@@ -96,11 +96,11 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38]) // 1 for cod ,38 for offline manual by harbans
                     ->orWhere(function($q3) {
-                        if(checkColumnExists('orders', 'is_postpay'))
-                        {
+                        
+                        
                             $q3->where('is_postpay', 1) // 1 for order is post pay.
                                ->whereNotIn('payment_option_id', [1, 38]);
-                        }
+                        
                     });
             });
         });
@@ -127,11 +127,11 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                 ->orWhere(function($q3) {
-                    if(checkColumnExists('orders', 'is_postpay'))
-                    {
+                    
+                    
                         $q3->where('is_postpay', 1) // 1 for order is post pay.
                             ->whereNotIn('payment_option_id', [1, 38]);
-                    }
+                    
                 });
             });
         });
@@ -157,11 +157,11 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                 ->orWhere(function($q3) {
-                    if(checkColumnExists('orders', 'is_postpay'))
-                    {
+                    
+                    
                         $q3->where('is_postpay', 1) // 1 for order is post pay.
                             ->whereNotIn('payment_option_id', [1, 38]);
-                    }
+                    
                 });
             });
         });
@@ -219,9 +219,9 @@ class OrderController extends BaseController
             $q->withoutAppends();
         }, 'vendors.status', 'orderStatusVendor', 'address', 'user' ]);
         
-        if(checkColumnExists('order_vendors', 'exchange_order_vendor_id')){
-            $orders = $orders->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail']);
-        }
+        
+        $orders = $orders->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail']);
+        
         
 
         if ($user->is_superadmin == 0) {
@@ -236,11 +236,11 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                 ->orWhere(function($q3) {
-                    if(checkColumnExists('orders', 'is_postpay'))
-                    {
+                    
+                    
                         $q3->where('is_postpay', 1) // 1 for order is post pay
                             ->whereNotIn('payment_option_id', [1, 38]);
-                    }
+                    
                 });
             });
         })->orderBy('id', 'asc');
@@ -272,10 +272,10 @@ class OrderController extends BaseController
                 $query->where('vendor_id', $request->get('vendor_id'));
             });
         }
-        if( checkColumnExists('orders', 'gift_card_id') ){
-            $HasGiftCard = 1;
-            $orders  = $orders->with(['giftCard']);
-        }
+        
+        $HasGiftCard = 1;
+        $orders  = $orders->with(['giftCard']);
+        
         //Search by keyword
         if (!empty($request->search_keyword)) {
             $order_count->whereHas('address', function ($query) use ($request) {
@@ -461,11 +461,11 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                     ->orWhere(function($q3) {
-                        if(checkColumnExists('orders', 'is_postpay'))
-                        {
+                        
+                        
                             $q3->where('is_postpay', 1)
                                 ->whereNotIn('payment_option_id', [1, 38]);
-                        }
+                        
                     });
             });
         });
@@ -730,27 +730,29 @@ class OrderController extends BaseController
 
     public function getOrderDetail($domain = '', $order_id, $vendor_id)
     {
+        //  dd($vendor_id);
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
         $vendor_order_status_option_ids = [];
         $vendor_order_status_created_dates = [];
         $order = Order::with(array(
-            'vendors' => function ($query) use ($vendor_id) {
-                $query->where('vendor_id', $vendor_id);
-            },
-            'vendors.products.prescription' => function ($query) use ($vendor_id, $order_id) {
+            'vendors' => function ($query) use ($vendor_id,$order_id) {
+                $query->join('vendors', 'vendors.id', '=', 'order_vendors.vendor_id')
+                ->where('vendors.id', $vendor_id)
+                ->where('order_vendors.order_id', $order_id);            },
+              'vendors.products.prescription' => function ($query) use ($vendor_id, $order_id) {
                 $query->where('vendor_id', $vendor_id)->where('order_id', $order_id);
             },
             'vendors.products' => function ($query) use ($vendor_id) {
                 $query->where('vendor_id', $vendor_id);
-                if (checkColumnExists('vendor_order_product_statuses', 'order_status_option_id')) {
-                    $query->with('order_product_status');
-                }
+                
+                $query->with('order_product_status');
+                
             },
-            'vendors.products.product',
-            'vendors.products.addon',
-            'vendors.products.addon.set',
-            'vendors.products.addon.option',
+             'vendors.products.product',
+             'vendors.products.addon',
+             'vendors.products.addon.set',
+             'vendors.products.addon.option',
             'vendors.products.addon.option.translation' => function ($q) use ($langId) {
                 $q->select('addon_option_translations.id', 'addon_option_translations.addon_opt_id', 'addon_option_translations.title', 'addon_option_translations.language_id');
                 $q->where('addon_option_translations.language_id', $langId);
@@ -933,7 +935,6 @@ class OrderController extends BaseController
         if(!empty($order->recurring_booking_time)){
             $recurring_booking = OrderLongTermServiceSchedule::where(['order_number'=>$order->order_number,'type'=>2])->get();
         }
-
         //    pr( $order['total_other_taxes'][14]);
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id,
@@ -952,7 +953,7 @@ class OrderController extends BaseController
             "category_KYC_document" => $category_KYC_document,
             'driver_data' => (($driver_data) ? json_decode($driver_data) : ''),
             'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm,
-            'recurring_booking' => $recurring_booking,
+            'recurring_booking' => $recurring_booking
         ]);
     }
 
@@ -1076,11 +1077,11 @@ class OrderController extends BaseController
                     
                     if ($orderData->shipping_delivery_type == 'D') {
                         //Create Shipping request for dispatcher
-                        if( checkColumnExists('orders','is_long_term') &&   $orderData->orderDetail->is_long_term ==1){
+                        if($orderData->orderDetail->is_long_term ==1){
                             $order_dispatch = $this->checkIfanyServiceProductLastMileon($request);
 
                         }
-                        else if( checkColumnExists('orders','recurring_booking_type') &&   $orderData->orderDetail->recurring_booking_type ==1){
+                        else if($orderData->orderDetail->recurring_booking_type ==1){
                             $order_dispatch = $this->checkIfIsProductRecurringLastMileon($request);
                         }
                         else{
@@ -1464,7 +1465,6 @@ class OrderController extends BaseController
 
     public function checkIfanyProductLastMileon($request)
     {
-        $islongTermInDB = checkColumnExists('products','is_long_term_service') ;
         $order_dispatchs = 2;
         $AdditionalPreference  =  getAdditionalPreference(['is_place_order_delivery_zero','is_service_product_price_from_dispatch']);
         $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
@@ -1616,11 +1616,11 @@ class OrderController extends BaseController
 
             foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
                 $isNotLongTerm = 1;
-                if( $islongTermInDB = 1 ){
+                
                     if( $prod->product->is_long_term_service ==1 ){
                         $isNotLongTerm = 0;
                     }
-                }
+                
 
 
                 if (( $isNotLongTerm ==1 ) && $prod->product->category->categoryDetail->type_id == 9) {    ///////// if product from laundry
@@ -1661,7 +1661,7 @@ class OrderController extends BaseController
 
     public function checkIfIsProductRecurringLastMileon($request)
     {
-        $isRecurringBookingDB   = checkColumnExists('products','is_recurring_booking');
+        
         $order_dispatchs        = 2;
         $checkdeliveryFeeAdded  = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $luxury_option_id       = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
@@ -1783,11 +1783,11 @@ class OrderController extends BaseController
 
             foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
                 $isNotLongTerm = 1;
-                if( $islongTermInDB = 1 ){
+                
                     if( $prod->product->is_long_term_service ==1 ){
                         $isNotLongTerm = 0;
                     }
-                }
+                
 
 
                 if (( $isNotLongTerm ==1 ) && $prod->product->category->categoryDetail->type_id == 9) {    ///////// if product from laundry
@@ -1838,8 +1838,7 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if(checkColumnExists('orders', 'is_postpay'))
-                {
+                
                     if($order->is_postpay==1 && $order->payment_status == 0)
                     {
                         $cash_to_be_collected = 'Yes';
@@ -1848,10 +1847,7 @@ class OrderController extends BaseController
                         $cash_to_be_collected = 'No';
                         $payable_amount = 0.00;
                     }
-                }else{
-                    $cash_to_be_collected = 'No';
-                    $payable_amount = 0.00;
-                }
+                
             }
             $dynamic = uniqid($order->id . $vendor);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'phone_no', 'email', 'name', 'latitude', 'longitude', 'address','order_pre_time')->first();
@@ -1995,7 +1991,6 @@ class OrderController extends BaseController
                         ]);
 
                         $url = $dispatch_domain->delivery_service_key_url;
-
                         $res = $client->post(
                             $url . '/api/task/create',
                             ['form_params' => ($postdata)]
@@ -2113,9 +2108,6 @@ class OrderController extends BaseController
 
                 return 1;
             }
-
-
-
         }
             return 2;
         } catch (\Exception $e) {
@@ -2141,8 +2133,7 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if(checkColumnExists('orders', 'is_postpay'))
-                {
+                
                     if($order->is_postpay==1 && $order->payment_status == 0)
                     {
                         $cash_to_be_collected = 'Yes';
@@ -2151,10 +2142,7 @@ class OrderController extends BaseController
                         $cash_to_be_collected = 'No';
                         $payable_amount = 0.00;
                     }
-                }else{
-                    $cash_to_be_collected = 'No';
-                    $payable_amount = 0.00;
-                }
+                
             }
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
@@ -2277,8 +2265,7 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if(checkColumnExists('orders', 'is_postpay'))
-                {
+                
                     if($order->is_postpay==1 && $order->payment_status == 0)
                     {
                         $cash_to_be_collected = 'Yes';
@@ -2287,10 +2274,7 @@ class OrderController extends BaseController
                         $cash_to_be_collected = 'No';
                         $payable_amount = 0.00;
                     }
-                }else{
-                    $cash_to_be_collected = 'No';
-                    $payable_amount = 0.00;
-                }
+                
             }
 
 
@@ -2534,9 +2518,8 @@ class OrderController extends BaseController
                     $query->where('user_id', Auth::user()->id);
                 });
             }
-            if(checkColumnExists('order_return_requests', 'type')){
-                $orders_list = $orders_list->whereIn('type', [1,3]); // 1 = return , 2 = exchange
-            }
+            $orders_list = $orders_list->whereIn('type', [1,3]); // 1 = return , 2 = exchange
+            
             if (!empty($request->search_keyword)) {
                 $orders_list->whereHas('order', function ($query)  use ($request) {
                     $query->whereHas('address', function ($q) use ($request) {
@@ -2757,8 +2740,7 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if(checkColumnExists('orders', 'is_postpay'))
-                {
+                
                     if($order->is_postpay==1 && $order->payment_status == 0)
                     {
                         $cash_to_be_collected = 'Yes';
@@ -2767,10 +2749,7 @@ class OrderController extends BaseController
                         $cash_to_be_collected = 'No';
                         $payable_amount = 0.00;
                     }
-                }else{
-                    $cash_to_be_collected = 'No';
-                    $payable_amount = 0.00;
-                }
+                
             }
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
@@ -3238,6 +3217,28 @@ class OrderController extends BaseController
         $order_vendor = OrderVendor::where('order_id', 47)->first();
         $order_vendor->order_status_option_id = rand();
         $order_vendor->save();
+    }
+
+    public function addExtraPrepTimeToOrder(Request $request){
+      
+        $response    = $this->addBufferTime($request);
+        if($response['status']=='success'){
+            $order = Order::find($response ['order_id']);
+            $this->sendDelayPushNotification($order->user_id, $order,$request);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Time Added Success Fully.',
+            ], 200);
+        }else{
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Some Thing Went Wrong.',
+              
+            ], 200);
+        }
+        
+        
+
     }
 
 

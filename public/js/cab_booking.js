@@ -948,11 +948,12 @@ $(document).ready(function () {
         let amount = $(this).data('amount');
         let vendor_id = $(this).data('vendor_id');
         let product_id = $(this).data('product_id');
+         let cart_product_ids = $("input[name='cart_product_ids[]']").map(function(){return $(this).val();}).get();
         $.ajax({
             type: "POST",
             dataType: 'json',
             url: promo_code_list_url,
-            data: {amount:amount, vendor_id:vendor_id},
+            data: {amount:amount, vendor_id:vendor_id,cart_product_ids:cart_product_ids},
             success: function(response) {
                 if(response.status == 'Success'){
                     $('#cab_booking_promo_code_list_main_div').html('');

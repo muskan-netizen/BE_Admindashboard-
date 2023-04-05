@@ -456,12 +456,10 @@ class ReturnOrderController extends FrontController
 
         try {
 
+
             $order_vendor = OrderVendor::where('id', $request->id)->first();
-            if (checkColumnExists('return_reasons', 'type')) {
-                $cancellation_reason = ReturnReason::where(['status' => 'Active', 'type' => 3])->get();
-            } else {
-                $cancellation_reason = ReturnReason::where(['status' => 'Active'])->get();
-            }
+            $cancellation_reason = ReturnReason::where(['status' => 'Active', 'type' => 3])->get();
+           
 
             $orderCancellationPercentage = 0;
             if (($client_preferences->order_cancellation_time > 0)) {

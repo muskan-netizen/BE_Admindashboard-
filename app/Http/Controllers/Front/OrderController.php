@@ -112,10 +112,10 @@ class OrderController extends FrontController
             if (! empty($icon->image_url['proxy_url'])) {
                 $imgUrl = $icon->image_url['proxy_url'] . '40/40' . $icon->image_url['image_path'];
             }
+
             $iconsArray[] = $imgUrl;
         }   
-        // dd($iconsArray);
-        $checkLongTerm = checkColumnExists('orders', 'is_long_term');
+       
 
         //Past Orders Start Query
         $pastOrders = Order::with([
@@ -154,10 +154,8 @@ class OrderController extends FrontController
             'driver_rating',
             'reports'
         ]);
-        if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
-            $pastOrders = $pastOrders->with('vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail');
-        }
 
+        $pastOrders = $pastOrders->with('vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail');
 
         if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
             $pastOrders->whereHas('vendors.products', function ($q) {
@@ -179,11 +177,10 @@ class OrderController extends FrontController
             $q1->orWhere(function ($q2) {
                 $q2->where('payment_option_id', 1);
             });
-        })
-            ->where('orders.user_id', $user->id);
-        if ($checkLongTerm) {
-            $pastOrders->where('orders.is_long_term', 0);
-        } 
+
+        })->where('orders.user_id', $user->id);
+
+        $pastOrders->where('orders.is_long_term', 0);
      
         $pastOrders = $pastOrders->orderBy('orders.id', 'DESC')
             ->select('*', 'id as total_discount_calculate')
@@ -205,9 +202,7 @@ class OrderController extends FrontController
                     $Pq->with(['products.media.image', 'products.pvariant.media.pimage.image','products.Routes', 'products.order_product_status']);
                 });
                
-                if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
-                    $q->with('exchanged_of_order.orderDetail');
-                }
+                $q->with('exchanged_of_order.orderDetail');
                 $q->whereNotIn('order_status_option_id', [
                     3,
                     6,
@@ -222,6 +217,7 @@ class OrderController extends FrontController
             'address',
             'reqCancelOrder'
         ]);
+
 
         
         $activeOrders->where(function ($q1) {
@@ -246,9 +242,9 @@ class OrderController extends FrontController
             });
         })
             ->where('orders.user_id', $user->id);
-        if ($checkLongTerm) {
+        
             $activeOrders->where('orders.is_long_term', 0);
-        }
+        
         if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
             $activeOrders =  $activeOrders->whereHas('vendors.products', function ($q) {
                 $q->whereNotIn('dispatcher_status_option_id',[1,5,6]); //1=pending,5= complete,6 reject
@@ -371,11 +367,12 @@ class OrderController extends FrontController
             'vendors' => function ($q) {
                 $q->whereHas('products.productReturn');
             }
+
         ])->whereHas('vendors.products.productReturn')->where('orders.user_id', $user->id);
-        if ($checkLongTerm) {
-            $returnOrders->where('orders.is_long_term', 0);
-        }
+        $returnOrders->where('orders.is_long_term', 0);
+        
         $returnOrders = $returnOrders->orderBy('orders.id', 'DESC')->paginate(20);
+
         foreach ($returnOrders as $order) {
             foreach ($order->vendors as $vendor) {
                 foreach ($vendor->products as $product) {
@@ -431,13 +428,10 @@ class OrderController extends FrontController
             });
         })
             ->where('orders.user_id', $user->id);
-        if ($checkLongTerm) {
-            $rejectedOrders->where('orders.is_long_term', 0);
-        }
-        
-        $rejectedOrders = $rejectedOrders->orderBy('orders.id', 'DESC')
-            ->select('*', 'id as total_discount_calculate')
-            ->paginate(10);
+
+        $rejectedOrders->where('orders.is_long_term', 0);
+        $rejectedOrders = $rejectedOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
+
 
         foreach ($rejectedOrders as $order) {
             foreach ($order->vendors as $vendor) {
@@ -482,27 +476,21 @@ class OrderController extends FrontController
             $client_preferences->editlimit_datetime = Carbon::now()->addHours($client_preferences->order_edit_before_hours)->toDateTimeString();
         }     
         $payments = PaymentOption::where('credentials', '!=', '')->where('status', 1)->count();
-        if (checkColumnExists('return_reasons', 'type')) {
-            $cancellation_reason = ReturnReason::where([
+
+        $cancellation_reason = ReturnReason::where([
                 'status' => 'Active',
                 'type' => 3
             ])->get();
-        } else {
-            $cancellation_reason = ReturnReason::where([
-                'status' => 'Active'
-            ])->get();
-        }
        
-   
-        // dd($activeOrders->toArray());
 
         $longTermOrder = [];
         /**
          * get user long term orders
          */
         $show_long_term =0;
-        if ($additionalPreference['is_long_term_service'] == 1 && checkColumnExists('products', 'is_long_term_service')){
+        if ($additionalPreference['is_long_term_service'] == 1){
             $show_long_term =1;
+
             $longTermOrder = $this->getUserLongTermService($user, $langId, $currency_id);
         }
             
@@ -549,9 +537,6 @@ class OrderController extends FrontController
                     $Pq->with(['products.media.image', 'products.pvariant.media.pimage.image','products.Routes', 'products.order_product_status']);
                 });
 
-                // if (checkColumnExists('order_vendors', 'exchange_order_vendor_id')) {
-                //     $q->with('exchanged_of_order.orderDetail');
-                // }
             }
             ,
             'vendors.dineInTable.translations' => function ($qry) use ($langId) {
@@ -655,6 +640,7 @@ class OrderController extends FrontController
         $currency_id = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
+
         $order = Order::with([
             'products.vendor',
             'products.pvariant.vset',
@@ -664,7 +650,7 @@ class OrderController extends FrontController
             },
             'address'
         ]);
-        if (checkTableExists('order_long_term_services') && checkColumnExists('orders', 'is_long_term')) {
+        if (checkTableExists('order_long_term_services')) {
             $order = $order->with([
                 'products.LongTermService.product',
                 'products.LongTermService.product.translation_one' => function ($q) use ($langId) {
@@ -1225,14 +1211,10 @@ class OrderController extends FrontController
             }
             $currency_id = Session::get('customerCurrency');
             $language_id = Session::get('customerLanguage');
-            if (checkColumnExists('carts', 'order_id')) { // get if any order is being edit
-                $cart = Cart::where('user_id', $user->id)->with([
+            $cart = Cart::where('user_id', $user->id)->with([
                     'editingOrder.orderStatusVendor',
                     'cartvendor'
                 ])->first();
-            } else {
-                $cart = Cart::where('user_id', $user->id)->first();
-            }
 
             /* Get Currencies of client and customer */
             $customerCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
@@ -1243,7 +1225,9 @@ class OrderController extends FrontController
             $loyalty_points_used = $loyaltyCheck->loyalty_points_used ?? 0;
 
             // check gift card
-            if(($additionalPreferences->is_gift_card ==1) ){
+
+            if($additionalPreferences->is_gift_card ==1){
+
 
                 if(isset($cart->giftCard) && !empty($cart->giftCard)){
 
@@ -1259,7 +1243,7 @@ class OrderController extends FrontController
                     }
                 }
             }
-            // pr($UserGiftCardId);
+           
             /* Generate order object */
             $order = new Order();
 
@@ -1341,9 +1325,7 @@ class OrderController extends FrontController
             $order->is_gift = $request->is_gift ?? 0;
             $order->user_latitude = $latitude ? $latitude : null;
             $order->user_longitude = $longitude ? $longitude : null;
-            if (checkColumnExists('orders', 'is_postpay')) {
-                $order->is_postpay = (isset($request->is_postpay)) ? $request->is_postpay : 0;
-            }
+            $order->is_postpay = (isset($request->is_postpay)) ? $request->is_postpay : 0;
             /* Save initial details of order */
             $order->save();
 
@@ -1425,7 +1407,6 @@ class OrderController extends FrontController
             $is_long_term_order = 0;
             $deliveryfeeOnCoupon = 0;
 
-            $checkLongTermInDB = checkColumnExists('products', 'is_long_term_service');
             /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
             if (! empty($request->other_taxes_string)) {
                 foreach (explode(":", $request->other_taxes_string) as $row) {
@@ -1546,7 +1527,7 @@ class OrderController extends FrontController
                     $divider = (empty($vendor_cart_product->doller_compare) || $vendor_cart_product->doller_compare < 0) ? 1 : $vendor_cart_product->doller_compare;
                     $price_in_currency = $variant->price / $divider;
                     // change product price when is_service_product_price_from_dispatch on 
-                    if(( checkColumnExists('cart_products', 'dispatch_agent_price') && ($action == 'on_demand') && $additionalPreferences->is_service_product_price_from_dispatch ==1 )){
+                    if(($action == 'on_demand') && $additionalPreferences->is_service_product_price_from_dispatch ==1){
                         $price_in_currency =$vendor_cart_product->dispatch_agent_price / $divider;
                     }
                     //Find item price here  ==  + $variant->price;
@@ -1571,11 +1552,9 @@ class OrderController extends FrontController
                     }
 
                     $daysCountRecurring       = 1;
-                    if(checkColumnExists('cart_products','recurring_booking_type')){
-                        if($vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
-                            $date       = count(explode(",",$vendor_cart_product->recurring_day_data));
-                            $daysCountRecurring =  $date;
-                        }
+                    if($vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
+                        $date       = count(explode(",",$vendor_cart_product->recurring_day_data));
+                        $daysCountRecurring =  $date;
                     }
                     $quantity_price = $quantity_price * $daysCountRecurring;
 
@@ -1650,8 +1629,7 @@ class OrderController extends FrontController
                     $variant_price = $variant->price * $daysCountRecurring;
                     // change variant_price price when is_service_product_price_from_dispatch on 
                     $is_price_buy_driver = 0;
-                    if(($action == 'on_demand') && checkColumnExists('cart_products', 'dispatch_agent_price') && 
-                    ($additionalPreferences->is_service_product_price_from_dispatch ==1 )){
+                    if(($action == 'on_demand') && ($additionalPreferences->is_service_product_price_from_dispatch ==1 )){
                         $variant_price =$vendor_cart_product->dispatch_agent_price ;
                         $is_price_buy_driver = 1;
                     }
@@ -1675,12 +1653,8 @@ class OrderController extends FrontController
                     $order_product->dispatcher_status_option_id =1;
                     $order_product->order_status_option_id =1;
                     $order_product->product_delivery_fee = isset($vendor_cart_product->product_delivery_fee) ? $vendor_cart_product->product_delivery_fee : 0;
-                    if(checkColumnExists('order_vendor_products', 'is_price_buy_driver')){
-                        $order_product->is_price_buy_driver = $is_price_buy_driver;
-                    }
-                    if(checkColumnExists('order_vendor_products', 'specific_instruction')){
-                        $order_product->specific_instruction = $vendor_cart_product->specific_instruction;
-                    }
+                    $order_product->is_price_buy_driver = $is_price_buy_driver;
+                    $order_product->specific_instruction = $vendor_cart_product->specific_instruction;
                     /**
                      * for rental case total_booking_time as a total time
                      * for on_demand and appointment total booking time as single service duration time as per service for get totel service time multiply by quantity
@@ -1748,35 +1722,24 @@ class OrderController extends FrontController
                     $order_product->product_name = $vendor_cart_product->product->title ?? $vendor_cart_product->product->sku;
 
                     $product_dispatcher_tag = $vendor_cart_product->product->tags;
-                    if (($checkLongTermInDB == 1)) {}
+
                     $order_product->product_dispatcher_tag = $vendor_cart_product->product->tags;
 
                     $order_product->schedule_type = $vendor_cart_product->schedule_type ?? null;
                     $order_product->scheduled_date_time = $vendor_cart_product->schedule_type == 'schedule' ? $vendor_cart_product->scheduled_date_time : null;
+
                     $order_product->schedule_slot = ! empty($vendor_cart_product->schedule_slot) ? $vendor_cart_product->schedule_slot : '';
-                    if (checkColumnExists('order_vendor_products', 'dispatch_agent_id')) {
-                        $order_product->dispatch_agent_id = ! empty($vendor_cart_product->dispatch_agent_id) ? $vendor_cart_product->dispatch_agent_id : null;
-                    }
+                    $order_product->dispatch_agent_id = ! empty($vendor_cart_product->dispatch_agent_id) ? $vendor_cart_product->dispatch_agent_id : null;
+    
 
-                    if (checkColumnExists('order_vendor_products', 'slot_id')) {
-
-                        $order_product->slot_id = ! empty($vendor_cart_product->slot_id) ? $vendor_cart_product->slot_id : null;
-                    }
-
-                    if (checkColumnExists('order_vendor_products', 'delivery_date')) {
-
-                        $order_product->delivery_date = ! empty($vendor_cart_product->delivery_date) ? $vendor_cart_product->delivery_date : null;
-                    }
-
-                    if (checkColumnExists('order_vendor_products', 'slot_price')) {
-
-                        $order_product->slot_price = ! empty($vendor_cart_product->slot_price) ? $vendor_cart_product->slot_price : null;
-                    }
-
+                    $order_product->slot_id = ! empty($vendor_cart_product->slot_id) ? $vendor_cart_product->slot_id : null;
+                    
+                    $order_product->delivery_date = ! empty($vendor_cart_product->delivery_date) ? $vendor_cart_product->delivery_date : null;
+                    
+                    $order_product->slot_price = ! empty($vendor_cart_product->slot_price) ? $vendor_cart_product->slot_price : null;
                   
-                   // if (checkColumnExists('order_vendor_products', 'dispatch_agent_id')) {
-                        $order_product->dispatch_agent_id = !empty($vendor_cart_product->dispatch_agent_id) ? $vendor_cart_product->dispatch_agent_id : null;
-                   // }
+                    $order_product->dispatch_agent_id = !empty($vendor_cart_product->dispatch_agent_id) ? $vendor_cart_product->dispatch_agent_id : null;
+
                     if ($vendor_cart_product->product->pimage) {
                         $order_product->image = $vendor_cart_product->product->pimage->first() ? $vendor_cart_product->product->pimage->first()->path : '';
                     }
@@ -1792,41 +1755,39 @@ class OrderController extends FrontController
                     $order_product->save();
 
                     /** for Recurring Service */
-                    if(checkColumnExists('cart_products','recurring_booking_type')){
-                        if(!empty($vendor_cart_product->recurring_booking_time)){
-                            $user_timezone          =   $timezone;
-                            $recurring_booking_time =   convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
-        
-                                $RecurringServiceSchedule = array();
-        
-                                 // No Nee other action
-                                 if(@$vendor_cart_product->recurring_booking_type){
-                                    $Recurring_quantity     = $vendor_cart_product->quantity;
-                                    $recurring_day_data     = $vendor_cart_product->recurring_day_data;
-                                    $recurring_day_data     = explode(",",$recurring_day_data);
-        
-                                    $ndate                  = convertDateTimeInClientTimeZone(Carbon::now());
-                                    $recurring_booking_time = convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
-                                    for ($x = 0; $x < count($recurring_day_data); $x++) {
-                                        $date           = $recurring_day_data[$x];
-                                        $newDate        = $date.' '. $recurring_booking_time;
-                                        $RecurringServiceSchedule [] = [
-                                            'order_vendor_product_id' => $order_product->id,
-                                            'schedule_date'           => $newDate,
-                                            'type'                    => 2,
-                                            'order_number'            => $order->order_number
-                                        ];
-                                    }
+                    if(!empty($vendor_cart_product->recurring_booking_time)){
+                        $user_timezone          =   $timezone;
+                        $recurring_booking_time =   convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
+    
+                            $RecurringServiceSchedule = array();
+    
+                                // No Nee other action
+                                if(@$vendor_cart_product->recurring_booking_type){
+                                $Recurring_quantity     = $vendor_cart_product->quantity;
+                                $recurring_day_data     = $vendor_cart_product->recurring_day_data;
+                                $recurring_day_data     = explode(",",$recurring_day_data);
+    
+                                $ndate                  = convertDateTimeInClientTimeZone(Carbon::now());
+                                $recurring_booking_time = convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
+                                for ($x = 0; $x < count($recurring_day_data); $x++) {
+                                    $date           = $recurring_day_data[$x];
+                                    $newDate        = $date.' '. $recurring_booking_time;
+                                    $RecurringServiceSchedule [] = [
+                                        'order_vendor_product_id' => $order_product->id,
+                                        'schedule_date'           => $newDate,
+                                        'type'                    => 2,
+                                        'order_number'            => $order->order_number
+                                    ];
                                 }
+                            }
 
-                                if (!empty($RecurringServiceSchedule)) {
-                                      OrderLongTermServiceSchedule::insert($RecurringServiceSchedule);
-                                  }
-                        }
+                            if (!empty($RecurringServiceSchedule)) {
+                                    OrderLongTermServiceSchedule::insert($RecurringServiceSchedule);
+                                }
                     }
 
                     /** for long Term Service */
-                    if (($checkLongTermInDB == 1) && $vendor_cart_product->product->is_long_term_service && $vendor_cart_product->LongTermProducts) {
+                    if ($vendor_cart_product->product->is_long_term_service && $vendor_cart_product->LongTermProducts) {
                         $is_long_term_order = 1;
                         $service_start_date = $vendor_cart_product->service_start_date ?? Carbon::now()->format('Y-m-d H:i:s');
                         $service_end_date = Carbon::parse($service_start_date)->addMonths($vendor_cart_product->product->service_duration)
@@ -2108,10 +2069,9 @@ class OrderController extends FrontController
                 $subs_discount_admin = $subs_discount_arr['admin'] + $subs_discount_arr['delivery_discount'];
                 $subs_discount_vendor = $subs_discount_arr['vendor'];
 
-                if (checkColumnExists('order_vendors', 'subscription_discount_admin')) {
-                    $OrderVendor->subscription_discount_admin = $subs_discount_admin;
-                    $OrderVendor->subscription_discount_vendor = $subs_discount_vendor;
-                }
+                $OrderVendor->subscription_discount_admin  = $subs_discount_admin;
+                $OrderVendor->subscription_discount_vendor = $subs_discount_vendor;
+
                 $total_subscription_discount = $total_subscription_discount + $subs_discount_admin + $subs_discount_vendor;
                 $OrderVendor->is_restricted = $is_restricted;
                 $OrderVendor->bid_discount = $bid_vendor_discount ?? 0;
@@ -2146,14 +2106,13 @@ class OrderController extends FrontController
 
             $order->total_amount = $total_amount - $Order_bid_discount??0;
 
-            if(checkColumnExists('cart_products','recurring_booking_type')){
-                if(@$vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
-                    $date       = explode(",",$vendor_cart_product->recurring_day_data);
-                    if($vendor_cart_product->recurring_booking_type == 1 ||$vendor_cart_product->recurring_booking_type == 2 || $vendor_cart_product->recurring_booking_type == 3 || $vendor_cart_product->recurring_booking_type == 4){
-                        $days_count                         =  count($date);
-                        $pvariant_new_price                 =   $order->total_amount * $days_count;
-                        //$order->total_amount                =  decimal_format($pvariant_new_price);
-                    }
+
+            if($vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
+                $date       = explode(",",$vendor_cart_product->recurring_day_data);
+                if($vendor_cart_product->recurring_booking_type == 1 ||$vendor_cart_product->recurring_booking_type == 2 || $vendor_cart_product->recurring_booking_type == 3 || $vendor_cart_product->recurring_booking_type == 4){
+                    $days_count                         =  count($date);
+                    $pvariant_new_price                 =   $order->total_amount * $days_count;
+                    //$order->total_amount                =  decimal_format($pvariant_new_price);
                 }
             }
 
@@ -2186,10 +2145,8 @@ class OrderController extends FrontController
             // ---------------------------------------
             $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
 
-            if(checkColumnExists('cart_products','recurring_booking_type')){
-                if(!empty($vendor_cart_product->recurring_booking_time)){
-                    $payable_amount = ($request->total_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
-                }
+            if(!empty($vendor_cart_product->recurring_booking_time)){
+                $payable_amount = ($request->total_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
             }
 
             $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
@@ -2230,10 +2187,8 @@ class OrderController extends FrontController
 
             $payable_amount = $payable_amount - $wallet_amount_used;
 
-            if(checkColumnExists('cart_products','recurring_booking_type')){
-                if(!empty($vendor_cart_product->recurring_booking_time)){
-                    $payable_amount =  $request->total_amount - $wallet_amount_used;
-                }
+            if(!empty($vendor_cart_product->recurring_booking_time)){
+                $payable_amount =  $request->total_amount - $wallet_amount_used;
             }
 
             //echo  " Total payable_amount2=".$payable_amount."; <br>";
@@ -2276,10 +2231,12 @@ class OrderController extends FrontController
                 }
                 $order->payable_amount = $orderTotalPay;
             }
+
             if (getAdditionalPreference([
                 'is_gift_card'
-            ])['is_gift_card'] == 1 && checkColumnExists('orders', 'gift_card_id')) {
+            ])['is_gift_card'] == 1) {
                 $order->gift_card_id = $cart->gift_card_id;
+
                 $order->gift_card_amount = decimal_format($giftCardUsedAmount);
                 $order->gift_card_code = $userGiftCardCode;
                 Cart::where('id', $cart->id)->update([
@@ -2315,26 +2272,20 @@ class OrderController extends FrontController
             }
             $order->bid_discount        = $Order_bid_discount??0;
 
-            if(checkColumnExists('cart_products','recurring_booking_type')){
-                if(!empty($vendor_cart_product->recurring_booking_time)){
-                    $user_timezone          =   $timezone;
-                    $recurring_booking_time =   convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
-                    if(checkColumnExists('orders','recurring_booking_type')){
-                        $order->recurring_booking_type  = $vendor_cart_product->recurring_booking_type;
-                        $order->recurring_week_day      = json_encode($vendor_cart_product->recurring_week_day);
-                        $order->recurring_week_type     = $vendor_cart_product->recurring_week_type;
-                        $order->recurring_day_data      = $vendor_cart_product->recurring_day_data;
-                        $order->recurring_booking_time  = $recurring_booking_time;
-                    }
-                }
+            if(!empty($vendor_cart_product->recurring_booking_time)){
+                $user_timezone          =   $timezone;
+                $recurring_booking_time =   convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
+                $order->recurring_booking_type  = $vendor_cart_product->recurring_booking_type;
+                $order->recurring_week_day      = json_encode($vendor_cart_product->recurring_week_day);
+                $order->recurring_week_type     = $vendor_cart_product->recurring_week_type;
+                $order->recurring_day_data      = $vendor_cart_product->recurring_day_data;
+                $order->recurring_booking_time  = $recurring_booking_time;
             }
 
 
 
             $order->save();
-            if(checkColumnExists('order_files','id')){
-                OrderFiles::where('cart_id',$cart->id)->update(['order_id'=>$order->id,'cart_id'=>'']);
-            }
+            OrderFiles::where('cart_id',$cart->id)->update(['order_id'=>$order->id,'cart_id'=>'']);
           
             // $this->sendOrderNotification($user->id, $vendor_ids);
 
@@ -2390,34 +2341,24 @@ class OrderController extends FrontController
                     $this->sendSuccessEmail($request, $order, $vendor_id);
                 }
 
-                if (checkColumnExists('carts', 'order_id')) {
-                    Cart::where('id', $cart->id)->update([
-                        'schedule_type' => null,
-                        'scheduled_date_time' => null,
-                        'comment_for_pickup_driver' => null,
-                        'comment_for_dropoff_driver' => null,
-                        'comment_for_vendor' => null,
-                        'schedule_pickup' => null,
-                        'schedule_dropoff' => null,
-                        'specific_instructions' => null,
-                        'order_id' => NULL
-                    ]);
-                } else {
-                    Cart::where('id', $cart->id)->update([
-                        'schedule_type' => null,
-                        'scheduled_date_time' => null,
-                        'comment_for_pickup_driver' => null,
-                        'comment_for_dropoff_driver' => null,
-                        'comment_for_vendor' => null,
-                        'schedule_pickup' => null,
-                        'schedule_dropoff' => null,
-                        'specific_instructions' => null
-                    ]);
-                }
+
+                Cart::where('id', $cart->id)->update([
+                    'schedule_type' => null,
+                    'scheduled_date_time' => null,
+                    'comment_for_pickup_driver' => null,
+                    'comment_for_dropoff_driver' => null,
+                    'comment_for_vendor' => null,
+                    'schedule_pickup' => null,
+                    'schedule_dropoff' => null,
+                    'specific_instructions' => null,
+                    'order_id' => NULL
+                ]);
+                
                 CaregoryKycDoc::where('cart_id', $cart->id)->update([
                     'ordre_id' => $order->id,
                     'cart_id' => ''
                 ]);
+
                 CartAddon::where('cart_id', $cart->id)->delete();
                 CartCoupon::where('cart_id', $cart->id)->delete();
                 CartProduct::where('cart_id', $cart->id)->delete();
@@ -3042,14 +2983,9 @@ class OrderController extends FrontController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if (checkColumnExists('orders', 'is_postpay')) {
-                    if ($order->is_postpay == 1 && $order->payment_status == 0) {
-                        $cash_to_be_collected = 'Yes';
-                        $payable_amount = $order->payable_amount;
-                    } else {
-                        $cash_to_be_collected = 'No';
-                        $payable_amount = 0.00;
-                    }
+                if ($order->is_postpay == 1 && $order->payment_status == 0) {
+                    $cash_to_be_collected = 'Yes';
+                    $payable_amount = $order->payable_amount;
                 } else {
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -3191,14 +3127,9 @@ class OrderController extends FrontController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if (checkColumnExists('orders', 'is_postpay')) {
-                    if ($order->is_postpay == 1 && $order->payment_status == 0) {
-                        $cash_to_be_collected = 'Yes';
-                        $payable_amount = $order->payable_amount;
-                    } else {
-                        $cash_to_be_collected = 'No';
-                        $payable_amount = 0.00;
-                    }
+                if ($order->is_postpay == 1 && $order->payment_status == 0) {
+                    $cash_to_be_collected = 'Yes';
+                    $payable_amount = $order->payable_amount;
                 } else {
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -3327,14 +3258,9 @@ class OrderController extends FrontController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if (checkColumnExists('orders', 'is_postpay')) {
-                    if ($order->is_postpay == 1 && $order->payment_status == 0) {
-                        $cash_to_be_collected = 'Yes';
-                        $payable_amount = $order->payable_amount;
-                    } else {
-                        $cash_to_be_collected = 'No';
-                        $payable_amount = 0.00;
-                    }
+                if ($order->is_postpay == 1 && $order->payment_status == 0) {
+                    $cash_to_be_collected = 'Yes';
+                    $payable_amount = $order->payable_amount;
                 } else {
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;

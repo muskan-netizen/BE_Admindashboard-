@@ -2812,6 +2812,9 @@ section.home-serivces .card-box {
     max-height: 100%;
     object-fit: cover;
 }
+.alSingleProducts .product-right .btn-wrapper .product-buttons {
+    margin: 20px 0px;
+}
 
 .al_body_template_six .displayProducts .product-box .media-body {
     padding: 0 10px

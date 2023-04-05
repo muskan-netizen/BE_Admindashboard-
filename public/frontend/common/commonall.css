@@ -61,7 +61,9 @@
     text-transform: capitalize;
     margin-right:0!important;
 }
-
+.search_bar.menu-right .icon-nav a span {
+    font-family: 'Poppins', sans-serif;
+}
 .al_body_template_one .vendor-design_new {
     margin-top: -16%;
     display: flex;
@@ -85,7 +87,9 @@
 .al_body_template_four .profile_address ul.vendor-info li.d-block.vendor-location a span {
     color: #000;
 }
-
+.main-rating i {
+    padding-left: 2px;
+}
 .al_body_template_eight .vendor-design_new {
     margin-top: -14%;
     display: flex;
@@ -315,6 +319,12 @@ span.org_price.ml-1.font-14 {
 }
 .al_body_template_one .inner_spacing h4 {
     color: #000;
+    font-size: 14px;
+    font-weight: 600;
+}
+.al_body_template_one .inner_spacing h4 small {
+    font-size: 14px;
+    font-weight: 300;
 }
 .al_body_template_one .main-fillter .side_fillter {
     border: none;margin-top: 0px !important;
@@ -1101,12 +1111,18 @@ body.al_body_template_nine .product-card-box.position-relative.al_box_third_temp
 body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule_div input::-webkit-calendar-picker-indicator {
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 24 24"><path fill="%23fff" d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg>');
 }
+.dark  div#login-section .btn {
+    color: #000!important;
+}
+
 @media (max-width:1400px){
     .al_body_template_four  .brand-ing {
         width: 180px;
         height: 180px;
     }
-    
+    .paddingrigh {
+        padding-right: 15px!important;
+    }
 }
 @media (max-width:991px){
     .al_body_template_four .vender-icon img {

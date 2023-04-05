@@ -2,9 +2,9 @@
     <a class="suppliers-box d-block" href="{{route('vendorDetail')}}/{{ $vendor->slug }}">
         <div class="suppliers-img-outer position-relative ">
             @if($vendor->is_vendor_closed==1) 
-                <img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="{{ $vendor->logo['proxy_url'] }}200/200{{ $vendor->logo['image_path'] }}" alt="" title="">
+                <img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="{{ get_file_path($vendor->logo,'FILL_URL','200','200') }}" alt="" title="">
             @else
-                <img  class="fluid-img mx-auto blur-up lazyload" data-src="{{ $vendor->logo['proxy_url'] }}200/200{{ $vendor->logo['image_path'] }}" alt="" title="">
+                <img  class="fluid-img mx-auto blur-up lazyload" data-src="{{ get_file_path($vendor->logo,'FILL_URL','200','200') }}" alt="" title="">
             @endif
 
         </div>

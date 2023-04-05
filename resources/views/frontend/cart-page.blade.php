@@ -1587,10 +1587,10 @@
                             $product->vendor->order_min_amount > 0 &&
                             $product->product_total_amount + $product->vendor->fixed_fee_amount < $product->vendor->order_min_amount
                         ))
-                         @if($cart_details->is_recurring_booking != 1 && $serviceType != 'rental') 
+                        @if($cart_details->is_recurring_booking != 1 && $serviceType != 'rental') 
                               @include('frontend.cart.scheduleSlot')
                         @endif
-                           
+                         
                             <div class="col-sm-6 col-lg-12 mt-2 text-sm-right cart-checkout_btn">
                                 @if (isset($ageVerify->status) && $ageVerify->status == 1)
                                     {{-- <button id="verify_your_age" class="btn btn-solid " type="button" >{{__('Verify Your Age')}}</button> --}}
