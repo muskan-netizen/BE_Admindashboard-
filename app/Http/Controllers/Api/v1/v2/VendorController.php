@@ -2236,7 +2236,7 @@ class VendorController extends BaseController{
                         }
                     ])->join('product_translations', 'product_translations.product_id', '=', 'products.id')
                     ->select('products.*',DB::raw("'$multipli' as variant_multiplier"))->withCount(['variantSet','addOn'])
-                    ->orderBy('products.id', 'asc')
+                    ->orderBy('product_translations.title', 'asc')
                     ->groupBy('products.id');
                     }]);
                     
@@ -2298,7 +2298,7 @@ class VendorController extends BaseController{
                     if(isset($request->category_id))
                     $products = $products->where('category_id',$request->category_id);
 
-                    $products = $products->orderBy('products.id', 'asc')->paginate($limit, $page); 
+                    $products = $products->orderBy('product_translations.title', 'asc')->paginate($limit, $page); 
                 // if(!empty($products)){
                 //     foreach ($products as $key => $product) {
                       
@@ -2836,6 +2836,9 @@ class VendorController extends BaseController{
                 if (!empty($order_type) && $order_type == 'popular_product') {
 
                     $products = $products->orderBy('order_product_count', 'desc');
+                }
+                if(empty($order_type)){
+                    $products = $products->orderBy('product_translations.title', 'asc');
                 }
                $products = $products->groupBy('products.id')->paginate($limit, $page);
            
