@@ -51,7 +51,7 @@ class DatabaseSeeder extends Seeder
               AppStylingAddOptionTableSeeder::class,
               MainRoleSeeder::class,
               MainPermissionSeeder::class,
-              ShippingOptionSeeder::class,
+              ShippingOptionSeeder::class
           ]);
         // $this->call(UsersTableSeeder::class);
        // $this->call(AppStylingOptionsTableSeeder::class);
