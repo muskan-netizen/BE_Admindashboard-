@@ -26,7 +26,7 @@ trait CustomerSignupSuccessEmailTrait{
         {
           $content = '';
           $client_detail = Client::first();
-          $email_template = EmailTemplate::where('slug', '=', 'NewCustomerSignup')->first();
+          $email_template = EmailTemplate::where('slug', '=', 'newcustomersignup')->first();
           if($email_template){
               $content = $email_template->content;
               $content = str_ireplace("{name}", $user->name, $content);

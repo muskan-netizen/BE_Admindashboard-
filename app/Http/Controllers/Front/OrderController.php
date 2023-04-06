@@ -486,9 +486,9 @@ class OrderController extends FrontController
                     } elseif($luxuryOptionTitle == 'payment_intent.payment_failed'){
                         $luxuryOptionTitle = 'Failed';
                     } else {
-                        $luxuryOptionTitle = 'delivery';
+                        $luxuryOptionTitle = !empty($order->luxury_option) ? $order->luxury_option->title : 'delivery';
                     }
-
+                    
                    
 
                     $email_template_content = $email_template->content;
