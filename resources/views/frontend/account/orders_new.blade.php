@@ -828,7 +828,7 @@ $timezone = Auth::user()->timezone;
                                                                 </li>
                                                                 @endif
 
-                                                                @if ( checkColumnExists('orders', 'gift_card_amount') && $order->gift_card_amount > 0)
+                                                                @if ($order->gift_card_amount > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{ __('Gift Card Amount') }}</label>
                                                                     <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->gift_card_amount
@@ -841,9 +841,9 @@ $timezone = Auth::user()->timezone;
                                                                     <label class="m-0">{{ __('Total Payable') }}</label>
                                                                     <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->payable_amount+$order->fixed_fee_amount)) : Session::get('currencySymbol') .decimal_format($order->payable_amount+$order->fixed_fee_amount)}}
 
-                                                                        @if(!checkColumnExists('orders', 'is_postpay'))
+                                                                        
                                                                         $order->is_postpay = 0;
-                                                                        @endif
+                                                                       
 
                                                                         @if ($order->payment_option_id != 1 && $order->is_postpay == 1 && $order->payment_status == 0)
                                                                         <br /><span style="color:var(--theme-deafult);">Unpaid</span>
@@ -1270,7 +1270,7 @@ $timezone = Auth::user()->timezone;
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                 </li>
                                                                 @endif
-                                                                @if ( checkColumnExists('orders', 'gift_card_amount') && $order->gift_card_amount > 0)
+                                                                @if ($order->gift_card_amount > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{ __('Gift Card Amount') }}</label>
                                                                     <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->gift_card_amount
@@ -1596,7 +1596,7 @@ $timezone = Auth::user()->timezone;
                                                                                                 $clientCurrency->doller_compare)}}</span>
                                                                 </li>
                                                                 @endif
-                                                                @if ( checkColumnExists('orders', 'gift_card_amount') && $order->gift_card_amount > 0)
+                                                                @if ($order->gift_card_amount > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{ __('Gift Card Amount') }}</label>
                                                                     <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->gift_card_amount
@@ -1918,7 +1918,7 @@ $timezone = Auth::user()->timezone;
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                             </li>
                                                             @endif
-                                                            @if ( checkColumnExists('orders', 'gift_card_amount') && $order->gift_card_amount > 0)
+                                                            @if ($order->gift_card_amount > 0)
                                                             <li class="d-flex align-items-center justify-content-between">
                                                                 <label class="m-0">{{ __('Gift Card Amount') }}</label>
                                                                 <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->gift_card_amount

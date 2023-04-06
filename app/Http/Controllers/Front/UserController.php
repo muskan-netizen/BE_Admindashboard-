@@ -98,9 +98,9 @@ class UserController extends FrontController{
             $message = __('An otp has been sent to your phone. Please check.');
             if ($user->is_phone_verified == 0) {
                 $otp = getUserToken($data)['otp'];
-                 $user->phone_token = $otp;
-                 if(getUserToken($data)['status']){
-                    $user->phone_token_valid_till = $newDateTime;
+                $user->phone_token = $otp;
+                $user->phone_token_valid_till = $newDateTime;
+                if(getUserToken($data)['status']){
                     $provider = $data->sms_provider;
                     $to = '+'.$request->dial_code.str_replace(' ', '', $request->phone);
                    // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $otp . " to verify your account.";

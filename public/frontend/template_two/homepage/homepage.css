@@ -491,6 +491,7 @@ body.dark .inner_spacing{
         box-shadow: 5px 5px 5px 5px #bbb4b46e;
         border-radius: 10px;
     }
+   
     body.al_body_template_two .cab-footer button{
         font-size: 11px!important;
     }
@@ -499,10 +500,16 @@ body.dark .inner_spacing{
     padding: 0;
     height: auto !important;
 }
-.al_body_template_two .margin-res{margin-top: 10px;}
+.accordion>.card>.card-header h2{
+    margin:0px;
+}
+.accordion .card-header button:after{
+    content:inherit;
+}
+/* 
 .al_body_template_two .margin-res .media-body .inner_spacing {
     margin-bottom: 10px;
-}
+} */
 .royo_whatsapp_img {
     position: fixed;
     z-index: 99999;
@@ -517,7 +524,6 @@ body.dark .inner_spacing{
 body.al_body_template_two .slick-track {
     margin-left: 0 !important;
 }
-
 body.al_body_template_two ul.status_box a {
     color: var(--theme-deafult);
 }

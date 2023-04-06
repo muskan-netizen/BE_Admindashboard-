@@ -180,8 +180,9 @@
                                                                     $product_taxable_amount += $product->taxable_amount;
                                                                     $total_tax_order_price += $product->taxable_amount;
                                                                 @endphp
+                                                            </li>
                                                         @endif
-                                                        </li>
+                                                      
                                                     @endforeach
                                                 </ul>
                                             </div>
@@ -198,7 +199,36 @@
                                                                 class="items_price">{{ __('Rate Your Driver') }}</label>
                                                             <label class="rating-star add_edit_driver_review"
                                                                 data-id="{{ $order->driver_rating->id ?? 0 }}"
-                                                                data-order_vendor_product_id="{{ $product->id ?? 0 }}">
+                                                                data-order_vendor_product_id="{{ $product->id ?? 0 }}"
+                                                                data-dispatch_traking_url="{{ $order->vendors[0]->dispatch_traking_url  }}">
+                                                                <i
+                                                                    class="fa fa-star{{ $driverrating >= 1 ? '' : '-o' }}"></i>
+                                                                <i
+                                                                    class="fa fa-star{{ $driverrating >= 2 ? '' : '-o' }}"></i>
+                                                                <i
+                                                                    class="fa fa-star{{ $driverrating >= 3 ? '' : '-o' }}"></i>
+                                                                <i
+                                                                    class="fa fa-star{{ $driverrating >= 4 ? '' : '-o' }}"></i>
+                                                                <i
+                                                                    class="fa fa-star{{ $driverrating >= 5 ? '' : '-o' }}"></i>
+                                                            </label>
+                                                        </li>
+
+                                                    </ul>
+
+                                                @elseif($product->routes->first() && ($product->routes->first()->dispatch_traking_url !=''))    
+                                                    <ul class="product_list p-0 m-0 text-center">
+                                                        @php
+                                                            $driverrating = $order->driver_rating->rating ?? 0;
+                                                        @endphp
+                                                        <li class="text-center alOrderTaxi">
+                                                            {{-- <img src="#" alt=""> --}}
+                                                            <label
+                                                                class="items_price">{{ __('Rate Your Driver') }}</label>
+                                                            <label class="rating-star add_edit_driver_review"
+                                                                data-id="{{ $order->driver_rating->id ?? 0 }}"
+                                                                data-order_vendor_product_id="{{ $product->id ?? 0 }}"
+                                                                data-dispatch_traking_url="{{$product->routes->first()->dispatch_traking_url  }}">
                                                                 <i
                                                                     class="fa fa-star{{ $driverrating >= 1 ? '' : '-o' }}"></i>
                                                                 <i
@@ -360,7 +390,7 @@
                                             <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->total_delivery_fee * $clientCurrency->doller_compare) }}</span>
                                         </li>
                                     @endif
-                                    @if (checkColumnExists('orders', 'gift_card_amount') && $order->gift_card_amount > 0)
+                                    @if ($order->gift_card_amount > 0)
                                         <li class="d-flex align-items-center justify-content-between">
                                             <label class="m-0">{{ __('Gift Card Amount') }}</label>
                                             <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->gift_card_amount * $clientCurrency->doller_compare) }}</span>

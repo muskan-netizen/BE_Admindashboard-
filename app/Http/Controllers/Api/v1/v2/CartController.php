@@ -40,7 +40,7 @@ class CartController extends BaseController
     public function index(Request $request)
     {
      
- try {
+    try {
 
             // if(($request->has('gateway')) && ($request->gateway != '')){
             //     if($request->has('order')){
@@ -63,80 +63,76 @@ class CartController extends BaseController
             // }
             $user = Auth::user();
             if (!$user->id) {
-                if(checkColumnExists('carts','order_id'))
-                {
-                    $cart = Cart::where('unique_identifier', $user->system_user)->with(['editingOrder']);
-                }else{
-                    $cart = Cart::where('unique_identifier', $user->system_user);
-                }
+                $cart = Cart::where('unique_identifier', $user->system_user)->with(['editingOrder']);
             } else {
-                if(checkColumnExists('carts','order_id'))
-                {
-                    $cart = Cart::where('user_id', $user->id)->with(['editingOrder']);
-                }else{
-                    $cart = Cart::where('user_id', $user->id);
-                }
+                $cart = Cart::where('user_id', $user->id)->with(['editingOrder']);
             }
+            $cartData= [];
             $cart = $cart->first();
-            $address = UserAddress::where('user_id', $cart->user_id)->where('is_primary', 1)->first();
-            $address_id = ($address) ? $address->id : 0;
-            //pr($_POST);
-            if ($user) {
-              
-                $obj = [
-                    'cart' => $cart,
-                    'currency'=> $user->currency,
-                    'code'=> $request->code,
-                    'type'=> $request->type,
-                    'language'=> $user->language,
-                    'requestType'=>2,
-                    'address_id'=> $address_id,
-                    'schedule_datetime_del'=> $request->schedule_datetime_del,
-                    'type'=> $request->type,
-                ];
-               
-                //$cart, $address_id=0 , $code = 'D',$schedule_datetime_del=''
-                $cartData = $this->getCartsNewV2($obj,$request);
-                //pr($cartData);
-                //$cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
+            if($cart) {
 
-
-                if(isset($cart->editingOrder) && !empty($cart->editingOrder) && !empty($cartData))
-                {
-                    $editlimit_datetime = Carbon::now()->toDateTimeString();
-                    $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
-                    $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
-                    $cartData->cart_error_message = '';
-                    if((strtotime($cart->editingOrder->scheduled_date_time) - strtotime($editlimit_datetime)) < 0){
-                        $cartData->cart_error_message = __("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date. Please discard order editing.");
-                    }
-                    $VendorOrderStatus = VendorOrderStatus::where('order_id', $cart->editingOrder->id)->whereNotIn('order_status_option_id', [1, 2])->count();
-                    if($VendorOrderStatus > 0){
-                        $cartData->cart_error_message = __("You can not edit this order. Either order is in processed or in processing. Please discard order editing.");
-                    }
-                }
+            
                 
+                $address = UserAddress::where('user_id', $cart->user_id)->where('is_primary', 1)->first();
+                $address_id = ($address) ? $address->id : 0;
+                //pr($_POST);
+                if ($user) {
+                
+                        $obj = [
+                            'cart' => $cart,
+                            'currency'=> $user->currency,
+                            'code'=> $request->code,
+                            'type'=> $request->type,
+                            'language'=> $user->language,
+                            'requestType'=>2,
+                            'address_id'=> $address_id,
+                            'schedule_datetime_del'=> $request->schedule_datetime_del,
+                            'type'=> $request->type,
+                        ];
+                    
+                        //$cart, $address_id=0 , $code = 'D',$schedule_datetime_del=''
+                        $cartData = $this->getCartsNewV2($obj,$request);
+                        //pr($cartData);
+                        //$cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
 
-                $age_restriction = CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
-                                $q->where('age_restriction',1);
-                            })->count();
-                $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
-                $passbase['check'] = 0;
-                $passbase['status'] = "";
-                if($passbase_check && $age_restriction)
-                {
-                    $passbase['check'] = 1;
-                    if(is_null($user->passbase_verification)){
-                        $passbase['status'] = 'not_created';
-                    }else{
-                        $passbase['status'] = $user->passbase_verification->status;
-                    }
 
-                    $cartData->passbase_check = $passbase['check']??0;
-                    $cartData->passbase_status= $passbase['status']??'';
+                        if(isset($cart->editingOrder) && !empty($cart->editingOrder) && !empty($cartData))
+                        {
+                            $editlimit_datetime = Carbon::now()->toDateTimeString();
+                            $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
+                            $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
+                            $cartData->cart_error_message = '';
+                            if((strtotime($cart->editingOrder->scheduled_date_time) - strtotime($editlimit_datetime)) < 0){
+                                $cartData->cart_error_message = __("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date. Please discard order editing.");
+                            }
+                            $VendorOrderStatus = VendorOrderStatus::where('order_id', $cart->editingOrder->id)->whereNotIn('order_status_option_id', [1, 2])->count();
+                            if($VendorOrderStatus > 0){
+                                $cartData->cart_error_message = __("You can not edit this order. Either order is in processed or in processing. Please discard order editing.");
+                            }
+                        }
+                        
+
+                        $age_restriction = CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
+                                        $q->where('age_restriction',1);
+                                    })->count();
+                        $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
+                        $passbase['check'] = 0;
+                        $passbase['status'] = "";
+                        if($passbase_check && $age_restriction)
+                        {
+                            $passbase['check'] = 1;
+                            if(is_null($user->passbase_verification)){
+                                $passbase['status'] = 'not_created';
+                            }else{
+                                $passbase['status'] = $user->passbase_verification->status;
+                            }
+
+                            $cartData->passbase_check = $passbase['check']??0;
+                            $cartData->passbase_status= $passbase['status']??'';
+                        }
+
+                    return $this->successResponse($cartData);
                 }
-
-                return $this->successResponse($cartData);
             }
 
             return $this->successResponse($cartData);
@@ -222,7 +218,7 @@ class CartController extends BaseController
             }
 
             $order_edit_qty = (!empty($already_added_product_in_cart) && !empty($already_added_product_in_cart->order_quantity))?$already_added_product_in_cart->order_quantity:0;
-            if(checkColumnExists('products','is_long_term_service') && $product->is_long_term_service !=1){
+            if($product->is_long_term_service !=1){
                 if ($product->category->categoryDetail->type_id == 8) {
                 } else {
                     if ( ($product->sell_when_out_of_stock == 0) && (($productVariant->quantity + $order_edit_qty) < $request->quantity && $product->has_inventory == 1) ) {
@@ -352,7 +348,7 @@ class CartController extends BaseController
                 
             //Recurring Booking
             $recurring_days = '';
-            if(checkColumnExists('products','is_recurring_booking') && $product->is_recurring_booking == 1){
+            if($product->is_recurring_booking == 1){
 
                 if (empty($request->recurringformPost)) {
                     return $this->errorResponse(__('Recurring booking type not be empty.'), 404);
@@ -363,14 +359,12 @@ class CartController extends BaseController
                 $recurringformPost = $cartRecurringCall->recurringCalculationFunction($request);
                 $action = '5';
                 //Check if recurring_booking_type,recurring_week_day,recurring_week_type,recurring_day_data,recurring_booking_time coulmn exists in table
-               if(checkColumnExists('cart_products','recurring_booking_type')){
-                   $start_date             = $recurringformPost->startDate;
-                   $end_date               = $recurringformPost->endDate;
-                   $recurring_days  = @$recurringformPost->selectedCustomdates??null;
-                   $weekTypes  = @$recurringformPost->weekTypes??null;
-                   $action = $recurringformPost->action??5;
-                   $schedule_time = $recurringformPost->schedule_time??null;
-               }
+                $start_date             = $recurringformPost->startDate;
+                $end_date               = $recurringformPost->endDate;
+                $recurring_days  = @$recurringformPost->selectedCustomdates??null;
+                $weekTypes  = @$recurringformPost->weekTypes??null;
+                $action = $recurringformPost->action??5;
+                $schedule_time = $recurringformPost->schedule_time??null;
 
                 //In case of on recurringformPost
                 if (!empty($request->recurringformPost)) {
@@ -384,7 +378,7 @@ class CartController extends BaseController
             }
            
 
-                if($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData) &&  checkColumnExists('cart_products','dispatch_agent_price') ){
+                if($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData)){
                   
                     $dataTime = Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                     $slot = $request->dispatcherAgentData['onDemandBookingdate'] ?? Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('H:i:s');
@@ -664,8 +658,6 @@ class CartController extends BaseController
     {
 
         try{
-        $islongTermInDB = checkColumnExists('products','is_long_term_service') ;
-        $isRecurringInDB = checkColumnExists('products','is_recurring_booking') ;
         $container_charges_tax = 0;
         $deliver_fee_charges_tax = 0;
         $total_service_fee_tax = 0;
@@ -894,7 +886,7 @@ class CartController extends BaseController
 
                     if(isset($prod->product) && !empty($prod->product)){
                       //  pr($prod->product);
-                        if($islongTermInDB ==1 && $prod->product->is_long_term_service ==1){
+                        if($prod->product->is_long_term_service ==1){
                             $vendorData->is_long_term_service = 1;
                             $LongTermProducts = $prod->product->LongTermProducts;
                             $is_long_term = 1;
@@ -939,7 +931,7 @@ class CartController extends BaseController
                         $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                         $price_in_currency = $prod->pvariant ? $prod->pvariant->price : 0;
                          //  GET PRICE from driver
-                        if( checkColumnExists('cart_products', 'dispatch_agent_price') && ( $is_service_product_price_from_dispatch ==1 )){
+                        if($is_service_product_price_from_dispatch ==1){
                             $price_in_currency = isset($prod->dispatch_agent_price) ? $prod->dispatch_agent_price : 0 ;
                         }
                         $total_markup_charges += $prod->pvariant->markup_price??0;
@@ -1076,7 +1068,7 @@ class CartController extends BaseController
                                     $checkLastMile = 1;
                                     $product_tags = $prod->product->tags;
                                 } /** check lont term product product last mile  */
-                                else if( ($islongTermInDB ==1) && ($prod->product->is_long_term_service ==1) && !empty($prod->product->LongTermProduct) && $prod->product->LongTermProduct->first()->Requires_last_mile ==1){
+                                else if(($prod->product->is_long_term_service ==1) && !empty($prod->product->LongTermProduct) && $prod->product->LongTermProduct->first()->Requires_last_mile ==1){
 
                                     $checkLastMile = 1;
                                     $product_tags = $prod->product->LongTermProduct->first()->tags;

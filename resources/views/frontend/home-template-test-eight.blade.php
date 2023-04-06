@@ -266,11 +266,11 @@
 		<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
 			<div class="carousel-inner">
 				@foreach($banners as $key => $banner)
-				@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}else if($banner->link=='url'){if($banner->link_url !=null){$url=$banner->link_url;}}@endphp
+				@php $url=''; if($banner->link=='category'){if(!empty($banner->category_slug)){$url=route('categoryDetail', $banner->category_slug);}}else if($banner->link=='vendor'){if(!empty($banner->vendor_slug)){$url=route('vendorDetail', $banner->vendor_slug);}}else if($banner->link=='url'){if($banner->link_url !=null){$url=$banner->link_url;}}@endphp
 				<div class="carousel-item @if($key == 0) active @endif">
 					<a class="banner-img-outer" href="{{$url??'#'}}"  target="_blank">
-						<link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '1170/500' . $banner->image['image_path']}}" />
-						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1170/500' . $banner->image['image_path']}}">
+						<link rel="preload" as="image" href="{{ get_file_path($banner->image,'IMG_URL1','1170','500') }}" />
+						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{ get_file_path($banner->image,'IMG_URL1','1170','500') }}">
 					</a>
 				</div>
 				@endforeach
@@ -290,11 +290,11 @@
 			<div class="carousel-inner">
 
 				@foreach($mobile_banners as $key => $banner)
-				@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
+				@php $url=''; if($banner->link=='category'){if(!empty($banner->category_slug)){$url=route('categoryDetail', $banner->category_slug);}}else if($banner->link=='vendor'){if(!empty($banner->vendor_slug)){$url=route('vendorDetail', $banner->vendor_slug);}}@endphp
 				<div class="carousel-item @if($key == 0) active @endif">
 					<a class="banner-img-outer" href="{{$url??'#'}}">
-						<link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '400/150' . $banner->image['image_path']}}" />
-						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '400/150' . $banner->image['image_path']}}">
+						<link rel="preload" as="image" href="{{ get_file_path($banner->image,'IMG_URL1','400','150') }}" />
+						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{ get_file_path($banner->image,'IMG_URL1','400','150') }}">
 					</a>
 				</div>
 				@endforeach
@@ -798,7 +798,7 @@
 			</div>
 		</section>
 		@elseif($homePageLabel->slug == 'most_popular_products' && (count($homePageData[$homePageLabel->slug]) != 0))
-		<section class="main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+		{{-- <section class="main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 			<div class="container p2p-full-width">
 				<div class="top-heading d-flex justify-content-between">
 					<h2 class="col pl-0 h2-heading mb-3"> @php
@@ -806,19 +806,15 @@
 						@endphp </h2>
 						<!-- <a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i></a>  -->
 				</div>
-				<div class="row">
-					<div class="col-12">
-						<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-							<div class="row selling_product_eight">
-								@foreach ($homePageData[$homePageLabel->slug] as $product )
-								@include('frontend.home_page_8.most_popular_products')
-								@endforeach
-							</div>
-						</div>
+				<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+					<div class=" selling_product_eight">
+						@foreach ($homePageData[$homePageLabel->slug] as $product )
+						@include('frontend.home_page_8.most_popular_products')
+						@endforeach
 					</div>
 				</div>
 			</div>
-		</section>
+		</section> --}}
 		@elseif($homePageLabel->slug == 'banner' && (count($homePageData['banners']) != 0))
 		@if(!empty(@$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]))
 			<section class="mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >

@@ -85,7 +85,9 @@ pr($products->toArray());
 
     </style>
 @endsection
-
+@php
+    $getAdditionalPreference = getAdditionalPreference(['is_recurring_booking', 'is_long_term_service', 'square_enable_status']);
+@endphp
 @section('content')
     <div class="container-fluid">
         <div class="row">
@@ -251,7 +253,7 @@ pr($products->toArray());
                                                         <th>{{ __('Bar Code') }}</th>
                                                         <th>{{ __('Status') }}</th>
                                                         <th>{{ __('Expiry Date') }}</th>
-                                                        @if(@getAdditionalPreference(['is_recurring_booking'])['is_recurring_booking'] == 1)
+                                                        @if(@$getAdditionalPreference['is_recurring_booking'] == 1)
                                                             <th>{{ __('Recurring Booking') }}</th>
                                                         @endif
                                                         @if ($client_preference_detail->business_type != 'taxi')
@@ -270,7 +272,7 @@ pr($products->toArray());
                                     </div>
                                 </div>
                             </div>
-                            @if(@getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] ==1)
+                            @if(@$getAdditionalPreference['is_long_term_service'] ==1)
                             <div class="card-box">
                                 <div class="row">
                                     <div class="col-md-6">
@@ -312,7 +314,7 @@ pr($products->toArray());
     <div class="row address" id="def" style="display: none;">
         <input type="text" id="def-address" name="test" class="autocomplete form-control def_address">
     </div>
-    @if(@getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] ==1)
+    @if(@getAdditionalPreference['is_long_term_service'] ==1)
     <div id="add-service" class="modal fade add_service" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
         aria-hidden="true" style="display: none;">
         <div class="modal-dialog modal-dialog-centered">
@@ -740,10 +742,13 @@ pr($products->toArray());
                                   <option value="for_markup">{{__('Markup Price')}}</option>
                                 @endif
 
-                                @if(@getAdditionalPreference(['is_recurring_booking'])['is_recurring_booking'] == 1)
+                                @if(@getAdditionalPreference['is_recurring_booking'] == 1)
                                     <option value="is_recurring_booking">{{__('Recurring Booking')}}</option>
                                 @endif
                                   <option value="for_sell_when_out_of_stock">{{__('Sell when out of stock')}}</option>
+                                @if(@getAdditionalPreference['square_enable_status'] == 1)
+                                  <option value="sync_for_square_post">{{__('Sync For Square POS')}}</option>
+                                @endif
                                   <option value="delete">{{__('Delete')}}</option>
                              </select>
                          </div>
@@ -946,7 +951,7 @@ pr($products->toArray());
     </div>
 
     <!--- End popup qrcode -->
-    @if(@getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] ==1)
+    @if(@getAdditionalPreference['is_long_term_service'] == 1)
       <script src="{{asset('js/adminVendor.js')}}"></script>
     @endif
     <script type="text/javascript">
@@ -1412,7 +1417,7 @@ pr($products->toArray());
                     {data: 'bar_code', name: 'bar_code', orderable: false, searchable: false},
                     {data: 'product_is_live', name: 'product_is_live', orderable: false, searchable: false},
                     {data: 'expiry_date', name: 'expiry_date', orderable: false, searchable: false},
-                    @if(@getAdditionalPreference(['is_recurring_booking'])['is_recurring_booking'] == 1)
+                    @if(@getAdditionalPreference['is_recurring_booking'] == 1)
                       {data: 'is_recurring_booking', name: 'is_recurring_booking', orderable: false, searchable: false},
                     @endif
                     {data: 'product_is_new', name: 'product_is_new', orderable: false, searchable: false},

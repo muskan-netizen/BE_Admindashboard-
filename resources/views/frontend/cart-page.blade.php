@@ -248,9 +248,9 @@
                         </div>
 
                         <div class="col-12 cart-heading mt-2 px-0">
-                            <h5 class="my-1"><b>{{ $product->vendor->name }}</b></h5>
+                            <h5 class="my-1"><b>{{ $product->vendor ? @$product->vendor->name : '' }}</b></h5>
                             <input type="hidden" name="category_name" id="category_name"
-                                value="{{ $product->vendor->name }}" />
+                                value="{{ $product->vendor ? @$product->vendor->name : '' }}" />
                         </div>
 
 
@@ -280,7 +280,7 @@
                                         <div class="row align-items-md-center">
                                             <div class="col-md-3 order-md-1">
                                                 <h4 class="cart_product_name">
-                                                    {{ @$vendor_product->product->category_name->name }}</h4>
+                                                    {{ $vendor_product->product->category_name ? @$vendor_product->product->category_name->name : ''}}</h4>
                                                 <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px">
                                                     <strong>{{ @$vendor_product->product->translation_one ? @$vendor_product->product->translation_one->title : @$vendor_product->product->sku }}</strong>
                                                 </h4>
@@ -605,7 +605,7 @@
                                                                                 @foreach ($product->slots as $slot)
                                                                                     <option value="{{ $slot->value }}"
                                                                                         {{ $slot->value == $product->schedule_slot ? 'selected' : '' }}>
-                                                                                        {{ $slot->name }}</option>
+                                                                                        {{ @$slot->name }}</option>
                                                                                 @endforeach
                                                                             </select>
                                                                         @else
@@ -720,8 +720,8 @@
                                                 <img class="blur-up lazyload"
                                                     data-src="{{ asset('assets/images/discount_icon.svg') }}">
                                                 <label class="mb-0 ml-2">
-                                                    @if ($product->coupon)
-                                                        {{ $product->coupon->promo->name }}
+                                                    @if ($product->coupon && $product->coupon->promo )
+                                                        {{  @$product->coupon->promo->name ?? '' }}
                                                     @else
                                                         <a href="javascript:void(0)" class="promo_code_list_btn ml-1"
                                                             data-vendor_id="{{ $product->vendor->id }}"
@@ -730,10 +730,10 @@
                                                     @endif
                                                 </label>
                                             </div>
-                                            @if ($product->coupon)
+                                            @if ($product->coupon && $product->coupon->promo )
                                                 <label class="p-1 m-0"><a href="javascript:void(0)"
                                                         class="remove_promo_code_btn ml-1"
-                                                        data-coupon_id="{{ $product->coupon ? $product->coupon->promo->id : '' }}"
+                                                        data-coupon_id="{{ @$product->coupon->promo->id ?? '' }}"
                                                         data-cart_id="{{ $cart_details->id }}">Remove</a></label>
                                             @endif
                                         @endif
@@ -759,7 +759,7 @@
                                                     {{ __('Processor Name') }} :</label>
                                             </div>
                                             <div class="col-7">
-                                                {!! $product->processor_product->name !!}
+                                                {!! ($product->processor_product ? $product->processor_product->name : '') !!}
                                             </div>
                                         </div>
                                         <div class="row mb-1 d-flex align-items-center">
@@ -828,7 +828,7 @@
                                                             @foreach ($product->slots as $slot)
                                                                 <option value="{{ $slot->value }}"
                                                                     {{ $slot->value == $product->selected_slot ? 'selected' : '' }}>
-                                                                    {{ $slot->name }}</option>
+                                                                    {{ @$slot->name }}</option>
                                                             @endforeach
                                                         </select>
                                                         {{-- onchange="checkSlotAvailability(this);" --}}
@@ -1033,7 +1033,7 @@
                                                             @foreach ($cart_details->slotsForPickup as $slot)
                                                                 <option value="{{ $slot->value }}"
                                                                     {{ $slot->value == $cart_details->scheduled->slot ? 'selected' : '' }}>
-                                                                    {{ $slot->name }}</option>
+                                                                    {{ @$slot->name }}</option>
                                                             @endforeach
                                                         @endif
                                                     </select>
@@ -1065,7 +1065,7 @@
                                                             @foreach ($cart_details->slotsForDropoff as $slot)
                                                                 <option value="{{ $slot->value }}"
                                                                     {{ $slot->value == $cart_details->scheduled->slot ? 'selected' : '' }}>
-                                                                    {{ $slot->name }}</option>
+                                                                    {{ @$slot->name }}</option>
                                                             @endforeach
                                                         @endif
                                                     </select>
@@ -1587,62 +1587,10 @@
                             $product->vendor->order_min_amount > 0 &&
                             $product->product_total_amount + $product->vendor->fixed_fee_amount < $product->vendor->order_min_amount
                         ))
-                         @if($cart_details->is_recurring_booking != 1 && $serviceType != 'rental') 
+                        @if($cart_details->is_recurring_booking != 1 && $serviceType != 'rental') 
                               @include('frontend.cart.scheduleSlot')
                         @endif
-                            @if ($cart_details->is_long_term_service != 1 &&
-                                ($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) &&
-                                $cart_details->vendorCnt == 1 &&
-                                !in_array($serviceType, ['appointment', 'on_demand']))
-                                @if ($client_preference_detail->business_type != 'laundry')
-                                    <div class="row arabic-lng position-relative my-3" id="dateredio">
-                                        <div class=" col-md-12 mb-2 mb-md-0 text-right">
-                                            <div class="login-form col schedule_btn">
-                                                <ul
-                                                    class="list-inline ml-auto d-flex align-items-center justify-content-end">
-                                                    <li class="d-inline-block mr-1">
-                                                        <input type="hidden" class="custom-control-input check"
-                                                            id="vendor_id" name="vendor_id"
-                                                            value="{{ $cart_details->vendor_id }}">
-                                                        <input type="hidden" class="custom-control-input check"
-                                                            id="tasknow" name="task_type"
-                                                            value="{{ $cart_details->schedule_type == 'schedule' ? 'schedule' : 'now' }}">
-                                                    </li>
-                                                    @if ($cart_details->delay_date == 0)
-                                                        {{-- <li class="d-inline-block mr-1">
-                                <input type="radio" class="custom-control-input check" id="tasknow" name="tasktype" value="now" <%= ((cart_details->schedule_type == 'now' || cart_details->schedule_type == '' || cart_details->schedule_type == null) ? 'checked' : '') %> >
-                                <label class="btn btn-solid" for="tasknow">{{__('Now')}}</label>
-                            </li> --}}
-                                                    @endif
-                                                    <li class="d-inline-block ">
-                                                        <input type="radio"
-                                                            class="custom-control-input check taskschedulebtn"
-                                                            id="taskschedule" name="tasktype" value=""
-                                                            {{ $cart_details->schedule_type == 'schedule' || $cart_details->delay_date != 0 ? 'checked' : '' }}
-                                                            style="{{ $cart_details->schedule_type != 'schedule' ? '' : 'display:none!important' }}">
-                                                        <label class="btn btn-solid mb-0 taskschedulebtn"
-                                                            for="taskschedule"
-                                                            style="{{ $cart_details->schedule_type != 'schedule' ? '' : 'display:none!important' }}">{{ __('Schedule') }}</label>
-                                                    </li>
-                                                    @if ($cart_details->closed_store_order_scheduled != 1 && $cart_details->deliver_status == 0)
-                                                        <li class="close-window">
-                                                            <i class="fa fa-times cross" aria-hidden="true"></i>
-                                                        </li>
-                                                    @else
-                                                        <li class="close-window">
-                                                            <i class="fa fa-times cross"
-                                                                style="display:none!important" aria-hidden="true"></i>
-                                                        </li>
-                                                    @endif
-                                                </ul>
-                                                @include('frontend.cart.schedule_time')
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                @endif
-                            @endif
-
+                         
                             <div class="col-sm-6 col-lg-12 mt-2 text-sm-right cart-checkout_btn">
                                 @if (isset($ageVerify->status) && $ageVerify->status == 1)
                                     {{-- <button id="verify_your_age" class="btn btn-solid " type="button" >{{__('Verify Your Age')}}</button> --}}

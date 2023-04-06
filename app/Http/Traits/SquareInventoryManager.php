@@ -4,7 +4,7 @@ use Square\SquareClient;
 use Square\Environment;
 use Square\Exceptions\ApiException;
 use Ramsey\Uuid\Uuid;
-use App\Models\{Product, Variant, TaxCategory, Client, ProductVariantSet, ClientPreference, ProductTranslation, ClientLanguage, ProductVariant, ClientCurrency, TaxRate, AddonSet, AddonOption};
+use App\Models\{Product, Variant, TaxCategory, Client, ProductVariantSet, ClientPreference, ProductTranslation, ClientLanguage, ProductVariant, ClientCurrency, TaxRate, AddonSet, AddonOption, SquareTimestamp};
 use Auth, Log, DB;
 use Carbon\Carbon;
 trait SquareInventoryManager{
@@ -45,9 +45,9 @@ trait SquareInventoryManager{
     {
       DB::beginTransaction();
       try{
-        $product         = Product::with(['media.image', 'primary', 'category.cat', 'vendor','brand','variant', 'variant.set', 'variantSets', 'taxCategory.taxRate', 
-                            'sets.addOnName'])->select('id', 'sku', 'is_live', 'has_variant', 'tax_category_id', 'square_item_id', 'square_item_version')
-                            ->where('id', $product_id)->where('is_live', 1)->first();
+        $product = Product::with(['media.image', 'primary', 'category.cat', 'vendor','brand','variant', 'variant.set', 'variantSets', 'taxCategory.taxRate', 
+        'sets.addOnName'])->select('id', 'sku', 'is_live', 'has_variant', 'tax_category_id', 'square_item_id', 'square_item_version')
+        ->where('id', $product_id)->where('is_live', 1)->first();
         if(!empty($product))
         {
           
@@ -457,7 +457,7 @@ trait SquareInventoryManager{
       $physical_count->setState($state);
       $physical_count->setLocationId($this->location_id);
       $physical_count->setQuantity($quantity);
-      $physical_count->setOccurredAt(Carbon::now()->toIso8601ZuluString());
+      $physical_count->setOccurredAt(Carbon::now()->toIso8601ZuluString());//set timestamp as per square format
 
       $inventory_change = new \Square\Models\InventoryChange();
       $inventory_change->setType($type);
@@ -530,5 +530,68 @@ trait SquareInventoryManager{
       } 
     }
   }
-  
+
+  public function searchCatalogObjects($timestamp_version_update ='')
+  {
+    //-----init square client--------
+    $client = $this->init();
+    try{
+      $last_begin_timestamp = SquareTimestamp::orderBy('id', 'desc')->first();
+      $object_types = ['ITEM', 'TAX', 'ITEM_VARIATION', 'MODIFIER', 'MODIFIER_LIST'];
+      $body = new \Square\Models\SearchCatalogObjectsRequest();
+      $body->setObjectTypes($object_types);
+      $body->setIncludeDeletedObjects(true);
+      $last_timestamp = (!empty($last_begin_timestamp) && isset($last_begin_timestamp->created_at)) ? Carbon::parse($last_begin_timestamp->created_at)->toIso8601ZuluString() : Carbon::now()->subDays(1)->toIso8601ZuluString();
+      $body->setBeginTime($last_timestamp);
+
+      $api_response = $client->getCatalogApi()->searchCatalogObjects($body);
+      if ($api_response->isSuccess()) {
+        $result = $api_response->getResult();
+        if(@$result && @$result->getObjects()){
+          foreach($result->getObjects() as $getobjects){
+            if($getobjects->getType() == "ITEM"){
+              $square_item_id = $getobjects->getId();
+              $square_item_name = $getobjects->getItemData()->getName();
+              $productdata = Product::where('square_item_id', '=', $square_item_id)->first();
+              ProductTranslation::where('product_id', '=', $productdata->id)->update(['title' => $square_item_name]);
+            }
+            if(@$getobjects->getItemData() && @$getobjects->getItemData()->getVariations()){
+              foreach($getobjects->getItemData()->getVariations() as $getvariation){
+                if($getvariation->getType() == "ITEM_VARIATION"){
+                  $square_variation_id = $getvariation->getId();
+                  $square_variation_name = $getvariation->getItemVariationData()->getName();
+                  $square_price = $getvariation->getItemVariationData()->getPriceMoney()->getAmount() / 100;
+                  $variantdata = ProductVariant::where('square_variant_id', '=', $square_variation_id)->update(['price' => $square_price]);
+                }
+              }
+            }
+          }
+        }
+        if($timestamp_version_update != ''){
+           $timestamp_version_update = Carbon::parse($timestamp_version_update)->toTimeString();
+        }else{
+          $timestamp_version_update = Carbon::now()->toIso8601ZuluString();
+        }
+        SquareTimestamp::create(array(
+          'created_at' => $timestamp_version_update,
+          'updated_at'  => $timestamp_version_update
+        ));
+      } else {
+        $errors = $api_response->getErrors();
+        return response()->json([
+          'status' => 'error',
+          'result' => [],
+          'message' => __('Something went wrong, Please try again later.')
+        ]);
+      }
+    }
+    catch (ApiException $e)
+    {
+      return response()->json([
+        'status' => 'error',
+        'result' => [],
+        'message' => $e->getMessage()
+      ]);
+    }
+  }
 }

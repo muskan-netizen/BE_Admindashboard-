@@ -122,8 +122,10 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('account/tax/filter', [TaxController::class, 'filter'])->name('account.tax.filter');
         Route::get('account/tax/export', [TaxController::class, 'export'])->name('account.tax.export');
         Route::get('account/vendor/filter', [VendorController::class, 'filter'])->name('account.vendor.filter');
+        Route::get('account/vendor/getVendorCalculations', [VendorController::class, 'getOrderVendorCalculations'])->name('account.vendor.calculations');
         Route::get('account/vendor/export', [VendorController::class, 'export'])->name('account.vendor.export');
         Route::get('account/order/filter', [OrderController::class, 'filter'])->name('account.order.filter');
+        Route::get('account/order/getOrderCalculations', [OrderController::class, 'getOrderVendorCalculations'])->name('account.order.calculations');
         Route::get('account/loyalty/filter', [LoyaltyController::class, 'filter'])->name('account.loyalty.filter');
         Route::get('account/loyalty/export', [LoyaltyController::class, 'export'])->name('account.loyalty.export');
         Route::get('account/order/export', [OrderController::class, 'export'])->name('account.order.export');
@@ -291,6 +293,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('vendor/payout/filter/{id}', 'Client\VendorController@payoutFilter')->name('vendor.payout.filter');
         Route::post('vendor/payout/create/{id}', 'Client\VendorController@vendorPayoutCreate')->name('vendor.payout.create');
         Route::post('vendor/saveConfig/{id}', 'Client\VendorController@updateConfig')->name('vendor.config.update');
+        Route::post('vendor/info/{id}', 'Client\VendorController@updateVendorInfo')->name('vendor.config.additioninfo');
         Route::post('vendor/saveConfig/profile/{id}', 'Client\VendorController@updateVendorConfigProfile')->name('vendor.config.update.profile');
         Route::post('vendor/social/media/urls', 'Client\VendorController@updateVendorSocialMediaUrls')->name('vendor.social.media.urls');
         Route::post('vendor/social/media/delete', 'Client\VendorController@deleteVendorSocialMediaUrl')->name('vendor.social.media.delete');

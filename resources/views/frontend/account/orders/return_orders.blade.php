@@ -243,7 +243,7 @@
                                                     $clientCurrency->doller_compare)}}</span>
                                             </li>
                                         @endif
-                                        @if ( checkColumnExists('orders', 'gift_card_amount') &&  $order->gift_card_amount > 0)
+                                        @if ($order->gift_card_amount > 0)
                                             <li
                                                 class="d-flex align-items-center justify-content-between">
                                                 <label

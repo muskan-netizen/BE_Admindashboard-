@@ -159,7 +159,6 @@ if (Session::has('toaster')) {
     });
     
     function get_latest_order_socket(order_number){
-        console.log(order_number);
         Audio.prototype.play = (function(play) {
             return function() {
                 var audio = this,
@@ -186,18 +185,15 @@ if (Session::has('toaster')) {
             dataType: "JSON",
             data: {
                 filter_order_status: "pending_orders",
-                search_keyword: order_number
+                search_keyword: order_number,
+                className : 'col-xl-12'
             },
             success: function(response) {
                 if (response.status == 'Success') {
-                    //console.log(response);
-                    if (response.data.orders.data.length != 0) {
+                    if (response.data.html != '') {
                         $("#received_new_orders").find(".modal-body").html('');
                         let latest_order_template = _.template($('#latest_order_template').html());
-                        $("#received_new_orders").find(".modal-body").append(latest_order_template({
-                            Helper: NumberFormatHelper,
-                            orders: response.data.orders.data
-                        }));
+                        $("#received_new_orders").find(".modal-body").append(response.data.html);
                         $("#received_new_orders").modal('show');
                     }
                 }
@@ -243,6 +239,7 @@ if (Session::has('toaster')) {
                 },
             });
             console.log(token);
+            console.log("token");
 
         }).catch(function(err) {
             console.log(`Token Error :: ${err}`);
@@ -253,18 +250,22 @@ if (Session::has('toaster')) {
 
     initFirebaseMessagingRegistration();
     messaging.onMessage( async function(payload) {
-        console.log("payload");
-        console.log(payload);
+
         if (!("Notification" in window)) {
             console.log("This browser does not support system notifications.");
         }
         else if (Notification.permission === "granted") {
+            console.log(payload);
+            console.log("payload");
             if(payload && payload.data && payload.data.data){
                 if(payload.data.type && payload.data.type=="order_created"){
                     var payload_data = JSON.parse(payload.data.data);
                     console.log('firepase msg order number');
                     console.log(payload_data.order_number);
-                    get_latest_order_socket(payload_data.order_number);
+                    setTimeout(()=>{
+                         get_latest_order_socket(payload_data.order_number);
+                    },3000);
+                   
                 }
                 else if(payload.data.type=="order_cancellation_request"){
                     var notificationTitle = payload.notification.title;

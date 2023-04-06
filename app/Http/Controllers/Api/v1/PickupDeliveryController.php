@@ -380,11 +380,8 @@ class PickupDeliveryController extends BaseController{
                 $order->friend_name = $request->friendName;
                 $order->friend_phone_number = $request->friendPhoneNumber;
                 $order->luxury_option_id = $luxury_option->id;
-                if(checkColumnExists('orders', 'is_postpay')){
-                    $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
-                }
 
-
+                $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
 
                 $schedule_datetime_del = NULL;
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
@@ -459,10 +456,7 @@ class PickupDeliveryController extends BaseController{
                 $order_product->no_seats_for_pooling = (isset($request->is_cab_pooling) && $request->is_cab_pooling== 1 && isset($request->no_seats_for_pooling))?$request->no_seats_for_pooling:0;
                 $order_product->is_cab_pooling = isset($request->is_cab_pooling)?$request->is_cab_pooling:0;
 
-                if(checkColumnExists('order_vendor_products', 'is_one_push_booking'))
-                {
-                    $order_product->is_one_push_booking = isset($request->is_one_push_booking)?$request->is_one_push_booking:0;
-                }
+                $order_product->is_one_push_booking = isset($request->is_one_push_booking)?$request->is_one_push_booking:0;
 
                 if(isset($request->user_product_order_form) && !empty($request->user_product_order_form))
                 $user_product_order_form = json_encode($request->user_product_order_form);
@@ -648,16 +642,10 @@ class PickupDeliveryController extends BaseController{
                     $cash_to_be_collected = 'Yes';
                     $payable_amount = $order->payable_amount;
                 } else {
-                    if(checkColumnExists('orders', 'is_postpay'))
+                    if($order->is_postpay==1)
                     {
-                        if($order->is_postpay==1)
-                        {
-                            $cash_to_be_collected = 'Yes';
-                            $payable_amount = $order->payable_amount;
-                        }else{
-                            $cash_to_be_collected = 'No';
-                            $payable_amount = 0.00;
-                        }
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
                     }else{
                         $cash_to_be_collected = 'No';
                         $payable_amount = 0.00;
@@ -669,15 +657,11 @@ class PickupDeliveryController extends BaseController{
                     $schedule_datetime_del = Carbon::parse($request->schedule_time, $customer->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
 
-                if(isset($request->task_type) && !empty($request->task_type))
-                {
-                    $request->task_type = $request->task_type;
-                    $schedule_datetime_del = null;
-                    $request->order_time = $schedule_datetime_del;
-                }else{
-                    $request->task_type = 'schedule';
-                    $request->scheduled_date_time = $schedule_datetime_del;
-                    $request->order_time = $schedule_datetime_del;
+                $task_type = 'now';
+                if($request->has('task_type')){
+                    $task_type = $request->task_type;
+                }elseif(!empty($order->scheduled_date_time)){
+                    $task_type = 'schedule';
                 }
                 $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
                 $dynamic = (!empty($order_vendor->web_hook_code)) ? $order_vendor->web_hook_code : uniqid($order->id.$vendor);
@@ -721,7 +705,7 @@ class PickupDeliveryController extends BaseController{
                             'recipient_email' => $request->email ?? $customer->email,
                             'task_description' => $request->task_description??null,
                             'allocation_type' => (isset($request->agent_id) && !empty($request->agent_id)) ? 'm' : 'a',
-                            'task_type' => $request->task_type,
+                            'task_type' => $task_type,
                             'schedule_time' => $schedule_datetime_del ?? null,
                             'cash_to_be_collected' => $payable_amount??0.00,
                             'barcode' => '',
@@ -1261,9 +1245,7 @@ class PickupDeliveryController extends BaseController{
             $order->loyalty_amount_saved = $loyalty_amount_saved;
             $order->total_toll_amount    = $total_toll_amount;
             $order->total_service_fee    = $total_service_fee;
-            if(checkColumnExists('orders', 'is_edited')){
-                $order->is_edited = 1;
-            }
+            $order->is_edited = 1;
 
             $now = Carbon::now()->toDateTimeString();
             $user_subscription = SubscriptionInvoicesUser::with('features')
@@ -1320,16 +1302,10 @@ class PickupDeliveryController extends BaseController{
                     $cash_to_be_collected = 'Yes';
                     $payable_amount = $order->payable_amount;
                 } else {
-                    if(checkColumnExists('orders', 'is_postpay'))
+                    if($order->is_postpay==1)
                     {
-                        if($order->is_postpay==1)
-                        {
-                            $cash_to_be_collected = 'Yes';
-                            $payable_amount = $order->payable_amount;
-                        }else{
-                            $cash_to_be_collected = 'No';
-                            $payable_amount = 0.00;
-                        }
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order->payable_amount;
                     }else{
                         $cash_to_be_collected = 'No';
                         $payable_amount = 0.00;

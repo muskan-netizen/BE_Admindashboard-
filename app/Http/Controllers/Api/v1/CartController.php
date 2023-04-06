@@ -62,19 +62,9 @@ class CartController extends BaseController
             // }
             $user = Auth::user();
             if (!$user->id) {
-                if(checkColumnExists('order_files','id'))
-                {
-                    $cart = Cart::where('unique_identifier', $user->system_user)->with(['editingOrder','OrderFiles']);
-                }else{
-                    $cart = Cart::where('unique_identifier', $user->system_user)->with(['editingOrder']);
-                }
+                $cart = Cart::where('unique_identifier', $user->system_user)->with(['editingOrder','OrderFiles']);
             } else {
-                if(checkColumnExists('order_files','id'))
-                {
-                    $cart = Cart::where('user_id', $user->id)->with(['editingOrder','OrderFiles']);
-                }else{
-                    $cart = Cart::where('user_id', $user->id)->with(['editingOrder']);
-                }
+                $cart = Cart::where('user_id', $user->id)->with(['editingOrder','OrderFiles']);
             }
             $cart = $cart->first();
             $cartData = [];
@@ -155,7 +145,7 @@ class CartController extends BaseController
     /**     * Add product In Cart    *           */
     public function add(Request $request)
     {
-     
+        
         try {
             $preference = ClientPreference::first();
             $luxury_option = LuxuryOption::where('title', $request->type)->first();
@@ -201,9 +191,19 @@ class CartController extends BaseController
                 $cart_detail = Cart::updateOrCreate(['unique_identifier' => $unique_identifier], $cart_detail);
                 $already_added_product_in_cart = CartProduct::where(["product_id" => $request->product_id, 'cart_id' => $cart_detail->id])->first();
             }
+            $additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
+            if( ($luxury_option->id == 6) && ($additionalPreference['is_service_product_price_from_dispatch'] ==1) ){
+                $CartProduct = CartProduct::where(['cart_id' => $cart_detail->id])->select('id','dispatch_agent_id')->first();
+                $dispatcherAgentData= $request->has('dispatcherAgentData') ? $request->dispatcherAgentData : [];
+                $request_dispatch_agent_id = isset($dispatcherAgentData['agent_id'] ) ?  $dispatcherAgentData['agent_id']: "";
+              
+                if($CartProduct &&  ( $CartProduct->dispatch_agent_id != $request_dispatch_agent_id)){
+                    return $this->errorResponse('Please select the service of same provider', 404);
+                }
+            }
 
             $order_edit_qty = (!empty($already_added_product_in_cart) && !empty($already_added_product_in_cart->order_quantity))?$already_added_product_in_cart->order_quantity:0;
-            if(checkColumnExists('products','is_long_term_service') && $product->is_long_term_service !=1){
+            if($product->is_long_term_service !=1){
                 if ($product->category->categoryDetail->type_id == 8) {
                 } else {
                     if ( ($product->sell_when_out_of_stock == 0) && (($productVariant->quantity + $order_edit_qty) < $request->quantity && $product->has_inventory == 1) ) {
@@ -337,7 +337,7 @@ class CartController extends BaseController
                 
             //Recurring Booking
             $recurring_days = '';
-            if(checkColumnExists('products','is_recurring_booking') && $product->is_recurring_booking == 1){
+            if($product->is_recurring_booking == 1){
 
                 if (empty($request->recurringformPost)) {
                     return $this->errorResponse(__('Recurring booking type not be empty.'), 404);
@@ -348,14 +348,14 @@ class CartController extends BaseController
                 $recurringformPost = $cartRecurringCall->recurringCalculationFunction($request);
                 $action = '5';
                 //Check if recurring_booking_type,recurring_week_day,recurring_week_type,recurring_day_data,recurring_booking_time coulmn exists in table
-               if(checkColumnExists('cart_products','recurring_booking_type')){
+               
                    $start_date             = $recurringformPost->startDate;
                    $end_date               = $recurringformPost->endDate;
                    $recurring_days  = @$recurringformPost->selectedCustomdates??null;
                    $weekTypes  = @$recurringformPost->weekTypes??null;
                    $action = $recurringformPost->action??5;
                    $schedule_time = $recurringformPost->schedule_time??null;
-               }
+               
 
                 //In case of on recurringformPost
                 if (!empty($request->recurringformPost)) {
@@ -369,7 +369,7 @@ class CartController extends BaseController
             }
            
 
-                if($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData) &&  checkColumnExists('cart_products','dispatch_agent_price') ){
+                if($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData)){
                   
                     $dataTime = Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                     $slot = @$request->dispatcherAgentData['slot'] ?  @$request->dispatcherAgentData['slot'] : Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('H:i:s');
@@ -649,8 +649,6 @@ class CartController extends BaseController
     {
 
         try{
-        $islongTermInDB = checkColumnExists('products','is_long_term_service') ;
-        $isRecurringInDB = checkColumnExists('products','is_recurring_booking') ;
         $container_charges_tax = 0;
         $deliver_fee_charges_tax = 0;
         $total_service_fee_tax = 0;
@@ -718,7 +716,7 @@ class CartController extends BaseController
             }, 'vendorProducts.product.taxCategory.taxRate',
         ]);
 
-        $cartData = $cartData->select('vendor_id', 'vendor_dinein_table_id')->where('status', [0, 1])->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        $cartData = $cartData->select('vendor_id', 'vendor_dinein_table_id','dispatch_agent_id')->where('status', [0, 1])->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
 
         $taxes=TaxRate::all();
         $taxRates=array();
@@ -927,7 +925,7 @@ class CartController extends BaseController
 
                     if(isset($prod->product) && !empty($prod->product)){
                       //  pr($prod->product);
-                        if($islongTermInDB ==1 && $prod->product->is_long_term_service ==1){
+                        if($prod->product->is_long_term_service ==1){
                             $vendorData->is_long_term_service = 1;
                             $LongTermProducts = $prod->product->LongTermProducts;
                             $is_long_term = 1;
@@ -972,7 +970,7 @@ class CartController extends BaseController
                         $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                         $price_in_currency = $prod->pvariant ? $prod->pvariant->price : 0;
                          //  GET PRICE from driver
-                        if( checkColumnExists('cart_products', 'dispatch_agent_price') && ( $is_service_product_price_from_dispatch ==1 )){
+                        if($is_service_product_price_from_dispatch ==1){
                             $price_in_currency = isset($prod->dispatch_agent_price) ? $prod->dispatch_agent_price : 0 ;
                         }
                         $total_markup_charges += $prod->pvariant->markup_price??0;
@@ -1076,7 +1074,7 @@ class CartController extends BaseController
 
                             if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
                                 foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
-                                    $rate = round($tax_value->tax_rate);
+                                    $rate = $tax_value->tax_rate;
                                     $tax_amount = ($price_in_doller_compare * $rate) / 100;
                                     if(!$additionalPreferences->is_tax_price_inclusive){
                                         $product_tax = ($quantity_price) * $rate / 100;
@@ -1084,8 +1082,8 @@ class CartController extends BaseController
                                         $product_tax = (($quantity_price)  * $rate) / (100 + $rate);
                                     }
                                     $taxData[$tckey]['rate'] = $rate;
-                                    $taxData[$tckey]['tax_amount'] = $tax_amount;
-                                    $taxData[$tckey]['product_tax'] = $product_tax;
+                                    $taxData[$tckey]['tax_amount'] = decimal_format($tax_amount);
+                                    $taxData[$tckey]['product_tax'] = decimal_format($product_tax);
                                     $taxable_amount = $taxable_amount + $product_tax;
                                     $taxData[$tckey]['sku'] = ucfirst($prod->pvariant->sku);
                                     $taxData[$tckey]['identifier'] = $tax_value->identifier;
@@ -1097,7 +1095,6 @@ class CartController extends BaseController
                                     );
                                 }
                             }
-                            //dd($prod->product->toArray());
                             $prod->taxdata = $taxData;
                             if ( (in_array($action,['delivery','on_demand']) )  && ( $is_service_product_price_from_dispatch !=1 )) {
                                 $checkLastMile = 0;
@@ -1110,7 +1107,7 @@ class CartController extends BaseController
                                     $checkLastMile = 1;
                                     $product_tags = $prod->product->tags;
                                 } /** check lont term product product last mile  */
-                                else if( ($islongTermInDB ==1) && ($prod->product->is_long_term_service ==1) && !empty($prod->product->LongTermProduct) && $prod->product->LongTermProduct->first()->Requires_last_mile ==1){
+                                else if(($prod->product->is_long_term_service ==1) && !empty($prod->product->LongTermProduct) && $prod->product->LongTermProduct->first()->Requires_last_mile ==1){
 
                                     $checkLastMile = 1;
                                     $product_tags = $prod->product->LongTermProduct->first()->tags;
@@ -1334,7 +1331,7 @@ class CartController extends BaseController
                 $vendorData->vendor_gross_total = $payable_amount;
                 $vendorData->discount_amount = $discount_amount;
                 $vendorData->discount_percent = $discount_percent;
-                $vendorData->taxable_amount = $taxable_amount;
+                $vendorData->taxable_amount = decimal_format($taxable_amount);
                 $vendorData->payable_amount = $payable_amount - $discount_amount;
                 $vendorData->isDeliverable = 1;
                 $total_paying = $total_paying + $payable_amount ;
@@ -1638,7 +1635,7 @@ class CartController extends BaseController
             $loyalty_amount_saved = $temp_total_paying;
             $cart->total_payable_amount = 0.00;
         } else {
-            $cart->total_payable_amount = $total_paying - ($total_disc_amount + $loyalty_amount_saved);
+            $cart->total_payable_amount = ($total_paying  + $cart->total_tax) - ($total_disc_amount + $loyalty_amount_saved);
         }
         //Log::info("total_payable_amount 1".$total_taxable_amount);
         /* if($total_taxable_amount>0){

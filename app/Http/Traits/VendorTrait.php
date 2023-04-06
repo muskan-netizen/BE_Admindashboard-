@@ -10,7 +10,7 @@ use App\Models\Client as CP;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 
-use App\Models\{VendorMultiBanner,WebStylingOption};
+use App\Models\{VendorAdditionalInfo, VendorMultiBanner,WebStylingOption};
 
 
 trait VendorTrait{
@@ -26,10 +26,7 @@ trait VendorTrait{
         $webStyle =   WebStylingOption::where(['is_selected'=>'1'])->first('id');
         $banner = [];
         if($webStyle && ($webStyle->id == 6)){
-            if(checkColumnExists('vendor_multi_banners', 'id')){
-
-                $banner = VendorMultiBanner::where(['vendor_id'=> $vendor_id])->whereNotNull('image')->get();
-            }
+            $banner = VendorMultiBanner::where(['vendor_id'=> $vendor_id])->whereNotNull('image')->get();
         }
         $respons=[
             'webStyleId' => $webStyle->id,
@@ -37,6 +34,14 @@ trait VendorTrait{
         ];
         return $respons;
      
+    }
+
+    public function updateVendorAdditionalPreference($id,$additionalData)
+    {
+        return  VendorAdditionalInfo::updateOrCreate(
+                ['vendor_id'=> $id],
+                $additionalData
+            );
     }
 
 
