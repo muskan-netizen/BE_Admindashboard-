@@ -125,7 +125,9 @@ class OrderController extends Controller{
                 return $vendor_orders->vendor ? __($vendor_orders->total_markup_price??0) : '0';
             })
             ->addColumn('payable_amount', function($vendor_orders) {
-                return number_format($vendor_orders->payable_amount - $vendor_orders->total_markup_price??0, 2);
+                $tip = !empty($vendor_orders->orderDetail)?number_format($vendor_orders->orderDetail->tip_amount, 2):0.00;
+                
+                return number_format(($vendor_orders->payable_amount +$tip)- $vendor_orders->total_markup_price??0, 2);
             })
             ->addColumn('payment_option_title',function($vendor_orders){
                
