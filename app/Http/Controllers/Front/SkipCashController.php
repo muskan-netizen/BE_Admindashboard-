@@ -163,6 +163,7 @@ class SkipCashController extends Controller
         $error = curl_error($ch);
         $info = curl_getinfo($ch);
         curl_close($ch);
+        \Log::info($response);
         $responseObj = json_decode($response);  
         if ($responseObj->returnCode != '200') {
             $message = 'Payment error';
@@ -277,14 +278,14 @@ class SkipCashController extends Controller
              $returnUrl = route('payment.gateway.return.response').'/?gateway=skip_cash'.'&status=200&transaction_id='.$request->order_id.'&action=wallet';
              return Redirect::to($returnUrl);
            }else{
-             return Redirect::to(route('user.wallet'));
+             return Redirect::to(route('user.wallet'))->with('success', 'Wallet amount added successfully.');
            }
       }else{
         if ($payment->payment_from == 'app') {
             $returnUrl = route('payment.gateway.return.response').'/?gateway=skip_cash'.'&status=200&transaction_id='.$request->order_id.'&action=wallet';
             return Redirect::to($returnUrl);
           }else{
-            return Redirect::to(route('user.wallet'))->with('success', 'Wallet amount added successfully.');
+            return Redirect::to(route('user.wallet'))->with('error', 'Amount Failed.');
           }
       }
   }
@@ -307,7 +308,15 @@ class SkipCashController extends Controller
           }else{
             return Redirect::to(route('user.orders'))->with('success', 'Tip given successfully.');
           }
+      }else{
+      if ($payment->payment_from == 'app') {
+        $returnUrl = route('payment.gateway.return.response').'/?gateway=skip_cash'.'&status=200&transaction_id='.$request->order_id.'&action=tip';
+        return Redirect::to($returnUrl);
+      }else{
+        return Redirect::to(route('user.orders'))->with('error', 'Failed.');
       }
+    }
+
   }
 
 

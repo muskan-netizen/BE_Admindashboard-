@@ -50,7 +50,7 @@ class NmiPaymentController extends Controller
        $time = time();
        $user_id = auth()->id();
        $amount = $request->amt??$request->amount;
-       \Log::info(json_encode($request->all()));
+    //    \Log::info(json_encode($request->all()));
        if ($request->payment_from == 'cart') {
            $time = $request->order_number;
            Payment::create([
@@ -199,7 +199,7 @@ class NmiPaymentController extends Controller
    public function completeOrderCart($request, $payment)
    {
       $order = Order::where('order_number', $payment->transaction_id)->first();
-      \Log::info(json_encode($order));
+    //   \Log::info(json_encode($order));
 
       if (isset($request['response']) && $request['response'] == 1) 
       {
@@ -258,8 +258,16 @@ class NmiPaymentController extends Controller
               $returnUrl = route('user.wallet');
               $response['route'] = $returnUrl;
           }
-          return $response;
+      }else{
+        if ($payment->payment_from == 'app') {
+            $response['status'] = '0';
+            $response['msg'] = 'Failed';
+          }else{
+            $returnUrl = route('user.wallet');
+              $response['route'] = $returnUrl;
+          }
       }
+      return $response;
   }
 
   public function completeOrderTip($request, $payment,$amount,$requestdata)
@@ -289,7 +297,7 @@ class NmiPaymentController extends Controller
       if (isset($request['response']) && $request['response'] == 1) {
 
           $data['transaction_id'] = $payment->transaction_id;
-          $data['payment_option_id'] = 50;
+          $data['payment_option_id'] = 53;
           $data['subsid'] = $requestdata['subsid'];
           $data['subscription_id'] = $requestdata['subsid'];
           $data['amount'] = $requestdata['amt'];
