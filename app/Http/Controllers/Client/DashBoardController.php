@@ -655,6 +655,29 @@ class DashBoardController extends BaseController
             $currencySymbol = $clientCurrency->currency->symbol;
             $orderNotificationCnt = OrderNotificationsLogs::whereIn('vendor_id',$vendorIds)->count();
 
+            $orderLocations = [];
+            $address_ids  = [];
+            // pr($locationwise_revenue->toArray());
+            if(sizeof($locationwise_revenue) > 0) {
+                foreach($locationwise_revenue as $key => $orderAdd)
+                {
+                
+                    if($orderAdd->address){
+                            $sum = isset($orderLocations[$orderAdd->address->city]['sum']) ? $orderLocations[$orderAdd->address->city]['sum'] : 0;
+                            $addresscount = isset($orderLocations[$orderAdd->address->city]['addressCount']) ? $orderLocations[$orderAdd->address->city]['addressCount'] : 0;
+                            $address_ids[]=$orderAdd->id;
+                            //$loc[$orderAdd->address->city]= array(
+                                $orderLocations[$orderAdd->address->city]['addressCount']=($addresscount) +$orderAdd->addressCount;
+                                $orderLocations[$orderAdd->address->city]['address_id']= $orderAdd->address_id;
+                                $orderLocations[$orderAdd->address->city]['city'] = $orderAdd->address->city;
+                                $orderLocations[$orderAdd->address->city]['sum'] = ($sum) + ($orderAdd->sum);
+                            //);
+                    
+                    }
+                }
+                
+//pr($orderLocations);
+            }
 
             $response = [
                 'markers' => $markers,
@@ -675,7 +698,7 @@ class DashBoardController extends BaseController
                 'monthwise_revenue' => $monthwise_revenue,
                 'previousweek_revenue_daywise' => $previousweek_revenue_daywise,
                 'currentweek_revenue_daywise' => $currentweek_revenue_daywise,
-                'locationwise_revenue' => $locationwise_revenue,
+                'locationwise_revenue' => $orderLocations,
                 'currentyear_ordercount' => $currentyear_orderCount,
                 'currencySymbol' => $currencySymbol,
                 'total_vendors' => $vendorCounts,
