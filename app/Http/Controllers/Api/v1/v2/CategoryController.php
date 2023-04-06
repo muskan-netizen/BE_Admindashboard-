@@ -26,8 +26,8 @@ class CategoryController extends BaseController
             $page = $request->has('page') ? $request->page : 1;
             $product_list = $request->has('product_list') ? $request->product_list : 'false';
             $mod_type = $request->has('type') ? $request->type : 'delivery';
-            \Log::info('categoryData api')
-            \Log::info($cid)
+            \Log::info('categoryData api');
+            \Log::info($cid);
             if ($cid == 0) {
                 return response()->json(['error' => 'No record found.'], 404);
             }
