@@ -18,12 +18,12 @@
             
                     <div class="cd-products-table">
                         <div class="features">
-                            <div class="top-info">Models</div>
+                            <div class="top-info model_comp">Models</div>
                             <ul class="cd-features-list">
                                 <li>Price</li>
                                 <li>Rating</li>
                                 <li class="compare_pro_discription">Description</li>
-                                <li>Seller</li>
+                                <li class="seller_comp">Seller</li>
                             </ul>
                         </div> <!-- .features -->
                         
