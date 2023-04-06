@@ -72,7 +72,7 @@ class CategoryController extends BaseController
                     $qry->select('product_id')->from('product_categories')->where('category_id', $cid);
                 })->groupBy('product_variant_sets.variant_type_id')->get();
             if (!$category) {
-                return response()->json(['error' => 'No record found.'], 200);
+                return response()->json(['error' => 'No record found.'], 404);
             }
             $code = $request->header('code');
             $client = Client::where('code', $code)->first();
