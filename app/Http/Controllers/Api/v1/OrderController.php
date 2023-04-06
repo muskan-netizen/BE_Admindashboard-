@@ -1843,7 +1843,7 @@ class OrderController extends BaseController
                     $cartDetails = $this->getCart($cart);
                 }
                 //pr( $cartDetails->toArray());
-                $luxuryOptionTitle = ($request->has('type')) ? $request->type : 'delivery';
+                $luxuryOptionTitle = !empty($order->luxury_option) ? $order->luxury_option->title : 'delivery';
                 if ($email_template) {
 
                     $email_template_content = $email_template->content;
