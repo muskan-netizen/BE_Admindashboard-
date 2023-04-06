@@ -65,7 +65,6 @@ class UserhomeController extends FrontController
         $client_preferences = $this->client_preferences;
         $client_preferences = $client_preferences->makeHidden(['customer_support_key','delivery_service_key','fcm_server_key','fcm_api_key','mail_username','mail_password','sms_key','sms_secret','sms_credentials','fb_client_secret','fcm_storage_bucket','customer_support_application_id','pickup_delivery_service_key']);
         return response()->json(['success' => true, 'client_preferences' => $client_preferences]);
-
     }
 
     public function getLastMileTeams()

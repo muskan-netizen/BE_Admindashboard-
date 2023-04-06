@@ -12,7 +12,7 @@ use Carbon\CarbonPeriod;
 use ConvertCurrency;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Http\Traits\{ApiResponser,ProductActionTrait,VendorTrait};
+use App\Http\Traits\{ApiResponser,ProductActionTrait,VendorTrait,PaymentTrait};
 use App\Http\Traits\HomePage\HomePageTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -27,7 +27,7 @@ use DateTimeZone;
 
 class HomeController extends BaseController
 {
-    use ApiResponser,ProductActionTrait, HomePageTrait,VendorTrait;
+    use ApiResponser,ProductActionTrait, HomePageTrait,VendorTrait,PaymentTrait;
 
     private $curLang = 0;
     private $field_status = 2;
@@ -237,7 +237,7 @@ class HomeController extends BaseController
             $homeData['currencies'] = ClientCurrency::with('currency')->select('currency_id', 'is_primary', 'doller_compare')->orderBy('is_primary', 'desc')->get();
             $homeData['dynamic_tutorial'] = AppDynamicTutorial::orderBy('sort')->get();
 
-            $payment_codes = ['stripe', 'stripe_fpx', 'stripe_oxxo','stripe_ideal','razorpay', 'checkout', 'paytab','flutterwave', 'khalti'];
+            $payment_codes = $this->paymentOptionArray('homepage');
             $payment_creds = PaymentOption::select('code', 'credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
             if ($payment_creds) {
                 foreach ($payment_creds as $creds) {
@@ -316,6 +316,7 @@ class HomeController extends BaseController
             $latitude = $request->latitude;
             $longitude = $request->longitude;
             $paginate = $request->has('limit') ? $request->limit : 12;
+            $distance_to_time_multiplier = $preferences->distance_to_time_multiplier??2;
             //filter
             $venderFilterClose   = $request->has('close_vendor') && $request->close_vendor ? $request->close_vendor : null;
             $venderFilterOpen   = $request->has('open_vendor') && $request->open_vendor ? $request->open_vendor : null;
@@ -458,10 +459,9 @@ class HomeController extends BaseController
             $vendorData =   $vendorData->take(5);
 
 
-            $on_sale_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, '', $type);
-            $new_product_details    = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_new', $type);
-            $feature_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_featured', $type);
-
+            $on_sale_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, '', $type,$latitude,$longitude,$preferences);
+            $new_product_details    = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_new', $type,$latitude,$longitude,$preferences);
+            $feature_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_featured', $type,$latitude,$longitude,$preferences);
             if($spotlight && ($spotlight == 1) ){
                 $spotlight_products=$this->getSpotlightProducts();
             }
@@ -819,16 +819,27 @@ class HomeController extends BaseController
         return $this->successResponse($temp_orders, '', 200);
     }
 
-    public function vendorProducts($venderIds, $langId, $currency = '', $where = '', $type)
+    public function vendorProducts($venderIds, $langId, $currency = '', $where = '', $type,$latitude='',$longitude='',$preferences)
     {
+        $distance_to_time_multiplier = $preferences->distance_to_time_multiplier??2;
         $user = Auth::user();
         $userid = !empty($user) ? $user->id : 0;
         $products = Product::byProductCategoryServiceType($type)->byProductWhereCheck()->with([ 
             'category.categoryDetail.translation' => function ($q) use ($langId) {
                 $q->where('category_translations.language_id', $langId);
             },
-            'vendor' => function ($q) use ($type) {
+            'vendor' => function ($q) use ($type,$latitude,$longitude,$distance_to_time_multiplier) {
                 $q->where($type, 1);
+                $q->select('*',DB::Raw("6371 * acos(cos(radians(" . $latitude . "))
+                * cos(radians(latitude))
+                * cos(radians(longitude) - radians(" . $longitude . "))
+                + sin(radians(" .$latitude. "))
+                * sin(radians(latitude))) AS dropoffdistance "),
+                DB::Raw("6371 * acos(cos(radians(" . $latitude . "))
+                * cos(radians(latitude))
+                * cos(radians(longitude) - radians(" . $longitude . "))
+                + sin(radians(" .$latitude. "))
+                * sin(radians(latitude))) * ".$distance_to_time_multiplier." as timeTaken"));
             },
             'inwishlist' => function($qry) use($userid){
                 $qry->where('user_id', $userid);
@@ -840,7 +851,7 @@ class HomeController extends BaseController
                 $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
             },
             'variant' => function ($q) use ($langId) {
-                $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
+                $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode','compare_at_price');
                 $q->groupBy('product_id');
             },
         ])
@@ -864,6 +875,12 @@ class HomeController extends BaseController
                 foreach ($value->variant as $k => $v) {
                     $value->variant[$k]->multiplier = $currency ? $currency->doller_compare : 1;
                 }
+                if($value->variant->first()->compare_at_price>0){
+                    $value->offers = ($value->variant->first()->compare_at_price - $value->variant->first()->price) / $value->variant->first()->compare_at_price * 100;
+                }else{
+                    $value->offers = 0;
+                }
+
             }
         }
        // Log::info($products);
@@ -882,7 +899,7 @@ class HomeController extends BaseController
                 $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
             },
             'variant' => function ($q) use ($langId) {
-                $q->select('sku', 'product_id', 'quantity', 'price', 'markup_price','barcode');
+                $q->select('sku', 'product_id', 'quantity', 'price', 'markup_price','barcode','compare_at_price');
                 $q->groupBy('product_id');
             },
         ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating')
@@ -898,6 +915,11 @@ class HomeController extends BaseController
             foreach ($products as $key => $value) {
                 foreach ($value->variant as $k => $v) {
                     $value->variant[$k]->multiplier = $clientCurrency->doller_compare;
+                }
+                if($value->variant->first()->compare_at_price>0){
+                    $value->offers = ($value->variant->first()->compare_at_price - $value->variant->first()->price) / $value->variant->first()->compare_at_price * 100;
+                }else{
+                    $value->offers = 0;
                 }
             }
         }
