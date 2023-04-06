@@ -4370,11 +4370,19 @@ body.al_body_template_one #page-container .footer-theme .sub-title .contact-list
 .al_body_template_one .ratio_asos .top-banner-wrapper .top-banner-content {
     margin-bottom: 20px;
 }
-
+.main-fillter .side_fillter .collection-collapse-block h3{
+    padding-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+}
 .al_body_template_one .offer-slider.al .img-outer-box img {
     height: 100%;
 }
 
+body.al_body_template_one ul.exzoom_img_ul{
+    height: 550px;
+    object-fit: cover;
+}
 .al_body_template_one .offer-slider .img-outer-box {
     overflow: hidden;
     border-radius: 10px;
