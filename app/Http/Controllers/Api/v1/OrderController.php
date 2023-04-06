@@ -294,7 +294,7 @@ class OrderController extends BaseController
                             $total_taxes+=(float)$row1[1];
                         }
                     }
-                    $order->taxable_amount = $total_taxes;
+                    $order->taxable_amount =  decimal_format($total_taxes);
                     $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
                     $order->save();
 
@@ -503,7 +503,7 @@ class OrderController extends BaseController
                            
 
                             //$taxable_amount += $product_taxable_amount;
-                            $vendor_taxable_amount += decimal_format($taxable_amount);
+                            $vendor_taxable_amount +=  decimal_format($taxable_amount);
                             //$total_amount += ($vendor_cart_product->quantity * $variant->price) + ($vendor_cart_product->quantity * $variant->container_charges);
                             $variant_price = $variant->price;
                             // change variant_price price when is_service_product_price_from_dispatch on 
@@ -2752,7 +2752,7 @@ class OrderController extends BaseController
                 $order['payable_amount'] = $order->payable_amount  - $total_markup_Price;
             }else{
                 $order['total_amount'] = $order->total_amount;
-                $order['payable_amount'] = $order->payable_amount;
+                $order['payable_amount'] = decimal_format($order->payable_amount);
             }
             //mohit sir branch code added by sohail
             $advancePayableAmount = 0;
@@ -2777,8 +2777,8 @@ class OrderController extends BaseController
            }
 
             // $order['user_document_value'] =  $user_docs;
-            $order->taxable_amount =  $total_other_taxes??0;
-            $order->total_other_taxes =  $total_other_taxes??0;
+           $order->taxable_amount =  decimal_format($total_other_taxes??0);
+           $order->total_other_taxes =  decimal_format($total_other_taxes??0);
             $order['user_document_list'] =  $user_registration_documents;
             $order['category_KYC_document'] = $category_KYC_document??null;
             $order->slot_based_Price =  $slot_based_Price??0;

@@ -116,7 +116,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                                     <th>{{ __('Date & Time') }}</th>
                                     <th>{{ __('Customer Name') }}</th>
                                     <th>{{ __('Vendor') }}</th>
-                                    <th>{{ __('Vendor Amount') }}</th>
+                                    <th>{{ __('Vendor Earning') }}</th>
                                     <th>{{ __('Subtotal Amount') }}</th>
                                     @if(auth()->user()->is_superadmin ==1)
                                         <th>{{ __('Markup Price') }}({{ __("Visible For Admin") }})</th>
@@ -153,7 +153,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
             }
         });
-        function getPercentageAmount(percent,amount){
+       function getPercentageAmount(percent,amount){
             // var totalPercent = (percent/amount * 100);
            if(amount == 0.00){
             	return amount;

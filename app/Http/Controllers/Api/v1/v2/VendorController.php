@@ -2298,7 +2298,7 @@ class VendorController extends BaseController{
                     if(isset($request->category_id))
                     $products = $products->where('category_id',$request->category_id);
 
-                    $products = $products->paginate($limit, $page); 
+                    $products = $products->orderBy('product_translations.title', 'asc')->paginate($limit, $page); 
                 // if(!empty($products)){
                 //     foreach ($products as $key => $product) {
                       
@@ -2837,8 +2837,10 @@ class VendorController extends BaseController{
 
                     $products = $products->orderBy('order_product_count', 'desc');
                 }
-                $products = $products->distinct();
-                $products = $products->paginate($limit, $page);
+                if(empty($order_type)){
+                    $products = $products->orderBy('product_translations.title', 'asc');
+                }
+               $products = $products->groupBy('products.id')->paginate($limit, $page);
            
                 $response['products'] = $products ?? [];
            

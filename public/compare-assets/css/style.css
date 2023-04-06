@@ -63,15 +63,24 @@ Main Components
 .product_compare_design ul.cd-features-list li.rate span {
   float: inherit;
 }
+.model_comp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .product_compare_design ul li{display:block;}
 /* .product_compare_design ul li a{display:block; height: 150px !important;
   min-height: 150px !important;} */
   .product_compare_design ul li .top-info h3{font-size: 14px; text-transform: capitalize !important;color: #544e4e;font-weight: 600;}
   .product_compare_design .top-info img{width:100%;max-width:60%;margin:0 auto;}
   .product_compare_design ul.cd-features-list li.compare_pro_discription {
-    height: 230px;
-    min-height: 230px;
+    height: 250px;
+    min-height: 250px;
     overflow-x: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .compare_pro_discription::-webkit-scrollbar-track
@@ -295,7 +304,7 @@ Main Components
 .product_compare_design ul.cd-features-list li{
   font-size:14px;
   font-weight: 600;
-  color: #4c4747;
+  color: #4c4747;text-align: center;
 }
 .product_compare_design ul.cd-features-list li p {
   font-size: 12px !important;
@@ -662,7 +671,7 @@ No JS
     padding: 10px 10px;
   }
   .product_compare_design ul.cd-features-list li:last-child{
-    height: auto;min-height: auto;
+    height: auto;min-height: auto; border-bottom: 1px solid#e6e6e6;
   }
   .product_compare_design .cd-products-columns{
  border-top: 1px solid#e6e6e6;
@@ -671,11 +680,21 @@ No JS
   border-top: 1px solid#e6e6e6;
 
 }
+li.seller_comp {
+  border-bottom: none !important;
+}
 .cd-products-comparison-table header {
   margin: 20px 0px;
 }
 }
 
+
+@media screen and (max-width:767px){
+  ul.cd-table-navigation {
+    display: none;
+}
+.scrolling{box-shadow: none !important;}
+}
 
 @media screen and (max-width:480px){
   .cd-table-navigation a{
@@ -683,4 +702,9 @@ No JS
     width: 20px;
     background-size: 10px 10px;
   }
+  .product_compare_design ul.cd-features-list li:last-child a {
+    display: inline-block;
+    font-size: 12px;
+}
+
 }
