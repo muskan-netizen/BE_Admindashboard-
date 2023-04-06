@@ -1997,7 +1997,7 @@ class VendorController extends BaseController{
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude','subscription_mode')->first();
         $latitude = $request->latitude;
         $longitude = $request->longitude;
-        $limit = $request->has('limit') ? $request->limit : 12;
+        $limit = $request->has('limit') ? $request->limit :12;
         $page = $request->has('page') ? $request->page : 1;
 
         //filter

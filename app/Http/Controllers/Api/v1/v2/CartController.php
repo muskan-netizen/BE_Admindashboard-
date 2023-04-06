@@ -40,7 +40,7 @@ class CartController extends BaseController
     public function index(Request $request)
     {
      
- try {
+    try {
 
             // if(($request->has('gateway')) && ($request->gateway != '')){
             //     if($request->has('order')){
@@ -67,66 +67,72 @@ class CartController extends BaseController
             } else {
                 $cart = Cart::where('user_id', $user->id)->with(['editingOrder']);
             }
+            $cartData= [];
             $cart = $cart->first();
-            $address = UserAddress::where('user_id', $cart->user_id)->where('is_primary', 1)->first();
-            $address_id = ($address) ? $address->id : 0;
-            //pr($_POST);
-            if ($user) {
-              
-                $obj = [
-                    'cart' => $cart,
-                    'currency'=> $user->currency,
-                    'code'=> $request->code,
-                    'type'=> $request->type,
-                    'language'=> $user->language,
-                    'requestType'=>2,
-                    'address_id'=> $address_id,
-                    'schedule_datetime_del'=> $request->schedule_datetime_del,
-                    'type'=> $request->type,
-                ];
-               
-                //$cart, $address_id=0 , $code = 'D',$schedule_datetime_del=''
-                $cartData = $this->getCartsNewV2($obj,$request);
-                //pr($cartData);
-                //$cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
+            if($cart) {
 
-
-                if(isset($cart->editingOrder) && !empty($cart->editingOrder) && !empty($cartData))
-                {
-                    $editlimit_datetime = Carbon::now()->toDateTimeString();
-                    $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
-                    $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
-                    $cartData->cart_error_message = '';
-                    if((strtotime($cart->editingOrder->scheduled_date_time) - strtotime($editlimit_datetime)) < 0){
-                        $cartData->cart_error_message = __("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date. Please discard order editing.");
-                    }
-                    $VendorOrderStatus = VendorOrderStatus::where('order_id', $cart->editingOrder->id)->whereNotIn('order_status_option_id', [1, 2])->count();
-                    if($VendorOrderStatus > 0){
-                        $cartData->cart_error_message = __("You can not edit this order. Either order is in processed or in processing. Please discard order editing.");
-                    }
-                }
+            
                 
+                $address = UserAddress::where('user_id', $cart->user_id)->where('is_primary', 1)->first();
+                $address_id = ($address) ? $address->id : 0;
+                //pr($_POST);
+                if ($user) {
+                
+                        $obj = [
+                            'cart' => $cart,
+                            'currency'=> $user->currency,
+                            'code'=> $request->code,
+                            'type'=> $request->type,
+                            'language'=> $user->language,
+                            'requestType'=>2,
+                            'address_id'=> $address_id,
+                            'schedule_datetime_del'=> $request->schedule_datetime_del,
+                            'type'=> $request->type,
+                        ];
+                    
+                        //$cart, $address_id=0 , $code = 'D',$schedule_datetime_del=''
+                        $cartData = $this->getCartsNewV2($obj,$request);
+                        //pr($cartData);
+                        //$cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
 
-                $age_restriction = CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
-                                $q->where('age_restriction',1);
-                            })->count();
-                $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
-                $passbase['check'] = 0;
-                $passbase['status'] = "";
-                if($passbase_check && $age_restriction)
-                {
-                    $passbase['check'] = 1;
-                    if(is_null($user->passbase_verification)){
-                        $passbase['status'] = 'not_created';
-                    }else{
-                        $passbase['status'] = $user->passbase_verification->status;
-                    }
 
-                    $cartData->passbase_check = $passbase['check']??0;
-                    $cartData->passbase_status= $passbase['status']??'';
+                        if(isset($cart->editingOrder) && !empty($cart->editingOrder) && !empty($cartData))
+                        {
+                            $editlimit_datetime = Carbon::now()->toDateTimeString();
+                            $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
+                            $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
+                            $cartData->cart_error_message = '';
+                            if((strtotime($cart->editingOrder->scheduled_date_time) - strtotime($editlimit_datetime)) < 0){
+                                $cartData->cart_error_message = __("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date. Please discard order editing.");
+                            }
+                            $VendorOrderStatus = VendorOrderStatus::where('order_id', $cart->editingOrder->id)->whereNotIn('order_status_option_id', [1, 2])->count();
+                            if($VendorOrderStatus > 0){
+                                $cartData->cart_error_message = __("You can not edit this order. Either order is in processed or in processing. Please discard order editing.");
+                            }
+                        }
+                        
+
+                        $age_restriction = CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
+                                        $q->where('age_restriction',1);
+                                    })->count();
+                        $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
+                        $passbase['check'] = 0;
+                        $passbase['status'] = "";
+                        if($passbase_check && $age_restriction)
+                        {
+                            $passbase['check'] = 1;
+                            if(is_null($user->passbase_verification)){
+                                $passbase['status'] = 'not_created';
+                            }else{
+                                $passbase['status'] = $user->passbase_verification->status;
+                            }
+
+                            $cartData->passbase_check = $passbase['check']??0;
+                            $cartData->passbase_status= $passbase['status']??'';
+                        }
+
+                    return $this->successResponse($cartData);
                 }
-
-                return $this->successResponse($cartData);
             }
 
             return $this->successResponse($cartData);

@@ -362,6 +362,9 @@ span.org_price.ml-1.font-14 {
 }
 .displayProducts .inner_spacing h3 label{
     font-weight: 400;font-size: 16px;text-transform: capitalize;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .al_body_template_four  .categories_img .product-image img{
     object-fit:cover;
@@ -682,7 +685,10 @@ body.al_body_template_one .product-image img.img-fluid.blur-up.lazyloaded{
     transform: translateY(0%);
     margin-top: 6px;
 }
-
+.add_overlay .qty-box.mb-3 {
+    z-index: -1;
+    position: relative;
+}
 /* .al_body_template_eight  .pixelstrap .al_main_category:hover ul.al_main_category_list {
     visibility: visible;
     opacity: 1;
@@ -777,7 +783,7 @@ li.vendor-timing p{
     width: 98.3%;
     transform: translateY(-50%);
 }
-.al_body_template_one .common-banner:after, .al_body_template_nine .common-banner:after {
+.al_body_template_one .common-banner:after, .al_body_template_three .common-banner:after, .al_body_template_nine .common-banner:after {
     content: "";
     position: absolute;
     background: #0e0c0c4f;
@@ -1020,7 +1026,7 @@ body.al_body_template_two .vendor-design_new  .product-bottom-bar {
 }
 .menu-navigation .pixelstrap ul , .menu_navigation_al_four .pixelstrap .alMainMenu ul, .menu-navigation_al .pixelstrap .al_main_category_list {
     max-height: 40vh;
-    overflow-y: scroll;
+    overflow-y: auto;
 }   
 .al_body_template_four .pixelstrap ul.alInnerMenu li a span.new-tag{
     font-weight: 400;
@@ -1219,6 +1225,12 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
     display: flex;
     flex-wrap: wrap;
 }
+/*recent order font size decrease css*/
+.recent-orders .price_box_bottom li{font-size: 14px;}
+
+
+
+
 /*======== first template css gagandeep 29-03-2023 end ========*/
 
 @media (max-width:576px){

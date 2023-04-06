@@ -1013,7 +1013,6 @@ li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center {
     position: relative;
 }
 
-
 .al_body_template_eight #header_cart_main_ul img.mr-2.blur-up.lazyloaded {
     border-radius: 60px;
     height: 50px;
@@ -1057,8 +1056,10 @@ header#al_new_design.site-header.fixed-bar .menu-navigation.alThreeMenu ul.al_ma
     position: fixed;
     top: 208px !important;
 }
+
 body.al_body_template_eight #al_new_design .pixelstrap ul {
-    top: 40px;
+    top: 24px;
+    /* top:40px; */
     box-shadow: none;
 }
 
