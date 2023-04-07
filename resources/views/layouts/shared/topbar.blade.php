@@ -224,7 +224,7 @@ $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'
                     </a>
                     @endif
                     {{-- @can('role-add') --}}
-                    <a href="{{route('roles')}}" class="dropdown-item notify-item">
+                    <a href="{{route('roles')}}" class="dropdown-item notify-item d-none">
                         <i class="fe-user"></i>
                         <span>{{ __("All Roles") }}</span>
                     </a>

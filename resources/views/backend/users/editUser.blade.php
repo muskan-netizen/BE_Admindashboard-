@@ -261,7 +261,7 @@
                                         }
                                     }
                                 @endphp
-                                <table class="table table-borderless table-nowrap table-hover table-centered m-0 d-none">
+                                <table class="table table-borderless table-nowrap table-hover table-centered m-0">
 
                                     <thead class="thead-light">
                                         <tr>

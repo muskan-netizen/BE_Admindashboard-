@@ -33,6 +33,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                 <!-- page title right side here -->
                 <div class="col-md-6 float-right">
                     <form class="d-flex">
+                    
                         @if(auth()->user()->is_superadmin)
                           <div class="input-group mr-2  d-none">
                             <select name="app_managers" class="form-control select2-single mr-2" id="app_managers">
@@ -55,7 +56,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                         </div>
                         @endif
                         <div class="input-group">
-                            <input type="text" class="form-control form-control-light" id="range-datepicker" placeholder="2022-08-10 to 2022-08-22">
+                            <input type="text" class="form-control form-control-light" id="range-datepicker" value="{{ $setWeekDate }}" placeholder="">
                             <span class="input-group-text bg-primary border-primary text-white">
                                 <i class="mdi mdi-calendar-range font-13"></i>
                             </span>
