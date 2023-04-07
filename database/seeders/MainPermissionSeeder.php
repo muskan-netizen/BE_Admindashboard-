@@ -160,6 +160,16 @@ class MainPermissionSeeder extends Seeder{
                 //Role Permission page
                 array('name' => 'role-permission','controller'=>'RolePermissionController'),
 
+                //Role vendor_config-view
+                array('name' => 'vendor_config-view','controller'=>'VendorSlotController'),
+
+                #Role vendor_pincode-view
+                array('name' => 'vendor_pincode-view','controller'=>'PincodeController'),
+                array('name' => 'vendor_pincode-add','controller'=>'PincodeController'),
+
+                array('name' => 'permission_product_draft-published-view','controller'=>'ProductController'),
+                array('name' => 'permission_product_draft-published-add','controller'=>'ProductController'),
+
         );
 
 
