@@ -1215,18 +1215,18 @@ class StripeGatewayController extends FrontController
         switch ($event->type) {
             case 'payment_intent.succeeded':
                 $paymentIntent = $event->data->object;
-                
+                $transactionId = $user_id = $cart_id = $payment_form = $order_number = '';
                 $payment_intent_id = $paymentIntent->id;
                 $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
                 if(!empty($intent->charges) && !empty($intent->charges->data)){
                     $charges = $intent->charges->data[0];
+                    $transactionId = @$charges->balance_transaction;
                 }else{
                     $charges = $intent;
+                    $transactionId = @$charges->id;
                 }
-                $transactionId = $user_id = $cart_id = $payment_form = $order_number = '';
                 $amount = 0;
                 if(@$charges){
-                    $transactionId = @$charges->id;
                     $payment_form = @$charges->metadata->payment_form;
                     $amount = @$charges->amount / 100;
                     $user_id = @$charges->metadata->user_id;
@@ -1402,17 +1402,18 @@ class StripeGatewayController extends FrontController
             case 'payment_intent.succeeded':
                 $paymentIntent = $event->data->object;
                 // //\Log::info($paymentIntent);
-                
+                $transactionId = $user_id = $cart_id = $payment_form = $order_number = '';
                 $payment_intent_id = $paymentIntent->id;
                 $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
                 if(!empty($intent->charges) && !empty($intent->charges->data)){
                     $charges = $intent->charges->data[0];
+                    $transactionId = @$charges->balance_transaction;
                 }else{
                     $charges = $intent;
-                }$transactionId = $user_id = $cart_id = $payment_form = $order_number = '';
+                    $transactionId = @$charges->id;
+                }
                 $amount = 0;
                 if(@$charges){
-                    $transactionId = @$charges->id;
                     $payment_form = @$charges->metadata->payment_form;
                     $amount = @$charges->amount / 100;
                     $user_id = @$charges->metadata->user_id;
@@ -1598,18 +1599,18 @@ class StripeGatewayController extends FrontController
             case 'payment_intent.succeeded':
                 $paymentIntent = $event->data->object;
                 // //\Log::info($paymentIntent);
-                
+                $transactionId = $user_id = $cart_id = $payment_form = $order_number = '';
                 $payment_intent_id = $paymentIntent->id;
                 $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
                 if(!empty($intent->charges) && !empty($intent->charges->data)){
                     $charges = $intent->charges->data[0];
+                    $transactionId = @$charges->balance_transaction;
                 }else{
                     $charges = $intent;
+                    $transactionId = @$charges->id;
                 }
-                $transactionId = $user_id = $cart_id = $payment_form = $order_number = '';
                 $amount = 0;
                 if(@$charges){
-                    $transactionId = @$charges->id;
                     $payment_form = @$charges->metadata->payment_form;
                     $amount = @$charges->amount / 100;
                     $user_id = @$charges->metadata->user_id;
@@ -1752,17 +1753,18 @@ class StripeGatewayController extends FrontController
         switch (@$event->type) {
             case 'payment_intent.succeeded':
                 $paymentIntent = $event->data->object;
-                
+                $transactionId = $user_id = $cart_id = $payment_form = $order_number = '';
                 $payment_intent_id = $paymentIntent->id;
                 $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
                 if(!empty($intent->charges) && !empty($intent->charges->data)){
                     $charges = $intent->charges->data[0];
+                    $transactionId = @$charges->balance_transaction;
                 }else{
                     $charges = $intent;
-                }$transactionId = $user_id = $cart_id = $payment_form = $order_number = '';
+                    $transactionId = @$charges->id;
+                }
                 $amount = 0;
                 if(@$charges){
-                    $transactionId = @$charges->id;
                     $payment_form = @$charges->metadata->payment_form;
                     $amount = @$charges->amount / 100;
                     $user_id = @$charges->metadata->user_id;
