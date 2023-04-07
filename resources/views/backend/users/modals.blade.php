@@ -108,6 +108,7 @@
                         @foreach($user_registration_documents as $user_registration_document)
                             @if(isset($user_registration_document->primary) && !empty($user_registration_document->primary))
                                 @if(strtolower($user_registration_document->file_type) == 'selector')
+                            @if(isset($user_registration_document->options))
                                     <div class="col-md-6 mb-3" id="{{$user_registration_document->primary->slug??''}}Input">
                                         <label for="">{{$user_registration_document->primary ? $user_registration_document->primary->name : ''}}</label>
                                         <select class="form-control {{ (!empty($user_registration_document->is_required))?'required':''}}" name="{{$user_registration_document->primary->slug}}"  id="input_file_selector_{{$user_registration_document->id}}">
@@ -118,6 +119,7 @@
                                         </select>
                                         <span class="invalid-feedback" id="{{$user_registration_document->primary->slug}}_error"><strong></strong></span>
                                     </div>
+                                    @endif
                                 @else
                                     <div class="col-md-6" >
                                         <div class="form-group" id="{{$user_registration_document->primary->slug??''}}Input">

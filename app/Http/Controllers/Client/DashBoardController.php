@@ -24,8 +24,14 @@ class DashBoardController extends BaseController
 {
     use ApiResponser;
 
+    public $roleId;
+
+    public function __construct(){
+        $this->roleId = getRoleId(@auth()->user()->getRoleNames()[0]);
+    }
+
     public function index(Request $request)
-    {  
+    {   
        $managers = User::whereHas('roles',function($q){
             $q->where('name','Manager');
        })->get();
@@ -339,15 +345,14 @@ class DashBoardController extends BaseController
     {
         try {
             $vendorIds = [];
-            
             $managerId = (($request->manager_id)?$request->manager_id:auth()->id());
             $vendors = Vendor::latest();
 
-            if(@auth()->user()->getRoleNames()[0]=='Manager' || $request->manager_id)
+            if($this->roleId == 4 && $request->manager_id)
             {
                 $vendors = $vendors->where('refference_id',$managerId);
                 $vendorIds = $vendors->pluck('id')->toArray();
-            }elseif(@auth()->user()->getRoleNames()[0]=='Seller')
+            }elseif($this->roleId == 4)
             {
                 $managerId = UserVendor::where('user_id',$managerId)->value('vendor_id');
                 $vendors = $vendors->where('id',$managerId);
@@ -453,7 +458,7 @@ class DashBoardController extends BaseController
 
             $total_orders = $vendor_orders->count();
 
-            if(@auth()->user()->getRoleNames()[0]=='Seller'){
+            if(getRoleId(@auth()->user()->getRoleNames()[0])==4){
                 $total_sold_products = OrderVendorProduct::where('order_vendor_id',$vendorIds);
 
                 if($date_filter)

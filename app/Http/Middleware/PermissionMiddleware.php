@@ -39,6 +39,8 @@ class PermissionMiddleware
                 if(@$user->is_superadmin){
                     return $next($request);
                 }
+            // dd($page);
+
                 throw UnauthorizedException::forPermissions($permissions);
             }
 
