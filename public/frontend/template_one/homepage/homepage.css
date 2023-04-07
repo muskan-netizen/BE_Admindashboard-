@@ -595,6 +595,9 @@ label {
     border-left: 1px solid var(--theme-deafult);
     border-right: 1px solid var(--theme-deafult)
 }
+.create_box h6{
+    font-weight: 300;
+}
 
 .radio {
     display: block;
