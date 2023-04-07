@@ -1197,11 +1197,14 @@ class StripeGatewayController extends FrontController
         
         $payload = @file_get_contents('php://input');
         $event = null;
-        // //\Log::info($payload);
+        \Log::info("payload");
+        Log::info($payload);
         try {
             $event = \Stripe\Event::constructFrom(
                 json_decode($payload, true)
                 );
+            \Log::info('event');
+            \Log::info($event);
         } catch(\UnexpectedValueException $e) {
             // Invalid payload
             http_response_code(400);
