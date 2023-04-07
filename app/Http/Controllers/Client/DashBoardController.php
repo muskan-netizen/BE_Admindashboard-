@@ -27,15 +27,18 @@ class DashBoardController extends BaseController
     public $from_date;
     public $to_date;
     public $setWeekDate;
+    public $roleId;
+
     function __construct()
     {
         $this->from_date = Carbon::now()->startOfDay()->subDays(7);
         $this->to_date = Carbon::now()->endOfDay();
         $this->setWeekDate =  $this->from_date->format('d M Y') . ' to '. $this->to_date->format('d M Y');
+        $this->roleId = getRoleId(@auth()->user()->getRoleNames()[0]);
     }
 
     public function index(Request $request)
-    {  
+    {   
        $managers = User::whereHas('roles',function($q){
             $q->where('name','Manager');
        })->get();
@@ -354,19 +357,18 @@ class DashBoardController extends BaseController
     {
         try {
             $vendorIds = [];
-            
             $managerId = (($request->manager_id)?$request->manager_id:auth()->id());
             $vendors = Vendor::latest();
 
-            if(@auth()->user()->getRoleNames()[0]=='Manager' || $request->manager_id)
+            if($this->roleId == 4 && $request->manager_id)
             {
                 $vendors = $vendors->where('refference_id',$managerId);
                 $vendorIds = $vendors->pluck('id')->toArray();
-            }elseif(@auth()->user()->getRoleNames()[0]=='Seller')
+            }elseif($this->roleId == 4)
             {
-                $managerId = UserVendor::where('user_id',$managerId)->value('vendor_id');
-                $vendors = $vendors->where('id',$managerId);
-                $vendorIds = $vendors->pluck('id')->toArray();
+                $managerId = UserVendor::where('user_id',$managerId)->get();
+                $vendorIds = $managerId->pluck('vendor_id')->toArray();
+                $vendors = $vendors->whereIn('id',$vendorIds);
             }
             if(($request->reportType !='Vendor' && !empty($request->reportType)) && isset(auth()->user()->geo_ids))
             {
@@ -377,7 +379,6 @@ class DashBoardController extends BaseController
                     $vendorIds = $areaVendors;
                 }
             }
-
 
             $vendorCounts = $vendors->count();
             $managersCount = User::whereHas('roles',function($q){
@@ -494,7 +495,7 @@ class DashBoardController extends BaseController
             // $total_orders = $vendor_orders->count();
             // pr($total_orders);
 
-            if(@auth()->user()->getRoleNames()[0]=='Seller'){
+            if($this->roleId==4){
                 $total_sold_products = OrderVendorProduct::where('order_vendor_id',$vendorIds);
 
                 if($date_filter)
@@ -704,7 +705,7 @@ class DashBoardController extends BaseController
                 foreach($locationwise_revenue as $key => $orderAdd)
                 {
                 
-                    if($orderAdd->address){
+                    if($orderAdd->address && !empty(@$orderAdd->address->city)){
                             $sum = isset($orderLocations[$orderAdd->address->city]['sum']) ? $orderLocations[$orderAdd->address->city]['sum'] : 0;
                             $addresscount = isset($orderLocations[$orderAdd->address->city]['addressCount']) ? $orderLocations[$orderAdd->address->city]['addressCount'] : 0;
                             $address_ids[]=$orderAdd->id;

@@ -16,8 +16,7 @@ $(document).ready(function () {
     });
 
     $("#dashboard_refresh_btn").click(function () {
-        $flatpickr.clear();
-        getDashboardData(dashboard_filter_url);
+        window.location.reload();
     });
     getDashboardData(dashboard_filter_url);
 

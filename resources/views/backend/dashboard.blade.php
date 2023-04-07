@@ -64,7 +64,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                         <a href="javascript: void(0);" class="btn btn-primary mx-1" id="dashboard_refresh_btn">
                             <i class="mdi mdi-autorenew"></i>
                         </a>
-                        @if(@auth()->user()->roles[0]->name == 'Seller')
+                        @if(getRoleId(@auth()->user()->roles[0]->name) == 4)
                         <a href="{{route('noti.list')}}" class="btn btn-primary alCartIcon" ><span id="notification_counts" class="alBadge">0</span>
                             <i class="mdi mdi-cart-plus"></i>
                         </a>
@@ -145,7 +145,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                 </div>
                 @endif
 
-                @if(@auth()->user()->getRoleNames()[0]=='Seller')
+                @if(getRoleId(@auth()->user()->getRoleNames()[0])==4)
                 <div class="col-sm">
                     <!-- Revenue box start here -->
                     <div class="card alDasBoxItems">
