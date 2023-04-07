@@ -763,6 +763,7 @@ class OrderController extends BaseController
                             }
                             if($vendor_info->fixed_fee_amount > 0){
                                 $fixed_fee_amount = $fixed_fee_amount + $vendor_info->fixed_fee_amount;
+                                $order_vendor->fixed_fee =  $vendor_info->fixed_fee_amount;
                             }
                         }
                         $order_vendor->save();
