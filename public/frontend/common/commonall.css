@@ -530,7 +530,9 @@ content: inherit;
 .al_body_template_one .brand-left {
     padding: 0px 20px !important;
 }
-
+.al_body_template_one #register .file.file--upload {
+    z-index: 9;
+}
 .al_body_template_one section.buy_details #productPriceValue b {
     font-weight: 600 !important;
 }
