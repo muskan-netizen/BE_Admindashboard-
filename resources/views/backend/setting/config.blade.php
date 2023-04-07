@@ -1698,11 +1698,49 @@
             </form>
         </div>
         @if (isset($preference) && $preference->subscription_mode == '1') 
-        {{-- starts square POS integration --}}
-        <div class="col-xl-4 col-lg-4 h-100">
-            <div class="page-title-box">
-                <h4 class="page-title text-uppercase">{{  getNomenclatureName('Vendors', true). __(' Subscription rule') }}</h4>
+            <div class="col-xl-4 col-lg-4 h-100">
+                <div class="page-title-box">
+                    <h4 class="page-title text-uppercase">{{  getNomenclatureName('Vendors', true). __(' Subscription rule') }}</h4>
+                </div>
+
+                <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
+                    @csrf
+                    <input type="hidden" name="vendor_subcription_rule" id="vendor_subcription_rule" value="1">
+                    <!-- HubSpot card start -->
+                    <div class="card-box h-100">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-0 switchery-demo">
+                                    <label class="d-flex align-items-center justify-content-between">
+                                        <h5 class="social_head text-uppercase">
+                                            <span>{{ __('Subscription rule') }}</span>
+                                        </h5>
+
+                                        <button class="btn btn-info btn-block save_btn" type="submit">
+                                            {{ __('Save') }} </button>
+                                    </label>
+                                    <p class="sub-header">
+                                        {{ __('vendor not showing in if thay dont have any Subscription') }}
+                                    </p>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                                <label for="is_show_vendor_on_subcription_switch" class="mr-3">{{ __("Enable") }} <br/></label>
+                                                <input type="checkbox" data-plugin="switchery" name="is_show_vendor_on_subcription_switch" id="is_show_vendor_on_subcription_switch" class="form-control checkbox_change" data-className="is_show_vendor_on_subcription" data-color="#43bee1" @if($getAdditionalPreference['is_show_vendor_on_subcription'] == 1) checked @endif>
+                                                <input type="hidden" @if($getAdditionalPreference['is_show_vendor_on_subcription'] == 1) value="1" @else value="0" @endif name="is_show_vendor_on_subcription" id="is_show_vendor_on_subcription" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
+        @endif
 
         <div class="col-xl-4 col-lg-4 h-100">
             <div class="page-title-box">

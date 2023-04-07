@@ -99,14 +99,12 @@ class AzulPaymentController extends FrontController
         $number = $this->orderNumber($request);
 
         if ($request->from == 'wallet') {
-            $number = $this->orderNumber($request);
             $request->request->add([
                 'order_number' => $number,
                 'amount' => $request->amount
             ]);
         }
         if ($request->from == 'subscription') {
-            $number = $this->orderNumber($request);
             $request->request->add([
                 'order_number' => $number,
                 'amount' => $request->amount
