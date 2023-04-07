@@ -1612,6 +1612,59 @@ trait OrderTrait
             return true;
 
     }
+
+    public function addBufferTime($request){
+        $postdata= [
+            'order_id'=>$request->order_id,
+            'vendor_id'=>$request->vendor_id,
+        ];
+        $order=  OrderVendor::where($postdata)->first();
+        $order->extra_time = $request->time;
+        $order->save();
+        $postdata['time'] = $request->time;
+        $postdata['tracking_id'] = $request->tracking_id;
+        $dispatch_domain = $this->getDispatchDomain();
+        $client = new Client([
+            'headers' => [
+                'personaltoken' => $dispatch_domain->delivery_service_key,
+                'shortcode' => $dispatch_domain->delivery_service_key_code,
+                'content-type' => 'application/json'
+            ]
+        ]);
+        $url = $dispatch_domain->delivery_service_key_url;    
+               $res = $client->post(
+            $url . '/api/task/update_order_prepration_time',
+            ['form_params' => ($postdata)]
+        );
+        $response = json_decode($res->getBody(), true);
+        $response['order_id'] =$order->order_id;
+        return $response;
+     }
+
+     public function sendDelayPushNotification($user_id, $order,$request){
+        $devices = UserDevice::whereNotNull('device_token')->where('user_id', $user_id)->pluck('device_token')->toArray();
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+
+        $data = [
+            "registration_ids" => $devices,
+            "notification" => [
+                'title' => "Order Delayed",
+                'body'  => "Your order has been delayed by ".$request->time." minutes",
+                'sound' => "default",
+                "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                'click_action' => route('user.orders'),
+                "android_channel_id" => "default-channel-id"
+            ],
+            "data" => [
+                'title' => "Order Delayed",
+                'body'  => "Your order has been delayed by ".$request->time." minutes",
+                "type" => "order_delayed"
+            ],
+            "priority" => "high"
+        ];
+        sendFcmCurlRequest($data);
+     }
+     
      
 
 
