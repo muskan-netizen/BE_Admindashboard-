@@ -458,15 +458,6 @@ class OrderController extends FrontController
             $currSymbol = Session::has('currencySymbol') ? Session::get('currencySymbol') : '$';
             $client_name = 'Sales';
             $mail_from = $data->mail_from;
-            
-            if ($vendor_id == "") {
-                $sendto =  $user->email;
-            } else {
-                $vendor = Vendor::where('id', $vendor_id)->first();
-                if ($vendor) {
-                    $sendto =  $vendor->email;
-                }
-            }
             try {
                 $email_template_content = '';
                 $address = '';
@@ -499,11 +490,11 @@ class OrderController extends FrontController
                     }                    
 
                     $email_template_content = $email_template->content;
-                    if ($vendor_id == "") {
-                        $returnHTML = view('email.newOrderProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
-                     } else {
-                        $returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails,'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
-                    }
+                    //     if ($vendor_id == "") {
+                    $returnHTML = view('email.newOrderProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();                    
+                    //     } else {
+                    //$returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails,'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();                   
+                    // }
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
                     $email_template_content = str_ireplace("{description}", '', $email_template_content);
@@ -517,7 +508,6 @@ class OrderController extends FrontController
 
                     $email_data = [
                         'link' => "link",
-                        'email' => $sendto,
                         'mail_from' => $mail_from,
                         'client_name' => $client_name,
                         'logo' => $client->logo['original'],
@@ -532,7 +522,16 @@ class OrderController extends FrontController
                         $email_data['admin_email'] = $data['admin_email'];
                     }
                     $vendor_id == "" ? $email_data['send_to_cc'] = 1 : $email_data['send_to_cc'] = 0;
-
+                    
+                    /* -- Sending email to vendor -- */
+                    $vendor = Vendor::where('id', $vendor_id)->first();
+                    if (! empty($vendor)) {
+                        $email_data['email'] = $vendor->email;
+                        dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
+                    }
+                    
+                    /* -- Sending email to customer -- */
+                    $email_data['email'] = $user->email;
                     dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                 }
             } catch (\Exception $e) {
