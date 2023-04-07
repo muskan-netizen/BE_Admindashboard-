@@ -617,7 +617,7 @@ class CategoryController extends FrontController{
             }
             // $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
 
-            $products = $products->groupBy('products.id')->paginate($limit, $page);
+            $products = $products->paginate($limit, $page);
         if(!empty($products)){
             foreach ($products as $key => $value) {
                 $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;

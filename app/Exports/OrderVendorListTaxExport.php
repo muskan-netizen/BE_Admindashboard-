@@ -74,6 +74,9 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                     }
                 }
             }
+            $tip = !empty($vendor_order->orderDetail)?number_format($vendor_order->orderDetail->tip_amount, 2):0.00;
+            
+            $vendor_order->total_amount = $tip+$vendor_order->payable_amount;
             $vendor_order->order_status = $order_status;
         }
         return $vendor_orders;
@@ -89,9 +92,7 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 'Date & Time',
                 'Customer Name',
                 'Vendor Name',
-                'Vendor Amount',
                 'Subtotal Amount',
-                'Tip',
                 'Promo Code Used',
                 'Promo Code Discount',
                 'Service Fee',
@@ -99,7 +100,7 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 'Fixed Fee',
                 'Tip Amount',
                 'Sales Tax',
-                'Store Earning',
+                'Vendor Earning',
                 'Admin Commission [Fixed]',
                 'Admin Commission [%Age]',
                 'Final Amount',
@@ -120,7 +121,6 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 'Date & Time',
                 'Customer Name',
                 'Vendor Name',
-                'Vendor Amount',
                 'Subtotal Amount',
                 'Promo Code Used',
                 'Promo Code Discount',
@@ -129,7 +129,7 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 'Fixed Fee',
                 'Tip Amount',
                 'Sales Tax',
-                'Store Earning',
+                'Vendor Earning',
                 'Admin Commission [Fixed]',
                 'Admin Commission [%Age]',
                 'Final Amount',
@@ -153,9 +153,7 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 $order_vendors->created_date,
                 $order_vendors->user_name,
                 $order_vendors->vendor ? $order_vendors->vendor->name : '',
-                $order_vendors->vendor_amount,
                 decimal_format($order_vendors->subtotal_amount),
-                decimal_format($order_vendors->orderDetail ? $order_vendors->orderDetail->tip_amount : 0),
                 $order_vendors->coupon_code,
                 decimal_format($order_vendors->discount_amount),
                 decimal_format($order_vendors->service_fee_percentage_amount),
@@ -163,10 +161,10 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 decimal_format($order_vendors->fixed_fee),
                 $order_vendors->orderDetail ? $order_vendors->orderDetail->tip_amount : '',
                 decimal_format($order_vendors->taxable_amount),
-                decimal_format($order_vendors->payable_amount - ($order_vendors->admin_commission_percentage_amount + $order_vendors->admin_commission_fixed_amount + $order_vendors->delivery_fee)),
+                $order_vendors->vendor_amount,
                 decimal_format($order_vendors->admin_commission_fixed_amount),
                 decimal_format($order_vendors->admin_commission_percentage_amount),
-                decimal_format($order_vendors->payable_amount),
+                decimal_format($order_vendors->total_amount),
                 $order_vendors->orderDetail ? $order_vendors->orderDetail->loyalty_points_used : '',
                 $order_vendors->orderDetail ? $order_vendors->orderDetail->loyalty_points_earned : '',
                 decimal_format($order_vendors->admin_commission_percentage_amount + $order_vendors->admin_commission_fixed_amount + $order_vendors->service_fee_percentage_amount),
@@ -184,7 +182,6 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 $order_vendors->created_date,
                 $order_vendors->user_name,
                 $order_vendors->vendor ? $order_vendors->vendor->name : '',
-                $order_vendors->vendor_amount,
                 decimal_format($order_vendors->subtotal_amount),
                 $order_vendors->coupon_code,
                 decimal_format($order_vendors->discount_amount),
@@ -193,10 +190,10 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 decimal_format($order_vendors->fixed_fee),
                 $order_vendors->orderDetail ? $order_vendors->orderDetail->tip_amount : '',
                 decimal_format($order_vendors->taxable_amount),
-                decimal_format($order_vendors->payable_amount - ($order_vendors->admin_commission_percentage_amount + $order_vendors->admin_commission_fixed_amount)),
+                $order_vendors->vendor_amount,
                 decimal_format($order_vendors->admin_commission_fixed_amount),
                 decimal_format($order_vendors->admin_commission_percentage_amount),
-                decimal_format($order_vendors->payable_amount),
+                decimal_format($order_vendors->total_amount),
                ($order_vendors->orderDetail && $order_vendors->orderDetail->paymentOption)? $order_vendors->orderDetail->paymentOption->title : '',
                 $order_vendors->order_status,
                 $order_vendors->orderDetail->shipping_delivery_type == 'L' ?'Lalamove' :'Dispatcher',
