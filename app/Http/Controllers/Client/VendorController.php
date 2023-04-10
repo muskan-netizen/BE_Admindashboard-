@@ -52,11 +52,7 @@ class VendorController extends BaseController
         }else{
             $this->is_payout_enabled = 0;
         }
-        if(!empty(auth()->user()) && auth()->user()->getRoleNames()[0]){   
-            $this->roleId = getRoleId(@auth()->user()->getRoleNames()[0]);
-         }else{
-            $this->roleId = '';
-         }
+        $this->roleId = (@auth()->user()) ? getRoleId(@auth()->user()->getRoleNames()[0]) : null;
     }
 
     /**
