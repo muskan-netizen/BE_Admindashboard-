@@ -2975,18 +2975,7 @@ class OrderController extends FrontController
             $customer = User::find($order->user_id);
             $cus_address = UserAddress::find($order->address_id);
             $tasks = array();
-            if ($order->payment_option_id == 1) {
-                $cash_to_be_collected = 'Yes';
-                $payable_amount = $order->payable_amount;
-            } else {
-                if ($order->is_postpay == 1 && $order->payment_status == 0) {
-                    $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order->payable_amount;
-                } else {
-                    $cash_to_be_collected = 'No';
-                    $payable_amount = 0.00;
-                }
-            }
+           
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address','order_pre_time')->first();
@@ -2999,6 +2988,19 @@ class OrderController extends FrontController
             }
             $tasks = array();
             $meta_data = '';
+
+            if ($order->payment_option_id == 1) {
+                $cash_to_be_collected = 'Yes';
+                $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
+            } else {
+                if ($order->is_postpay == 1 && $order->payment_status == 0) {
+                    $cash_to_be_collected = 'Yes';
+                    $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
+                } else {
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                }
+            }
 
             $team_tag = null;
             if (! empty($dispatch_domain->last_mile_team)) {
@@ -3044,7 +3046,7 @@ class OrderController extends FrontController
                 // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                 $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
-            Log::info("order Pre Time is ".$vendor_details->order_pre_time);
+            //Log::info("order Pre Time is ".$vendor_details->order_pre_time);
             $client = CP::orderBy('id', 'asc')->first();
             $postdata = [
                 'order_number' => $order->order_number,
