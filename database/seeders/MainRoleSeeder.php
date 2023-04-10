@@ -32,13 +32,19 @@ class MainRoleSeeder extends Seeder
                 ),
                 array(
                     'id' => 4,
-                    'name' => 'Seller',
+                    'name' => 'Vendor',
                     'guard_name'=>'web'
 
                 ),
                 array(
                     'id' => 5,
                     'name' => 'Manager',
+                    'guard_name'=>'web'
+
+                ),
+                array(
+                    'id' => 6,
+                    'name' => 'User',
                     'guard_name'=>'web'
 
                 )

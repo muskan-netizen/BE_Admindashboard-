@@ -1940,6 +1940,13 @@ class VendorController extends BaseController
             'is_superadmin' => 0
         ];
         $client = User::where('id', $id)->update($data);
+        $user = User::where('id', $id)->first();
+
+         //Assign user to role for permission
+         if($user){
+            DB::table('model_has_roles')->where('model_id',$user->id)->delete();
+            $user->assignRole(4);
+        }
 
         if(UserPermissions::where('user_id', $id)->count() == 0){
             //for updating permissions
@@ -2064,8 +2071,11 @@ class VendorController extends BaseController
      */
     public function userVendorPermissionDestroy($domain = '', $id)
     {
-        $del_price_rule = UserVendor::where('id', $id);
-         $del_price_rule = $del_price_rule->delete();
+        $del_price_rule = UserVendor::where('id', $id)->first();
+        // dd($id);
+        $id = $del_price_rule->user_id;
+        $del_price_rule = $del_price_rule->delete();
+        $this->removeVendorPermissionAndRole($id);
 
         return redirect()->back()->with('success', 'Permission deleted successfully!');
     }

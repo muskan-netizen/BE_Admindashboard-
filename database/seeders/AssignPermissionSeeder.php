@@ -1,11 +1,13 @@
 <?php
 namespace Database\Seeders;
+
 use DB;
 use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
-class MainPermissionSeeder extends Seeder{
+class AssignPermissionSeeder extends Seeder{
     /**
      * Run the database seeds.
      *
@@ -13,7 +15,7 @@ class MainPermissionSeeder extends Seeder{
      */
     public function run(){
 
-    $permissions = array(
+        $permissions = array(
             //Dashboard Page
             array('id'=>'1','name' => 'dashboard-view','controller'=>'DashBoardController'),
             array('id'=>'2','name' => 'dashboard-weekRevenue','controller'=>'DashBoardController'),
@@ -165,54 +167,41 @@ class MainPermissionSeeder extends Seeder{
             //Role vendor_config-view
             array('id'=>'74','name' => 'vendor_config-view','controller'=>'VendorSlotController'),
 
-            #Role vendor_pincode-view
+            //Role vendor_pincode-view
             array('id'=>'75','name' => 'vendor_pincode-view','controller'=>'PincodeController'),
             array('id'=>'76','name' => 'vendor_pincode-add','controller'=>'PincodeController'),
 
+            // Product Controller
             array('id'=>'77','name' => 'permission_product_draft-published-view','controller'=>'ProductController'),
             array('id'=>'78','name' => 'permission_product_draft-published-add','controller'=>'ProductController'),
             array('id'=>'79','name' => 'chat-view','controller'=>'ChatController'),
             array('id'=>'80','name' => 'accounting-tax-rate','controller'=>'TaxRateController'),
             array('id'=>'81','name' => 'seller-module','controller'=>'SellerController'),
 
-    );
+);
 
+    $supperAdminPermisson = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81];
 
-        foreach ($permissions as $key=> $permission) {
-           $permissions_array[]=array(
-            'id' => $permission['id'],
-            'name' => $permission['name'],
-            'controller' => $permission['controller'],
-            'guard_name' => 'web',
-           );
-        }
+    $vendorPermisson = [
+        1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,55,56,
+        63,64,65,66,69,73,79,80,81];
+        
 
-        $option_count = DB::table('main_permissions')->count();
-        if($option_count == 0)
-        {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        DB::table('main_permissions')->truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-
-        DB::table('main_permissions')->insert($permissions_array);
-        }
-        else{
-
-            foreach ($permissions_array as $key=> $permission) {
-                $payop = Permission::where('name', $permission['name'])->first();
-  
-                if ($payop !== null) {
-                    $payop->update(['name' => $permission['name'],'controller'=>$permission['controller']]);
-                } else {
-                    $payop = Permission::create([
-                        'id' => $permission['id'],
-                        'name' => $permission['name'],
-                        'controller' => $permission['controller'],
-                        'guard_name' => 'web',
-                    ]);
-                }
+        $role = Role::get();
+        foreach ($role as $key=> $role) {
+            //First Revoke all permission then assign new 
+            $role->syncPermissions(); 
+            if($role->id == '1'){
+                //Assign all selected permisson to role
+                $role->syncPermissions($supperAdminPermisson);
+            }elseif($role->id == '4'){
+                //Assign all selected permisson to role
+                $role->syncPermissions($vendorPermisson);
             }
-
+            
         }
+       
+    
     }
+        
 }
