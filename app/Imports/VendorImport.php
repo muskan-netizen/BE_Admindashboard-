@@ -9,10 +9,19 @@ use Maatwebsite\Excel\Concerns\ToCollection;
 
 class VendorImport implements ToCollection
 {
+    public $roleId;
+    public $csv_vendor_import_id;
+    
     public function  __construct($csv_vendor_import_id)
     {
         $this->csv_vendor_import_id = $csv_vendor_import_id;
-    }
+        if(!empty(auth()->user()) && auth()->user()->getRoleNames()[0]){   
+            $this->roleId = getRoleId(@auth()->user()->getRoleNames()[0]);
+            }else{
+            $this->roleId = '';
+            }
+        }
+
     public function collection(Collection $rows)
     {
         try {
@@ -172,7 +181,7 @@ class VendorImport implements ToCollection
                             'longitude' => $longitude,
                         );
 
-                        if(@auth()->user()->getRoleNames()[0]=='Manager')
+                        if(@$this->roleId=='5')
                         {
                             $insert_vendor_details['refference_id'] = auth()->id()??null;
                         }
@@ -180,7 +189,7 @@ class VendorImport implements ToCollection
                         $vendorID  =  Vendor::insertGetId($insert_vendor_details);
                         $vendorData = Vendor::where('id', $vendorID)->first();
 
-                        if(@auth()->user()->getRoleNames()[0]=='Manager')
+                        if(@$this->roleId=='5')
                         {
                             UserVendor::updateOrCreate(['user_id' =>  auth()->id(),'vendor_id' => $vendorID]);
                         }
