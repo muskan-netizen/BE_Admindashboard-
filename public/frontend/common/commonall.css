@@ -74,7 +74,7 @@
     z-index: 9;
     margin-left: 4%;
 }
-.al_body_template_four  .vendor-design_new{
+.al_body_template_four .vendor-design_new{
     margin-top: -14%;
     display: flex;
     align-items: center;
@@ -922,7 +922,7 @@ display: inline-block;
 .custom_banner img{
     border-radius: 50px;
     min-height: 300px;
-    object-fit:cover;
+    object-fit:cover;   
     object-position: center;
 }
 /*------- SIMILAR PRODUCTS image changes*/
@@ -1170,6 +1170,19 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
     color: #000!important;
 }
 
+.al_body_template_four .vendor-description .vendor-info li.d-block{
+    display: flex!important;
+    line-height: 1.5!important;
+    margin-top: 0!important;
+}
+.al_body_template_four .vendor-info i, .al_body_template_four .vendor-info i {
+    color: inherit;
+    min-width: 15px;
+}
+.al_body_template_four .vendor-description .vendor-info li.d-block p {
+    margin: 0;
+    padding-left: 10px;
+}
 @media (max-width:1400px){
     .al_body_template_four  .brand-ing {
         width: 180px;
