@@ -871,6 +871,7 @@ class OrderController extends BaseController
                             }
                             if($vendor_info->fixed_fee_amount > 0){
                                 $fixed_fee_amount = $fixed_fee_amount + $vendor_info->fixed_fee_amount;
+                                $order_vendor->fixed_fee =  $vendor_info->fixed_fee_amount;
                             }
                         }
                         $order_vendor->save();
@@ -2030,7 +2031,7 @@ class OrderController extends BaseController
                     $cartDetails = $this->getCart($cart);
                 }
                 //pr( $cartDetails->toArray());
-                $luxuryOptionTitle = ($request->has('type')) ? $request->type : 'delivery';
+                $luxuryOptionTitle = !empty($order->luxury_option) ? $order->luxury_option->title : 'delivery';
                 if ($email_template) {
 
                     $email_template_content = $email_template->content;
