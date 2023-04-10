@@ -15,11 +15,7 @@ class VendorImport implements ToCollection
     public function  __construct($csv_vendor_import_id)
     {
         $this->csv_vendor_import_id = $csv_vendor_import_id;
-        if(!empty(auth()->user()) && auth()->user()->getRoleNames()[0]){   
-            $this->roleId = getRoleId(@auth()->user()->getRoleNames()[0]);
-            }else{
-            $this->roleId = '';
-            }
+        $this->roleId = (@auth()->user()) ? getRoleId(@auth()->user()->getRoleNames()[0]) : null;
         }
 
     public function collection(Collection $rows)
