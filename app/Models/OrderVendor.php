@@ -142,7 +142,10 @@ class OrderVendor extends Model{
     }
     
     public function getTotalPriceAttribute(){
-        return $this->payable_amount;
+        $amount = $this->payable_amount;
+        $tip = !empty($this->orderDetail)?number_format($this->orderDetail->tip_amount, 2):0.00;
+        $amount += $tip;
+        return decimal_format($amount);
     }
 
 }
