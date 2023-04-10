@@ -313,8 +313,8 @@ class HomeController extends BaseController
             $currency_id = $user->currency;
             $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
             $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'is_service_area_for_banners','subscription_mode')->first();
-            $latitude = $request->latitude;
-            $longitude = $request->longitude;
+            $latitude = !empty($request->latitude) ? ($request->latitude ?? $user->latitude ) :  $preferences->Default_latitude ;
+            $longitude =!empty($request->longitude) ? ($request->longitude ?? $user->longitude ) :  $preferences->Default_longitude ;
             $paginate = $request->has('limit') ? $request->limit : 12;
             $distance_to_time_multiplier = $preferences->distance_to_time_multiplier??2;
             //filter
