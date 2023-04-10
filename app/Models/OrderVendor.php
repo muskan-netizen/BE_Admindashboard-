@@ -144,7 +144,7 @@ class OrderVendor extends Model{
         }
         $tip = !empty($this->orderDetail)?number_format($this->orderDetail->tip_amount, 2):0.00;
         $vendor_amount += $tip;
-        return number_format($vendor_amount - $discount - $this->admin_commission_percentage_amount);
+        return decimal_format($vendor_amount - $discount - $this->admin_commission_percentage_amount);
     }
 
 }

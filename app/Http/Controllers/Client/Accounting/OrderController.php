@@ -111,6 +111,13 @@ class OrderController extends Controller{
                 // return number_format($vendor_orders->admin_commission_percentage_amount, 2).' ('.number_format($vendor_orders->vendor->commission_percent,2).'%)';
                 return number_format($vendor_orders->fixed_fee, 2);
             })
+            ->addColumn('discount_amount', function($vendor_orders) {
+                // return number_format($vendor_orders->admin_commission_percentage_amount, 2).' ('.number_format($vendor_orders->vendor->commission_percent,2).'%)';
+                return number_format($vendor_orders->discount_amount, 2);
+            })->addColumn('taxable_amount', function($vendor_orders) {
+                // return number_format($vendor_orders->admin_commission_percentage_amount, 2).' ('.number_format($vendor_orders->vendor->commission_percent,2).'%)';
+                return number_format($vendor_orders->taxable_amount, 2);
+            })
             ->addColumn('tip_amount', function($vendor_orders) {
                 // return number_format($vendor_orders->admin_commission_percentage_amount, 2).' ('.number_format($vendor_orders->vendor->commission_percent,2).'%)';
                 return !empty($vendor_orders->orderDetail)?number_format($vendor_orders->orderDetail->tip_amount, 2):0.00;
