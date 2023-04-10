@@ -141,5 +141,12 @@ class OrderVendor extends Model{
         $vendor_amount += $tip;
         return decimal_format($vendor_amount - $discount - $this->admin_commission_percentage_amount);
     }
+    
+    public function getTotalPriceAttribute(){
+        $amount = $this->subtotal_amount;
+        $tip = !empty($this->orderDetail)?number_format($this->orderDetail->tip_amount, 2):0.00;
+        $amount += decimal_format($this->delivery_fee+$this->taxable_amount+$this->fixed_fee+$tip-$this->discount_amount-$this->total_markup_price??0.00);
+        return decimal_format($amount);
+    }
 
 }

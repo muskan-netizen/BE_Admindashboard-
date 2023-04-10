@@ -293,7 +293,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                                 return data+" ("+getPercentageAmount(data,full.subtotal_amount)+"%)";
                                 // return numberWithCommas(data)+" ("+getPercentageAmount(data,full.subtotal_amount)+"%)";
                             }},
-                            {data: 'payable_amount', name: 'action', orderable: false, searchable: false,
+                            {data: 'total_price', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
                                 return numberWithCommas(data);
                             }},
