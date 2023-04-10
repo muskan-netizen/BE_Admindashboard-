@@ -411,7 +411,6 @@ class OrderController extends BaseController
                                     $vendor_products_total_amount = $vendor_products_total_amount + $opt_quantity_price;
                                 }
                             }
-
                             $vendor_taxable_amount = 0;
                             if (isset($vendor_cart_product->product->taxCategory)) {
                                 foreach ($vendor_cart_product->product->taxCategory->taxRate as $tax_rate_detail) {
@@ -754,11 +753,14 @@ class OrderController extends BaseController
                         $Order_bid_discount += $bid_vendor_discount??0;
                         $vendor_info = Vendor::where('id', $vendor_id)->first();
                         if ($vendor_info) {
-                            if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {
-                                $actual_amountComm = $vendor_payable_amount - $vendor_markup_amount;
+                            if(isset($coupon_paid_by)){
+                                $actual_amount = $actual_amount - $vendor_discount_amount;
+                            }
+                            if (($vendor_info->commission_percent) != null && $actual_amount > 0) {
+                                $actual_amountComm = $actual_amount - $vendor_markup_amount;
                                 $order_vendor->admin_commission_percentage_amount = round($vendor_info->commission_percent * ($actual_amountComm / 100), 2);
                             }
-                            if (($vendor_info->commission_fixed_per_order) != null && $vendor_payable_amount > 0) {
+                            if (($vendor_info->commission_fixed_per_order) != null && $actual_amount > 0) {
                                 $order_vendor->admin_commission_fixed_amount = $vendor_info->commission_fixed_per_order;
                             }
                             if($vendor_info->fixed_fee_amount > 0){
