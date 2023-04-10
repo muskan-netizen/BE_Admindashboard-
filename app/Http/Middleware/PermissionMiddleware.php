@@ -36,9 +36,11 @@ class PermissionMiddleware
             {
                 $permissions =  $permissionArray[$check[0]];
             }else{
-                if(@$user->is_superadmin){
+                if(@$user->is_superadmin || @$user->is_admin){
                     return $next($request);
                 }
+            // dd($page);
+
                 throw UnauthorizedException::forPermissions($permissions);
             }
 
