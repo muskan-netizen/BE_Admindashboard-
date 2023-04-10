@@ -34,7 +34,7 @@ class DashBoardController extends BaseController
         $this->from_date = Carbon::now()->startOfDay()->subDays(7);
         $this->to_date = Carbon::now()->endOfDay();
         $this->setWeekDate =  $this->from_date->format('d M Y') . ' to '. $this->to_date->format('d M Y');
-        $this->roleId = getRoleId(@auth()->user()->getRoleNames()[0]);
+        $this->roleId = (@auth()->user()) ? getRoleId(@auth()->user()->getRoleNames()[0]) : null;
     }
 
     public function index(Request $request)
