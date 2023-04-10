@@ -224,12 +224,12 @@ $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'
                     </a>
                     @endif
                     {{-- @can('role-add') --}}
-                    @if(Auth::user()->is_superadmin )
+                    {{-- @if(Auth::user()->is_superadmin )
                         <a href="{{route('roles')}}" class="dropdown-item notify-item">
                             <i class="fe-user"></i>
                             <span>{{ __("Manage Roles") }}</span>
                         </a>
-                    @endif
+                    @endif --}}
                     {{-- <a href="{{route('permissions')}}" class="dropdown-item notify-item">
                         <i class="fe-user"></i>
                         <span>{{ __("All Permissions") }}</span>
