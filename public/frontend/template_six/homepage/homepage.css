@@ -74,8 +74,9 @@ body.al_body_template_six.dark h6.card_title.ellips {
 
 .al_body_template_six .product-card-box.position-relative.al_box_third_template.al h6.card_title.ellips {
     color: #000;
-    font-size: 16px;
+    font-size: 14px;
     margin-bottom: 0;
+    font-weight: 400;
 }
 
 .al_body_template_six .alSpaMenuCard.active ul li a {
@@ -85,7 +86,10 @@ body.al_body_template_six.dark h6.card_title.ellips {
     line-height: 35px;
     letter-spacing: 1px;
 }
-
+.slick-slider .d-flex.align-items-center.justify-content-between.al_clock b{
+    font-weight: 200;
+    font-size: 14px
+}
 .al_body_template_six ul#main-menu {
     flex-wrap: wrap;
 }
