@@ -32,6 +32,14 @@ body.al_body_template_six.dark h6.card_title.ellips {
     color: #fff !important;
 }
 
+.suppliers-section h2 {font-size: 22px;}
+.render_full_featured_products h2 {font-size: 22px;}
+.render_full_new_products h2{font-size: 22px;}
+.render_full_on_sale h2{ font-size: 22px;}
+.cab-banner-area h2{font-size: 22px;}
+.render_full_recent_orders h2{font-size: 22px;}
+.popular-brands h2{font-size: 22px;}
+.render_full_recent_orders {margin-top: 20px;}
 .al_body_template_six .nav-cate-img img {
     width: 100%;
     object-fit: cover;
@@ -888,7 +896,7 @@ a.brand-box.d-block.black-box {
 
 .cab-footer button.btn.btn-solid.new-btn {
     background-color: var(--theme-deafult);
-    color: #fff;
+    color: #fff;font-size: 12px;font-weight: 100;
 }
 
 .cab-banner-area .card-box {
