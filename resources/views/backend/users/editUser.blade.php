@@ -60,6 +60,7 @@
     <!-- start page title -->
     <div class="row">
         <div class="col-12">
+            @include('alert')
             <div class="page-title-box">
                 @if(isset($subadmin))
                 <h4 class="page-title">{{ __('Update Customer') }}</h4>
@@ -69,7 +70,6 @@
     </div>
     <!-- end page title -->
     <div class="row">
-        {{-- @include('alert') --}}
         <div class="col-md-7">
             <div class="card">
                 <div class="card-body">

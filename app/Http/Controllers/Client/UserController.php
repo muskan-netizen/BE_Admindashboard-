@@ -445,11 +445,13 @@ class UserController extends BaseController
         if(@$request->input('role')){
             if($request->input('role') == 4 && empty($request->vendor_permissions))
             {
-               return redirect()->back()->with('error','sdfsd');
+               return redirect()->back()->with('error','Select aleast one Vendor.');
             }
 
             DB::table('model_has_roles')->where('model_id',$id)->delete();
             $user->assignRole($request->input('role'));
+        }else{
+            DB::table('model_has_roles')->where('model_id',$id)->delete();
         }
 
 
@@ -492,8 +494,7 @@ class UserController extends BaseController
         }
         //Need to remove vendor permissons from user table 
         $this->removeVendorPermissionAndRole($id);
-
-        return redirect()->route('customer.index')->with('success', 'Customer Updated successfully!');
+        return redirect()->back()->with('success','Customer Updated successfully!');
     }
 
     public function profile()
