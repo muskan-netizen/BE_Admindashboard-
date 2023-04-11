@@ -1943,6 +1943,7 @@ class OrderController extends FrontController
                         $vendor_service_fee_percentage_amount = $vendor_service_fee_percentage_amount + $service_fee_percentage_amount;
                         $payable_amount += $service_fee_percentage_amount;
                         $total_service_fee = $total_service_fee + $service_fee_percentage_amount;
+                        $vendor_payable_amount += $service_fee_percentage_amount;
                     }
 
                     $cart_addons = CartAddon::where('cart_product_id', $vendor_cart_product->id)->get();
@@ -2043,10 +2044,9 @@ class OrderController extends FrontController
                 $OrderVendor->fixed_fee = $fixedFeeAmount;
                 $OrderVendor->additional_price = $additionalPrice;
                 $OrderVendor->taxable_amount = number_format($total_other_taxes, 2);
-                ;
                 $OrderVendor->payment_option_id = $request->payment_option_id;
-                $OrderVendor->subtotal_amount = $OrderVendor->subtotal_amount - $bid_vendor_discount ?? 0;
-                $OrderVendor->payable_amount = $vendor_payable_amount - $bid_vendor_discount;
+                $OrderVendor->subtotal_amount = $OrderVendor->subtotal_amount - $bid_vendor_discount??0;
+                $OrderVendor->payable_amount = $vendor_payable_amount +$fixedFeeAmount+number_format($total_other_taxes, 2);
                 $OrderVendor->total_markup_price = $vendor_markup_amount;
                 $OrderVendor->total_container_charges = $vendor_total_container_charges;
 
@@ -2065,8 +2065,12 @@ class OrderController extends FrontController
                 $Order_bid_discount += $bid_vendor_discount ?? 0;
                 $vendor_info = Vendor::where('id', $vendor_id)->first();
                 if ($vendor_info) {
+                    if(isset($coupon_paid_by)){
+                        $actual_amount = $actual_amount - $vendor_discount_amount;
+                    }
                     if (($vendor_info->commission_percent) != null && $actual_amount > 0) {
                         $actual_amountComm = $actual_amount - $vendor_markup_amount;
+                        
                         $OrderVendor->admin_commission_percentage_amount = round($vendor_info->commission_percent * ($actual_amountComm / 100), 2);
                     }
                     if (($vendor_info->commission_fixed_per_order) != null && $actual_amount > 0) {
