@@ -1160,6 +1160,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var confirm_discard_edit_order_title = "{{__('Are you sure?')}}";
     var confirm_discard_edit_order_desc = "{{__('You want to discard editing Order.')}}";
     var success_error_container = ".cart_response";
+    var data_trans_url = "{{route('payment.payByDataTrans')}}";
 
     @if(!empty($client_preference_detail->is_postpay_enable))
         var post_pay_edit_order = "{{$client_preference_detail->is_postpay_enable}}";
@@ -1873,7 +1874,9 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 @if(in_array('flutterwave',$client_payment_options))
 <script src="https://checkout.flutterwave.com/v3.js"></script>
 @endif
-
+@if(in_array('data_trans',$client_payment_options))
+    <script src="https://pay.sandbox.datatrans.com/upp/payment/js/datatrans-2.0.0.js"></script>
+@endif
 @endsection
 @section('script-bottom-js')
 <script defer type="text/javascript"  src="{{ asset('js/giftCard/cartGiftCard.js') }}"></script>

@@ -40,7 +40,7 @@ class PaymentOptionController extends BaseController
     public function index()
     {
 
-        $payment_codes = array('cod','azul', 'dpo', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash','stripe_ideal','userede','openpay','upay','conekta','telr','khalti','mtn_momo','plugnpay','payway','skip_cash');
+        $payment_codes = array('cod','azul', 'dpo', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash','stripe_ideal','userede','openpay','upay','conekta','telr','khalti','mtn_momo','plugnpay','payway','skip_cash','data_trans');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
 
         $payout_codes = array(
@@ -776,6 +776,20 @@ class PaymentOptionController extends BaseController
                                 'skip_cash_testing_url' => $request->skip_cash_testing_url,
                                 'skip_cash_live_url' => $request->skip_cash_live_url,
                             ));
+                            break;
+
+                            case 'data_trans':
+                                $validatedData = $request->validate([
+                                    'data_trans_merchant_id' => 'required',
+                                    'data_trans_password' => 'required'
+                                ]);
+    
+                                $data_trans_arr = array(
+                                    'merchant_id' => $request->data_trans_merchant_id,
+                                    'password' => $request->data_trans_password
+                                );
+                                $json_creds = json_encode($data_trans_arr);
+                                
                             break;
                     }
                 }

@@ -4929,8 +4929,9 @@ $(document).ready(function () {
                 paymentViazulpay('', payment_option_id, '');
                  break;
             break;
-             case 50:
-                paymentViazulpay('', payment_option_id, '');
+             case 55:
+
+                paymentViaDataTrans('', payment_option_id, '');
                  break;
         }
 
@@ -5428,7 +5429,16 @@ $(document).ready(function () {
               } else {
                   return false;
               }
-          break 
+          break ;
+          case '55':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaDataTrans(address_id,payment_option_id,order);
+                }
+                else{
+                    return false;
+                }
+            break;
         }
 
     }
@@ -5654,6 +5664,10 @@ $(document).ready(function () {
             case 50:
                 paymentViazulpay('',payment_option_id,'');
                 break;
+            case 55: 
+                var walletAmount = $('#wallet_amount').val();
+                paymentViaDataTrans(payment_option_id,walletAmount,null);
+            break;
         }
     }
 

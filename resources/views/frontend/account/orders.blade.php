@@ -695,6 +695,8 @@ $timezone = Auth::user()->timezone;
     var payment_stripe_url = "{{ route('payment.stripe') }}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
     var create_payphone_url = "{{route('payphone.createHash')}}";
+    var update_qty_url = "{{ url('product/updateCartQuantity') }}";
+
     var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
     var create_dpo_tocken = "{{route('dpo.createTocken')}}";
     var create_windcave_hash_url = "{{route('windcave.createHash')}}";

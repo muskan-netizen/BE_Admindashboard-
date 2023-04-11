@@ -572,7 +572,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
 	var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
 	var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
-
+    var data_trans_url = "{{route('payment.payByDataTrans')}}";
     var inline='';
     $('#wallet_amount').keypress(function(event) {
         if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
@@ -781,6 +781,9 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 @endif
 @if(in_array('flutterwave',$client_payment_options))
 <script src="https://checkout.flutterwave.com/v3.js"></script>
+@endif
+@if(in_array('data_trans',$client_payment_options))
+    <script src="https://pay.sandbox.datatrans.com/upp/payment/js/datatrans-2.0.0.js"></script>
 @endif
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script src="{{asset('js/payment.js')}}"></script>
