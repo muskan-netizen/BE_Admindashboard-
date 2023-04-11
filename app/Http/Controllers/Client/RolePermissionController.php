@@ -19,7 +19,23 @@ class RolePermissionController extends Controller
         // }
         $roles =$roles->orderBy('id','ASC')->get();
         $permissions = Permission::get();
-        return view('backend/role_permission/index',compact('roles','permissions'));
+        $prmArr = [];
+        if(sizeof($permissions) > 0) {
+            foreach($permissions as $key => $permission)
+            {
+            
+                if($permission->controller){
+                        $prmArr[$permission->controller][$key]['id'] = $permission->id;
+                        $prmArr[$permission->controller][$key]['web']= $permission->web;
+                        $prmArr[$permission->controller][$key]['name'] = $permission->name;
+                        $prmArr[$permission->controller][$key]['controller'] = $permission->controller;
+                } 
+            }
+
+        }
+
+       // pr($prmArr);
+        return view('backend/role_permission/index',compact('roles','prmArr'));
     }
 
     public function getRole(Request $request,$id)

@@ -10,10 +10,11 @@
             <div class="page-title-box">
                 <h4 class="page-title">Roles and Permission</h4>
             </div>
+            
         </div>
     </div>
     <!-- end page title -->
-    <div class="row">
+    {{-- <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
@@ -48,8 +49,6 @@
                             <a class="btn btn-info waves-effect waves-light text-sm-right add-role"
                                 href="javascript:;"><i class="mdi mdi-plus-circle mr-1"></i> Create Role</a>
 
-                                {{-- <a class="btn btn-info waves-effect waves-light text-sm-right " href="{{route('permissions')}}"><i class="mdi mdi-plus-circle mr-1"></i> Add Permissions
-                            </a> --}}
                         </div>
                     </div>
 
@@ -69,15 +68,7 @@
                                   <td>{{ @$role->name }}</td>
                                   <td>
                                     <a class="btn btn-primary btn-sm edit-role" data-name="{{@$role->name}}" data-id="{{$role->id}}" href="javascript:;">Edit</a>
-                                      {{-- <a class="btn btn-info" href="{{ route('roles.show',$role->id) }}">Show</a>
-                                      @can('role-edit')
-                                          <a class="btn btn-primary" href="{{ route('roles.edit',$role->id) }}">Edit</a>
-                                      @endcan
-                                      @can('role-delete')
-                                          {!! Form::open(['method' => 'DELETE','route' => ['roles.destroy', $role->id],'style'=>'display:inline']) !!}
-                                              {!! Form::submit('Delete', ['class' => 'btn btn-danger']) !!}
-                                          {!! Form::close() !!}
-                                      @endcan --}}
+                                     
                                   </td>
                               </tr>
                               @empty
@@ -94,6 +85,402 @@
                 </div> <!-- end card-body-->
             </div> <!-- end card-->
         </div> <!-- end col -->
+    </div> --}}
+   
+    <div class="row">
+        <div class="col-md-3">
+            <div class="role-left">
+                    <a class="btn btn-info waves-effect waves-light text-sm-center add-role permission-role"
+                    href="javascript:;"><i class="mdi mdi-plus-circle mr-1"></i> Create Role</a>
+                    <ul class="m-0 p-0 card-box">
+                        @forelse ($roles as $key => $role)
+                                <li data-id="{{$role->id}}"  class="role_name"><a href="javascript:void(0)">{{ @$role->name }}</a></li>
+                            @empty
+                                <tr>
+                                    <li data-id="{{$role->id}}"  class="role_name"><a href="javascript:void(0)">No Record found.</li></tr>
+                                </tr>
+                        @endforelse
+                        
+                        {{-- <li><a href="#">Chef the Project</a></li>
+                        <li><a href="#">Computable</a></li>
+                        <li><a href="#">Chef the Project</a></li>
+                        <li><a href="#">Computable</a></li>
+                        <li><a href="#">Chef the Project</a></li>
+                        <li><a href="#">Computable</a></li>
+                        <li><a href="#">Chef the Project</a></li>
+                        <li><a href="#">Computable</a></li> --}}
+                    </ul>
+            </div>
+        </div>
+        <div class="col-md-9">
+            {{-- <div class="switch_table my-2">
+                <label class="pure-material-switch">
+                    <input type="checkbox">
+                    <span>Switch</span>
+                  </label>
+            </div> --}}
+            <div class="row">
+                <div class="col-12">
+                    <div class="permision_btn">
+                        <h4>Module Permission	</h4>
+                        {{-- <a href="#">Click</a> --}}
+                    </div>
+                </div>
+            </div>
+            <form id="updatePermissionForm" class="role_table_per">
+
+                <input type="hidden" value="" name="role_id">
+                <input type="hidden" value="update_role" name="action">
+            
+                <div class="table-responsive">
+                    <table class="table table-striped custom-table">
+                        <thead>
+                            <tr>
+                                <th class="fw-bolder">Module Permission</th>
+                                <th class="text-center fw-bolder"></th>
+                                <th class="text-center fw-bolder"></th>
+                                <th class="text-center fw-bolder"></th>
+                                <th class="text-center fw-bolder"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php
+                                //pr($prmArr);
+                                $last_conter = 0; @endphp
+                           
+                                @foreach($prmArr as $key => $perm)
+                                <tr>
+                                    @php 
+                                        $last = 4;
+                                        $pcount = count($perm);
+                                        $ch = 0;
+                                        $tdCount = 1;
+                                    @endphp
+
+                                        <td>
+                                            <i class="ti-folder"></i> 
+                                            <input type="hidden" value="" name="" ><span>{{$key}}</span>
+                                        </td>   
+                                        @php $last_con = count($perm);  $last_conter = 0;  $space=0; @endphp
+                                            @foreach($perm as $key2 => $permData)
+                                               
+                                            
+
+                                                <td class="text-center">
+                                                    <input class="access_module" type="checkbox"  name="permission_arr[]" value="{{$permData['id']}}">
+                                                    <span class="fw-bolder">{{$permData['name']}}</span>
+                                                </td>
+                                                @php    
+                                                    $mod = ($last_conter+1)%$last;
+                                                @endphp
+                                                @if($mod == 0)
+                                                   
+                                                    </tr>
+                                                    <tr>
+                                                        <td> <input type="hidden" value="" name="" ><span></span></td>
+                                                        @php $last_con --; $ch = 1; @endphp
+                                                @endif
+
+                                                @php    
+                                                    $tdCount++;
+                                                @endphp
+                                                {{-- <?php if( ($space + 1) === $last_con && $tdCount <= $last )
+                                                    {
+                                                        $spacers = $last - $tdCount;
+                                                        for ($i = $spacers; $i >= 0 ; $i--)
+                                                        {
+                                                            ?>
+                                                            <td> <input type="hidden" value="" name=""><span></span></td>
+                                                            <?php
+                                                        }
+                                                    }
+                                                ?> --}}
+
+                                                @php $last_conter++; @endphp
+                                            
+                                            @endforeach    
+
+                                    </tr>     
+
+                               
+                                @endforeach
+
+                            {{-- <?php foreach($permissions as $prm) : ?>                                         --}}
+                             
+
+                                {{-- {{-- <tr>
+                                    <td>
+                                      
+                                        <input type="hidden" value="" name="module_id[]" ><span></span>
+                                    </td>       
+                                    <td class="text-center">
+                                       
+                                        <input class="access_module" type="checkbox"  name="can_access[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>                
+                                    <td class="text-center">
+                                        <input type="checkbox"  name="can_create[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="checkbox"  name="can_update[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input  type="checkbox"  name="can_delete[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                </tr> 
+                                <tr>
+                                    <td>
+                                        <i class="ti-folder"></i> 
+                                        <input type="hidden" value="" name="module_id[]" ><span>test1</span>
+                                    </td>       
+                                    <td class="text-center">
+                                       
+                                        <input class="access_module" type="checkbox"  name="can_access[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>                
+                                    <td class="text-center">
+                                        <input type="checkbox"  name="can_create[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="checkbox"  name="can_update[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input  type="checkbox"  name="can_delete[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                      
+                                        <input type="hidden" value="" name="module_id[]" ><span></span>
+                                    </td>       
+                                    <td class="text-center">
+                                       
+                                        <input class="access_module" type="checkbox"  name="can_access[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>                
+                                    <td class="text-center">
+                                        <input type="checkbox"  name="can_create[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="checkbox"  name="can_update[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input  type="checkbox"  name="can_delete[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <i class="ti-folder"></i> 
+                                        <input type="hidden" value="" name="module_id[]" ><span>test1</span>
+                                    </td>       
+                                    <td class="text-center">
+                                       
+                                        <input class="access_module" type="checkbox"  name="can_access[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>                
+                                    <td class="text-center">
+                                        <input type="checkbox"  name="can_create[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="checkbox"  name="can_update[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input  type="checkbox"  name="can_delete[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                      
+                                        <input type="hidden" value="" name="module_id[]" ><span></span>
+                                    </td>       
+                                    <td class="text-center">
+                                       
+                                        <input class="access_module" type="checkbox"  name="can_access[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>                
+                                    <td class="text-center">
+                                        <input type="checkbox"  name="can_create[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="checkbox"  name="can_update[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input  type="checkbox"  name="can_delete[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <i class="ti-folder"></i> 
+                                        <input type="hidden" value="" name="module_id[]" ><span>test1</span>
+                                    </td>       
+                                    <td class="text-center">
+                                       
+                                        <input class="access_module" type="checkbox"  name="can_access[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>                
+                                    <td class="text-center">
+                                        <input type="checkbox"  name="can_create[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="checkbox"  name="can_update[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input  type="checkbox"  name="can_delete[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                      
+                                        <input type="hidden" value="" name="module_id[]" ><span></span>
+                                    </td>       
+                                    <td class="text-center">
+                                       
+                                        <input class="access_module" type="checkbox"  name="can_access[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>                
+                                    <td class="text-center">
+                                        <input type="checkbox"  name="can_create[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="checkbox"  name="can_update[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input  type="checkbox"  name="can_delete[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <i class="ti-folder"></i> 
+                                        <input type="hidden" value="" name="module_id[]" ><span>test1</span>
+                                    </td>       
+                                    <td class="text-center">
+                                       
+                                        <input class="access_module" type="checkbox"  name="can_access[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>                
+                                    <td class="text-center">
+                                        <input type="checkbox"  name="can_create[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="checkbox"  name="can_update[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input  type="checkbox"  name="can_delete[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                      
+                                        <input type="hidden" value="" name="module_id[]" ><span></span>
+                                    </td>       
+                                    <td class="text-center">
+                                       
+                                        <input class="access_module" type="checkbox"  name="can_access[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>                
+                                    <td class="text-center">
+                                        <input type="checkbox"  name="can_create[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="checkbox"  name="can_update[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input  type="checkbox"  name="can_delete[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <i class="ti-folder"></i> 
+                                        <input type="hidden" value="" name="module_id[]" ><span>test1</span>
+                                    </td>       
+                                    <td class="text-center">
+                                       
+                                        <input class="access_module" type="checkbox"  name="can_access[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>                
+                                    <td class="text-center">
+                                        <input type="checkbox"  name="can_create[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="checkbox"  name="can_update[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input  type="checkbox"  name="can_delete[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                      
+                                        <input type="hidden" value="" name="module_id[]" ><span></span>
+                                    </td>       
+                                    <td class="text-center">
+                                       
+                                        <input class="access_module" type="checkbox"  name="can_access[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>                
+                                    <td class="text-center">
+                                        <input type="checkbox"  name="can_create[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="checkbox"  name="can_update[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input  type="checkbox"  name="can_delete[]" value="">
+                                        <span class="fw-bolder">Module Permission</span>
+                                    </td>
+                                </tr>
+                                 --}}
+
+            
+            
+                            {{-- <?php endforeach; ?> --}}
+                        </tbody>
+                    </table>
+                </div>
+            
+                
+                
+            </form>
+        </div>
+       
+
     </div>
 </div>
 
@@ -123,11 +510,11 @@
                                     <div class="col-md-12 select2">
                                         <div class="form-group" id="nameInput">
                                         {!! Form::label('title', __('Permission'),['class' => 'control-label']) !!}
-                                        <select class="permissoin-multiple selectTo" name="permission[]" multiple="multiple">
+                                        {{-- <select class="permissoin-multiple selectTo" name="permission[]" multiple="multiple">
                                             @foreach($permissions as $perm)
                                             <option value="{{$perm->id}}" >{{$perm->name}}</option>
                                             @endforeach
-                                        </select>
+                                        </select> --}}
                                         </div>
                                     </div>
                                 </div>
