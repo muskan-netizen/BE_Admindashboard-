@@ -1596,7 +1596,7 @@ class OrderController extends FrontController
                 $OrderVendor->taxable_amount = number_format($total_other_taxes, 2);
                 $OrderVendor->payment_option_id = $request->payment_option_id;
                 $OrderVendor->subtotal_amount = $OrderVendor->subtotal_amount - $bid_vendor_discount??0;
-                $OrderVendor->payable_amount = $vendor_payable_amount +$fixedFeeAmount+number_format($total_other_taxes, 2);;
+                $OrderVendor->payable_amount = $vendor_payable_amount +$fixedFeeAmount+number_format($total_other_taxes, 2);
                 $OrderVendor->total_markup_price = $vendor_markup_amount;
                 $OrderVendor->total_container_charges = $vendor_total_container_charges;
 

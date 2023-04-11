@@ -295,7 +295,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                             	if(full.coupon_paid_by == 0){
                             		discount = full.discount_amount;
                             	}
-                            	amount = amount - discount
+                            	amount = amount - discount;
                                 return data+" ("+getPercentageAmount(data,amount)+"%)";
                                 // return numberWithCommas(data)+" ("+getPercentageAmount(data,full.subtotal_amount)+"%)";
                             }},
