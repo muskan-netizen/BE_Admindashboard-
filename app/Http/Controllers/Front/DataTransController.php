@@ -142,6 +142,21 @@ class DataTransController extends Controller
  
     public function successPage(Request $request)
     {
+        $payment = Payment::where('transaction_id', $request->get('datatransTrxId'))->first();
+            if ($payment->type == 'cart') {
+                $this->completeOrderCart($request, $payment);
+            } elseif ($payment->type == 'wallet') {
+                \Log::info("Wallet type");
+               $this->completeOrderWallet($request, $payment);
+            } elseif ($payment->type == 'tip') {
+                $order = Order::find($payment->order_id);
+                $this->completeOrderTip($request, $payment,$order->order_number??0);
+            } elseif ($payment->type == 'subscription') {
+                $this->completeOrderSubs($request, $payment);
+            } elseif ($payment->type == 'pickup_delivery') {
+                 $this->completeOrderPickup($request, $payment);
+            }   
+            
         if(auth()->user()){
 
             \Log::info("user ".json_encode(auth()->user()->id));
