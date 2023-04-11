@@ -32,6 +32,14 @@ body.al_body_template_six.dark h6.card_title.ellips {
     color: #fff !important;
 }
 
+.suppliers-section h2 {font-size: 22px;}
+.render_full_featured_products h2 {font-size: 22px;}
+.render_full_new_products h2{font-size: 22px;}
+.render_full_on_sale h2{ font-size: 22px;}
+.cab-banner-area h2{font-size: 22px;}
+.render_full_recent_orders h2{font-size: 22px;}
+.popular-brands h2{font-size: 22px;}
+.render_full_recent_orders {margin-top: 20px;}
 .al_body_template_six .nav-cate-img img {
     width: 100%;
     object-fit: cover;
@@ -66,8 +74,9 @@ body.al_body_template_six.dark h6.card_title.ellips {
 
 .al_body_template_six .product-card-box.position-relative.al_box_third_template.al h6.card_title.ellips {
     color: #000;
-    font-size: 16px;
+    font-size: 14px;
     margin-bottom: 0;
+    font-weight: 400;
 }
 
 .al_body_template_six .alSpaMenuCard.active ul li a {
@@ -77,7 +86,10 @@ body.al_body_template_six.dark h6.card_title.ellips {
     line-height: 35px;
     letter-spacing: 1px;
 }
-
+.slick-slider .d-flex.align-items-center.justify-content-between.al_clock b{
+    font-weight: 200;
+    font-size: 14px
+}
 .al_body_template_six ul#main-menu {
     flex-wrap: wrap;
 }
@@ -888,7 +900,7 @@ a.brand-box.d-block.black-box {
 
 .cab-footer button.btn.btn-solid.new-btn {
     background-color: var(--theme-deafult);
-    color: #fff;
+    color: #fff;font-size: 12px;font-weight: 100;
 }
 
 .cab-banner-area .card-box {
