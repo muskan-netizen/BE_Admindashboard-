@@ -5,11 +5,11 @@
                 @if(isset($banner->id))
                     <label>{{ __("Upload banner image") }}</label>
                     <input type="file" accept="image/*" data-plugins="dropify" name="image" class="dropify" data-default-file="{{$banner->image['proxy_url'].'1900/500'.$banner->image['image_path']}}" />
-                   
+
                 @else
                     <label>{{ __("Upload banner image") }}</label>
                     <input data-default-file="" type="file" data-plugins="dropify" name="image" accept="image/*" class="dropify"/>
-                   
+
 
                     @endif
                     <label class="logo-size text-right w-100">{{ __("Banner Size") }} 1920x550<br>{{ __("Content Area") }} 1370x330</label>
@@ -31,7 +31,7 @@
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    {!! Form::label('title', __('Enable'),['class' => 'control-label']) !!} 
+                    {!! Form::label('title', __('Enable'),['class' => 'control-label']) !!}
                     <div>
                         <?php $validity = (isset($banner->id) && $banner->id > 0) ? 'validity_edit' : 'validity_add'; ?>
                         @if((isset($banner) && $banner->validity_on == '0'))
@@ -39,7 +39,7 @@
                         @else
                          <input type="checkbox" data-plugin="switchery" name="validity_on" class="form-control {{$validity}}" data-color="#43bee1" checked='checked'>
                         @endif
-                        
+
                     </div>
                 </div>
             </div>
@@ -47,13 +47,13 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group" id="start_date_timeInput">
-                    @php 
-                    $minDate = Date('Y-m-d');
+                    @php
+                        $minDate = Date('Y-m-d');
                     @endphp
                     {!! Form::label('title', __('Start Date'),['class' => 'control-label']) !!}
                     {!! Form::text('start_date_time', $banner->start_date_time, ['class' => 'form-control downside datetime-datepicker', 'id' => 'start-datepicker', 'min' => $minDate]) !!}
- 
-                <span class="invalid-feedback" role="alert">
+
+                    <span class="invalid-feedback" role="alert">
                     <input type="hidden" name="banner_id" value="{{isset($banner->id) ? $banner->id : ''}}">
                         <strong></strong>
                     </span>
@@ -79,7 +79,7 @@
                         <option value="vendor" {{($banner->link == 'vendor') ? 'selected' : ''}}>{{ __("Vendor") }}</option>
                         <option value="url" {{($banner->link == 'url') ? 'selected' : ''}}>{{ __("URL Link") }}</option>
                     </select>
- 
+
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
                     </span>

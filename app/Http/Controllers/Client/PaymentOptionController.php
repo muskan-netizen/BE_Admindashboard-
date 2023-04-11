@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Client;
 
 use Session;
@@ -7,15 +6,24 @@ use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Traits\ToasterResponser;
+use App\Http\Traits\MtnMomoPaymentManager;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
 use Illuminate\Support\Facades\DB;
-use App\Models\{Client, ClientPreference, PaymentOption, PayoutOption};
+use App\Models\ {
+    Client,
+    ClientPreference,
+    PaymentOption,
+    PayoutOption
+};
+use Log;
 
 class PaymentOptionController extends BaseController
 {
     use ToasterResponser;
+    use MtnMomoPaymentManager;
+
     private $folderName = 'payoption';
 
     public function __construct()
@@ -23,6 +31,7 @@ class PaymentOptionController extends BaseController
         $code = Client::orderBy('id', 'asc')->value('code');
         $this->folderName = '/' . $code . '/payoption';
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -31,21 +40,28 @@ class PaymentOptionController extends BaseController
     public function index()
     {
 
-        $payment_codes = array('cod','azul', 'dpo', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash','stripe_ideal','userede','openpay','upay','conekta','telr','khalti','mtn_momo','plugnpay');
+        $payment_codes = array('cod','azul', 'dpo', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash','stripe_ideal','userede','openpay','upay','conekta','telr','khalti','mtn_momo','plugnpay','payway','skip_cash');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
 
-        $payout_codes = array('cash', 'stripe', 'pagarme','razorpay');
+        $payout_codes = array(
+            'cash',
+            'stripe',
+            'pagarme',
+            'razorpay'
+        );
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
 
-
-        return view('backend/payoption/index')->with(['payOption' => $payOption, 'payoutOption' => $payoutOption]);
+        return view('backend/payoption/index')->with([
+            'payOption' => $payOption,
+            'payoutOption' => $payoutOption
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Brand  $brand
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Brand $brand
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $domain = '', $id)
@@ -55,7 +71,7 @@ class PaymentOptionController extends BaseController
 
         $saved_creds = PaymentOption::select('credentials')->where('id', $id)->first();
 
-        if ((isset($saved_creds)) && (!empty($saved_creds->credentials))) {
+        if ((isset($saved_creds)) && (! empty($saved_creds->credentials))) {
             $json_creds = $saved_creds->credentials;
         } else {
             $json_creds = NULL;
@@ -69,19 +85,21 @@ class PaymentOptionController extends BaseController
                 $json_creds = json_encode(array(
                     'username' => $request->paypal_username,
                     'password' => $request->paypal_password,
-                    'signature' => $request->paypal_signature,
+                    'signature' => $request->paypal_signature
                 ));
             } else if (strtolower($request->method_name) == 'stripe') {
-                if($request->stripe_api_key != 'admin@640'){
+                if ($request->stripe_api_key != 'admin@640') {
                     $json_creds = json_encode(array(
                         'api_key' => $request->stripe_api_key
                     ));
                 }
-
             }
         }
 
-        PaymentOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds]);
+        PaymentOption::where('id', $id)->update([
+            'status' => $status,
+            'credentials' => $json_creds
+        ]);
 
         return redirect()->back()->with('success', $msg);
     }
@@ -96,7 +114,7 @@ class PaymentOptionController extends BaseController
 
         foreach ($method_id_arr as $key => $id) {
             $saved_creds = PaymentOption::select('credentials')->where('id', $id)->first();
-            if ((isset($saved_creds)) && (!empty($saved_creds->credentials))) {
+            if ((isset($saved_creds)) && (! empty($saved_creds->credentials))) {
                 $json_creds = $saved_creds->credentials;
             } else {
                 $json_creds = NULL;
@@ -111,20 +129,18 @@ class PaymentOptionController extends BaseController
                     $test_mode = 1;
                 }
 
-                if (isset($method_name_arr[$key]))
-                {
-                    switch( strtolower($method_name_arr[$key]) )
-                    {
+                if (isset($method_name_arr[$key])) {
+                    switch (strtolower($method_name_arr[$key])) {
                         case 'paypal':
                             $validatedData = $request->validate([
-                                'paypal_username'       => 'required',
-                                'paypal_password'       => 'required',
-                                'paypal_signature'      => 'required',
+                                'paypal_username' => 'required',
+                                'paypal_password' => 'required',
+                                'paypal_signature' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'username' => $request->paypal_username,
                                 'password' => $request->paypal_password,
-                                'signature' => $request->paypal_signature,
+                                'signature' => $request->paypal_signature
                             ));
                             break;
 
@@ -132,22 +148,22 @@ class PaymentOptionController extends BaseController
                             $json_creds = json_encode(array(
                                 'cod_min_amount' => $request->cod_min_amount
                             ));
-                        break;
+                            break;
 
                         case 'stripe':
                             $validatedData = $request->validate([
-                                'stripe_api_key'        => 'required',
+                                'stripe_api_key' => 'required',
                                 'stripe_publishable_key' => 'required'
                             ], [
                                 'stripe_api_key.required' => 'Stripe secret key field is required'
                             ]);
 
-                            if($request->stripe_api_key != 'admin@640'){
+                            if ($request->stripe_api_key != 'admin@640') {
                                 $stripe_arr = array(
                                     'api_key' => $request->stripe_api_key,
                                     'publishable_key' => $request->stripe_publishable_key
                                 );
-                                if(isset($request->stripe_client_id)){
+                                if (isset($request->stripe_client_id)) {
                                     $stripe_arr['client_id'] = $request->stripe_client_id;
                                 }
                                 $json_creds = json_encode($stripe_arr);
@@ -156,13 +172,13 @@ class PaymentOptionController extends BaseController
 
                         case 'toyyibpay':
                             $validatedData = $request->validate([
-                                'toyyibpay_api_key'        => 'required',
-                                'toyyibpay_redirect_uri'   => 'required'
+                                'toyyibpay_api_key' => 'required',
+                                'toyyibpay_redirect_uri' => 'required'
                             ], [
                                 'toyyibpay_api_key.required' => 'Toyyibpay secret key field is required'
                             ]);
 
-                            if($request->stripe_api_key != 'admin@640'){
+                            if ($request->stripe_api_key != 'admin@640') {
                                 $toyyibpay_arr = array(
                                     'toyyibpay_api_key' => $request->toyyibpay_api_key,
                                     'toyyibpay_redirect_uri' => $request->toyyibpay_redirect_uri
@@ -185,7 +201,7 @@ class PaymentOptionController extends BaseController
 
                         case 'yoco':
                             $validatedData = $request->validate([
-                                'yoco_secret_key'        => 'required',
+                                'yoco_secret_key' => 'required',
                                 'yoco_public_key' => 'required'
                             ], [
                                 'yoco_secret_key.required' => 'Yoco secret key field is required'
@@ -254,21 +270,21 @@ class PaymentOptionController extends BaseController
 
                         case 'gcash':
                             $validatedData = $request->validate([
-                                'gcash_public_key' => 'required',
+                                'gcash_public_key' => 'required'
                             ]);
                             $json_creds = json_encode(array(
-                                'public_key' => $request->gcash_public_key,
+                                'public_key' => $request->gcash_public_key
                             ));
                             break;
 
                         case 'simplify':
                             $validatedData = $request->validate([
                                 'simplify_public_key' => 'required',
-                                'simplify_private_key' => 'required',
+                                'simplify_private_key' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'public_key' => $request->simplify_public_key,
-                                'private_key' => $request->simplify_private_key,
+                                'private_key' => $request->simplify_private_key
                             ));
                             break;
 
@@ -276,12 +292,12 @@ class PaymentOptionController extends BaseController
                             $validatedData = $request->validate([
                                 'square_application_id' => 'required',
                                 'square_access_token' => 'required',
-                                'square_location_id' => 'required',
+                                'square_location_id' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'application_id' => $request->square_application_id,
                                 'api_access_token' => $request->square_access_token,
-                                'location_id' => $request->square_location_id,
+                                'location_id' => $request->square_location_id
                             ));
                             break;
 
@@ -289,12 +305,12 @@ class PaymentOptionController extends BaseController
                             $validatedData = $request->validate([
                                 'ozow_site_code' => 'required',
                                 'ozow_private_key' => 'required',
-                                'ozow_api_key' => 'required',
+                                'ozow_api_key' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'site_code' => $request->ozow_site_code,
                                 'private_key' => $request->ozow_private_key,
-                                'api_key' => $request->ozow_api_key,
+                                'api_key' => $request->ozow_api_key
                             ));
                             break;
                             
@@ -345,12 +361,12 @@ class PaymentOptionController extends BaseController
                             $validatedData = $request->validate([
                                 'pagarme_api_key' => 'required',
                                 'pagarme_secret_key' => 'required',
-                                'pagarme_multiplier' => 'required',
+                                'pagarme_multiplier' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'api_key' => $request->pagarme_api_key,
                                 'secret_key' => $request->pagarme_secret_key,
-                                'multiplier' => $request->pagarme_multiplier,
+                                'multiplier' => $request->pagarme_multiplier
                             ));
                             break;
 
@@ -381,7 +397,7 @@ class PaymentOptionController extends BaseController
                         case 'kongapay':
                             $validatedData = $request->validate([
                                 'kongapay_api_key' => 'required',
-                                'kongapay_merchant_id' => 'required',
+                                'kongapay_merchant_id' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'api_key' => $request->kongapay_api_key,
@@ -409,7 +425,7 @@ class PaymentOptionController extends BaseController
                                 'viva_wallet_client_id' => 'required',
                                 'viva_wallet_client_key' => 'required',
                                 'viva_wallet_merchant_id' => 'required',
-                                'viva_wallet_merchant_key' => 'required',
+                                'viva_wallet_merchant_key' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'client_id' => $request->viva_wallet_client_id,
@@ -421,7 +437,7 @@ class PaymentOptionController extends BaseController
 
                         case 'easypaisa':
                             $validatedData = $request->validate([
-                                'easypaisa_store_id' => 'required',
+                                'easypaisa_store_id' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'easypaisa_store_id' => $request->easypaisa_store_id
@@ -445,7 +461,7 @@ class PaymentOptionController extends BaseController
                                 'easebuzz_salt' => 'required'
                             ]);
                             $json_creds = json_encode(array(
-                                'easebuzz_Sub_merchant' =>  ($request->has('easebuzz_Sub_merchant') && $request->easebuzz_Sub_merchant == 'on') ? 1 : 0,
+                                'easebuzz_Sub_merchant' => ($request->has('easebuzz_Sub_merchant') && $request->easebuzz_Sub_merchant == 'on') ? 1 : 0,
                                 'easebuzz_merchant_key' => $request->easebuzz_merchant_key,
                                 'easebuzz_salt' => $request->easebuzz_salt
                             ));
@@ -457,7 +473,7 @@ class PaymentOptionController extends BaseController
                                 'paytab_server_key' => 'required',
                                 'paytab_client_key' => 'required',
                                 'paytab_mobile_server_key' => 'required',
-                                'paytab_mobile_client_key' => 'required',
+                                'paytab_mobile_client_key' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'profile_id' => $request->paytab_profile_id,
@@ -520,7 +536,7 @@ class PaymentOptionController extends BaseController
                             $validatedData = $request->validate([
                                 'payphone_id' => 'required',
                                 'payphone_client_id' => 'required',
-                                'payphone_token' => 'required',
+                                'payphone_token' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'id' => $request->payphone_id,
@@ -575,7 +591,7 @@ class PaymentOptionController extends BaseController
                                 'api_key' => $request->mycash_api_key,
                                 'username' => $request->mycash_username,
                                 'password' => $request->mycash_password,
-                                'merchant_phone' => $request->mycash_merchant_phone,
+                                'merchant_phone' => $request->mycash_merchant_phone
                             ));
                             break;
 
@@ -611,7 +627,7 @@ class PaymentOptionController extends BaseController
 
                         case 'offline_manual':
                             $validatedData = $request->validate([
-                                'manule_payment_title' => 'required',
+                                'manule_payment_title' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'manule_payment_title' => $request->manule_payment_title
@@ -620,7 +636,7 @@ class PaymentOptionController extends BaseController
                         case 'userede':
                             $validatedData = $request->validate([
                                 'userede_Rede_PV' => 'required',
-                                'userede_Rede_token' => 'required',
+                                'userede_Rede_token' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'userede_Rede_PV' => $request->userede_Rede_PV,
@@ -631,7 +647,7 @@ class PaymentOptionController extends BaseController
                             $validatedData = $request->validate([
                                 'openpay_merchant_id' => 'required',
                                 'openpay_private_key' => 'required',
-                                'openpay_public_key' => 'required',
+                                'openpay_public_key' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'openpay_merchant_id' => $request->openpay_merchant_id,
@@ -640,10 +656,54 @@ class PaymentOptionController extends BaseController
                                 'openpay_verification_key' => $request->openpay_verification_key
                             ));
                             break;
+
+                        case 'azul':
+                            $creds = ! empty($json_creds) ? json_decode($json_creds) : '';
+                            $validatedData = $request->validate([
+                                'azul_main_url' => 'required',
+                                'azul_alternate_url' => 'required',
+                                'azul_ecommerce_url' => 'required',
+                                'azul_merchant_id' => 'required',
+                                'azul_auth_header_one' => 'required',
+                                'azul_auth_header_two' => 'required',
+                                'azul_test_url' => 'required'
+                                // 'azul_ssl_certificate' => 'required',
+                                // 'azul_ssl_key' => 'required'
+                            ]);
+                            if ($request->hasFile('azul_ssl_certificate')) {
+                                $file = $request->file('azul_ssl_certificate');
+                                $file_name = 'Cert/' . uniqid() . '.' . $file->getClientOriginalExtension();
+                                $path = Storage::disk('local')->put($file_name, file_get_contents($file), 'public');
+                                $azul_ssl_certificate = $file_name;
+                            } else {
+                                $azul_ssl_certificate = (! empty($creds) && isset($creds->azul_ssl_certificate)) ? $creds->azul_ssl_certificate : '';
+                            }
+
+                            if ($request->hasFile('azul_ssl_key')) {
+                                $file = $request->file('azul_ssl_key');
+                                $file_name = 'Cert/' . uniqid() . '.' . $file->getClientOriginalExtension();
+                                $path = Storage::disk('local')->put($file_name, file_get_contents($file), 'public');
+                                $azul_ssl_key = $file_name;
+                            } else {
+                                $azul_ssl_key = (! empty($creds) && isset($creds->azul_ssl_key)) ? $creds->azul_ssl_key : '';
+                            }
+
+                            $json_creds = json_encode(array(
+                                'azul_main_url' => $request->azul_main_url,
+                                'azul_alternate_url' => $request->azul_alternate_url,
+                                'azul_ecommerce_url' => $request->azul_ecommerce_url,
+                                'azul_test_url' => $request->azul_test_url,
+                                'azul_merchant_id' => $request->azul_merchant_id,
+                                'azul_auth_header_one' => $request->azul_auth_header_one,
+                                'azul_auth_header_two' => $request->azul_auth_header_two,
+                                'azul_ssl_certificate' => $azul_ssl_certificate,
+                                'azul_ssl_key' => $azul_ssl_key
+                            ));
+                            break;
                         case 'dpo':
                             $validatedData = $request->validate([
                                 'company_token' => 'required',
-                                'service_type' => 'required',
+                                'service_type' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'company_token' => $request->company_token,
@@ -653,7 +713,7 @@ class PaymentOptionController extends BaseController
                         case 'upay':
                             $validatedData = $request->validate([
                                 'uuid_key' => 'required',
-                                'aes_key' => 'required',
+                                'aes_key' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'uuid_key' => $request->uuid_key,
@@ -663,7 +723,7 @@ class PaymentOptionController extends BaseController
                         case 'conekta':
                             $validatedData = $request->validate([
                                 'conekta_public_key' => 'required',
-                                'conekta_private_key' => 'required',
+                                'conekta_private_key' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'public_key' => $request->conekta_public_key,
@@ -673,7 +733,7 @@ class PaymentOptionController extends BaseController
                         case 'telr':
                             $validatedData = $request->validate([
                                 'telr_merchant_id' => 'required',
-                                'telr_api_key' => 'required',
+                                'telr_api_key' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'merchant_id' => $request->telr_merchant_id,
@@ -691,16 +751,44 @@ class PaymentOptionController extends BaseController
                                 'api_secret_key' => $request->khalti_secret_key
                             ));
 
-
+                        case 'mtn_momo':
+                            $validatedData = $request->validate([
+                                'subscription_key' => 'required',
+                                'reference_id' => 'required',
+                                'api_key' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'subscription_key' => $request->subscription_key,
+                                'reference_id' => $request->reference_id,
+                                'api_key' => $request->api_key
+                            ));
+                            break;
+                            case 'skip_cash':
+                            $validatedData = $request->validate([
+                                'skip_cash_client_id' => 'required',
+                                'skip_cash_key_id' => 'required',
+                                'skip_cash_api_secret' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'skip_cash_client_id' => $request->skip_cash_client_id,
+                                'skip_cash_key_id' => $request->skip_cash_key_id,
+                                'skip_cash_api_secret' => $request->skip_cash_api_secret,
+                                'skip_cash_testing_url' => $request->skip_cash_testing_url,
+                                'skip_cash_live_url' => $request->skip_cash_live_url,
+                            ));
+                            break;
                     }
                 }
             }
-            PaymentOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
+            PaymentOption::where('id', $id)->update([
+                'status' => $status,
+                'credentials' => $json_creds,
+                'test_mode' => $test_mode
+            ]);
         }
         $toaster = $this->successToaster(__('Success'), $msg);
         return redirect()->back()->with('toaster', $toaster);
     }
-
 
     public function payoutUpdateAll(Request $request, $domain = '')
     {
@@ -712,7 +800,7 @@ class PaymentOptionController extends BaseController
 
         foreach ($method_id_arr as $key => $id) {
             $saved_creds = PayoutOption::select('credentials')->where('id', $id)->first();
-            if ((isset($saved_creds)) && (!empty($saved_creds->credentials))) {
+            if ((isset($saved_creds)) && (! empty($saved_creds->credentials))) {
                 $json_creds = $saved_creds->credentials;
             } else {
                 $json_creds = NULL;
@@ -729,31 +817,30 @@ class PaymentOptionController extends BaseController
 
                 if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'stripe')) {
                     $validatedData = $request->validate([
-                        'stripe_payout_secret_key'      => 'required',
+                        'stripe_payout_secret_key' => 'required',
                         'stripe_payout_publishable_key' => 'required',
-                        'stripe_payout_client_id'       => 'required'
+                        'stripe_payout_client_id' => 'required'
                     ]);
                     $json_creds = json_encode(array(
                         'secret_key' => $request->stripe_payout_secret_key,
-                        'publishable_key' =>  $request->stripe_payout_publishable_key,
+                        'publishable_key' => $request->stripe_payout_publishable_key,
                         'client_id' => $request->stripe_payout_client_id
                     ));
-                }
-                else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'pagarme')) {
+                } else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'pagarme')) {
                     $validatedData = $request->validate([
                         'pagarme_payout_api_key' => 'required',
                         'pagarme_payout_secret_key' => 'required',
-                        'pagarme_payout_multiplier' => 'required',
+                        'pagarme_payout_multiplier' => 'required'
                     ]);
                     $json_creds = json_encode(array(
                         'api_key' => $request->pagarme_payout_api_key,
                         'secret_key' => $request->pagarme_payout_secret_key,
-                        'multiplier' => $request->pagarme_payout_multiplier,
+                        'multiplier' => $request->pagarme_payout_multiplier
                     ));
                 } else if ((isset($method_name_arr[$key])) && (strtolower($method_name_arr[$key]) == 'razorpay')) {
                     $validatedData = $request->validate([
                         'razorpay_payout_api_key' => 'required',
-                        'razorpay_payout_secret_key' => 'required',
+                        'razorpay_payout_secret_key' => 'required'
                     ]);
                     $json_creds = json_encode(array(
                         'api_key' => $request->razorpay_payout_api_key,
@@ -761,7 +848,11 @@ class PaymentOptionController extends BaseController
                     ));
                 }
             }
-            PayoutOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
+            PayoutOption::where('id', $id)->update([
+                'status' => $status,
+                'credentials' => $json_creds,
+                'test_mode' => $test_mode
+            ]);
         }
         $toaster = $this->successToaster(__('Success'), $msg);
         return redirect()->back()->with('toaster', $toaster);
@@ -770,7 +861,7 @@ class PaymentOptionController extends BaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Brand  $brand
+     * @param \App\Brand $brand
      * @return \Illuminate\Http\Response
      */
     public function destroy($domain = '', $id)
@@ -784,8 +875,8 @@ class PaymentOptionController extends BaseController
     /**
      * save the order of variant.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Variant  $variant
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Variant $variant
      * @return \Illuminate\Http\Response
      */
     public function updateOrders(Request $request)
@@ -799,5 +890,70 @@ class PaymentOptionController extends BaseController
             }
         }
         return redirect('client/category')->with('success', 'Brand order updated successfully!');
+    }
+
+    /**
+     * Generate Mtn momo payment gateway api key
+     */
+    public function MtnmomoApiKey(Request $request)
+    {
+        $subscription_key = $request->subscription_key;
+        $reference_id = $request->reference_id;
+        $create_user = MtnMomoPaymentManager::createApiUser($subscription_key, $reference_id);
+        $result = json_decode($create_user, true);
+        if ($result['status'] == 201) {
+            $api_data = MtnMomoPaymentManager::createApiKey($subscription_key, $reference_id);
+            return json_encode([
+                'status' => 201,
+                'api_key' => $api_data['apiKey'],
+                'message' => 'Api key generate successfully.'
+            ]);
+        } else {
+            return json_encode([
+                'status' => $result['status'],
+                'message' => $result['message']
+            ]);
+        }
+    }
+
+    public function GenerateAccressToken()
+    {
+        $payOpt = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'mtn_momo')
+            ->where('status', 1)
+            ->first();
+        $json = json_decode($payOpt->credentials);
+        $subscription_key = $json->subscription_key;
+        $reference_id = $json->reference_id;
+        $api_key = $json->api_key;
+        $token = base64_encode($reference_id . ':' . $api_key);
+        if ($payOpt->test_mode == '1') {
+            $appUrl = 'https://sandbox.momodeveloper.mtn.com/';
+            $envirement = 'sandbox';
+        } else {
+            $appUrl = 'https://payments.stabexinternational.com/api/mtn/Callback/';
+            $envirement = 'live';
+        }
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $appUrl . '/collection/token',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_HTTPHEADER => array(
+                'X-Target-Environment: ' . $envirement,
+                'Ocp-Apim-Subscription-Key: ' . $subscription_key,
+                'Content-Type: application/json',
+                'Authorization: Basic ' . $token
+            )
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        return $response;
     }
 }

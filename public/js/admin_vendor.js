@@ -1,5 +1,7 @@
+
 $(document).ready(function() {
-        var table;
+    
+    var table;
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
@@ -186,7 +188,8 @@ $(document).ready(function() {
                 }
             });
         });
-        function initDataTable(table, status) {
+
+function initDataTable(table, status) {
             $('#'+table).DataTable({
                 "destroy": true,
                 "scrollX": true,
@@ -224,7 +227,6 @@ $(document).ready(function() {
        
 
         function dataTableColumn(status){
-         console.log(status);
             if(status == 1){
                 return [
                     {data: 'checkbox',name: 'checkbox', orderable: false, searchable: false},
@@ -247,6 +249,11 @@ $(document).ready(function() {
                                 markup+="<span class='badge bg-soft-warning text-warning'>"+full.offers[i]+"</span>";
                             }
                         }
+                        if(full.instant_booking_level!='')
+                        {
+                            markup+="<br/><span class='badge bg-success text-white'>"+full.instant_booking_level+"</span>";
+                        }
+
                         return markup;
                     }},
                     {data: 'add_category_option', class:'text-center', name: 'add_category_option', orderable: false, searchable: false},
@@ -254,6 +261,10 @@ $(document).ready(function() {
                     {data: 'products_count', class:'text-center', class:'text-center', name: 'products_count', orderable: false, searchable: false},
                     {data: 'orders_count', class:'text-center', name: 'orders_count', orderable: false, searchable: false},
                     {data: 'currently_working_orders_count', class:'text-center', name: 'currently_working_orders_count', orderable: false, searchable: false},
+                    
+                    // {data: 'manager', name: 'manager', orderable: true, searchable: false, "mRender": function ( data, type, full ) {
+                    //     return  data;                       
+                    // }},
                     {data: 'edit_action', class:'text-center', name: 'edit_action', orderable: false, searchable: false, "mRender":function(data, type, full){
                         if(status == 2){
                             return "<div class='form-ul'><div class='inner-div d-inline-block'><a class='action-icon' userId='"+full.id+"' href='"+full.show_url+"'><i class='mdi mdi-eye'></i></a></div></div>"
@@ -290,7 +301,10 @@ $(document).ready(function() {
                     {data: 'products_count', class:'text-center', class:'text-center', name: 'products_count', orderable: false, searchable: false},
                     {data: 'orders_count', class:'text-center', name: 'orders_count', orderable: false, searchable: false},
                     {data: 'currently_working_orders_count', class:'text-center', name: 'currently_working_orders_count', orderable: false, searchable: false},
-                    {data: 'edit_action', class:'text-center', name: 'edit_action', orderable: false, searchable: false, "mRender":function(data, type, full){
+                    {data: 'manager', name: 'manager', orderable: true, searchable: false, "mRender": function ( data, type, full ) {
+                        return  data; 
+                        }},
+                        {data: 'edit_action', class:'text-center', name: 'edit_action', orderable: false, searchable: false, "mRender":function(data, type, full){
                         if(status == 2){
                             return "<div class='form-ul'><div class='inner-div d-inline-block'><a class='action-icon' userId='"+full.id+"' href='"+full.show_url+"'><i class='mdi mdi-eye'></i></a></div></div>"
                         }else{
@@ -299,5 +313,50 @@ $(document).ready(function() {
                     }},
                 ]
             }
+        }
+    });
+
+    $(document).on('change', '.select_manager', function() {
+        if($(this).val()!='')
+        {
+            var vendor_id = Array($(this).attr('data-id'));
+            $.ajax({
+                type: "POST",
+                headers: {
+                    'X-CSRF-TOKEN': $('input[name="_token"]').val()
+                },
+                url: base_url+'/client/vendor/assignManager',
+                data: {vendor_id: vendor_id, manager_id: $(this).val()},
+                success: function( msg ) {
+                    $.toast({ 
+                    heading:"Success!",
+                    text : "Manager assigned successfully.", 
+                    showHideTransition : 'slide', 
+                    bgColor : 'green',              
+                    textColor : '#eee',            
+                    allowToastClose : true,      
+                    hideAfter : 5000,            
+                    stack : 5,                   
+                    textAlign : 'left',         
+                    position : 'top-right'      
+                    });
+                    //location.reload();
+                },
+                error: function(errors){
+                    $.toast({ 
+                    heading:"Error!",
+                    text : "Manager can not be assigned. "+msg.msg, 
+                    showHideTransition : 'slide', 
+                    bgColor : 'red',              
+                    textColor : '#eee',            
+                    allowToastClose : true,      
+                    hideAfter : 5000,            
+                    stack : 5,                   
+                    textAlign : 'left',         
+                    position : 'top-right'      
+                    });
+                   // location.reload();
+                }
+            });
         }
     });

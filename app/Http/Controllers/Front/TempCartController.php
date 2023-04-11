@@ -8,14 +8,14 @@ use Session;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client as GCLIENT;
-use App\Http\Traits\{ApiResponser,CartManager};
+use App\Http\Traits\{ApiResponser,CartManager,ProductTrait,OrderTrait};
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\{FrontController, LalaMovesController, OrderController, PromoCodeController};
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, TempCart, TempCartAddon, TempCartProduct, TempCartCoupon, TempCartDeliveryFee, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot, UserDevice, NotificationTemplate};
 use Log;
 class TempCartController extends FrontController
 {
-    use ApiResponser,CartManager;
+    use ApiResponser,CartManager,ProductTrait,OrderTrait;
 
     /**
      * get products from cart
@@ -53,6 +53,8 @@ class TempCartController extends FrontController
      */
     public function getCart($cart, $langId = '1', $currency = '1', $type = 'delivery')
     {
+        $additionalPreference =getAdditionalPreference(['is_service_product_price_from_dispatch']);
+        $is_service_product_price_from_dispatch = $additionalPreference['is_service_product_price_from_dispatch'];
         $preferences = ClientPreference::first();
         $clientCurrency = ClientCurrency::where('currency_id', $currency)->first();
         if (!$cart) {
@@ -201,13 +203,15 @@ class TempCartController extends FrontController
                 }
 
                 foreach ($vendorData->vendorProducts as $pkey => $prod) {
+                   // pr($prod->toArray());
                     if(isset($prod->product) && !empty($prod->product)){
-
-                        if($prod->product->sell_when_out_of_stock == 0){
-                            $quantity_check = productvariantQuantity($prod->variant_id);
-                            if($quantity_check < $prod->quantity ){
-                                $delivery_status=0;
-                                $product_out_of_stock = 1;
+                        if($is_service_product_price_from_dispatch !=1){ // no need to check slot and web styling 
+                            if($prod->product->sell_when_out_of_stock == 0){
+                                $quantity_check = productvariantQuantity($prod->variant_id);
+                                if($quantity_check < $prod->quantity ){
+                                    $delivery_status=0;
+                                    $product_out_of_stock = 1;
+                                }
                             }
                         }
                         $prod->product_out_of_stock =  $product_out_of_stock;
@@ -216,11 +220,16 @@ class TempCartController extends FrontController
                         $variantsData = $taxData = $vendorAddons = array();
                         $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                         $price_in_currency = $prod->pvariant ? $prod->pvariant->price : 0;
+                        if( ( $is_service_product_price_from_dispatch ==1 )){
+                            $price_in_currency = isset($prod->dispatch_agent_price) ? $prod->dispatch_agent_price : 0 ;
+                        }
                         $price_in_doller_compare = $price_in_currency * $clientCurrency->doller_compare;
                         $quantity_price = $price_in_doller_compare * $prod->quantity;
                         $item_count = $item_count + $prod->quantity;
                         $proSum = $proSum + $quantity_price;
-                        $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
+                        if($prod->is_payment_done !=1){
+                            $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
+                        }
                         if (isset($prod->pvariant->image->imagedata) && !empty($prod->pvariant->image->imagedata)) {
                             $prod->cartImg = $prod->pvariant->image->imagedata;
                         } else {
@@ -271,7 +280,9 @@ class TempCartController extends FrontController
                             $variantsData['discount_amount'] = $pro_disc;
                             $variantsData['coupon_applied'] = $codeApplied;
                             $variantsData['quantity_price'] = $quantity_price;
-                            $payable_amount = $payable_amount + $quantity_price;
+                            if($prod->is_payment_done !=1){
+                                $payable_amount = $payable_amount + $quantity_price;
+                            }
                             if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
                                 foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
                                     $rate = round($tax_value->tax_rate);
@@ -416,31 +427,35 @@ class TempCartController extends FrontController
                     $subscription_discount = $subscription_discount + $deliver_charge;
                 }
                 $total_subscription_discount = $total_subscription_discount + $subscription_discount;
-                if (isset($serviceArea)) {
-                    if ($serviceArea->isEmpty()) {
-                        $vendorData->isDeliverable = 0;
-                        $delivery_status = 0;
-                    }
-                }
-                if ($vendorData->vendor->show_slot == 0) {
-                    if (($vendorData->vendor->slotDate->isEmpty()) && ($vendorData->vendor->slot->isEmpty())) {
-                        $vendorData->vendor->is_vendor_closed = 1;
-                        if ($delivery_status != 0) {
+                if($is_service_product_price_from_dispatch !=1){ // no need to check slot and web styling 
+                    if (isset($serviceArea)) {
+                        if ($serviceArea->isEmpty()) {
+                            $vendorData->isDeliverable = 0;
                             $delivery_status = 0;
                         }
-                    } else {
-                        $vendorData->vendor->is_vendor_closed = 0;
+                    }
+                    if ($vendorData->vendor->show_slot == 0) {
+                        if (($vendorData->vendor->slotDate->isEmpty()) && ($vendorData->vendor->slot->isEmpty())) {
+                            $vendorData->vendor->is_vendor_closed = 1;
+                            if ($delivery_status != 0) {
+                                $delivery_status = 0;
+                            }
+                        } else {
+                            $vendorData->vendor->is_vendor_closed = 0;
+                        }
                     }
                 }
+
                 if($vendorData->vendor->$action == 0){
                     $vendorData->is_vendor_closed = 1;
                     $delivery_status = 0;
                 }
 
                 $order_sub_total = $order_sub_total + $vendor_products_total_amount;
-
-                if((float)($vendorData->vendor->order_min_amount) > $payable_amount){  # if any vendor total amount of order is less then minimum order amount
-                    $delivery_status = 0;
+                if($is_service_product_price_from_dispatch !=1){ // no need to check slot and web styling 
+                    if((float)($vendorData->vendor->order_min_amount) > $payable_amount){  # if any vendor total amount of order is less then minimum order amount
+                        $delivery_status = 0;
+                    }
                 }
                 $promoCodeController = new PromoCodeController();
                 $promoCodeRequest = new Request();
@@ -486,6 +501,9 @@ class TempCartController extends FrontController
         $cart->total_tax = $total_tax;
         $cart->tax_details = $tax_details;
         // $cart->gross_paybale_amount = $total_paying;
+        // if( $cart->vendor_wallet_amount_used > 0){
+            
+        // }
         $cart->gross_paybale_amount = $order_sub_total;
         $cart->total_discount_amount = $total_disc_amount * $clientCurrency->doller_compare;
         $cart->products = $cartData;
@@ -500,20 +518,21 @@ class TempCartController extends FrontController
         // } else {
             $cart->total_payable_amount = $total_paying  + $total_tax - $total_disc_amount - $loyalty_amount_saved;
         // }
-        $wallet_amount_used = 0;
-        if (isset($user)) {
-            if ($user->balanceFloat > 0) {
-                $wallet_amount_used = $user->balanceFloat;
-                if ($clientCurrency) {
-                    $wallet_amount_used = $user->balanceFloat * $clientCurrency->doller_compare;
-                }
-                if ($wallet_amount_used > $cart->total_payable_amount) {
-                    $wallet_amount_used = $cart->total_payable_amount;
-                }
-                $cart->total_payable_amount = $cart->total_payable_amount - $wallet_amount_used;
-                $cart->wallet_amount_used = $wallet_amount_used;
-            }
-        } 
+        $cart->wallet_amount_used =  $cart->vendor_wallet_amount_used;
+        // $wallet_amount_used = 0;
+        // if (isset($user)) {
+        //     if ($user->balanceFloat > 0) {
+        //         $wallet_amount_used = $user->balanceFloat;
+        //         if ($clientCurrency) {
+        //             $wallet_amount_used = $user->balanceFloat * $clientCurrency->doller_compare;
+        //         }
+        //         if ($wallet_amount_used > $cart->total_payable_amount) {
+        //             $wallet_amount_used = $cart->total_payable_amount;
+        //         }
+        //         $cart->total_payable_amount = $cart->total_payable_amount - $wallet_amount_used;
+        //         $cart->wallet_amount_used = $wallet_amount_used;
+        //     }
+        // } 
         $cart->deliver_status = $delivery_status;
         $cart->loyalty_amount = $loyalty_amount_saved;
         $cart->tip = array(
@@ -821,20 +840,23 @@ class TempCartController extends FrontController
      */
     public function sendEditedOrderPushNotification($user_ids, $orderData)
     {
-        Log::info("sendEditedOrderPushNotification");
+       // Log::info("sendEditedOrderPushNotification");
 
         $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
-        //    Log::info($devices);
+     
+        //   // Log::info($devices);
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+      
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
-            $notification_content = NotificationTemplate::where('id', 12)->first();
+            $notification_content = NotificationTemplate::where('slug', 'order-modified-customer')->first();
+          
             if ($notification_content) {
-                
+                $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
                 $data = [
                     "registration_ids" => $devices,
                     "notification" => [
                         'title' => $notification_content->subject,
-                        'body'  => $notification_content->content,
+                        'body'  => $body_content,
                         'sound' => "notification.wav",
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                         'click_action' => route('order.index'),
@@ -842,13 +864,16 @@ class TempCartController extends FrontController
                     ],
                     "data" => [
                         'title' => $notification_content->subject,
-                        'body'  => $notification_content->content,
+                        'body'  => $body_content,
                         'data' => $orderData,
                         'type' => "order_modified"
                     ],
                     "priority" => "high"
                 ];
-                sendFcmCurlRequest($data);
+               $res  = sendFcmCurlRequest($data,$client_preferences->fcm_server_key);
+             //  pr( $res);
+               \Log::info('sendEditedOrderPushNotification sendFcmCurlRequest ');
+               \Log::info($res);
             }
         }
     }
@@ -893,22 +918,46 @@ class TempCartController extends FrontController
     {
         try{
             $order_vendor_id = $request->order_vendor_id;
-            $getallproduct = OrderVendor::with(['products.addon'])->where('id', $order_vendor_id)->first();
+            $order_vendor_product_id = $request->order_vendor_product_id ?? '';
+           // pr( $order_vendor_product_id );
+            $getallproduct = OrderVendor::with(['products' => function ($q) use ($order_vendor_product_id) {
+                if($order_vendor_product_id){
+                    $q->where('id', $order_vendor_product_id);
+                }
+            },'orderDetail','products.addon'])->where('id', $order_vendor_id)->first();
+            $GetVendorReturnAmount = $this->GetVendorReturnAmount($request, $getallproduct->orderDetail);
+   
+            if(!$getallproduct){
+                return $this->errorResponse('order Not flund',401); 
+            }
             if(!$request->has('user_id')){
                 $request->request->add(['user_id' => $getallproduct->user_id]);
             }
+            $is_payment_done = 1;
+            if ($getallproduct->orderDetail->payment_option_id == 1 && ($getallproduct->orderDetail->payable_amount >0)) {
+                $is_payment_done = 0;
+            }
             $langId = ClientLanguage::where(['is_primary' => 1, 'is_active' => 1])->value('language_id');
             $currId = ClientCurrency::where(['is_primary' => 1])->value('currency_id');
-            $cart = TempCart::where('status', '0')->where('user_id', $request->user_id)->where('order_vendor_id', $order_vendor_id)->where('is_submitted', '!=', 1)->where('is_approved', '!=', 1)->first();
+            $cart = TempCart::where('status', '0')->where('user_id', $request->user_id)->where('order_vendor_id', $order_vendor_id)->where('is_approved', '!=', 1)->first();
             if(!$cart){
                 foreach($getallproduct->products as $data){
+                 
                     $request->request->add([
                         'set_temp_cart' => 1,
                         'vendor_id' => $data->vendor_id,
                         'product_id' => $data->product_id,
                         'quantity' => $data->quantity,
-                        'variant_id' => $data->variant_id
+                        'variant_id' => $data->variant_id,
+                        'dispatch_agent_id' => $data->dispatch_agent_id,
+                        'dispatch_agent_price' => $data->price,
+                        'is_payment_done' => $is_payment_done,
+                        'vendor_wallet_amount_used' => $GetVendorReturnAmount['vendor_wallet_amount'],
+                        'order_payable_amount' => $getallproduct->orderDetail->payable_amount,
+                      
+
                     ]);
+                   
                     $addonID = OrderProductAddon::where('order_product_id',$data->id)->pluck('addon_id');
                     $addonoptID = OrderProductAddon::where('order_product_id',$data->id)->pluck('option_id');
                     if(count($addonID)){
@@ -958,13 +1007,15 @@ class TempCartController extends FrontController
                 'currency_id' => $client_currency->currency_id,
                 'unique_identifier' => '', //!$user ? $new_session_token : '',
                 'address_id' => $address_id,
-                'order_vendor_id' => $order_vendor_id
+                'order_vendor_id' => $order_vendor_id,
+                'vendor_wallet_amount_used' => $request->vendor_wallet_amount_used,
+                'order_payable_amount'      => $request->order_payable_amount
             ];
             if ($user) {
                 $cart_detail = TempCart::updateOrCreate([
                     'user_id' => $user->id,
                     'is_submitted' => 0,
-                    'is_approved' => 0
+                    'is_approved' => 0,
                 ], $cart_detail);
                 $already_added_product_in_cart = TempCartProduct::where(["product_id" => $request->product_id, 'cart_id' => $cart_detail->id])->first();
             } else {
@@ -1033,7 +1084,10 @@ class TempCartController extends FrontController
                 'product_id' => $request->product_id,
                 'variant_id'  => $request->variant_id,
                 'currency_id' => $client_currency->currency_id,
-                'luxury_option_id' => ($luxury_option) ? $luxury_option->id : 0
+                'luxury_option_id' => ($luxury_option) ? $luxury_option->id : 0,
+                'is_payment_done' => $request->is_payment_done ?? 0,
+                'dispatch_agent_id' => $request->dispatch_agent_id,
+                'dispatch_agent_price' => $request->dispatch_agent_price
             ];
 
             $checkVendorId = TempCartProduct::where('cart_id', $cart_detail->id)->where('vendor_id', '!=', $request->vendor_id)->first();
@@ -1160,27 +1214,34 @@ class TempCartController extends FrontController
             if(!$product){
                 return $this->errorResponse(__('No record found.'), 422);
             }
+            $additionalPreference =  getAdditionalPreference(['is_service_product_price_from_dispatch']);
+            $agent_id = $request->agent_id;
+            if(($additionalPreference['is_service_product_price_from_dispatch'] ==1 )&& ( $request->product_price_from_dispatch ==1)){
+                $is_service_product_price_from_dispatch = $additionalPreference['is_service_product_price_from_dispatch'];
+            }
+            
             $product->vendor->is_vendor_closed = 0;
-            if($product->vendor->show_slot == 0){
-                if( ($product->vendor->slotDate->isEmpty()) && ($product->vendor->slot->isEmpty()) ){
-                    $product->vendor->is_vendor_closed = 1;
-                }else{
-                    $product->vendor->is_vendor_closed = 0;
-                    if($product->vendor->slotDate->isNotEmpty()){
-                        $product->vendor->opening_time = Carbon::parse($product->vendor->slotDate->first()->start_time)->format('g:i A');
-                        $product->vendor->closing_time = Carbon::parse($product->vendor->slotDate->first()->end_time)->format('g:i A');
-                    }elseif($product->vendor->slot->isNotEmpty()){
-                        $product->vendor->opening_time = Carbon::parse($product->vendor->slot->first()->start_time)->format('g:i A');
-                        $product->vendor->closing_time = Carbon::parse($product->vendor->slot->first()->end_time)->format('g:i A');
+            if( $is_service_product_price_from_dispatch !=1){ // no need to check slot 
+
+                if($product->vendor->show_slot == 0){
+                    if( ($product->vendor->slotDate->isEmpty()) && ($product->vendor->slot->isEmpty()) ){
+                        $product->vendor->is_vendor_closed = 1;
+                    }else{
+                        $product->vendor->is_vendor_closed = 0;
+                        if($product->vendor->slotDate->isNotEmpty()){
+                            $product->vendor->opening_time = Carbon::parse($product->vendor->slotDate->first()->start_time)->format('g:i A');
+                            $product->vendor->closing_time = Carbon::parse($product->vendor->slotDate->first()->end_time)->format('g:i A');
+                        }elseif($product->vendor->slot->isNotEmpty()){
+                            $product->vendor->opening_time = Carbon::parse($product->vendor->slot->first()->start_time)->format('g:i A');
+                            $product->vendor->closing_time = Carbon::parse($product->vendor->slot->first()->end_time)->format('g:i A');
+                        }
                     }
                 }
             }
 
             $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
             $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
-            foreach ($product->variant as $key => $value) {
-                $product->variant[$key]->multiplier = $clientCurrency->doller_compare;
-            }
+            
             $addonList = array();
             foreach ($product->addOn as $key => $value) {
                 foreach ($value->setoptions as $k => $v) {
@@ -1196,6 +1257,16 @@ class TempCartController extends FrontController
             /*  if variant has image return variant images else product images  */
             $variant_id = 0;
             foreach ($product->variant as $key => $value) {
+              
+                $value->multiplier = $clientCurrency->doller_compare;
+                if($is_service_product_price_from_dispatch ==1){
+                    $actual_price =0.0;
+                    $Agent_price =  $this->getAgentProductPriceFromDispatcher(  $value->sku,$agent_id);
+                    if($Agent_price){
+                        $actual_price = $Agent_price['data'] ? $Agent_price['data']['price'] : 0.0;
+                    }
+                   $value['price'] =  $actual_price; 
+                }
                 $variant_id = $value->id;
                 if($product->sell_when_out_of_stock == 1){
                     $value->stock_check = '1';
@@ -1236,6 +1307,7 @@ class TempCartController extends FrontController
             if(isset($product->variant[0]->media) && !empty($product->variant[0]->media)){
                 unset($product->variant[0]->media);
             }
+            $product->is_service_product_price_from_dispatch = (int)$is_service_product_price_from_dispatch;
             unset($product->related);
             unset($product->media);
             unset($product->upSell);
@@ -1426,6 +1498,86 @@ class TempCartController extends FrontController
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
+    public function AgentProductsSearchResults(Request $request, $domain = '')
+    {
+        // $orderController = new OrderController();
+        // $vendor_order_detail = $orderController->minimize_orderDetails_for_notification('80', '9');
+       
+        // pr($this->sendEditedOrderPushNotification(['2'], $vendor_order_detail));
+       // return 1;
+      // pr($request->all());
+        try {
+            $keyword = $request->input('keyword');
+            $vid = $request->input('vendor');
+            $productSku = $request->input('productSku')?? [];
+            $agent_id = $request->input('agent_id');
+            $limit = $request->has('limit') ? $request->limit : 10;
+            $page  = $request->has('page') ? $request->page : 1;
+          
+            $clientLanguage = ClientLanguage::where('is_primary', 1)->first();
+            $langId = $clientLanguage ? $clientLanguage->language_id : 1;
+            if($productSku){
+                $productSku = explode(',',$productSku);
+            }
+
+            $response = array();
+             
+            $products = Product::with(['media.image','variants' => function($q) use($productSku){
+                $q->whereIn('sku', $productSku);
+            },
+            'translation' => function($q) use($langId, $keyword){
+                $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                if($keyword){
+                    $q->where(function ($q1) use ($keyword) {
+                        $q1->where('title', 'LIKE', '%' . $keyword . '%')
+                        ->orWhere('body_html', 'LIKE', '%' . $keyword . '%');
+                    });
+                }
+                $q->groupBy('product_id');
+            }])
+            ->select('id', 'sku', 'title', 'description', 'category_id', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
+            if($keyword){
+                $products = $products->where(function ($q) use ($keyword, $langId) {
+                    $q->where(function ($q1) use ($keyword) {
+                        $q1->where('sku', 'LIKE', '%' . $keyword . '%')
+                        ->orWhere('url_slug', 'LIKE', '%' . $keyword . '%')
+                        ->orWhere('title', 'LIKE', '%' . $keyword . '%');
+                    });
+                    $q->orWhereHas('translation', function ($q1) use ($keyword, $langId) {
+                        $q1->where(function ($q2) use ($keyword) {
+                            $q2->where('title', 'LIKE', '%' . $keyword . '%');
+                        });
+                    });
+                });                
+            }
+            $products = $products->whereHas('variants' , function($q) use($productSku){
+                $q->whereIn('sku', $productSku);
+            });
+            $products = $products->where('is_live', 1)
+                //->whereIn('sku', $productSku)
+                ->whereNull('products.deleted_at')
+                ->paginate($limit, $page);
+            foreach ($products as $product) {
+                // foreach ($product->variants as $variant) {
+                    
+                //     $Agent_price =  $this->getAgentProductPriceFromDispatcher(  $variant->sku,$agent_id);
+                //     if($Agent_price){
+                //         $actual_price = $Agent_price['data'] ? $Agent_price['data']['price'] : 0.0;
+                //         $variant['agent_price'] =  $actual_price;
+                //     }
+
+                // }
+                $product->image_url = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
+
+                $response[] = $product;
+            }
+           
+            return $this->successResponse($response);
+        }
+        catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
 
 
     /**
@@ -1434,6 +1586,11 @@ class TempCartController extends FrontController
      */
     public function getCartForApproval($cart, $order, $langId = '1', $currency = '1', $type = 'delivery')
     {
+        $additionalPreference =  getAdditionalPreference(['is_service_product_price_from_dispatch']);
+     
+        if(($additionalPreference['is_service_product_price_from_dispatch'] ==1 )&& ( $order->luxury_option_id ==6)){ // luxury_option_id for ondemand 
+            $is_service_product_price_from_dispatch = $additionalPreference['is_service_product_price_from_dispatch'];
+        }
         $preferences = ClientPreference::first();
         $clientCurrency = ClientCurrency::where('currency_id', $currency)->first();
         if (!$cart) {
@@ -1519,7 +1676,7 @@ class TempCartController extends FrontController
 
                 $cart_dinein_table_id = $vendorData->vendor_dinein_table_id;
 
-                if ($action != 'delivery') {
+                if (($action != 'delivery') &&( $is_service_product_price_from_dispatch!=1))  {
                     $vendor_details['vendor_address'] = $vendorData->vendor->select('id', 'latitude', 'longitude', 'address')->where('id', $vendorData->vendor_id)->first();
                     if ($action == 'dine_in') {
                         $vendor_tables = VendorDineinTable::where('vendor_id', $vendorData->vendor_id)->with('category')->get();
@@ -1596,12 +1753,20 @@ class TempCartController extends FrontController
                         $price_in_currency = $price_in_doller_compare = $pro_disc = $quantity_price = 0;
                         $variantsData = $taxData = $vendorAddons = array();
                         $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
-                        $price_in_currency = $prod->pvariant ? $prod->pvariant->price : 0;
+                        $pvariantprice =  $prod->pvariant ? $prod->pvariant->price : 0;
+
+
+                        $price_in_currency =   $pvariantprice;
                         $price_in_doller_compare = $price_in_currency * $clientCurrency->doller_compare;
+                        if( $is_service_product_price_from_dispatch==1){
+                            $price_in_currency =   $price_in_doller_compare =  $prod->dispatch_agent_price;
+                        }
+                      
                         $quantity_price = $price_in_doller_compare * $prod->quantity;
                         $item_count = $item_count + $prod->quantity;
                         $proSum = $proSum + $quantity_price;
                         $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
+                       
                         if (isset($prod->pvariant->image->imagedata) && !empty($prod->pvariant->image->imagedata)) {
                             $prod->cartImg = $prod->pvariant->image->imagedata;
                         } else {
@@ -1673,7 +1838,7 @@ class TempCartController extends FrontController
                                 }
                             }
                             $prod->taxdata = $taxData;
-                            if ($action == 'delivery') {
+                            if (($action == 'delivery') &&( $is_service_product_price_from_dispatch!=1)) {
                                 if (!empty($prod->product->Requires_last_mile) && ($prod->product->Requires_last_mile == 1)) {
                                     $deliver_charge = $this->getDeliveryFeeDispatcher($vendorData->vendor_id);
                                     if (!empty($deliver_charge) && $delivery_count == 0) {
@@ -1783,6 +1948,7 @@ class TempCartController extends FrontController
                 $vendorData->discount_percent = $discount_percent;
                 $vendorData->taxable_amount = $taxable_amount;
                 $vendorData->payable_amount = $payable_amount - $discount_amount;
+               
                 $vendorData->isDeliverable = 1;
                 $total_paying = $total_paying + $payable_amount;
                 $total_tax = $total_tax + $taxable_amount;
@@ -1813,7 +1979,7 @@ class TempCartController extends FrontController
                         $vendorData->vendor->is_vendor_closed = 0;
                     }
                 }
-                if($vendorData->vendor->$action == 0){
+                if(($vendorData->vendor->$action == 0)  &&( $is_service_product_price_from_dispatch!=1)){
                     $vendorData->is_vendor_closed = 1;
                     $delivery_status = 0;
                 }
@@ -1850,7 +2016,7 @@ class TempCartController extends FrontController
             $cart->total_subscription_discount = $total_subscription_discount * $clientCurrency->doller_compare;
         }
 
-        if($cartData->count() == '1'){
+        if($cartData->count() == '1' && ($is_service_product_price_from_dispatch!=1) ){
             $vendorId = $cartData[0]->vendor_id;
             //type must be a : delivery , takeaway,dine_in
             $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();

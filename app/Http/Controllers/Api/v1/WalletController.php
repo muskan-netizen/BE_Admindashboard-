@@ -39,9 +39,11 @@ class WalletController extends Controller{
             $user = Auth::user();
         }
 
+
         if($user){
             $credit_amount = $request->amount;
             $wallet = $user->wallet;
+
             if ($credit_amount > 0) {
                 $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> by transaction reference <b>'.$request->transaction_id.'</b>']);
 

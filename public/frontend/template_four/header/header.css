@@ -32,7 +32,7 @@ body, html {
 .al_body_template_four .pixelstrap ul.alInnerMenu li a:hover span.new-tag{color:var(--theme-deafult)}
 .al_body_template_four .pixelstrap ul.alInnerMenu li a span.new-tag{font-size: 14px;}
 #main-menu .slick-list{overflow: inherit;}
-.al_body_template_four .pixelstrap ul.alInnerMenu{top: 30px;padding: 0;display: none;}
+.al_body_template_four .pixelstrap ul.alInnerMenu{top: 100%;padding: 0;display: none;}
 .al_searchType .form-control{background-color: transparent;}
 
 

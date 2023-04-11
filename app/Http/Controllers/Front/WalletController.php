@@ -9,6 +9,7 @@ use App\Models\{User, Transaction, ClientCurrency, Payment, PaymentOption};
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Auth;
 use Session;
+use App\Models\UserDataVault;
 
 class WalletController extends FrontController
 {
@@ -34,7 +35,10 @@ class WalletController extends FrontController
             $public_key_yoco= json_decode($public_key_yoco);
             $public_key_yoco= $public_key_yoco->public_key??'';
         }
-        return view('frontend/account/wallet',compact('public_key_yoco'))->with(['user'=>$user, 'navCategories'=>$navCategories, 'user_transactions'=>$user_transactions, 'clientCurrency'=>$clientCurrency]);
+        
+        $userCardExist =        UserDataVault::where(['user_id' => $auth_user->id])->count();
+        
+        return view('frontend/account/wallet',compact('public_key_yoco'))->with(['user'=>$user, 'navCategories'=>$navCategories, 'user_transactions'=>$user_transactions, 'clientCurrency'=>$clientCurrency,'userCardExist'=>$userCardExist]);
     }
 
     /**
@@ -44,6 +48,7 @@ class WalletController extends FrontController
      */
     public function creditWallet(Request $request, $domain = '')
     {
+
         if( (isset($request->user_id)) && (!empty($request->user_id)) ){
             $user = User::find($request->user_id);
         }elseif( (isset($request->auth_token)) && (!empty($request->auth_token)) ){
@@ -110,8 +115,10 @@ class WalletController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function paymentOptions(Request $request, $domain = ''){
-        $ex_codes = ['cod','offline_manual'];
-        $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereNotIn('code', $ex_codes)->where('status', 1)->get();
+        $ex_codes = ['offline_manual'];
+        $code = array('cod','stripe', 'dpo','azul', 'stripe_fpx', 'paystack','yoco', 'paylink', 'razorpay','simplify','square','ozow','pagarme', 'checkout','authorize_net','kongapay','ccavenue', 'cashfree','viva_wallet','easebuzz','vnpay','paytab','mvodafone','flutterwave','easypaisa','braintree','payphone','windcave','paytech','windcave','stripe_oxxo', 'mycash','stripe_ideal','userede','openpay','khalti','mtn_momo','plugnpay');
+
+        $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereIn('code', $code)->whereNotIn('code', $ex_codes)->where('status', 1)->get();
         foreach ($payment_options as $k => $payment_option) {
             if( (!empty($payment_option->credentials)) ){
                 $payment_option->slug = strtolower(str_replace(' ', '_', $payment_option->title));

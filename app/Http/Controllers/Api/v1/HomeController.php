@@ -13,6 +13,7 @@ use ConvertCurrency;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Traits\{ApiResponser,ProductActionTrait};
+use App\Http\Traits\HomePage\HomePageTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -26,7 +27,7 @@ use DateTimeZone;
 
 class HomeController extends BaseController
 {
-    use ApiResponser,ProductActionTrait;
+    use ApiResponser,ProductActionTrait, HomePageTrait;
 
     private $curLang = 0;
     private $field_status = 2;
@@ -60,10 +61,21 @@ class HomeController extends BaseController
                         $vendorMode[] = $vendorData;
                     }
             }
+            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo']);
+    
             //pr($vendorMode);
             //mohit sir branch code updated by sohail farm meat
             $homeData['profile']->preferences->vendorMode = $vendorMode;
-            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price']);
+
+            $homeData['profile']->preferences->is_cab_pooling = (int) $getAdditionalPreference['is_cab_pooling'];
+            $homeData['profile']->preferences->chat_button = (int) $getAdditionalPreference['chat_button'];
+            $homeData['profile']->preferences->call_button = (int) $getAdditionalPreference['call_button'];
+            $homeData['profile']->preferences->is_user_kyc_for_registration = (int) $getAdditionalPreference['is_user_kyc_for_registration'];
+            //dd($homeData['profile']);
+
+
+            
+
             $homeData['profile']->preferences->advance_booking_amount = 0;
             $homeData['profile']->preferences->advance_booking_amount_percentage = 0;
             if(!empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101) ){
@@ -73,16 +85,34 @@ class HomeController extends BaseController
             //till here
 
             $homeData['profile']->preferences->update_order_product_price = (!empty($getAdditionalPreference['update_order_product_price']) && $getAdditionalPreference['update_order_product_price'] == 1)? true : false;
-            $homeData['profile']->preferences->is_cab_pooling = (int) getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
-            $homeData['profile']->preferences->chat_button = (int) getAdditionalPreference(['chat_button'])['chat_button'];
-            $homeData['profile']->preferences->call_button = (int) getAdditionalPreference(['call_button'])['call_button'];
-            //dd($homeData['profile']);
+            $homeData['profile']->preferences->is_one_push_book_enable    = (int) $getAdditionalPreference['is_one_push_book_enable'];
+            $homeData['profile']->preferences->is_bid_ride_enable         = (int) $getAdditionalPreference['is_bid_ride_enable'];
+            
+            $homeData['profile']->preferences->is_service_product_price_from_dispatch         = (int) $getAdditionalPreference['is_service_product_price_from_dispatch'];
+
+            if($homeData['profile']->preferences->is_one_push_book_enable == 1){
+                $homeData['profile']->preferences->pick_drop_instant_booking_vendor = Vendor::select('id', 'slug', 'name', 'is_vendor_instant_booking', 'status')
+                                                                                      ->with(['products' => function ($v) {
+                                                                                        $v->where('is_product_instant_booking', 1)->first();
+                                                                                    }])->where('status', 1)->where('is_vendor_instant_booking', 1)->first();
+            }
+            
             $delivery_nomenclature = $this->getNomenclatureName('Delivery', $langId, false);
             $dinein_nomenclature = $this->getNomenclatureName('Dine-In', $langId, false);
             $takeaway_nomenclature = $this->getNomenclatureName('Takeaway', $langId, false);
             $search_nomenclature = $this->getNomenclatureName('Search', $langId, false);
             $vendors_nomenclature = $this->getNomenclatureName('Vendors', $langId, false);
             $sellers_nomenclature = $this->getNomenclatureName('sellers', $langId, false);
+
+            $account_name = $this->getNomenclatureName('Account Name', $langId, false);
+            $bank_name = $this->getNomenclatureName('Bank Name', $langId, false);
+            $account_number = $this->getNomenclatureName('Account Number', $langId, false);
+            $ifsc_code = $this->getNomenclatureName('IFSC Code', $langId, false);
+            $aadhaar_front = $this->getNomenclatureName('Aadhaar Front', $langId, false);
+            $aadhaar_back = $this->getNomenclatureName('Aadhaar Back', $langId, false);
+            $aadhaar_number = $this->getNomenclatureName('Aadhaar Number', $langId, false);
+            $upi_id = $this->getNomenclatureName('UPI Id', $langId, false);
+
             $fixed_fee_nomenclature = $this->getNomenclatureName('fixed_fee', $langId, false);
             $referral_code = $this->getNomenclatureName('Referral Code', $langId, false);
             $want_to_tip = $this->getNomenclatureName('want_to_tip', $langId, false);
@@ -99,6 +129,18 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->fixed_fee_nomenclature = $fixed_fee_nomenclature;
             $homeData['profile']->preferences->want_to_tip_nomenclature = $want_to_tip;
             $homeData['profile']->preferences->referral_code = $referral_code;
+
+            $homeData['profile']->preferences->seller_sold_title = (int) $getAdditionalPreference['seller_sold_title'];
+            $homeData['profile']->preferences->seller_platform_logo = (int) $getAdditionalPreference['seller_platform_logo'];
+            $homeData['profile']->preferences->account_name = $account_name;
+            $homeData['profile']->preferences->bank_name = $bank_name;
+            $homeData['profile']->preferences->account_number = $account_number;
+            $homeData['profile']->preferences->ifsc_code = $ifsc_code;
+            $homeData['profile']->preferences->aadhaar_front = $aadhaar_front;
+            $homeData['profile']->preferences->aadhaar_back = $aadhaar_back;
+            $homeData['profile']->preferences->aadhaar_number = $aadhaar_number;
+            $homeData['profile']->preferences->upi_id = $upi_id;
+
             if(!is_null($passbase))
             {
                 $homeData['profile']->preferences->passbase_check = 1;
@@ -108,7 +150,7 @@ class HomeController extends BaseController
                 $homeData['profile']->preferences->passbase_check = 0;
             }
 
-
+            $homeData['parent_category'] = Category::with('translation_one','type')->where('id', '>', '1')->where('is_core', 1)->where('parent_id', 1)->where('is_visible', 1)->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1)->pluck('id', 'slug')->toArray();
 
             $homeData['languages'] = ClientLanguage::with('language')->select('language_id', 'is_primary')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
             $banners = Banner::select("id", "name", "description", "image", "image_mobile", "link", 'redirect_category_id', 'redirect_vendor_id')
@@ -245,9 +287,13 @@ class HomeController extends BaseController
             else
                 $domain_link = "https://" . $homeData['profile']->sub_domain . env('SUBMAINDOMAIN');
             $homeData['domain_link'] = $domain_link;
+
             $homeData['profile']->preferences->static_otp =  (getUserToken($preferences->preferences)['status'])?false:true;
-            $homeData['profile']->preferences->is_postpay_enable = (int) @getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'];
-            $homeData['profile']->preferences->is_order_edit_enable = (int) @getAdditionalPreference(['is_order_edit_enable'])['is_order_edit_enable'];
+            $homeData['profile']->preferences->is_postpay_enable    = (int) $getAdditionalPreference['is_postpay_enable'];
+            $homeData['profile']->preferences->is_order_edit_enable = (int) $getAdditionalPreference['is_order_edit_enable'];
+            $homeData['profile']->preferences->is_bid_enable        = (int) $getAdditionalPreference['is_bid_enable'];
+            $homeData['profile']->preferences->is_file_cart_instructions = (int) $getAdditionalPreference['is_file_cart_instructions'];
+
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -261,6 +307,7 @@ class HomeController extends BaseController
             $vends = [];
             $venderIds = [];
             $homeData = [];
+            $spotlight_products=[];
             $user = Auth::user();
             $langId = $user->language;
             $currency_id = $user->currency;
@@ -274,6 +321,7 @@ class HomeController extends BaseController
             $venderFilterOpen   = $request->has('open_vendor') && $request->open_vendor ? $request->open_vendor : null;
             $venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
             $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
+            $spotlight= $request->has('is_spotlight') && $request->is_spotlight ? $request->is_spotlight : null;
 
             $type = $request->has('type') ? $request->type : 'delivery';
            
@@ -314,13 +362,12 @@ class HomeController extends BaseController
             }
             
             $allVendorData = clone $vendorData;
-            $long_term_vendors = clone $vendorData;
             $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->limit(100)->get();
             $venderIds  = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
 
-            // \Log::info($vendorData->toSql());
-            // \Log::info($venderIds);
-            // \Log::info($ses_vendors);
+            // //\Log::info($vendorData->toSql());
+            // //\Log::info($venderIds);
+            // //\Log::info($ses_vendors);
 
 
             $timezone = $user->timezone ?? 'Asia/Kolkata';
@@ -330,6 +377,9 @@ class HomeController extends BaseController
 
 
             foreach ($vendorData as $vendor) {
+                $vendor->vendorrating = $this->vendorRatings($vendor->products);
+                $vendor->vendorNoOfRatings = $this->vendorNoOfRatings($vendor->products);
+                $vendor->promocodes = $this->getVendorWisePromoCodes($vendor->id);
                 unset($vendor->products);
 
                 $vendor->is_vendor_closed = 0;
@@ -406,13 +456,15 @@ class HomeController extends BaseController
 
             $vendorData =   $vendorData->take(5);
 
-            // if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-            //     $vendorData = $vendorData->sortBy('lineOfSightDistance')->values()->all();
-            // }
 
             $on_sale_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, '', $type);
             $new_product_details    = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_new', $type);
             $feature_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_featured', $type);
+
+            if($spotlight && ($spotlight == 1) ){
+                $spotlight_products=$this->getSpotlightProducts();
+            }
+           
             // foreach ($new_product_details as  $new_product_detail) {
             //     $multiply = $new_product_detail->variant->first() ? $new_product_detail->variant->first()->multiplier : 1;
             //     $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
@@ -529,6 +581,7 @@ class HomeController extends BaseController
             $homeData['on_sale_products'] = $on_sale_product_details;
             $homeData['new_products'] = $new_product_details;
             $homeData['featured_products'] = $feature_product_details;
+            $homeData['spotlight_deals']=$spotlight_products;
 
             $brands = Brand::with(['bc.categoryDetail', 'bc.categoryDetail.translation' =>  function ($q) use ($langId) {
                 $q->select('category_translations.name', 'category_translations.category_id', 'category_translations.language_id')->where('category_translations.language_id', $langId);
@@ -545,12 +598,13 @@ class HomeController extends BaseController
             $homeData['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
             // long term service
             $long_term_service_products =[];
-            if(getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1){
+            $additionalPreference = getAdditionalPreference(['is_long_term_service', 'is_token_currency_enable']);
+            if($additionalPreference['is_long_term_service'] == 1){
                 $requestFrom='app';
-                $long_term_service_products = $this->longTermServiceProducts($long_term_vendors, $langId, $clientCurrency,'', $type,'', $requestFrom);
+                $long_term_service_products = $this->longTermServiceProducts($ses_vendors, $additionalPreference, $langId, $clientCurrency,'', $type,'', $requestFrom);
             }
             $homeData['long_term_service'] = $long_term_service_products;
-       
+          
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -577,6 +631,7 @@ class HomeController extends BaseController
             $venderFilterOpen   = $request->has('open_vendor') && $request->open_vendor ? $request->open_vendor : null;
             $venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
             $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
+          
 
             $type = $request->has('type') ? $request->type : 'delivery';
             $cid = $request->category_id;
@@ -765,12 +820,17 @@ class HomeController extends BaseController
 
     public function vendorProducts($venderIds, $langId, $currency = '', $where = '', $type)
     {
-        $products = Product::byProductCategoryServiceType($type)->byProductWhereCheck()->with([
+        $user = Auth::user();
+        $userid = !empty($user) ? $user->id : 0;
+        $products = Product::byProductCategoryServiceType($type)->byProductWhereCheck()->with([ 
             'category.categoryDetail.translation' => function ($q) use ($langId) {
                 $q->where('category_translations.language_id', $langId);
             },
             'vendor' => function ($q) use ($type) {
                 $q->where($type, 1);
+            },
+            'inwishlist' => function($qry) use($userid){
+                $qry->where('user_id', $userid);
             },
             'media' => function ($q) {
                 $q->groupBy('product_id');
@@ -805,6 +865,7 @@ class HomeController extends BaseController
                 }
             }
         }
+       // Log::info($products);
         return $products;
     }
 

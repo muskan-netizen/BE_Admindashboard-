@@ -766,11 +766,11 @@ class PaymentOptionController extends BaseController{
         // Auto accept order
         $orderController = new OrderController();
         $orderController->autoAcceptOrderIfOn($order->id);
-        // \Log::info(json_encode($order));
+        // //\Log::info(json_encode($order));
 
         // Remove cart
         // $cart = Cart::select('id')->where('status', '0')->where('user_id', $order->user_id)->first();
-        // \Log::info(json_encode($cart));
+        // //\Log::info(json_encode($cart));
         // Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
         // CartAddon::where('cart_id', $cart->id)->delete();
         // CartCoupon::where('cart_id', $cart->id)->delete();

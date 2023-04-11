@@ -123,7 +123,7 @@ class OrderController extends Controller{
                 return !empty($vendor_orders->orderDetail)?number_format($vendor_orders->orderDetail->tip_amount, 2):0.00;
             })
             ->addColumn('order_status', function($vendor_orders) {
-               return $vendor_orders->OrderStatusOption ? ($vendor_orders->OrderStatusOption->title ?? 'N/A') : "N/A";
+                return $vendor_orders->OrderStatusOption ? ($vendor_orders->OrderStatusOption->title ?? 'N/A') : "N/A";
             })
             ->addColumn('vendor_name',function($vendor_orders){
                 return $vendor_orders->vendor ? __($vendor_orders->vendor->name) : '';

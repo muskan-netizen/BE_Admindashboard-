@@ -18,48 +18,18 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Banner, Brand, Category, Country, Order, Product, Vendor, VendorOrderStatus, UserAddress, OrderVendor, OrderReturnRequest, User, ClientCurrency};
+use App\Models\{Banner, Brand, Category, Country, Order, Product, Vendor, VendorOrderStatus, UserAddress, OrderVendor, OrderReturnRequest, User, ClientCurrency, OrderNotificationsLogs, OrderVendorProduct, ServiceArea, UserVendor};
 
 class DashBoardController extends BaseController
 {
     use ApiResponser;
 
-    public function index()
+    public function index(Request $request)
     {  
-        // $currentmonth_start = Carbon::now()->startOfMonth();
-        //     $currentmonth_end = Carbon::now()->endOfMonth();
-        //     $previousmonth_start = Carbon::now()->startOfMonth()->subMonth();
-        //     $previousmonth_end = Carbon::now()->endOfMonth()->subMonth();
- 
-        // $revenue_currentmonth = Order::whereBetween('created_at', [$currentmonth_start, $currentmonth_end])->sum('payable_amount');
-        // $revenue_lastmonth = Order::whereBetween('created_at', [$previousmonth_start, $previousmonth_end])->sum('payable_amount');
-        // $revenue_increase = '';
-        // $revenue_decrease = '';
-        // if ($revenue_lastmonth < $revenue_currentmonth) {
-        //     if ($revenue_lastmonth > 0) {
-        //         $percent_from = $revenue_currentmonth - $revenue_lastmonth;
-        //         $revenue_increase = $percent_from / $revenue_lastmonth * 100; //increase percent
-        //     } else {
-        //         $revenue_increase = 100; //increase percent
-        //     }
-        // } else {
-        //     if ($revenue_currentmonth > 0) {
-        //         $percent_from = $revenue_lastmonth - $revenue_currentmonth;
-        //         $revenue_decrease = $percent_from / $revenue_lastmonth * 100; //decrease percent
-        //     } else {
-        //         $revenue_decrease = 0;
-        //     }
-        // }
-        // if ($revenue_increase != '') {
-        //     $revenue_increase = round($revenue_increase, 2);
-        // }
-        // if ($revenue_decrease != '') {
-            
-        //     $revenue_decrease = round($revenue_decrease, 2);
-        // }
-        // echo 'incccc' . $revenue_increase . ' desccc' . $revenue_decrease;
-        // die;
-        return view('backend/dashboard');
+       $managers = User::whereHas('roles',function($q){
+            $q->where('name','Manager');
+       })->get();
+        return view('backend/dashboard',compact('managers'));
     }
 
     public function dashboard_old()
@@ -368,6 +338,36 @@ class DashBoardController extends BaseController
     public function postFilterDataNew(Request $request)
     {
         try {
+            $vendorIds = [];
+            
+            $managerId = (($request->manager_id)?$request->manager_id:auth()->id());
+            $vendors = Vendor::latest();
+
+            if(@auth()->user()->getRoleNames()[0]=='Manager' || $request->manager_id)
+            {
+                $vendors = $vendors->where('refference_id',$managerId);
+                $vendorIds = $vendors->pluck('id')->toArray();
+            }elseif(@auth()->user()->getRoleNames()[0]=='Seller')
+            {
+                $managerId = UserVendor::where('user_id',$managerId)->value('vendor_id');
+                $vendors = $vendors->where('id',$managerId);
+                $vendorIds = $vendors->pluck('id')->toArray();
+            }
+            if(($request->reportType !='Vendor' && !empty($request->reportType)) && isset(auth()->user()->geo_ids))
+            {
+                $areaVendors = ServiceArea::whereIn('id',explode(',',auth()->user()->geo_ids))->pluck('vendor_id')->toArray();          
+                if(count($areaVendors)>0 && ($request->reportType =='Both')){
+                    $vendorIds = array_unique(array_merge($areaVendors,$vendorIds));
+                }elseif(count($areaVendors)>0 && ($request->reportType =='Zone')){               
+                    $vendorIds = $areaVendors;
+                }
+            }
+
+
+            $vendorCounts = $vendors->count();
+            $managersCount = User::whereHas('roles',function($q){
+                $q->where('name','Manager');
+            })->count();
             $date_filter = $request->date_filter;
             if($date_filter){
                 $date_explode = explode('to', $date_filter);
@@ -380,17 +380,26 @@ class DashBoardController extends BaseController
             $total_products = $products->whereHas('vendor', function ($query){
                 $query->where(['vendors.status' => 1]);
             });
-            if (Auth::user()->is_superadmin == 0) {
+            if (Auth::user()->is_superadmin == 0 || $request->manager_id) {
                 $total_products = $total_products->whereHas('vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);
                 });
+
+                if(count($vendorIds)>0)
+                {
+                    $total_products = $total_products->whereIn('vendor_id',$vendorIds);
+                }
             }
+
+            if($date_filter)
+            $total_products->whereBetween('created_at', [$from_date, $end_date]);
+            
             
             $total_products = $total_products->where('deleted_at', NULL)->count();
 
             # Revenue sum
             $orders = new Order;
-            $total_revenue = clone $orders;
+            $order_revenue = $total_revenue = clone $orders;
             if (Auth::user()->is_superadmin == 0) {
                 $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);
@@ -401,28 +410,76 @@ class DashBoardController extends BaseController
                 $total_revenue = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);
                 });
+
+                if(count($vendorIds)>0)
+                {
+                    $total_revenue = $orders->whereHas('vendors.vendor', function ($query) use($vendorIds) {
+                        $query->whereIn('vendor_id', $vendorIds);
+                    });
+                    
+                    $order_revenue = clone $total_revenue;
+                }
             }
             
+            if($date_filter)
+            $total_revenue = $total_revenue->whereBetween('created_at', [$from_date, $end_date]);
+
             $total_revenue = $total_revenue->sum('payable_amount');
 
             # Customers count
             $users = new User;
-            $total_customers = $users->where(['status' => 1, 'is_superadmin' => 0])->count();
+            $total_customers = $users->where(['status' => 1, 'is_superadmin' => 0]);
+            
+            if($date_filter)
+            $total_customers = $total_customers->whereBetween('created_at', [$from_date, $end_date]);
+            
+            $total_customers = $total_customers->count();
 
             # Orders count
             $vendor_orders = OrderVendor::with(['user','vendor']);
-            if (Auth::user()->is_superadmin == 0) {
-                 $vendor_orders = $vendor_orders->whereHas('vendor.permissionToUser', function ($query) {
-                 $query->where('user_id', Auth::user()->id);
-             });
+            if (Auth::user()->is_superadmin == 0 || $request->manager_id) {
+                //  $vendor_orders = $vendor_orders->whereHas('vendor.permissionToUser', function ($query) {
+                //         $query->where('user_id', Auth::user()->id);
+                //     });
+
+             if(count($vendorIds)>0)
+                {
+                    $vendor_orders = $vendor_orders->whereIn('vendor_id',$vendorIds);
+                }
             }
+            
+            if($date_filter)
+            $vendor_orders->whereBetween('created_at', [$from_date, $end_date]);
+
             $total_orders = $vendor_orders->count();
 
-            # Current week revenue sum
-            $revenueCurrentWeek = $orders->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('payable_amount');
-            # Previous week revenue sum
-            $revenueLastWeek = $orders->whereBetween('created_at', [Carbon::now()->startOfWeek()->subWeek(), Carbon::now()->endOfWeek()->subWeek()])->sum('payable_amount');
+            if(@auth()->user()->getRoleNames()[0]=='Seller'){
+                $total_sold_products = OrderVendorProduct::where('order_vendor_id',$vendorIds);
 
+                if($date_filter)
+                $total_sold_products = $total_sold_products->whereBetween('created_at', [$from_date, $end_date]);
+
+                $total_sold_products =$total_sold_products->sum('quantity');
+            }
+            
+            $revenueCurrentWeek = clone $order_revenue;
+            $revenueLastWeek = clone $order_revenue;
+            $orders_currentmonth = clone $order_revenue;
+            $orders_lastmonth = clone $order_revenue;
+            $revenue_currentmonth = clone $order_revenue;
+            $revenue_lastmonth = clone $order_revenue;
+
+            $sale = clone $order_revenue;
+            $data = clone $order_revenue;
+            $data1 = clone $order_revenue;
+            $locationwise_revenue = clone $order_revenue;
+            $currentyear_ordercount = clone $order_revenue;
+
+            # Current week revenue sum
+            $revenueCurrentWeek = $revenueCurrentWeek->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('payable_amount');
+            # Previous week revenue sum
+            $revenueLastWeek = $revenueLastWeek->whereBetween('created_at', [Carbon::now()->startOfWeek()->subWeek(), Carbon::now()->endOfWeek()->subWeek()])->sum('payable_amount');
+        
             $currentmonth_start = Carbon::now()->startOfMonth();
             $currentmonth_end = Carbon::now()->endOfMonth();
             $previousmonth_start = Carbon::now()->startOfMonth()->subMonth();
@@ -456,8 +513,8 @@ class DashBoardController extends BaseController
             }
 
             #Get orders percentage since last month
-            $orders_currentmonth = $orders->whereBetween('created_at', [$currentmonth_start, $currentmonth_end])->count();
-            $orders_lastmonth = $orders->whereBetween('created_at', [$previousmonth_start, $previousmonth_end])->count();
+            $orders_currentmonth = $orders_currentmonth->whereBetween('created_at', [$currentmonth_start, $currentmonth_end])->count();
+            $orders_lastmonth = $orders_lastmonth->whereBetween('created_at', [$previousmonth_start, $previousmonth_end])->count();
             $orders_increase = '';
             $orders_decrease = '';
             if ($orders_lastmonth < $orders_currentmonth) {
@@ -483,8 +540,8 @@ class DashBoardController extends BaseController
             }
 
             #Get revenue percentage since last month
-            $revenue_currentmonth = $orders->whereBetween('created_at', [$currentmonth_start, $currentmonth_end])->sum('payable_amount');
-            $revenue_lastmonth = $orders->whereBetween('created_at', [$previousmonth_start, $previousmonth_end])->sum('payable_amount');
+            $revenue_currentmonth = $revenue_currentmonth->whereBetween('created_at', [$currentmonth_start, $currentmonth_end])->sum('payable_amount');
+            $revenue_lastmonth = $revenue_lastmonth->whereBetween('created_at', [$previousmonth_start, $previousmonth_end])->sum('payable_amount');
             $revenue_increase = '';
             $revenue_decrease = '';
             if ($revenue_lastmonth < $revenue_currentmonth) {
@@ -550,28 +607,35 @@ class DashBoardController extends BaseController
             $previousweek_startdate = Carbon::now()->startOfWeek()->subWeek()->format('Y-m-d');
             $previousweek_revenue_daywise = [];
             for ($i = 0; $i < 7; $i++) {
-                $data = $orders->where(\DB::raw("DATE(created_at)"), date('Y-m-d', strtotime($previousweek_startdate . '+' . $i . ' day')))->sum('payable_amount');
-                $previousweek_revenue_daywise[] = round($data);
+                $dataSum = $data->where(\DB::raw("DATE(created_at)"), date('Y-m-d', strtotime($previousweek_startdate . '+' . $i . ' day')))->sum('payable_amount');
+                $previousweek_revenue_daywise[] = round($dataSum);
             }
 
             # Current week day wise revenue total
             $currentweek_startdate = Carbon::now()->startOfWeek()->format('Y-m-d');
             $currentweek_revenue_daywise = [];
             for ($i = 0; $i < 7; $i++) {
-                $data = $orders->where(\DB::raw("DATE(created_at)"), date('Y-m-d', strtotime($currentweek_startdate . '+' . $i . ' day')))->sum('payable_amount');
-                $currentweek_revenue_daywise[] = round($data);
+                $dataSum2 = $data1->where(\DB::raw("DATE(created_at)"), date('Y-m-d', strtotime($currentweek_startdate . '+' . $i . ' day')))->sum('payable_amount');
+                $currentweek_revenue_daywise[] = round($dataSum2);
             }
 
             # Revenue location wise
-            $locationwise_revenue = $orders->with('address:id,city')->groupBy('address_id')->selectRaw('address_id, sum(payable_amount) as sum, COUNT(address_id) as addressCount')->whereYear('created_at', date('Y'))->whereNotNull('address_id');
-            $currentyear_ordercount = $orders->whereYear('created_at', date('Y'))->count();
+            // dd($orders->with('address:id,city')->get());  
+
+            $locationwise_revenueNew = $locationwise_revenue->with('address:id,city')->groupBy('address_id')->selectRaw('address_id, sum(payable_amount) as sum, COUNT(address_id) as addressCount')->whereYear('created_at', date('Y'))->whereNotNull('address_id');
+            // dd($locationwise_revenueNew->get());
+
+            $currentyear_orderCount = $currentyear_ordercount->whereYear('created_at', date('Y'))->count();
+            
             if($date_filter)
             {
-                $locationwise_revenue->whereBetween('created_at', [$from_date, $end_date]);
-                $currentyear_ordercount = $orders->whereBetween('created_at', [$from_date, $end_date])->count();
+                $locationwise_revenueNew->whereBetween('created_at', [$from_date, $end_date]);
+                $currentyear_orderCount = $currentyear_ordercount->whereBetween('created_at', [$from_date, $end_date])->count();
             }
-            $address_ids = $locationwise_revenue->pluck('address_id')->toArray();
-            $locationwise_revenue = $locationwise_revenue->get();
+            // dd(currentyear_ordercountNew);
+            $address_ids = $locationwise_revenueNew->pluck('address_id')->toArray();
+
+            $locationwise_revenue = $locationwise_revenueNew->get();
             $address_details = UserAddress::whereIn('id', $address_ids)->get();
 
             # Locations latitude and longitude for map marking
@@ -589,6 +653,31 @@ class DashBoardController extends BaseController
             # Currency symbol
             $clientCurrency = ClientCurrency::with('currency')->where('is_primary', 1)->first();
             $currencySymbol = $clientCurrency->currency->symbol;
+            $orderNotificationCnt = OrderNotificationsLogs::whereIn('vendor_id',$vendorIds)->count();
+
+            $orderLocations = [];
+            $address_ids  = [];
+            // pr($locationwise_revenue->toArray());
+            if(sizeof($locationwise_revenue) > 0) {
+                foreach($locationwise_revenue as $key => $orderAdd)
+                {
+                
+                    if($orderAdd->address){
+                            $sum = isset($orderLocations[$orderAdd->address->city]['sum']) ? $orderLocations[$orderAdd->address->city]['sum'] : 0;
+                            $addresscount = isset($orderLocations[$orderAdd->address->city]['addressCount']) ? $orderLocations[$orderAdd->address->city]['addressCount'] : 0;
+                            $address_ids[]=$orderAdd->id;
+                            //$loc[$orderAdd->address->city]= array(
+                                $orderLocations[$orderAdd->address->city]['addressCount']=($addresscount) +$orderAdd->addressCount;
+                                $orderLocations[$orderAdd->address->city]['address_id']= $orderAdd->address_id;
+                                $orderLocations[$orderAdd->address->city]['city'] = $orderAdd->address->city;
+                                $orderLocations[$orderAdd->address->city]['sum'] = ($sum) + ($orderAdd->sum);
+                            //);
+                    
+                    }
+                }
+                
+//pr($orderLocations);
+            }
 
             $response = [
                 'markers' => $markers,
@@ -609,12 +698,33 @@ class DashBoardController extends BaseController
                 'monthwise_revenue' => $monthwise_revenue,
                 'previousweek_revenue_daywise' => $previousweek_revenue_daywise,
                 'currentweek_revenue_daywise' => $currentweek_revenue_daywise,
-                'locationwise_revenue' => $locationwise_revenue,
-                'currentyear_ordercount' => $currentyear_ordercount,
+                'locationwise_revenue' => $orderLocations,
+                'currentyear_ordercount' => $currentyear_orderCount,
                 'currencySymbol' => $currencySymbol,
+                'total_vendors' => $vendorCounts,
+                'managersCount' => $managersCount??0,
+                'total_sold_products' => $total_sold_products??0,
+                'orderNotificationCnt' => $orderNotificationCnt??0
             ];
             return $this->successResponse($response);
         } catch (Exception $e) {
         }
     }
+
+        # Filter for new admin dashboard
+        public function notificationList(Request $request)
+        {
+
+            $vendorIds = [];
+        
+            $managerId = auth()->id();
+            $vendors = Vendor::latest();
+            $vendorIds = $vendors->whereHas('permissionToUser', function ($query) {
+                $query->where('user_id', Auth::user()->id);
+            });
+            $vendorIds =$vendorIds->pluck('id');
+
+            $notifications = OrderNotificationsLogs::whereIn('vendor_id',$vendorIds)->orderBy('id','desc')->get();
+            return  view('backend.vendor.notifications',compact('notifications'));
+        }
 }

@@ -15,9 +15,9 @@
                                 <span>{{ dateTimeInUserTimeZone($order->created_at, $timezone) }}</span>
                             </div>
                             <div class="col-md-3 alOrderStatus">
-                                                                        <h4>{{ __(getNomenclatureName('Vendor Name',true)) }}</h4>
-                                                                        <span><a class="text-capitalize">{{ @$order->vendors[0]['vendor']->name }}</a></span>
-                             </div>
+                                <h4>{{ __('Vendor Name') }}</h4>
+                                <span><a class="text-capitalize">{{ @$order->vendors[0]->vendor->name }}</a></span>
+                            </div>
                             @if ($client_preference_detail->business_type != 'taxi')
                                 <div class="col-md-3">
                                     <h4>{{ __('Address') }}</h4>
@@ -158,6 +158,7 @@
                                                 </ul>
                                             </div>
                                         </div>
+                                        @include('frontend.account.recurringItems')
                                     </div>
                                 @endforeach
                             </div>
@@ -242,7 +243,7 @@
                                                     $clientCurrency->doller_compare)}}</span>
                                             </li>
                                         @endif
-                                        @if ( checkColumnExists('orders', 'gift_card_amount') &&  $order->gift_card_amount > 0)
+                                        @if ($order->gift_card_amount > 0)
                                             <li
                                                 class="d-flex align-items-center justify-content-between">
                                                 <label

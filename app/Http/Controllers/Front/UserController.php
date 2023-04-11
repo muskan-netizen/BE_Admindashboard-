@@ -165,8 +165,8 @@ class UserController extends FrontController{
         }
     }catch(\Execption $e)
     {
-        Log::info('SMS logs');
-        Log::info($e->getMessage());
+       // Log::info('SMS logs');
+       // Log::info($e->getMessage());
         return response($e->getMessage(),400);
     }
     }

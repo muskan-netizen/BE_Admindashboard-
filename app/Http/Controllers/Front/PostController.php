@@ -100,9 +100,7 @@ class PostController extends FrontController
     {
         try {
             // dd($request->all());
-            // $request->sku = "adfasdf".time();
-
-            // $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+            
 
             //ProductVariant::where('product_id',$id)->update(['status'=>0]);
             // $product = Product::where('id', $id)->firstOrFail();
@@ -142,7 +140,6 @@ class PostController extends FrontController
                     if( checkTableExists('product_attributes') ) {
                         $insert_arr = [];
                         $insert_count = 0;
-
                         foreach($request->attribute as $key => $value) {
                             if( !empty($value) && !empty($value['option'] && is_array($value) )) {
                                 
@@ -282,7 +279,6 @@ class PostController extends FrontController
         $generated_slug = $sku_url.'.'.$slug;
         $user = Auth::user();	
         $user_vendor = UserVendor::where('user_id', $user->id)->first();
-        // dd($user_vendor);
         if(@$user_vendor->vendor_id){
             $product = new Product();
             $product->sku = $slug;
@@ -302,7 +298,7 @@ class PostController extends FrontController
             if ($product->id > 0) {
                 $datatrans[] = [
                     'title' => $request->product_name??null,
-                    'body_html' => '',
+                    'body_html' => !empty($request->product_description)?$request->product_description:'',
                     'meta_title' => '',
                     'meta_keyword' => '',
                     'meta_description' => '',

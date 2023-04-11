@@ -92,6 +92,13 @@ class NotificationTemplateSeeder extends Seeder
                 "tags" => "{prescription}",
                 "content" => "Place your bid before it's too late {prescription}",
                 "slug" => "place-bid-request"
+            ],
+            [
+                "label" => "Order Modified (Customer)",
+                "subject" => "Order Modified",
+                "tags" => "{order_id}",
+                "content" => "Your order ({order_id}) has been modified",
+                "slug" => "order-modified-customer"
             ]
         ];
         NotificationTemplate::truncate();

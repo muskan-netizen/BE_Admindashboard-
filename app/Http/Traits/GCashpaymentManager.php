@@ -56,7 +56,7 @@ trait GCashpaymentManager{
       'redirectfailurl' => 'https://sales.alerthire.com',
       'returnUrl' => 'https://sales.alerthire.com'
       );
-    Log::info($post_data);
+   // Log::info($post_data);
     $curl = curl_init();
     curl_setopt_array($curl, array(
       CURLOPT_URL => 'https://g.payx.ph/payment_request',

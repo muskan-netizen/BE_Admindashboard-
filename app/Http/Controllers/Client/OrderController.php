@@ -15,7 +15,8 @@ use App\Http\Controllers\DunzoController;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Models\RescheduleOrder;
-use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices,Currency, ProcessorProduct};
+
+use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices,Currency, ProcessorProduct,OrderLongTermServiceSchedule, Product, OrderProductDispatchReturnRoute, OrderVendorProduct, VendorOrderProductStatus, ProductBooking};
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -24,6 +25,7 @@ use App\Models\AutoRejectOrderCron;
 use App\Http\Traits\ApiResponser;
 use Log;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use App\Models\{LoyaltyCard, VendorOrderCancelReturnPayment};
 
 class OrderController extends BaseController
@@ -62,6 +64,10 @@ class OrderController extends BaseController
         }
         $return_requests = $return_requests->count();
 
+        $return_form_requests = OrderProductDispatchReturnRoute::where('dispatcher_status_option_id', 4);
+        
+        $returnFormRequestCount = $return_form_requests->count();
+
         // cancel order requests
         $cancel_order_requests = OrderCancelRequest::where('status', 0);
         if ($user->is_superadmin == 0) {
@@ -90,11 +96,11 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38]) // 1 for cod ,38 for offline manual by harbans
                     ->orWhere(function($q3) {
-                        if(checkColumnExists('orders', 'is_postpay'))
-                        {
+                        
+                        
                             $q3->where('is_postpay', 1) // 1 for order is post pay.
                                ->whereNotIn('payment_option_id', [1, 38]);
-                        }
+                        
                     });
             });
         });
@@ -121,11 +127,11 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                 ->orWhere(function($q3) {
-                    if(checkColumnExists('orders', 'is_postpay'))
-                    {
+                    
+                    
                         $q3->where('is_postpay', 1) // 1 for order is post pay.
                             ->whereNotIn('payment_option_id', [1, 38]);
-                    }
+                    
                 });
             });
         });
@@ -151,11 +157,11 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                 ->orWhere(function($q3) {
-                    if(checkColumnExists('orders', 'is_postpay'))
-                    {
+                    
+                    
                         $q3->where('is_postpay', 1) // 1 for order is post pay.
                             ->whereNotIn('payment_option_id', [1, 38]);
-                    }
+                    
                 });
             });
         });
@@ -178,8 +184,7 @@ class OrderController extends BaseController
         $request->merge(['response'=>2,'filter_order_status'=>'pending_orders']);
         $OrderFilterData = $this->postOrderFilter($request);
         $setWeekDate = $this->setWeekDate;
-       // pr($OrderFilterData['pagination'] );
-        return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors', 'fixedFee', 'accounting', 'del_order_count', 'rescheduleOrderCount', 'client_preferences','OrderFilterData','setWeekDate'));
+        return view('backend.order.index', compact('return_requests', 'cancel_order_requests', 'pending_order_count', 'active_order_count', 'past_order_count', 'clientCurrency', 'vendors', 'fixedFee', 'accounting', 'del_order_count', 'rescheduleOrderCount', 'client_preferences','OrderFilterData','setWeekDate','returnFormRequestCount'));
     }
    public function geteEnabledLuxuryOptions($clientPreference){
     $LuxuryOptions = [];
@@ -208,12 +213,16 @@ class OrderController extends BaseController
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $filter_order_status = $request->filter_order_status;
         $HasGiftCard = 0;
+        $ClassName = $request->has('className') ? $request->className : 'col-xl-6';
+
         $orders = Order::onlyEnabledLuxuryOptions($EnabledLuxuryOptions)->with(['vendors.products' => function ($q) {
             $q->withoutAppends();
         }, 'vendors.status', 'orderStatusVendor', 'address', 'user' ]);
-        if(checkColumnExists('order_vendors', 'exchange_order_vendor_id')){
-            $orders = $orders->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail']);
-        }
+        
+        
+        $orders = $orders->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail']);
+        
+        
 
         if ($user->is_superadmin == 0) {
             $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) use ($user) {
@@ -227,11 +236,11 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                 ->orWhere(function($q3) {
-                    if(checkColumnExists('orders', 'is_postpay'))
-                    {
+                    
+                    
                         $q3->where('is_postpay', 1) // 1 for order is post pay
                             ->whereNotIn('payment_option_id', [1, 38]);
-                    }
+                    
                 });
             });
         })->orderBy('id', 'asc');
@@ -263,10 +272,10 @@ class OrderController extends BaseController
                 $query->where('vendor_id', $request->get('vendor_id'));
             });
         }
-        if( checkColumnExists('orders', 'gift_card_id') ){
-            $HasGiftCard = 1;
-            $orders  = $orders->with(['giftCard']);
-        }
+        
+        $HasGiftCard = 1;
+        $orders  = $orders->with(['giftCard']);
+        
         //Search by keyword
         if (!empty($request->search_keyword)) {
             $order_count->whereHas('address', function ($query) use ($request) {
@@ -357,6 +366,93 @@ class OrderController extends BaseController
                         });
                     break;
 
+                case 'rental_pending_delivery':
+                    $order_status_options = [1,6];
+                    $orders = $orders->with(['vendors' => function ($query) use ($order_status_options, $user) {
+                        
+                        if ($user->is_superadmin == 0) {
+                            $query->whereHas('vendor.permissionToUser', function ($query1) use ($user) {
+                                $query1->where('user_id', $user->id);
+                            });
+                        }
+                    }])->whereHas('vendors.products.Routes', function ($query) {
+                        $query->where('dispatcher_status_option_id', '!=' , 5);
+                    })
+                    ->whereHas('vendors', function ($query) use ($order_status_options, $request) {
+                        $query->whereNotIn('order_status_option_id', $order_status_options);
+                        if (!empty($request->get('vendor_id'))) {
+                            $query->where('vendor_id', $request->get('vendor_id'));
+                        }
+                    });
+                break;
+                case 'rental_running_product':
+                    $order_status_options = [6];
+                    $orders = $orders->with(['vendors' => function ($query) use ($user) {
+                        
+                        if ($user->is_superadmin == 0) {
+                            $query->whereHas('vendor.permissionToUser', function ($query1) use ($user) {
+                                $query1->where('user_id', $user->id);
+                            });
+                        }
+                    }])->whereHas('vendors.products.Routes', function ($query) {
+                        $query->where('dispatcher_status_option_id', '=' , 5);
+                    })
+                    ->whereHas('vendors', function ($query) use ($order_status_options, $request) {
+                        // $query->whereIn('order_status_option_id', $order_status_options);
+                        if (!empty($request->get('vendor_id'))) {
+                            $query->where('vendor_id', $request->get('vendor_id'));
+                        }
+                    });
+                break;
+                case 'rental_pending_return':
+                    $order_status_options = [6];
+                    $orders = $orders->with(['vendors' => function ($query) use ($order_status_options, $user) {
+                        
+                        if ($user->is_superadmin == 0) {
+                            $query->whereHas('vendor.permissionToUser', function ($query1) use ($user) {
+                                $query1->where('user_id', $user->id);
+                            });
+                        }
+                    }])->whereHas('vendors.products.Routes', function ($query) {
+                        $query->where('dispatcher_status_option_id', '=' , 5);
+                    })
+                    ->whereHas('vendors', function ($query) use ($order_status_options, $request) {
+                        // $query->whereIn('order_status_option_id', $order_status_options);
+                        if (!empty($request->get('vendor_id'))) {
+                            $query->where('vendor_id', $request->get('vendor_id'));
+                        }
+                    });
+                break;
+
+                    // /* luxury option orders */
+                    // case 'delivery_orders':
+                    //     $orders = $filter_orders->where('luxury_option_id', 1);
+                    //     break;
+
+                    // case 'dine_in_orders':
+                    //     $orders = $filter_orders->where('luxury_option_id', 2);
+                    //     break;
+
+                    // case 'takeaway_orders':
+                    //     $orders = $filter_orders->where('luxury_option_id', 3);
+                    //     break;
+
+                    // case 'rental_orders':
+                    //     $orders = $filter_orders->where('luxury_option_id', 4);
+                    //     break;
+
+                    // case 'pick_drop_orders':
+                    //     $orders = $filter_orders->where('luxury_option_id', 5);
+                    //     break;
+
+                    // case 'on_demand_orders':
+                    //     $orders = $filter_orders->where('luxury_option_id', 6);
+                    //     break;
+
+                    // case 'laundry_orders':
+                    //     $orders = $filter_orders->where('luxury_option_id', 7);
+                    //     break;
+                    // /* luxury option orders */
             }
         }
         $orders = $orders->whereHas('vendors')->where(function ($q1) {
@@ -365,11 +461,11 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                     ->orWhere(function($q3) {
-                        if(checkColumnExists('orders', 'is_postpay'))
-                        {
+                        
+                        
                             $q3->where('is_postpay', 1)
                                 ->whereNotIn('payment_option_id', [1, 38]);
-                        }
+                        
                     });
             });
         });
@@ -411,12 +507,12 @@ class OrderController extends BaseController
                 $response[$vendorTypeOrders] = $$vendorTypeOrders;
             }
         }
-
+        
         if ($lux_id > 0) {
             $orders = $orders->where('luxury_option_id', $lux_id);
         }
         $orders = $orders->paginate(20);
-
+      //  pr($orders->first()->vendors->toArray());
         // Pending orders count
         $pending_orders = $pending_orders->with('vendors', function ($query) use ($user) {
             $query->where('order_status_option_id', 1);
@@ -500,8 +596,13 @@ class OrderController extends BaseController
                 $vendor->order_vendor_id = $vendor_order_status ? $vendor_order_status->order_vendor_id : '';
                 $vendor->vendor_name = $vendor->vendor->name ?? '';
                 $product_total_count = 0;
+                $security_amount = 0;
+                if($vendor->products->count() == 0){
+                    $orders->forget($key);
+                }
                 foreach ($vendor->products as $product) {
                     $product_total_count += $product->quantity * $product->price;
+                    $security_amount += $product->security_amount;
                     $product->image_path  = $product->media->first() &&  !is_null($product->media->first()->image) ? $product->media->first()->image->path : getDefaultImagePath();
                     if (!is_null($product->product) && ($product->has_inventory != 0) && ($product->quantity > ($product->product->variant->first() ? $product->product->variant[0]->quantity : 0))) {
                         $vendor->isAlert = true;
@@ -542,6 +643,7 @@ class OrderController extends BaseController
                 $orders->forget($key);
             }
             $order->scheduled_date_time = $scheduled_date_time;
+            $order->security_amount = $security_amount;
         }
         $admincurrency = ClientCurrency::getAdminCurrencySymbol();
 
@@ -641,6 +743,9 @@ class OrderController extends BaseController
             },
             'vendors.products' => function ($query) use ($vendor_id) {
                 $query->where('vendor_id', $vendor_id);
+                
+                $query->with('order_product_status');
+                
             },
             'vendors.products.product',
             'vendors.products.addon',
@@ -659,9 +764,9 @@ class OrderController extends BaseController
             'reports',
 
         ));
-        if(checkColumnExists('order_vendors', 'exchange_order_vendor_id')){
-            $order = $order->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail', 'order_exchange_request']);
-        }
+        
+        $order = $order->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail', 'order_exchange_request']);
+        
         $order = $order->findOrFail($order_id);
         //    return $order;
         // set payment option dynamic name
@@ -681,6 +786,9 @@ class OrderController extends BaseController
             $order->paymentOption->title = __($order->paymentOption->title);
         }
         $product_schedule_type = '';
+
+
+
         foreach ($order->vendors as $key => $vendor) {
 
             if(isset($vendor) && !empty($vendor->vendor_id) && @$vendor->exchanged_to_order){
@@ -690,6 +798,13 @@ class OrderController extends BaseController
             if(isset($vendor) && !empty($vendor->vendor_id && @$vendor->exchanged_of_order)){
                 $vendor->exchanged_of_order->vendor_detail_url = route('order.show.detail', [$vendor->exchanged_of_order->order_id, @$vendor->exchanged_of_order->vendor_id]);
             }
+
+            // if(isset($vendor->recurring_booking_time) && !empty($vendor->recurring_booking_time)){
+
+            //     $vendor->recurring_bookings =  OrderLongTermServiceSchedule::where(['order_vendor_product_id'=>$vendor->id,'type'=>2])->get();
+            // }
+
+
             foreach ($vendor->products as $key => $product) {
 
                 $product->longTermSchedule = array();
@@ -714,6 +829,17 @@ class OrderController extends BaseController
 
                     }
                 }
+
+
+                // Product Recurring Bookings
+                $product_id             = @$product->product->id;
+                $recurring_product      = Product::find($product_id);
+                if(isset($recurring_product->is_recurring_booking) && $recurring_product->is_recurring_booking == 1){
+                    $product->recurring_bookings =  OrderLongTermServiceSchedule::where(['order_number'=>$order->order_number,'type'=>2])->get();
+                }
+
+
+
                 //pr($product->longTermSchedule->toArray());
                 // check vendor product for schedule
                 if ($product->schedule_type == 'schedule') {
@@ -723,7 +849,7 @@ class OrderController extends BaseController
                 $divider = (empty($product->doller_compare) || $product->doller_compare < 0) ? 1 : $product->doller_compare;
                 $total_amount = $product->quantity * $product->price;
                 $product->routes = []; // routes for single product $product->Routes; //
-                if (in_array($order->luxury_option_id, [6, 8])) { // for on demand service and appointment service code by harbans :)
+                if (in_array($order->luxury_option_id, [6, 8, 4])) { // for on demand service and appointment service code by harbans :)
                     $product->routes =  $product->Routes; // OrderProductDispatchRoute::with('DispatchStatus')->where(['order_vendor_product_id'=>$product->id])->get()->toArray();
                 }
                 foreach ($product->addon as $ck => $addons) {
@@ -802,6 +928,12 @@ class OrderController extends BaseController
             }
         }
 
+
+        $recurring_booking = '';
+        if(!empty($order->recurring_booking_time)){
+            $recurring_booking = OrderLongTermServiceSchedule::where(['order_number'=>$order->order_number,'type'=>2])->get();
+        }
+
         //    pr( $order['total_other_taxes'][14]);
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id,
@@ -819,7 +951,8 @@ class OrderController extends BaseController
             'fixedFee'=>$fixedFee,
             "category_KYC_document" => $category_KYC_document,
             'driver_data' => (($driver_data) ? json_decode($driver_data) : ''),
-            'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm
+            'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm,
+            'recurring_booking' => $recurring_booking,
         ]);
     }
 
@@ -883,17 +1016,20 @@ class OrderController extends BaseController
      */
     public function changeStatus(Request $request, $domain = '')
     {
-
+      
         $orderPlaced = true;
         $orderPlacedNo = '';
+        $productIds = $request->productIds??[];
+        $orderVendorProductIds = $request->order_vendor_product_id??[];
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
-         try {
+         //try {
 
             $timezone = Auth::user()->timezone;
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
+          
             $currentOrderStatus = OrderVendor::where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
-
+            
             if ($currentOrderStatus->order_status_option_id == 2 && $request->status_option_id == 2) { //$request->status_option_id == 3){
                 return response()->json(['status' => 'error', 'message' => __('Order has already been accepted!!!')]);
             }
@@ -921,18 +1057,37 @@ class OrderController extends BaseController
                     }
 
                 }
+
+                if($request->order_luxury_option_id == 4){
+                    foreach($orderVendorProductIds as $key => $id){
+                        $vendor_order_product_status = new VendorOrderProductStatus();
+                        $vendor_order_product_status->order_id = $request->order_id;
+                        $vendor_order_product_status->order_vendor_id = $request->order_vendor_id;
+                        $vendor_order_product_status->vendor_id = $request->vendor_id;
+                        $vendor_order_product_status->product_id = $productIds[$key];
+                        $vendor_order_product_status->order_status_option_id = $request->status_option_id;
+                        $vendor_order_product_status->order_vendor_product_id = $id;
+                        $vendor_order_product_status->save();
+                    }
+                }
+               
                 if ($request->status_option_id == 2) {
                     //Check Order delivery type
+                    
                     if ($orderData->shipping_delivery_type == 'D') {
                         //Create Shipping request for dispatcher
-
-                        if( checkColumnExists('orders','is_long_term') &&   $orderData->orderDetail->is_long_term ==1){
+                        if($orderData->orderDetail->is_long_term ==1){
                             $order_dispatch = $this->checkIfanyServiceProductLastMileon($request);
 
-                        }else{
+                        }
+                        else if($orderData->orderDetail->recurring_booking_type ==1){
+                            $order_dispatch = $this->checkIfIsProductRecurringLastMileon($request);
+                        }
+                        else{
                             $order_dispatch = $this->checkIfanyProductLastMileon($request);
                         }
                         if ($order_dispatch && $order_dispatch == 1){
+
                             $stats = $this->insertInVendorOrderDispatchStatus($request);
                             $orderPlaced = true;
                         }
@@ -975,13 +1130,10 @@ class OrderController extends BaseController
                     $vendor_order_status->order_id = $request->order_id;
                     $vendor_order_status->vendor_id = $request->vendor_id;
                     // This below line is commented because the data in $request->order_vendor_id incorrect.
-                    // $vendor_order_status->order_vendor_id = $request->order_vendor_id;
-                    $vendor_order_status->order_vendor_id = $vendorOrderStatus->order_vendor_id;
+                    $vendor_order_status->order_vendor_id = $request->order_vendor_id;
+                    //$vendor_order_status->order_vendor_id = $vendorOrderStatus->order_vendor_id;
                     $vendor_order_status->order_status_option_id = $request->status_option_id;
                     $vendor_order_status->save();
-
-
-
 
                     if ($request->status_option_id == 3) {
                         if ($orderData->shipping_delivery_type == 'D' && !empty($currentOrderStatus->dispatch_traking_url)) {
@@ -1048,19 +1200,23 @@ class OrderController extends BaseController
                 }
 
                 if ($request->status_option_id == 2) {
-                    $this->ProductVariantStock($request->order_id);
+                    $this->ProductVariantStock($request->order_id, $request);
                 }
 
                 if ($currentOrderStatus->order_status_option_id == 2 && $request->status_option_id == 3) {
-                    $this->ProductVariantStockIncrease($request->order_id);
+                    $this->ProductVariantStockIncreaseByOrderId($request->order_id);
                 }
 
+                if ($request->status_option_id == 3 && $request->order_luxury_option_id == 4) {
+                    ProductBooking::where('order_id', $request->order_id)->update(['on_rent' => 0]);
+                }
 
                 $order_vendor = OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
                 $order_vendor->order_status_option_id = $request->status_option_id;
                 $order_vendor->reject_reason = $request->reject_reason;
                 $order_vendor->cancelled_by = $request->cancelled_by;
                 $order_vendor->save();
+                OrderProduct::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id'=>$request->status_option_id]);
                 DB::commit();
                 $orderData = Order::find($request->order_id);
                 // $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
@@ -1069,20 +1225,59 @@ class OrderController extends BaseController
                 if(getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1){
                      $this->sendTrackingUrlSMS($orderData);
                 }
+
                 return response()->json([
                     'status' => 'success',
                     'created_date' => convertDateTimeInTimeZone($vendor_order_status->created_at, $timezone, 'l, F d, Y, H:i A'),
                     'message' => __('Order Status Updated Successfully.' . (($orderPlacedNo) ? ' Order No : ' . $orderPlacedNo : ''))
                 ]);
             }
+            return response()->json([
+                'status' => 'error',
+                'message' =>__('Order has already updated!!!')
+            ]);
+        // } catch (\Exception $e) {
+        //     DB::rollback();
+        //     return response()->json([
+        //         'status' => 'error',
+        //         'message' => $e->getMessage()
+        //     ]);
+        // }
+    }
+
+    public function changeVendorProductStatus(Request $request, $domain = '')
+    {
+        try {
+            $timezone = Auth::user()->timezone;
+            $vendor_order_product_status_check = VendorOrderProductStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_vendor_product_id', $request->order_vendor_product_id)->where('order_status_option_id', $request->status_option_id)->first();
+
+            if (@$vendor_order_product_status_check->order_status_option_id == 3) { //$request->status_option_id == 2){
+                return response()->json(['status' => 'error', 'message' => __('Order has already been rejected!!!')]);
+            }
+
+            $create_vendor_order_product_status = VendorOrderProductStatus::create(array(
+                'order_id' => $request->order_id,
+                'order_vendor_id'  => $request->order_vendor_id,
+                'vendor_id' => $request->vendor_id,
+                'product_id' => $request->order_product_id,
+                'order_status_option_id' => $request->status_option_id,
+                'order_vendor_product_id' => $request->order_vendor_product_id
+            ));
+
+            if($create_vendor_order_product_status){
+                return response()->json([
+                    'status' => 'success',
+                    'message' => __('Order Vendor Product Status Updated Successfully.')
+                ]);
+            }
         } catch (\Exception $e) {
-            DB::rollback();
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
             ]);
         }
     }
+
     /// ******************   insert In Vendor Order Dispatch Status   ************************ ///////////////
     public function insertInVendorOrderDispatchStatus($request)
     {
@@ -1136,7 +1331,7 @@ class OrderController extends BaseController
 
         if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
             $order_ship = $ship->createOrderRequestShippo($checkdeliveryFeeAdded);
-            //\Log::info($order_ship);
+            ////\Log::info($order_ship);
         }
         if ($order_ship->object_id) {
             $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])->update([
@@ -1269,13 +1464,207 @@ class OrderController extends BaseController
 
     public function checkIfanyProductLastMileon($request)
     {
-        $islongTermInDB = checkColumnExists('products','is_long_term_service') ;
         $order_dispatchs = 2;
+        $AdditionalPreference  =  getAdditionalPreference(['is_place_order_delivery_zero','is_service_product_price_from_dispatch']);
         $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
-        // pr( $checkdeliveryFeeAdded);
         $luxury_option_id = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
-        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
+        $is_place_order_delivery_zero = $AdditionalPreference['is_place_order_delivery_zero'];
+        $is_restricted = $checkdeliveryFeeAdded->is_restricted;
         /// luxury option 8 ( static ) for appointment you can check it on luxuryOptionSeeder
+        if ($luxury_option_id == 8) { // only for appointment type
+            $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
+            if ($dispatch_domain_Appointment && $dispatch_domain_Appointment != false) {
+                $Appointment = 0;
+                foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+
+
+                    if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 12) {
+                        $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
+                        //echo $Appointment . 'app';
+                        //echo $checkdeliveryFeeAdded->delivery_fee . '$checkdeliveryFeeAdded->delivery_fee';
+
+                        if ($dispatch_domain_Appointment && $dispatch_domain_Appointment != false && $Appointment == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0) {
+
+                            $dispatch_domain = [
+                                'service_key'      => $dispatch_domain_Appointment->appointment_service_key,
+                                'service_key_code' => $dispatch_domain_Appointment->appointment_service_key_code,
+                                'service_key_url'  => $dispatch_domain_Appointment->appointment_service_key_url,
+                                'service_type'     => 'appointment'
+                            ];
+                            //pr($checkdeliveryFeeAdded);
+                            $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain, $request);
+                            if ($order_dispatchs && $order_dispatchs == 1) {
+                                $Appointment = 1;
+                                return 1;
+                            }
+                        }
+                    }
+                    else{
+
+                    }
+
+                    //pr('ad');
+                }
+            }
+        }
+     
+        if ($luxury_option_id == 6) { // only for on_demand type
+            
+            $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
+
+            if ($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false) {
+                $OnDemand = 0;
+                foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+                    $dispatch_domain = [
+                        'service_key'      => $dispatch_domain_OnDemand->dispacher_home_other_service_key,
+                        'service_key_code' => $dispatch_domain_OnDemand->dispacher_home_other_service_key_code,
+                        'service_key_url'  => $dispatch_domain_OnDemand->dispacher_home_other_service_key_url,
+                        'service_type'     => 'on_demand'
+                    ];
+                 
+                    if(( $AdditionalPreference['is_service_product_price_from_dispatch'] == 1)  && ( $prod->product->category->categoryDetail->type_id == 8)){
+                       
+                        $dispatch_domain['rejectable_order'] = 1;
+                        $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain, $request);
+                        //$order_dispatchs = $this->placeRequestToDispatchSingleProductUpdate($request->order_id, $request->vendor_id, $dispatch_domain, $prod,$is_restricted,$request);
+                       
+                        if ($order_dispatchs && $order_dispatchs == 1) {
+                            $OnDemand = 1;
+                            return 1;
+                        }
+                    }
+                    else if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
+
+                        //  $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
+                        //echo $Appointment . 'app';
+
+                        if ($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false && $OnDemand == 0  && $checkdeliveryFeeAdded->delivery_fee > 0) {
+
+
+                            $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain, $request);
+                            if ($order_dispatchs && $order_dispatchs == 1) {
+                                $OnDemand = 1;
+                                return 1;
+                            }
+                        }
+                    }else{ //for long term service
+
+                    }
+
+                }
+            }
+        }
+
+        if ($luxury_option_id == 4) { // only for rental type
+            $dispatch_domain = $this->getDispatchDomain();
+            if ($dispatch_domain && $dispatch_domain != false) {
+                foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+                    if ($prod->product->category->categoryDetail->type_id == 10) {
+                        $dispatch_domain = [
+                            'service_key'      => $dispatch_domain->delivery_service_key,
+                            'service_key_code' => $dispatch_domain->delivery_service_key_code,
+                            'service_key_url'  => $dispatch_domain->delivery_service_key_url,
+                            'service_type'     => 'rental'
+                        ];
+                        
+                        $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain, $request);
+                        if ($order_dispatchs && $order_dispatchs == 1) {
+                            // $OnDemand = 1;
+                            return 1;
+                        }
+                    }
+                }
+            }
+        }
+
+        $dispatch_domain = $this->getDispatchDomain();
+        if ($dispatch_domain && $dispatch_domain != false) {
+            if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
+                $order_dispatchs = $this->placeRequestToDispatch($request->order_id, $request->vendor_id, $dispatch_domain);
+            }
+
+
+            if ($order_dispatchs && $order_dispatchs == 1)
+                return 1;
+        }
+
+
+        // $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
+        // if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false) {
+        //     $ondemand = 0;
+
+        //     foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+        //         if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
+        //             $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
+        //             if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false && $ondemand == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0.00) {
+        //                 $order_dispatchs = $this->placeRequestToDispatchOnDemand($request->order_id, $request->vendor_id, $dispatch_domain_ondemand);
+        //                 if ($order_dispatchs && $order_dispatchs == 1) {
+        //                     $ondemand = 1;
+        //                     return 1;
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+        // //\Log::info('getDispatchLaundryDomain');
+        /////////////// **************** for laundry accept order *************** ////////////////
+        $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
+
+        if ($dispatch_domain_laundry && $dispatch_domain_laundry != false) {
+            $laundry = 0;
+
+            foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+                $isNotLongTerm = 1;
+                
+                    if( $prod->product->is_long_term_service ==1 ){
+                        $isNotLongTerm = 0;
+                    }
+                
+
+
+                if (( $isNotLongTerm ==1 ) && $prod->product->category->categoryDetail->type_id == 9) {    ///////// if product from laundry
+
+                    $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
+                    if ($dispatch_domain_laundry && $dispatch_domain_laundry != false && $laundry == 0) {
+
+                        for ($x = 1; $x <= 2; $x++) {
+
+                            if ($x == 1) {
+                                $team_tag = $dispatch_domain_laundry->laundry_pickup_team ?? null;
+                                $colm = $x;
+                            }
+
+                            if ($x == 2) {
+                                $team_tag = $dispatch_domain_laundry->laundry_dropoff_team ?? null;
+                                $colm = $x;
+                            }
+
+
+                            ////\Log::info('placeRequestToDispatchLaundry');
+                            $order_dispatchs = $this->placeRequestToDispatchLaundry($request->order_id, $request->vendor_id, $dispatch_domain_laundry, $team_tag, $colm);
+                        }
+
+                        if ($order_dispatchs && $order_dispatchs == 1) {
+                            $laundry = 1;
+                            return 1;
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+        return 2;
+    }
+
+    public function checkIfIsProductRecurringLastMileon($request)
+    {
+        
+        $order_dispatchs        = 2;
+        $checkdeliveryFeeAdded  = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $luxury_option_id       = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
+        $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         if ($luxury_option_id == 8) { // only for appointment type
             $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
             if ($dispatch_domain_Appointment && $dispatch_domain_Appointment != false) {
@@ -1350,37 +1739,41 @@ class OrderController extends BaseController
                 }
             }
         }
+
+        if ($luxury_option_id == 4) { // only for rental type
+            $dispatch_domain = $this->getDispatchDomain();
+            if ($dispatch_domain && $dispatch_domain != false) {
+                foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
+                    if ($prod->product->category->categoryDetail->type_id == 10) {
+                        $dispatch_domain = [
+                            'service_key'      => $dispatch_domain->delivery_service_key,
+                            'service_key_code' => $dispatch_domain->delivery_service_key_code,
+                            'service_key_url'  => $dispatch_domain->delivery_service_key_url,
+                            'service_type'     => 'rental'
+                        ];
+                        
+                        $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain, $request);
+                        if ($order_dispatchs && $order_dispatchs == 1) {
+                            // $OnDemand = 1;
+                            return 1;
+                        }
+                    }
+                }
+            }
+        }
         
         $dispatch_domain = $this->getDispatchDomain();
+
         if ($dispatch_domain && $dispatch_domain != false) {
+            // dd($checkdeliveryFeeAdded->delivery_fee);
             if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
                 $order_dispatchs = $this->placeRequestToDispatch($request->order_id, $request->vendor_id, $dispatch_domain);
             }
-
-
+            
             if ($order_dispatchs && $order_dispatchs == 1)
                 return 1;
         }
 
-
-        // $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
-        // if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false) {
-        //     $ondemand = 0;
-
-        //     foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
-        //         if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
-        //             $dispatch_domain_ondemand = $this->getDispatchOnDemandDomain();
-        //             if ($dispatch_domain_ondemand && $dispatch_domain_ondemand != false && $ondemand == 0  && $checkdeliveryFeeAdded->delivery_fee <= 0.00) {
-        //                 $order_dispatchs = $this->placeRequestToDispatchOnDemand($request->order_id, $request->vendor_id, $dispatch_domain_ondemand);
-        //                 if ($order_dispatchs && $order_dispatchs == 1) {
-        //                     $ondemand = 1;
-        //                     return 1;
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-        // \Log::info('getDispatchLaundryDomain');
         /////////////// **************** for laundry accept order *************** ////////////////
         $dispatch_domain_laundry = $this->getDispatchLaundryDomain();
 
@@ -1389,11 +1782,11 @@ class OrderController extends BaseController
 
             foreach ($checkdeliveryFeeAdded->products as $key => $prod) {
                 $isNotLongTerm = 1;
-                if( $islongTermInDB = 1 ){
+                
                     if( $prod->product->is_long_term_service ==1 ){
                         $isNotLongTerm = 0;
                     }
-                }
+                
 
 
                 if (( $isNotLongTerm ==1 ) && $prod->product->category->categoryDetail->type_id == 9) {    ///////// if product from laundry
@@ -1414,7 +1807,7 @@ class OrderController extends BaseController
                             }
 
 
-                            //\Log::info('placeRequestToDispatchLaundry');
+                            ////\Log::info('placeRequestToDispatchLaundry');
                             $order_dispatchs = $this->placeRequestToDispatchLaundry($request->order_id, $request->vendor_id, $dispatch_domain_laundry, $team_tag, $colm);
                         }
 
@@ -1444,8 +1837,7 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if(checkColumnExists('orders', 'is_postpay'))
-                {
+                
                     if($order->is_postpay==1 && $order->payment_status == 0)
                     {
                         $cash_to_be_collected = 'Yes';
@@ -1454,14 +1846,12 @@ class OrderController extends BaseController
                         $cash_to_be_collected = 'No';
                         $payable_amount = 0.00;
                     }
-                }else{
-                    $cash_to_be_collected = 'No';
-                    $payable_amount = 0.00;
-                }
+                
             }
             $dynamic = uniqid($order->id . $vendor);
-            $vendor_details = Vendor::where('id', $vendor)->select('id', 'phone_no', 'email', 'name', 'latitude', 'longitude', 'address')->first();
-            $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->get()->first();
+            $vendor_details = Vendor::where('id', $vendor)->select('id', 'phone_no', 'email', 'name', 'latitude', 'longitude', 'address','order_pre_time')->first();
+            $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->first();
+            // pr($orderVendorDetails);
             if(!empty($orderVendorDetails->web_hook_code))
             {
                 $dynamic = $orderVendorDetails->web_hook_code;
@@ -1477,7 +1867,8 @@ class OrderController extends BaseController
             if (isset($order->scheduled_date_time) && !empty($order->scheduled_date_time)) {
                 $task_type = 'schedule';
                 $schedule_time = $order->scheduled_date_time ?? null;
-            } else {
+            }
+            else {
                 $task_type = 'now';
             }
 
@@ -1492,6 +1883,136 @@ class OrderController extends BaseController
                 $scheduleDateTime = $selectedDate . ' ' . $slotTime;
                 $schedule_time =  $scheduleDateTime ?? null;
             }
+
+
+            if(checkColumnExists('orders', 'recurring_booking_type') && ($order->recurring_day_data != ""))
+            {
+
+
+                $date       = explode(",",$order->recurring_day_data);
+                $start_date = $end_date = '';
+                if(isset($date[0])){
+                    $start_date = $date[0];
+                }
+                if(isset($date[1])){
+                    $end_date   = $date[1];
+                }
+                $days_count     = 0;
+                if(!empty($start_date) && !empty($end_date)){
+                    $days_count = Carbon::parse( $start_date )->diffInDays( $end_date );
+                    $startDate  = Carbon::createFromFormat('Y-m-d', $start_date);
+                    $endDate    = Carbon::createFromFormat('Y-m-d', $end_date);
+                    $dateRange  = CarbonPeriod::create($startDate, $endDate);
+                    $dates      = array_map(fn ($date) => $date->format('Y-m-d'), iterator_to_array($dateRange));
+                    $date      = $dates[0];
+                }
+                if($days_count > 0){
+                        $recurring_data = OrderLongTermServiceSchedule::where(['order_number'=>$order->order_number])->first();
+                        $schedule_time = $recurring_data->schedule_date;
+                        $tasks[] = array(
+                                        'task_type_id' => 1,
+                                        'latitude' => $vendor_details->latitude ?? '',
+                                        'longitude' => $vendor_details->longitude ?? '',
+                                        'short_name' => '',
+                                        'address' => $vendor_details->address ?? '',
+                                        'post_code' => '',
+                                        'barcode' => '',
+                                        'flat_no'     => null,
+                                        'email'       => $vendor_details->email ?? null,
+                                        'phone_number' => $vendor_details->phone_no ?? null,
+                                    );
+
+                        $tasks[] = array(
+                                        'task_type_id' => 2,
+                                        'latitude' => $cus_address->latitude ?? '',
+                                        'longitude' => $cus_address->longitude ?? '',
+                                        'short_name' => '',
+                                        'address' => $cus_address->address ?? '',
+                                        'post_code' => $cus_address->pincode ?? '',
+                                        'barcode' => '',
+                                        'flat_no'     => $cus_address->house_number ?? null,
+                                        'email'       => $customer->email ?? null,
+                                        'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
+                                    );
+
+                        if ($customer->dial_code == "971") {
+                            // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
+                            $customerno = "0" . $customer->phone_number;
+                        } else {
+                            // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
+                            $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
+                        }
+                        $client = CP::orderBy('id', 'asc')->first();
+                        $postdata =  [
+                            'order_number' =>  $order->order_number,
+                            'customer_name' => $customer->name ?? 'Dummy Customer',
+                            'customer_phone_number' => $customerno ?? rand(111111, 11111),
+                            'customer_dial_code' => $customer->dial_code ?? null,
+                            'customer_email' => $customer->email ?? null,
+                            'recipient_phone' => $customerno ?? rand(111111, 11111),
+                            'recipient_email' => $customer->email ?? null,
+                            'task_description' => "Order From :" . $vendor_details->name,
+                            'allocation_type' => 'a',
+                            'task_type' => $task_type,
+                            'schedule_time' => $schedule_time ?? null,
+                            'cash_to_be_collected' => $payable_amount ?? 0.00,
+                            'order_number' => $order->order_number,
+                            'barcode' => '',
+                            'order_team_tag' => $team_tag,
+                            'call_back_url' => $call_back_url ?? null,
+                            'task' => $tasks,
+                            'is_restricted' => $orderVendorDetails->is_restricted,
+                            'vendor_id' => $vendor_details->id,
+                            'order_vendor_id' => $orderVendorDetails->id,
+                            'dbname' => $client->database_name,
+                            'order_id' => $order->id,
+                            'customer_id' => $order->user_id,
+                            'user_icon' => $customer->image,
+                            'vendor_name' => $vendor_details->name ?? null,
+                            'tip_amount' => $order->tip_amount,
+                            'payment_method' => $order->payment_method,
+                            'order_pre_time'=>$vendor_details->order_pre_time
+
+                        ];
+                        //pr($postdata);
+                        if ($orderVendorDetails->is_restricted == 1) {
+                            $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
+                            $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
+                        }
+
+                        $client = new Client([
+                            'headers' => [
+                                'personaltoken' => $dispatch_domain->delivery_service_key,
+                                'shortcode' => $dispatch_domain->delivery_service_key_code,
+                                'content-type' => 'application/json'
+                            ]
+                        ]);
+
+                        $url = $dispatch_domain->delivery_service_key_url;
+
+                        $res = $client->post(
+                            $url . '/api/task/create',
+                            ['form_params' => ($postdata)]
+                        );
+
+
+
+
+                    $response = json_decode($res->getBody(), true);
+                    if ($response && $response['task_id'] > 0) {
+                        $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
+                        $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
+                            ->update(['web_hook_code' => $dynamic, 'dispatch_traking_url' => $dispatch_traking_url]);
+                        $recurring_data->web_hook_code          = $dynamic;
+                        $recurring_data->dispatch_traking_url   = $dispatch_traking_url;
+                        $recurring_data->save();
+                        return 1;
+                    }
+
+                }
+
+            }else{
+
 
             $tasks[] = array(
                 'task_type_id' => 1,
@@ -1539,7 +2060,7 @@ class OrderController extends BaseController
                 'allocation_type' => 'a',
                 'task_type' => $task_type,
                 'schedule_time' => $schedule_time ?? null,
-                'cash_to_be_collected' => $orderVendorDetails->payable_amount ?? 0.00,
+                'cash_to_be_collected' => !empty($orderVendorDetails) ? ($orderVendorDetails->payable_amount + $orderVendorDetails->service_fee_percentage_amount) : 0.00,
                 'order_number' => $order->order_number,
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
@@ -1571,7 +2092,7 @@ class OrderController extends BaseController
             ]);
 
             $url = $dispatch_domain->delivery_service_key_url;
-
+            // dd($url);
             $res = $client->post(
                 $url . '/api/task/create',
                 ['form_params' => ($postdata)]
@@ -1585,9 +2106,13 @@ class OrderController extends BaseController
 
                 return 1;
             }
+
+
+
+        }
             return 2;
         } catch (\Exception $e) {
-            Log::info($e->getMessage());
+           // Log::info($e->getMessage());
             return 2;
             // return response()->json([
             //     'status' => 'error',
@@ -1595,8 +2120,6 @@ class OrderController extends BaseController
             // ]);
         }
     }
-
-
 
     // place Request To Dispatch for On Demand
     public function placeRequestToDispatchOnDemand($order, $vendor, $dispatch_domain)
@@ -1611,8 +2134,7 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if(checkColumnExists('orders', 'is_postpay'))
-                {
+                
                     if($order->is_postpay==1 && $order->payment_status == 0)
                     {
                         $cash_to_be_collected = 'Yes';
@@ -1621,10 +2143,7 @@ class OrderController extends BaseController
                         $cash_to_be_collected = 'No';
                         $payable_amount = 0.00;
                     }
-                }else{
-                    $cash_to_be_collected = 'No';
-                    $payable_amount = 0.00;
-                }
+                
             }
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
@@ -1736,7 +2255,7 @@ class OrderController extends BaseController
     // place Request To Dispatch for Laundry
     public function placeRequestToDispatchLaundry($order, $vendor, $dispatch_domain, $team_tag, $colm)
     {
-        // \Log::info('placeRequestToDispatchLaundry -- 1');
+        // //\Log::info('placeRequestToDispatchLaundry -- 1');
 
         try {
             $order = Order::find($order);
@@ -1747,8 +2266,7 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if(checkColumnExists('orders', 'is_postpay'))
-                {
+                
                     if($order->is_postpay==1 && $order->payment_status == 0)
                     {
                         $cash_to_be_collected = 'Yes';
@@ -1757,10 +2275,7 @@ class OrderController extends BaseController
                         $cash_to_be_collected = 'No';
                         $payable_amount = 0.00;
                     }
-                }else{
-                    $cash_to_be_collected = 'No';
-                    $payable_amount = 0.00;
-                }
+                
             }
 
 
@@ -1875,7 +2390,7 @@ class OrderController extends BaseController
                 'customer_id' => $order->user_id,
                 'user_icon' => $customer->image
             ];
-            //\Log::info(json_encode($postdata));
+            ////\Log::info(json_encode($postdata));
             // if($order_vendor->is_restricted == 1)
             // {
             //     $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
@@ -1892,7 +2407,7 @@ class OrderController extends BaseController
             ]);
 
             $url = $dispatch_domain->laundry_service_key_url;
-            // \Log::info('domain --'.$url);
+            // //\Log::info('domain --'.$url);
 
             $res = $client->post(
                 $url . '/api/task/create',
@@ -1962,7 +2477,7 @@ class OrderController extends BaseController
     {
         try {
             $user = Auth::user();
-            $orders_list = OrderReturnRequest::where('status', $status)->where('type', 1)->with('product', 'order')->orderBy('updated_at', 'DESC');
+            $orders_list = OrderReturnRequest::where('status', $status)->whereIn('type', [1,3])->with('product', 'order')->orderBy('updated_at', 'DESC');
             if ($user->is_superadmin == 0) {
                 $orders_list = $orders_list->whereHas('order.vendors.vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);
@@ -2004,9 +2519,8 @@ class OrderController extends BaseController
                     $query->where('user_id', Auth::user()->id);
                 });
             }
-            if(checkColumnExists('order_return_requests', 'type')){
-                $orders_list = $orders_list->where('type', 1); // 1 = return , 2 = exchange
-            }
+            $orders_list = $orders_list->whereIn('type', [1,3]); // 1 = return , 2 = exchange
+            
             if (!empty($request->search_keyword)) {
                 $orders_list->whereHas('order', function ($query)  use ($request) {
                     $query->whereHas('address', function ($q) use ($request) {
@@ -2080,11 +2594,32 @@ class OrderController extends BaseController
     public function getReturnProductModal(Request $request, $domain = '')
     {
         try {
-            $return_details = OrderReturnRequest::where('id', $request->id)->where('type', 1)->with('returnFiles')->first();
+            $return_details = OrderReturnRequest::where('id', $request->id)->whereIn('type', [1,3])->with('returnFiles')->first();
             if (isset($return_details)) {
 
                 if ($request->ajax()) {
                     return \Response::json(\View::make('frontend.modals.update-return-product-client', array('return_details' => $return_details))->render());
+                }
+            }
+            return $this->errorResponse('Invalid order', 404);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+
+     /**
+     * return rental orders details
+     */
+    public function getRentalReturnProductModal(Request $request, $domain = '')
+    {
+        // dd($request->all());
+        try {
+            $return_details = OrderProductDispatchReturnRoute::with(['order', 'orderProduct', 'orderProduct.pvariant', 'orderProduct.product'])->where('id', $request->id)->first();
+            if (isset($return_details)) {
+
+                if ($request->ajax()) {
+                    return \Response::json(\View::make('frontend.modals.update-rental-return-product-client', array('return_details' => $return_details))->render());
                 }
             }
             return $this->errorResponse('Invalid order', 404);
@@ -2100,19 +2635,89 @@ class OrderController extends BaseController
     {
         DB::beginTransaction();
         try {
-            $return = OrderReturnRequest::find($request->id);
+            $return = OrderReturnRequest::with('order')->find($request->id);
+            // dd($return->created_at);
             $returns = OrderReturnRequest::where('id', $request->id)->update(['status' => $request->status ?? null, 'reason_by_vendor' => $request->reason_by_vendor ?? null]);
-            if (isset($returns)) {
+            if (isset($returns) && $return->type == 1) {
                 if ($request->status == 'Accepted' && $return->status != 'Accepted') {
                     $user = User::find($return->return_by);
                     $wallet = $user->wallet;
                     $order_product = OrderProduct::find($return->order_vendor_product_id);
-                    $credit_amount = $order_product->price + $order_product->taxable_amount;
+                    if(!empty($return->order) && $return->order->luxury_option_id != 4){
+                        $credit_amount = $order_product->price + $order_product->taxable_amount;
+                        $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return ' . $order_product->product_name]);
+                    }
+                    $dispatch_domain = $this->getDispatchDomain();
+                    $order_details = OrderProduct::where('id',$return->order_vendor_product_id)->whereHas('order',function($q) use ($user){$q->where('user_id',$user->id);})->first();
+                    $this->placeReturnRequestToDispatch($order_details->order_id, $order_details->vendor_id, $dispatch_domain, $order_details);
+                }
+                DB::commit();
+                return $this->successResponse($returns, 'Updated.');
+            }elseif(isset($returns) && $return->type == 3){
+                if ($request->status == 'Accepted' && $return->status != 'Accepted') {
+                    $user = User::find($return->return_by);
+                    $wallet = $user->wallet;
+                    $order_product = OrderProduct::find($return->order_vendor_product_id);
+                    $product_detail = Product::with('variant')->find($order_product->product_id);
+
+                    // Get Remaining Hours
+                    $to = Carbon::createFromFormat('Y-m-d H:s:i', $return->created_at); //request created date
+                    $from = Carbon::createFromFormat('Y-m-d H:s:i', $order_product->end_date_time); //product end date
+                    $diff_in_hours = $to->diffInHours($from);
+
+                    // Get Total Hours
+                    $start_hour = Carbon::createFromFormat('Y-m-d H:s:i', $order_product->start_date_time);
+                    $end_hour = Carbon::createFromFormat('Y-m-d H:s:i', $order_product->end_date_time);
+                    $total_hours = $start_hour->diffInHours($end_hour);
+
+                    $hours_used = floor($total_hours - $diff_in_hours);
+                    if($hours_used <= $product_detail->minimum_duration){
+                        $credit_amount = $order_product->incremental_price;
+                    }else{
+                        $remaining_hours = floor(($total_hours - $hours_used) / $product_detail->additional_increments);
+                        $credit_amount = ($remaining_hours * $product_detail->variant[0]['incremental_price']);
+                    }
                     $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return ' . $order_product->product_name]);
                     $dispatch_domain = $this->getDispatchDomain();
                     $order_details = OrderProduct::where('id',$return->order_vendor_product_id)->whereHas('order',function($q) use ($user){$q->where('user_id',$user->id);})->first();
-                    $this->placeReturnRequestToDispatch($order_details->order_id, $order_details->vendor_id, $dispatch_domain);
+                    $this->placeReturnRequestToDispatch($order_details->order_id, $order_details->vendor_id, $dispatch_domain, $order_details);
+                    DB::commit();
+                    return $this->successResponse($returns, 'Updated.');
                 }
+            }
+            return $this->errorResponse('Invalid order', 200);
+        } catch (Exception $e) {
+            DB::rollback();
+            return $this->errorResponse($e->getMessage(), 400);
+        }
+    }
+
+    /**
+     * return  order product
+     */
+    public function updateProductRentalReturn(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $return = OrderProductDispatchReturnRoute::with(['order', 'orderProduct', 'orderProduct.pvariant', 'orderProduct.product'])->where('id', $request->id)->first();
+            if(@$request->status && $request->status == 'Accepted'){
+                $returns = OrderProductDispatchReturnRoute::where('id', $request->id)->update(['dispatcher_status_option_id' => 6]);
+                $update_return_status = OrderReturnRequest::where('order_vendor_product_id', $request->order_vendor_product_id)->update(['status' => 'Completed']);
+            }
+            
+            if (isset($returns)) {
+                $security_amount = $return->orderProduct->security_amount;
+                if($request->damage > 0){
+                    $security_amount = $security_amount - $request->damage;
+                }
+               
+                $user = User::find($return->order->user_id);
+                $wallet = $user->wallet;
+                $order_product = OrderProduct::find($return->order_vendor_product_id);
+                $credit_amount = $security_amount;
+                $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for secuirity return ' . $order_product->product_name]);
+                $this->ProductVariantStockIncreaseByOrderId($order_product->order_id, 'rental');
+                $product_bookings = ProductBooking::where('order_vendor_product_id', $request->order_vendor_product_id)->update(['on_rent' => 0]);
                 DB::commit();
                 return $this->successResponse($returns, 'Updated.');
             }
@@ -2124,7 +2729,7 @@ class OrderController extends BaseController
     }
 
     // place Request To Dispatch
-    public function placeReturnRequestToDispatch($order, $vendor, $dispatch_domain)
+    public function placeReturnRequestToDispatch($order, $vendor, $dispatch_domain, $order_product)
     {
         try {
 
@@ -2136,8 +2741,7 @@ class OrderController extends BaseController
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
             } else {
-                if(checkColumnExists('orders', 'is_postpay'))
-                {
+                
                     if($order->is_postpay==1 && $order->payment_status == 0)
                     {
                         $cash_to_be_collected = 'Yes';
@@ -2146,10 +2750,7 @@ class OrderController extends BaseController
                         $cash_to_be_collected = 'No';
                         $payable_amount = 0.00;
                     }
-                }else{
-                    $cash_to_be_collected = 'No';
-                    $payable_amount = 0.00;
-                }
+                
             }
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
@@ -2252,15 +2853,7 @@ class OrderController extends BaseController
                     'content-type' => 'application/json'
                 ]
             ]);
-
-            \Log::info("header", [
-                'personaltoken' => $dispatch_domain->delivery_service_key,
-                'shortcode' => $dispatch_domain->delivery_service_key_code,
-                'content-type' => 'application/json'
-            ]);
-
-            \Log::info("header", $postdata);
-
+            //\Log::info("header", $postdata);
             $url = $dispatch_domain->delivery_service_key_url;
 
             $res = $client->post(
@@ -2268,17 +2861,30 @@ class OrderController extends BaseController
                 ['form_params' => ($postdata)]
             );
             $response = json_decode($res->getBody(), true);
-            \Log::info("asdfasdfasd". $res->getBody());
+            //\Log::info("asdfasdfasd". $res->getBody());
             if ($response && $response['task_id'] > 0) {
                 $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
                 $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
                     ->update(['web_hook_code' => $dynamic, 'dispatch_traking_url' => $dispatch_traking_url]);
 
+                //track url
+                // OrderReturnRequest
+
+                $dispatch_route                                 = new OrderProductDispatchReturnRoute();
+                $dispatch_route->order_id                       = $order->id;
+                $dispatch_route->order_vendor_id                = $order_product->order_vendor_id;
+                $dispatch_route->order_vendor_product_id        = $order_product->id;
+                $dispatch_route->web_hook_code                  = $dynamic;
+                $dispatch_route->dispatch_traking_url           = $dispatch_traking_url;
+                $dispatch_route->dispatcher_status_option_id    = 4;
+                $dispatch_route->order_status_option_id         = 1;
+                $dispatch_route->save();
+
                 return 1;
             }
             return 2;
         } catch (\Exception $e) {
-            Log::info($e->getMessage());
+           // Log::info($e->getMessage());
             return 2;
             // return response()->json([
             //     'status' => 'error',
@@ -2603,9 +3209,9 @@ class OrderController extends BaseController
 
         // Product decrement successfully
         if ($request->getStatusCode() == 200) {
-            Log::info('Product decrement successfully');
+           // Log::info('Product decrement successfully');
         } else {
-            Log::info('Product not decrement successfully');
+           // Log::info('Product not decrement successfully');
         }
     }
     function testObserver()
@@ -2615,7 +3221,6 @@ class OrderController extends BaseController
         $order_vendor->save();
         dd($order_vendor);
     }
-
 
 
 }
