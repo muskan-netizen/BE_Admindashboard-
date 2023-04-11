@@ -758,7 +758,18 @@ display: inline-block;
     font-size: 14px;
 }
 
-
+@media (max-width:767px){
+    .al_body_template_eight  .product-image img.img-fluid.blur-up.lazyloaded {
+    height: auto !important;
+}
+body.al_body_template_eight .page-main-content .col-grid-box{
+        max-width: 47%;
+        margin: 0 auto 10px;
+}
+.al_body_template_eight  .displayProducts .suppliers-box .suppliers-img-outer {
+    height: 160px !important;
+}
+}
 @media (max-width:576px){
     .al_body_template_four  .dark #login-section::after,  .al_body_template_four  #login-section::after{
         opacity:0;
