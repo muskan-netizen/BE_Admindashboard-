@@ -8,6 +8,7 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use App\Models\ClientPreference;
+use Illuminate\Support\Facades\Session;
 
 
 
@@ -25,6 +26,11 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
 
     public function collection(){
         $user = Auth::user();
+        if (Session::has('preferences') && !empty(Session::get('preferences'))) {
+            $client_preference_detail = (object)Session::get('preferences');
+        }else{
+            $client_preference_detail = ClientPreference::select('is_tax_price_inclusive')->first();
+        }
         $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
         $vendor_orders =  OrderVendor::with(['orderDetail.paymentOption', 'user','vendor','payment'])->orderBy('id', 'DESC');
         if (Auth::user()->is_superadmin == 0){
@@ -60,9 +66,7 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
             }
             $vendor_orders = $vendor_orders->where('order_status_option_id',$status);
         }
-        $vendor_orders = $vendor_orders->get();  
-        $client_preference_detail= ClientPreference::first();
-        
+        $vendor_orders = $vendor_orders->get();          
         foreach ($vendor_orders as $vendor_order) {
             $adminDiscount = 0.00;
             $vendor_order->created_date = dateTimeInUserTimeZone($vendor_order->created_at, $timezone);

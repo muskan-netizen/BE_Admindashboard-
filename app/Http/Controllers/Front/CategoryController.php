@@ -344,7 +344,7 @@ class CategoryController extends FrontController{
                     // }
                 }
             }
-            $maxPrice =  DB::select("SELECT MAX(product_variants.price) as max_price FROM products INNER JOIN product_variants ON product_variants.product_id = products.id WHERE product_variants.status = 1 AND products.is_live = 1 AND products.category_id = ?", [$category_id])[0]->max_price;
+            $maxPrice =  DB::select("SELECT MAX(product_variants.price) as max_price FROM product_variants INNER JOIN products ON products.id = product_variants.product_id WHERE product_variants.status = 1 AND products.is_live = 1 AND products.category_id = ?", [$category_id])[0]->max_price;
             $listData = $products;
             if($is_max){
                 $listData = $maxPrice;
@@ -440,9 +440,7 @@ class CategoryController extends FrontController{
             }
         }
         $listData = $products;
-        $maxPrice =  DB::select("SELECT MAX(product_variants.price) as max_price FROM products INNER JOIN product_variants ON product_variants.product_id = products.id WHERE product_variants.status = 1 AND products.is_live = 1 AND products.category_id = ?", [$category->id])[0]->max_price;
-        
-
+        $maxPrice =  DB::select("SELECT MAX(product_variants.price) as max_price FROM product_variants INNER JOIN products ON products.id = product_variants.product_id WHERE product_variants.status = 1 AND products.is_live = 1 AND products.category_id = ?", [$category->id])[0]->max_price;
         return view('frontend/cate-products')->with(['listData' => $listData, 'category' => $category, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets,"vendor_id"=>$vendor->id,'maxPrice'=>$maxPrice]);
     }
 
