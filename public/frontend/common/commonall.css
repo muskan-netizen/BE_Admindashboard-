@@ -746,6 +746,19 @@ display: inline-block;
 }
 /*======== first template css gagandeep 29-03-2023 end ========*/
 
+/*======== ( category product ratting fix) eight css gagandeep 11-04-2023  ========*/ 
+.al_body_template_eight .vendor_onetem .supplier-rating span.rating-number {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 2px 5px;
+    background: #fff;
+    border-radius: 5px;
+    display: inline-block;
+    font-size: 14px;
+}
+
+
 @media (max-width:576px){
     .al_body_template_four  .dark #login-section::after,  .al_body_template_four  #login-section::after{
         opacity:0;
