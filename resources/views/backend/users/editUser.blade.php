@@ -60,6 +60,7 @@
     <!-- start page title -->
     <div class="row">
         <div class="col-12">
+            @include('alert')
             <div class="page-title-box">
                 @if(isset($subadmin))
                 <h4 class="page-title">{{ __('Update Customer') }}</h4>
@@ -209,7 +210,8 @@
                                 }
                             @endphp
                             @if(strtolower($user_registration_document->file_type) == 'selector')
-                                    <div class="col-md-6 mb-3" id="{{$user_registration_document->primary->slug??''}}Input">
+                                @if($user_registration_document->options)    
+                                <div class="col-md-6 mb-3" id="{{$user_registration_document->primary->slug??''}}Input">
                                         <label for="">{{$user_registration_document->primary ? $user_registration_document->primary->name : ''}}</label>
                                         <select class="form-control {{ (!empty($user_registration_document->is_required))?'required':''}}" name="{{$user_registration_document->primary->slug}}"  id="input_file_selector_{{$user_registration_document->id}}">
                                             <option value="" >{{__('Please Select '). ($user_registration_document->primary ? $user_registration_document->primary->name : '') }}</option>
@@ -219,6 +221,7 @@
                                         </select>
                                         <span class="invalid-feedback" id="{{$user_registration_document->primary->slug}}_error"><strong></strong></span>
                                     </div>
+                                    @endif
                             @else
                             <div class="col-md-6" >
                                 <div class="form-group" id="{{$user_registration_document->primary->slug??''}}Input">
@@ -261,7 +264,7 @@
                                         }
                                     }
                                 @endphp
-                                <table class="table table-borderless table-nowrap table-hover table-centered m-0 d-none">
+                                <table class="table table-borderless table-nowrap table-hover table-centered m-0">
 
                                     <thead class="thead-light">
                                         <tr>

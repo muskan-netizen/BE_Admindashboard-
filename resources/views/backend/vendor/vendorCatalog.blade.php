@@ -242,7 +242,7 @@ pr($products->toArray());
                                                         <th><input type="checkbox" class="all-product_check"
                                                                 name="all_product_id" id="all-product_check"></th>
                                                         <th>#</th>
-                                                        <th>{{ __('Name') }}</th>
+                                                        <th>{{ __('Name 11') }}</th>
                                                         <th>{{ __('Category') }}</th>
                                                         @if ($client_preference_detail->business_type != 'taxi')
                                                             <th>{{ __('Brand') }}</th>
@@ -1357,6 +1357,7 @@ pr($products->toArray());
         function datatable_intent(search =''){
             $('#vendor_product_table').DataTable({
                 "responsive": true,
+                "bAutoWidth": false,
                 "scrollX": true,
                 "destroy": true,
                 // "processing": true,

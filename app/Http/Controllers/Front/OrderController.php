@@ -742,6 +742,7 @@ class OrderController extends FrontController
              $user_id = $order->user_id;
              $user = User::find($user_id);
         }
+        
         $client = CP::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
         $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from', 'admin_email')->where('id', '>', 0)->first();
         if (! empty($data->mail_driver) && ! empty($data->mail_host) && ! empty($data->mail_port) && ! empty($data->mail_port) && ! empty($data->mail_password) && ! empty($data->mail_encryption)) {
@@ -749,7 +750,6 @@ class OrderController extends FrontController
             $currSymbol = Session::has('currencySymbol') ? Session::get('currencySymbol') : '$';
             $client_name = 'Sales';
             $mail_from = $data->mail_from;
-           
             try {
                 $email_template_content = '';
                 $address = '';
@@ -778,16 +778,14 @@ class OrderController extends FrontController
                     } elseif($luxuryOptionTitle == 'payment_intent.payment_failed'){
                         $luxuryOptionTitle = 'Failed';
                     } else {
-                        $luxuryOptionTitle = 'delivery';
-                    }
-
-                   
+                        $luxuryOptionTitle = !empty($order->luxury_option) ? $order->luxury_option->title : 'delivery';
+                    }                    
 
                     $email_template_content = $email_template->content;
                     //     if ($vendor_id == "") {
-                    $returnHTML = view('email.newOrderProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
+                    $returnHTML = view('email.newOrderProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();                    
                     //     } else {
-                    //$returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails,'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
+                    //$returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails,'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();                   
                     // }
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
@@ -800,7 +798,6 @@ class OrderController extends FrontController
                         $address = str_ireplace("{address}", $address_arr->address . ', ' . $address_arr->state . ', ' . $address_arr->country . ', ' . $address_arr->pincode, $email_template_content);
                     }
 
-                    /* -- Sending email to vendor -- */
                     $email_data = [
                         'link' => "link",
                         'mail_from' => $mail_from,
@@ -817,16 +814,15 @@ class OrderController extends FrontController
                         $email_data['admin_email'] = $data['admin_email'];
                     }
                     $vendor_id == "" ? $email_data['send_to_cc'] = 1 : $email_data['send_to_cc'] = 0;
-
+                    
                     /* -- Sending email to vendor -- */
                     $vendor = Vendor::where('id', $vendor_id)->first();
                     if (! empty($vendor)) {
                         $email_data['email'] = $vendor->email;
                         dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                     }
-
+                    
                     /* -- Sending email to customer -- */
-
                     $email_data['email'] = $user->email;
                     dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                 }
@@ -1947,6 +1943,7 @@ class OrderController extends FrontController
                         $vendor_service_fee_percentage_amount = $vendor_service_fee_percentage_amount + $service_fee_percentage_amount;
                         $payable_amount += $service_fee_percentage_amount;
                         $total_service_fee = $total_service_fee + $service_fee_percentage_amount;
+                        $vendor_payable_amount += $service_fee_percentage_amount;
                     }
 
                     $cart_addons = CartAddon::where('cart_product_id', $vendor_cart_product->id)->get();
@@ -2047,10 +2044,9 @@ class OrderController extends FrontController
                 $OrderVendor->fixed_fee = $fixedFeeAmount;
                 $OrderVendor->additional_price = $additionalPrice;
                 $OrderVendor->taxable_amount = number_format($total_other_taxes, 2);
-                ;
                 $OrderVendor->payment_option_id = $request->payment_option_id;
-                $OrderVendor->subtotal_amount = $OrderVendor->subtotal_amount - $bid_vendor_discount ?? 0;
-                $OrderVendor->payable_amount = $vendor_payable_amount - $bid_vendor_discount;
+                $OrderVendor->subtotal_amount = $OrderVendor->subtotal_amount - $bid_vendor_discount??0;
+                $OrderVendor->payable_amount = $vendor_payable_amount +$fixedFeeAmount+number_format($total_other_taxes, 2);
                 $OrderVendor->total_markup_price = $vendor_markup_amount;
                 $OrderVendor->total_container_charges = $vendor_total_container_charges;
 
@@ -2069,8 +2065,12 @@ class OrderController extends FrontController
                 $Order_bid_discount += $bid_vendor_discount ?? 0;
                 $vendor_info = Vendor::where('id', $vendor_id)->first();
                 if ($vendor_info) {
+                    if(isset($coupon_paid_by)){
+                        $actual_amount = $actual_amount - $vendor_discount_amount;
+                    }
                     if (($vendor_info->commission_percent) != null && $actual_amount > 0) {
                         $actual_amountComm = $actual_amount - $vendor_markup_amount;
+                        
                         $OrderVendor->admin_commission_percentage_amount = round($vendor_info->commission_percent * ($actual_amountComm / 100), 2);
                     }
                     if (($vendor_info->commission_fixed_per_order) != null && $actual_amount > 0) {
