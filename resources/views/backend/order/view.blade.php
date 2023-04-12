@@ -787,11 +787,18 @@ $timezone = Auth::user()->timezone;
                             <td>{{ $clientCurrency->currency->symbol }}{{ decimal_format($adminRevenue) }}
                             </td>
                         </tr>
+<tr>
+                            <th scope="row" colspan="4" class="text-end">
+                                {{ __('Admin Commission') }} :
+                            </th>
 
+                            <td>{{ $clientCurrency->currency->symbol }}{{ decimal_format($vendor->admin_commission_percentage_amount) }}
+                            </td>
+                        </tr>
                         <tr>
                             <th scope="row" colspan="4" class="text-end">{{ __("Store Earning") }} :</th>
                             {{-- <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->sub_total * $clientCurrency->doller_compare - $revenue - $vendorDiscount)}}</td> --}}
-                            <td>{{$clientCurrency->currency->symbol}}{{decimal_format($storeRevenue)}}</td>
+                            <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->vendor_amount)}}</td>
                         </tr>
                         {{-- @endif --}}
                         @if($order->tip_amount > 0)

@@ -1594,55 +1594,30 @@
 									== 1) required @endif>
 								</div>
 							</div>
+
 							<div class="col-12">
 								<div class="form-group mb-2">
-									<label for="azul_merchant_id" class="mr-3">{{ __("Merchant ID")
-										}}</label> <input type="text" name="azul_merchant_id"
-										id="azul_merchant_id" class="form-control"
-										value="{{$azul_merchant_id}}" @if($opt->status == 1) required
+									<label for="payway_merchant_id" class="mr-3">{{ __("Merchant ID")
+										}}</label> <input type="text" name="payway_merchant_id"
+										id="payway_merchant_id" class="form-control"
+										value="{{$payway_merchant_id}}" @if($opt->status == 1) required
 									@endif>
 								</div>
 							</div>
-							<div class="col-12">
-								<div class="form-group mb-2">
-									<label for="azul_auth_header_one" class="mr-3">{{ __("Auth
-										Header 1") }}</label> <input type="text"
-										name="azul_auth_header_one" id="azul_auth_header_one"
-										class="form-control" value="{{$azul_auth_header_one}}"
-										@if($opt->status == 1) required @endif>
-								</div>
-							</div>
-							<div class="col-12">
-								<div class="form-group mb-2">
-									<label for="azul_auth_header_two" class="mr-3">{{ __("Auth
-										Header 2") }}</label> <input type="text"
-										name="azul_auth_header_two" id="azul_auth_header_two"
-										class="form-control" value="{{$azul_auth_header_two}}"
-										@if($opt->status == 1) required @endif>
-								</div>
-							</div>
 
 							<div class="col-12">
 								<div class="form-group mb-2">
-									<label for="azul_ssl_certificate" class="mr-3">{{ __("SSL
-										Certificate") }}</label> <input type="file"
-										name="azul_ssl_certificate" id="azul_ssl_certificate"
-										class="form-control" 	@if($opt->status == 1) required @endif>
-									<p class="font-weight-bold">{{@$azul_ssl_certificate}}</p>
-								</div>
-							</div>
-
-							<div class="col-12">
-								<div class="form-group mb-2">
-									<label for="azul_ssl_key" class="mr-3">{{ __("SSL Key") }}</label>
-									<input type="file" name="azul_ssl_key" id="azul_ssl_key"
-										class="form-control" 	@if($opt->status == 1) required @endif>
-									<p class="font-weight-bold">{{@$azul_ssl_key}}</p>
+									<label for="payway_api_key" class="mr-3">{{ __("Api Key")
+										}}</label> <input type="text" name="payway_api_key"
+										id="payway_api_key" class="form-control"
+										value="{{$payway_api_key}}" @if($opt->status == 1) required
+									@endif>
 								</div>
 							</div>
 
 						</div>
 					</div>
+					
 					@endif
 
 

@@ -1182,6 +1182,19 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
     margin: 0;
     padding-left: 10px;
 }
+.save-card-custom {
+    padding-top: 10px;
+}
+.save-card-custom input {
+    margin: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.save-card-custom label {
+    padding-left: 25px;
+}
+
+
 @media (max-width:1400px){
     .al_body_template_four  .brand-ing {
         width: 180px;
