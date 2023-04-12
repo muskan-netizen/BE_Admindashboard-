@@ -40,16 +40,17 @@ class BookingController extends FrontController
         $order['dispatch_traking_url'] = $order->vendors->first()->dispatch_traking_url ?? null;
         //dd($order);
         $order['dispatch_traking_url'] = str_replace("/order/","/order-details/",$order['dispatch_traking_url']);
-        $response = Http::get($order['dispatch_traking_url']);
+        if ($order['dispatch_traking_url']) {
+            $response = Http::get($order['dispatch_traking_url']);
+        }
         $tasks = array();
         $agent_location = '';
-        if($response->status() == 200){
+        if(isset($response) && $response->status() == 200){
            $response = $response->json();
            $order['dispatch_order'] = $response;
            $tasks = $response['tasks'];
            $agent_location = $response['agent_location'];
         }
-        
 
         $vendor = OrderVendor::where('order_id',$order->id)->first();
         return view('frontend.booking.details')->with(['user_addresses' => $user_addresses, 'navCategories' => $navCategories,'order' => $order,'vendor' => $vendor,'route' => $route,'tasks' => $tasks,'agent_location' => $agent_location]);

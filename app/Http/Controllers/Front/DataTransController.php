@@ -117,12 +117,11 @@ class DataTransController extends Controller
     public function completeOrderCart(Request $request, $pay)
     {
         $order = Order::where('id', $pay->order_id)->first();
-        // dd($order);
+
         if (! empty($order)) {
             $order->payment_status = '1';
             $order->save();
 
-            // Auto accept order
             $orderController = new OrderController();
             $orderController->autoAcceptOrderIfOn($order->id);
 
@@ -147,7 +146,6 @@ class DataTransController extends Controller
             CartProduct::where('cart_id', $cartid)->delete();
             CartProductPrescription::where('cart_id', $cartid)->delete();
 
-            // send sms
             // $this->sendSuccessSMS($request, $order);
             Payment::create([
                 'amount' => 0,
@@ -160,8 +158,6 @@ class DataTransController extends Controller
                 'order_id' => $order->id
             ]);
 
-            // Send Notification
-            // return $order->id;
             if (! empty($order->vendors)) {
                 foreach ($order->vendors as $vendor_value) {
                     $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
@@ -174,7 +170,17 @@ class DataTransController extends Controller
             $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
             $super_admin = User::where('is_superadmin', 1)->pluck('id');
             $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+            
+            if(isset($request->come_from) && $request->come_from == 'app')
+            {
+                $response['status']         = 'Success';
+                $response['msg']            = 'Success Added wallet.';
+                $response['payment_from']   = 'wallet';
+                $response['order_id']       = $order->id;
+                return response()->json($response,200);
+            }
             return redirect()->route('order.success',['order_id' => $order->id]);
+
         } else {
             $user = auth()->user();
             $wallet = $user->wallet;
@@ -183,7 +189,16 @@ class DataTransController extends Controller
                     'Wallet has been <b>refunded</b> for cancellation of order #' . $order->order_number
                 ]);
             }
-            return 0;
+
+            if(isset($request->come_from) && $request->come_from == 'app')
+            {
+                $response['status']         = 'Success';
+                $response['msg']            = 'Success Added wallet.';
+                $response['payment_from']   = 'Wallet has been <b>refunded</b> for cancellation of order #' . $order->order_number;
+                return response()->json($response,200);
+            }
+
+            return redirect()->route('user.wallet');
         }
     }
 
@@ -194,15 +209,14 @@ class DataTransController extends Controller
         $data['payment_option_id'] =  55;
         $request = new \Illuminate\Http\Request($data);
         $this->creditMyWallet($request);
-        // if($come_from == 'app')
-        // {
+        if(isset($request->come_from) && $request->come_from == 'app')
+        {
             $response['status']         = 'Success';
             $response['msg']            = 'Success Added wallet.';
             $response['payment_from']   = 'wallet';
-
-        // }
+            return response()->json($response,200);
+        }
         return redirect()->route('user.wallet');
-        return response()->json($response,200);
 
     }
 
@@ -266,13 +280,13 @@ class DataTransController extends Controller
 
         $subscriptionController = new UserSubscriptionController();
         $subscriptionController->purchaseSubscriptionPlan($request,'', $payment->viva_order_id);
-        // if ($come_from == 'app') {
+        if (isset($request->come_from) && $request->come_from == 'app') {
             $response['status'] = 'Success';
             $response['msg'] = 'Success Added Subscription.';
             $response['payment_from'] = 'subscription';
-        // }
+            return response()->json($response, 200);
+        }
         return redirect()->route('user.subscription.plans');
-        return response()->json($response, 200);
         
     }
 
@@ -300,12 +314,27 @@ class DataTransController extends Controller
                 $request->request->add(['order_number'=> $order->order_number, 'payment_option_id' => 32, 'amount' => $order->payable_amount, 'transaction_id' => $request->datatransTrxId]);
                 $plaseOrderForPickup = new PickupDeliveryController();
                 $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+                
+                if (isset($request->come_from) && $request->come_from == 'app') {
+                    $response['status'] = 'Success';
+                    $response['msg'] = 'Success Added Pickup.';
+                    $response['payment_from'] = 'pickup_delivery';
+                    return response()->json($response, 200);
+                }
+
                 return Redirect::to(route('front.booking.details',$order->order_number));
             }
         }else{
             //Failed transaction case
             $data = Payment::where('transaction_id',$request->datatransTrxId)->first();
             $data->delete();
+
+            if (isset($request->come_from) && $request->come_from == 'app') {
+                $response['status'] = 'Success';
+                $response['msg'] = 'Success Added Pickup.';
+                $response['payment_from'] = 'pickup_delivery';
+                return response()->json($response, 200);
+            }
 
             return Redirect::to(route('user.wallet'))->with('error',$request->message);
         }
@@ -321,7 +350,13 @@ class DataTransController extends Controller
 
         $orderController = new OrderController();
         $orderController->tipAfterOrder($request);
-        
+
+        if (isset($request->come_from) && $request->come_from == 'app') {
+            $response['status'] = 'Success';
+            $response['msg'] = 'Success Added Tip.';
+            $response['payment_from'] = 'tip';
+            return response()->json($response, 200);
+        }
         return redirect()->route('user.orders');
         
     }
