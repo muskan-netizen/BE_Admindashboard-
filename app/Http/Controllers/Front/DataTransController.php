@@ -20,14 +20,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\DataTransTrait;
 use App\Models\CaregoryKycDoc;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redirect;
 
 class DataTransController extends Controller
 {
-    use ApiResponser;
+    use DataTransTrait;
     public function payByDataTrans(Request $request)
     {
         $data = $request->all();
@@ -35,6 +36,7 @@ class DataTransController extends Controller
         $data['come_from'] = 'app';
 
         $amt = $request->amt ?? $request->total_amount;
+        $order = Order::where(['order_number' => $request->order_number])->first();
 
         if ($request->isMethod('post')) {
                 $data['come_from'] = 'web';
@@ -44,59 +46,12 @@ class DataTransController extends Controller
                 Auth::login($user);
             } else {
                 $user = auth()->user();
-            }
-
-            if ($request->payment_from == 'cart') {
-                $order = Order::where(['order_number' => $request->order_number])->first();
-                $data['return_url'] = route('order.success',[$order->id]);
-                $refNo = "Oder-".$request->order_number;
-              
-            } elseif ($request->payment_from == 'pickup_delivery') {
-                // $request->amt = $amt;
-                $time = $request->order_number;
-                $data['return_url'] = route('front.booking.details', [$time]);
-                $refNo = "Pickup Delivery";
-              
-            } elseif ($request->payment_from == 'wallet') {
-
-                $data['return_url'] = route('user.wallet');
-                $refNo = "Wallet-Credit";
-
-            } elseif ($request->payment_from == 'tip') {
-
-                $data['return_url'] =route('user.orders');
-                $refNo = "Tip Amount";
-      
-            } elseif ($request->payment_from == 'subscription') {
-           
-                $data['return_url'] = route('user.subscription.plans');
-                $refNo = "subscription";                
-            }
-            // $data['order_number'] = $time;
+            }         
         }
-
-        $payment = PaymentOption::find($request->payment_option_id);
-        $credentials = json_decode($payment->credentials);
 
         $order = Order::where('order_number', $request->order_number)->first();
 
-        $redirect = $data['return_url'];
-        $redirect = route('order.dataTransuccessPage');
-
-        $response = Http::withHeaders([
-            'Authorization' => 'Basic '. base64_encode("$credentials->merchant_id:$credentials->password"),
-            'Content-Type' =>'application/json' 
-        ])->post('https://api.sandbox.datatrans.com/v1/transactions',[
-            "currency" => "CHF",
-            "refno" => $refNo,
-            "amount" => $request->total_amount * 100,
-            "paymentMethods" => ["ECA","VIS","PAP","AMX","AZP","APL","PAY","DIS"],
-            "redirect" => [
-                "successUrl" => $redirect,
-                "cancelUrl" => route('userHome'),
-                "errorUrl" => $redirect
-            ]
-        ]);
+        $response = $this->dataTransApi($request);
         
         if($request->payment_from == 'cart')
         {
@@ -129,7 +84,7 @@ class DataTransController extends Controller
                 'payment_option_id' => 55,
                 'transaction_id' => $response['transactionId'],
                 'balance_transaction' => $amt,
-                'viva_order_id' => $order->id ?? '',
+                'viva_order_id' => $request->order_number ?? '',
                 'type' => $request->payment_from,
                 'date' => date('Y-m-d'),
                 'user_id' => $user->id
@@ -144,53 +99,23 @@ class DataTransController extends Controller
     {
         $payment = Payment::where('transaction_id', $request->get('datatransTrxId'))->first();
             if ($payment->type == 'cart') {
-                $this->completeOrderCart($request, $payment);
+               return $this->completeOrderCart($request, $payment);
             } elseif ($payment->type == 'wallet') {
                 \Log::info("Wallet type");
-               $this->completeOrderWallet($request, $payment);
+               return $this->completeOrderWallet($request, $payment);
             } elseif ($payment->type == 'tip') {
                 $order = Order::find($payment->order_id);
-                $this->completeOrderTip($request, $payment,$order->order_number??0);
+                return $this->completeOrderTip($request, $payment);
             } elseif ($payment->type == 'subscription') {
-                $this->completeOrderSubs($request, $payment);
+                return $this->completeOrderSubs($request, $payment);
             } elseif ($payment->type == 'pickup_delivery') {
-                 $this->completeOrderPickup($request, $payment);
+                return $this->completeOrderPickup($request, $payment);
             }   
-            
-        if(auth()->user()){
 
-            \Log::info("user ".json_encode(auth()->user()->id));
-
-            $payment = Payment::select('*')->where('user_id',auth()->user()->id)->where(['transaction_id' => $request->get('datatransTrxId')])->orderBy('id','DESC')->first();
-            //  dd($payment);
-            if($payment){
-                if ($payment->type == 'cart') {   
-                    $message = 'Order has been placed successfully';
-                    Session::put('success', $message);
-                    \Log::info("payment order id : ".$payment->order_id);
-                    $this->completeOrderCart($request, $payment);
-                    return redirect()->route('order.success',['order_id' => $payment->order_id]);                  
-                } elseif (in_array($payment->type,[ 'wallet','wallet_topup'])) {
-                    $message = 'Wallet has been credited successfully';
-                    Session::put('success', $message);
-                    return redirect()->route('user.wallet');
-                } elseif ($payment->type == 'tip') {
-                    $message = 'Tip has been submitted successfully';
-                    Session::put('success', $message);
-                    return redirect()->route('user.orders');
-                } elseif ($payment->type == 'subscription') {
-                    $message = 'Subscription has been done successfully';
-                    Session::put('success', $message);
-                    return redirect()->route('user.subscription.plans');
-                } 
-            }
-        }
-       // return redirect('user/orders');
     }
 
     public function completeOrderCart(Request $request, $pay)
     {
-        // dd($pay);
         $order = Order::where('id', $pay->order_id)->first();
         // dd($order);
         if (! empty($order)) {
@@ -221,19 +146,19 @@ class DataTransController extends Controller
             CartCoupon::where('cart_id', $cartid)->delete();
             CartProduct::where('cart_id', $cartid)->delete();
             CartProductPrescription::where('cart_id', $cartid)->delete();
-            Cart::where('id', $cartid)->delete();
+
             // send sms
             // $this->sendSuccessSMS($request, $order);
-            // Payment::create([
-            //     'amount' => 0,
-            //     'transaction_id' => $pay->transaction_id,
-            //     'balance_transaction' => $order->payable_amount,
-            //     'type' => 'cart',
-            //     'user_id' => $pay->user_id,
-            //     'payment_option_id' => $pay->payment_option_id,
-            //     'date' => date('Y-m-d'),
-            //     'order_id' => $order->id
-            // ]);
+            Payment::create([
+                'amount' => 0,
+                'transaction_id' => $pay->transaction_id,
+                'balance_transaction' => $order->payable_amount,
+                'type' => 'cart',
+                'user_id' => $pay->user_id,
+                'payment_option_id' => $pay->payment_option_id,
+                'date' => date('Y-m-d'),
+                'order_id' => $order->id
+            ]);
 
             // Send Notification
             // return $order->id;
@@ -249,7 +174,7 @@ class DataTransController extends Controller
             $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
             $super_admin = User::where('is_superadmin', 1)->pluck('id');
             $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
-            return $order->id;
+            return redirect()->route('order.success',['order_id' => $order->id]);
         } else {
             $user = auth()->user();
             $wallet = $user->wallet;
@@ -268,7 +193,6 @@ class DataTransController extends Controller
         $data['transaction_id'] =  $payment->transaction_id;
         $data['payment_option_id'] =  55;
         $request = new \Illuminate\Http\Request($data);
-        // $walletController = new WalletController();
         $this->creditMyWallet($request);
         // if($come_from == 'app')
         // {
@@ -277,11 +201,12 @@ class DataTransController extends Controller
             $response['payment_from']   = 'wallet';
 
         // }
+        return redirect()->route('user.wallet');
         return response()->json($response,200);
 
     }
-    
-    public function creditMyWallet(Request $request)
+
+    public function creditMyWallet(Request $request, $domain = '')
     {
         if( (isset($request->user_id)) && (!empty($request->user_id)) ){
             $user = User::find($request->user_id);
@@ -310,7 +235,7 @@ class DataTransController extends Controller
                 $payment->transaction_id = $request->transaction_id;
                 $payment->payment_option_id = $request->payment_option_id ?? null;
                 $payment->balance_transaction = $credit_amount;
-                $payment->type = 'wallet_topup';
+                $payment->type = 'wallet';
                 $payment->save();
 
                 $transactions = Transaction::where('payable_id', $user->id)->get();
@@ -346,7 +271,59 @@ class DataTransController extends Controller
             $response['msg'] = 'Success Added Subscription.';
             $response['payment_from'] = 'subscription';
         // }
+        return redirect()->route('user.subscription.plans');
         return response()->json($response, 200);
         
     }
+
+    public function completeOrderPickup(Request $request,$payment)
+    {
+        $order = Order::where('order_number',$payment->viva_order_id)->first();
+        if(isset($request->datatransTrxId))
+        {
+            if ($order) {
+                $order->payment_status = 1;
+                $order->save();
+                $payment_exists = Payment::where('transaction_id', $request->datatransTrxId)->first();
+                if (!$payment_exists) {
+                    $payment = new Payment();
+                    $payment->date = date('Y-m-d');
+                    $payment->type = 'pickup_delivery';
+                    $payment->order_id = $order->id ?? '';
+                    $payment->payment_option_id = 55;
+                    $payment->user_id = $order->user_id ?? '';
+                    $payment->transaction_id = $request->datatransTrxId;
+                    $payment->balance_transaction = $order->payable_amount ?? '';
+                    $payment->save();
+                }
+                
+                $request->request->add(['order_number'=> $order->order_number, 'payment_option_id' => 32, 'amount' => $order->payable_amount, 'transaction_id' => $request->datatransTrxId]);
+                $plaseOrderForPickup = new PickupDeliveryController();
+                $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+                return Redirect::to(route('front.booking.details',$order->order_number));
+            }
+        }else{
+            //Failed transaction case
+            $data = Payment::where('transaction_id',$request->datatransTrxId)->first();
+            $data->delete();
+
+            return Redirect::to(route('user.wallet'))->with('error',$request->message);
+        }
+    }
+
+    public function completeOrderTip($request, $payment)
+    {
+        $data['tip_amount'] = $payment->amount;
+        $data['order_number'] = $payment->viva_order_id;
+        $data['transaction_id'] = $payment->transaction_id;
+
+        $request = new \Illuminate\Http\Request($data);
+
+        $orderController = new OrderController();
+        $orderController->tipAfterOrder($request);
+        
+        return redirect()->route('user.orders');
+        
+    }
+
 }

@@ -1327,8 +1327,10 @@
         var add_rider_url = "{{ route('rider.create') }}";
         var remove_rider_url = "{{ route('rider.remove') }}";
         var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
-         var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
-         	var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
+        var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
+        var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
+        var data_trans_url = "{{route('payment.payByDataTrans')}}";
+
         @if ($client_preference_detail->distance_unit_for_time == 'mile')
             var distance_unit = "IMPERIAL";
         @else
@@ -1400,7 +1402,9 @@
     @endif
     <script type="text/javascript" src="{{ asset('js/developer.js') }}"></script>
     <script src="{{ asset('js/payment.js') }}"></script>
-
+    @if(in_array('data_trans',$client_payment_options))
+        <script src="https://pay.sandbox.datatrans.com/upp/payment/js/datatrans-2.0.0.js"></script>
+    @endif
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
         integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>

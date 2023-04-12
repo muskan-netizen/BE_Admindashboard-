@@ -1,0 +1,58 @@
+<?php
+namespace App\Http\Traits;
+
+use App\Models\PaymentOption;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http as FacadesHttp;
+use App\Http\Traits\ApiResponser;
+
+trait DataTransTrait
+{
+    use ApiResponser;
+    public function __construct()
+    {
+        $this->creds = PaymentOption::where('code', 'data_trans')->where('status', 1)->first();
+        $this->creds_arr = json_decode($this->creds->credentials);
+        $this->merchant_id = $this->creds_arr->merchant_id;
+        $this->password = $this->creds_arr->password;
+    }
+
+    public function dataTransApi(Request $request)
+    {
+        $redirect = route('order.dataTransuccessPage');
+
+        if ($request->payment_from == 'cart') {
+            $refNo = "Oder-".$request->order_number;
+          
+        } elseif ($request->payment_from == 'pickup_delivery') {
+            $refNo = "Pickup Delivery";
+          
+        } elseif ($request->payment_from == 'wallet') {
+            $refNo = "Wallet-Credit";
+
+        } elseif ($request->payment_from == 'tip') {
+            $refNo = "Tip Amount";
+  
+        } elseif ($request->payment_from == 'subscription') {
+            $refNo = "subscription";                
+        }
+        elseif ($request->payment_from == 'pickup_delivery') {
+            $refNo = "subscription";                
+        }
+
+       return FacadesHttp::withHeaders([
+            'Authorization' => 'Basic '. base64_encode($this->merchant_id.':'.$this->password),
+            'Content-Type' =>'application/json' 
+        ])->post('https://api.sandbox.datatrans.com/v1/transactions',[
+            "currency" => "CHF",
+            "refno" => $refNo,
+            "amount" => $request->total_amount * 100,
+            "paymentMethods" => ["ECA","VIS","PAP","AMX","AZP","APL","PAY","DIS"],
+            "redirect" => [
+                "successUrl" => $redirect,
+                "cancelUrl" => route('userHome'),
+                "errorUrl" => $redirect
+            ]
+        ]);
+    }
+}

@@ -5666,7 +5666,7 @@ $(document).ready(function () {
                 break;
             case 55: 
                 var walletAmount = $('#wallet_amount').val();
-                paymentViaDataTrans(payment_option_id,walletAmount,null);
+                paymentViaDataTrans('',payment_option_id,null);
             break;
         }
     }

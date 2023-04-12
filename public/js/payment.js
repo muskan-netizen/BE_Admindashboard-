@@ -3724,7 +3724,6 @@ function clickHandle(evt, tabName) {
 }
 
 window.paymentViaDataTrans = function paymentViaDataTrans(address_id,payment_option_id,order) {
-
     let tip = 0;
     let tipElement = $("#cart_tip_amount");
     let cartElement = $("input[name='cart_total_payable_amount']");
@@ -3747,6 +3746,11 @@ window.paymentViaDataTrans = function paymentViaDataTrans(address_id,payment_opt
         total_amount = walletElement.val();
         data.payment_from ='wallet';
 
+    } else if (cabElement.length > 0) {
+        total_amount = cabElement.data('totalamount');
+        data.payment_from = 'pickup_delivery';
+        data.order_number = order.order_number;
+        data.reload_route = order.route;
     } else if (path.indexOf("subscription") !== -1) {
         total_amount = subscriptionElement.val();
         data.subscription_id = subscription_id.val();
@@ -3760,7 +3764,7 @@ window.paymentViaDataTrans = function paymentViaDataTrans(address_id,payment_opt
     }
 
     data.total_amount = total_amount;
-    data.payment_option_id = 55;
+    data.payment_option_id = payment_option_id;
     data._token = $('input[name=_token]').val();
 
     $.ajax({
