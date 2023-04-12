@@ -724,12 +724,19 @@ body.al_body_template_six.dark h6.card_title.ellips {
 
 .al_body_template_six .alSixMainMenu {
     margin-top: -120px;
-    display: flex;
+    /* display: flex; */
+    display: block;
     justify-content: center;
     position: relative;
     z-index: 9;
 }
-
+.al_body_template_six .alSixMainMenu .slick-disabled{
+    display: none!important;
+}
+.al_body_template_six .common-product-box {
+    display: block;
+    border-bottom: unset;
+}   
 .al_body_template_six .alSixMainMenu .slick-slide .al_main_category a .alCategoryName {
     text-transform: uppercase;
     max-width: 120px;

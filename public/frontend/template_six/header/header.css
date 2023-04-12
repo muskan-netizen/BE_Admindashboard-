@@ -1116,9 +1116,25 @@ body .royo_whatsapp_img {
     min-width: 250px;
 }
 
+.al_body_template_six .vendor-design_new {
+    width: 100%;
+}
 
-
-
+.al_body_template_six  .vendor-design_new .vendor-info li{
+    color:inherit;
+    display: block;
+}
+.al_body_template_six  .vendor_icon-design h3, .al_body_template_six  .alProductCategories .product-bottom-bar .vendor-reviwes, .al_body_template_six  .customize_vendor {
+    display: inline-block;
+}
+.al_body_template_six .alProductCategories .product-bottom-bar .vendor-reviwes{
+    position: unset;
+}
+.al_body_template_six .vendor-design_new .vendor-info li svg g {
+    stroke: #000;
+    fill: #000!important;
+    opacity: 1;
+}
 @media (max-width:576px) {
     .rightHead {
         order: 2;

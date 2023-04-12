@@ -2682,11 +2682,19 @@ body.al_body_template_eight.homeHeader section.section-b-space.ratio_asos .colle
     display: inline-block;
     font-size: 14px;
 }
-
-@media (max-width:767px){
-
+.al_body_template_eight  .order-success-sec ul.order-detail.row li {
+    width: 100%;
+    max-width: 100%;
+    flex: unset;
+    justify-content: space-between;
+    display: flex!important;
+    padding-bottom: 5px;
+    font-size:15px;
 }
-
+.al_body_template_eight  .order-success-sec ul.order-detail.row li.Shipping span:first-child {
+    min-width: 150px;
+    display: inline-block;
+}
 /*----------laptop view----------*/
 
 @media(max-width:1440px) {
@@ -2700,6 +2708,9 @@ body.al_body_template_eight.homeHeader section.section-b-space.ratio_asos .colle
 /*-------------ipad css--------*/
 
 @media(max-width:991px) {
+    .al_body_template_eight .order-success-sec ul.order-detail {
+        margin: 0!important;
+    }
     body.al_body_template_eight .recet-pw .login_img img {
         border-radius: 10px 10px 0 0 !important;
     }
