@@ -2953,6 +2953,22 @@ body.al_body_template_eight.homeHeader .main-fillter .side_fillter .range-slider
 .price_box_bottom li span {
     font-size: 12px;
 }
+/*======== ( category product ratting fix) eight css gagandeep 11-04-2023  ========*/ 
+.al_body_template_eight .vendor_onetem .supplier-rating span.rating-number {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 2px 5px;
+    background: #fff;
+    border-radius: 5px;
+    display: inline-block;
+    font-size: 14px;
+}
+
+@media (max-width:767px){
+
+}
+
 /*----------laptop view----------*/
 
 @media(max-width:1440px) {
@@ -3725,6 +3741,16 @@ body.al_body_template_eight.homeHeader .main-fillter .side_fillter .range-slider
         position: absolute;
         right: 0;
         font-size: 14px !important;
+    }
+    .al_body_template_eight  .product-image img.img-fluid.blur-up.lazyloaded {
+        height: auto !important;
+    }
+    body.al_body_template_eight .page-main-content .col-grid-box{
+            max-width: 47%;
+            margin: 0 auto 10px;
+    }
+    .al_body_template_eight  .displayProducts .suppliers-box .suppliers-img-outer {
+        height: 160px !important;
     }
 }
 
