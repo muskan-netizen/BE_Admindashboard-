@@ -181,10 +181,12 @@
                                                     <label
                                                         class="m-0">{{ __('Amount') }}</label>
                                                     @php
-                                                        $product_subtotal_amount = $product_total_count - $vendor->discount_amount + $vendor->delivery_fee;
+	                        $product_subtotal_amount = $vendor->subtotal_amount - $vendor->discount_amount + $vendor->total_container_charges +
+                                                                                                 $vendor->taxable_amount + $vendor->service_fee_percentage_amount + $vendor->fixed_fee +
+                                                                                                 $vendor->delivery_fee + $vendor->additional_price + $vendor->toll_amount-$order->wallet_amount_used;
                                                         $subtotal_order_price += $product_subtotal_amount;
                                                     @endphp
-                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->payable_amount
+                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($product_subtotal_amount
                                                         *
                                                         $clientCurrency->doller_compare)}}</span>
                                                 </li>
@@ -300,8 +302,7 @@
                                         class="grand_total d-flex align-items-center justify-content-between">
                                         <label
                                             class="m-0">{{ __('Total Payable') }}</label>
-                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->payable_amount
-                                            - $order->total_discount_calculate *
+                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->payable_amount *
                                             $clientCurrency->doller_compare)}}</span>
                                     </li>
                                     {{-- mohit sir branch code added by sohail --}}
