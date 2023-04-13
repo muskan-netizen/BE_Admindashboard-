@@ -1122,6 +1122,10 @@ body .royo_whatsapp_img {
     min-width: 250px;
 }
 
+.al_body_template_six .vendor-design_new {
+    width: 100%;
+}
+
 .al_body_template_six  .vendor-design_new .vendor-info li{
     color:inherit;
     display: block;
