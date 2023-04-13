@@ -713,7 +713,13 @@ body.al_body_template_six.dark h6.card_title.ellips {
 .al_body_template_six .alSixMainMenu .pixelstrap .al_main_category_list li a {
     text-align: left;
 }
-
+.al_body_template_six .slick-slide .inner_spacing p {
+    display: block;
+    line-height: 1.5;
+}
+.al_body_template_six .product-card-box.position-relative.al_box_third_template.al h6.card_title.ellips{
+    margin-bottom: 6px!important;
+}
 .al_body_template_six .nav-cate-img img {
     height: 150px;
     width: 150px;
