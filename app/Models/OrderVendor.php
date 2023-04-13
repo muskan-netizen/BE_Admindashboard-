@@ -136,8 +136,6 @@ class OrderVendor extends Model{
         if($this->coupon_paid_by == 0){
             $discount = $this->discount_amount;
         }
-        $tip = !empty($this->orderDetail)?number_format($this->orderDetail->tip_amount, 2):0.00;
-        $vendor_amount += $tip;
         return decimal_format($vendor_amount - $discount - $this->admin_commission_percentage_amount);
     }
     
