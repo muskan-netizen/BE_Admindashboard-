@@ -8,6 +8,14 @@ $(function () {
           $('body').removeClass("add_overlay");
         }
       );
+
+    let cardJson = {
+        'cno': '',
+        'dt': '',
+        'cv': '',
+        'name':'',
+    }
+
     var slotValidater = 2;
 
     var footer_height = jQuery('.footer-light').height();
@@ -4928,11 +4936,14 @@ $(document).ready(function () {
                  case 50:
                 paymentViazulpay('', payment_option_id, '');
                  break;
-            break;
              case 55:
 
                 paymentViaDataTrans('', payment_option_id, '');
                  break;
+            case 52:
+                paymentViaSkipCash('',payment_option_id,'');
+                break;
+                
         }
 
     }
@@ -4992,7 +5003,7 @@ $(document).ready(function () {
                     return false;
                 }
                // paymentViaPaystack(address_id, payment_option_id);
-            break;
+            break;https://trello.com/c/IG4uyXtL/478-munch-landing-page
 
             case '6':
                 paymentViaPayfast(address_id, payment_option_id);
@@ -5408,7 +5419,9 @@ $(document).ready(function () {
                 }
                 else{
                     return false;
-                }
+                }     
+              break; 
+
             case '50':
 				if(creditCardValidation()){
 	                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
@@ -5435,10 +5448,28 @@ $(document).ready(function () {
                 if (order != '') {
                     paymentViaDataTrans(address_id,payment_option_id,order);
                 }
+          break ;
+          case '53':
+
+            cardJson = {
+                'cno': $('#card-element-nmi').val(),
+                'dt': $('#date-element-nmi').val(),
+                'cv': $('#cvv-element-nmi').val(),
+                'name':'nmi',
+            }
+            if(cardValidation(cardJson)){
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentNmipay(address_id, payment_option_id,order,cardJson);
+                }
                 else{
                     return false;
                 }
             break;
+            }else{
+                $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
+            }
+            break; 
         }
 
     }
@@ -5668,6 +5699,23 @@ $(document).ready(function () {
                 var walletAmount = $('#wallet_amount').val();
                 paymentViaDataTrans('',payment_option_id,null);
             break;
+
+            case 52:
+                paymentViaSkipCash('',payment_option_id,'');
+                break;
+            
+            case 53:
+                cardJson = {
+                    'cno': $('#card-element-nmi').val(),
+                    'dt': $('#date-element-nmi').val(),
+                    'cv': $('#cvv-element-nmi').val(),
+                    'name':'nmi',
+                }
+                if(cardValidation(cardJson)){
+                    paymentNmipay('', payment_option_id,'',cardJson);
+                }
+                break; 
+
         }
     }
 

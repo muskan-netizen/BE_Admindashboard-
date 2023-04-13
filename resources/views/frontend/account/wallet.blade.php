@@ -436,6 +436,23 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                     </div>
                 <% } %>
 
+                <% if(payment_option.slug == 'nmi') { %>
+                    <div class="col-md-12 mt-3 mb-3 nmi_element_wrapper option-wrapper d-none">
+                        <div class="row no-gutters">
+                            <div class="col-6">
+                            <input type="text"  maxlength="16" style=" border-right: none;" class="form-control demoInputBox" id="card-element-nmi" placeholder="Enter Card Number" />
+                            </div>
+                            <div class="col-3">
+                            <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="date-element-nmi" placeholder="MM/YYYY" />
+                            </div>
+                            <div class="col-3">
+                            <input type="password" max="4" style=" border-left: none;"  class="form-control demoInputBox" id="cvv-element-nmi" placeholder="CVV" />
+                            </div>
+                            <span class="error text-danger" id="card_error_nmi"></span>
+                        </div>
+                    </div>
+                <% } %>
+
                  <% if(payment_option.slug == 'azulpay') { %>
                     <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
                         <div class="row no-gutters">
@@ -476,7 +493,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
 
                         </div>
 <div class="row">
-<div class="col-md-4">
+<div class="col-md-4 save-card-custom">
                      <input type="checkbox" name="save_card" class="form-check-input" id="azul-save_card" value="1">
                                     <label for="azul-save_card" class="">{{ __('Save Card') }}</label>
             </div>
@@ -497,6 +514,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
 @endsection
 @section('script')
 <script src="{{asset('js/credit-card-validator.js')}}"></script>
+@include('frontend.account.paymentUrls')
 @if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
 @endif

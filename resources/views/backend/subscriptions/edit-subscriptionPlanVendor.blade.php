@@ -65,12 +65,15 @@
                             </select>
                         </div>
                     </div>
-                    <?php /* ?><div class="col-md-6">
-                        <div class="form-group">
-                            <label for="">Sort Order</label>
-                            <input class="form-control" type="number" name="sort_order" min="1" value="{{ $plan->sort_order }}" required="required">
+                    @if(@getAdditionalPreference(['is_show_vendor_on_subcription'])['is_show_vendor_on_subcription'] == 1)
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="">{{ __("Order Count") }}</label>
+                                <input class="form-control" type="number" name="order_count" min="0" value="{{ $plan->order_count }}" required="required">
+                            </div>
                         </div>
-                    </div><?php */ ?>
+                    @endif
+                   
                     <div class="col-md-12">
                         <div class="form-group">
                             {!! Form::label('title', __('Description'),['class' => 'control-label']) !!}

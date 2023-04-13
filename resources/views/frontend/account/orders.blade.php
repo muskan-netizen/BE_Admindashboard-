@@ -307,7 +307,7 @@ $timezone = Auth::user()->timezone;
                                         </ul>
                                         <div class="tab-content nav-material al" id="top-tabContent">
                                             @if($additionalPreference['is_service_product_price_from_dispatch'] == 1)
-                                             @include('frontend.account.orders.pending_orders')
+                                             {{-- @include('frontend.account.orders.pending_orders') --}}
                                             @endif
                                             @include('frontend.account.orders.active_orders')
                                             @include('frontend.account.orders.past_orders')
@@ -319,22 +319,9 @@ $timezone = Auth::user()->timezone;
                                             @endif
 
                                         </div>
-                                        {{-- @endforeach
-                                        @else --}}
-                                        {{-- <div class="col-12">
-                                            <div class="no-gutters order_head">
-                                                <h4 class="text-center">{{ __('No Rejected/Cancel Order Found') }}
-                                                </h4>
-                                            </div>
-                                        </div> --}}
-                                        {{-- @endif --}}
                                     </div>
                                    
                                 </div>
-                                @if($show_long_term ==1)
-                                @include('frontend.account.longTermOrderTab')
-                                @endif
-
                             </div>
                         </div>
                     </div>

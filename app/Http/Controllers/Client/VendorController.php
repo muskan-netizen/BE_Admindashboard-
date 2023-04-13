@@ -41,6 +41,7 @@ class VendorController extends BaseController
     use VendorTrait;
     public $is_payout_enabled;
     private $folderName = '/vendor/extra_docs';
+    public $roleId;
 
     public function __construct(){
         $code = Client::orderBy('id','asc')->value('code');
@@ -51,6 +52,7 @@ class VendorController extends BaseController
         }else{
             $this->is_payout_enabled = 0;
         }
+        $this->roleId = (@auth()->user()) ? getRoleId(@auth()->user()->getRoleNames()[0]) : null;
     }
 
     /**
@@ -67,7 +69,7 @@ class VendorController extends BaseController
             $vendors = $vendors->whereHas('permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
             });
-            if(@auth()->user()->getRoleNames()[0]=='Manager')
+            if(@$this->roleId=='5')
             {
                 $vendors = $vendors->where('refference_id',auth()->id());
             }
@@ -188,7 +190,7 @@ class VendorController extends BaseController
                 $query->where('user_id', $user->id);
             });
         }
-        if(@auth()->user()->getRoleNames()[0]=='Manager')
+        if(@$this->roleId=='5')
         {
             $vendors = $vendors->where('refference_id',auth()->id());
         }
@@ -414,7 +416,7 @@ class VendorController extends BaseController
         $vendor->city = $request->city;
         $vendor->state = $request->state;
         $vendor->country = $request->country;
-        if(@auth()->user()->getRoleNames()[0]=='Manager')
+        if(@$this->roleId=='5')
         {
             $vendor->refference_id = auth()->id();
         }
@@ -423,7 +425,7 @@ class VendorController extends BaseController
         $vendor->slug = Str::slug($request->name, "-");
         $vendor->save();
 
-        if(@auth()->user()->getRoleNames()[0]=='Manager')
+        if(@$this->roleId=='5')
         {
             UserVendor::updateOrCreate(['user_id' =>  auth()->id(),'vendor_id' => $vendor->id]);
         }
@@ -1940,6 +1942,13 @@ class VendorController extends BaseController
             'is_superadmin' => 0
         ];
         $client = User::where('id', $id)->update($data);
+        $user = User::where('id', $id)->first();
+
+         //Assign user to role for permission
+         if($user){
+            DB::table('model_has_roles')->where('model_id',$user->id)->delete();
+            $user->assignRole(4);
+        }
 
         if(UserPermissions::where('user_id', $id)->count() == 0){
             //for updating permissions
@@ -2064,8 +2073,11 @@ class VendorController extends BaseController
      */
     public function userVendorPermissionDestroy($domain = '', $id)
     {
-        $del_price_rule = UserVendor::where('id', $id);
-         $del_price_rule = $del_price_rule->delete();
+        $del_price_rule = UserVendor::where('id', $id)->first();
+        // dd($id);
+        $id = $del_price_rule->user_id;
+        $del_price_rule = $del_price_rule->delete();
+        $this->removeVendorPermissionAndRole($id);
 
         return redirect()->back()->with('success', 'Permission deleted successfully!');
     }

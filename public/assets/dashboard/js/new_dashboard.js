@@ -1,6 +1,8 @@
 $(document).ready(function () {
+    
     const $flatpickr = $("#range-datepicker").flatpickr({
         mode: "range",
+        dateFormat: "d M Y",
         onClose: function (selectedDates, dateStr, instance) {
             getDashboardData(dashboard_filter_url);
         }
@@ -14,8 +16,7 @@ $(document).ready(function () {
     });
 
     $("#dashboard_refresh_btn").click(function () {
-        $flatpickr.clear();
-        getDashboardData(dashboard_filter_url);
+        window.location.reload();
     });
     getDashboardData(dashboard_filter_url);
 
@@ -26,6 +27,7 @@ $(document).ready(function () {
 
         $.getJSON(dashboard_filter_url, { manager_id : manager_id ,date_filter: date_filter,reportType:reportType}, function (response) {
             if (response.status == 'Success') {
+                //$('#range-datepicker').val(response.data.setWeekDate);
                 $('#total_products').html('+ ' + response.data.total_products);
                 $('#notification_counts').html(response.data.orderNotificationCnt);
                 $('#total_revenue').html(response.data.currencySymbol + response.data.total_revenue);

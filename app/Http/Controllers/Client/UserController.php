@@ -26,6 +26,7 @@ use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\CustomerExport;
 use App\Http\Traits\ApiResponser;
+use App\Http\Traits\VendorTrait;
 use App\Models\UserDevice;
 use Session;
 use DB;
@@ -34,7 +35,7 @@ use App\Models\{Payment, User, Client, ClientPreference, Country, CsvCustomerImp
 
 class UserController extends BaseController
 {
-    use ApiResponser;
+    use ApiResponser,VendorTrait;
     private $folderName = '/profile/document';
 
     public function __construct()
@@ -442,9 +443,18 @@ class UserController extends BaseController
 
         //Assign user to role for permission
         if(@$request->input('role')){
+            if($request->input('role') == 4 && empty($request->vendor_permissions))
+            {
+               return redirect()->back()->with('error','Select aleast one Vendor.');
+            }
+
             DB::table('model_has_roles')->where('model_id',$id)->delete();
             $user->assignRole($request->input('role'));
+        }else{
+            DB::table('model_has_roles')->where('model_id',$id)->delete();
         }
+
+
         //for updating permissions
         $removepermissions = UserPermissions::where('user_id', $id)->delete();
         if ($request->permissions) {
@@ -455,11 +465,12 @@ class UserController extends BaseController
             }
             UserPermissions::insert($addpermission);
         }
+        // dd($request->vendor_permissions);
         //for updating vendor permissions
+        $removeteampermissions = UserVendor::where('user_id', $id)->delete();
         if ($request->vendor_permissions) {
             $teampermissions = $request->vendor_permissions;
             $addteampermission = [];
-            $removeteampermissions = UserVendor::where('user_id', $id)->delete();
             for ($i = 0; $i < count($teampermissions); $i++) {
                 $addteampermission[] =  array('user_id' => $id, 'vendor_id' => $teampermissions[$i]);
             }
@@ -481,7 +492,9 @@ class UserController extends BaseController
                 }
             }
         }
-        return redirect()->route('customer.index')->with('success', 'Customer Updated successfully!');
+        //Need to remove vendor permissons from user table 
+        $this->removeVendorPermissionAndRole($id);
+        return redirect()->back()->with('success','Customer Updated successfully!');
     }
 
     public function profile()

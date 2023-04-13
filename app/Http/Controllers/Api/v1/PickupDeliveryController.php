@@ -663,6 +663,7 @@ class PickupDeliveryController extends BaseController{
                 }elseif(!empty($order->scheduled_date_time)){
                     $task_type = 'schedule';
                 }
+                $vendor_details = Vendor::where('id', $vendor)->select('order_pre_time')->first();
                 $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
                 $dynamic = (!empty($order_vendor->web_hook_code)) ? $order_vendor->web_hook_code : uniqid($order->id.$vendor);
                 $unique = Auth::user()->code;
@@ -694,7 +695,7 @@ class PickupDeliveryController extends BaseController{
                     // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                     $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                 }
-
+                Log::info("order Pre Time is ".$vendor_details->order_pre_time);
                 $postdata =  [
                             'order_number' =>  $order->order_number,
                             'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -731,7 +732,8 @@ class PickupDeliveryController extends BaseController{
                             'is_cab_pooling' => isset($request->is_cab_pooling)?$request->is_cab_pooling:0,
                             'is_one_push_booking' => isset($request->is_one_push_booking)?$request->is_one_push_booking:0,
                             'available_seats' => isset($request->seats_for_booking)?$request->seats_for_booking:0,
-                            'agent' => $request->agent_id ?? null
+                            'agent' => $request->agent_id ?? null,
+                            'order_pre_time'=>$vendor_details->order_pre_time
                         ];
                 if($request->has('bid_task_type')){
                     $postdata['bid_task_type']    = $request->bid_task_type;

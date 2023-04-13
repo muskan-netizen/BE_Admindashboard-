@@ -1214,6 +1214,17 @@ if (!function_exists('taxRates')) {
     }
 }
 
+if (!function_exists('getRoleId')) {
+    function getRoleId($name){
+        if($name){
+            return  \Spatie\Permission\Models\Role::where('name',$name)->value('id');
+        }else{
+            return null;
+        }
+    }
+}
+
+
 
 if (!function_exists('getServiceTypesCategory')) {
     /**

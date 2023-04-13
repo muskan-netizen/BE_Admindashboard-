@@ -5,8 +5,7 @@ use Session;
 use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Traits\ToasterResponser;
-use App\Http\Traits\MtnMomoPaymentManager;
+use App\Http\Traits\{ToasterResponser,MtnMomoPaymentManager,PaymentTrait};
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
@@ -21,8 +20,7 @@ use Log;
 
 class PaymentOptionController extends BaseController
 {
-    use ToasterResponser;
-    use MtnMomoPaymentManager;
+    use ToasterResponser,MtnMomoPaymentManager,PaymentTrait;
 
     private $folderName = 'payoption';
 
@@ -40,15 +38,10 @@ class PaymentOptionController extends BaseController
     public function index()
     {
 
-        $payment_codes = array('cod','azul', 'dpo', 'wallet', 'layalty-points', 'paypal', 'stripe', 'stripe_fpx', 'paystack', 'payfast', 'mobbex', 'yoco', 'paylink', 'razorpay','gcash','simplify','square','ozow','pagarme','checkout','authorize_net','kongapay','ccavenue','easypaisa', 'cashfree','viva_wallet','easebuzz','toyyibpay','paytab','vnpay','mvodafone','flutterwave','payphone','braintree','windcave','paytech','stripe_oxxo','offline_manual', 'mycash','stripe_ideal','userede','openpay','upay','conekta','telr','khalti','mtn_momo','plugnpay','payway','skip_cash','data_trans');
+        $payment_codes = $this->paymentOptionArray('payment_codes');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
 
-        $payout_codes = array(
-            'cash',
-            'stripe',
-            'pagarme',
-            'razorpay'
-        );
+        $payout_codes = $this->paymentOptionArray('payout');
         $payoutOption = PayoutOption::whereIn('code', $payout_codes)->get();
 
         return view('backend/payoption/index')->with([
@@ -763,18 +756,28 @@ class PaymentOptionController extends BaseController
                                 'api_key' => $request->api_key
                             ));
                             break;
-                            case 'skip_cash':
+                        case 'skip_cash':
+                        $validatedData = $request->validate([
+                            'skip_cash_client_id' => 'required',
+                            'skip_cash_key_id' => 'required',
+                            'skip_cash_api_secret' => 'required',
+                        ]);
+                        $json_creds = json_encode(array(
+                            'skip_cash_client_id' => $request->skip_cash_client_id,
+                            'skip_cash_key_id' => $request->skip_cash_key_id,
+                            'skip_cash_api_secret' => $request->skip_cash_api_secret,
+                            'skip_cash_testing_url' => $request->skip_cash_testing_url,
+                            'skip_cash_live_url' => $request->skip_cash_live_url,
+                        ));
+                        break;
+                        case 'nmi':
                             $validatedData = $request->validate([
-                                'skip_cash_client_id' => 'required',
-                                'skip_cash_key_id' => 'required',
-                                'skip_cash_api_secret' => 'required',
+                                'nmi_client_id' => 'required',
+                                'nmi_key_id' => 'required',
                             ]);
                             $json_creds = json_encode(array(
-                                'skip_cash_client_id' => $request->skip_cash_client_id,
-                                'skip_cash_key_id' => $request->skip_cash_key_id,
-                                'skip_cash_api_secret' => $request->skip_cash_api_secret,
-                                'skip_cash_testing_url' => $request->skip_cash_testing_url,
-                                'skip_cash_live_url' => $request->skip_cash_live_url,
+                                'nmi_client_id' => $request->nmi_client_id,
+                                'nmi_key_id' => $request->nmi_key_id,
                             ));
                             break;
 

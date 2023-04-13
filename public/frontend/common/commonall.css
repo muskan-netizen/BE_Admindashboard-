@@ -74,8 +74,8 @@
     z-index: 9;
     margin-left: 4%;
 }
-.al_body_template_four  .vendor-design_new{
-    margin-top: -10%;
+.al_body_template_four .vendor-design_new{
+    margin-top: -14%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -303,6 +303,18 @@
 
 .vendor-info li {
     color: #fff;
+}
+.al_body_template_four .vendor-description .vendor-info li.d-block {
+    display: flex!important;
+    line-height: 1.5!important;
+    margin-top: 0!important;
+}
+.al_body_template_four .vendor-description .vendor-info li.d-block p {
+    margin-top: 0;
+    padding-left: 10px;
+}
+.al_body_template_four .vendor-info i, .al_body_template_four .vendor-info i {
+    min-width: 15px;
 }
 
 span.org_price.ml-1.font-14 {
@@ -565,7 +577,9 @@ content: inherit;
 .al_body_template_one .brand-left {
     padding: 0px 20px !important;
 }
-
+.al_body_template_one #register .file.file--upload {
+    z-index: 9;
+}
 .al_body_template_one section.buy_details #productPriceValue b {
     font-weight: 600 !important;
 }
@@ -807,11 +821,13 @@ li.vendor-timing p{
 }
 .vendor-info li{padding-left: 0px;}
 
+
 .al_body_template_eight .common-banner {
     position: relative;height: 300px;
-}.al_body_template_one .common-banner {
-    position: relative;height: 300px;
 }
+/* .al_body_template_one .common-banner {
+    position: relative;height: 300px;
+} */
 .top-banner-content.small-section {
     position: absolute;
     top: 50%;
@@ -819,7 +835,7 @@ li.vendor-timing p{
     width: 98.3%;
     transform: translateY(-50%);
 }
-.al_body_template_one .common-banner:after, .al_body_template_three .common-banner:after, .al_body_template_nine .common-banner:after {
+.al_body_template_one .common-banner:after, .al_body_template_two .common-banner:after, .al_body_template_three .common-banner:after, .al_body_template_four .common-banner:after, .al_body_template_six .common-banner:after, .al_body_template_eight .common-banner:after, .al_body_template_nine .common-banner:after {
     content: "";
     position: absolute;
     background: #0e0c0c4f;
@@ -838,10 +854,6 @@ li.vendor-timing p{
 }
 .common-banner.my-banner{
 position: relative;
-}
-.al_body_template_six .common-banner:after{
-    position:inherit;
-    background:transparent;
 }
 .al_body_template_six .common-banner:after{
     position:inherit;
@@ -909,7 +921,7 @@ display: inline-block;
 .custom_banner img{
     border-radius: 50px;
     min-height: 300px;
-    object-fit:cover;
+    object-fit:cover;   
     object-position: center;
 }
 /*------- SIMILAR PRODUCTS image changes*/
@@ -1156,6 +1168,32 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
 .dark  div#login-section .btn {
     color: #000!important;
 }
+
+.al_body_template_four .vendor-description .vendor-info li.d-block{
+    display: flex!important;
+    line-height: 1.5!important;
+    margin-top: 0!important;
+}
+.al_body_template_four .vendor-info i, .al_body_template_four .vendor-info i {
+    color: inherit;
+    min-width: 15px;
+}
+.al_body_template_four .vendor-description .vendor-info li.d-block p {
+    margin: 0;
+    padding-left: 10px;
+}
+.save-card-custom {
+    padding-top: 10px;
+}
+.save-card-custom input {
+    margin: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.save-card-custom label {
+    padding-left: 25px;
+}
+
 
 @media (max-width:1400px){
     .al_body_template_four  .brand-ing {

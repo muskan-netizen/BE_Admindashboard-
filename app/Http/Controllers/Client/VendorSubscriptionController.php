@@ -50,7 +50,6 @@ class VendorSubscriptionController extends BaseController
             }
         }
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
-        pr( $clientCurrency);
         return view('backend.vendor.vendorSubscriptions')->with(['subscription_plans'=>$sub_plans, 'clientCurrency'=> $clientCurrency,'subscription'=>$active_subscription]);
     }
 
@@ -146,7 +145,7 @@ class VendorSubscriptionController extends BaseController
             $start_date = $current_date;
             $next_date = NULL;
             $end_date = NULL;
-
+            $orderCount =  (@$subscription_plan->order_count >0) ? $subscription_plan->order_count : 0 ;
             if($last_subscription){
                 if($last_subscription->end_date >= $current_date){
                     $start_date = Carbon::parse($last_subscription->end_date)->addDays(1)->toDateString();
@@ -165,6 +164,7 @@ class VendorSubscriptionController extends BaseController
             $subscription_invoice->next_date = $next_date;
             $subscription_invoice->end_date = $end_date;
             $subscription_invoice->subscription_amount = $request->amount;
+            $subscription_invoice->order_count = $orderCount ;
             $subscription_invoice->save();
             $subscription_invoice_id = $subscription_invoice->id;
             if($subscription_invoice_id){
@@ -236,8 +236,10 @@ class VendorSubscriptionController extends BaseController
      */
     public function updateSubscriptionStatus(Request $request, $domain = '', $slug = '')
     {
+      
         $message = '';
         $subscription_invoice = SubscriptionInvoicesVendor::with('plan')->where('slug', $slug)->firstOrFail();
+      
         if(!empty($request->subscription_status)){
             DB::beginTransaction();
             try {

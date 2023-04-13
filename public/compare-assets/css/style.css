@@ -653,7 +653,7 @@ No JS
   margin: 20px 0px !important;
   padding: 0 5% 25px !important;
   box-shadow: none;
-  background:transparent;
+  background:transparent; 
 }
 
 /*-----responsive query for compare product----------*/
@@ -707,4 +707,4 @@ li.seller_comp {
     font-size: 12px;
 }
 
-}
+} 

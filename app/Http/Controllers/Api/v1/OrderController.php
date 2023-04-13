@@ -6,7 +6,7 @@ use App\Http\Controllers\AhoyController;
 use DB;
 use Carbon\{Carbon,CarbonPeriod};
 use Illuminate\Http\Request;
-use App\Http\Traits\{ApiResponser,OrderTrait,CartManager,DispatcherSlot};
+use App\Http\Traits\{ApiResponser,OrderTrait,CartManager,DispatcherSlot,VendorTrait};
 use GuzzleHttp\Client as GCLIENT;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Client\ShippoController;
@@ -27,7 +27,7 @@ use App\Models\AutoRejectOrderCron;
 use App\Models\{VendorOrderCancelReturnPayment};
 class OrderController extends BaseController
 {
-    use ApiResponser,CartManager,OrderTrait,DispatcherSlot;
+    use ApiResponser,CartManager,OrderTrait,DispatcherSlot,VendorTrait;
     /**
      * Display a listing of the resource.
      *
@@ -167,7 +167,7 @@ class OrderController extends BaseController
                 $client_preference = ClientPreference::first();
 
                 $editlimit_datetime = Carbon::now()->toDateTimeString();
-                $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive','order_edit_before_hours','is_service_product_price_from_dispatch']);
+                $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive','order_edit_before_hours','is_service_product_price_from_dispatch','is_show_vendor_on_subcription']);
                 $order_edit_before_hours =  @$additionalPreferences->order_edit_before_hours;
                 $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
                 // if ($client_preference->verify_email == 1) {
@@ -353,11 +353,21 @@ class OrderController extends BaseController
                         }else{
                             $order_vendor = new OrderVendor();
                         }
+                        $vendor_subcription_lnvoices_id = '';
+                       
+                        if($client_preference->subscription_mode == '1' &&  $additionalPreferences->is_show_vendor_on_subcription == 1){
+                            $vendor_on_subcription = $this->getVendorActiveSubscription($vendor_id);
+                            if( $vendor_on_subcription)
+                            { 
+                                $vendor_subcription_lnvoices_id =   $vendor_on_subcription->id ;
+                            }
+                        }
                         
                         $order_vendor->status = 0;
                         $order_vendor->user_id = $user->id;
                         $order_vendor->order_id = $order->id;
                         $order_vendor->vendor_id = $vendor_id;
+                        $order_vendor->subscription_invoices_vendor_id = $vendor_subcription_lnvoices_id;
                         $order_vendor->vendor_dinein_table_id = $vendor_cart_products->unique('vendor_dinein_table_id')->first()->vendor_dinein_table_id;
                         $order_vendor->save();
                         foreach ($vendor_cart_products as $vendor_cart_product) {
@@ -438,7 +448,6 @@ class OrderController extends BaseController
                                     $vendor_products_total_amount = $vendor_products_total_amount + $opt_quantity_price;
                                 }
                             }
-
                             $vendor_taxable_amount = 0;
                             if (isset($vendor_cart_product->product->taxCategory)) {
                                 foreach ($vendor_cart_product->product->taxCategory->taxRate as $tax_rate_detail) {
@@ -862,15 +871,19 @@ class OrderController extends BaseController
                         $Order_bid_discount += $bid_vendor_discount??0;
                         $vendor_info = Vendor::where('id', $vendor_id)->first();
                         if ($vendor_info) {
-                            if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {
-                                $actual_amountComm = $vendor_payable_amount - $vendor_markup_amount;
+                            if(isset($coupon_paid_by)){
+                                $actual_amount = $actual_amount - $vendor_discount_amount;
+                            }
+                            if (($vendor_info->commission_percent) != null && $actual_amount > 0) {
+                                $actual_amountComm = $actual_amount - $vendor_markup_amount;
                                 $order_vendor->admin_commission_percentage_amount = round($vendor_info->commission_percent * ($actual_amountComm / 100), 2);
                             }
-                            if (($vendor_info->commission_fixed_per_order) != null && $vendor_payable_amount > 0) {
+                            if (($vendor_info->commission_fixed_per_order) != null && $actual_amount > 0) {
                                 $order_vendor->admin_commission_fixed_amount = $vendor_info->commission_fixed_per_order;
                             }
                             if($vendor_info->fixed_fee_amount > 0){
                                 $fixed_fee_amount = $fixed_fee_amount + $vendor_info->fixed_fee_amount;
+                                $order_vendor->fixed_fee =  $vendor_info->fixed_fee_amount;
                             }
                         }
                         $order_vendor->save();
@@ -1511,7 +1524,7 @@ class OrderController extends BaseController
             else
                 $call_back_url = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/dispatch-order-status-update/" . $dynamic;
             //   $call_back_url = route('dispatch-order-update', $dynamic);
-            $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
+            $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address','order_pre_time')->first();
             $order_vendor = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
@@ -1560,6 +1573,7 @@ class OrderController extends BaseController
                 // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                 $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
+            Log::info("order Pre Time is ".$vendor_details->order_pre_time);
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -1583,7 +1597,8 @@ class OrderController extends BaseController
                 'dbname' => $client->database_name,
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
-                'user_icon' => $customer->image
+                'user_icon' => $customer->image,
+                'order_pre_time'=>$vendor_details->order_pre_time
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -2030,7 +2045,7 @@ class OrderController extends BaseController
                     $cartDetails = $this->getCart($cart);
                 }
                 //pr( $cartDetails->toArray());
-                $luxuryOptionTitle = ($request->has('type')) ? $request->type : 'delivery';
+                $luxuryOptionTitle = !empty($order->luxury_option) ? $order->luxury_option->title : 'delivery';
                 if ($email_template) {
 
                     $email_template_content = $email_template->content;
@@ -2213,7 +2228,7 @@ class OrderController extends BaseController
             $order->scheduled_slot  = $order->orderDetail->scheduled_slot;
             $order->schedule_dropoff = date('d/m/Y',strtotime($order->orderDetail->schedule_dropoff));
             $order->dropoff_scheduled_slot  = $order->orderDetail->dropoff_scheduled_slot;
-            
+            $order->payable_amount = $order->total_price;
             $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
             
             
