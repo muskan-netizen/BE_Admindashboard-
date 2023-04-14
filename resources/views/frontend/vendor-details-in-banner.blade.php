@@ -16,8 +16,8 @@
                 <div class="ml-sm-1 position-relative profile_address vendor_icon-design">
                             <h3>{{ $vendor->name }}</h3>
                             <div class="vendor-reviwes">
-                        @if ($vendor->vendorRating > 0)
                         @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
+                                                @if ($vendor->vendorRating > 0)
                             <div class="rating-text-box ml-sm-auto p-1">
                                 <span>{{ $vendor->vendorRating }}</span>
                                 <i class="fa fa-star" aria-hidden="true"></i>
