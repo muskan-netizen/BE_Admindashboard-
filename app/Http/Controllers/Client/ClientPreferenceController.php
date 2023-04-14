@@ -71,7 +71,7 @@ class ClientPreferenceController extends BaseController{
 
         $productDeliveryFeeByRole = ProductDeliveryFeeByRole::groupBy('role_id')->get()->pluck('role_id')->toArray();
 
-        $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds','is_service_product_price_from_dispatch','is_file_cart_instructions','is_user_kyc_for_registration','add_to_cart_btn','chat_button','call_button','is_tracking_url','is_tracking_sms_url','is_place_order_delivery_zero','is_cust_success_signup_email','is_admin_vendor_rating','square_enable_status', 'square_credentials','is_long_term_service','is_influencer_refer_and_earn','is_show_vendor_on_subcription','is_postpay_enable','is_order_edit_enable','order_edit_before_hours','is_enable_compare_product','is_bid_enable','update_order_product_price','is_influencer_refer_and_earn']);
+        $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds','is_service_product_price_from_dispatch','is_file_cart_instructions','is_user_kyc_for_registration','add_to_cart_btn','chat_button','call_button','is_tracking_url','is_tracking_sms_url','is_place_order_delivery_zero','is_cust_success_signup_email','is_admin_vendor_rating','square_enable_status', 'square_credentials','is_long_term_service','is_influencer_refer_and_earn','is_show_vendor_on_subcription','is_postpay_enable','is_order_edit_enable','order_edit_before_hours','is_enable_compare_product','is_bid_enable','update_order_product_price','is_influencer_refer_and_earn','is_user_pre_signup']);
 
         return view('backend/setting/config')->with([
                                                 'tags' => $tags,
@@ -452,6 +452,8 @@ class ClientPreferenceController extends BaseController{
             // $preference->takeaway_check = ($request->has('takeaway_check') && $request->takeaway_check == 'on') ? 1 : 0;
             // $preference->delivery_check = ($request->has('delivery_check') && $request->delivery_check == 'on') ? 1 : 0;
         }
+        
+   
         if($request->has('custom_mods_config') && $request->custom_mods_config == '1'){
             $preference->enquire_mode = ($request->has('enquire_mode') && $request->enquire_mode == 'on') ? 1 : 0;
             $preference->pharmacy_check = ($request->has('pharmacy_check') && $request->pharmacy_check == 'on') ? 1 : 0;
@@ -486,7 +488,7 @@ class ClientPreferenceController extends BaseController{
             $preference->map_on_search_screen = ($request->has('map_on_search_screen') && $request->map_on_search_screen == 'on') ? 1 : 0;
             $preference->slots_with_service_area = ($request->has('slots_with_service_area') && $request->slots_with_service_area == 'on') ? 1 : 0;
         }
-
+        
         if($request->has('edit_order_modes') && $request->edit_order_modes == '1'){
          $preference->is_edit_order_admin = ($request->has('is_edit_order_admin') && $request->is_edit_order_admin == 'on') ? 1 : 0;
          $preference->is_edit_order_vendor = ($request->has('is_edit_order_vendor') && $request->is_edit_order_vendor == 'on') ? 1 : 0;
@@ -813,9 +815,11 @@ class ClientPreferenceController extends BaseController{
                 $preferenceset->need_appointment_service = ($request->has('need_appointment_service') && $request->need_appointment_service == 'on') ? 1 : 0;
             }
         }
-
+        $preference->is_user_pre_signup = ($request->has('is_user_pre_signup') && ($request->is_user_pre_signup == 'on')) ? 1 : 0;
         $preferenceset->save();
-
+        ClientPreference::first()->update([
+            'is_user_pre_signup' => ($request->has('is_user_pre_signup') && $request->input('is_user_pre_signup') == 'on') ? 1 : 0,
+        ]);
         if($request->has('send_to') && $request->send_to == 'customize' ){
             return redirect()->route('configure.customize')->with('success', 'Client customizations updated successfully!');
         }

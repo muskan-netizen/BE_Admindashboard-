@@ -1696,6 +1696,13 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                 <input type="hidden"  @if(@$getAdditionalPreference['is_phone_signup'] == 1) value="1" @else value="0" @endif  name="is_phone_signup"  id="is_phone_signup"/>
                             </div>
                         </div>
+                        <div class="col-sm-12">
+                            <div class="form-group d-flex justify-content-between">
+                                <label for="is_pre_signup" class="mr-3 mb-0">{{ __("User Pre SignUp") }}</label>
+                                <input type="checkbox" data-plugin="switchery" name="is_user_pre_signup" id="is_phone_signup_switch" class="form-control checkbox_change" data-className="is_phone_signup"  data-color="#43bee1" @if( @$getAdditionalPreference['is_user_pre_signup'] == '1') checked='checked' @endif>
+                                <input type="hidden"  @if(@$getAdditionalPreference['is_user_pre_signup'] == 1) value="1" @else value="0" @endif  name="is_phone_signup"  id="is_pre_signup"/>
+                            </div>
+                        </div>
                         @foreach($verify_options as $key => $opt)
                         @php $creds = json_decode($opt->credentials); @endphp
                         <input type="hidden" name="method_id[]" id="{{$opt->id}}" value="{{$opt->id}}">
