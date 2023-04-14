@@ -5004,7 +5004,7 @@ $(document).ready(function () {
                     return false;
                 }
                // paymentViaPaystack(address_id, payment_option_id);
-            break;https://trello.com/c/IG4uyXtL/478-munch-landing-page
+            break;
 
             case '6':
                 paymentViaPayfast(address_id, payment_option_id);

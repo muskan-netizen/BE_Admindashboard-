@@ -15,6 +15,12 @@ trait DataTransTrait
         $this->creds_arr = json_decode($this->creds->credentials);
         $this->merchant_id = $this->creds_arr->merchant_id;
         $this->password = $this->creds_arr->password;
+        if($this->creds->test_mode)
+        {
+            $this->url = 'https://api.sandbox.datatrans.com/v1/transactions';
+        }else{
+            $this->url = 'https://api.datatrans.com/v1/transactions';
+        }
     }
 
     public function dataTransApi(Request $request)
@@ -40,7 +46,7 @@ trait DataTransTrait
        return FacadesHttp::withHeaders([
             'Authorization' => 'Basic '. base64_encode($this->merchant_id.':'.$this->password),
             'Content-Type' =>'application/json' 
-        ])->post('https://api.sandbox.datatrans.com/v1/transactions',[
+        ])->post($this->url,[
             "currency" => "CHF",
             "refno" => $refNo,
             "amount" => $request->total_amount * 100,

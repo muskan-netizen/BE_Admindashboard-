@@ -178,7 +178,7 @@
 						(strtolower($opt->code)!= 'kongapay') && (strtolower($opt->code)!=
 						'windcave') && (strtolower($opt->code)!= 'payphone') &&
 						(strtolower($opt->code)!= 'offline_manual') &&
-						(strtolower($opt->code) != 'khalti') && (strtolower($opt->code) != 'data_trans'))
+						(strtolower($opt->code) != 'khalti'))
 						<div class="col-6">
 							<div class="form-group mb-0 switchery-demo">
 								<label for="" class="mr-0 d-block">{{ __('Sandbox') }}</label> <input
