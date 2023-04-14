@@ -4933,16 +4933,17 @@ $(document).ready(function () {
             case 49:
                 paymentViaplugnpay('', payment_option_id, '');
                  break;
-                 case 50:
+            case 50:
                 paymentViazulpay('', payment_option_id, '');
-                 break;
-             case 55:
+            break;
 
-                paymentViaDataTrans('', payment_option_id, '');
-                 break;
             case 52:
                 paymentViaSkipCash('',payment_option_id,'');
-                break;
+            break;
+
+            case 55:
+                paymentViaDataTrans('', payment_option_id, '');
+            break;
                 
         }
 
@@ -5695,10 +5696,6 @@ $(document).ready(function () {
             case 50:
                 paymentViazulpay('',payment_option_id,'');
                 break;
-            case 55: 
-                var walletAmount = $('#wallet_amount').val();
-                paymentViaDataTrans('',payment_option_id,null);
-            break;
 
             case 52:
                 paymentViaSkipCash('',payment_option_id,'');
@@ -5714,8 +5711,11 @@ $(document).ready(function () {
                 if(cardValidation(cardJson)){
                     paymentNmipay('', payment_option_id,'',cardJson);
                 }
-                break; 
+            break; 
 
+            case 55: 
+                paymentViaDataTrans('',payment_option_id,null);
+            break;
         }
     }
 

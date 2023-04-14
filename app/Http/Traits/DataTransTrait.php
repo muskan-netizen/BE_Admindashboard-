@@ -36,9 +36,6 @@ trait DataTransTrait
         } elseif ($request->payment_from == 'subscription') {
             $refNo = "subscription";                
         }
-        elseif ($request->payment_from == 'pickup_delivery') {
-            $refNo = "subscription";                
-        }
 
        return FacadesHttp::withHeaders([
             'Authorization' => 'Basic '. base64_encode($this->merchant_id.':'.$this->password),

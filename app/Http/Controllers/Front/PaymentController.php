@@ -3,16 +3,13 @@
 namespace App\Http\Controllers\Front;
 
 use Auth;
-use Omnipay\Omnipay;
-use App\Models\Payment;
 use App\Models\PaymentOption;
 use Illuminate\Http\Request;
-use App\Models\{Order, User, Cart, CartAddon, CartCoupon, CartDeliveryFee, ClientCurrency, CartProduct, CartProductPrescription, UserAddress, UserVendor};
+use App\Models\{Order, User, Cart, ClientCurrency, CartProduct};
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\Front\{FrontController, CashfreeGatewayController,EasebuzzController,VnpayController, PayUGatewayController, MyCashGatewayController,UseRedePaymentController,OpenpayPaymentController};
-use Illuminate\Support\Facades\Auth as FacadesAuth;
-use Illuminate\Support\Facades\Http;
+
 
 class PaymentController extends FrontController{
 
