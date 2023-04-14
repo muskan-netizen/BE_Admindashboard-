@@ -434,7 +434,7 @@ trait OrderTrait
                                 $call_back_url = "https://" . $client->custom_domain . "/dispatch-order-product-status-update/" . $dynamic;
                             else
                                 $call_back_url = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/dispatch-order-product-status-update/" . $dynamic;
-                                Log::info("order Pre Time is ".$vendor_details->order_pre_time);
+                               // Log::info("order Pre Time is ".$vendor_details->order_pre_time);
 
                             $postdata =  [
                                 'order_number'  =>  $order->order_number,
