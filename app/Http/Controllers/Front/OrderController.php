@@ -1594,17 +1594,12 @@ class OrderController extends FrontController
                 if (isset($vendor_cart_product->vendor->fixed_fee_amount)) {
                     $fixedFeeAmount = $vendor_cart_product->vendor->fixed_fee_amount;
                 }
-                
-                $taxAmount =  0.00;
-                if($rate > 0){
-                    $taxAmount = decimal_format($total_other_taxes, 2);
-                }
                 $OrderVendor->fixed_fee = $fixedFeeAmount;
                 $OrderVendor->additional_price = $additionalPrice;
-                $OrderVendor->taxable_amount =$taxAmount;
+                $OrderVendor->taxable_amount =$new_vendor_taxable_amount;
                 $OrderVendor->payment_option_id = $request->payment_option_id;
                 $OrderVendor->subtotal_amount = $OrderVendor->subtotal_amount - $bid_vendor_discount??0;
-                $OrderVendor->payable_amount = $vendor_payable_amount +$fixedFeeAmount+$taxAmount;
+                $OrderVendor->payable_amount = $vendor_payable_amount +$fixedFeeAmount+$new_vendor_taxable_amount;
                 $OrderVendor->total_markup_price = $vendor_markup_amount;
                 $OrderVendor->total_container_charges = $vendor_total_container_charges;
 
