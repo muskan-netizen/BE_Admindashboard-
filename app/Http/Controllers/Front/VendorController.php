@@ -28,15 +28,17 @@ class VendorController extends FrontController
            $vendorType = 'delivery';
         }
         $preferences = (object)Session::get('preferences');
+        $additionalPreference = getAdditionalPreference(['is_show_vendor_on_subcription']);
         $navCategories = $this->categoryNav($langId);
         $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 30;
         $ses_vendors = $this->getServiceAreaVendors();
 
         $categoryTypes = getServiceTypesCategory($vendorType);
 
-        $vendors = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+        $vendors = Vendor::byVendorSubscriptionRule($preferences)->whereHas('getAllCategory.category',function($q)use ($categoryTypes){
             $q->whereIn('type_id',$categoryTypes);
         })->with('products')->select('id', 'name', 'banner', 'address', 'order_pre_time','is_show_vendor_details' ,'order_min_amount', 'logo', 'slug', 'latitude', 'longitude')->where(['status'=> 1,$vendorType => 1]);
+       
 
         if (($preferences) && ($preferences->is_hyperlocal == 1)) {
             $latitude = Session::get('latitude') ?? $preferences->Default_latitude;

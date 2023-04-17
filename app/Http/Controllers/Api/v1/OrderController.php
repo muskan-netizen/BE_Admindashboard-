@@ -6,7 +6,7 @@ use App\Http\Controllers\AhoyController;
 use DB;
 use Carbon\{Carbon,CarbonPeriod};
 use Illuminate\Http\Request;
-use App\Http\Traits\{ApiResponser,OrderTrait,CartManager,DispatcherSlot};
+use App\Http\Traits\{ApiResponser,OrderTrait,CartManager,DispatcherSlot,VendorTrait};
 use GuzzleHttp\Client as GCLIENT;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Client\ShippoController;
@@ -27,7 +27,7 @@ use App\Models\AutoRejectOrderCron;
 use App\Models\{VendorOrderCancelReturnPayment};
 class OrderController extends BaseController
 {
-    use ApiResponser,CartManager,OrderTrait,DispatcherSlot;
+    use ApiResponser,CartManager,OrderTrait,DispatcherSlot,VendorTrait;
     /**
      * Display a listing of the resource.
      *
@@ -167,7 +167,7 @@ class OrderController extends BaseController
                 $client_preference = ClientPreference::first();
 
                 $editlimit_datetime = Carbon::now()->toDateTimeString();
-                $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive','order_edit_before_hours','is_service_product_price_from_dispatch']);
+                $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive','order_edit_before_hours','is_service_product_price_from_dispatch','is_show_vendor_on_subcription']);
                 $order_edit_before_hours =  @$additionalPreferences->order_edit_before_hours;
                 $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
                 // if ($client_preference->verify_email == 1) {
@@ -353,11 +353,21 @@ class OrderController extends BaseController
                         }else{
                             $order_vendor = new OrderVendor();
                         }
+                        $vendor_subcription_lnvoices_id = '';
+                       
+                        if($client_preference->subscription_mode == '1' &&  $additionalPreferences->is_show_vendor_on_subcription == 1){
+                            $vendor_on_subcription = $this->getVendorActiveSubscription($vendor_id);
+                            if( $vendor_on_subcription)
+                            { 
+                                $vendor_subcription_lnvoices_id =   $vendor_on_subcription->id ;
+                            }
+                        }
                         
                         $order_vendor->status = 0;
                         $order_vendor->user_id = $user->id;
                         $order_vendor->order_id = $order->id;
                         $order_vendor->vendor_id = $vendor_id;
+                        $order_vendor->subscription_invoices_vendor_id = $vendor_subcription_lnvoices_id;
                         $order_vendor->vendor_dinein_table_id = $vendor_cart_products->unique('vendor_dinein_table_id')->first()->vendor_dinein_table_id;
                         $order_vendor->save();
                         foreach ($vendor_cart_products as $vendor_cart_product) {
@@ -1493,20 +1503,7 @@ class OrderController extends BaseController
             $customer = User::find($order->user_id);
             $cus_address = UserAddress::find($order->address_id);
             $tasks = array();
-            if ($order->payment_option_id == 1) {
-                $cash_to_be_collected = 'Yes';
-                $payable_amount = $order->payable_amount;
-            } else {
-                
-                if($order->is_postpay==1 && $order->payment_status == 0)
-                {
-                    $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order->payable_amount;
-                }else{
-                    $cash_to_be_collected = 'No';
-                    $payable_amount = 0.00;
-                }
-            }
+            
             $dynamic = uniqid($order->id . $vendor);
             $client = Client::orderBy('id', 'asc')->first();
             if (isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain)
@@ -1514,10 +1511,25 @@ class OrderController extends BaseController
             else
                 $call_back_url = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/dispatch-order-status-update/" . $dynamic;
             //   $call_back_url = route('dispatch-order-update', $dynamic);
-            $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
+            $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address','order_pre_time')->first();
             $order_vendor = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
+
+            if ($order->payment_option_id == 1 && ($order->payable_amount >0)) {
+                $cash_to_be_collected = 'Yes';
+                $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
+            } else {
+
+                if($order->is_postpay==1 && $order->payment_status == 0)
+                {
+                    $cash_to_be_collected = 'Yes';
+                    $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
+                }else{
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                }
+            }
 
             $team_tag = null;
             if (!empty($dispatch_domain->last_mile_team))
@@ -1563,9 +1575,10 @@ class OrderController extends BaseController
                 // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                 $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
+            //Log::info("order Pre Time is ".$vendor_details->order_pre_time);
             $postdata =  [
                 'order_number' =>  $order->order_number,
-                'customer_name' => $customer->name ?? 'Dummy Customer',
+                'customer_name' => $customer->name ?? 'Customer',
                 'customer_phone_number' =>$customerno ?? rand(111111, 11111),
                 'customer_dial_code' => $customer->dial_code ?? null,
                 'customer_email' => $customer->email ?? null,
@@ -1586,7 +1599,8 @@ class OrderController extends BaseController
                 'dbname' => $client->database_name,
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
-                'user_icon' => $customer->image
+                'user_icon' => $customer->image,
+                'order_pre_time'=>$vendor_details->order_pre_time
             ];
             if($order_vendor->is_restricted == 1)
             {

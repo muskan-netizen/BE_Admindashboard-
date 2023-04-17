@@ -85,6 +85,7 @@ class SubscriptionPlansVendorController extends BaseController
      */
     public function saveSubscriptionPlan(Request $request, $slug='')
     {
+        
         try{
             DB::beginTransaction();
             $message = 'added';
@@ -116,6 +117,7 @@ class SubscriptionPlansVendorController extends BaseController
             $plan->price = $request->price;
             // $plan->period = $request->period;
             $plan->frequency = $request->frequency;
+            $plan->order_count = $request->order_count ??0;
             // $plan->sort_order = $request->sort_order;
             $plan->status = ($request->has('status') && $request->status == 'on') ? '1' : '0';
             $plan->on_request = ($request->has('on_request') && $request->on_request == 'on') ? 1 : 0;
@@ -189,6 +191,7 @@ class SubscriptionPlansVendorController extends BaseController
      */
     public function updateSubscriptionPlanStatus(Request $request, $slug='')
     {
+      
         try{
             DB::beginTransaction();
             $subscription = SubscriptionPlansVendor::where('slug', $slug)->first();
