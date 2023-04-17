@@ -1847,9 +1847,14 @@ i.mdi.mdi-exclamation-thick {
 }
 
 .nav-second-level li a {
-    position: relative
+    position: relative;
 }
-
+/*dashboard pagination hover css remove */
+.content-page li.paginate_button.page-item.active:hover {
+    background: inherit !important;
+    border: 1px solid #fff0;
+}
+/*end here*/
 .nav-second-level li .collapse li a:before {
     content: "";
     width: 6px;

@@ -10,7 +10,7 @@ use App\Models\Client as CP;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 
-use App\Models\{VendorAdditionalInfo, VendorMultiBanner,WebStylingOption};
+use App\Models\{User, UserVendor, VendorAdditionalInfo, VendorMultiBanner,WebStylingOption};
 
 
 trait VendorTrait{
@@ -43,6 +43,19 @@ trait VendorTrait{
                 $additionalData
             );
     }
+
+
+    public function removeVendorPermissionAndRole($id)
+    {
+        $cnt = UserVendor::where('user_id',$id)->count();
+        if($cnt==0){
+            //Remove permission of is_admin from user table
+            User::whereId($id)->update(['is_admin'=>0]);
+            DB::table('model_has_roles')->where('model_id',$id)->delete();
+        }
+
+    }
+
 
 
 }

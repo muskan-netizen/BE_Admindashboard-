@@ -24,12 +24,27 @@ class DashBoardController extends BaseController
 {
     use ApiResponser;
 
+    public $from_date;
+    public $to_date;
+    public $setWeekDate;
+    public $roleId;
+
+    function __construct()
+    {
+        $this->from_date = Carbon::now()->startOfDay()->subDays(7);
+        $this->to_date = Carbon::now()->endOfDay();
+        $this->setWeekDate =  $this->from_date->format('d M Y') . ' to '. $this->to_date->format('d M Y');
+        $this->roleId = (@auth()->user()) ? getRoleId(@auth()->user()->getRoleNames()[0]) : null;
+    }
+
     public function index(Request $request)
-    {  
+    {   
        $managers = User::whereHas('roles',function($q){
             $q->where('name','Manager');
        })->get();
-        return view('backend/dashboard',compact('managers'));
+       $setWeekDate = $this->setWeekDate;
+
+        return view('backend/dashboard',compact('managers','setWeekDate'));
     }
 
     public function dashboard_old()
@@ -45,6 +60,9 @@ class DashBoardController extends BaseController
                 $date_explode = explode('to', $date_filter);
                 $from_date = $date_explode[0].' 00:00:00';
                 $end_date = $date_explode[1].' 23:59:59';
+            }else{
+                $from_date = $this->from_date;
+                $end_date = $this->to_date;
             }
             $total_brands = Brand::where('status', 1);
             if($date_filter){
@@ -339,19 +357,18 @@ class DashBoardController extends BaseController
     {
         try {
             $vendorIds = [];
-            
             $managerId = (($request->manager_id)?$request->manager_id:auth()->id());
             $vendors = Vendor::latest();
 
-            if(@auth()->user()->getRoleNames()[0]=='Manager' || $request->manager_id)
+            if($this->roleId == 4 && $request->manager_id)
             {
                 $vendors = $vendors->where('refference_id',$managerId);
                 $vendorIds = $vendors->pluck('id')->toArray();
-            }elseif(@auth()->user()->getRoleNames()[0]=='Seller')
+            }elseif($this->roleId == 4)
             {
-                $managerId = UserVendor::where('user_id',$managerId)->value('vendor_id');
-                $vendors = $vendors->where('id',$managerId);
-                $vendorIds = $vendors->pluck('id')->toArray();
+                $managerId = UserVendor::where('user_id',$managerId)->get();
+                $vendorIds = $managerId->pluck('vendor_id')->toArray();
+                $vendors = $vendors->whereIn('id',$vendorIds);
             }
             if(($request->reportType !='Vendor' && !empty($request->reportType)) && isset(auth()->user()->geo_ids))
             {
@@ -363,16 +380,23 @@ class DashBoardController extends BaseController
                 }
             }
 
-
             $vendorCounts = $vendors->count();
             $managersCount = User::whereHas('roles',function($q){
                 $q->where('name','Manager');
             })->count();
             $date_filter = $request->date_filter;
             if($date_filter){
-                $date_explode = explode('to', $date_filter);
-                $from_date = $date_explode[0].' 00:00:00';
-                $end_date = $date_explode[1].' 23:59:59';
+
+                $date_date_filter = explode(' to ', $request->get('date_filter'));
+                $to_date = (!empty($date_date_filter[1])) ? $date_date_filter[1] : $date_date_filter[0];
+                $from_date = date("Y-m-d", strtotime($date_date_filter[0]));  
+                $to_date = date("Y-m-d", strtotime($to_date));  
+                $from_date = $from_date.' 00:00:00';
+                $end_date = $to_date.' 23:59:59';
+            }else{
+                $date_filter = '1';
+                $from_date = $this->from_date;
+                $end_date = $this->to_date;
             }
             # Products count
             $products = new Product;
@@ -425,7 +449,7 @@ class DashBoardController extends BaseController
             $total_revenue = $total_revenue->whereBetween('created_at', [$from_date, $end_date]);
 
             $total_revenue = $total_revenue->sum('payable_amount');
-
+//pr($total_revenue);
             # Customers count
             $users = new User;
             $total_customers = $users->where(['status' => 1, 'is_superadmin' => 0]);
@@ -435,9 +459,16 @@ class DashBoardController extends BaseController
             
             $total_customers = $total_customers->count();
 
-            # Orders count
-            $vendor_orders = OrderVendor::with(['user','vendor']);
+          
+            
             if (Auth::user()->is_superadmin == 0 || $request->manager_id) {
+                  # Orders count
+            $vendor_orders = OrderVendor::with(['user','vendor']);
+
+            if($date_filter)
+            $vendor_orders->whereBetween('created_at', [$from_date, $end_date]);
+
+
                 //  $vendor_orders = $vendor_orders->whereHas('vendor.permissionToUser', function ($query) {
                 //         $query->where('user_id', Auth::user()->id);
                 //     });
@@ -446,14 +477,25 @@ class DashBoardController extends BaseController
                 {
                     $vendor_orders = $vendor_orders->whereIn('vendor_id',$vendorIds);
                 }
-            }
-            
-            if($date_filter)
-            $vendor_orders->whereBetween('created_at', [$from_date, $end_date]);
 
             $total_orders = $vendor_orders->count();
 
-            if(@auth()->user()->getRoleNames()[0]=='Seller'){
+
+            }else{
+                  # Orders count
+            if($date_filter)
+               $orders =  $orders->whereBetween('created_at', [$from_date, $end_date]);
+            
+            $total_orders = $orders->count();
+
+            }
+            
+           
+
+            // $total_orders = $vendor_orders->count();
+            // pr($total_orders);
+
+            if($this->roleId==4){
                 $total_sold_products = OrderVendorProduct::where('order_vendor_id',$vendorIds);
 
                 if($date_filter)
@@ -622,7 +664,8 @@ class DashBoardController extends BaseController
             # Revenue location wise
             // dd($orders->with('address:id,city')->get());  
 
-            $locationwise_revenueNew = $locationwise_revenue->with('address:id,city')->groupBy('address_id')->selectRaw('address_id, sum(payable_amount) as sum, COUNT(address_id) as addressCount')->whereYear('created_at', date('Y'))->whereNotNull('address_id');
+            $locationwise_revenueNew = $locationwise_revenue->with('address:id,city')->groupBy('address_id')->selectRaw('address_id, sum(payable_amount) as sum, COUNT(address_id) as addressCount');
+            // ->whereYear('created_at', date('Y'));
             // dd($locationwise_revenueNew->get());
 
             $currentyear_orderCount = $currentyear_ordercount->whereYear('created_at', date('Y'))->count();
@@ -657,12 +700,12 @@ class DashBoardController extends BaseController
 
             $orderLocations = [];
             $address_ids  = [];
-            // pr($locationwise_revenue->toArray());
+             //pr($locationwise_revenue->toArray());
             if(sizeof($locationwise_revenue) > 0) {
                 foreach($locationwise_revenue as $key => $orderAdd)
                 {
                 
-                    if($orderAdd->address){
+                    if($orderAdd->address && !empty(@$orderAdd->address->city)){
                             $sum = isset($orderLocations[$orderAdd->address->city]['sum']) ? $orderLocations[$orderAdd->address->city]['sum'] : 0;
                             $addresscount = isset($orderLocations[$orderAdd->address->city]['addressCount']) ? $orderLocations[$orderAdd->address->city]['addressCount'] : 0;
                             $address_ids[]=$orderAdd->id;
@@ -673,6 +716,16 @@ class DashBoardController extends BaseController
                                 $orderLocations[$orderAdd->address->city]['sum'] = ($sum) + ($orderAdd->sum);
                             //);
                     
+                    } else {
+                        $city = 'Others';
+                        $sum = isset($orderLocations[$city]['sum']) ? $orderLocations[$city]['sum'] : 0;
+                        $addresscount = isset($orderLocations[$city]['addressCount']) ? $orderLocations[$city]['addressCount'] : 0;
+                        $address_ids[]=$orderAdd->id;
+                        //$loc[$orderAdd->address->city]= array(
+                            $orderLocations[$city]['addressCount']=($addresscount) +1;
+                            $orderLocations[$city]['address_id']= $orderAdd->address_id;
+                            $orderLocations[$city]['city'] = $city;
+                            $orderLocations[$city]['sum'] = ($sum) + ($orderAdd->sum);
                     }
                 }
                 
