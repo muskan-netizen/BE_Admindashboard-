@@ -14,7 +14,7 @@
   </div>
 @php
     $mapKey = '1234';
-    $theme = \App\Models\ClientPreference::where(['id' => 1])->first();
+    $theme = Session::get('preferences');
     $analytics = getAdditionalPreference(['gtag_id', 'fpixel_id']);
     if($theme && !empty($theme->map_key)){
         $mapKey = $theme->map_key;
@@ -74,10 +74,12 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 <script defer type="text/javascript" src="{{asset('front-assets/js/bootstrap.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/underscore.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
+<script src="{{asset('assets/libs/select2/select2.min.js')}}"></script>
 @yield('home-page')
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{$mapKey}}&v=3.exp&libraries=places,drawing"></script>
 <script type="text/javascript" src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('js/spinner.js')}}"></script>
+<script defer type="text/javascript" src="{{asset('js/image_blur.js')}}"></script>
 
 @yield('custom-js')
 <script defer type="text/javascript" src="{{asset('js/custom.js')}}"></script>
@@ -149,6 +151,8 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 
                 },
             });
+                        console.log("token");
+
             console.log(token);
 
         }).catch(function(err) {
@@ -159,6 +163,7 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
     initFirebaseMessagingRegistration();
     @endif
     messaging.onMessage(function(payload) {
+        console.log(payload);
         if (!("Notification" in window)) {
             console.log("This browser does not support system notifications.");
         } else if (Notification.permission === "granted") {
@@ -260,13 +265,19 @@ if($showSubscriptionPlanPopUp == 1){
 @endphp
 
 <script type="text/javascript">
+    var currencySymbol = "{{ Session::get('currencySymbol') }}";
     var is_hyperlocal = 0;
     var selected_address = 0;
     var vendor_type = "delivery";
     var currentRouteName = "{{Route::currentRouteName()}}";
+    var is_service_product_price_from_dispatch_forOnDemand = 0;
     @if(Session::has('vendorType') && (Session::get('vendorType') != '') )
         vendor_type = "{{Session::get('vendorType')}}";
     @endif
+    @if((getAdditionalPreference(['is_service_product_price_from_dispatch'])['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand'))
+        is_service_product_price_from_dispatch_forOnDemand =1;
+    @endif
+
     var autocomplete_url = "{{ route('autocomplete') }}";
     let stripe_publishable_key = '{{ $stripe_publishable_key }}';
     let stripe_fpx_publishable_key = '{{ $stripe_fpx_publishable_key }}';
@@ -367,14 +378,17 @@ if($showSubscriptionPlanPopUp == 1){
     var khalti_api_key = "{{getKhaltiPayApiKey()??''}}";
 
 // Client Perference  Detail
-    var client_preference_web_color = "{{getClientPreferenceDetail()->web_color}}";
-    var client_preference_web_rgb_color = "{{getClientPreferenceDetail()->wb_color_rgb}}";
-    var stop_accepting_orders = "{{getClientPreferenceDetail()->stop_order_acceptance_for_users ?? 0}}";
+    var client_preference_web_color = "{{Session::get('preferences')->web_color}}";
+    var client_preference_web_rgb_color = "{{Session::get('preferences')->wb_color_rgb}}";
+    var stop_accepting_orders = "{{Session::get('preferences')->stop_order_acceptance_for_users ?? 0}}";
 
 // Client Detail
-    var client_company_name = "{{getClientDetail()->company_name}}";
-    var client_logo_url = "{{getClientDetail()->logo_image_url}}";
+    var client_company_name = "{{Session::get('clientdata')->company_name}}";
+    var client_logo_url = "{{Session::get('clientdata')->logo_image_url}}";
     var digit_count = "{{$client_preference_detail->digit_after_decimal}}";
+
+//////////////Telr payment Routes
+    var skipcash = "{{route('payment.skipcash')}}";
 
 // is restricted
     var is_age_restricted ="{{$client_preference_detail->age_restriction}}";
@@ -385,22 +399,22 @@ if($showSubscriptionPlanPopUp == 1){
     var userLatitude = "{{ session()->has('latitude') ? session()->get('latitude') : 0 }}";
     var userLongitude = "{{ session()->has('longitude') ? session()->get('longitude') : 0 }}";
 
-    if(!userLatitude){
+    if(!userLatitude || userLongitude ==0 || userLongitude==''){
         @if(!empty($client_preference_detail->Default_latitude))
-        userLatitude = "{{$client_preference_detail->Default_latitude}}";
+            userLatitude = "{{$client_preference_detail->Default_latitude}}";
         @endif
     }
     if(!userLatitude ){
         userLatitude = "30.7333";
     }
 
-    if(!userLongitude){
+    if(!userLongitude || userLongitude ==0 || userLongitude==''){
         @if(!empty($client_preference_detail->Default_longitude))
              userLongitude = "{{$client_preference_detail->Default_longitude}}";
         @endif
     }
-    if(!userLatitude ){
-        userLatitude = "76.7794";
+    if(!userLongitude ){
+        userLongitude = "76.7794";
     }
 
     @if(Session::has('selectedAddress'))

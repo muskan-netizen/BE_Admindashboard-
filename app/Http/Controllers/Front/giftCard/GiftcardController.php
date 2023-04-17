@@ -168,7 +168,7 @@ class GiftcardController extends FrontController
                 $UserGiftCard->buy_for_data = !empty($request->senderData) ? $request->senderData : ''; 
                 $UserGiftCard->save();
                 if($sendToMail != ''){
-                    Log::info('GiftCardMail');
+                   // Log::info('GiftCardMail');
                     $currSymbol = Session::has('currencySymbol') ? Session::get('currencySymbol') : '$';
                     $GiftCard->userCode =  $code;
                     $this->GiftCardMail($sendToMail,$sendToName, $GiftCard ,$user ,$currSymbol);

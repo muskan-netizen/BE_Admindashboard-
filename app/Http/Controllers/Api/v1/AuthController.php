@@ -22,13 +22,14 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Front\CustomerAuthController;
 use App\Http\Requests\{LoginRequest, SignupRequest};
 use App\Http\Controllers\Client\VendorController;
-use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate, SmsTemplate, UserRegistrationDocuments,UserDocs, Vendor, Permissions, UserPermissions, Type, Category, VendorCategory};
+use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate, SmsTemplate, UserRegistrationDocuments,UserDocs, Vendor, PermissionsOld, UserPermissions, Type, Category, VendorCategory,UserAddress,UserPaymentCards};
 use Log;
 use App\Http\Traits\CustomerSignupSuccessEmailTrait;
+use App\Http\Traits\InfluencerTrait;
 
 class AuthController extends BaseController
 {
-    use ApiResponser;
+    use ApiResponser, InfluencerTrait;
     use CustomerSignupSuccessEmailTrait;
     /**
      * Get Country List
@@ -298,7 +299,6 @@ class AuthController extends BaseController
      */
     public function signup(Request $signReq)
     {
-
         $preferences = ClientPreference::first();
         $user_registration_documents = UserRegistrationDocuments::with('primary')->get();
         $rules = [
@@ -315,6 +315,21 @@ class AuthController extends BaseController
         }
         if($preferences->verify_phone == 1){
             $rules['phone_number'] = 'required|string|min:7|max:15|unique:users';
+        }
+        if($signReq->has('has_address') && $signReq->has_address ==1 ){
+            $rules['address_type']  = 'required';
+            $rules['address']       = 'required';
+            $rules['street']        = 'required';
+            $rules['latitude']      = 'required';
+            $rules['longitude']     = 'required';
+            $rules['house_number']  = 'required';
+            $rules['pincode']       = 'required';
+        }
+        if($signReq->has('has_Payment_card') && $signReq->has_Payment_card ==1 ){
+            $rules['card_number']        = 'required';
+            $rules['card_holder_name']   = 'required';
+            $rules['card_cvv']           = 'required';
+            $rules['expiry_date']        = 'required';
         }
         foreach ($user_registration_documents as $user_registration_document) {
             if($user_registration_document->is_required == 1){
@@ -413,6 +428,30 @@ class AuthController extends BaseController
             }
         }
         $user_id = $user->id;
+        if($signReq->has('has_address') && $signReq->has_address ==1 ){
+            $address = new UserAddress();
+            $address->user_id = $user->id;
+            $address->is_primary =  1 ;
+            $signReq->request->add(['type' =>($signReq->has('address_type') && $signReq->address_type < 3) ? $signReq->address_type : 3]);
+            //address_type ,  address, street,latitude,longitude,house_number,pincode
+            foreach ($signReq->only('address', 'house_number','street', 'city', 'state', 'latitude', 'longitude', 'pincode', 'phonecode', 'country_code', 'type', 'country', 'type_name','extra_instruction') as $key => $value) {
+                $address[$key] = $value;
+            }
+            $address->save();
+        }
+        if($signReq->has('has_Payment_card') && $signReq->has_Payment_card ==1 ){
+            $PaymentCards           = new UserPaymentCards();
+            $PaymentCards->user_id  = $user->id;
+            // 'card_number', 'card_holder_name','card_cvv', 'expiry_date'
+            foreach ($signReq->only('card_number', 'card_holder_name','card_cvv', 'expiry_date') as $key => $value) {
+                $PaymentCards[$key] = $value;
+            }
+            $PaymentCards->save();
+        }
+        if(@$signReq->kyc){
+            InfluencerTrait::saveKycData($signReq, $user_id);
+        }
+        
         $user_registration_documents = UserRegistrationDocuments::with(['user_document' =>function($q) use($user_id){
             $q->where('user_id', $user_id);
         },'primary'])->get();
@@ -428,6 +467,7 @@ class AuthController extends BaseController
         }
         $userRefferal->user_id = $user->id;
         $userRefferal->save();
+
         $user_cart = Cart::where('user_id', $user->id)->first();
         if ($user_cart) {
             $unique_identifier_cart = Cart::where('unique_identifier', $signReq->device_token)->first();
@@ -594,7 +634,7 @@ class AuthController extends BaseController
                 $vendor->slug = Str::slug($user->name, "-");
                 $vendor->save();
             
-                $permission_details = Permissions::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
+                $permission_details = PermissionsOld::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
             
                 UserVendor::create(['user_id' => $user->id, 'vendor_id' => $vendor->id]);
             
@@ -925,7 +965,7 @@ class AuthController extends BaseController
             return response()->json(['error' => __('OTP is not valid')], 404);
         }
         $currentTime = Carbon::now()->toDateTimeString();
-        if ($currentTime > $user->phone_token_valid_till) {
+        if (($currentTime > $user->phone_token_valid_till) && !isStaticOtpEnable()) {
             return response()->json(['error' => __('OTP has been expired.')], 404);
         }
         $user->password = Hash::make($request['new_password']);
@@ -1334,7 +1374,7 @@ class AuthController extends BaseController
                 if($user->status==2)
                 {
                     return $this->errorResponse(__('User is Blocked.'), 404);
-                }
+                } 
                 if($user->status==3)
                 {
                     return $this->errorResponse(__('User is Inactive.'), 404);
@@ -1344,7 +1384,7 @@ class AuthController extends BaseController
             
             $request->request->add(['phone_number' => $phone_number]);
             return $this->proceedToPhoneLogin($request);
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             return $this->errorResponse($ex->getMessage(), $ex->getCode());
         }
     }
@@ -1431,8 +1471,8 @@ class AuthController extends BaseController
                 return $this->errorResponse('Something went wrong. Please try again.', 422);
             }
         } catch (\Exception $e) {
-            Log::info($e);
-            Log::info($e->getMessage());
+           // Log::info($e);
+           // Log::info($e->getMessage());
             return $this->errorResponse($e->getMessage(), 422);
         }
     }

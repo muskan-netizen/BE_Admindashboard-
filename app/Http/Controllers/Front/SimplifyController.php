@@ -32,14 +32,14 @@ class SimplifyController extends FrontController
         {
             $data['come_from'] = 'web';
         }
-        Log::info("Before Payment");
-        Log::info($data);
+       // Log::info("Before Payment");
+       // Log::info($data);
     	return view('frontend.payment_gatway.simplify_view')->with(['data' => $data]);
     }
     public function createPayment(Request $request)
     {
-        Log::info("Create Payment");
-        Log::info($request->all());
+       // Log::info("Create Payment");
+       // Log::info($request->all());
         if($request->come_from == "app")
         {
             $user = User::where('auth_token', $request->auth_token)->first();

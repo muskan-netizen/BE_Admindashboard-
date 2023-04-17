@@ -500,43 +500,205 @@
                                                                                                     name="select{{ $order->order_number }}"
                                                                                                     value="custom" checked>
 
-                                                                                            @endif
-                                                                                        </div>
-                                                                                        <div
-                                                                                            class="custom_tip mb-1 @if ($order->payable_amount > 0)  d-none @endif">
-                                                                                            <input
-                                                                                                class="input-number form-control"
-                                                                                                name="custom_tip_amount{{ $order->order_number }}"
-                                                                                                id="custom_tip_amount{{ $order->order_number }}"
-                                                                                                placeholder="{{ __('Enter Custom Amount') }}"
-                                                                                                type="number" value=""
-                                                                                                min="0.01" step="0.01">
-                                                                                        </div>
-                                                                                        <div
-                                                                                            class="col-md-6 text-md-right text-center">
-                                                                                            <button type="button"
-                                                                                                class="btn btn-solid topup_wallet_btn_tip topup_wallet_btn_for_tip"
-                                                                                                data-order_number={{ $order->order_number }}
-                                                                                                data-payableamount={{ $order->payable_amount }}>{{ __('Submit') }}</button>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <hr class="my-2">
-                                                                            @endif
+                                                    @if (@$replaceable && $order->vendors[0]->exchanged_of_order == null)
+                                                        <button class="replace-order-product btn btn-solid"
+                                                            data-id="{{ $order->id ?? 0 }}"
+                                                            data-vendor_id="{{ $vendor->vendor_id ?? 0 }}">
 
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        @endforeach
-                                                    @else
-                                                        <div class="col-12">
-                                                            <div class="no-gutters order_head">
-                                                                <h4 class="text-center">{{ __('No Past Order Found') }}
-                                                                </h4>
-                                                            </div>
-                                                        </div>
+                                                            {{ __('Replace') }}
+                                                        </button>
                                                     @endif
-                                                </div>
-                                                {{ $pastOrders->appends(['pageType' => 'pastOrders'])->links() }}
+                                                    {{--  luxury_option_id = 6 on_demand   --}}
+                                                    @if(($luxury_option_id !=6) && ($additionalPreference['is_service_product_price_from_dispatch'] != 1))
+                                                    <button class="repeat-order-product btn btn-solid mr-2"
+                                                        data-id="{{ $order->id ?? 0 }}"
+                                                        data-order_vendor_id="{{ $vendor->id ?? 0 }}"
+                                                        data-vendor_id="{{ $vendor->vendor_id ?? 0 }}">
+                                                        <td class="text-center" colspan="3">
+                                                            {{ __('Repeat Order') }}
+                                                    </button>
+                                                    @endif
+                                                @endif
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <div class="col-md-3 mb-3 pl-lg-0">
+                            <div class="card-box p-2 mb-0 h-100">
+                                <ul class="price_box_bottom m-0 pl-0 pt-1">
+                                    <li class="d-flex align-items-center justify-content-between">
+                                        <label class="m-0">{{ __('Sub Total') }}</label>
+                                        <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->total_amount + $order->total_delivery_fee * $clientCurrency->doller_compare) }}</span>
+                                    </li>
+                                    @if ($order->wallet_amount_used > 0)
+                                        <li class="d-flex align-items-center justify-content-between">
+                                            <label class="m-0">{{ __('Wallet') }}</label>
+                                            <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->wallet_amount_used * $clientCurrency->doller_compare) }}</span>
+                                        </li>
+                                    @endif
+                                    @if ($order->loyalty_amount_saved > 0)
+                                        <li class="d-flex align-items-center justify-content-between">
+                                            <label class="m-0">{{ __('Loyalty Used') }}</label>
+                                            <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->loyalty_amount_saved * $clientCurrency->doller_compare) }}</span>
+                                        </li>
+                                    @endif
+                                    @if ($order->taxable_amount > 0)
+                                        <li class="d-flex align-items-center justify-content-between">
+                                            <label class="m-0">{{ __('Tax') }}</label>
+                                            <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->taxable_amount * $clientCurrency->doller_compare) }}</span>
+                                        </li>
+                                    @endif
+                                    @if ($order->total_service_fee > 0)
+                                        <li class="d-flex align-items-center justify-content-between">
+                                            <label class="m-0">{{ __('Service Fee') }}</label>
+                                            <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->total_service_fee * $clientCurrency->doller_compare) }}</span>
+                                        </li>
+                                    @endif
+                                    @if ($order->tip_amount > 0)
+                                        <li class="d-flex align-items-center justify-content-between">
+                                            <label class="m-0">{{ __('Tip Amount') }}</label>
+                                            <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->tip_amount * $clientCurrency->doller_compare) }}</span>
+                                        </li>
+                                    @endif
+                                    @if ($order->subscription_discount > 0)
+                                        <li class="d-flex align-items-center justify-content-between">
+                                            <label class="m-0">{{ __('Subscription Discount') }}</label>
+                                            <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->subscription_discount * $clientCurrency->doller_compare) }}</span>
+                                        </li>
+                                    @endif
+                                    @if ($order->total_discount_calculate > 0)
+                                        <li class="d-flex align-items-center justify-content-between">
+                                            <label class="m-0">{{ __('Discount') }}</label>
+                                            <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->total_discount_calculate * $clientCurrency->doller_compare) }}</span>
+                                        </li>
+                                    @endif
+                                    @if ($order->total_delivery_fee > 0)
+                                        <li class="d-flex align-items-center justify-content-between">
+                                            <label class="m-0">{{ __('Delivery Fee') }}</label>
+                                            <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->total_delivery_fee * $clientCurrency->doller_compare) }}</span>
+                                        </li>
+                                    @endif
+                                    @if ($order->gift_card_amount > 0)
+                                        <li class="d-flex align-items-center justify-content-between">
+                                            <label class="m-0">{{ __('Gift Card Amount') }}</label>
+                                            <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->gift_card_amount * $clientCurrency->doller_compare) }}</span>
+                                        </li>
+                                    @endif
+                                    <li class="grand_total d-flex align-items-center justify-content-between">
+                                        <label class="m-0">{{ __('Total Payable') }}</label>
+                                        <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount - $order->total_discount_calculate * $clientCurrency->doller_compare) }}</span>
+                                    </li>
+                                    {{-- mohit sir branch code added by sohail --}}
+                                    @if (@$order->advance_amount > 0)
+                                        <li class="grand_total d-flex align-items-center justify-content-between">
+                                            <label class="m-0">{{ __('Advance Paid') }}</label>
+                                            <span>{{ Session::get('currencySymbol') }}{{ decimal_format(@$order->advance_amount) }}</span>
+                                        </li>
+                                        <li class="grand_total d-flex align-items-center justify-content-between">
+                                            <label class="m-0">{{ __('Pending Amount') }}</label>
+                                            <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount) - decimal_format(@$order->advance_amount) }}</span>
+                                        </li>
+                                    @endif
+                                    {{-- till here --}}
+                                </ul>
+
+                                @if ($client_preference_detail->tip_after_order == 1 && $order->tip_amount <= 0 && $payments > 0)
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="mb-2">
+                                                @if (getNomenclatureName('Want To Tip', true) != 'Want To Tip')
+                                                    {{ getNomenclatureName('Want To Tip', true) }}
+                                                @else
+                                                    {{ __('Do you want to give a tip?') }}
+                                                @endif
+                                            </div>
+                                            <div class="tip_radio_controls">
+                                                @if ($order->payable_amount > 0)
+                                                    <input type="radio" class="tip_radio" id="control_01"
+                                                        name="select{{ $order->order_number }}"
+                                                        value="{{ round($order->payable_amount * 0.05, 2) }}">
+                                                    <label class="tip_label" for="control_01">
+                                                        <h5 class="m-0" id="tip_5">
+                                                            {{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount * 0.05) }}
+                                                        </h5>
+                                                        <p class="m-0">
+                                                            5%</p>
+                                                    </label>
+
+                                                    <input type="radio" class="tip_radio" id="control_02"
+                                                        name="select{{ $order->order_number }}"
+                                                        value="{{ round($order->payable_amount * 0.1, 2) }}">
+                                                    <label class="tip_label" for="control_02">
+                                                        <h5 class="m-0" id="tip_10">
+                                                            {{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount * 0.1) }}
+                                                        </h5>
+                                                        <p class="m-0">
+                                                            10%</p>
+                                                    </label>
+
+                                                    <input type="radio" class="tip_radio" id="control_03"
+                                                        name="select{{ $order->order_number }}"
+                                                        value="{{ round($order->payable_amount * 0.15, 2) }}">
+                                                    <label class="tip_label" for="control_03">
+                                                        <h5 class="m-0" id="tip_15">
+                                                            {{ Session::get('currencySymbol') }}{{ decimal_format($order->payable_amount * 0.15) }}
+                                                        </h5>
+                                                        <p class="m-0">
+                                                            15%</p>
+                                                    </label>
+
+                                                    <input type="radio" class="tip_radio"
+                                                        id="custom_control{{ $order->order_number }}"
+                                                        name="select{{ $order->order_number }}" value="custom">
+                                                    <label class="tip_label"
+                                                        for="custom_control{{ $order->order_number }}">
+                                                        <h5 class="m-0">
+                                                            {{ __('Custom') }}<br>{{ __('Amount') }}
+                                                        </h5>
+                                                    </label>
+                                                @else
+                                                    <input type="hidden" class="tip_radio"
+                                                        id="custom_control{{ $order->order_number }}"
+                                                        name="select{{ $order->order_number }}" value="custom"
+                                                        checked>
+                                                @endif
+                                            </div>
+                                            <div
+                                                class="custom_tip mb-1 @if ($order->payable_amount > 0) d-none @endif">
+                                                <input class="input-number form-control"
+                                                    name="custom_tip_amount{{ $order->order_number }}"
+                                                    id="custom_tip_amount{{ $order->order_number }}"
+                                                    placeholder="{{ __('Enter Custom Amount') }}" type="number"
+                                                    value="" min="0.01" step="0.01">
+                                            </div>
+                                            <div class="col-md-6 text-md-right text-center">
+                                                <button type="button"
+                                                    class="btn btn-solid topup_wallet_btn_tip topup_wallet_btn_for_tip"
+                                                    data-order_number={{ $order->order_number }}
+                                                    data-payableamount={{ $order->payable_amount }}>{{ __('Submit') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr class="my-2">
+                                @endif
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        @else
+            <div class="col-12">
+                <div class="no-gutters order_head">
+                    <h4 class="text-center">{{ __('No Past Order Found') }}
+                    </h4>
+                </div>
+            </div>
+        @endif
+    </div>
+    {{ $pastOrders->appends(['pageType' => 'pastOrders'])->links() }}
+</div>

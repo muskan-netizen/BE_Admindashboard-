@@ -124,7 +124,7 @@ class VivawalletController extends FrontController
               'merchantTrns'        => $number
           ];
       $response = $this->createOrderPaymentLink($data);
-          \Log::info(json_encode($response));
+          //\Log::info(json_encode($response));
       if($response->orderCode){
             $payId = Payment::where('transaction_id',$number)->first();
             $payId->viva_order_id = $response->orderCode;

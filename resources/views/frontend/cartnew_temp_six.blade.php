@@ -1697,6 +1697,8 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var update_cart_product_schedule = "{{route('cart.updateProductSchedule')}}";
     var post_toyyibpay_via_gateway_url = "{{route('payment.toyyibpay.index')}}";
 
+
+
     var latitude = "{{ session()->has('latitude') ? session()->get('latitude') : 0 }}";
     var longitude = "{{ session()->has('longitude') ? session()->get('longitude') : 0 }}";
 

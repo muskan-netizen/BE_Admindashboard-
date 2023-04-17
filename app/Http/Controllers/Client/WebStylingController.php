@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{ClientPreference, PaymentMethod,HomePageLabel,ClientLanguage, HomePageLabelTranslation,CabBookingLayout,CabBookingLayoutTranslation,Category,CabBookingLayoutCategory, ClientPreferenceAdditional,OrderDeliveryStatusIcon, WebStyling,WebStylingOption, HomeProduct, Product};
-
+use App\Models\{ClientPreference, PaymentMethod,HomePageLabel,ClientLanguage, HomePageLabelTranslation,CabBookingLayout,CabBookingLayoutTranslation,Category,CabBookingLayoutCategory, ClientPreferenceAdditional,OrderDeliveryStatusIcon, WebStyling,WebStylingOption, HomeProduct, Product, CabBookingLayoutBanner};
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\Client;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +13,7 @@ use DB,Log;
 use Session;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\HomePage\WebStylingTrait;
+
 class WebStylingController extends BaseController{
     use WebStylingTrait;
     //
@@ -50,7 +51,7 @@ class WebStylingController extends BaseController{
             $home_page_labels = $home_page_labels->orderBy('order_by')->get();
 
         }
-// dd($home_page_labels);
+
 
         $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
                     ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
@@ -77,7 +78,12 @@ class WebStylingController extends BaseController{
        $categories =  $this->getCategoryListing();
        $selectedProducts =  $this->getSelectedProducts();
        $products = $this->getProducts(['products' => $selectedProducts]);
-        return view('backend/web_styling/index')->with(['products' => $products, 'selectedProducts' => $selectedProducts, 'categories' => $categories, 'clientContact'=>$client,'homepage_style_options' => $homepage_style_options,'all_pickup_category'=> $all_pickup_category,'client_preferences' => $client_preferences,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts, 'langs' => $langs,'payment_methods' => $payment_methods,'themeId'=>$themeId,'orderDeliveryIcons'=>$orderDeliveryIcons, 'single_category_products'=> $single_category_products, 'selected_single_category_products' => $selected_single_category_products]);
+       //type = 0 for Web products
+       $selected_ids= $this->getHomePageSelectedProducts(0);
+       $select_products= $this->getProducts([],'all');
+        $bottom_name = ClientPreferenceAdditional::where('key_name','bottom_name')->first();
+        
+        return view('backend/web_styling/index')->with(['products' => $products, 'selectedProducts' => $selectedProducts, 'categories' => $categories, 'clientContact'=>$client,'homepage_style_options' => $homepage_style_options,'all_pickup_category'=> $all_pickup_category,'client_preferences' => $client_preferences,'home_page_labels' => $home_page_labels,'cab_booking_layouts' => $cab_booking_layouts, 'langs' => $langs,'payment_methods' => $payment_methods,'themeId'=>$themeId,'orderDeliveryIcons'=>$orderDeliveryIcons, 'single_category_products'=> $single_category_products, 'selected_single_category_products' => $selected_single_category_products,'selected_ids'=>$selected_ids,'select_products'=> $select_products,'bottom_name'=>($bottom_name->key_value??'')]);
     }
 
 
@@ -88,7 +94,7 @@ class WebStylingController extends BaseController{
      * @return \Illuminate\Http\Response
      */
     public function updateWebStyles(Request $request){
-        // dd($request->all());
+        //  dd($request->all());
         if($request->has('home_labels')){
             foreach ($request->home_labels as $key => $value) {
                 $home_translation = HomePageLabelTranslation::where('language_id', $request->languages[$key])->where('home_page_label_id', $request->home_labels[$key])->first();
@@ -285,7 +291,6 @@ class WebStylingController extends BaseController{
         $featured_products->slug = preg_replace('/\s+/', '', $request->names[0])??null;
         $featured_products->is_active = $request->has('is_active') && $request->is_active == "on" ? 1 : 0;
         $featured_products->save();
-
         foreach ($request->languages as $key => $value) {
             $home_translation = new CabBookingLayoutTranslation();
             $home_translation->title = $request->names[$key];
@@ -342,10 +347,12 @@ class WebStylingController extends BaseController{
 
      # delete  pickup delivery section
      public function deletePickupSection($domain = '', $id){
-
         DB::beginTransaction();
         try{
         $featured_products =  CabBookingLayout::where('id',$id)->delete();
+        if($featured_products){
+            HomeProduct::where('layout_id',$id)->delete();
+        }
         DB::commit();
         return redirect()->back()->with('success', 'Pickup Styling Deleted Successfully!');
         }
@@ -428,6 +435,12 @@ class WebStylingController extends BaseController{
         if(@$request->product_category){
             $this->updateSingleCategoryProductsToDb($request);
         }
+
+        if(@$request->selected_products)
+        {
+            //For webside type = 0
+            $this->updateSelectedProductstoDb($home_translation->cab_booking_layout_id,$request,'0');
+        }  
         
 
         foreach ($request->pickup_labels as $key => $value) {
@@ -451,11 +464,17 @@ class WebStylingController extends BaseController{
 
             if(isset($request->categories[$key]) && !empty($request->categories[$key])){
                 $is_cat =  $request->categories[$key]['check'];
-            //    Log::info($is_cat);
+            //   // Log::info($is_cat);
             }
             else{
                 $is_cat =  0;
-            //    Log::info($is_cat);
+            //   // Log::info($is_cat);
+            }
+
+            if(isset($request->banner_image[$key]) && !empty($request->banner_image[$key])){
+                $is_img =$request->banner_image[$key]['check'];
+            } else{
+                $is_img =  0;
             }
 
 
@@ -469,10 +488,25 @@ class WebStylingController extends BaseController{
                 $cate->save();
             }
 
-
+            if(isset($request->banner_image[$value]) && !empty($request->banner_image[$value])){
+                $is_img =$request->banner_image[$value]['check'];
+                $del = CabBookingLayoutBanner::where('cab_booking_layout_id', $value)->delete();
+                $folderName='banner';
+                $filePath = $folderName . '/' . Str::random(40);
+                $file = $is_img;
+                
+                $orignal_name = $is_img->getClientOriginalName();
+                $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                
+                $url = Storage::disk('s3')->url($file_name);
+                
+                $cate = new CabBookingLayoutBanner();
+                $cate->cab_booking_layout_id  =  $value;
+                $cate->banner_image_url  = $url;
+                $cate->type  = 1;
+                $cate->save();
+            }
         }
-
-
 
 
         return response()->json([
@@ -526,26 +560,6 @@ class WebStylingController extends BaseController{
     /**
      * get Products for selected product home section
     */
-
-    public function getProducts($request)
-    {
-        $language_id = Session::get('customerLanguage') ?? 1;
-        $products = Product::with([
-        'translation' => function ($q) use ($language_id){
-            $q->select('product_id', 'title')->where('language_id', $language_id);
-        }]);
-        if(@$request['category_id']){
-            $products->wherehas('category', function($q) use($request){
-                $q->where('category_id', $request['category_id']);
-            });
-        }
-        if(@$request['products']){
-            $products->whereIn('id', $request['products']);
-        }
-        $products = $products->select('id')->where('is_live', 1)
-                    ->get();
-        return $products;
-    }
 
 
     public function getProductDatainModal(Request $request){
@@ -676,7 +690,12 @@ class WebStylingController extends BaseController{
         $client->contact_email =  $request->contact_email ;
         if($request->has('whatsapp_url'))
         $client->whatsapp_url =  $request->whatsapp_url;
-
+        if($request->has('bottom_value')){
+            ClientPreferenceAdditional::updateOrCreate(['key_name'=>$request->bottom_name,'client_code'=>$user->code],[
+                'key_name'=>$request->bottom_name,
+                'key_value'=>$request->bottom_value
+            ]);
+        }
         $client->save();
         return redirect()->back()->with('success', 'Contact Us Updated successfully!');
     }

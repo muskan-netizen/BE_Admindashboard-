@@ -13,14 +13,14 @@
     <div class="col-lg-12 d-flex justify-content-between align-items-center" id="add_new_address_btn">
         <h4 class="page-title m-0">{{ __($label)  }} {{ __('Address') }}</h4>
         @if(!in_array($action , ['dine_in','takeaway','appointment']))
-            <a class="add-address ml-auto" href="#add_new_address_form" data-toggle="modal" data-target="#add_new_address_form_modal">
+            <a class="add-address ml-auto" href="#add_new_address_form">
                 <i class="fa fa-plus mr-1" aria-hidden="true"></i>
                 <!-- {{__('Add New Address')}} -->
             </a>
         @endif
     </div>
 </div>
-@if($action != 'delivery' && $action != 'on_demand' )
+@if($action != 'delivery' && $action != 'on_demand' && $action != 'rental' )
     @if (!empty($processorProduct) && $processorProduct->is_processor_enable == 1)
         <div>
             <input type="hidden" id="latitude" value="{{ $processorProduct->latitude }}">
@@ -82,9 +82,9 @@
                 @endif
                 <label class="radio m-0">{{ ($address->house_number ?? false) ? $address->house_number."," : '' }} {{$address->address}}, {{$address->state}} {{$address->pincode}}
                     @if($address->is_primary)
-                    <input type="radio" name="address_id" value="{{$address->id}}" checked="checked">
+                    <input type="radio" name="address_id" id="cart_address_id_{{$address->id}}" value="{{$address->id}}" checked="checked">
                     @else
-                    <input type="radio" name="address_id" value="{{$address->id}}" {{$k == 0? 'checked="checked"' : '' }}>
+                    <input type="radio" name="address_id" id="cart_address_id_{{$address->id}}" value="{{$address->id}}" {{$k == 0? 'checked="checked"' : '' }}>
                     @endif
                     <span class="checkround"></span>
                 </label>

@@ -5,6 +5,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
 $languageList = \App\Models\ClientLanguage::with('language')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 $paymentMethod = \App\Models\PaymentMethod::where('is_show',1)->get();
+$company_name = \App\Models\ClientPreferenceAdditional::where('key_name','bottom_name')->first();
 $applocale = 'en';
 if(session()->has('applocale')){
 $applocale = session()->get('applocale');
@@ -256,7 +257,7 @@ $applocale = session()->get('applocale');
                         <ul>
                            @foreach($paymentMethod as $payment_method)
                            <li>
-                              <a href="#"><img src="{{ $payment_method->image_url }}"></a>
+                              <a href="#" aria-label="{{ $payment_method->name}}"><img alt="{{ $payment_method->name}}" src="{{ $payment_method->image_url }}"></a>
                            </li>
                            @endforeach
                         </ul>
@@ -382,7 +383,7 @@ $applocale = session()->get('applocale');
                   $prevYear = $currYear - 1;
                   $currYear = substr($currYear, -2);
                   @endphp
-                  <p><i class="fa fa-copyright" aria-hidden="true"></i> {{$prevYear}}-{{$currYear}} | {{__('All rights reserved')}}</p>
+                     <p><i class="fa fa-copyright" aria-hidden="true"></i> {{$prevYear}}-{{$currYear}} @if(isset($company_name)) @if(!empty($company_name->key_value)) | {{$company_name->key_value}}  @endif @endif| {{__('All rights reserved')}}</p>
                </div>
             </div>
          </div>
