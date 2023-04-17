@@ -2374,6 +2374,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                     <option value="Text">Text</option>
                                     <option value="Image">Image</option>
                                     <option value="Pdf">PDF</option>
+                                    <option value="selector">selector</option>
                                  </select>
                               </div>
                            </div>
@@ -2410,6 +2411,32 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                     </tr>
                                 </tbody>
                             </table>
+                        </div>
+                        <div id="user_selector_div" class="col-md-12 d-none">
+                            <div class="card">
+                            <div class="card-box mb-0 ">
+                                <div class="d-flex align-items-center justify-content-between">
+                                   <h4 class="header-title text-uppercase">{{__('Options')}}</h4>
+                                   
+                                </div>
+                                <div id="option_div">
+
+                                        <div class="selector-option-al ">
+                                            <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="vendor-selector-datatable">
+                                                <tr class="trForClone">
+
+                                                    @foreach($client_languages as $langs)
+                                                        <th>{{$langs->langName}}</th>
+                                                    @endforeach
+                                                    <th></th>
+                                                </tr>
+                                                <tbody id="table_body">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                </div>
+                            </div>
+                            </div>
                         </div>
 
                      </div>
@@ -2890,6 +2917,22 @@ $(document).ready(function(){
             $("#selector_div").addClass("d-none");
         }
     });
+
+      // User Registration Document Script
+      $(document).on("change", "#user_file_type_select", function() {
+        var file_type = $(this).val();
+        if(file_type == 'selector'){
+            $("#user_selector_div").removeClass("d-none");
+            var classoption_section = $('#option_div').find('.option_section');
+            if(classoption_section.length==0){
+                addoptionTemplate(0);
+            }
+        }
+        else{
+            $("#user_selector_div").addClass("d-none");
+        }
+    });
+
     function addoptionTemplate(section_id){
         section_id                = parseInt(section_id);
         section_id                = section_id +1;
@@ -2983,6 +3026,33 @@ $(document).ready(function(){
             success: function(response) {
                if (response.status = 'Success') {
 
+                if(response.data.file_type=="selector"){
+                        $("#selector_div").removeClass("d-none");
+                        $('.option_section').remove();
+                        var options = response.data.options;
+                        var section_id =0
+                        var row =0
+                        var option_section_temp    = $('#vendorSelectorTemp').html();
+                        var modified_temp         = _.template(option_section_temp);
+                        $(options).each(function(index, value) {
+                            section_id                = parseInt(section_id);
+                            row                       = parseInt(section_id)
+                            section_id                = section_id +1;
+                            $('#vendor-selector-datatable #table_body').append(modified_temp({ id:section_id,data:value}));
+                            var options_trans = value.translations;
+                            $(options_trans).each(function(trans_index, trans_value) {
+                                var input_id = '#option_name_'+row+'_'+trans_value.language_id;
+                                $(input_id).val(trans_value.name);
+                            });
+                            $('.add_more_button').hide();
+                            $('#vendor-selector-datatable #add_button_'+section_id).show();
+                        });
+                    }else{
+                        $('.option_section').remove();
+                        $("#selector_div").addClass("d-none");
+                    }
+                    
+
                   $(document).find("#add_user_registration_document_modal select[name=file_type]").val(response.data.file_type).change();
 
                   $("#add_user_registration_document_modal input[name=user_registration_document_id]").val(response.data.id);
@@ -2992,6 +3062,12 @@ $(document).ready(function(){
                   $.each(response.data.translations, function( index, value ) {
                     $('#add_user_registration_document_modal #user_registration_document_name_'+value.language_id).val(value.name);
                   });
+                  
+                  $.each(response.data.options, function( index, value ) {
+                    $.each(value.translations, function( index1, value1 ) {
+                        $('#add_user_registration_document_modal #option_name_'+index+'_'+value1.language_id).val(value1.name);
+                     });
+                    });
                }
             },
             error: function() {}
@@ -3245,6 +3321,12 @@ $(document).ready(function(){
                   $.each(response.data.translations, function( index, value ) {
                     $('#add_vendor_registration_document_modal #vendor_registration_document_name_'+value.language_id).val(value.name);
                   });
+                  $.each(response.data.options, function( index, value ) {
+                    $.each(value.translations, function( index1, value1 ) {
+                        $('#add_vendor_registration_document_modal #option_name_'+index+'_'+value1.language_id).val(value1.name);
+                     });
+                    });
+
                }
             },
             error: function() {}

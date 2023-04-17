@@ -48,19 +48,7 @@
             </span>
         </div>
     </div>
-@elseif($client_preference_detail->subscription_tab_taxi == 1)
-    <div class="col-md-4">
-        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-            <label for="subscription_mode" class="mr-2 mb-0">{{ __('Subscription Mod') }}<small
-                    class="d-block pr-5">{{ __('Enable the option to create Subscriptions for Customers and Vendors.') }}</small></label>
-            <span> <input type="checkbox" data-plugin="switchery" name="subscription_mode" id="subscription_mode"
-                    class="form-control" data-color="#43bee1"
-                    @if (isset($preference) && $preference->subscription_mode == '1') checked='checked' @endif>
-            </span>
-        </div>
-    </div>
 @endif
-
 <div class="col-md-4">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="subscription_tab_taxi" class="mr-2 mb-0">{{ __('Subscription Tab') }}<small
@@ -99,14 +87,6 @@
         </span>
     </div>
 </div>
-{{-- <div class="col-md-4">
-            <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="delay_order" class="mr-2 mb-0">{{__('Delay Order')}}<small class="d-block pr-5">Option to add delay time per product separately for Dine In/ Delivery/ Takeaway to restrict order to scheduling only with added Delay.</small></label>
-            <span> <input type="checkbox" data-plugin="switchery" name="delay_order" id="delay_order" class="form-control" data-color="#43bee1" @if (isset($preference) && $preference->delay_order == '1') checked='checked' @endif>
-            </span>
-        </div>
-</div> 
---}}
 <div class="col-md-4">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="product_order_form" class="mr-2 mb-0">{{ $nomenclatureProductOrderForm }}<small
@@ -249,14 +229,6 @@
         </span>
     </div>
 </div>
-
-<!-- <div class="col-md-4">
-    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-        <label for="enable_inventory_service" class="mr-2 mb-0">{{ __('Need Inventory?') }}<small class="d-block pr-5">{{ __('Enable to give permission to panel for inventory.') }}</small></label>
-        <span> <input type="checkbox" data-plugin="switchery" name="enable_inventory_service" id="enable_inventory_service" class="form-control" data-color="#43bee1" @if (isset($preference) && $preference->enable_inventory_service == '1') checked='checked' @endif>
-        </span>
-    </div>
-</div> -->
 
 <div class="col-md-4">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
