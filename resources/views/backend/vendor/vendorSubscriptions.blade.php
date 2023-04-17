@@ -23,6 +23,9 @@
                                     <span class="plan-price">{{$clientCurrency->currency->symbol}}{{ decimal_format($subscription->subscription_amount) }} / {{ $subscription->frequency }}</span>
                                 </div>
                                 <p>{{ $subscription->plan->description }}</p>
+                                @if(@getAdditionalPreference(['is_show_vendor_on_subcription'])['is_show_vendor_on_subcription'] == 1)
+                                <p>{{ $subscription->order_count }}</p>
+                                @endif
                             </div>
 
                             <div class="col-sm-6 form-group mb-0">

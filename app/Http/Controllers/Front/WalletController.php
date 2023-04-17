@@ -6,14 +6,14 @@ use DB;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Front\FrontController;
 use App\Models\{User, Transaction, ClientCurrency, Payment, PaymentOption};
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,PaymentTrait};
 use Illuminate\Support\Facades\Auth;
 use Session;
 use App\Models\UserDataVault;
 
 class WalletController extends FrontController
 {
-    use ApiResponser;
+    use ApiResponser,PaymentTrait;
     /**
      * Display a listing of the resource.
      *
@@ -116,7 +116,8 @@ class WalletController extends FrontController
      */
     public function paymentOptions(Request $request, $domain = ''){
         $ex_codes = ['offline_manual'];
-        $code = array('cod','stripe', 'dpo','azul', 'stripe_fpx', 'paystack','yoco', 'paylink', 'razorpay','simplify','square','ozow','pagarme', 'checkout','authorize_net','kongapay','ccavenue', 'cashfree','viva_wallet','easebuzz','vnpay','paytab','mvodafone','flutterwave','easypaisa','braintree','payphone','windcave','paytech','windcave','stripe_oxxo', 'mycash','stripe_ideal','userede','openpay','khalti','mtn_momo','plugnpay');
+        $code =  $this->paymentOptionArray('wallet');
+        // $code = array('cod','stripe', 'dpo','azul', 'stripe_fpx', 'paystack','yoco', 'paylink', 'razorpay','simplify','square','ozow','pagarme', 'checkout','authorize_net','kongapay','ccavenue', 'cashfree','viva_wallet','easebuzz','vnpay','paytab','mvodafone','flutterwave','easypaisa','braintree','payphone','windcave','paytech','windcave','stripe_oxxo', 'mycash','stripe_ideal','userede','openpay','khalti','mtn_momo','plugnpay');
 
         $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereIn('code', $code)->whereNotIn('code', $ex_codes)->where('status', 1)->get();
         foreach ($payment_options as $k => $payment_option) {

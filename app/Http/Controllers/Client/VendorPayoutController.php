@@ -9,16 +9,14 @@ use Carbon\Carbon;
 use Omnipay\Omnipay;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Http\Traits\ApiResponser;
-use App\Http\Traits\ToasterResponser;
+use App\Http\Traits\{ApiResponser,ToasterResponser,PaymentTrait};
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\OrderVendorListExport;
 use App\Http\Controllers\Client\{BaseController, StripeGatewayController, PagarmeController};
 use App\Models\{Client, User, Vendor, OrderVendor, PaymentOption, PayoutOption, VendorConnectedAccount, VendorPayout, ClientCurrency};
 
 class VendorPayoutController extends BaseController{
-    use ApiResponser;
-    use ToasterResponser;
+    use ApiResponser,ToasterResponser,PaymentTrait;
     public $gateway;
     public $currency;
 
@@ -36,7 +34,7 @@ class VendorPayoutController extends BaseController{
         }
 
         //stripe connected account details
-        $codes = ['cash', 'stripe', 'pagarme','razorpay'];
+        $codes = $this->paymentOptionArray('payout');
         $payout_creds = PayoutOption::whereIn('code', $codes)->where('status', 1)->get();
         if ($payout_creds) {
             foreach ($payout_creds as $creds) {

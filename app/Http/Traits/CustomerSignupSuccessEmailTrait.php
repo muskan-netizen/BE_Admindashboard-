@@ -43,7 +43,7 @@ trait CustomerSignupSuccessEmailTrait{
                   'customer_name' => ucwords($user->name),
       
               ];
-              dispatch(new \App\Jobs\sendCustomerRegistrationEmail($email_data))->onQueue('customer_signup_success_email');
+              dispatch(new \App\Jobs\sendCustomerRegistrationEmail($email_data))->onQueue('verify_email');
           }
         }
      }

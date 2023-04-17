@@ -176,33 +176,37 @@ $timezone = Auth::user()->timezone;
                                 </div>
                                 @endif
                                 @endif
-
-                                @if(isset($order->vendors) && isset($order->vendors->first()->dispatch_traking_url) && $order->vendors->first()->dispatch_traking_url !=null)
+                              @foreach ($order->vendors as $vendor)
+                                
+                                @if($vendor->vendor_id == $vendor_id)
+                                @if(isset($order->vendors) && isset($vendor->dispatch_traking_url) && $vendor->dispatch_traking_url!=null)
                                 <div class="col-lg-6">
                                     <div class="mb-4">
                                         <h5 class="mt-0">{{ __('Tracking ID') }}:</h5>
                                         <p>
                                             @php
-                                            $track = explode('/', $order->vendors->first()->dispatch_traking_url);
+                                            $track = explode('/', $vendor->dispatch_traking_url);
                                             $track_code = end($track);
                                             @endphp
-                                            <a href="{{ $order->vendors->first()->dispatch_traking_url }}" target="_blank">#{{ $track_code }}</a>
+                                            <a href="{{ $vendor->dispatch_traking_url }}" target="_blank">#{{ $track_code }}</a>
                                         </p>
                                     </div>
                                 </div>
                                 @elseif(isset($order->vendors) &&
-                                isset($order->vendors->first()->lalamove_tracking_url) &&
-                                $order->vendors->first()->lalamove_tracking_url != null)
+                                isset($vendor->lalamove_tracking_url) &&
+                                $vendor->lalamove_tracking_url != null)
                                 <div class="col-lg-6">
                                     <div class="mb-4">
                                         <h5 class="mt-0">{{ __('Tracking ID') }}:</h5>
                                         <p>
-                                            <a href="{{ $order->vendors->first()->lalamove_tracking_url }}" target="_blank">#{{ $order->vendors->first()->web_hook_code }}</a>
+                                            <a href="{{ $vendor->lalamove_tracking_url }}" target="_blank">#{{ $vendor->web_hook_code }}</a>
                                         </p>
                                     </div>
                                 </div>
                                 @endif
                             </div>
+                             @endif
+                            @endforeach
                             {{-- @endif
                             @endif --}}
                             <div class="row track-order-list">
@@ -368,6 +372,11 @@ $timezone = Auth::user()->timezone;
 
                             {{ __("Exchange To") }}<a href="{{$order->vendors[0]->exchanged_to_order->vendor_detail_url }}"><span>#{{ $order->vendors[0]->exchanged_to_order->orderDetail->order_number }}</span></a>
                             @endIf
+                           
+                         
+                            <button class=" badge badge-info"  data-toggle="modal" data-target="#showDelayTimeModal">{{ __('Add Delay Time') }} <img src=""> </button>
+ 
+
                             @if(@$order->vendors[0]->exchanged_of_order)
                             {{ __("Exchange Of") }}
                             <a href="{{$order->vendors[0]->exchanged_of_order->vendor_detail_url }}"><span># {{$order->vendors[0]->exchanged_of_order->orderDetail->order_number}}</span></a>
@@ -402,9 +411,11 @@ $timezone = Auth::user()->timezone;
                                         <th>{{ __("Total") }}</th>
                                     </tr>
                                 </thead>
+                           
                                 @foreach ($order->vendors as $vendor)
+                                
                                 @if($vendor->vendor_id == $vendor_id)
-
+                                        
                                 <tbody>
                                     @php
                                     $sub_total = 0;
@@ -413,6 +424,7 @@ $timezone = Auth::user()->timezone;
                                     $storeRevenue = 0;
                                     $revenue = $vendor->admin_commission_percentage_amount + $vendor->admin_commission_fixed_amount + $vendor->total_markup_price;
                                     @endphp
+                                 
                                     @foreach ($vendor->products as $product)
                                     @if ($product->order_id == $order->id)
                                     @php
@@ -1166,7 +1178,37 @@ $timezone = Auth::user()->timezone;
 </div>
 </div>
 </div>
-
+      <!-- modal for Delay Time -->
+<div class="modal fade" id="showDelayTimeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog" role="document">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Add Delay Time</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         @foreach ($order->vendors as $vendor)
+         @if($vendor->vendor_id == $vendor_id)
+         <div class="modal-body">
+            <div class="form-group">
+               <label for="message-text" class="col-form-label">Enter Time(in minutes):</label>
+               <input type="number" class="form-control" value="{{$vendor->extra_time}}" id="buffer_time">               
+            </div>
+         </div>
+         <div class="modal-footer">
+            @php
+            $track = explode('/', $vendor->dispatch_traking_url);
+            $track_code = end($track);
+            @endphp
+            <button class="buffer_time_btn  badge badge-info"   data-tracking_id={{$track_code}} data-tracking_url={{$vendor->dispatch_traking_url}}   data-order_id={{$order->id}} data-vendor_id={{$vendor_id}}>{{ __('Save') }} <img src=""> </button>
+         </div>
+         @endif
+         @endforeach
+      </div>
+   </div>
+</div>
+   
 <!-- product return modal -->
 <div class="modal fade return-order" id="return_order" tabindex="-1" aria-labelledby="return_orderLabel">
     <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -1185,6 +1227,10 @@ $timezone = Auth::user()->timezone;
     </div>
 </div>
 <!-- end product return modal -->
+
+
+
+
 
 <div id="delivery_info_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -1233,6 +1279,9 @@ $timezone = Auth::user()->timezone;
             </div>
         </div>
     </div>
+
+
+
 
 
     <!-- Order Invoice Code -->
@@ -1551,5 +1600,52 @@ $timezone = Auth::user()->timezone;
                 newWin.close();
             }, 10);
         }
+
+        $(document).on('click', '.buffer_time_btn', function(e) {
+            var time = $("#buffer_time").val();
+            var order_id = $(this).data('order_id');
+            var vendor_id = $(this).data('vendor_id');
+            var tracking_id = $(this).data('tracking_id');
+            if(time <=0 ){
+                alert("Please enter a valid minutes");
+                return false;
+            }
+            $.ajax({
+                        type: "POST",
+                        data: {
+                            order_id: order_id,
+                            vendor_id: vendor_id,
+                            time:time,
+                            tracking_id:tracking_id
+                        },
+                        url: "{{ route('order.delay_time') }}",
+                        headers: {
+                            Accept: "application/json"
+                        },
+                        success: function(response) {
+                            console.log(response);
+                            if (response.status == 'success') {
+                                $('#showDelayTimeModal').modal('hide');
+                                $.NotificationApp.send("Success", response.message, "top-right",
+                                    "#5ba035", "success");
+                               
+                            }else{
+                                  $.NotificationApp.send("Error", response.message, "top-right",
+                                    "#5ba035", "error");
+                            }
+                        },
+                        error: function(response) {
+                            let error = response.responseJSON;
+                            Swal.fire({
+                                text: error.message,
+                                icon: "error",
+                                button: "OK",
+                            });
+                            return false;
+                        }
+                    });
+        });
+
+
     </script>
     @endsection

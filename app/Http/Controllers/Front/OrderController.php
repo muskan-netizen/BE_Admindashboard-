@@ -51,7 +51,8 @@ use App\Models\ {
     ReturnReason,
     OrderDeliveryStatusIcon,
     UserGiftCard,
-    OrderFiles 
+    OrderFiles,
+    SubscriptionInvoicesVendor
 };
 use Illuminate\Http\Request;
 use App\Models\LuxuryOption;
@@ -61,7 +62,9 @@ use App\Models\ClientPreference;
 use App\Http\Traits\ {
     ApiResponser,
     CartManager,
-    SquareInventoryManager
+    SquareInventoryManager,
+    VendorTrait,
+    OrderTrait
 };
 use App\Models\AddonOption;
 use App\Models\ {
@@ -83,8 +86,7 @@ use Illuminate\Support\Facades\Http;
 
 class OrderController extends FrontController
 {
-    use ApiResponser, CartManager, SquareInventoryManager;
-    use \App\Http\Traits\OrderTrait;
+    use ApiResponser, CartManager, SquareInventoryManager,VendorTrait,OrderTrait;
 
     /**
      * Display a listing of the resource.
@@ -500,7 +502,6 @@ class OrderController extends FrontController
             $pendingOrder = $this->pendingOrder( $request,$user,$langId,$iconsArray);
         }
       
-        
         return view('frontend.account.orders')->with([
             'payments' => $payments,
             'rejectedOrders' => $rejectedOrders,
@@ -1168,14 +1169,14 @@ class OrderController extends FrontController
             $fixed_fee_amount = $request->total_fixed_fee_amount ?? 0.00;
             DB::beginTransaction();
 
-            $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code', 'slots_with_service_area', 'stop_order_acceptance_for_users')->first();
+            $preferences = ClientPreference::select('is_hyperlocal', 'Default_latitude', 'Default_longitude', 'distance_unit_for_time', 'distance_to_time_multiplier', 'client_code', 'slots_with_service_area', 'stop_order_acceptance_for_users','subscription_mode')->first();
             $editlimit_datetime = Carbon::now()->toDateTimeString();
             $order_edit_before_hours = 0;
            
-            $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive','is_gift_card','is_service_product_price_from_dispatch','order_edit_before_hours']);
+            $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive','is_gift_card','is_service_product_price_from_dispatch','order_edit_before_hours','is_show_vendor_on_subcription']);
 
             $order_edit_before_hours = $additionalPreferences->order_edit_before_hours;
-
+            
             $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
             $luxury_option = LuxuryOption::where('title', $action)->first();
             $delivery_on_vendors = array();
@@ -1419,6 +1420,8 @@ class OrderController extends FrontController
                 $delivery_distance = 0;
                 $deliver_charge = $ptaxable_amount = $delivery_fee_charges = 0.00;
                 $delivery_count = 0;
+                $rate = 0;
+                $vendor_amount = 0;
                 $vendor_payable_amount = 0;
                 $vendor_markup_amount = 0;
                 $vendor_discount_amount = 0;
@@ -1443,7 +1446,14 @@ class OrderController extends FrontController
                 }else{
                     $timezone = $client_timezone->timezone ?? ( $user ? $user->timezone : 'Asia/Kolkata' );
                 }
-
+                $vendor_subcription_lnvoices_id = '';
+                if($preferences->subscription_mode == '1' && $additionalPreferences->is_show_vendor_on_subcription == 1){
+                    $vendor_on_subcription = $this->getVendorActiveSubscription($vendor_id);
+                    if( $vendor_on_subcription)
+                    { 
+                        $vendor_subcription_lnvoices_id =   $vendor_on_subcription->id ;
+                    }
+                }
 
                 /* Update details related to order vendor */
                 if (isset($cart->editingOrder) && ! empty($cart->editingOrder)) {
@@ -1461,6 +1471,7 @@ class OrderController extends FrontController
                 $OrderVendor->user_id = $user->id;
                 $OrderVendor->order_id = $order->id;
                 $OrderVendor->vendor_id = $vendor_id;
+                $OrderVendor->subscription_invoices_vendor_id = $vendor_subcription_lnvoices_id;
                 $OrderVendor->vendor_dinein_table_id = $vendor_cart_products->unique('vendor_dinein_table_id')->first()->vendor_dinein_table_id;
                 $OrderVendor->save();
 
@@ -1553,6 +1564,7 @@ class OrderController extends FrontController
                     // $vendor_payable_amount = $vendor_payable_amount + $quantity_price + $quantity_container_charges;
                     $vendor_markup_amount = $vendor_markup_amount + $variant->markup_price;
                     $vendor_payable_amount = $vendor_payable_amount + $quantity_price;
+                    $vendor_amount = $vendor_amount + $quantity_price;
                     $vendor_total_container_charges = $vendor_total_container_charges + $quantity_container_charges;
                     // $vendor_total_container_charges = $quantity_container_charges;
                     // echo "<br>payable_amount: ".$payable_amount."+ quantity_price: ".$quantity_price ;
@@ -1932,7 +1944,7 @@ class OrderController extends FrontController
                             // if(!in_array($vendor_cart_product->vendor_id, $addonArray)){
                             // $vendor_payable_amount_for_service = $vendor_payable_amount;
                             // }
-
+                            $vendor_amount = $vendor_amount + $opt_quantity_price;
                             $quantity_price = $quantity_price + $opt_quantity_price;
                         }
                     }
@@ -1974,7 +1986,7 @@ class OrderController extends FrontController
 
                 $coupon_id = null;
                 $coupon_name = null;
-                $actual_amount = $vendor_payable_amount;
+                $actual_amount = $vendor_amount;
                 if ($vendor_cart_product->coupon) {
                     $coupon_id = $vendor_cart_product->coupon->promo->id;
 
@@ -2043,10 +2055,10 @@ class OrderController extends FrontController
                 }
                 $OrderVendor->fixed_fee = $fixedFeeAmount;
                 $OrderVendor->additional_price = $additionalPrice;
-                $OrderVendor->taxable_amount = number_format($total_other_taxes, 2);
+                $OrderVendor->taxable_amount =$new_vendor_taxable_amount;
                 $OrderVendor->payment_option_id = $request->payment_option_id;
                 $OrderVendor->subtotal_amount = $OrderVendor->subtotal_amount - $bid_vendor_discount??0;
-                $OrderVendor->payable_amount = $vendor_payable_amount +$fixedFeeAmount+number_format($total_other_taxes, 2);
+                $OrderVendor->payable_amount = $vendor_payable_amount +$fixedFeeAmount+$new_vendor_taxable_amount;
                 $OrderVendor->total_markup_price = $vendor_markup_amount;
                 $OrderVendor->total_container_charges = $vendor_total_container_charges;
 
@@ -2316,7 +2328,9 @@ class OrderController extends FrontController
                 44,
                 45,
                 47,
-                52
+                52,
+                53,
+                54
             ]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay, payu,mycash,Stipre_oxxo,stripe_ideal
 
             if (! in_array($request->payment_option_id, $ex_gateways) || (isset($request->is_postpay) && $request->is_postpay == 1)) {
@@ -2968,21 +2982,10 @@ class OrderController extends FrontController
             $customer = User::find($order->user_id);
             $cus_address = UserAddress::find($order->address_id);
             $tasks = array();
-            if ($order->payment_option_id == 1) {
-                $cash_to_be_collected = 'Yes';
-                $payable_amount = $order->payable_amount;
-            } else {
-                if ($order->is_postpay == 1 && $order->payment_status == 0) {
-                    $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order->payable_amount;
-                } else {
-                    $cash_to_be_collected = 'No';
-                    $payable_amount = 0.00;
-                }
-            }
+           
             $dynamic = uniqid($order->id . $vendor);
             $call_back_url = route('dispatch-order-update', $dynamic);
-            $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
+            $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address','order_pre_time')->first();
             $order_vendor = OrderVendor::where([
                 'order_id' => $order->id,
                 'vendor_id' => $vendor
@@ -2992,6 +2995,19 @@ class OrderController extends FrontController
             }
             $tasks = array();
             $meta_data = '';
+
+            if ($order->payment_option_id == 1) {
+                $cash_to_be_collected = 'Yes';
+                $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
+            } else {
+                if ($order->is_postpay == 1 && $order->payment_status == 0) {
+                    $cash_to_be_collected = 'Yes';
+                    $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
+                } else {
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                }
+            }
 
             $team_tag = null;
             if (! empty($dispatch_domain->last_mile_team)) {
@@ -3037,7 +3053,7 @@ class OrderController extends FrontController
                 // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                 $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
-
+            //Log::info("order Pre Time is ".$vendor_details->order_pre_time);
             $client = CP::orderBy('id', 'asc')->first();
             $postdata = [
                 'order_number' => $order->order_number,
@@ -3062,7 +3078,8 @@ class OrderController extends FrontController
                 'dbname' => $client->database_name,
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
-                'user_icon' => $customer->image
+                'user_icon' => $customer->image,
+                'order_pre_time'=>$vendor_details->order_pre_time
             ];
             if ($order_vendor->is_restricted == 1) {
                 $postdata['user_verification_type'] = isset($customer->passbase_verification) && ! is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
@@ -3448,43 +3465,45 @@ class OrderController extends FrontController
         }
     }
 
-    public function sendSuccessNotification($id, $vendorId)
-    {
-        $super_admin = User::where('is_superadmin', 1)->pluck('id');
-        $user_vendors = UserVendor::where('vendor_id', $vendorId)->pluck('user_id');
-        $devices = UserDevice::whereNotNull('device_token')->where('user_id', $id)->pluck('device_token');
-        foreach ($devices as $device) {
-            $token[] = $device;
-        }
-        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_vendors)->pluck('device_token');
-        foreach ($devices as $device) {
-            $token[] = $device;
-        }
-        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $super_admin)->pluck('device_token');
-        foreach ($devices as $device) {
-            $token[] = $device;
-        }
-        // $token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
-        // dd($token);
 
-        // $from = env('FIREBASE_SERVER_KEY');
 
-        $notification_content = NotificationTemplate::where('id', 2)->first();
-        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
-        if ($notification_content && ! empty($token) && ! empty($client_preferences->fcm_server_key)) {
+    // public function sendSuccessNotification($id, $vendorId)
+    // {
+    //     $super_admin = User::where('is_superadmin', 1)->pluck('id');
+    //     $user_vendors = UserVendor::where('vendor_id', $vendorId)->pluck('user_id');
+    //     $devices = UserDevice::whereNotNull('device_token')->where('user_id', $id)->pluck('device_token');
+    //     foreach ($devices as $device) {
+    //         $token[] = $device;
+    //     }
+    //     $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_vendors)->pluck('device_token');
+    //     foreach ($devices as $device) {
+    //         $token[] = $device;
+    //     }
+    //     $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $super_admin)->pluck('device_token');
+    //     foreach ($devices as $device) {
+    //         $token[] = $device;
+    //     }
+    //     //$token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
+    //     // dd($token);
 
-            $data = [
-                "registration_ids" => $token,
-                "notification" => [
-                    'title' => $notification_content->label,
-                    'body' => $notification_content->content
-                ]
-            ];
-            $dataString = $data;
+    //     //$from = env('FIREBASE_SERVER_KEY');
 
-            sendFcmCurlRequest($data);
-        }
-    }
+    //     $notification_content = NotificationTemplate::where('id', 2)->first();
+    //     $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+    //     if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
+
+    //         $data = [
+    //             "registration_ids" => $token,
+    //             "notification" => [
+    //                 'title' => $notification_content->label,
+    //                 'body'  => $notification_content->content,
+    //             ]
+    //         ];
+    //         $dataString = $data;
+
+    //         sendFcmCurlRequest($data);
+    //     }
+    // }
 
     // / ****************** insert In Vendor Order Dispatch Status ************************ ///////////////
     public function insertInVendorOrderDispatchStatus($request)

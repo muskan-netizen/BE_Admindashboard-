@@ -156,12 +156,12 @@
                                     </div>
                                 </div>
 
-                                <div class="form-row ">
-                                    @if (count($user_registration_documents) > 0)
-                                        <div class="user-info d-block w-100">
-                                            <h2 class="py-1">User Document</h2>
-                                        </div>
-                                    @endif
+                                @if (count($user_registration_documents) > 0)    
+                                    <div class="user-info d-block w-100">
+                                        <h5 class="py-1">User Document</h5>
+                                    </div>
+                                @endif
+                                <div class="row form-group mb-0 ">
                                     @foreach ($user_registration_documents as $vendor_registration_document)
                                         @if (isset($vendor_registration_document->primary->slug) && !empty($vendor_registration_document->primary->slug))
                                             @if (strtolower($vendor_registration_document->file_type) == 'selector')
@@ -298,7 +298,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="row  mt-5">
+                                <div class="row  my-5">
                                     <div class="col-md-12">
                                         <input type="hidden" name="device_type" value="web">
                                         <input type="hidden" name="device_token" value="web">
