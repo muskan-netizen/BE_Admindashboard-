@@ -815,11 +815,13 @@ class ClientPreferenceController extends BaseController{
                 $preferenceset->need_appointment_service = ($request->has('need_appointment_service') && $request->need_appointment_service == 'on') ? 1 : 0;
             }
         }
-        $preference->is_user_pre_signup = ($request->has('is_user_pre_signup') && ($request->is_user_pre_signup == 'on')) ? 1 : 0;
         $preferenceset->save();
-        ClientPreference::first()->update([
-            'is_user_pre_signup' => ($request->has('is_user_pre_signup') && $request->input('is_user_pre_signup') == 'on') ? 1 : 0,
-        ]);
+        $client = Client::first();
+        
+        ClientPreferenceAdditional::updateOrCreate(
+            ['key_name' => 'is_user_pre_signup', 'client_code' => $client->code],
+            ['key_name' => 'is_user_pre_signup', 'key_value' => ($request->has('is_user_pre_signup') && $request->input('is_user_pre_signup') == 'on') ? 1 : 0,'client_code' => $client->code,'client_id'=> $client->id]);
+      
         if($request->has('send_to') && $request->send_to == 'customize' ){
             return redirect()->route('configure.customize')->with('success', 'Client customizations updated successfully!');
         }

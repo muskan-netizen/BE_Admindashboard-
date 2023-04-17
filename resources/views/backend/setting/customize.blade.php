@@ -5,6 +5,7 @@
 .select2-multiple {visibility: hidden !important;}
 </style>
 @endsection
+
 @section('content')
 <div class="container-fluid" id="alCustomizePage">
     {{--<div class="row">
@@ -43,7 +44,8 @@
 
 <!-- New Customize Page -->
 @php
-$getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id','fpixel_id','is_token_currency_enable', 'token_currency','is_price_by_role','advance_booking_amount', 'advance_booking_amount_percentage',]); //,'seller_sold_title','saller_platform_logo'
+$getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id','fpixel_id','is_token_currency_enable', 'token_currency','is_price_by_role','advance_booking_amount', 'advance_booking_amount_percentage','is_user_pre_signup']); //,'seller_sold_title','saller_platform_logo'
+
 @endphp
    <!--Localization start -->
     <div class="row">
