@@ -44,7 +44,7 @@ trait CartManagerV2{
         $this->user_allAddresses = UserAddress::where('user_id', $this->user->id)->where('status',1)->orderBy('is_primary','Desc')->get();
     }
     $this->preferences = ClientPreference::with(['client_detail:id,code,country_id'])->first();
-    $this->additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive']);
+    $this->additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive','is_service_price_selection','is_service_product_price_from_dispatch']);
 
 
     $this->variantsData  = $this->variant_options = $this->vendorAddons = array();

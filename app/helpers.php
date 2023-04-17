@@ -1878,3 +1878,36 @@ if (!function_exists('getUserToken')) {
             return $data;
     }
 }
+
+if (!function_exists('getOnDemandPricingRule')) {    
+    /**
+     * getOnDemandPricingRule
+     *
+     * @param  mixed $vendorType = user selected vendor mode 
+     * @param  mixed $userSelection =  user selected pricing geting from vendor or freelancer
+     * @param  mixed $is_service_product_price_from_dispatch custoom mode selecter by admin 
+     * @param  mixed $is_service_price_selection custoom mode selecter by admin  $is_service_product_price_from_dispatch = 0,$is_service_price_selection = 0,
+     * @return void
+     */
+    function getOnDemandPricingRule($vendorType = "on_demand",$userSelection = "vendor",$additionalPreference)
+    {
+       // pr($vendorType);
+        $is_service_product_price_from_dispatch = @$additionalPreference['is_service_product_price_from_dispatch'] ?? 0;
+        $is_service_price_selection             = @$additionalPreference['is_service_price_selection'] ?? 0;
+        $return['is_price_from_freelancer'] = 0;
+        $return['is_ondemand_multi_pricing'] = 0;
+            $value = 0;
+            if(($vendorType == "on_demand") && ($is_service_product_price_from_dispatch ==1 )){
+                $return['is_price_from_freelancer'] =1;
+                if($is_service_price_selection ==1 ){
+                    $return['is_ondemand_multi_pricing'] = 1;
+                    if($userSelection =='freelancer'){
+                        $return['is_price_from_freelancer'] =1;
+                    }else{
+                        $return['is_price_from_freelancer'] =0;
+                    }
+                }
+            }
+            return $return;
+    }
+}

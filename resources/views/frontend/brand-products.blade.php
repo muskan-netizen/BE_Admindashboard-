@@ -4,11 +4,11 @@
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 @endsection
 @php
-$additionalPreference = getAdditionalPreference(['is_token_currency_enable','is_service_product_price_from_dispatch']);
+$additionalPreference = getAdditionalPreference(['is_token_currency_enable','is_service_product_price_from_dispatch','is_service_price_selection']);
 $is_service_product_price_from_dispatch_forOnDemand = 0;
-if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
-    $is_service_product_price_from_dispatch_forOnDemand =1;
-}
+
+$getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'), (@Session::get('onDemandPriceingSelected') ?? ''),$additionalPreference);
+$is_service_product_price_from_dispatch_forOnDemand =$getOnDemandPricingRule['is_price_from_freelancer'] ?? 0;
 @endphp
 @section('content')
 <style type="text/css">

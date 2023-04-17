@@ -29,9 +29,10 @@ span.alPriceValue, span.alPriceValue i {
 @php
 $add_to_cart =  route('addToCart') ;
 $is_service_product_price_from_dispatch_forOnDemand = 0;
-$additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
+$additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch','is_service_price_selection']);
+$getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'), (@Session::get('onDemandPriceingSelected') ?? ''),$additionalPreference);
 $category_type_idForNotShowshPlusMinus = ['12'];
-if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
     $is_service_product_price_from_dispatch_forOnDemand =1;
     array_push($category_type_idForNotShowshPlusMinus,8);
 }

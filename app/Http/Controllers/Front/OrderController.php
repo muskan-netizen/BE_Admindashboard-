@@ -105,7 +105,10 @@ class OrderController extends FrontController
 
         $langId = Session::get('customerLanguage');       
         $navCategories = $this->categoryNav($langId);
-        $additionalPreference =getAdditionalPreference(['is_long_term_service','is_token_currency_enable','token_currency','is_postpay_enable'  ,'is_order_edit_enable' ,'order_edit_before_hours','is_service_product_price_from_dispatch']);
+        $additionalPreference =getAdditionalPreference(['is_long_term_service','is_token_currency_enable','token_currency','is_postpay_enable'  ,'is_order_edit_enable' ,'order_edit_before_hours','is_service_product_price_from_dispatch','is_service_price_selection']);
+        $getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'), (@Session::get('onDemandPriceingSelected') ?? ''),$additionalPreference);
+        $is_service_product_price_from_dispatch_forOnDemand =$getOnDemandPricingRule['is_price_from_freelancer'] ?? 0;
+
         $dispatcher_icons = OrderDeliveryStatusIcon::select('image', 'image_url')->get();
         foreach ($dispatcher_icons as $icon) {
             $imgUrl = asset($icon->image);
@@ -121,14 +124,14 @@ class OrderController extends FrontController
         $pastOrders = Order::with([
             'vendors' => function ($q) {
 
-                $q->whereHas('products', function ($Pq) use ( $additionalPreference) {
-                    if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+                $q->whereHas('products', function ($Pq) use ( $is_service_product_price_from_dispatch_forOnDemand) {
+                    if( $is_service_product_price_from_dispatch_forOnDemand ==1){
                             $Pq->where('dispatcher_status_option_id',5);
                     }
                    
                 });
 
-                if($additionalPreference['is_service_product_price_from_dispatch'] ==0){
+                if($is_service_product_price_from_dispatch_forOnDemand==0){
                         $q->whereIn('order_status_option_id', [
                             6,
                             9
@@ -157,7 +160,7 @@ class OrderController extends FrontController
 
         $pastOrders = $pastOrders->with('vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail');
 
-        if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+        if($is_service_product_price_from_dispatch_forOnDemand ==1){
             $pastOrders->whereHas('vendors.products', function ($q) {
                 $q->where('dispatcher_status_option_id',5); //1=pending,5= complete,6 reject
             });
@@ -194,7 +197,7 @@ class OrderController extends FrontController
         $activeOrders = Order::with([
             'vendors' => function ($q) use($additionalPreference) {
                 $q->whereHas('products', function ($Pq) use ( $additionalPreference) {
-                    if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+                    if($is_service_product_price_from_dispatch_forOnDemand ==1){
                             // $Pq->where('dispatcher_status_option_id',2);
                             $Pq->whereNotIn('dispatcher_status_option_id',[1,5,6]);
                     }
@@ -245,7 +248,7 @@ class OrderController extends FrontController
         
             $activeOrders->where('orders.is_long_term', 0);
         
-        if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+        if($is_service_product_price_from_dispatch_forOnDemand ==1){
             $activeOrders =  $activeOrders->whereHas('vendors.products', function ($q) {
                 $q->whereNotIn('dispatcher_status_option_id',[1,5,6]); //1=pending,5= complete,6 reject
             })->whereHas('vendors.products');
@@ -408,7 +411,7 @@ class OrderController extends FrontController
             'user',
             'address'
         ]);
-        if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+        if($is_service_product_price_from_dispatch_forOnDemand ==1){
             $rejectedOrders->whereHas('vendors.products', function ($q) {
                 $q->where('dispatcher_status_option_id',6); //1=pending,5= complete,6 reject
             });
@@ -498,7 +501,7 @@ class OrderController extends FrontController
         $langId = Session::get('customerLanguage');
         $fixedFee = $this->fixedFee($langId);
         $pendingOrder = [];
-        if ($additionalPreference['is_service_product_price_from_dispatch'] == 1){
+        if ($is_service_product_price_from_dispatch_forOnDemand == 1){
             $pendingOrder = $this->pendingOrder( $request,$user,$langId,$iconsArray);
         }
       
@@ -516,7 +519,8 @@ class OrderController extends FrontController
             'longTermOrder' => $longTermOrder,
             'additionalPreference' => $additionalPreference,
             'pendingOrder' => $pendingOrder,
-            'show_long_term' =>$show_long_term
+            'show_long_term' =>$show_long_term,
+            'is_service_product_price_from_dispatch_forOnDemand' =>$is_service_product_price_from_dispatch_forOnDemand
         ]);
     }
     

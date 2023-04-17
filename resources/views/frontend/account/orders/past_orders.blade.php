@@ -318,7 +318,7 @@
                                                         </button>
                                                     @endif
                                                     {{--  luxury_option_id = 6 on_demand   --}}
-                                                    @if(($luxury_option_id !=6) && ($additionalPreference['is_service_product_price_from_dispatch'] != 1))
+                                                    @if(($luxury_option_id !=6) && ($is_service_product_price_from_dispatch_forOnDemand != 1))
                                                     <button class="repeat-order-product btn btn-solid mr-2"
                                                         data-id="{{ $order->id ?? 0 }}"
                                                         data-order_vendor_id="{{ $vendor->id ?? 0 }}"

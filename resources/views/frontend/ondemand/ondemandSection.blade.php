@@ -1,13 +1,20 @@
 
 @section('customcss')
 <link defer type="text/css" href="{{asset('css/ondemand.css')}}" rel="stylesheet" id="bs-default-stylesheet" />
+<style>
+.home-serivces .step-indicator .step1 p{
+    width: max-content;
+}   
+</style>
 @endsection
 @php
 $add_to_cart =  route('addToCart') ;
-$additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
+$additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch','is_service_price_selection']);
+$getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'), (@Session::get('onDemandPriceingSelected') ?? ''),$additionalPreference);
+
 $is_service_product_price_from_dispatch_forOnDemand = 0;
 $category_type_idForNotShowshPlusMinus = ['12'];
-if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+if($getOnDemandPricingRule['is_price_from_freelancer']==1){
     $is_service_product_price_from_dispatch_forOnDemand =1;
     array_push($category_type_idForNotShowshPlusMinus,8);
 }
@@ -279,7 +286,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                     $cartcount = 1;
                                                                 @endphp
                                                             @endif
-                                                                @if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand'))
+                                                                @if($is_service_product_price_from_dispatch_forOnDemand==1)
                                                                 @if($cartcount > 0)
                                                                         <h5 class="my-sm-0 my-3 "></h5>
                                                                         <a class="btn btn-solid float-right"  id="added_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
@@ -442,7 +449,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                         @php
                                          $last_cart_product_id =  $cart_data->id
                                          @endphp
-                                        @if(($cart_data->cateTypeId ==8) && ($additionalPreference['is_service_product_price_from_dispatch'] !=1))
+                                        @if(($cart_data->cateTypeId ==8) && ($is_service_product_price_from_dispatch_forOnDemand !=1))
                                             @if(!empty($cart_data->product->mode_of_service) && $cart_data->product->mode_of_service == 'schedule')
                                             @php
                                                 $productDate = trim(date('Y-m-d', strtotime($cart_data->scheduled_date_time)));
