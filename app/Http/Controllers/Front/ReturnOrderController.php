@@ -26,8 +26,7 @@ use App\Models\{LoyaltyCard,ClientCurrency,VendorOrderCancelReturnPayment};
 
 class ReturnOrderController extends FrontController{
 
-    use ApiResponser;
-    use OrderTrait, ReturnExchangeTrait;
+    use ApiResponser,OrderTrait, ReturnExchangeTrait;
     /**
      * order details in modal
     */

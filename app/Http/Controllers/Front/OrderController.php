@@ -49,7 +49,7 @@ use App\Models\LuxuryOption;
 use App\Models\PaymentOption;
 use App\Models\CartDeliveryFee;
 use App\Models\ClientPreference;
-use App\Http\Traits\{ApiResponser, CartManager};
+use App\Http\Traits\{ApiResponser, CartManager,OrderTrait};
 use App\Models\AddonOption;
 use App\Models\{OrderLongTermServices, OrderLongTermServicesAddon, OrderLongTermServiceSchedule,Bid};
 use App\Models\ProductVariantSet;
@@ -66,8 +66,7 @@ use Illuminate\Support\Facades\Http;
 
 class OrderController extends FrontController
 {
-    use ApiResponser, CartManager;
-    use \App\Http\Traits\OrderTrait;
+    use ApiResponser, CartManager,OrderTrait;
     /**
      * Display a listing of the resource.
      *

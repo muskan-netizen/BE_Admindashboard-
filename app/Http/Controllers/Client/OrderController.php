@@ -21,7 +21,7 @@ use GuzzleHttp\Client;
 use App\Models\Client as CP;
 use App\Models\Transaction;
 use App\Models\AutoRejectOrderCron;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,OrderTrait};
 use Log;
 use Carbon\Carbon;
 use App\Models\{LoyaltyCard, VendorOrderCancelReturnPayment};
@@ -30,8 +30,7 @@ class OrderController extends BaseController
 {
     private $folderName = '/order/reports';
 
-    use ApiResponser;
-    use \App\Http\Traits\OrderTrait;
+    use ApiResponser,OrderTrait;
     public $from_date;
     public $to_date;
     public $setWeekDate;
