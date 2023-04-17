@@ -2841,7 +2841,7 @@ class VendorController extends BaseController{
                 if(empty($order_type)){
                     $products = $products->orderBy('product_translations.title', 'asc');
                 }
-               $products = $products->paginate($limit, $page);
+                $products = $products->groupBy('products.id')->paginate($limit, $page);
            
                 $response['products'] = $products ?? [];
            
