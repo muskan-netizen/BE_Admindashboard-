@@ -1007,7 +1007,7 @@ class VendorController extends FrontController
             $returnHTML = view('frontend.vendor-search-products')->with(['vendor'=> $vendor,'tags'=>$tags,'tag_id'=> $tagId, 'listData'=>$listData,'tagId'=>$tagId, 'input'=>$request->all()])->render();
         }
 
-        return response()->json(array('status'=>'Success', 'html'=>$returnHTML));
+        return response()->json(array('status'=>'Success', 'html'=>mb_convert_encoding($returnHTML, "UTF-8", "auto")));
     }
 
 
