@@ -43,6 +43,8 @@ if (Session::has('toaster')) {
 {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" ></script> --}}
 <script src="{{asset('assets/libs/datetimepicker/daterangepicker.min.js')}}" ></script>
 <script src="{{ asset('assets/js/alert/alert.js') }}"></script>
+<script src="{{asset('assets/js/backend/backend_common.js')}}"></script>
+
 
 {{-- <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js" ></script> --}}
 {{-- add translation file  --}}
@@ -157,7 +159,6 @@ if (Session::has('toaster')) {
     });
     
     function get_latest_order_socket(order_number){
-        console.log(order_number);
         Audio.prototype.play = (function(play) {
             return function() {
                 var audio = this,
@@ -189,8 +190,7 @@ if (Session::has('toaster')) {
             },
             success: function(response) {
                 if (response.status == 'Success') {
-                    console.log(response);
-                     if (response.data.html != '') {
+                    if (response.data.html != '') {
                         $("#received_new_orders").find(".modal-body").html('');
                         let latest_order_template = _.template($('#latest_order_template').html());
                         $("#received_new_orders").find(".modal-body").append(response.data.html);
@@ -239,6 +239,7 @@ if (Session::has('toaster')) {
                 },
             });
             console.log(token);
+            console.log("token");
 
         }).catch(function(err) {
             console.log(`Token Error :: ${err}`);
@@ -249,12 +250,13 @@ if (Session::has('toaster')) {
 
     initFirebaseMessagingRegistration();
     messaging.onMessage( async function(payload) {
-        console.log("payload");
-        console.log(payload);
+
         if (!("Notification" in window)) {
             console.log("This browser does not support system notifications.");
         }
         else if (Notification.permission === "granted") {
+            console.log(payload);
+            console.log("payload");
             if(payload && payload.data && payload.data.data){
                 if(payload.data.type && payload.data.type=="order_created"){
                     var payload_data = JSON.parse(payload.data.data);

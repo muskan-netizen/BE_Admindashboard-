@@ -102,6 +102,14 @@
             z-index: 10;
             display: none;
         }
+
+ .select2-results__option{
+    width:100%;
+   }
+   .select2-container{
+    width:100%!important;
+   }
+
     </style>
 @endsection
 
@@ -375,14 +383,17 @@
                                                     class="icofont icofont-man-in-glasses"></i>Details</a>
                                             <div class="material-border"></div>
                                         </li> -->
-                                            @if ($client_preference_detail && $client_preference_detail->rating_check == 1)
-                                                <li class="nav-item"><a class="nav-link active" id="review-top-tab"
-                                                        data-toggle="tab" href="#top-review" role="tab"
-                                                        aria-selected="false"><i
-                                                            class="icofont icofont-contacts"></i>{{ __('Ratings & Reviews') }}</a>
-                                                    <div class="material-border"></div>
-                                                </li>
-                                            @endif
+                                        @if($client_preference_detail && $client_preference_detail->rating_check == 1 && count($rating_details)>0)
+                                        <li class="nav-item "><a class="nav-link active" id="review-top-tab" data-toggle="tab" href="#top-review" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Ratings & Reviews')}}</a>
+                                            <div class="material-border"></div>
+                                        </li>
+                                        @endif
+
+                                        <li class="nav-item ml-3"><a class="nav-link {{(count($rating_details)>0)?'':'active'}}" id="compare-product-tab" data-toggle="tab" href="#compare-product" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Compare products')}}</a>
+                                            <div class="material-border"></div>
+                                        </li>
+
+
                                         </ul>
                                         <div class="tab-content nav-material" id="top-tabContent">
                                             <div class="tab-pane fade" id="top-home" role="tabpanel"
@@ -393,7 +404,7 @@
                                                 aria-labelledby="profile-top-tab">
                                                 <p>{!! !empty($product->translation) && isset($product->translation[0]) ? $product->translation[0]->body_html : '' !!}</p>
                                             </div>
-                                            <div class="tab-pane show active" id="top-review" role="tabpanel"
+                                            <div class="tab-pane show {{(count($rating_details)>0)?'active':''}}" id="top-review" role="tabpanel"
                                                 aria-labelledby="review-top-tab">
                                                 @forelse ($rating_details as $rating)
                                                     <div v-for="item in list"
@@ -441,6 +452,9 @@
                                                     <p>{{ __('No Result Found') }}</p>
                                                 @endforelse
                                             </div>
+
+                                            @include('frontend.compare-product-table')
+
                                         </div>
                                     </div>
                                 </div>

@@ -293,7 +293,7 @@ class ReturnOrderController extends BaseController{
         try {
             $user = Auth::user();
             DB::beginTransaction();
-            \Log::info("asdfasd", $request->all());
+            //\Log::info("asdfasd", $request->all());
            
             $orderVendorProductOld = OrderProduct::find($request->order_vendor_product_id); // get exchanged order product
             

@@ -21,7 +21,7 @@
                                            
                                                 <div class="col-md-12 mb-3 mt-3 d-sm-flex">
                                                     <div
-                                                        class="vender-icon mr-sm-1 text-center text-sm-left mb-2 mb-sm-0">
+                                                        class="vender-icon  mr-sm-1 text-center text-sm-left mb-2 mb-sm-0">
 
                                                         <img src="{{ $vendor['logo']['image_fit'] }}90/90{{ $vendor['logo']['image_path'] }}"
                                                         class="rounded-circle avatar-lg" alt="profile-image">

@@ -40,12 +40,14 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
             </div>
             @endif
         @else
+            @if(auth()->user()->can('vendor-add') || auth()->user()->is_superadmin)
             <div class="col-sm-6 text-sm-right">
                 <button class="btn btn-info waves-effect waves-light text-sm-right openImportModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
                 </button>
                 <button class="btn btn-info waves-effect waves-light text-sm-right openAddModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Add') }}
                 </button>
             </div>
+            @endif
         @endif
 
     </div>
@@ -151,6 +153,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
                                                     <th class="text-center">{{ __('Products') }}</th>
                                                     <th class="text-center">{{ __('Orders') }}</th>
                                                     <th class="text-center">{{ __('Active') }} <br> {{ __('Orders') }}</th>
+                                                    {{-- <th class="text-center">{{ __('Manager') }}</th> --}}
                                                     <th class="text-center">{{ __('Action') }}</th>
                                                 </tr>
                                             </thead>
@@ -185,6 +188,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
                                                     <th class="text-center">{{ __('Products') }}</th>
                                                     <th class="text-center">{{ __('Orders') }}</th>
                                                     <th class="text-center">{{ __('Active') }} <br> {{ __('Orders') }}</th>
+                                                    {{-- <th class="text-center">{{ __('Manager') }}</th> --}}
                                                     <th class="text-center">{{ __('Action') }}</th>
                                                 </tr>
                                             </thead>
@@ -218,6 +222,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
                                                     <th class="text-center">{{ __("Products") }}</th>
                                                     <th class="text-center">{{ __('Orders') }}</th>
                                                     <th class="text-center">{{ __("Active") }} <br> {{ __("Orders") }}</th>
+                                                    {{-- <th class="text-center">{{ __('Manager') }}</th> --}}
                                                     <th class="text-center">{{ __('Action') }}</th>
                                                 </tr>
                                             </thead>
@@ -407,17 +412,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
             $('#Vendor_order_pre_time_show').text(txt);
        }
     }
-    // $(document).on('change', '.activeCategory', function(){
-    //     //var status = $(this).is(":checked");
-    //     var category_id = $(this).data('category_id');
-    //    var input= "  <input type='hideen' name='category_ids[]' value='"+category_id+"' >";
-    //    $('#nestable_list_1').append(input);
 
-    // });
-    // $('.iti__country').click(function() {
-    //     var code = $(this).attr('data-country-code');
-    //     document.getElementById('addCountryData').value = code;
-    // })
 </script>
 @include('backend.vendor.pagescript')
 <script src="{{asset('js/admin_vendor.js')}}"></script>

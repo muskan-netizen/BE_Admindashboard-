@@ -271,8 +271,7 @@
                                                         {{ $vendor['delivery_fee'] = 0 }}
                                                     @endif
 
-
-                                                    <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($vendor['subtotal_amount'] - $vendor['discount_amount'] + $vendor['total_container_charges'] + $vendor['taxable_amount'] + $vendor['service_fee_percentage_amount'] + $order['fixed_fee_amount'] + $vendor['delivery_fee'] + $vendor['additional_price'] + $vendor['additional_price'] + $vendor['toll_amount']) }}
+                                                    <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($vendor['subtotal_amount'] - $vendor['discount_amount'] + $vendor['total_container_charges'] + $vendor['taxable_amount'] + $vendor['service_fee_percentage_amount'] + $vendor['fixed_fee'] + $vendor['delivery_fee'] + $vendor['additional_price'] + $vendor['toll_amount']-$order->wallet_amount_used) }}
                                                     </span>
                                                 </li>
                                             </ul>
@@ -292,7 +291,7 @@
                                                     data-single_div="#single-order-div{{ $k . $ve }}"
                                                     data-count="{{ $ve }}" data-order_id="{{ $order->id }}"
                                                     data-vendor_id="{{ $vendor->vendor_id }}" data-status_option_id="2"
-                                                    data-order_vendor_id="{{ $vendor->order_vendor_id }}"
+                                                    data-order_vendor_id="{{ $vendor->id }}"
                                                     data-is_alert="{{ $vendor->isAlert }}"
                                                     data-alert_message="{{ $vendor->alertMessage }}">{{ __('Exchange Accept') }}</button>
                                             @else
@@ -302,7 +301,7 @@
                                                     data-count="{{ $ve }}"
                                                     data-order_id="{{ $order->id }}"
                                                     data-vendor_id="{{ $vendor->vendor_id }}" data-status_option_id="2"
-                                                    data-order_vendor_id="{{ $vendor->order_vendor_id }}"
+                                                    data-order_vendor_id="{{ $vendor->id }}"
                                                     data-is_alert="{{ $vendor->isAlert }}"
                                                     data-alert_message="{{ $vendor->alertMessage }}">{{ __('Accept') }}</button>
                                             @endif
@@ -312,7 +311,7 @@
                                                 data-single_div="#single-order-div{{ $k . $ve }}"
                                                 data-count="{{ $ve }}" data-order_id="{{ $order->id }}"
                                                 data-vendor_id="{{ $vendor->vendor_id }}" data-status_option_id="4"
-                                                data-order_vendor_id="{{ $vendor->order_vendor_id }}"
+                                                data-order_vendor_id="{{ $vendor->id }}"
                                                 data-order_luxury_option="{{ $order->luxury_option_id }}">{{ __('Processing') }}</button>
                                         @elseif($vendor->order_status_option_id == 4)
                                             <button class="update-status btn-success"
@@ -320,7 +319,7 @@
                                                 data-single_div="#single-order-div{{ $k . $ve }}"
                                                 data-count="{{ $ve }}" data-order_id="{{ $order->id }}"
                                                 data-vendor_id="{{ $vendor->vendor_id }}" data-status_option_id="5"
-                                                data-order_vendor_id="{{ $vendor->order_vendor_id }}">
+                                                data-order_vendor_id="{{ $vendor->id }}">
                                                 @if ($order->luxury_option_id == 2 || $order->luxury_option_id == 3)
                                                     {{ __('Order Prepared') }}
                                                 @else
@@ -333,7 +332,7 @@
                                                 data-single_div="#single-order-div{{ $k . $ve }}"
                                                 data-count="{{ $ve }}" data-order_id="{{ $order->id }}"
                                                 data-vendor_id="{{ $vendor->vendor_id }}" data-status_option_id="6"
-                                                data-order_vendor_id="{{ $vendor->order_vendor_id }}">{{ __('Delivered') }}</button>
+                                                data-order_vendor_id="{{ $vendor->id }}">{{ __('Delivered') }}</button>
                                         @else
                                         @endif
                                         @if (
@@ -348,7 +347,7 @@
                                                     data-count="{{ $ve }}"
                                                     data-order_id="{{ $order->id }}"
                                                     data-vendor_id="{{ $vendor->vendor_id }}" data-status_option_id="3"
-                                                    data-order_vendor_id="{{ $vendor->order_vendor_id }}">{{ __('Exchange Reject') }}</button>
+                                                    data-order_vendor_id="{{ $vendor->id }}">{{ __('Exchange Reject') }}</button>
                                             @else
                                                 <button class="update-status btn-danger" id="reject"
                                                     data-full_div="#full-order-div{{ $k }}"
@@ -356,7 +355,7 @@
                                                     data-count="{{ $ve }}"
                                                     data-order_id="{{ $order->id }}"
                                                     data-vendor_id="{{ $vendor->vendor_id }}" data-status_option_id="3"
-                                                    data-order_vendor_id="{{ $vendor->order_vendor_id }}">{{ __('Reject') }}</button>
+                                                    data-order_vendor_id="{{ $vendor->id }}">{{ __('Reject') }}</button>
                                             @endif
                                         @endif
 

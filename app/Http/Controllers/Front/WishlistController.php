@@ -30,7 +30,7 @@ class WishlistController extends FrontController
                 $q->groupBy('product_id');
             },
         ])->select( "id", "user_id", "product_id", "added_on")
-        ->where('user_id', Auth::user()->id)->get();
+        ->where('user_id', Auth::user()->id)->orderBy('id','desc')->get();
       //  pr($wishList->toArray());
         if(!empty($wishList)){
             foreach($wishList as $key => $wish){

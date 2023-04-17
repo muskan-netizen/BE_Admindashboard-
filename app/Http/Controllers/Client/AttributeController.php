@@ -136,7 +136,7 @@ class AttributeController extends BaseController
                 ->where('status', 1)
                 ->orderBy('parent_id', 'asc')
                 ->orderBy('position', 'asc')
-                ->whereIn('type_id', ['1', '3', '6', '13'])
+                ->whereIn('type_id', ['1', '3', '6', '13', '10'])
                 ->where('id', '>', 1)
                 ->whereNull('vendor_id')
                 ->get();
@@ -518,10 +518,10 @@ class AttributeController extends BaseController
             }
         }
         catch(\Exception $e) {
-            \Log::info('######### Attribute Update Error #########');
-            \Log::info($e->getLine());
+            //\Log::info('######### Attribute Update Error #########');
+            //\Log::info($e->getLine());
             \Log::info($e->getMessage());
-            \Log::info('######### Attribute Update Error End #########');
+            //\Log::info('######### Attribute Update Error End #########');
             return response()->json(array('success' => false));
         }
     }
