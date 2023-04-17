@@ -44,7 +44,7 @@
             </div>
             <div class="col-md-6">
                 <div class="form-group" id="emailInput">
-                    <label for="">{{ __('Email') }}</label>https://grub.royoorders.com/
+                    <label for="">{{ __('Email') }}</label>
                     {!! Form::text('email', $vendor->email, ['class'=>'form-control']) !!}
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
