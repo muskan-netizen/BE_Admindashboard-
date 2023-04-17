@@ -44,7 +44,7 @@
             </div>
             <div class="col-md-6">
                 <div class="form-group" id="emailInput">
-                    <label for="">{{ __('Email') }}</label>
+                    <label for="">{{ __('Email') }}</label>https://grub.royoorders.com/
                     {!! Form::text('email', $vendor->email, ['class'=>'form-control']) !!}
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
@@ -313,7 +313,7 @@
                             if($vendor_registration_document->file_type == 'Text' || $vendor_registration_document->file_type == 'selector' ){
                                 $field_value = $vendor_doc->file_name;
                             } else {
-                                $field_value = $vendor_doc->image_file['storage_url'];
+                                $field_value = isset($vendor_doc->image_file['storage_url'])?$vendor_doc->image_file['storage_url']:'';
                             }
                         }
                     }
