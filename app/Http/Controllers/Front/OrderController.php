@@ -2813,43 +2813,43 @@ class OrderController extends FrontController
 
 
 
-    public function sendSuccessNotification($id, $vendorId)
-    {
-        $super_admin = User::where('is_superadmin', 1)->pluck('id');
-        $user_vendors = UserVendor::where('vendor_id', $vendorId)->pluck('user_id');
-        $devices = UserDevice::whereNotNull('device_token')->where('user_id', $id)->pluck('device_token');
-        foreach ($devices as $device) {
-            $token[] = $device;
-        }
-        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_vendors)->pluck('device_token');
-        foreach ($devices as $device) {
-            $token[] = $device;
-        }
-        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $super_admin)->pluck('device_token');
-        foreach ($devices as $device) {
-            $token[] = $device;
-        }
-        //$token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
-        // dd($token);
+    // public function sendSuccessNotification($id, $vendorId)
+    // {
+    //     $super_admin = User::where('is_superadmin', 1)->pluck('id');
+    //     $user_vendors = UserVendor::where('vendor_id', $vendorId)->pluck('user_id');
+    //     $devices = UserDevice::whereNotNull('device_token')->where('user_id', $id)->pluck('device_token');
+    //     foreach ($devices as $device) {
+    //         $token[] = $device;
+    //     }
+    //     $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_vendors)->pluck('device_token');
+    //     foreach ($devices as $device) {
+    //         $token[] = $device;
+    //     }
+    //     $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $super_admin)->pluck('device_token');
+    //     foreach ($devices as $device) {
+    //         $token[] = $device;
+    //     }
+    //     //$token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
+    //     // dd($token);
 
-        //$from = env('FIREBASE_SERVER_KEY');
+    //     //$from = env('FIREBASE_SERVER_KEY');
 
-        $notification_content = NotificationTemplate::where('id', 2)->first();
-        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
-        if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
+    //     $notification_content = NotificationTemplate::where('id', 2)->first();
+    //     $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+    //     if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
 
-            $data = [
-                "registration_ids" => $token,
-                "notification" => [
-                    'title' => $notification_content->label,
-                    'body'  => $notification_content->content,
-                ]
-            ];
-            $dataString = $data;
+    //         $data = [
+    //             "registration_ids" => $token,
+    //             "notification" => [
+    //                 'title' => $notification_content->label,
+    //                 'body'  => $notification_content->content,
+    //             ]
+    //         ];
+    //         $dataString = $data;
 
-            sendFcmCurlRequest($data);
-        }
-    }
+    //         sendFcmCurlRequest($data);
+    //     }
+    // }
 
     /// ******************   insert In Vendor Order Dispatch Status   ************************ ///////////////
     public function insertInVendorOrderDispatchStatus($request)
