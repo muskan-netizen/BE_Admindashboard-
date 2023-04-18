@@ -1891,7 +1891,7 @@ if (!function_exists('getOnDemandPricingRule')) {
      */
     function getOnDemandPricingRule($vendorType = "on_demand",$userSelection = "vendor",$additionalPreference)
     {
-       // pr($vendorType);
+       
         $is_service_product_price_from_dispatch = @$additionalPreference['is_service_product_price_from_dispatch'] ?? 0;
         $is_service_price_selection             = @$additionalPreference['is_service_price_selection'] ?? 0;
         $return['is_price_from_freelancer'] = 0;

@@ -418,8 +418,8 @@ class UserhomeController extends FrontController
             }
 
             $is_service_product_price_from_dispatch_forOnDemand = 0;
-            Session::put('onDemandPriceingSelected', 'vendor');
-            $getOnDemandPricingRule = getOnDemandPricingRule($vendor_type,"vendor",$additionalPreference);
+          
+            $getOnDemandPricingRule = getOnDemandPricingRule($vendor_type, Session::get('onDemandPricingSelected'),$additionalPreference);
          
             $is_service_product_price_from_dispatch_forOnDemand =$getOnDemandPricingRule['is_price_from_freelancer'];
             // if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
@@ -458,6 +458,13 @@ class UserhomeController extends FrontController
             if($selectedPlaceId)
             Session::put('selectedPlaceId', $selectedPlaceId);
        // }
+        return redirect()->route('userHome');
+    }
+    public function setondemandPricingSession(Request $request)
+    {
+        $type  =  $request->type ?? 'vendor';
+        Session::put('onDemandPricingSelected',  $type );
+        ///pr(Session::get('onDemandPricingSelected'));
         return redirect()->route('userHome');
     }
     /**

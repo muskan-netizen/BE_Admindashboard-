@@ -75,7 +75,7 @@
     if ($additionalPreference['is_token_currency_enable'] == 1) {
         $hidden_token = 'd-none';
     }
-    $getOnDemandPricingRule = getOnDemandPricingRule($serviceType, (@Session::get('onDemandPriceingSelected') ?? ''),$additionalPreference);
+    $getOnDemandPricingRule = getOnDemandPricingRule($serviceType, (@Session::get('onDemandPricingSelected') ?? ''),$additionalPreference);
     // if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
     //     $is_service_product_price_from_dispatch_forOnDemand =1;
     // }

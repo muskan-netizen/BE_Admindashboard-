@@ -532,20 +532,7 @@
             name="is_place_order_delivery_zero" id="is_place_order_delivery_zero" />
     </div>
 </div>
-<div class="col-md-4">
-    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-        <label for="is_service_product_price_from_dispatch_switch"
-            class="mr-2 mb-0">{{ __('Freelancer Mod for Service Booking') }}<small
-                class="d-block pr-5">{{ __('To view list of agents on booking') }}</small></label>
-        <span> <input type="checkbox" data-plugin="switchery" name="is_service_product_price_from_dispatch_switch"
-                id="is_service_product_price_from_dispatch_switch" class="form-control checkbox_change"
-                data-className="is_service_product_price_from_dispatch" data-color="#43bee1"
-                @if ($getAdditionalPreference['is_service_product_price_from_dispatch'] == '1') checked='checked' @endif>
-        </span>
-        <input type="hidden" @if ($getAdditionalPreference['is_service_product_price_from_dispatch'] == '1') value="1" @else value="0" @endif
-            name="is_service_product_price_from_dispatch" id="is_service_product_price_from_dispatch" />
-    </div>
-</div>
+
 
 
 
@@ -617,11 +604,25 @@
             name="is_enable_compare_product" id="is_enable_compare_product" />
     </div>
 </div>
+<div class="col-md-4">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_service_product_price_from_dispatch_switch"
+            class="mr-2 mb-0">{{ __('Freelancer Mod for Service Booking') }}<small
+                class="d-block pr-5">{{ __('To view list of agents on booking') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_service_product_price_from_dispatch_switch"
+                id="is_service_product_price_from_dispatch_switch" class="form-control checkbox_change"
+                data-className="is_service_product_price_from_dispatch" data-color="#43bee1"
+                @if ($getAdditionalPreference['is_service_product_price_from_dispatch'] == '1') checked='checked' @endif>
+        </span>
+        <input type="hidden" @if ($getAdditionalPreference['is_service_product_price_from_dispatch'] == '1') value="1" @else value="0" @endif
+            name="is_service_product_price_from_dispatch" id="is_service_product_price_from_dispatch" />
+    </div>
+</div>
 @if ($getAdditionalPreference['is_service_product_price_from_dispatch'] == '1') 
 <div class="col-md-4 ">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-        <label for="is_service_price_selection_switch" class="mr-2 mb-0">{{ __('Service pricing showing deside by user') }}<small
-                class="d-block pr-5">{{ __('') }}</small></label>
+        <label for="is_service_price_selection_switch" class="mr-2 mb-0">{{ __('Service Freelancer/ Vendor Module') }}<small
+                class="d-block pr-5">{{ __('Enable this if you want to use both freelancer and vendor module simultaneously') }}</small></label>
         <span> <input type="checkbox" data-plugin="switchery" name="is_service_price_selection_switch"
                 id="is_service_price_selection_switch" class="form-control checkbox_change"
                 data-className="is_service_price_selection" data-color="#43bee1"

@@ -1,7 +1,7 @@
 @php
 $add_to_cart =  route('addToCart') ;
     $additionalPreference = getAdditionalPreference(['is_token_currency_enable','is_service_product_price_from_dispatch','is_service_price_selection']);
-    $getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'), (@Session::get('onDemandPriceingSelected') ?? ''),$additionalPreference);
+    $getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'), (@Session::get('onDemandPricingSelected') ?? ''),$additionalPreference);
     $is_service_product_price_from_dispatch_forOnDemand = 0;
     $category_type_idForNotShowshPlusMinus = ['12'];
     if($getOnDemandPricingRule['is_price_from_freelancer'] ==1){
