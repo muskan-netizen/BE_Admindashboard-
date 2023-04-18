@@ -340,10 +340,12 @@ class HomeController extends BaseController
            
 
             $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
+            
+            $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
+            $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
 
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
-                $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+                
                 $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
                 //3961 for miles and 6371 for kilometers
                 $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
