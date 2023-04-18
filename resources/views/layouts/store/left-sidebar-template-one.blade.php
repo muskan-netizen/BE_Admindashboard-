@@ -748,8 +748,8 @@ c-13 -26 -36 -53 -58 -66 l-37 -23 -1465 0 -1465 0 -37 23 c-22 13 -45 40 -58
             <h6 class="mb-1">{{ __("currency") }}</h6>
             <ul class="list-inline">
                 @foreach($currencyList as $key => $listc)
-                    <li class="{{session()->get('iso_code') ==  $listc->currency->iso_code ?  'active' : ''}}">
-                        <a href="javascript:void(0)" currId="{{$listc->currency_id}}" class="customerCurr " currSymbol="{{$listc->currency->symbol}}">{{$listc->currency->iso_code}}</a>
+                    <li class="{{session()->get('iso_code') ?? '' ==  $listc->currency->iso_code ?  'active' : ''}}">
+                        <a href="javascript:void(0)" currId="{{$listc->currency_id}}" class="customerCurr " currSymbol="{{$listc->currency->symbol ?? ''}}">{{$listc->currency->iso_code ?? ''}}</a>
                     </li>
                 @endforeach
             </ul>

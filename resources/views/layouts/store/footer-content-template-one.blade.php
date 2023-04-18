@@ -248,8 +248,8 @@ $company_name = \App\Models\ClientPreferenceAdditional::where('key_name','bottom
             <h6 class="mb-1">{{ __("currency") }}</h6>
             <ul class="list-inline">
                 @foreach($currencyList as $key => $listc)
-                    <li class="{{session()->get('iso_code') ==  $listc->currency->iso_code ?  'active' : ''}}">
-                        <a href="javascript:void(0)" currId="{{$listc->currency_id}}" class="customerCurr " currSymbol="{{$listc->currency->symbol}}">{{$listc->currency->iso_code}}</a>
+                    <li class="{{session()->get('iso_code') ?? '' ==  $listc->currency->iso_code ?  'active' : ''}}">
+                        <a href="javascript:void(0)" currId="{{$listc->currency_id}}" class="customerCurr " currSymbol="{{$listc->currency->symbol ?? ''}}">{{$listc->currency->iso_code ?? ''}}</a>
                     </li>
                 @endforeach
             </ul>
