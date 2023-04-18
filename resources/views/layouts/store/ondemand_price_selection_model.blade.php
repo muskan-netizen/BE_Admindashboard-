@@ -36,20 +36,23 @@
 <div class="modal fade" id="ondemand_price_selection_model" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
             <div class="modal-body text-center">
                 {{-- <img style="height:150px" class="img-fluid blur-up lazyload" data-src="{{asset('assets/images/18.png')}}" alt=""> --}}
                 <p class="select_heading mb-0 mt-3">{{ __('Select the type of service you wish to order') }}</p>
                 <p class="mb-0"></p>
             </div>
             <form action="" class="radip_cta_form text-left"> 
+                <div class="form-group text-left">
+                    <input type="radio" name="onDemandpricingselection" id="VendorService" {{ (Session::get('onDemandPricingSelected') =='vendor' || Session::get('onDemandPricingSelected') =='') ? 'checked' :'' }} value="vendor"> 
+                    <label for="VendorService">{{ __(config('constants.onDemandPricingType.vendor')) }}</label>
+                </div>
                 <div class="form-group  text-left">
                     <input type="radio" name="onDemandpricingselection" id="freelancer" {{ Session::get('onDemandPricingSelected') =='freelancer' ? 'checked' :'' }} value="freelancer">
-                    <label for="freelancer">{{ __('freelancer Service') }}</label>
+                    <label for="freelancer">{{ __(config('constants.onDemandPricingType.freelancer')) }}</label>
                 </dtext-centeriv>
-                <div class="form-group text-left">
-                    <input type="radio" name="onDemandpricingselection" id="VendorService" {{ Session::get('onDemandPricingSelected') =='vendor' ? 'checked' :'' }} value="vendor"> 
-                    <label for="VendorService">{{ __('Vendor Service') }}</label>
-                </div>
             </form>
             <div class="modal-footer d-block">
                 <div class="row no-gutters">

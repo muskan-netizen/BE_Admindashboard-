@@ -1,0 +1,1 @@
+<li class='on_demand_top_selection'><a href="JavaScript:void(0);" class="sell-btn"><span><i class="fa fa-university" aria-hidden="true"></i>{{ __(config('constants.onDemandPricingType.'.(Session::get('onDemandPricingSelected')??'vendor' ))) }}</span></a></li>

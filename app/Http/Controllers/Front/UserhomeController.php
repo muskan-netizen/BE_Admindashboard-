@@ -281,6 +281,7 @@ class UserhomeController extends FrontController
 
     public function index(Request $request, $domain='')
     {
+       // pr(Session::get('onDemandPricingSelected'));
         try {
             $home = array();
             $vendor_ids = array();

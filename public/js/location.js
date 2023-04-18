@@ -43,17 +43,11 @@ $(document).ready( async function () {
     else{
         $(".shimmer_effect").hide();
     }
-   // $('#ondemand_price_selection_model').modal({backdrop: 'static', keyboard: false});
+   
     $(".age_restriction_no").click(function () {
         window.location.replace("https://google.com");
     });
 
-    if($.cookie('age_restriction') == 1 && ($.cookie('show_ondemand_pricing') == undefined || $.cookie('show_ondemand_pricing') == 0)){
-        if(showOndemandPricing == 'showed'){
-            $("#ondemand_price_selection_model").modal("show");
-            $.cookie('show_ondemand_pricing', 1);
-        }
-    }
     if($.cookie('age_restriction') == 1 && ($.cookie('show_subscription_plan') == undefined || $.cookie('show_subscription_plan') == 0)){
         if(setShowSubscriptionPlan == 'showed'){
             $("#show-subscription-plan-mdl").modal("show");
@@ -928,6 +922,7 @@ $(document).ready( async function () {
     });
 
     function removeCartData(cart_id,ondemand_pricing_mode='') {
+       
         $.ajax({
             type: "post",
             dataType: 'json',
@@ -942,10 +937,10 @@ $(document).ready( async function () {
                         vendor_mod = $(".nav-tabs.vendor_mods").attr("data-mod");
                     }
                     OrderStorage.setStorageSingle('cartProductCount',0);
-                    setSession(vendor_mod);
                     if(ondemand_pricing_mode !='' && ondemand_pricing_mode != undefined ){
                         setSessionOndemandPricing(ondemand_pricing_mode);
                     }
+                    setSession(vendor_mod);
                     //getHomePageCategoryMenu(latitude, longitude, vendor_mod);
                     //getHomePage(latitude, longitude, vendor_mod);
                 }
@@ -1097,24 +1092,51 @@ $(document).ready( async function () {
 
 
 });
+function emptyCart(type = vendor_type){
+    var return_val = 1;
+    var cartData = (OrderStorage.getStorage('cartData') != '') ? JSON.parse(OrderStorage.getStorage('cartData')) : [];
+        var cartProductCount = OrderStorage.getStorage('cartProductCount');
+        if(cartProductCount > 0){
+            $("#remove_cart_modal").modal('show');
+            $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", cartData.id);
+            
+            $(".nav-tabs.vendor_mods").attr("data-mod", type);
+            
+            return_val = 0;
+        }
+    return return_val;
+}
 
-$(document).on("click",'.select_on_demand_pricing_by_user', function(e) { 
- e.preventDefault();
- var type  = document.querySelector('input[name="onDemandpricingselection"]:checked').value;
- if(type== undefined || type =='' ){
-    console.log('not selecter');
- }
- var cartData = (OrderStorage.getStorage('cartData') != '') ? JSON.parse(OrderStorage.getStorage('cartData')) : [];
- var cartProductCount = OrderStorage.getStorage('cartProductCount');
- if(cartProductCount > 0){
-     $("#remove_cart_modal").modal('show');
-     $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", cartData.id);
-     $("#remove_cart_modal #remove_cart_button").attr("data-ondemand_vendor_type", type);
-     $(".nav-tabs.vendor_mods").attr("data-mod", type);
-     return false;
- }
-    setSessionOndemandPricing(type);
-  console.log(type);
+$(document).on("click",'.on_demand_top_selection', async function(e) {
+    $("#ondemand_price_selection_model").modal("show");
+});
+
+$(document).on("click",'.select_on_demand_pricing_by_user', async function(e) { 
+    e.preventDefault();
+    var type  = document.querySelector('input[name="onDemandpricingselection"]:checked').value;
+    if(type== undefined || type =='' ){
+        console.log('not selecter');
+    }
+    if(ondemand_selected_price  == type){
+        return false
+    }
+    var cart_check = await emptyCart();
+    if(cart_check == 0){
+        $("#remove_cart_modal #remove_cart_button").attr("data-ondemand_vendor_type", type);
+        return false;
+    }
+  
+    //  var cartData = (OrderStorage.getStorage('cartData') != '') ? JSON.parse(OrderStorage.getStorage('cartData')) : [];
+    //  var cartProductCount = OrderStorage.getStorage('cartProductCount');
+    //  if(cartProductCount > 0){
+    //      $("#remove_cart_modal").modal('show');
+    //      $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", cartData.id);
+    //      $("#remove_cart_modal #remove_cart_button").attr("data-ondemand_vendor_type", type);
+    //      $(".nav-tabs.vendor_mods").attr("data-mod", type);
+    //      return false;
+    //}
+   setSessionOndemandPricing(type);
+  //console.log(type);
 });
 
 async function setSessionLocatin(latitude, longitude,address){

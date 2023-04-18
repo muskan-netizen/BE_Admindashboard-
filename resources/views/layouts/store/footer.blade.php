@@ -15,12 +15,11 @@
 @php
     $mapKey = '1234';
     $theme = Session::get('preferences');
-    $analytics = getAdditionalPreference(['gtag_id', 'fpixel_id','is_service_product_price_from_dispatch','is_service_price_selection']);
+    
     if($theme && !empty($theme->map_key)){
         $mapKey = $theme->map_key;
     }
-    $getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'),'',$analytics);
-    
+   
     $webColor = '#ff4c3b';
     \Session::forget('success');
 @endphp
@@ -40,8 +39,9 @@
         </div>
     </div>
 </div>
-
+@if($is_ondemand_multi_pricing ==1)
 @include('layouts.store.ondemand_price_selection_model')
+@endif
 <!-- spinner Start -->
 
 <div class="nb-spinner-main">
@@ -60,9 +60,8 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
     @if($showSubscriptionPlanPopUp == 1)
         setShowSubscriptionPlan = "showed";
     @endif
-    @if($getOnDemandPricingRule['is_ondemand_multi_pricing'] == 1)
-        showOndemandPricing = "showed";
-    @endif
+    var is_ondemand_multi_pricing = '{{ $is_ondemand_multi_pricing }}';
+    var ondemand_selected_price = "{{ Session::get('onDemandPricingSelected')?? 'vendor' }}";
 
 </script>
 @yield('pre-custom-script')
