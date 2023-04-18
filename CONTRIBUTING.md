@@ -22,7 +22,8 @@ Remember, bug reports are created in the hope that others with the same problem 
 
 **Core development ideas or discussion:**
 
-If you propose a new feature, please be willing to implement at least some of the code that would be needed to complete the feature.ProviderRepository.php
+If you propose a new feature, please be willing to implement at least some of the code that would be needed to complete the feature.
+
 Informal discussion regarding bugs, new features, and implementation of existing features takes place in the comments of the issues filed using feature template.
 
 **Which branch you should target?**

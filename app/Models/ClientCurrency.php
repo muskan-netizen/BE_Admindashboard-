@@ -18,7 +18,7 @@ class ClientCurrency extends Model
       $currencysymbol = '$';      
       $result = ClientCurrency::where('is_primary', 1)->first();
       if($result){         
-          $currencysymbol = $result->currency->symbol ?? '';
+          $currencysymbol = $result->currency->symbol;
       }
       return $currencysymbol;
     }

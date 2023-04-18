@@ -211,7 +211,7 @@ return [
         Paytabscom\Laravel_paytabs\PaypageServiceProvider::class,
         App\Providers\LocalizationServiceProvider::class,
         // TelrGateway\TelrServiceProvider::class,
-        //Spatie\Permission\PermissionServiceProvider::class,
+        Spatie\Permission\PermissionServiceProvider::class,
     ],
 
     /*

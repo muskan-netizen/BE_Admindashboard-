@@ -378,8 +378,8 @@ if($showSubscriptionPlanPopUp == 1){
     var khalti_api_key = "{{getKhaltiPayApiKey()??''}}";
 
 // Client Perference  Detail
-    var client_preference_web_color = "{{Session::get('preferences')->web_color ?? ''}}";
-    var client_preference_web_rgb_color = "{{Session::get('preferences')->wb_color_rgb  ?? ''}}";
+    var client_preference_web_color = "{{Session::get('preferences')->web_color}}";
+    var client_preference_web_rgb_color = "{{Session::get('preferences')->wb_color_rgb}}";
     var stop_accepting_orders = "{{Session::get('preferences')->stop_order_acceptance_for_users ?? 0}}";
 
 // Client Detail
