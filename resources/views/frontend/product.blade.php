@@ -253,9 +253,6 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                         <h2 class="mb-0">
                                             {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
                                         </h2>
-                                        @if(!is_category_p2p($product->category))
-                                            <span class="rating main-rating">4.1<i class="fa fa-star" aria-hidden="true"></i></span>
-                                        @endif
                                         <h6 class="sold-by">
                                             <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
                                         </h6>

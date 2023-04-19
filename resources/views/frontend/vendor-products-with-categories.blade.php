@@ -334,7 +334,7 @@ span.alPriceValue, span.alPriceValue i {
                                                                                 @endif
                                                                         </div>
                                                                     </div>
-                                                                    @if ($prod->averageRating > 0)
+                                                                    @if ($prod->averageRating > 0 && $client_preference_detail->rating_check == 1)
                                                                         <div class="rating-text-box">
                                                                             <span>{{ number_format($prod->averageRating, 1, '.', '') }}
                                                                             </span>
