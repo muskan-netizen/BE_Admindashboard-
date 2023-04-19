@@ -63,6 +63,7 @@ class HomeController extends BaseController
             //pr($vendorMode);
             //mohit sir branch code updated by sohail farm meat
             $homeData['profile']->preferences->vendorMode = $vendorMode;
+            $homeData['profile']->preferences->rating_check = $preferences->preferences->rating_check;
             $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price']);
             $homeData['profile']->preferences->advance_booking_amount = 0;
             $homeData['profile']->preferences->advance_booking_amount_percentage = 0;
