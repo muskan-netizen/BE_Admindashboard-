@@ -24,8 +24,6 @@
                             </div>
                             
                         @endif
-                        
-                    
                     </div>
                                 <ul class="vendor-info customize_vendor"> <li class="d-block vendor-location">
                                         <a href="javascript:void(0)" onclick="copyToClipboard('#p1')" >
@@ -85,8 +83,6 @@
                                         </svg><a class="open-social-medialinks" href="javascript:void(0)">Social Media Links</a>
                                     </li>
                                 @endif
-
-
                                 @php
                                     $checkSlot = findSlot('', $vendor->id, '');
                                 @endphp
