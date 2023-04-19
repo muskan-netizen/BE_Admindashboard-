@@ -302,7 +302,7 @@ class BaseController extends Controller{
         return $category_list;
     }
 
-    public function categoryNav($lang_id, $vends=[],$type = 'delivery') {
+    public function categoryNav($lang_id, $vends=[],$type = 'delivery', $request = []) {
 
         $categoryTypes = getServiceTypesCategory($type);
 
@@ -346,7 +346,13 @@ class BaseController extends Controller{
                         ->whereNull('categories.vendor_id')
                         ->withCount('products')
                         ->orderBy('categories.position', 'asc')
-                        ->groupBy('id')->get();
+                        ->groupBy('id');
+        if(@$request['category_limit'] && $request['category_limit'] > 0){
+            $categories = $categories->take($request['category_limit'])->get();
+        }else{
+            $categories = $categories->get();
+        }
+       
         if($categories){
             $categories = $this->buildTree($categories->toArray());
         }

@@ -307,7 +307,7 @@ class HomeController extends BaseController{
             
             $venderIds  = $vendorData->where('status', 1)->pluck('id');
 
-            $navCategories = $this->categoryNav($langId, $venderIds, $type);
+            $navCategories = $this->categoryNav($langId, $venderIds, $type , $request);
 
             Session::put('navCategories', $navCategories);
             $clientPreferences = ClientPreference::first();
