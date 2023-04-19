@@ -704,6 +704,7 @@ class HomeController extends BaseController{
                 'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
                 'vendor' => $new_product_detail->vendor,
                 'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->price??0 * $multiply,',')),
+                'compare_price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$on_sale_product_detail->variant->first()->compare_at_price??0 * $multiply,',')),                
                 'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug,
                 'is_p2p' => $is_p2p
             );
@@ -730,6 +731,7 @@ class HomeController extends BaseController{
                 'vendor_name' => $feature_product_detail->vendor ? $feature_product_detail->vendor->name : '',
                 'vendor' => $feature_product_detail->vendor,
                 'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$feature_product_detail->variant->first()->price * $multiply,',')),
+                'compare_price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$on_sale_product_detail->variant->first()->compare_at_price??0 * $multiply,',')),               
                 'category' => (@$feature_product_detail->category->categoryDetail->translation) ? @$feature_product_detail->category->categoryDetail->translation->first()->name : @$feature_product_detail->category->categoryDetail->slug,
                 'is_p2p' => $is_p2p
             );
@@ -760,6 +762,7 @@ class HomeController extends BaseController{
                 'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
                 'vendor' => $on_sale_product_detail->vendor,
                 'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$on_sale_product_detail->variant->first()->price??0 * $multiply,',')),
+                'compare_price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$on_sale_product_detail->variant->first()->compare_at_price??0 * $multiply,',')),
                 'category' => $cat_name,
                 'is_p2p' => $is_p2p
             );
