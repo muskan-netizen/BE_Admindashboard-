@@ -16,19 +16,13 @@
                 <div class="ml-sm-1 position-relative profile_address vendor_icon-design">
                             <h3>{{ $vendor->name }}</h3>
                             <div class="vendor-reviwes">
-                            
-                                                @if($client_preference_detail) @if($client_preference_detail->rating_check==1)
-
-                                                @if ($vendor->vendorRating > 0)
+                        @if ($vendor->vendorRating > 0 && $client_preference_detail->rating_check == 1) 
                             <div class="rating-text-box ml-sm-auto p-1">
                                 <span>{{ $vendor->vendorRating }}</span>
                                 <i class="fa fa-star" aria-hidden="true"></i>
                              
                             </div>
-                             @endif @endif
                         @endif
-                        
-                    
                     </div>
                                 <ul class="vendor-info customize_vendor"> <li class="d-block vendor-location">
                                         <a href="javascript:void(0)" onclick="copyToClipboard('#p1')" >
@@ -88,8 +82,6 @@
                                         </svg><a class="open-social-medialinks" href="javascript:void(0)">Social Media Links</a>
                                     </li>
                                 @endif
-
-
                                 @php
                                     $checkSlot = findSlot('', $vendor->id, '');
                                 @endphp
