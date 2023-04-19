@@ -314,7 +314,7 @@ class VendorController extends FrontController
         $tags = Tag::whereIn('id',$tag_ids)->with('primary')->get();
 
         $socialMediaUrls = VendorSocialMediaUrls::where('vendor_id', $vendor->id)->get();
-        return view('frontend/vendor-'.$page)->with(['show_range' => $show_range,'tags' => $tags, 'socialMediaUrls'=>$socialMediaUrls, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'is_vendor_closed'=>$is_vendor_closed,'cartData'=>$cartData,'period' => $period ,'time_slots'=>$time_slots,'Map_vendors' =>$Map_vendors,'vendorMultiBanner'=>$vendorMultiBanner, 'preferences'=> $preferences]);
+        return view('frontend/vendor-'.$page)->with(['show_range' => $show_range,'tags' => $tags, 'socialMediaUrls'=>$socialMediaUrls, 'range_products' => $range_products, 'vendor' => $vendor, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands,'is_vendor_closed'=>$is_vendor_closed,'cartData'=>$cartData,'period' => $period ,'time_slots'=>$time_slots,'Map_vendors' =>$Map_vendors,'vendorMultiBanner'=>$vendorMultiBanner]);
     }
 
     /**
