@@ -26,7 +26,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
         </div>
 </div>
         <div class="row homepageSix mt-4">
-            <div class="row mb-sm-5 mb-2 mt-5 ml-0">
+            <div class="w-100 row mb-sm-5 mb-2 mt-5 ml-0">
             @php $show_new_Products = 0; @endphp      
             @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
             @foreach($newProducts as $newProds)

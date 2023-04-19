@@ -2671,6 +2671,30 @@ body.al_body_template_eight.homeHeader section.section-b-space.ratio_asos .colle
 }
 
 
+/*======== ( category product ratting fix) eight css gagandeep 11-04-2023  ========*/ 
+.al_body_template_eight .vendor_onetem .supplier-rating span.rating-number {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 2px 5px;
+    background: #fff;
+    border-radius: 5px;
+    display: inline-block;
+    font-size: 14px;
+}
+.al_body_template_eight  .order-success-sec ul.order-detail.row li {
+    width: 100%;
+    max-width: 100%;
+    flex: unset;
+    justify-content: space-between;
+    display: flex!important;
+    padding-bottom: 5px;
+    font-size:15px;
+}
+.al_body_template_eight  .order-success-sec ul.order-detail.row li.Shipping span:first-child {
+    min-width: 150px;
+    display: inline-block;
+}
 /*----------laptop view----------*/
 
 @media(max-width:1440px) {
@@ -2684,6 +2708,9 @@ body.al_body_template_eight.homeHeader section.section-b-space.ratio_asos .colle
 /*-------------ipad css--------*/
 
 @media(max-width:991px) {
+    .al_body_template_eight .order-success-sec ul.order-detail {
+        margin: 0!important;
+    }
     body.al_body_template_eight .recet-pw .login_img img {
         border-radius: 10px 10px 0 0 !important;
     }
@@ -3430,6 +3457,16 @@ body.al_body_template_eight.homeHeader section.section-b-space.ratio_asos .colle
         position: absolute;
         right: 0;
         font-size: 14px !important;
+    }
+    .al_body_template_eight  .product-image img.img-fluid.blur-up.lazyloaded {
+        height: auto !important;
+    }
+    body.al_body_template_eight .page-main-content .col-grid-box{
+            max-width: 47%;
+            margin: 0 auto 10px;
+    }
+    .al_body_template_eight  .displayProducts .suppliers-box .suppliers-img-outer {
+        height: 160px !important;
     }
 }
 

@@ -22,7 +22,6 @@
                                 <i class="fa fa-star" aria-hidden="true"></i>
                              
                             </div>
-                            
                         @endif
                     </div>
                                 <ul class="vendor-info customize_vendor"> <li class="d-block vendor-location">
