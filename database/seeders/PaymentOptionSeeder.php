@@ -65,7 +65,9 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '49', 'path' => '', 'code' => 'plugnpay', 'title' => 'plugnpay', 'off_site' => '1', 'status' => '0'),
 	      array('id' => '50', 'path' => '', 'code' => 'azul', 'title' => 'Azulpay', 'off_site' => '1', 'status' => '0'),
         array('id' => '51', 'path' => '', 'code' => 'payway', 'title' => 'Payway', 'off_site' => '1', 'status' => '0'),
-        array('id' => '52', 'path' => '', 'code' => 'skip_cash', 'title' => 'SkpCash', 'off_site' => '1', 'status' => '0')
+        array('id' => '52', 'path' => '', 'code' => 'skip_cash', 'title' => 'SkpCash', 'off_site' => '1', 'status' => '0'),
+        array('id' => '53', 'path' => '', 'code' => 'nmi', 'title' => 'Nmi', 'off_site' => '1', 'status' => '0'),
+        array('id' => '54', 'path' => '', 'code' => 'yappy', 'title' => 'yappy', 'off_site' => '1', 'status' => '0'),
       );
 
       if($option_count == 0)
