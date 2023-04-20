@@ -39,7 +39,7 @@ class ProductEstimationController extends Controller
     public function getProductEstimationWithAddons(Request $request)
     {
         try{
-          \Log::info(json_encode($request->all()));
+          //\Log::info(json_encode($request->all()));
             $langID = $request->header('language')??"1";
             $estimateProductsWithAddons = EstimateProduct::with(['estimate_product_addons.estimate_addon_set.option','category.primary' , 'estimate_product_translation' => function($q) use($langID) {
                 $q->where('language_id', '=', $langID);
@@ -48,7 +48,7 @@ class ProductEstimationController extends Controller
             //     $estimateProductsWithAddons = $estimateProductsWithAddons->where('category_id',$request->category_id);
             // }
             // $estimateProductsWithAddons =$estimateProductsWithAddons->get();
-            \Log::info(json_encode($request->all()));
+            //\Log::info(json_encode($request->all()));
             return $this->successResponse($estimateProductsWithAddons);
         }catch (\Exception $e)
         {
@@ -138,7 +138,7 @@ class ProductEstimationController extends Controller
         // Search for similar products and addons. - By Ovi
         //foreach($request->product as $product){
             // $userProducts = $request->product;
-            // \Log::info($request->product);
+            // //\Log::info($request->product);
             // return json_encode($request->product);
             $searchResult = $this->searchProductExpection($request->product, $langId);
         //}
@@ -181,8 +181,8 @@ class ProductEstimationController extends Controller
         //     $product->variant_quantity = ($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
 
         //     // foreach($userProducts as $userProduct){
-        //     //     \Log::info($userProduct->count());
-        //     //     \Log::info($vendor->products->count());
+        //     //     //\Log::info($userProduct->count());
+        //     //     //\Log::info($vendor->products->count());
         //     //     if($userProduct->count() <= $vendor->products->count()){
         //     //         $vendor->match = "Complete Match";
         //     //     }
@@ -369,7 +369,7 @@ class ProductEstimationController extends Controller
         // $data = usort($data, function ($a, $b) {
         //     return ($a['price'] < $b['price']) ? -1 : 1;
         //   });
-        // \Log::info(json_encode($data));
+        // //\Log::info(json_encode($data));
         return $data;
     }
 
@@ -418,7 +418,7 @@ class ProductEstimationController extends Controller
     //     }])->whereHas('productsLive.translation',function($q) use($langId, $keywords, $teststests){
     //             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId)->whereIn('title', $keywords);
     //     })->where('status',1)->get();
-    //     //\Log::info($all_vendors);
+    //     ////\Log::info($all_vendors);
 
     //         // Return All Vendors with Products, Addons - By Ovi 
     //         return $all_vendors;

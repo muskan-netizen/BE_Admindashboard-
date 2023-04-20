@@ -9,14 +9,16 @@ use Omnipay\Omnipay;
 use Illuminate\Http\Request;
 use App\Models\PaymentOption;
 use Omnipay\Common\CreditCard;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,PaymentTrait};
 use App\Http\Controllers\Api\v1\{BaseController,VnpayController, StripeGatewayController, PaystackGatewayController, PayfastGatewayController, MobbexGatewayController, YocoGatewayController, RazorpayGatewayController, SimplifyGatewayController, SquareGatewayController,PagarmeGatewayController, CheckoutGatewayController,EasebuzzController, MyCashGatewayController,OpenpayPaymentController,UseRedePaymentController,UPayGatewayController,ConektaGatewayController, TelrGatewayController, KhaltiGatewayController,PlugnpayGatewayController};
 use App\Http\Controllers\Front\DpoController;
 use App\Http\Controllers\Front\CcavenueController;
 use App\Http\Controllers\Front\KongapayController;
 use App\Http\Controllers\Front\MpesaController;
 use App\Http\Controllers\Front\MvodafoneController;
+use App\Http\Controllers\Front\NmiPaymentController;
 use App\Http\Controllers\Front\PayphoneController;
+use App\Http\Controllers\Front\SkipCashController;
 use App\Http\Controllers\Front\ToyyibPayController;
 use App\Http\Controllers\Front\VivawalletController;
 use App\Http\Controllers\Front\WindcaveController;
@@ -25,19 +27,11 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, Product, OrderProductAddon, Client, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, CartDeliveryFee, CartProductPrescription, VendorOrderStatus, OrderStatusOption, Vendor, LoyaltyCard, User, Payment, Transaction, UserVendor};
 
 class PaymentOptionController extends BaseController{
-    use ApiResponser;
+    use ApiResponser,PaymentTrait;
     public $gateway;
 
     public function getPaymentOptions(Request $request, $page = ''){
-        if($page == 'wallet'){
-            $code = array('paypal','azul', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash', 'dpo','openpay','userede','upay','conekta','telr','khalti','plugnpay');
-        }
-        elseif($page == 'pickup_delivery'){
-            $code = array('cod','azul', 'dpo', 'razorpay','paystack','stripe','payfast','offline_manual','authorize_net','payphone','khalti','flutterwave','plugnpay');
-        }
-        else{
-            $code = array('cod','azul', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','offline_manual','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash','dpo','openpay','userede','upay','conekta','telr','khalti','plugnpay');
-        }
+        $code = $this->paymentOptionArray($page);
         //mohit sir branch code added by sohail
         $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage']);
         if($request->service_type == 'takeaway' && !empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101) ){
@@ -45,6 +39,8 @@ class PaymentOptionController extends BaseController{
         }else{
         //Till here
             $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials', 'title', 'off_site']);
+        // dd(DB::connection()->getDatabaseName());
+            // dd($payment_options->toArray());
             foreach($payment_options as $option){
                 if($option->code == 'stripe'){
                     $option->title = __('Credit/Debit Card (Stripe)');
@@ -101,11 +97,21 @@ class PaymentOptionController extends BaseController{
             return $this->errorResponse("Invalid Gateway Request", 400);
         }
     }
+
+    public function postPaymentVia_skip_cash(Request $request){
+        $gateway = new SkipCashController();
+          return $gateway->mobilePay($request);
+    }
+
+     public function postPaymentVia_nmi(Request $request){
+        $gateway = new NmiPaymentController();
+          return $gateway->mobilePay($request);
+    }
     
     public function postPaymentVia_azul(Request $request){
              $gateway = new AzulPaymentController();
                return $gateway->beforePayment($request);
-  }
+    }
 
     public function postPaymentVia_dpo(Request $request){
         $gateway = new DpoController();
@@ -766,11 +772,11 @@ class PaymentOptionController extends BaseController{
         // Auto accept order
         $orderController = new OrderController();
         $orderController->autoAcceptOrderIfOn($order->id);
-        // \Log::info(json_encode($order));
+        // //\Log::info(json_encode($order));
 
         // Remove cart
         // $cart = Cart::select('id')->where('status', '0')->where('user_id', $order->user_id)->first();
-        // \Log::info(json_encode($cart));
+        // //\Log::info(json_encode($cart));
         // Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
         // CartAddon::where('cart_id', $cart->id)->delete();
         // CartCoupon::where('cart_id', $cart->id)->delete();

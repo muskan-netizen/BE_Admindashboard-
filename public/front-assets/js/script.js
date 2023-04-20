@@ -25,7 +25,7 @@ function  layoutMode(){
 }
 !(async function (e) {
     "use strict";
-   
+
     var sliderConfig = {
         infinite: !0,
         speed: 300,
@@ -39,20 +39,20 @@ function  layoutMode(){
             { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
         ],
     };
-   
+
     var sliderConfigEight10 = {
-      
+
         rows: (featured_products_length >= 20    ? 2 : 1),
 		dots: false,
 		arrows: true,
 		infinite: true,
         //centerMode: true,
 		speed: 300,
-		slidesToShow: 10,
-		slidesToScroll: 10,
+		slidesToShow: 8,
+		slidesToScroll: 2,
         responsive: [
-            { breakpoint: 1920, settings: { slidesToShow: 10, slidesToScroll: 10 } },
-            { breakpoint: 1530, settings: { slidesToShow: 7, slidesToScroll: 7 } },
+            { breakpoint: 1920, settings: { slidesToShow: 8, slidesToScroll: 2 } },
+            { breakpoint: 1530, settings: { slidesToShow: 6, slidesToScroll: 3 } },
             { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
             { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
         ],
@@ -83,14 +83,33 @@ function  layoutMode(){
 		infinite: true,
         centerMode: false,
 		speed: 300,
-		slidesToShow: 12,
-		slidesToScroll: 1,
+		slidesToShow: 10,
+		slidesToScroll: 2,
         responsive: [
-            { breakpoint: 1920, settings: { slidesToShow: 12, slidesToScroll: 1 } },
+            { breakpoint: 1920, settings: { slidesToShow: 10, slidesToScroll: 2 } },
             { breakpoint: 1530, settings: { slidesToShow: 6, slidesToScroll: 2 } },
             { breakpoint:  991, settings: { slidesToShow: 4, slidesToScroll: 2 } },
             { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
         ],
+    };
+
+    var sliderConfigp2peight = {
+        arrows: true,
+        dots: false,
+        infinite: true,
+        speed: 300,
+        slidesToShow: 10,
+        slidesToScroll: 1,
+        responsive: [
+            {breakpoint: 1700,settings: {slidesToShow: 7,slidesToScroll: 2,infinite: true}},
+            {breakpoint: 1367,settings: {slidesToShow: 6,slidesToScroll: 2,infinite: true}},
+            {breakpoint: 1100,settings: {slidesToShow: 5,slidesToScroll: 2,infinite: true}},
+            {breakpoint: 991,settings: {slidesToShow: 4,slidesToScroll: 1}},
+            {breakpoint: 767,settings: {slidesToShow: 3,slidesToScroll: 1}},
+            {breakpoint: 576,settings: {slidesToShow: 2,slidesToScroll: 1}},
+            {breakpoint: 480,settings: {slidesToShow: 1,slidesToScroll: 1}},
+            {breakpoint: 360,settings: {slidesToShow: 1,slidesToScroll: 1}}
+        ]
     };
 
     var sliderConfigEight = {
@@ -125,6 +144,8 @@ function  layoutMode(){
         ],
     };
 
+    
+
     var sliderConfigSellingProductEight = {
         rows: 1,
 		dots: false,
@@ -136,6 +157,56 @@ function  layoutMode(){
         responsive: [
             { breakpoint: 1920, settings: { slidesToShow: 6, slidesToScroll: 6 } },
             { breakpoint: 1530, settings: { slidesToShow: 5, slidesToScroll: 5 } },
+            { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+            { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+        ],
+    };
+
+    var sliderConfigEight = {
+        rows: 1,
+		dots: false,
+		arrows: true,
+		infinite: true,
+		speed: 300,
+		slidesToShow: 6,
+		slidesToScroll: 6,
+        responsive: [
+            { breakpoint: 1920, settings: { slidesToShow: 6, slidesToScroll: 6 } },
+            { breakpoint: 1530, settings: { slidesToShow: 5, slidesToScroll: 5 } },
+            { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+            { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+        ],
+    };
+
+    var sliderConfigTopRatedProductEight = {
+        rows:1,
+		dots: false,
+		arrows: true,
+		infinite: true,
+        //centerMode: true,
+		speed: 300,
+		slidesToShow: 8,
+		slidesToScroll: 2,
+        responsive: [
+            { breakpoint: 1920, settings: { slidesToShow: 8, slidesToScroll: 2 } },
+            { breakpoint: 1530, settings: { slidesToShow: 6, slidesToScroll: 2 } },
+            { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+            { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+        ],
+    };
+
+    var sliderConfigSelectedProductFive = {
+        rows:1,
+		dots: false,
+		arrows: true,
+		infinite: true,
+        //centerMode: true,
+		speed: 300,
+		slidesToShow: 5,
+		slidesToScroll: 2,
+        responsive: [
+            { breakpoint: 1920, settings: { slidesToShow: 5, slidesToScroll: 5 } },
+            { breakpoint: 1530, settings: { slidesToShow: 4, slidesToScroll: 4 } },
             { breakpoint:  991, settings: { slidesToShow: 2, slidesToScroll: 2 } },
             { breakpoint:  400, settings: { slidesToShow: 2, slidesToScroll: 1 } },
         ],
@@ -293,6 +364,7 @@ function  layoutMode(){
         e(".product-4-on_sale").slick(sliderConfig),
         e(".product-4-new_products").slick(sliderConfig),
         e(".product-4-best_sellers").slick(sliderConfig),
+        e(".Popular_Brands").slick(sliderConfigp2peight),
         e(".product-4-featured_products").slick(sliderConfig),
         e(".p2p_eccomerce_slider10").slick(sliderConfigEight10),
         e(".spotlight_deals-eight").slick(sliderConfigspotlight),
@@ -300,8 +372,11 @@ function  layoutMode(){
         e(".p2p_eccomerce_slider").slick(sliderConfigEight),
         e(".TopratedSliderEight").slick(sliderConfigEighttop),
         e(".p2p_single_slider").slick(sliderConfig),
+        e(".product-4-selected_products").slick(sliderConfig),
+        e(".product-4-most_popular_products").slick(sliderConfig),
         e(".selling_product_eight").slick(sliderConfigSellingProductEight),
-
+        e(".top_rated_slider").slick(sliderConfigTopRatedProductEight),
+        e(".selected_products-slider").slick(sliderConfigSelectedProductFive),
         e('.suppliers-slider').slick({
             dots: false,
             infinite: true,
@@ -822,3 +897,6 @@ body_event.on("click", ".theme-layout-version", function () {
             }
         });
     });
+
+
+      

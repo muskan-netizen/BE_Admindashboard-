@@ -15,7 +15,7 @@ $timezone = $user->timezone;
 $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurrency->doller_compare ?? 1) ) : 0;
 $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency']);
 @endphp
-
+<link href="{{asset('assets/css/azul.css')}}" rel="stylesheet" type="text/css" />
 <style type="text/css">
     .productVariants .firstChild {
         min-width: 150px;
@@ -399,37 +399,94 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
 
                 <% if(payment_option.slug == 'plugnpay') { %>
                     <div class="col-md-12 mt-3 mb-3 plugnpay_element_wrapper option-wrapper d-none">
-                        <div class="row no-gutters">
-                            <div class="col-6">
-                                <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="plugnpay-card-element" placeholder="Enter card Number" required />
-                            </div>
-                            <div class="col-3">
-                                <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="5"  id="plugnpay-date-element" placeholder="MM/YY" required />
-                            </div>
-                            <div class="col-3">
-                                <input type="password" max="3" style=" border-left: none;"  class="form-control" id="plugnpay-cvv-element" placeholder="CVV" required />
-                            </div>
-                        </div>
+                        <div class="row no-gutters mb-2">
+                                    <div class="col-12">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-name-element" placeholder="Enter card holder name" />
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="plugnpay-card-element" placeholder="Enter card Number" />
+                                    </div>
+                                    <div class="col-3">
+                                        <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="5"  id="plugnpay-date-element" placeholder="MM/YY" />
+                                    </div>
+                                    <div class="col-3">
+                                        <input type="password" max="3" style=" border-left: none;"  class="form-control" id="plugnpay-cvv-element" placeholder="CVV" />
+                                    </div>
+                                     <div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-addr1-element" placeholder="Enter address"/>
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-addr2-element" placeholder="Enter alternate address (optional)" />
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-zip-element" placeholder="Enter zip code"/>
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-city-element" placeholder="Enter city name"/>
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-state-element" placeholder="Enter state code e.g. NY"/>
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-country-element" placeholder="Enter country code e.g. US"/>
+                                    </div>
+                                </div>
 
                         <span class="error text-danger" id="plugnpay_card_error"></span>
                     </div>
                 <% } %>
 
- <% if(payment_option.slug == 'azulpay') { %>
-                    <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
+                <% if(payment_option.slug == 'nmi') { %>
+                    <div class="col-md-12 mt-3 mb-3 nmi_element_wrapper option-wrapper d-none">
                         <div class="row no-gutters">
                             <div class="col-6">
-                                <input type="text"  maxlength="16" style=" border-right: none;" class="form-control demoInputBox" id="azul-card-element" placeholder="Enter Card Number" required />
+                            <input type="text"  maxlength="16" style=" border-right: none;" class="form-control demoInputBox" id="card-element-nmi" placeholder="Enter Card Number" />
                             </div>
                             <div class="col-3">
-                                <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="azul-date-element" placeholder="MM/YYYY" required />
+                            <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="date-element-nmi" placeholder="MM/YYYY" />
                             </div>
                             <div class="col-3">
-                                <input type="password" max="4" style=" border-left: none;"  class="form-control demoInputBox" id="azul-cvv-element" placeholder="CVV" required />
+                            <input type="password" max="4" style=" border-left: none;"  class="form-control demoInputBox" id="cvv-element-nmi" placeholder="CVV" />
                             </div>
+                            <span class="error text-danger" id="card_error_nmi"></span>
                         </div>
+                    </div>
+                <% } %>
 
+ <% if(payment_option.slug == 'azulpay') { %>
+                    <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
+
+<div class="tab">
+    <a class="tablinks active" onclick="clickHandle(event, 'Add-Card')" href="javascript:void(0);">Add Card</a>
+    <a class="tablinks" onclick="clickHandle(event, 'Card-List')" href="javascript:void(0);">Card List</a>
+  </div>
+
+  <div id="Add-Card" class="tabcontent show" style="display:block">
+     <div class="row no-gutters">
+                            <div class="col-6">
+                                <input type="text"  maxlength="16" style=" border-right: none;" class="form-control demoInputBox" id="azul-card-element" placeholder="Enter Card Number" />
+                            </div>
+                            <div class="col-3">
+                                <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="azul-date-element" placeholder="MM/YYYY" />
+                            </div>
+                            <div class="col-3">
+                                <input type="password" max="4" style=" border-left: none;"  class="form-control demoInputBox" id="azul-cvv-element" placeholder="CVV" />
+                            </div>
+
+                        </div>
+<div class="row">
+<div class="col-md-4 save-card-custom">
+                     <input type="checkbox" name="save_card" class="form-check-input" id="azul-save_card" value="1">
+                                    <label for="azul-save_card" class="">{{ __('Save Card') }}</label>
+            </div>
+</div>
                         <span class="error text-danger" id="azul_card_error"></span>
+
+  </div>
+
+  <div id="Card-List" class="tabcontent">
+  </div>
+
                     </div>
                 <% } %>
             <% } %>
@@ -439,6 +496,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
 @endsection
 @section('script')
 <script src="{{asset('js/credit-card-validator.js')}}"></script>
+@include('frontend.account.paymentUrls')
 @if(in_array('razorpay',$client_payment_options))
 <script type="text/javascript" src="https://checkout.razorpay.com/v1/checkout.js"></script>
 @endif
@@ -471,50 +529,6 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     <script src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js"></script>
 @endif
 <script type="text/javascript">
-    var stripe_fpx = '';
-    var fpxBank = '';
-    var idealBank = {};
-    var ajaxCall = 'ToCancelPrevReq';
-    var credit_wallet_url = "{{route('user.creditWallet')}}";
-    var payment_stripe_url = "{{route('payment.stripe')}}";
-    var create_konga_hash_url = "{{route('kongapay.createHash')}}";
-    var create_payphone_url = "{{route('payphone.createHash')}}";
-    var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
-    var create_flutterwave_url = "{{route('flutterwave.createHash')}}";
-    var create_windcave_hash_url = "{{route('windcave.createHash')}}";
-    var create_paytech_hash_url = "{{route('paytech.createHash')}}";
-    var create_dpo_tocken = "{{route('dpo.createTocken')}}";
-    var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
-    var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
-    var create_ccavenue_url = "{{route('ccavenue.pay')}}";
-    var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
-    var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
-    var payment_create_stripe_fpx_url = "{{url('payment/create/stripe_fpx')}}";
-    var payment_create_stripe_oxxo_url = "{{url('payment/create/stripe_oxxo')}}";
-    var payment_create_stripe_ideal_url = "{{url('payment/create/stripe_ideal')}}";
-    var payment_retrive_stripe_ideal_url = "{{url('payment/retrieve/stripe_ideal')}}";
-    var payment_paypal_url = "{{route('payment.paypalPurchase')}}";
-    var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
-    var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
-    var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
-    var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
-    var wallet_payment_options_url = "{{route('wallet.payment.option.list')}}";
-    var payment_success_paypal_url = "{{route('payment.paypalCompletePurchase')}}";
-    var payment_success_paylink_url = "{{route('payment.paylinkReturn')}}";
-    var payment_paystack_url = "{{route('payment.paystackPurchase')}}";
-    var payment_success_paystack_url = "{{route('payment.paystackCompletePurchase')}}";
-    var payment_payfast_url = "{{route('payment.payfastPurchase')}}";
-    var payment_khalti_complete_purchase = "{{route('payment.khaltiCompletePurchase')}}";
-    var payment_khalti_url = "{{route('payment.khaltiVerification')}}";
-    var amount_required_error_msg = "{{__('Please enter amount.') }}";
-    var payment_method_required_error_msg = "{{__('Please select payment method.')}}";
-    var wallet_balance_insufficient_msg = "{{ __('Insufficient funds in wallet') }}";
-    var user_wallet_balance = parseFloat("{{ $user_wallet_balance }}");
-    var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
-    var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
-	var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
-
-
     var inline='';
     $('#wallet_amount').keypress(function(event) {
         if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
@@ -559,7 +573,6 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         $('#wallet_payment_methods_error').html('');
         var method = $(this).val();
         var code = method.replace('radio-', '');
-
         if (code != '') {
             $("#wallet_payment_methods .option-wrapper").addClass('d-none');
             $("#wallet_payment_methods ."+code+"_element_wrapper").removeClass('d-none');
@@ -659,6 +672,8 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         $("#wallet_transfer_error_msg").text('').hide();
     });
 
+
+
     $(document).on('click', '.transfer_wallet_confirm', function() {
         var _that = $(this);
         var amount = $("#wallet_transfer_amount").val();
@@ -709,6 +724,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
             $("#error_dev").html(html).show();
         }
     });
+    
 </script>
 <script>
     var loadFile = function(event) {

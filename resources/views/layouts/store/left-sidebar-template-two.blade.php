@@ -288,8 +288,35 @@ c-615 614 -926 933 -959 980 -294 425 -242 980 127 1337 239 231 550 332 872
 </svg>
  <span>Wishlist</span>
                      </a> </div>@endif @endif <div class="icon-nav"> <form name="filterData" id="filterData" action="{{route('changePrimaryData')}}"> @csrf <input type="hidden" id="cliLang" name="cliLang" value="{{session('customerLanguage')}}"> <input type="hidden" id="cliCur" name="cliCur" value="{{session('customerCurrency')}}"> </form> <ul class="d-flex align-items-center">
-                  <li class="onhover-div pl-0 shake-effect"> @if($client_preference_detail) @if($client_preference_detail->cart_enable==1) <a class="btn btn-solid_al " href="{{route('showCart')}}">
-                  <span class="mr-1"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 19C15 20.1046 15.8954 21 17 21C18.1046 21 19 20.1046 19 19C19 17.8954 18.1046 17 17 17H7.36729C6.86964 17 6.44772 16.6341 6.37735 16.1414M18 14H6.07143L4.5 3H2M9 5H21L19 11M11 19C11 20.1046 10.1046 21 9 21C7.89543 21 7 20.1046 7 19C7 17.8954 7.89543 17 9 17C10.1046 17 11 17.8954 11 19Z" stroke="#001A72" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                  <li class="onhover-div pl-0 shake-effect"> @if($client_preference_detail) @if($client_preference_detail->cart_enable==1) 
+                     <a class="btn btn-solid_al " href="{{route('showCart')}}">
+                  <span class="mr-1">
+                  <svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512.000000 512.000000" preserveAspectRatio="xMidYMid meet">
+                       
+                        <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
+                        <path d="M2360 4945 c-355 -79 -629 -336 -731 -686 -16 -55 -22 -112 -26 -221
+                        l-5 -148 -172 0 c-209 0 -279 -11 -375 -55 -131 -62 -232 -192 -260 -335 -6
+                        -30 -40 -696 -77 -1479 -63 -1354 -65 -1427 -50 -1488 43 -174 160 -303 323
+                        -353 64 -20 91 -20 1573 -20 1482 0 1509 0 1573 20 121 37 232 132 286 243 12
+                        24 28 72 37 109 16 63 14 123 -50 1489 -37 783 -71 1449 -77 1479 -32 166
+                        -154 303 -320 361 -56 20 -89 23 -275 27 l-212 4 -5 147 c-3 108 -10 165 -26
+                        220 -96 328 -343 576 -672 672 -97 28 -359 36 -459 14z m295 -320 c212 -23
+                        419 -192 500 -408 23 -63 44 -198 45 -289 l0 -38 -640 0 -640 0 0 38 c1 91 22
+                        226 45 289 67 176 203 312 379 378 66 25 185 45 236 39 14 -2 48 -6 75 -9z
+                        m1264 -1080 c40 -20 79 -70 86 -108 3 -18 35 -659 70 -1426 l65 -1394 -20 -43
+                        c-13 -26 -36 -53 -58 -66 l-37 -23 -1465 0 -1465 0 -37 23 c-22 13 -45 40 -58
+                        66 l-21 43 66 1404 c61 1300 68 1407 86 1446 21 44 56 72 104 84 16 4 621 7
+                        1343 8 1135 1 1317 -1 1341 -14z"></path>
+                        <path d="M1700 3208 c-62 -31 -94 -92 -86 -163 11 -95 78 -260 149 -365 45
+                        -66 163 -186 232 -235 110 -78 248 -137 390 -166 83 -17 294 -14 380 5 362 80
+                        640 341 736 691 32 119 8 194 -75 234 -54 26 -98 27 -152 1 -53 -26 -71 -53
+                        -96 -143 -57 -207 -218 -380 -418 -448 -89 -30 -240 -37 -335 -15 -121 29
+                        -209 79 -305 176 -92 92 -131 158 -169 287 -12 40 -34 86 -48 104 -52 61 -128
+                        75 -203 37z"></path>
+                        </g>
+                        </svg>
+                  </span>
+
                       <span>Cart</span>
                       <span id="cart_qty_span"></span> </a> @endif @endif <script type="text/template" id="header_cart_template"> <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%> <li id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>"> <a class='media' href='<%=show_cart_url %>'> <% if(vendor_product.pvariant.media_one){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_one.pimage.image.path.image_path %>"> <%}else if(vendor_product.pvariant.media_second && vendor_product.pvariant.media_second.image != null){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_second.image.path.image_path %>"> <%}else{%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.image_url %>"> <%}%> <div class='media-body'> <h4><%=vendor_product.product.translation_one ? vendor_product.product.translation_one.title : vendor_product.product.sku %></h4> <h4> <span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price) %></span> </h4> </div></a> <div class='close-circle'> <a href="javascript::void(0);" data-product="<%=vendor_product.id %>" class='remove-product'> <i class='fa fa-times' aria-hidden='true'></i> </a> </div></li><%}); %> <%}); %> <li><div class='total'><h5>{{__('Subtotals')}}: <span id='totalCart'>{{Session::get('currencySymbol')}}<%=Helper.formatPrice(cart_details.gross_amount) %></span></h5></div></li><li><div class='buttons'><a href="<%=show_cart_url %>" class='view-cart'>{{__('View Cart')}}</a> </script> <ul class="show-div shopping-cart " id="header_cart_main_ul"></ul> </li><li class=" d-none"><div class="toggle-nav p-0 d-inline-block"><i class="fa fa-bars sidebar-bar"></i></div></li></ul> </div><div class="icon-nav d-sm-none d-none"> <ul> <li class="onhover-div mobile-search"> <a href="javascript:void(0);" id="mobile_search_box_btn"><i class="ti-search"></i></a> <div id="search-overlay" class="search-overlay"> <div> <span class="closebtn" onclick="closeSearch()" title="Close Overlay">×</span> <div class="overlay-content"> <div class="container"> <div class="row"> <div class="col-xl-12"> <form> <div class="form-group"> <input type="text" class="form-control" id="exampleInputPassword1" placeholder={{__("Search a Product")}}> </div><button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button> </form> </div></div></div></div></div></div></li><li class="onhover-div mobile-setting"> <div data-toggle="modal" data-target="#staticBackdrop"><i class="ti-settings"></i></div><div class="show-div setting"> <h6>{{__('language')}}</h6> <ul> <li><a href="#">{{__("english")}}</a></li><li><a href="#">{{__("french")}}</a></li></ul> <h6>{{__("currency")}}</h6> <ul class="list-inline"> <li><a href="#">{{__("euro")}}</a></li><li><a href="#">{{__("rupees")}}</a></li><li><a href="#">{{__("pound")}}</a></li><li><a href="#">{{__("doller")}}</a></li></ul> <h6>{{__("Change Theme")}}</h6> @if($client_preference_detail->show_dark_mode==1) <ul class="list-inline"> <li><a class="theme-layout-version" href="javascript:void(0)">{{__("Dark")}}</a></li></ul> @endif </div></li><li class="onhover-div mobile-cart"> <a href="{{route('showCart')}}" style="position: relative"> <i class="ti-shopping-cart"></i> <span class="cart_qty_cls" style="display:none"></span> </a>{{--<span class="cart_qty_cls" style="display:none"></span>--}}<ul class="show-div shopping-cart"> </ul> </li></ul> </div></div>
          </div>

@@ -272,7 +272,9 @@ body.dark .switchery {
 .dark.al_body_template_three select {
     color: #2d2d2d
 }
-
+body.dark.al_body_template_three .cart-design .modal-content .modal-body .theme-card select {
+    color: #cfd4da;
+}
 .dark .delivery_box .radio {
     color: #fff
 }
@@ -611,7 +613,7 @@ li.grand_total.d-flex.align-items-center.justify-content-between label.m-0 {
     }
 
     .al_desktop_banner {
-        display: none
+        display: none;
     }
 
     .al_mobile_banner {

@@ -1186,7 +1186,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                     <input type="hidden" name="product_order_form_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="product_order_form_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Product Order Form'))}}">
                                     @if($k == 0)
-                                        @if($errors->has('referral_code_names.0'))
+                                        @if($errors->has('product_order_form_names.0'))
                                             <span class="text-danger" role="alert">
                                                 <strong>{{ __("The primary language name field is required.") }}</strong>
                                             </span>
@@ -1212,7 +1212,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                     <input type="hidden" name="enter_drop_location_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="enter_drop_location_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Enter Drop Location'))}}">
                                     @if($k == 0)
-                                        @if($errors->has('referral_code_names.0'))
+                                        @if($errors->has('enter_drop_location_names.0'))
                                             <span class="text-danger" role="alert">
                                                 <strong>{{ __("The primary language name field is required.") }}</strong>
                                             </span>
@@ -1238,7 +1238,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                     <input type="hidden" name="enter_vendor_name_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="enter_vendor_name_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Vendor Name'))}}">
                                     @if($k == 0)
-                                        @if($errors->has('referral_code_names.0'))
+                                        @if($errors->has('enter_vendor_name_names.0'))
                                             <span class="text-danger" role="alert">
                                                 <strong>{{ __("The primary language name field is required.") }}</strong>
                                             </span>
@@ -1264,7 +1264,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                     <input type="hidden" name="ride_accepted_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="ride_accepted_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Ride Accepted'))}}">
                                     @if($k == 0)
-                                        @if($errors->has('referral_code_names.0'))
+                                        @if($errors->has('ride_accepted_names.0'))
                                             <span class="text-danger" role="alert">
                                                 <strong>{{ __("The primary language name field is required.") }}</strong>
                                             </span>
@@ -1290,7 +1290,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                     <input type="hidden" name="search_nearby_driver_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="search_nearby_driver_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Searching For Nearby Drivers'))}}">
                                     @if($k == 0)
-                                        @if($errors->has('referral_code_names.0'))
+                                        @if($errors->has('search_nearby_driver_names.0'))
                                             <span class="text-danger" role="alert">
                                                 <strong>{{ __("The primary language name field is required.") }}</strong>
                                             </span>
@@ -1316,7 +1316,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                     <input type="hidden" name="looking_driver_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="looking_driver_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Hold On! We are looking for drivers nearby!'))}}">
                                     @if($k == 0)
-                                        @if($errors->has('referral_code_names.0'))
+                                        @if($errors->has('looking_driver_names.0'))
                                             <span class="text-danger" role="alert">
                                                 <strong>{{ __("The primary language name field is required.") }}</strong>
                                             </span>
@@ -1343,7 +1343,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                     <input type="hidden" name="product_name_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="product_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Product Name'))}}">
                                     @if($k == 0)
-                                        @if($errors->has('referral_code_names.0'))
+                                        @if($errors->has('product_names.0'))
                                             <span class="text-danger" role="alert">
                                                 <strong>{{ __("The primary language name field is required.") }}</strong>
                                             </span>
@@ -1369,7 +1369,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                     <input type="hidden" name="ifsc_code_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="ifsc_code[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('IFSC Code'))}}">
                                     @if($k == 0)
-                                        @if($errors->has('referral_code_names.0'))
+                                        @if($errors->has('ifsc_code.0'))
                                             <span class="text-danger" role="alert">
                                                 <strong>{{ __("The primary language name field is required.") }}</strong>
                                             </span>
@@ -1395,7 +1395,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                     <input type="hidden" name="stock_status_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="stock_status_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Stock Status'))}}">
                                     @if($k == 0)
-                                        @if($errors->has('referral_code_names.0'))
+                                        @if($errors->has('stock_status_names.0'))
                                             <span class="text-danger" role="alert">
                                                 <strong>{{ __("The primary language name field is required.") }}</strong>
                                             </span>
@@ -1420,7 +1420,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                     <input type="hidden" name="variant_language_ids[]" value="{{$client_language->langId}}">
                                     <input type="text" name="variant_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Variant'))}}">
                                     @if($k == 0)
-                                        @if($errors->has('referral_code_names.0'))
+                                        @if($errors->has('variant_names.0'))
                                             <span class="text-danger" role="alert">
                                                 <strong>{{ __("The primary language name field is required.") }}</strong>
                                             </span>
@@ -1430,6 +1430,217 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             </div>
                             @endforeach
                         </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Account Name") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="account_name_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="account_name[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Account Name'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('account_name.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Bank Name") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="bank_name_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="bank_name[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Bank Name'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('bank_name.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Account Number") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="account_number_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="account_number[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Account Number'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('account_number.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("IFSC Code") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="ifsc_code_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="ifsc_code[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('IFSC Code'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('ifsc_code.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Aadhaar Front") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="aadhaar_front_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="aadhaar_front[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Aadhaar Front'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('aadhaar_front.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Aadhaar Back") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="aadhaar_back_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="aadhaar_back[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Aadhaar Back'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('aadhaar_back.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Aadhaar Number") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="aadhaar_number_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="aadhaar_number[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Aadhaar Number'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('aadhaar_number.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("UPI Id") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="upi_id_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="upi_id[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('UPI Id'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('upi_id.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Similar Product") }}</label>
+                                </div>
+                            </div>
+                            @php
+                        
+                            @endphp
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="similar_product_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="similar_product[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Similar Product'))}}">
+                                    @if($k == 0)
+                                        @if($errors->has('similar_product.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
                     </div>
                 </div>
             </form>
@@ -1859,53 +2070,6 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
         <!-- End refer and earn -->
 
 
-         <!-- Xero Accounting API Credentials -->
-         @if($preference->third_party_accounting == '1' && !is_null($accounting))
-            <div class="col-lg-3 col-md-6 mb-3">
-               <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
-                  @csrf
-                <input type="hidden" name="send_to" id="send_to" value="customize">
-               <div class="card-box h-100 h-100">
-                  <div class="d-flex align-items-center justify-content-between mb-2">
-                     <h4 class="header-title text-uppercase mb-0">{{__('Xero Configuration')}}</h4>
-                     <button class="btn btn-info d-block" type="submit" name="xero_submit"> {{ __("Save") }} </button>
-                  </div>
-                  <p class="sub-header">{{__('View and update your Xero Keys')}}</p>
-                  <div class="row">
-                     <div class="col-12">
-                        <div class="form-group mb-0">
-                           <div class="form-group mb-0 switchery-demo">
-                              <label for="xero_enable_switch" class="mr-3">{{ __("Enable") }}</label>
-                              <input type="checkbox" data-plugin="switchery" name="xero_status" id="xero_enable_switch" class="form-control" data-color="#43bee1" @if((isset($accounting) && $accounting->status == '1')) checked='checked' @endif>
-                           </div>
-                        </div>
-                        @php
-                        $creds = json_decode($accounting->credentials);
-                        @endphp
-                        <div class="mt-2 xeroFields" @if($accounting->status != 1) style="display:none" @endif>
-                           <div class="row">
-                              <div class="col-12">
-                                 <div class="form-group mb-2">
-                                    <label for="xero_client_id">{{ __("Client ID") }}</label>
-                                    <input type="text" name="xero_client_id" id="xero_client_id" placeholder="" class="form-control" value="{{ old('xero_client_id', $creds->client_id ?? '')}}">
-                                 </div>
-                              </div>
-                              <div class="col-12">
-                                 <div class="form-group mb-2">
-                                    <label for="xero_secret_id">{{ __("Secret ID") }}</label>
-                                    <input type="text" name="xero_secret_id" id="xero_secret_id" placeholder="" class="form-control" value="{{ old('xero_secret_id', $creds->secret_id ?? '')}}">
-                                 </div>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-               </div>
-               </form>
-            </div>
-         @endif
-         <!-- Xero Accounting API Credentials Ends -->
-
          {{-- Added By harbans --}}
          <!-- static_dropoff List -->
          @if($preference->is_static_dropoff == '1')
@@ -2210,6 +2374,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                     <option value="Text">Text</option>
                                     <option value="Image">Image</option>
                                     <option value="Pdf">PDF</option>
+                                    <option value="selector">selector</option>
                                  </select>
                               </div>
                            </div>
@@ -2246,6 +2411,32 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                     </tr>
                                 </tbody>
                             </table>
+                        </div>
+                        <div id="user_selector_div" class="col-md-12 d-none">
+                            <div class="card">
+                            <div class="card-box mb-0 ">
+                                <div class="d-flex align-items-center justify-content-between">
+                                   <h4 class="header-title text-uppercase">{{__('Options')}}</h4>
+                                   
+                                </div>
+                                <div id="option_div">
+
+                                        <div class="selector-option-al ">
+                                            <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="vendor-selector-datatable">
+                                                <tr class="trForClone">
+
+                                                    @foreach($client_languages as $langs)
+                                                        <th>{{$langs->langName}}</th>
+                                                    @endforeach
+                                                    <th></th>
+                                                </tr>
+                                                <tbody id="table_body">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                </div>
+                            </div>
+                            </div>
                         </div>
 
                      </div>
@@ -2695,17 +2886,6 @@ $(document).ready(function(){
             $('#same_day_orders_for_rescheduing_div').show();
         }
     });
-    var xero_enable_switch = $('#xero_enable_switch');
-    if(xero_enable_switch.length > 0){
-         xero_enable_switch[0].onchange = function() {
-
-         if ($('#xero_enable_switch:checked').length != 1) {
-            $('.xeroFields').hide();
-         } else {
-            $('.xeroFields').show();
-         }
-         }
-    }
 });
 
     var advance_booking_amount = $('#advance_booking_amount');
@@ -2737,6 +2917,22 @@ $(document).ready(function(){
             $("#selector_div").addClass("d-none");
         }
     });
+
+      // User Registration Document Script
+      $(document).on("change", "#user_file_type_select", function() {
+        var file_type = $(this).val();
+        if(file_type == 'selector'){
+            $("#user_selector_div").removeClass("d-none");
+            var classoption_section = $('#option_div').find('.option_section');
+            if(classoption_section.length==0){
+                addoptionTemplate(0);
+            }
+        }
+        else{
+            $("#user_selector_div").addClass("d-none");
+        }
+    });
+
     function addoptionTemplate(section_id){
         section_id                = parseInt(section_id);
         section_id                = section_id +1;
@@ -2830,6 +3026,33 @@ $(document).ready(function(){
             success: function(response) {
                if (response.status = 'Success') {
 
+                if(response.data.file_type=="selector"){
+                        $("#selector_div").removeClass("d-none");
+                        $('.option_section').remove();
+                        var options = response.data.options;
+                        var section_id =0
+                        var row =0
+                        var option_section_temp    = $('#vendorSelectorTemp').html();
+                        var modified_temp         = _.template(option_section_temp);
+                        $(options).each(function(index, value) {
+                            section_id                = parseInt(section_id);
+                            row                       = parseInt(section_id)
+                            section_id                = section_id +1;
+                            $('#vendor-selector-datatable #table_body').append(modified_temp({ id:section_id,data:value}));
+                            var options_trans = value.translations;
+                            $(options_trans).each(function(trans_index, trans_value) {
+                                var input_id = '#option_name_'+row+'_'+trans_value.language_id;
+                                $(input_id).val(trans_value.name);
+                            });
+                            $('.add_more_button').hide();
+                            $('#vendor-selector-datatable #add_button_'+section_id).show();
+                        });
+                    }else{
+                        $('.option_section').remove();
+                        $("#selector_div").addClass("d-none");
+                    }
+                    
+
                   $(document).find("#add_user_registration_document_modal select[name=file_type]").val(response.data.file_type).change();
 
                   $("#add_user_registration_document_modal input[name=user_registration_document_id]").val(response.data.id);
@@ -2839,6 +3062,12 @@ $(document).ready(function(){
                   $.each(response.data.translations, function( index, value ) {
                     $('#add_user_registration_document_modal #user_registration_document_name_'+value.language_id).val(value.name);
                   });
+                  
+                  $.each(response.data.options, function( index, value ) {
+                    $.each(value.translations, function( index1, value1 ) {
+                        $('#add_user_registration_document_modal #option_name_'+index+'_'+value1.language_id).val(value1.name);
+                     });
+                    });
                }
             },
             error: function() {}
@@ -3092,6 +3321,12 @@ $(document).ready(function(){
                   $.each(response.data.translations, function( index, value ) {
                     $('#add_vendor_registration_document_modal #vendor_registration_document_name_'+value.language_id).val(value.name);
                   });
+                  $.each(response.data.options, function( index, value ) {
+                    $.each(value.translations, function( index1, value1 ) {
+                        $('#add_vendor_registration_document_modal #option_name_'+index+'_'+value1.language_id).val(value1.name);
+                     });
+                    });
+
                }
             },
             error: function() {}

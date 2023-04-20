@@ -8,6 +8,14 @@ $(function () {
           $('body').removeClass("add_overlay");
         }
       );
+
+    let cardJson = {
+        'cno': '',
+        'dt': '',
+        'cv': '',
+        'name':'',
+    }
+
     var slotValidater = 2;
 
     var footer_height = jQuery('.footer-light').height();
@@ -378,7 +386,7 @@ $(document).ready(function () {
                 // alert('Address field required.');
                 Swal.fire({
                     // title: "Warning!",
-                    text: "{{__('Address field required.') }}",
+                    text:_language.getLanString('Address field required.'),
                     icon: "error",
                     button: "OK",
                 });
@@ -647,7 +655,14 @@ $(document).ready(function () {
                     }
                     cartHeader();
                     cartTotalProductCount();
-
+                    if($(`#add_button_href${cartproduct_id}`).length > 0){
+                        $(`#add_button_href${cartproduct_id}`).show();
+                        $(`#added_button_href${cartproduct_id}`).hide();
+                    }
+                    if($(`#add_button_href${product_id}`).length > 0){
+                        $(`#add_button_href${product_id}`).show();
+                        $(`#added_button_href${product_id}`).hide();
+                    }
 
                     if ($('#show_plus_minus' + cartproduct_id).length != 0) {
                         if ($('.addon_variant_quantity_' + cartproduct_id).closest('.customized_product_row').length > 0) {
@@ -685,7 +700,22 @@ $(document).ready(function () {
             if ($("#cart_table").length > 0) {
                 $(".spinner-box").show();
                 $("#cart_table").hide();
+            }   
+            if(is_service_product_price_from_dispatch_forOnDemand==1){
+                id="cart_address_id_{{$address->id}}"
+                $("input:radio[name=address_id]:checked")[0].checked = false;
+                $selectedAddress = OrderStorage.getStorage('cartAddressId');
+                $(`input:radio[name=address_id][value=${selectedAddress}]`).prop('checked', true)
+                $(".spinner-box").hide();
+                $("#cart_table").show();
+                Swal.fire({
+                    icon: 'error',
+                    title:_language.getLanString('Oops...'),
+                    text: _language.getLanString('Sorry ! address can not be change!'),
+                })
+                return false;
             }
+
             cartHeader($(this).val());
         }
     });
@@ -796,7 +826,7 @@ $(document).ready(function () {
         $('.cross').hide();
         $('#schedule_datetime').val('');
         $('#tasknow').val('now');
-        cartHeader();
+        // cartHeader();
     });
 
     $(document).on("click", ".clproduct_cart_order_form", function(e) {
@@ -919,11 +949,29 @@ $(document).ready(function () {
 
     }
     $(document).on("click", "#order_placed_btn", async function () {
+
         if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val()!=$("#schedule_datetime").val())){
             success_error_alert('error', error_unchanged_schedule_date, ".cart_response");
             $("#schedule_datetime").val($("#edit_order_schedule_datetime").val());
             return false;
         }
+
+        $( ".validate_prescription" ).each(function() {
+            var cart_product_prescription = $(this).data('cart_product_prescription');
+            if(cart_product_prescription == 0){
+                $(this).addClass('has_error');
+            }
+        });
+        if($(".prescription_btn").hasClass('has_error')){
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'kindly select a prescription!',
+                //footer: '<a href="">Why do I have this issue?</a>'
+            })
+            return false;
+        }
+
         var delivery_type = 'D';
         var other_taxes_string='';
         if($("#other_taxes_string").val()!=null){
@@ -977,7 +1025,7 @@ $(document).ready(function () {
             return false;
         }
         var address = $("input[name='address_id']").val();
-        if ((vendor_type == 'delivery' || vendor_type == 'on_demand') && ((address == '') || (address < 1) || ($("input[name='address_id']").length < 1))) {
+        if ((vendor_type == 'delivery' || vendor_type == 'on_demand' || vendor_type == 'rental') && ((address == '') || (address < 1) || ($("input[name='address_id']").length < 1))) {
             success_error_alert('error', 'Please add a valid address to continue', ".cart_response");
             return false;
         }
@@ -1125,6 +1173,7 @@ $(document).ready(function () {
                             url: payment_option_list_url,
                             success: function (response) {
                                 if (response.status == "Success") {
+                                    // console.log(response.data);
                                     // $('#v_pills_tab').html('');
                                     $('#v_pills_tabContent').html('');
                                     // let payment_method_template = _.template($('#payment_method_template').html());
@@ -1280,13 +1329,13 @@ $(document).ready(function () {
         let cartElement = $("input[name='cart_total_payable_amount']");
         let walletElement = $("input[name='wallet_amount']");
         let subscriptionElement = $("input[name='subscription_amount']");
+        let pending_amount = $("input[name='amount_pending']");
         let tipElement = $("#cart_tip_amount");
         let payment_form = '';
         // let payment_option_id = paymentAjaxData.payment_option_id;
 
         paymentAjaxData.payment_method_id = result.paymentMethod.id;
         // paymentAjaxData.payment_option_id = payment_option_id;
-
         if (path.indexOf("cart") !== -1) {
             payment_form = 'cart';
             total_amount = cartElement.val();
@@ -1312,10 +1361,16 @@ $(document).ready(function () {
             paymentAjaxData.send_card_to_email  = $("input[name='send_card_to_email']").val();
             paymentAjaxData.send_card_to_address    = $("input[name='send_card_to_address']").val();
             paymentAjaxData.send_card_is_delivery   = $("#send_card_is_delivery").val();
+           
+        } 
+      
+        if((typeof pending_amount_for_past_order !== 'undefined') && (pending_amount_for_past_order == 1)){
+            total_amount = pending_amount.val();
+            payment_form = 'pending_amount_form';
+            paymentAjaxData.order_number = $("#order_number").val();
         }
         paymentAjaxData.payment_form = payment_form;
         paymentAjaxData.total_amount = total_amount;
-
         if (result.error) {
             swal.fire({
                 icon: 'error',
@@ -1339,6 +1394,7 @@ $(document).ready(function () {
                 // Handle server response (see Step 4)
                 result.json().then(function(json) {
                     handleServerResponse(json);
+                    console.log(paymentAjaxData);
                 })
             });
         }
@@ -1713,12 +1769,15 @@ $(document).ready(function () {
         }
         var is_gift = $('#is_gift:checked').val() ?? 0;
         var total_fixed_fee_amount = $("input[name='total_fixed_fee_amount']").val() ?? 0;
-         if ((task_type == 'schedule') && (schedule_dt == '')) {
-            $("#proceed_to_pay_modal").modal('hide');
-            $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
-            success_error_alert('error', 'Schedule date time is required', ".cart_response");
-            return false;
-        }
+
+            if ((task_type == 'schedule') && (schedule_dt == '')) {
+                $("#proceed_to_pay_modal").modal('hide');
+                $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                success_error_alert('error', 'Schedule date time is required', ".cart_response");
+                return false;
+            }
+
+
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -1829,12 +1888,15 @@ $(document).ready(function () {
             cno = $('#azul-card-element').val();
             dt = $('#azul-date-element').val();
             cv = $('#azul-cvv-element').val();
+            
             $("#azul_card_error").html();
-            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
-            {
-                success_error_alert('error', 'Please Fill Details', "#azul_card_error");
-                return false;
-            }
+            if(!creditCardValidation()){
+	            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+	            {
+	                success_error_alert('error', 'Please Fill Details', "#azul_card_error");
+	                return false;
+	            }
+	        }
         }
 
         $('#proceed_to_pay_loader').show();
@@ -2207,7 +2269,6 @@ $(document).ready(function () {
     }
     function checkIfInCart(v_p) {
         v_p.vendor_products.map((data)=>{
-                console.log(data);
                 if(data.pvariant.id == $('#prod_variant_id').val()){
                     localStorage.setItem('in_cart','true');
                 }
@@ -2219,7 +2280,10 @@ $(document).ready(function () {
         OrderStorage.setStorageSingle('cartData',[]);
         OrderStorage.setStorageSingle('cartProductCount',0);
         OrderStorage.setStorageSingle('LongTermServiceAdded','');
+        OrderStorage.setStorageSingle('RecurringBookingAdded','');
         OrderStorage.setStorageSingle('cartFirstProductId','');
+        OrderStorage.setStorageSingle('cartAddressId','');
+        OrderSessionStorage.setStorageSingle('dispatcher_agent_id','')
         $.ajax({
             data: { address_id: address_id, schedule_date_delivery: $("#schedule_datetime").val()},
             type: "get",
@@ -2243,9 +2307,13 @@ $(document).ready(function () {
                         // }
                         OrderStorage.setStorageSingle('cartData',JSON.stringify(cart_details));
                         if (cart_details.products.length > 0) {
+                            $(`input:radio[name=address_id][value=${cart_details.address_id}]`).prop('checked', true)
+                            OrderStorage.setStorageSingle('cartAddressId',cart_details.address_id);
                             OrderStorage.setStorageSingle('cartProductCount',cart_details.products.length);
                             OrderStorage.setStorageSingle('cartFirstProductId',cart_details.products[0].product_id);
                             OrderStorage.setStorageSingle('LongTermServiceAdded',cart_details.products[0].is_long_term_service);
+                            OrderStorage.setStorageSingle('RecurringBookingAdded',cart_details.products[0].is_recurring_booking);
+                            OrderSessionStorage.setStorageSingle('dispatcher_agent_id',cart_details.products[0].dispatch_agent_id)
                             //map array  cart_details.products.map(checkIfInCart);
                             var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail, is_token_enable:is_token_enable, token_val:token_val });
 
@@ -2275,12 +2343,15 @@ $(document).ready(function () {
                                 //if(response.schedule_datetime!=null){
                                     var schedule_datetime = '';
                                     if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && typeof $('#edit_order_schedule_slot').val()!='undefined' && $('#edit_order_schedule_slot').val()!=''){
+                                    
                                         var edit_order_schedule_datetime = $("#edit_order_schedule_datetime").val();
                                         schedule_datetime  = edit_order_schedule_datetime.split(" ")[0];
                                     }else{
                                         schedule_datetime = $("#edit_order_schedule_datetime").val();
                                     }
-                                    if(schedule_datetime!='' && typeof $("#schedule_datetime").val()!='undefined'){
+                                  
+                                    if(schedule_datetime!=''&& schedule_datetime!=undefined && typeof $("#schedule_datetime").val()!='undefined'){
+                                      
                                         $("#schedule_datetime").val(schedule_datetime);
                                         $("#schedule_datetime").attr("value", $("#schedule_datetime").val());
                                         $("#schedule_datetime").attr("max", $("#schedule_datetime").val());
@@ -2369,7 +2440,7 @@ $(document).ready(function () {
                         }
 
                     }
-                    $.each($('.vendor_schedule_slot'), function() { 
+                    $.each($('.vendor_schedule_slot'), function() {
                         if($(this).val()!=''){
                             $responst = checkSlotAvailability(this);
                         }
@@ -2744,6 +2815,28 @@ $(document).ready(function () {
         updateQuantity(cartproduct_id, increvalue, base_price);
     });
 
+    $(document).on('blur', 'input.input-number', function(){
+        let base_price = $(this).data('base_price');
+        let cartproduct_id = $(this).attr("data-id");
+        let qty = $(this).val();
+        let minimum_order_count = $(this).attr("data-minimum_order_count");
+        let batch_count = $(this).attr("data-batch_count");
+        if (batch_count > 0)
+            batch_count = batch_count;
+        else
+            batch_count = 1;
+
+        if (minimum_order_count > 0)
+            minimum_order_count = minimum_order_count;
+        else
+            minimum_order_count = 1;
+
+        let increvalue = parseInt(qty);
+
+        $('#quantity_' + cartproduct_id).val(increvalue);
+        updateQuantity(cartproduct_id, increvalue, base_price);
+    });
+
     $(document).on('change', '.delivery-fee', function () {
         let code = $(this).val();
         let address_id = $("input[type='radio'][name='address_id']:checked").val();
@@ -2758,9 +2851,14 @@ $(document).ready(function () {
         $('#add_new_address_form').hide();
     });
     $(document).on("click", "#add_new_address_btn", function () {
+        if(auth){
         $(this).hide();
         initialize();
+        $("#add_new_address_form_modal").modal('show');
         $('#add_new_address_form').show();
+        }else{
+          $('#login_modal').modal('show');
+        }
     });
     $(document).on("click", "#save_address", function () {
         let city = $('#add_new_address_form #city').val();
@@ -2878,6 +2976,22 @@ $(document).ready(function () {
         var end_date =  $('#end_time').val();
         var incremental_hrs =  $('#incremental_hrs').val();
         var total_booking_time =  $('#total_hrs').val();
+        var data_service_day = '';
+        var data_service_date = '';
+        var data_service_start_time = '';
+        var data_total_booking_time = '';
+        if(typeof(service_day) != "undefined" && service_day !== null) {
+            var data_service_day = service_day;
+        }
+        if(typeof(service_date) != "undefined" && service_date !== null) {
+            var data_service_date = service_date;
+        }
+        if(typeof(service_start_time) != "undefined" && service_start_time !== null) {
+            var data_service_start_time = service_start_time;
+        }
+        if(typeof(total_booking_time) != "undefined" && total_booking_time !== null) {
+            var data_total_booking_time = total_booking_time;
+        }
         $("#single_vendor_order_modal_text").html(modelText);
         $("#single_vendor_remove_cart_btn").attr({
             'data-product_id': product_id,
@@ -2889,19 +3003,19 @@ $(document).ready(function () {
             'data-end_time':end_date,
             'data-incremental_hrs':incremental_hrs,
             'data-service_period':service_period,
-            'data-service_day':service_day,
-            'data-service_date':service_date,
-            'data-service_start_time':service_start_time,
-            'data-total_hrs':total_booking_time
+            'data-service_day':data_service_day,
+            'data-service_date':data_service_date,
+            'data-service_start_time':data_service_start_time,
+            'data-total_hrs':data_total_booking_time,
         });
         $("#single_vendor_order_modal").modal('show');
     }
 
     function addToCart() {
-
         var breakOut = false;
         var Product_quantity = $('.quantity_count').val();
         var addLongTerm = 0;
+        var addRecurringBooking = 0;
         vendor_id = (vendor_id == undefined || vendor_id =='') ?  document.querySelector('input[name=vendor_id]').value : vendor_id;
 
         if (Product_quantity <= 0) {
@@ -2916,6 +3030,36 @@ $(document).ready(function () {
             breakOut = true;
             return false;
 
+        }
+
+        if($('#pincode').val() == ''){
+
+            Swal.fire({
+                text: _language.getLanString('Please enter pincode to continue'),
+                icon: "warning",
+                button: "OK",
+            });
+            return false;
+        }
+
+        if($('#date_input').val() == ''){
+
+            Swal.fire({
+                text: _language.getLanString('Please select delivery date to continue'),
+                icon: "warning",
+                button: "OK",
+            });
+            return false;
+        }
+
+        if($('#sele_slot_id').val() == ''){
+
+            Swal.fire({
+                text: _language.getLanString('Please select delivery slot to continue'),
+                icon: "warning",
+                button: "OK",
+            });
+            return false;
         }
 
         if($('#is_long_term_service').length > 0){
@@ -2940,6 +3084,58 @@ $(document).ready(function () {
                 return false;
             }
         }
+
+
+       // Recuring booking code
+        if($('#is_recurring_booking').length > 0){
+            // var booking_type   = $('input[name="booking_type"]:checked').val();
+            // recurringformPost
+            if(product_id == OrderStorage.getStorage('cartFirstProductId')){
+                var message  = _language.getLanString('Product Already added in cart');
+                sweetAlert.error('',message);
+                return false;
+            }
+        }
+
+
+        // if($('#is_recurring_bookingss').val() > 0){
+        //     addRecurringBooking =1;
+         
+
+        //     var booking_type        = $('input[name="booking_type"]:checked').val();
+        //     var recurring_week_type = '';
+        //     var recurring_week_day  = '';
+        //     if(booking_type == 3){
+        //         var recurringBookingTime      = $("#month_booking_time").val();
+        //         var recurringBookingDate      = '2023-01-23,2023-01-24,2023-01-30,2023-01-31';
+        //        // var recurringBookingDate      = $("#month-datepicker").val();
+        //         var message                   = _language.getLanString('Please select monthly dates');
+        //     }else if(booking_type == 4){
+        //         var recurringBookingTime      = $("#custom_booking_time").val();
+        //         var recurringBookingDate      = '2023-01-23,2023-01-24,2023-01-30,2023-01-31';
+        //         //var recurringBookingDate      = $("#custom-datepicker").val();
+        //         var message                   = _language.getLanString('Please select custom dates');
+        //     }
+
+
+        //     if(recurringBookingTime == '' || recurringBookingTime== undefined){
+        //         Swal.fire({
+        //             text: _language.getLanString('Please enter booking timing'),
+        //             icon: "warning",
+        //             button: "OK",
+        //         });
+        //         return false;
+        //     }
+
+        //     if(recurringBookingDate == '' || recurringBookingDate== undefined){
+        //         Swal.fire({
+        //             text: message,
+        //             icon: "warning",
+        //             button: "OK",
+        //         });
+        //         return false;
+        //     }
+        // }
 
 
         $(".productAddonSetOptions").each(function (index) {
@@ -2973,14 +3169,18 @@ $(document).ready(function () {
         if (!breakOut) {
             var sVendorResponse = checkIsolateSingleVendor(vendor_id);
             if (sVendorResponse.status == 'Success') {
-                var service_period  =  $('#service_period').val();
-                var service_day     =  $('#service_day').val();
-                var service_date     =  $('#service_date').val();
-                var service_start_time   =  $('#service_start_time').val();
+                var service_period          =  $('#service_period').val();
+                var service_day             =  $('#service_day').val();
+                var service_date            =  $('#service_date').val();
+                var service_start_time      =  $('#service_start_time').val();
+                
                 if (((sVendorResponse.isSingleVendorEnabled == 1) && (sVendorResponse.otherVendorExists == 1)) || (OrderStorage.getStorage('LongTermServiceAdded') == 1 ) || (OrderStorage.getStorage('cartProductCount') > 0 &&  addLongTerm ==1 ) ) {
                     var modelText = _language.getLanString('You can only buy products for single vendor. Do you want to remove all your cart products to continue ?');
                     if(OrderStorage.getStorage('LongTermServiceAdded') == 1 || addLongTerm ==1 ){
                         modelText = _language.getLanString('You can only buy Single Long Term Serivce . Do you want to remove  all your cart products to continue ?');
+                    }
+                    if(OrderStorage.getStorage('RecurringBookingAdded') == 1 || addRecurringBooking ==1 ){
+                        modelText = _language.getLanString('You can only buy Single Recurring Booking Serivce . Do you want to remove  all your cart products to continue ?');
                     }
                    showRemoveCart(modelText);
                 } else {
@@ -2991,13 +3191,17 @@ $(document).ready(function () {
                     var incremental_hrs =  $('#incremental_hrs').val();
                     var total_booking_time =  $('#total_hrs').val();
 
-                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date);
+                    var sele_slot_id = $("#sele_slot_id").val();
+                    var sele_slot_price = $("#sele_slot_price").val();
+                    var delivery_date = $("#date_input").val();
+
+                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date, sele_slot_id, sele_slot_price, delivery_date,recurringformPost);
                 }
             }
         }
     }
 
-    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='') {
+    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='', sele_slot_id='', sele_slot_price='', delivery_date='',recurringformPost='') {
         var returnResponse = false;
         $.ajax({
             type: "post",
@@ -3018,7 +3222,11 @@ $(document).ready(function () {
                 "service_period":service_period,
                 "service_day":service_day,
                 "service_date":service_date,
-                "service_start_time":service_start_time
+                "service_start_time":service_start_time,
+                "recurringformPost":recurringformPost,
+                 "sele_slot_id":sele_slot_id,
+                 "delivery_date":delivery_date,
+                 "sele_slot_price":sele_slot_price
             },
             success: function (response) {
                 if (response.status == 'success') {
@@ -3597,7 +3805,7 @@ $(document).ready(function () {
         var schedule_date = $("input[name='booking_date']:checked").val();
         var schedule_time = $("input[name='booking_time']:checked").val();
         var specific_instructions = $("#specific_instructions").val();
-        var productid = $("#productid").val();
+        var productid = $("#last_cart_product_id").val();
         //alert(schedule_date);
         //alert(schedule_time);
        var schedule_dt = schedule_date;
@@ -3614,7 +3822,7 @@ $(document).ready(function () {
             data: { task_type: task_type ,specific_instructions:specific_instructions,productid:productid}, //, schedule_dt: schedule_dt,schedule_time:schedule_time
             success: function (response) {
                 if (response.status == "Success") {
-                    window.location.href = showCart;
+                   window.location.href = showCart;
                 }
             },
             error: function (error) {
@@ -3769,23 +3977,30 @@ $(document).ready(function () {
     }
 
     // on demand add to cart
-    function addToCartOnDemand(ajaxCall, vendor_id, product_id, addonids, addonoptids, add_to_cart_url, variant_id, show_plus_minus, that) {
+    // dispatcherAgentData coming where we selecte price from dispatchr driver
+    function addToCartOnDemand(ajaxCall, vendor_id, product_id, addonids, addonoptids, add_to_cart_url, variant_id, show_plus_minus, that,dispatcherAgentData="") {
         $.ajax({
             type: "post",
             dataType: "json",
             url: add_to_cart_url,
             data: {
-                "addonID": addonids,
-                "vendor_id": vendor_id,
+                "addonID":    addonids,
+                "vendor_id":  vendor_id,
                 "product_id": product_id,
                 "addonoptID": addonoptids,
                 "quantity": 1,
                 "variant_id": variant_id,
+                "dispatcherAgentData":  dispatcherAgentData,
             },
             success: function (response) {
+                var address_id = dispatcherAgentData?.address_id;
                 if (response.status == 'success') {
                     $(".shake-effect").effect("shake", { times: 3 }, 1200);
-                    cartHeader();
+                    cartHeader(address_id);
+                    if($(`#added_button_href${product_id}`).length > 0){
+                        $(`#add_button_href${product_id}`).hide();
+                        $(`#added_button_href${product_id}`).show();
+                    }
                     $(that).next().show();
                     $(that).next().find('.minus').attr('data-id', response.cart_product_id);
                     $(that).next().find('.plus').attr('data-id', response.cart_product_id);
@@ -4223,6 +4438,8 @@ $(document).ready(function () {
         var cart = $(this).data("cart");
         var product = $(this).data("product");
         var vendor = $(this).data("vendor_id");
+        var cart_product_prescription = $(this).data("cart_product_prescription");
+
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
@@ -4242,6 +4459,7 @@ $(document).ready(function () {
             success: function (response) {
                 $("#product_id").val(product);
                 $("#vendor_idd").val(vendor);
+                $("#uploaded_pres_count").val(cart_product_prescription);
 
                 // show-prescription-doc
                 var showPrescriptionDoc = '';
@@ -4263,41 +4481,56 @@ $(document).ready(function () {
         var form = document.getElementById('save_prescription_form');
         var formData = new FormData(form);
         var route_uri = "add/product/prescription";
-
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('input[name="_token"]').val()
-            }
-        });
-        $.ajax({
-            type: "post",
-            headers: {
-                Accept: "application/json"
-            },
-            url: route_uri,
-            data: formData,
-            contentType: false,
-            processData: false,
-            beforeSend: function () {
-                $(".loader_box").show();
-            },
-            success: function (response) {
-
-                if (response.status == 'success') {
-                    $(".modal .close").click();
-                    location.reload();
-                } else {
-                    $(".show_all_error.invalid-feedback").show();
-                    $(".show_all_error.invalid-feedback").text(response.message);
+        if(checkUploadFileLimit()){
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('input[name="_token"]').val()
                 }
-                return response;
-            },
-            complete: function () {
-                $('.loader_box').hide();
-            }
-        });
+            });
+            $.ajax({
+                type: "post",
+                headers: {
+                    Accept: "application/json"
+                },
+                url: route_uri,
+                data: formData,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+                    $(".loader_box").show();
+                },
+                success: function (response) {
 
+                    if (response.status == 'success') {
+                        $(".modal .close").click();
+                        location.reload();
+                    } else {
+                        $(".show_all_error.invalid-feedback").show();
+                        $(".show_all_error.invalid-feedback").text(response.message);
+                    }
+                    return response;
+                },
+                complete: function () {
+                    $('.loader_box').hide();
+                }
+            });
+        }
     });
+
+    function checkUploadFileLimit(){
+        var limit = 5;
+        var uploaded_prescription_count = $('.uploaded-prescription img').length;
+        var already_uploaded = $('#uploaded_pres_count').val();
+        var total_files = parseInt(uploaded_prescription_count) + parseInt(already_uploaded);
+        if(total_files > limit){
+            $('#save_prescription_form .validate-file-error').text("You can select max "+limit+" file.");
+            $('#prescription_file').val('');
+            return false;
+        }else{
+            $('#save_prescription_form .validate-file-error').text("");
+            return true;
+        }
+    }
 
     //prescription upload for bidding
 
@@ -4504,6 +4737,7 @@ $(document).ready(function () {
             case 4:
                 stripe.createSource(card).then(function(result) {
                     if (result.error) {
+                        alert("as");
                         $('#stripe_card_error').html(result.error.message);
                         $("#subscription_confirm_btn").attr("disabled", false);
                     } else {
@@ -4698,10 +4932,14 @@ $(document).ready(function () {
             break;
             case 49:
                 paymentViaplugnpay('', payment_option_id, '');
-            break;
-             case 50:
+                 break;
+            case 50:
                 paymentViazulpay('', payment_option_id, '');
                  break;
+            case 52:
+                paymentViaSkipCash('',payment_option_id,'');
+                break;
+                
         }
 
     }
@@ -5177,9 +5415,9 @@ $(document).ready(function () {
                 }
                 else{
                     return false;
-                }
-            break;
-            
+                }     
+              break; 
+
             case '50':
 				if(creditCardValidation()){
 	                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
@@ -5192,14 +5430,42 @@ $(document).ready(function () {
                 }else{
 					         $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
 				}
-              break;  
+              break; 
+            case '52':
+              var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+              if (order != '') {
+                  paymentViaSkipCash(address_id, order);
+              } else {
+                  return false;
+              }
+          break 
+          case '53':
+
+            cardJson = {
+                'cno': $('#card-element-nmi').val(),
+                'dt': $('#date-element-nmi').val(),
+                'cv': $('#cvv-element-nmi').val(),
+                'name':'nmi',
+            }
+            if(cardValidation(cardJson)){
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentNmipay(address_id, payment_option_id,order,cardJson);
+                }
+                else{
+                    return false;
+                }
+            }else{
+                $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
+            }
+            break; 
         }
 
     }
 
 
     function walletPaymentOPtions(payment_option_id)
-    {
+    {  
         switch (payment_option_id) {
             case 3:
                     paymentViaPaypal('', payment_option_id);
@@ -5415,9 +5681,26 @@ $(document).ready(function () {
             case 49:
                 paymentViaplugnpay('',payment_option_id,'');
                 break;
-                 case 50:
+            case 50:
                 paymentViazulpay('',payment_option_id,'');
-                 break;
+                break;
+
+            case 52:
+                paymentViaSkipCash('',payment_option_id,'');
+                break;
+            
+            case 53:
+                cardJson = {
+                    'cno': $('#card-element-nmi').val(),
+                    'dt': $('#date-element-nmi').val(),
+                    'cv': $('#cvv-element-nmi').val(),
+                    'name':'nmi',
+                }
+                if(cardValidation(cardJson)){
+                    paymentNmipay('', payment_option_id,'',cardJson);
+                }
+                break; 
+
         }
     }
 

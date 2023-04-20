@@ -37,4 +37,8 @@ class Cart extends Model
     {
         return $this->belongsTo('App\Models\Order', 'order_id', 'id');
     }
+    public function OrderFiles()
+    {
+      return $this->hasMany('App\Models\OrderFiles', 'cart_id', 'id'); 
+    }
 }

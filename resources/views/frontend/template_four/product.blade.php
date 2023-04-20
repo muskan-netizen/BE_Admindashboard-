@@ -33,6 +33,12 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 .value-badge{width:100px;font-weight: bold;}
 .container-badge-value{width:calc( 100% - 100px);}
 
+.select2-results__option{
+    width:100%;
+   }
+   .select2-container{
+    width:100%!important;
+   }
 
 </style>
 
@@ -302,7 +308,7 @@ $checkSlot = findSlot('',$product->vendor->id,'');
                                         {!!(!empty($product->translation) && isset($product->translation[0])) ?
                                             $product->translation[0]->body_html : ''!!}
 
-                                        @if( p2p_module_status() )
+                                        @if( p2p_module_status() || is_attribute_enabled() )
                                             @if( !empty($attr_array) )
                                                 @foreach($attr_array as $attr_key => $attr_val)
                                                     <div class="container-badge">
@@ -482,11 +488,15 @@ $checkSlot = findSlot('',$product->vendor->id,'');
                                                             class="icofont icofont-man-in-glasses"></i>Details</a>
                                                     <div class="material-border"></div>
                                                 </li> -->
-                                                @if($client_preference_detail && $client_preference_detail->rating_check == 1)
+                                                @if($client_preference_detail && $client_preference_detail->rating_check == 1 && count($rating_details)>0)
                                                 <li class="nav-item"><a class="nav-link active" id="review-top-tab" data-toggle="tab" href="#top-review" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Ratings & Reviews')}}</a>
                                                     <div class="material-border"></div>
                                                 </li>
                                                 @endif
+
+                                                <li class="nav-item ml-3"><a class="nav-link {{(count($rating_details)>0)?'':'active'}}" id="compare-product-tab" data-toggle="tab" href="#compare-product" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Compare products')}}</a>
+                                                    <div class="material-border"></div>
+                                                </li>
                                             </ul>
                                             <div class="tab-content nav-material" id="top-tabContent">
                                                 <div class="tab-pane fade" id="top-home" role="tabpanel" aria-labelledby="top-home-tab">
@@ -497,7 +507,7 @@ $checkSlot = findSlot('',$product->vendor->id,'');
                                                     <p>{!! (!empty($product->translation) && isset($product->translation[0])) ?
                                                         $product->translation[0]->body_html : ''!!}</p>
                                                 </div>
-                                                <div class="tab-pane show active" id="top-review" role="tabpanel" aria-labelledby="review-top-tab">
+                                                <div class="tab-pane show {{(count($rating_details)>0)?'active':''}}" id="top-review" role="tabpanel" aria-labelledby="review-top-tab">
                                                     @forelse ($rating_details as $rating)
                                                     <div v-for="item in list" class="w-100 d-flex justify-content-between mb-3">
                                                         <div class="review-box">
@@ -531,6 +541,9 @@ $checkSlot = findSlot('',$product->vendor->id,'');
                                                     <p>{{__('No Result Found')}}</p>
                                                     @endforelse
                                                 </div>
+                                                
+                                                @include('frontend.compare-product-table')
+
                                             </div>
                                         </div>
                                     </div>

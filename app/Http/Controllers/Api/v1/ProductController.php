@@ -8,7 +8,7 @@ use Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag};
+use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag,DeliverySlotProduct, DeliverySlot,UserAddress};
 use Validation;
 use DB;
 use App\Http\Traits\{ApiResponser,ProductTrait};
@@ -123,7 +123,7 @@ class ProductController extends BaseController
                         //     $v->select('id', 'sku', 'product_id', 'title', 'quantity','price','markup_price','cost_price','barcode','tax_category_id')
                         //     ->groupBy('product_id'); // return first variant
                         // },
-                        
+
                         'variant.media.pimage.image', 'vendor', 'media.image', 'related', 'upSell', 'crossSell',
                         'addOn' => function($q1) use($langId){
                             $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
@@ -154,12 +154,9 @@ class ProductController extends BaseController
                         },
 
                     ]);
-                    if(checkColumnExists('products', 'returnable')){
-                        $product = $product->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min', 'returnable', 'replaceable', 'return_days', 'is_long_term_service','service_duration','is_show_dispatcher_agent','is_slot_from_dispatch','tags','mode_of_service');
-                    }else{
-                        $product = $product->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min',  'is_long_term_service','service_duration','is_show_dispatcher_agent','is_slot_from_dispatch','tags','mode_of_service');
-                    }
-                        
+                    $product = $product->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min', 'returnable', 'replaceable', 'return_days', 'is_long_term_service','service_duration','is_show_dispatcher_agent','is_slot_from_dispatch','tags','mode_of_service','is_recurring_booking');
+                    
+
                     $product = $product->where('id', $pid)
                         ->first();
 
@@ -244,7 +241,7 @@ class ProductController extends BaseController
                     }
                 }
             }
-          
+
             $product->product_media = $data_image;
             $product->share_link = getServerURL() . $product->vendor->slug . '/product/' . $product->url_slug;
 
@@ -253,11 +250,11 @@ class ProductController extends BaseController
 
 
             $response['coupon_list'] = $coupon_list;
-            if( checkColumnExists('products','is_long_term_service') && $product->is_long_term_service == 1){
+            if($product->is_long_term_service == 1){
                 $product_id = $product->LongTermProducts->product_id;
                 $url_slug   = $product->LongTermProducts->product->url_slug;
                 $vendor_slug   = $product->vendor->slug;
-                
+
                 $LongTermProducts                    = $this->getProduct($product->LongTermProducts->product_id,$vendor_slug,$url_slug,$user,$langId);
                 $LongTermProducts->long_term_product = $product->LongTermProducts;
                 $addon =  $product->LongTermProducts->addons->pluck('option_id','addon_id')->toArray() ?? [];
@@ -265,7 +262,7 @@ class ProductController extends BaseController
                     $product->ServicePeriods = $product->ServicePeriod->pluck('service_period')->toArray();
                 }
                 $LongTermProducts->period =config('constants.Period');
-            
+
                 $LongTermProducts->product_addon     =  $addon;
                 $product->longTermServiceProduct     = $LongTermProducts;
                 $response['products'] = $product;
@@ -281,7 +278,7 @@ class ProductController extends BaseController
                         $product_attr[$key]['title'] = optional($value->attribute)->title ?? '';
                         $product_attr[$key]['attribute_id'] = $value->attribute_id ?? '';
                         
-                        if( !empty($value->attribute) && $value->attribute->type != 4) {
+                        if( !empty($value->attribute) && $value->attribute->type != 4 && $value->attribute->type != 6) {
                             $product_attr[$key]['value'] = optional($value->attributeOption)->title ?? '';
                         }
                         else {
@@ -290,11 +287,11 @@ class ProductController extends BaseController
                     }
                 }
             }
-
+            
             $attr_id = '';
             $attr_array = [];
             foreach($product_attr as $pro_att_key => $pro_att_val) {
-                
+
                 if( empty($attr_id) || ($pro_att_val['attribute_id'] != $attr_id) ) {
                     $attr_id = $pro_att_val['attribute_id'];
                     $attr_array[$pro_att_val['title']][$pro_att_key]['title'] = $pro_att_val['title'];
@@ -308,7 +305,7 @@ class ProductController extends BaseController
                     $attr_array[$pro_att_val['title']][$pro_att_key]['value'] = $pro_att_val['value'];
                 }
             }
-           
+
             $response['products'] = $product;
             $response['relatedProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'relate', $product->related);
             $response['upSellProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'upSell', $product->upSell);
@@ -369,7 +366,7 @@ class ProductController extends BaseController
         } catch (\Exception $e) {
           return response()->json(array('error' => false, 'message'=>'Something went wrong.'));
         }
-     
+
     }
 
     public function metaProduct($langId, $multiplier, $for = 'relate', $productArray = [])
@@ -448,7 +445,7 @@ class ProductController extends BaseController
                 if (!empty($pv_ids)) {
                     $product_variant = $product_variant->whereIn('product_variant_id', $pv_ids);
                 }
-                
+
                 $product_variant = $product_variant->where('product_id', $product->id)->get();
 
                 if ($product_variant) {
@@ -462,7 +459,7 @@ class ProductController extends BaseController
             if(empty($pv_ids)){
                 return $this->errorResponse('Invalid product sets or product has been removed.', 404, ['variant_empty'=>true]);
             }
-         
+
 
             $variantData = ProductVariant::join('products as pro', 'product_variants.product_id', 'pro.id')
                         ->with(['set','wishlist', 'product.media.image', 'media.pimage.image', 'translation' => function($q) use($langId){
@@ -479,7 +476,7 @@ class ProductController extends BaseController
                 $variantData->stock_check = 0;
             }
 
-            
+
             $data_image = array();
             $variantData->inwishlist = $variantData->wishlist;
             $variantData->is_wishlist = $product->category->categoryDetail->show_wishlist;
@@ -527,7 +524,7 @@ class ProductController extends BaseController
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
-     # get product faq 
+     # get product faq
      public function getProductFaq(Request $request, $product_id){
         $langId = Auth::user()->language;
 
@@ -551,5 +548,98 @@ class ProductController extends BaseController
         return response()->json([
             'data' => $product_faqs,
         ]);
+    }
+    public function getShippingProductDeliverySlots(Request $request){
+        try {
+            $request->validate(
+                [
+                    'delivery_date' => 'required',
+                    'product_id' => 'required'
+                ], 
+                [
+                    'vendor_id.required' => 'Delivery date is required',
+                    'pincode.required' => 'Product id is required'
+                ]
+            );
+            $product_id = $request->product_id;
+            $delivery_date = $request->delivery_date;
+            $mytime = Carbon::now();
+            $current_date = $mytime->format('Y-m-d');
+            $current_time = $mytime->format('H:i');
+            // $vendor_cut_off_time = Carbon::parse($request->vendor_cutoff_time)->format('H:i');
+            $product_delivery_slots = DeliverySlotProduct::with('deliverySlot')->where('product_id', $product_id);
+            if($current_date == $delivery_date){
+                $product_delivery_slots = $product_delivery_slots->whereHas('deliverySlot' ,function ($q) use ($current_time) {
+                    $q->whereTime('cutOff_time', '>=', $current_time);
+                    // $q->whereTime('start_time', '>', $current_time)->whereTime('end_time', '<', $vendor_cut_off_time);
+                })->get();
+            }else{
+                $product_delivery_slots = $product_delivery_slots->get();
+            }  
+            return response()->json([
+                'status' => 200,
+                'message' => 'success',
+                'data' => $product_delivery_slots
+            ]);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+    public function getProductDeliverySlotsInterval(Request $request){
+        try {
+            $request->validate(
+                [
+                    'slot_id' => 'required'
+                ], 
+                [
+                    'slot_id.required' => 'Slot Id is required'
+                ]
+            );
+            $product_delivery_slots_interval = [];
+            if (checkTableExists('product_attributes')) {
+                $product_delivery_slots_interval = DeliverySlot::where('parent_id', $request->slot_id)->get();
+            }
+            return response()->json([
+                'status' => 200,
+                'message' => 'success',
+                'data' => $product_delivery_slots_interval
+            ]);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+    /**
+     * getFreeLincerFromDispatcher
+     * @Author  Mr Harbans singh
+     * @param  mixed $request 
+     * @return void
+     */
+    public function getFreeLincerFromDispatcher(Request $request){
+        try {
+            $selecterVariant = ProductVariant::where('id',$request->variant_id)->first();
+            if($selecterVariant){
+                $latitude = '';
+                $longitud = '';
+                $address = UserAddress::find($request->address_id);
+                if($address){
+                    $latitude = $address->latitude ;
+                    $longitud = $address->longitude ;
+                }
+            
+                $res = $this->getProductPriceFromDispatcher($request->bookingdateTime,$selecterVariant->sku, $latitude, $longitud,$request->slot);
+                return response()->json(array('status' => 'Success', 'data' => $res['data']));
+            }
+            return response()->json([
+                'status' => 200,
+                'message' => 'Variant not Found!'
+            ]); 
+        } catch (Exception $e) {
+            //\Log::info('getFreeLincerFromDispatcher error');
+            \Log::info($e->getMessage());
+            return response()->json([
+                'status' => 400,
+                'message' => 'Somthing Went wrong!'
+            ]); 
+        }
     }
 }

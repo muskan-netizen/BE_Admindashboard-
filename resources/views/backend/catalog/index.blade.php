@@ -398,7 +398,7 @@
                     </div> -->
                 </div>
             </div>
-            @if( p2p_module_status() ) 
+            @if( p2p_module_status() || is_attribute_enabled()) 
                 @include('layouts.shared.attribute')
             @endif
             @if($client_preference_detail->is_vendor_tags == '1')

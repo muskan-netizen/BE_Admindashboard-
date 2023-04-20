@@ -23,4 +23,11 @@ class UserRegistrationDocuments extends Model
         return $this->hasOne('App\Models\UserDocs','user_registration_document_id','id',);
     }
 
+    public function options(){
+        return $this->hasMany('App\Models\UserRegistrationSelectOption', 'user_registration_documents_id','id');
+    }
+    public function option(){
+        return $this->hasOne('App\Models\UserRegistrationSelectOption', 'user_registration_documents_id','id');
+    }
+
 }

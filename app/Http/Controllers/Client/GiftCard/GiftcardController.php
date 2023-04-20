@@ -121,7 +121,7 @@ class GiftcardController extends BaseController
         
             return $GiftCard;
         } catch (Exception $e) {
-            Log::info('add gift Card: '. $e->getCode());
+           // Log::info('add gift Card: '. $e->getCode());
             return [];
         }
     }
@@ -191,7 +191,7 @@ class GiftcardController extends BaseController
                 'data' => []
             ]);
         } catch (Exception $e) {
-            Log::info('destroy gift Card: '. $e->getCode());
+           // Log::info('destroy gift Card: '. $e->getCode());
             return response()->json([
                 'status'=>'error',
                 'message' => $e->getCode(),

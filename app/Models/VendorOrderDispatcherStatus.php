@@ -27,7 +27,7 @@ class VendorOrderDispatcherStatus extends Model
             }
        })->find($order_id);
        $isLongTerm = 0;
-       if(checkColumnExists('orders','is_long_term') && (@$order->is_long_term ==1 )){
+       if(@$order->is_long_term ==1){
         $productcategorytype =   @$order->vendors[0]->products->first()->LongTermService->product->category->categoryDetail->type->title ;
         $isLongTerm = 1;
        }else{

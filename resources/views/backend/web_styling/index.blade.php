@@ -288,6 +288,12 @@
                                         </span>
                                         @endif
                                     </div>
+                                    <div class="form-group mt-2 mb-0">
+                                        <label for="whatsapp_url">Footer Bottom Name</label>
+                                        <input type="hidden" name="bottom_name" value="bottom_name">
+                                        <input type="text" name="bottom_value" id="bottom_value" placeholder="" class="form-control" value="{{old('bottom_value',$bottom_name)}}">
+                                      
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -422,7 +428,7 @@
 <form id="favicon-form-pickup" method="post" enctype="multipart/form-data">
 <div class="row" >
     <div class="col-md-9" ondrop="drop(event)" ondragover="allowDrop(event)">
-        <div class="card-box home-options-list">
+        <div class="card-box home-options-list h-100">
             <div class="row mb-2">
                 <div class="col-sm-8">
                     <h4 class="page-title mt-0">{{ __('Home Page')}}</h4>
@@ -494,8 +500,17 @@
                                 @endif
 
                                 @if($home_page_label->slug == 'selected_products')
-                                <a class="action-icon openProductsModal" userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
-                                    <i class="mdi mdi-pencil"></i>
+                                <a class="action-icon" userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
+                                    <div class="col pl-1">
+                                        <select class="form-control select2-multiple" id='product' name="selected_products[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." required>
+                                            <option value="">{{ __("Select Product") }}</option>
+                                            @if(@$select_products)
+                                                @foreach($select_products as $product)
+                                                    <option value="{{$product->id}}" @if(in_array($product->id, $selected_ids)) selected @endif>{{$product->title}}</option>
+                                                @endforeach
+                                            @endif
+                                        </select>
+                                        </div>
                                 </a>
                                 @endif
 
@@ -528,6 +543,11 @@
                                     <i class="mdi mdi-pencil"></i>
                                 </a>
 
+                                @endif
+                                @if($home_page_label->slug == 'banner')
+                                <a class="action-icon " userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
+                                    <input required type="file" accept="video/*,image/*,.pdf,.doc" data-plugins="dropify" name="banner_image[{{$home_page_label->id}}][check]" class="dropify" data-default-file="" >
+                                </a>
                                 @endif
                                 @if($home_page_label->slug == 'dynamic_page')
                                 <input type="checkbox" name="for_no_product_found_html[{{$key}}]" {{$home_page_label->for_no_product_found_html == 1 ? 'checked' : ''}} >{{__('For No Records')}}
@@ -651,7 +671,7 @@
                                 <div class="col-md-5 col-5 mb-3">
 
                                     <label>{{ __("Choose Categories") }}</label>
-                                    <select class="form-control" id='categoryForProducts' name="product_category" data-placeholder="Choose ..." required>
+                                    <select class="form-control select2search" id='categoryForProducts' name="product_category"  data-placeholder="Choose ..." required>
                                         <option value="">{{ __("Select Product Category") }}</option>
                                         @foreach($categories as $category)
                                         <option value="{{$category->id}}" >
@@ -666,7 +686,7 @@
                                 <div class="col-md-5 col-5 mb-3">
                                         <label>{{ __("Select Products") }}</label>
                                         <div id="editProductsBox">
-                                            <select class="form-control" id='product_id' name="product_id" data-placeholder="Choose ..." required>
+                                            <select class="form-control select2search" id='product_id' name="product_id"  data-placeholder="Choose ..." required>
                                                 <option value="">{{ __("Select Product") }}</option>
                                             </select>
                                         </div>
@@ -1305,7 +1325,12 @@ $(document).on('click', '.deletePickupSection', function() {
                 $('.loader_box').hide();
             }
         });
+
+       
     }
+    // $.fn.modal.Constructor.prototype.enforceFocus = function() {};
+        
+        $(".select2search").select2();
 </script>
 
 @endsection
