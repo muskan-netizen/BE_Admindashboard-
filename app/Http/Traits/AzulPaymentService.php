@@ -413,7 +413,6 @@ trait AzulPaymentService
             $response['code'] = $result->getStatusCode();
             $response['data'] = json_decode($result->getBody());
         } catch (ClientException $e) {
-            $response = $e->getResponse();
             $response['message'] = $e->getMessage();
             // Life is too short to handle exceptions.
         }
