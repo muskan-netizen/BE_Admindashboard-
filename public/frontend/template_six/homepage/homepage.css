@@ -91,9 +91,17 @@ body.al_body_template_six.dark h6.card_title.ellips {
     font-size: 14px
 }
 .al_body_template_six ul#main-menu {
-    flex-wrap: wrap;
+    /* flex-wrap: wrap; */
+    display: inline-block!important;
+    margin: 0 auto;
 }
-
+.alSixMainMenu .menu-navigation_al .container-fulid .row > .col-12 {
+    text-align: center;
+}
+.alSixMainMenu .menu-navigation_al .container-fulid .row > .col-12  .al_main_category_list{
+    max-height: 40vh;
+    overflow-y: auto;
+}
 
 /* ================================ Shimmer effect Start Form Here =========================================*/
 
