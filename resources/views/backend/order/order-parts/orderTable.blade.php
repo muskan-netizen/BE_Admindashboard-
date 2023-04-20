@@ -118,7 +118,7 @@
                                                                     @endif
                                                                 @else
                                                                     <span class="ml-2">{{ __('Order scheduled for') }}
-                                                                        {{ $order->scheduled_date_time }},
+                                                                        {{ $order->order_schedule_date }},
                                                                         {{ __('Slot') }} :
                                                                         {{ $order->scheduled_slot }}</span>
                                                                 @endif

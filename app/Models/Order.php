@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
+use Carbon\Carbon;
 
 class Order extends Model implements Auditable
 {
@@ -149,5 +150,9 @@ class Order extends Model implements Auditable
     public function scopeOnlyEnabledLuxuryOptions($query,$EnabledLuxuryOptions=[])
     {
         return $query->whereIn('luxury_option_id',$EnabledLuxuryOptions);
+    }
+    
+    public function getOrderScheduleDateAttribute(){
+        return Carbon::parse($this->scheduled_date_time)->format('d-m-Y');
     }
 }
