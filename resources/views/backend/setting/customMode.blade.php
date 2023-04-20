@@ -376,7 +376,7 @@
     </span>
 </div>
 </div>
-<div class="col-md-4">
+<!--div class="col-md-4">
 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
     <label for="is_price_by_role_switch"
         class="mr-2 mb-0">{{ __('Price By Role') }}<small
@@ -391,7 +391,7 @@
             name="is_price_by_role" id="is_price_by_role" />
     </span>
 </div>
-</div>
+</div-->
 
 <div class="col-md-4">
 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
