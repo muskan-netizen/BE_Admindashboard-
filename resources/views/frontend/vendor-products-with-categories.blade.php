@@ -1,3 +1,6 @@
+@php
+$checkSlot = findSlot('', $vendor->id, '');
+@endphp
 @extends('layouts.store', ['title' => $vendor->name])
 @section('css')
 <style type="text/css">
@@ -356,7 +359,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                                 @endif
                                                                         </div>
                                                                     </div>
-                                                                    @if ($prod->averageRating > 0)
+                                                                    @if ($prod->averageRating > 0 && $client_preference_detail->rating_check == 1)
                                                                         <div class="rating-text-box">
                                                                             <span>{{ number_format($prod->averageRating, 1, '.', '') }}
                                                                             </span>
