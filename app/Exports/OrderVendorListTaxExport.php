@@ -10,8 +10,6 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use App\Models\ClientPreference;
 use Illuminate\Support\Facades\Session;
 
-
-
 class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMapping{
     /**
     * @return \Illuminate\Support\Collection
@@ -82,16 +80,16 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 }
             }
             $tip = !empty($vendor_order->orderDetail)?number_format($vendor_order->orderDetail->tip_amount, 2):0.00;
-            if ($vendor_order->coupon_paid_by == 1) {
-                $adminDiscount = $vendor_order->discount_amount;
+            if ($vendor_order->coupon_paid_by == 1) {                
+                $adminDiscount = $vendor_order->discount_amount;               
             }
             $vendor_order->total_amount = $tip+$vendor_order->payable_amount;
             $vendor_order->order_status = $order_status;
-            $revenue = $vendor_order->admin_commission_percentage_amount + $vendor_order->admin_commission_fixed_amount + $vendor_order->total_markup_price;           
+            $revenue = $vendor_order->admin_commission_percentage_amount + $vendor_order->admin_commission_fixed_amount + $vendor_order->total_markup_price;            
             if(@$client_preference_detail->is_tax_price_inclusive){
-                $vendor_order->admin_revenue = ($revenue + $vendor_order->total_container_charges + $vendor_order->service_fee_percentage_amount + $vendor_order->delivery_fee) - $adminDiscount - number_format($vendor_order->orderDetail->loyalty_amount_saved??0.00);                                            
+                $vendor_order->admin_revenue = ($revenue + $vendor_order->total_container_charges + $vendor_order->service_fee_percentage_amount + $vendor_order->delivery_fee) - $adminDiscount - number_format($vendor_order->orderDetail->loyalty_amount_saved??0.00);                
             }else{
-                $vendor_order->admin_revenue = ($revenue + $vendor_order->taxable_amount +$vendor_order->total_container_charges+  $vendor_order->service_fee_percentage_amount  + $vendor_order->delivery_fee) - $adminDiscount - decimal_format($vendor_order->orderDetail->loyalty_amount_saved??0.00);                                             
+                $vendor_order->admin_revenue = ($revenue + $vendor_order->taxable_amount +$vendor_order->total_container_charges+  $vendor_order->service_fee_percentage_amount  + $vendor_order->delivery_fee) - $adminDiscount - decimal_format($vendor_order->orderDetail->loyalty_amount_saved??0.00);               
             }
         }
         return $vendor_orders;
