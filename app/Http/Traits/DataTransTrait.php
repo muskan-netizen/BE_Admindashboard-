@@ -26,6 +26,7 @@ trait DataTransTrait
     public function dataTransApi(Request $request)
     {
         $redirect = route('order.dataTransuccessPage');
+        $cancel_redirect = route('order.dataTransCancel');
 
         if ($request->payment_from == 'cart') {
             $refNo = "Oder-".$request->order_number;
@@ -53,7 +54,7 @@ trait DataTransTrait
             "paymentMethods" => ["ECA","VIS","PAP","AMX","AZP","APL","PAY","DIS"],
             "redirect" => [
                 "successUrl" => $redirect,
-                "cancelUrl" => route('userHome'),
+                "cancelUrl" => $cancel_redirect,
                 "errorUrl" => $redirect
             ]
         ]);

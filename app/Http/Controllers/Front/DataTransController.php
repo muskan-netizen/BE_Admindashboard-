@@ -52,7 +52,7 @@ class DataTransController extends Controller
         $order = Order::where('order_number', $request->order_number)->first();
 
         $response = $this->dataTransApi($request);
-        
+
         if($request->payment_from == 'cart')
         {
             $data = [
@@ -94,7 +94,19 @@ class DataTransController extends Controller
 
         return $response;
     }
- 
+    
+    public function cancelPage(Request $request)
+    {
+        if(isset($request->come_from) && $request->come_from == 'app')
+        {
+            $response['status']         = 'Error';
+            $response['msg']            = 'Payment Cancel';
+            return response()->json($response,200);
+        }
+        return redirect()->back();  
+
+    }
+
     public function successPage(Request $request)
     {
         $payment = Payment::where('transaction_id', $request->get('datatransTrxId'))->first();

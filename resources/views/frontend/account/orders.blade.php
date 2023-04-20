@@ -1157,7 +1157,7 @@ $(document).delegate(".order_placed_btn_pending", "click", function() {
 <script src="{{asset('front-assets/js/reschedule_order.js')}}"></script>
 <script src="{{asset('front-assets/js/user_edit_order.js')}}"></script>
 @if(in_array('data_trans',$client_payment_options))
-    <script src="https://pay.sandbox.datatrans.com/upp/payment/js/datatrans-2.0.0.js"></script>
+    <script src="{{ $data_trans_script_url }}"></script>
 @endif
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script>

@@ -522,7 +522,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 <script type="text/javascript" src="https://checkout.flutterwave.com/v3.js"></script>
 @endif
 @if(in_array('data_trans',$client_payment_options))
-    <script src="https://pay.sandbox.datatrans.com/upp/payment/js/datatrans-2.0.0.js"></script>
+    <script src="{{ $data_trans_script_url }}"></script>
 @endif
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/payment.js')}}"></script>
