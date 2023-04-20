@@ -3219,7 +3219,9 @@ body .page-title-box .page-title {
 .order_head h4 {
     opacity: 0
 }
-
+.order_received1 .order_head h4{
+    opacity: inherit;
+}
 .al_box_height {
     height: 40px!important;
     padding-left: 4px!important
@@ -5000,6 +5002,9 @@ body[dir=rtl] .modal-header .close {
     }
     .received-orders .modal-dialog.modal-dialog-centered {
         max-width: 600px;
+    }
+    .order_received1 .modal-dialog.modal-dialog-centered {
+        max-width: 940px;
     }
     .add_product .modal-dialog {
         max-width: 650px;
