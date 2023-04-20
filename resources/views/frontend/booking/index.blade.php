@@ -259,6 +259,14 @@
 .slick_bid_ride .slick-next:before {
     font-size: 18px;
 }
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0; 
+}
     </style>
     <section id="alTaxiBookingWrapper" class="cab-booking pt-0 pb-0">
         <div class="alFullMapArea col-md-12 p-0 h-100">
@@ -302,6 +310,18 @@
                     </div>
                     @endif
                     
+                    <div class="pool_radio_controls text-center">
+                        <input type="radio" id="cab_booking" name="bid_radio" value="0" checked>
+                        <label class="mb-0  my-2 active ">
+                            <h5 class="m-0" id="">Booking</h5>
+                        </label>
+                        
+                        <input type="radio" id="bid_radio"  name="bid_radio" value="1">
+                        <label class="mb-0  my-2" >
+                            <h5 class="m-0" id="">Bid</h5>
+                        </label>    
+                    </div>
+
                     <div class="location-box check-pick-first">
                         <div class="where-to-go">
                             <div class="title title-36">{{ __('Where can we pick you up?') }}</div>
@@ -657,6 +677,99 @@
                 <i class="fa fa-times ml-1 apremove" aria-hidden="true" data-rel="<%= random_id %>"></i>
             </li>
         </script>
+
+        <script type="text/template" id="vehicle_bid_template">
+            <div class="cab-outer style-4">
+                <div class="bg-white p-2">
+                    <a class="close-cab-detail-box" href="javascript:void()">✕</a>
+                    <div class="cab-image-box w-100 d-flex align-items-center justify-content-center">
+                        <img src="<%= result.image_url %>">
+                    </div>
+                    <div class="cab-location-details">
+                    <div style="height:5px;"><div class="loader cab-detail-main-loader" style="display: none;"></div></div>
+       
+
+                    <h4 class="d-flex align-items-center justify-content-between"><b><%= result.name %></b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.tags_price%></b></label></h4>
+                    <% if(result.toll_fee > 0){ %>
+                        <span class="d-flex align-items-center justify-content-between mt-2"><b>{{ __('Toll Fee') }}</b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_amount_less_toll">{{Session::get('currencySymbol')}}<%= result.toll_fee%></b></label></span>
+                    <% } %>
+
+                    <% if(result.service_charge_amount > 0){ %>
+                        <span class="d-flex align-items-center justify-content-between"><b>{{ __('Service Charge') }}</b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.service_charge_amount%></b></label></span>
+                    <% } %>
+
+                    <% if(result.service_charge_amount > 0 || result.toll_fee > 0){ %>
+                        <h4 class="d-flex align-items-center justify-content-between"><b>{{ __('Total') }}</b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_total_amount">{{Session::get('currencySymbol')}}<%= (result.total_tags_price)%></b></label></h4>
+                    <% } %>
+
+                    </div>
+                </div>
+                <div class="cab-amount-details px-2">
+                    <div class="row">
+                        <div class="col-6 mb-2">{{__('Distance')}}</div>
+                        <div class="col-6 mb-2 text-right" id="distance"><%= result.distance %> {{__($client_preference_detail->distance_unit_for_time)}}</div>
+                        <div class="col-6 mb-2">{{__('Duration')}}</div>
+                        <div class="col-6 mb-2 text-right" id="duration"><%= result.duration %> {{__('mins')}}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6" id="create_bid_btns">
+                <div class="input-get-value">
+                    <div class="input-group">
+                        <span class="input-group-btn mr-10">
+                            <button type="button" class="btn btn-danger btn-price-up-down" data-type="minus">
+                                <i class="fa fa-minus" aria-hidden="true"></i> 10
+                            </button>
+                        </span>
+                        <input type="number" name="cab_bid_price" value="<%= (result.total_tags_price)%>" id="cab_bid_price" class="form-control price-number-up-down text-center" min="10" max="">
+                        <span class="input-group-btn ml-10">
+                            <button type="button" class="btn btn-success btn-price-up-down" data-type="plus">
+                                <i class="fa fa-plus" aria-hidden="true"></i> 10
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            
+                <br>
+
+                <button class="btn btn-solid w-100" id="create_bid" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-task_type="now" data-tags="<%=(result.tags)%>">{{__('Create Bid')}}</button>
+            </div>
+
+            <div id="driver_acceptance_list" class="d-none"> 
+
+                Wait for driver acceptance
+
+            </div>
+
+            <span id="show_error_of_bid" class="text-danger"></span>
+            
+            {{-- <div class="payment-promo-container p-2">
+                <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal">
+                    <span id="payment_type">
+                        <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
+                    </span>
+                    <i class="fa fa-angle-down" aria-hidden="true"></i>
+                </h4>
+                <div class="row">
+                    <div class="col-12">
+                    <%
+                    var payableAmout = '';
+                    if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){
+                        payableAmout = result.subscription_discount;
+                    }
+                    %>
+                        <input type="hidden" id="stripe_token" name="stripe_token" value="">
+                        <button disabled class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id =""  data-subscriptionPayableAmount ="<%= payableAmout %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Book Now')}}</button>
+                    </div>
+                </div>
+            </div> --}}
+        </script>
+
                 <script type="text/template" id="cab_detail_box_template">
             <div class="cab-outer style-4">
                 <div class="bg-white p-2">
@@ -1327,8 +1440,10 @@
         var add_rider_url = "{{ route('rider.create') }}";
         var remove_rider_url = "{{ route('rider.remove') }}";
         var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
-         var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
-         	var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
+        var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
+        var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
+        var create_bid_url = "{{route('createBid')}}";
+
         @if ($client_preference_detail->distance_unit_for_time == 'mile')
             var distance_unit = "IMPERIAL";
         @else

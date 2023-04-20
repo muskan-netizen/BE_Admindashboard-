@@ -1105,9 +1105,16 @@ $(document).ready(function () {
                         if(response.data.faqlist > 0){
                             // console.log('innset');
                         }
-                        let cab_detail_box_template = _.template($('#cab_detail_box_template').html());
+                        var isBid = $('#bid_radio').prop("checked");
+                        console.log({cabData});
+                        if(isBid){
+                            let vehicle_bid_template = _.template($('#vehicle_bid_template').html());
+                            $("#cab_detail_box").append(vehicle_bid_template(cabData)).show();
+                        }else{
+                            let cab_detail_box_template = _.template($('#cab_detail_box_template').html());
+                            $("#cab_detail_box").append(cab_detail_box_template(cabData)).show();
+                        }
 
-                        $("#cab_detail_box").append(cab_detail_box_template(cabData)).show();
                         if($('input[name="is_cab_pooling_radio"]:checked').val() == 0 || $('input[name="is_cab_pooling_radio"]:checked').val() === undefined)
                         {
                             $(".show_no_of_seats_if_pooling").hide();
@@ -2115,22 +2122,52 @@ $(document).on("click",".btn-price-up-down",function(){
         if(type == 'minus') {
             
             if(currentVal > input.attr('min')) {
-                input.val(currentVal - 10).trigger('change');
+                input.val((currentVal - 10).toFixed(2)).trigger('change');
+            }else{
+                Swal.fire('You cannot dicrease amount')
+                $(this).attr('disabled',true);
             } 
             if(parseInt(input.val()) == input.attr('min')) {
             }
 
         } else if(type == 'plus') {
+            $('.btn-price-up-down').attr('disabled',false);
 
-            if(currentVal < input.attr('max')) {
-                input.val(currentVal + 10).trigger('change');
-            }
-            if(parseInt(input.val()) == input.attr('max')) {
-            }
+            // if(currentVal < input.attr('max')) {
+                input.val((currentVal + 10).toFixed(2)).trigger('change');
+            // }
+            // if(parseInt(input.val()) == input.attr('max')) {
+            // }
         }
     } else {
         input.val(input.attr('min'));
     }
 });
 
+$(document).on("click","#create_bid",function(){    
+    var product_id = $(this).attr('data-product_id');
+    var vendor_id = $(this).attr('data-vendor_id');
+    var requested_price = $('input[name="cab_bid_price"]').val();
+    var min_requested_price = 0;
+    var max_requested_price = 0;
+    var tags = $(this).attr('data-tags');
+    
+    $.ajax({
+        type: "POST",
+        dataType: 'json',
+        url: create_bid_url,
+        data : {product_id, vendor_id, requested_price,min_requested_price,max_requested_price,tags},
+        success: function(response) {
+            if(response.status == 200){
+                $("#create_bid_btns").hide();
+                $("#driver_acceptance_list").removeClass('d-none');
+            }
+        },
+        error: function(response) {
+            $('#show_error_of_bid').text(response.responseJSON.message);
+
+        } 
+    });
+
+});
 

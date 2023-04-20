@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, PaymentOption, PickDropDriverBid};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, PaymentOption, PickDropDriverBid, UserBidRideRequest};
 use App\Http\Traits\{ApiResponser,PaymentTrait};
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
@@ -1144,4 +1144,110 @@ class PickupDeliveryController extends FrontController{
         }
     }
 
+    public function createBidRideRequest(Request $request)
+    {
+        {
+            DB::beginTransaction();
+            try 
+            {
+                $vendor = Vendor::where('id', $request->vendor_id)->first();
+                $product = Product::where('id', $request->product_id)->first();
+
+                if(!$vendor || !$product){
+                    return response()->json(['status' => 201, 'message' => __('No record found.')], 404);
+                }
+    
+                $getAdditionalPreference = getAdditionalPreference(['bid_expire_time_limit_seconds']);
+                $expiryseconds = ($getAdditionalPreference['bid_expire_time_limit_seconds'] > 0) ? $getAdditionalPreference['bid_expire_time_limit_seconds'] : 30;
+                
+    
+                $UserBidRideRequest                         = new UserBidRideRequest();
+                $UserBidRideRequest->user_id                = Auth::user()->id;
+                $UserBidRideRequest->product_id             = $request->product_id;
+                $UserBidRideRequest->vendor_id              = $request->vendor_id;
+                $UserBidRideRequest->tasks                  = json_encode($request->tasks);
+                $UserBidRideRequest->requested_price        = $request->requested_price;
+                $UserBidRideRequest->web_hook_code          = uniqid(Auth::user()->id.$request->vendor_id);
+                $UserBidRideRequest->expired_at             = Carbon::now()->addSeconds($expiryseconds)->format('Y-m-d H:i:s');
+                $UserBidRideRequest->save();
+                
+                $request_to_dispatch = $this->placeRequestForDriverBidsToDispatch($request, $product, $UserBidRideRequest);
+                if($UserBidRideRequest){
+                    DB::commit();
+                    return response()->json(['status' => 200,'data' => $UserBidRideRequest, 'message' => "Request created, Please wait a while till someone respond to your request."], 200);
+                }else{
+                    DB::rollback();
+                    return response()->json(['status' => 201,'message' => "Error, Something went wrong."], 400);
+                }
+            }
+            catch(\Exception $e)
+            {
+                DB::rollback();
+                return response()->json(['status' => 201,'message' => "Error, Something went wrong. ".$e->getMessage() ], 400);
+            }
+        }
+    }
+
+    public function placeRequestForDriverBidsToDispatch($request, $product, $UserBidRideRequest){
+        try 
+        {
+            $getAdditionalPreference = getAdditionalPreference(['bid_expire_time_limit_seconds']);
+            $expiryseconds = ($getAdditionalPreference['bid_expire_time_limit_seconds'] > 0) ? $getAdditionalPreference['bid_expire_time_limit_seconds'] : 30;
+
+            $dispatch_domain = $this->checkIfPickupDeliveryOn();
+            $customer = Auth::user();
+            if($dispatch_domain && $dispatch_domain != false && !empty($UserBidRideRequest)) 
+            {
+                $unique = Auth::user()->code;
+                $client_do = Client::orderBy('id', 'asc')->first();
+
+                if(!empty($client_do->custom_domain)){
+                    $domain = $client_do->custom_domain;
+                }else{
+                    $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
+                }
+                
+                $call_back_url = "https://".$domain."/dispatch/driver/bids/update/".$UserBidRideRequest->web_hook_code;
+                
+                $postdata =  [
+                            'tasks'                   => $request->tasks,
+                            'call_back_url'           => $call_back_url??null,
+                            'agent_tag'               => $product->tags ?? '',
+                            'bid_id'                  => $UserBidRideRequest->id,
+                            'db_name'                 => $client_do->database_name,
+                            'client_code'             => $client_do->code,
+                            'requested_price'         => $UserBidRideRequest->requested_price,
+                            'expired_at'              => $UserBidRideRequest->expired_at,
+                            'expire_seconds'          => $expiryseconds,
+                            'customer_name'           => $customer->name,
+                            'customer_image'          => $customer->image['proxy_url'].'100/100'.$customer->image['image_path'],
+                            'minimum_requested_price' => $request->min_requested_price,
+                            'maximum_requested_price' => $request->max_requested_price,
+                        ];
+
+
+                $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
+                                                    'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
+                                                    'content-type' => 'application/json']
+                                                        ]);
+                $url = $dispatch_domain->pickup_delivery_service_key_url;
+                $res = $client->post(
+                    $url.'/api/bidriderequest/notifications',
+                    ['form_params' => (
+                            $postdata
+                        )]
+                );
+                $response = json_decode($res->getBody(), true);
+                return $response;
+            }
+        }
+        catch(\Exception $e)
+        {
+            $data = [];
+            $data['status'] = 400;
+            $data['message'] =  $e->getMessage();
+            return $data;
+        }
+    }
+    
 }
