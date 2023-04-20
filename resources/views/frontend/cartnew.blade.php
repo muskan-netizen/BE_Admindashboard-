@@ -119,6 +119,14 @@ font-size: 12px;padding: 6.7px 10px;}
 .dark .coupon_box img.blur-up.lazyloaded{background-color: #fff;opacity: 1;padding: 0 4px;border-radius: 25px;}
 .login-form #schedule_div input{display:block;width: 100% !important;}
 .login-form #schedule_div input::-webkit-calendar-picker-indicator{color: rgba(0, 0, 0, 0);opacity: 1}
+.cart_login_popop .modal-header h5 {font-size: 18px;font-weight: 600;text-transform: capitalize;}
+.cart_login_popop input{border-radius: 3px;}
+.cart_login_popop .new-user{text-align: center;padding: 30px 0px 0px 0px;}
+.cart_login_popop .login_continue_btn{border-radius: 3px !important;}
+.cart_login_popop  .login-button{font-size: 16px;}
+.cart_login_popop .login_continue_btn{font-size: 16px;}
+
+
 /*------cart page css end here------ */
 @media (max-width:576px){
 .al_body_template_two .show-prescription-doc {width:100%;}
@@ -603,7 +611,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                             </div>
                         </div>
 <div class="row">
-<div class="col-md-4">
+<div class="col-md-4 save-card-custom">
                      <input type="checkbox" name="save_card" class="form-check-input" id="azul-save_card" value="1">
                                     <label for="azul-save_card" class="">{{ __('Save Card') }}</label>
             </div>
@@ -614,6 +622,25 @@ $client_preferences = \App\Models\ClientPreference::first();
   </div>
                     </div>
                 <% } %>
+
+            <% if(payment_option.slug == 'nmi') { %>
+            <div class="col-md-12 mt-3 mb-3 nmi_element_wrapper option-wrapper d-none">
+                <div class="row no-gutters">
+                    <div class="col-6">
+                    <input type="text"  maxlength="16" style=" border-right: none;" class="form-control demoInputBox" id="card-element-nmi" placeholder="Enter Card Number" />
+                    </div>
+                    <div class="col-3">
+                    <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="date-element-nmi" placeholder="MM/YYYY" />
+                    </div>
+                    <div class="col-3">
+                    <input type="password" max="4" style=" border-left: none;"  class="form-control demoInputBox" id="cvv-element-nmi" placeholder="CVV" />
+                    </div>
+                    <span class="error text-danger" id="card_error_nmi"></span>
+                </div>
+            </div>
+            <% } %>
+
+
                     </div>
                 <% }); %>
                 {{-- <div class="" id="" role="tabpanel">
@@ -741,7 +768,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                     <input type="hidden" id="dialCode" name="dialCode" value="{{ old('dialCode') ? old('dialCode') : Session::get('default_country_phonecode','1') }}">
                     <input type="hidden" id="countryData" name="countryData" value="{{ strtolower(Session::get('default_country_code','US')) }}">
 
-                    <div class="login-with-username">
+                    <div class="login-with-username cart_login_popop">
                         <div class="modal-header px-0 pt-0">
                             <h5 class="modal-title">{{ __('Log in') }}</h5>
                             <button type="button" class="close m-0 p-0" data-dismiss="modal" aria-label="Close">
@@ -799,8 +826,8 @@ $client_preferences = \App\Models\ClientPreference::first();
                         @endif
                         @endif
 
-                        <div class="divider-line mb-2"></div>
-                        <p class="new-user mb-0">New to {{getClientDetail()->company_name}}? <a href="{{route('customer.register')}}">Create an
+                        {{-- <div class="divider-line mb-2"></div> --}}
+                        <p class="new-user mb-0"><a href="{{route('customer.register')}}">Create an
                                 account</a></p>
                     </div>
                     {{-- <div class="login-with-mail">
@@ -1088,6 +1115,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
     var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";
+    var payment_nmi_url = "{{route('nmi.pay')}}";
     var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";

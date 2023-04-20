@@ -26,7 +26,7 @@ trait CustomerSignupSuccessEmailTrait{
         {
           $content = '';
           $client_detail = Client::first();
-          $email_template = EmailTemplate::where('slug', '=', 'NewCustomerSignup')->first();
+          $email_template = EmailTemplate::where('slug', '=', 'newcustomersignup')->first();
           if($email_template){
               $content = $email_template->content;
               $content = str_ireplace("{name}", $user->name, $content);
@@ -37,12 +37,13 @@ trait CustomerSignupSuccessEmailTrait{
                   'email' => $user->email,
                   'powered_by' => url('/'),
                   'phone_no' => $user->phone_number,
+                  'logo' => $client_detail->logo['original'],
                   'email_template_content' => $content,
                   'subject' => $email_template->subject,
                   'customer_name' => ucwords($user->name),
       
               ];
-              dispatch(new \App\Jobs\sendCustomerRegistrationEmail($email_data))->onQueue('customer_signup_success_email');
+              dispatch(new \App\Jobs\sendCustomerRegistrationEmail($email_data))->onQueue('verify_email');
           }
         }
      }

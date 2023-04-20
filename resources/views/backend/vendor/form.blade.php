@@ -313,7 +313,7 @@
                             if($vendor_registration_document->file_type == 'Text' || $vendor_registration_document->file_type == 'selector' ){
                                 $field_value = $vendor_doc->file_name;
                             } else {
-                                $field_value = $vendor_doc->image_file['storage_url'];
+                                $field_value = isset($vendor_doc->image_file['storage_url'])?$vendor_doc->image_file['storage_url']:'';
                             }
                         }
                     }
@@ -338,7 +338,7 @@
                         <input id="input_file_logo_{{$vendor_registration_document->id}}" type="text" name="{{$vendor_registration_document->primary->slug??''}}" class="form-control" value="{{ $field_value }}">
                     @else
                         @if(strtolower($vendor_registration_document->file_type) == 'image')
-                        <label for="">{{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}</label>
+                        <label class="d-flex align-items-center justify-content-between" for="">{{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}<a href="{{ $field_value }}" target="__blank"><i class="fa fa-eye" aria-hidden="true"></i></a></label>
                         <input type="file" accept="image/*" data-plugins="dropify" name="{{$vendor_registration_document->primary->slug??''}}" class="dropify" data-default-file="{{ $field_value }}" />
                         @else
                         <label class="d-flex align-items-center justify-content-between" for="">{{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}<a href="{{ $field_value }}" target="__blank"><i class="fa fa-eye" aria-hidden="true"></i></a></label>

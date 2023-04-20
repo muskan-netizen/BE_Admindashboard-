@@ -8,7 +8,8 @@ use App\Http\Traits\ApiResponser;
 use App\Models\UserRegistrationDocuments;
 use App\Http\Controllers\Client\BaseController;
 use App\Models\UserRegistrationDocumentTranslation;
-
+use App\Models\UserRegistrationSelectOption;
+use App\Models\UserRegistrationSelectOptionTranslations;
 
 class UserRegistrationDocumentController extends BaseController{
     use ApiResponser;
@@ -39,13 +40,28 @@ class UserRegistrationDocumentController extends BaseController{
                         ['slug'=>Str::slug($name, '-'),'language_id' =>$language_id[$k],'user_registration_document_id' =>$user_registration_document->id ],
                             $data
                         );
-                    
-                    // $UserRegistrationDocumentTranslation = new UserRegistrationDocumentTranslation();
-                    // $UserRegistrationDocumentTranslation->name = $name;
-                    // $UserRegistrationDocumentTranslation->slug = Str::slug($name, '-');
-                    // $UserRegistrationDocumentTranslation->language_id = $language_id[$k];
-                    // $UserRegistrationDocumentTranslation->user_registration_document_id = $user_registration_document->id;
-                    // $UserRegistrationDocumentTranslation->save();
+                }
+            }
+
+            if($request->has('option_name')){
+                foreach($request->option_name as $key =>$value){
+
+                    if(isset($value[0]) && !empty($value[0])){
+                        $option  = new UserRegistrationSelectOption();
+                        $option->user_registration_documents_id = $user_registration_document->id;
+                        $option->save();
+
+                        foreach($request->language_id as $lang_key =>$lang_value){
+                            if(isset($value[$lang_key]) && !empty($value[$lang_key])){
+                                $optionTrabslation  = new UserRegistrationSelectOptionTranslations();
+                                $optionTrabslation->user_registration_select_option_id =$option->id ;
+                                $optionTrabslation->language_id = $lang_value;
+                                $optionTrabslation->name =$value[$lang_key] ;
+                                $optionTrabslation->save();
+                            }
+                        }
+                    }
+
                 }
             }
            
@@ -67,6 +83,11 @@ class UserRegistrationDocumentController extends BaseController{
         try {
             $language_id = $request->language_id;
             $user_registration_document = UserRegistrationDocuments::with(['translations'])->where(['id' => $request->user_registration_document_id])->firstOrFail();
+            if($user_registration_document->file_type == 'selector'){
+                $user_registration_document->options = UserRegistrationSelectOption::with(['translations'])
+                            ->where(['user_registration_documents_id' => $request->user_registration_document_id])
+                            ->get();
+            }
             return $this->successResponse($user_registration_document, '');
         } catch (Exception $e) {
             return $this->errorResponse([], $e->getMessage());
@@ -88,6 +109,12 @@ class UserRegistrationDocumentController extends BaseController{
               'name.0' => 'required|string|max:60',
               'file_type' => 'required',
             ],['name.0' => 'The default language name field is required.']);
+            if($request->file_type=="Selecter"){
+                $this->validate($request, [
+                    'option_name.0.0' => 'required|string|max:60',
+                  ],['option_name.0.0' => 'The default Option name field is required.']);
+            }
+
             DB::beginTransaction();
             $user_registration_document_id = $request->user_registration_document_id;
             $user_registration_document = UserRegistrationDocuments::where('id', $user_registration_document_id)->first();
@@ -108,15 +135,41 @@ class UserRegistrationDocumentController extends BaseController{
                     ['slug'=>Str::slug($name, '-'),'language_id' =>$language_id[$k],'user_registration_document_id' =>$user_registration_document->id ],
                         $data
                     );
-                
-                    // $UserRegistrationDocumentTranslation = new UserRegistrationDocumentTranslation();
-                    // $UserRegistrationDocumentTranslation->name = $name;
-                    // $UserRegistrationDocumentTranslation->slug = Str::slug($name, '-');
-                    // $UserRegistrationDocumentTranslation->language_id = $language_id[$k];
-                    // $UserRegistrationDocumentTranslation->user_registration_document_id = $user_registration_document->id;
-                    // $UserRegistrationDocumentTranslation->save();
                 }
             }
+
+            $delete_option = [];
+
+            if($request->has('option_name')){
+                foreach($request->option_name as $key =>$value){
+                    if(isset($value[0]) && !empty($value[0])){
+                        $data = [
+                            'user_registration_documents_id'       =>$user_registration_document->id
+                        ];
+                        $option = UserRegistrationSelectOption::updateOrCreate(
+                            ['id' => $request->option_id[$key][0] ],
+                            $data
+                        );
+                        $delete_option[] =$option->id;
+                        foreach($request->language_id as $lang_key =>$lang_value){
+                            if(isset($value[$lang_key]) && !empty($value[$lang_key])){
+                                $translationData = [
+                                    'name' => $value[$lang_key]
+                                ];
+                                $optionTrabslation = UserRegistrationSelectOptionTranslations::updateOrCreate(
+                                    ['user_registration_select_option_id' => $option->id,'language_id'=>  $lang_value],
+                                    $translationData
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+
+            UserRegistrationSelectOption::whereNotIn('id',$delete_option)
+                                            ->where('user_registration_documents_id', $user_registration_document_id)
+                                            ->delete();
+
             DB::commit();
             return $this->successResponse($user_registration_document, 'User Registration Document Updated Successfully.');
         } catch (Exception $e) {

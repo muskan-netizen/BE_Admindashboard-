@@ -20,32 +20,6 @@ $add_to_cart =  route('addToCart') ;
     </nav>
 </div>
 <div class="col-md-8 col-lg-6 alScrollspyProduct">
-    {{-- <div class="row my-2 d-flex align-items-center">
-        <div class="col-7 vendor-search-bar mb-sm-0 mb-2">
-            <div class="radius-bar w-100">
-                <div class="search_form d-flex align-items-center border">
-                    <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
-                    <input class="form-control border-0 typeahead" type="search"
-                        placeholder="{{ __('Search') }}" id="vendor_search_box" value="{{$input['keyword']??''}}">
-                </div>
-                <div class="list-box style-4" style="display:none;" id="search_box_main_div">
-                </div>
-            </div>
-        </div>
-        <div class="col-5 text-right pl-0"><span class="d-lg-inline-block d-none"> {{ __('Sort By') }} :</span>
-            <select name="order_type" id='order_type' class="product_tag_filter p-1">
-                <option value="">{{__('Please Select')}}</option>
-                <option value="featured" {{isset($input['order_type']) && $input['order_type'] == "featured" ? 'selected' : ''}}>{{__('Featured')}}</option>
-                <option value="a_to_z" {{isset($input['order_type']) && $input['order_type'] == "a_to_z" ? 'selected' : ''}}>{{__('A to Z')}}</option>
-                <option value="z_to_a" {{isset($input['order_type']) && $input['order_type'] == "z_to_a" ? 'selected' : ''}}>{{__('Z to A')}}</option>
-                <option value="low_to_high" {{isset($input['order_type']) && $input['order_type'] == "low_to_high" ? 'selected' : ''}}>{{__('Cost : Low to High')}}</option>
-                <option value="high_to_low" {{isset($input['order_type']) && $input['order_type'] == "high_to_low" ? 'selected' : ''}}>{{__('Cost : High to Low')}}</option>
-                <option value="rating" {{isset($input['order_type']) && $input['order_type'] == "rating" ? 'selected' : ''}}>{{__('Avg. Customer Review')}}</option>
-                <option value="newly_added" {{isset($input['order_type']) && $input['order_type'] == "newly_added" ? 'selected' : ''}}>{{__('Newest Arrivals')}}</option>
-            </select>
-        </div>
-    </div> --}}
-
     <div class="col-12 d-sm-flex justify-content-start mb-2 p-0">
         @if (isset($tags) && !empty($tags))
             @foreach ($tags as $key => $tag)
@@ -291,7 +265,7 @@ $add_to_cart =  route('addToCart') ;
                                     @endif
                                 </div>
                             </div>
-                            @if ($prod->averageRating > 0)
+                            @if ($prod->averageRating > 0 && $client_preference_detail->rating_check == 1)
                                 <div class="rating-text-box">
                                     <span>{{ number_format($prod->averageRating, 1, '.', '') }}
                                     </span>

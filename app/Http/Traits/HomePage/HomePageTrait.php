@@ -16,7 +16,7 @@ trait HomePageTrait
     {
         $latitude = Session::get('latitude');
         $longitude = Session::get('longitude');
-        $mostSellingVendors = Vendor::with('slot.day', 'slotDate')->select('vendors.*', DB::raw('count(vendor_id) as max_sales'))->join('order_vendors', 'vendors.id', '=', 'order_vendors.vendor_id')->whereIn('vendors.id', $vendor_ids)->where('vendors.status', 1)->groupBy('order_vendors.vendor_id')->orderBy(DB::raw('count(vendor_id)'), 'desc');
+        $mostSellingVendors = Vendor::with('slot.day', 'slotDate', 'products')->select('vendors.*', DB::raw('count(vendor_id) as max_sales'))->join('order_vendors', 'vendors.id', '=', 'order_vendors.vendor_id')->whereIn('vendors.id', $vendor_ids)->where('vendors.status', 1)->groupBy('order_vendors.vendor_id')->orderBy(DB::raw('count(vendor_id)'), 'desc');
 
         // add hyperlocal check to get vendors
         if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
@@ -160,19 +160,15 @@ trait HomePageTrait
 
     public function getSpotlightProducts()
     {
-        if(checkColumnExists('products','spotlight_deals')){
-            $spotlight_products = Product::with(['variants','media.image'
+        $spotlight_products = Product::with(['variants','media.image'
             ])->select('id', 'sku','title', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','spotlight_deals')->where('spotlight_deals', 1)->take(9)->get();
-        } 
         return $spotlight_products; 
     }
 
     public function getSelectedProduct($layout_id)
     {
-        if(checkColumnExists('home_products','layout_id')){
-            $selected_products = HomeProduct::with(['products.variants','products.media.image'])->where('layout_id',$layout_id)->get();
+        $selected_products = HomeProduct::with(['products.variants','products.media.image'])->where('layout_id',$layout_id)->get();
         return $selected_products;
-        }
     }
 
     public function getProducts($preferences, $vendor_ids, $language_id, $currency_id = 'USD', $p_dim, $product_ids)
@@ -405,7 +401,7 @@ trait HomePageTrait
                  $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
              },
              'variant' => function ($q) use ($langId) {
-                 $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                 $q->select('sku', 'product_id', 'quantity', 'price', 'barcode','compare_at_price');
                  $q->groupBy('product_id');
              },
          ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only');

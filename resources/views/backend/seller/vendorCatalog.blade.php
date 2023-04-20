@@ -1427,11 +1427,11 @@
             datatable_intent();
         });
         function datatable_intent(search =''){
-            $('#vendor_product_table').DataTable({
+            $('#sfsdf').DataTable({
                 "responsive": true,
                 "scrollX": true,
                 "destroy": true,
-                // "processing": true,
+                 "processing": true,
                 "serverSide": true,
                 "iDisplayLength": 25,
                 "lengthChange" : false,

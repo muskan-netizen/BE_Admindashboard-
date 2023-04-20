@@ -275,16 +275,17 @@ class ProductController extends BaseController
         }
         
 
+
         $otherProducts                      = Product::with('primary')->select('id', 'sku')->where('is_live', 1)->where('id', '!=', $product->id)->where('vendor_id', $product->vendor_id)->get();
         $configData                         = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch','age_restriction_on_product_mode','need_appointment_service')->first();
         $celebrities                        = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
-       // $otherProducts                      = Product::with('primary')->select('id', 'sku')->where('is_live', 1)->where('id', '!=', $product->id)->where('vendor_id', $product->vendor_id)->get();
         $configData->is_cab_pooling         = $getAdditionalPreference['is_cab_pooling'];
         $configData->is_one_push_book_enable= $getAdditionalPreference['is_one_push_book_enable'];
         $celebrities                        = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
-        $tollPassOrigin                     = (checkColumnExists('toll_pass_origin','toll_pass')) ? TollPassOrigin::select('id', 'toll_pass', 'desc')->get() : [];
-        $travelMode                         = (checkColumnExists('travel_mode','travelmode')) ?TravelMode::select('id', 'travelmode', 'desc')->get() : [];
-        $vehicleEmissionType                = (checkColumnExists('vehicle_emission_type','id')) ?VehicleEmissionType::select('id', 'emission_type', 'desc')->get() : [];
+        $tollPassOrigin                     = TollPassOrigin::select('id', 'toll_pass', 'desc')->get();
+        $travelMode                         = TravelMode::select('id', 'travelmode', 'desc')->get();
+        $vehicleEmissionType                = VehicleEmissionType::select('id', 'emission_type', 'desc')->get();
+
 
         $agent_dispatcher_tags = [];
         $agent_dispatcher_on_demand_tags = [];
@@ -335,10 +336,9 @@ class ProductController extends BaseController
                 $nomenclatureProductOrderForm = $nomenclatureTranslation->name ?? null;
             }
         }
-        $roles = [];
-        if(checkColumnExists('roles','is_enable_pricing')){
-            $roles = Role::where('status',1)->where('is_enable_pricing',1)->get();
-        }
+
+        $roles = Role::where('status',1)->where('is_enable_pricing',1)->get();
+        
 
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role',  'is_free_delivery_by_roles', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery']);
 
@@ -505,13 +505,9 @@ class ProductController extends BaseController
             $product->return_days        = $request->return_days??0;
 
             // product pickup date by vendor vendor FramMeat priyal by sohail
-            if(checkColumnExists('products', 'product_pickup_date')){
-                $product->product_pickup_date  = isset($request->product_pickup_date) ? $request->product_pickup_date : '';
-            }
-
-            if(checkColumnExists('products', 'is_product_instant_booking')){
-                $product->is_product_instant_booking   = ($request->has('is_product_instant_booking') && $request->is_product_instant_booking == 'on') ? 1 : 0;
-            }
+            $product->product_pickup_date  = isset($request->product_pickup_date) ? $request->product_pickup_date : '';
+           
+            $product->is_product_instant_booking   = ($request->has('is_product_instant_booking') && $request->is_product_instant_booking == 'on') ? 1 : 0;
 
             $product->service_charges_tax = ($request->has('service_charges_tax') && $request->service_charges_tax == 'on') ? 1 : 0;
             $product->service_charges_tax_id=$request->service_charges_tax_id != 0 && $product->service_charges_tax !=0 ? $request->service_charges_tax_id:0;
@@ -558,15 +554,11 @@ class ProductController extends BaseController
             $product->security_amount = ($request->has('security_amount')) ? $request->security_amount : null;
             $product->is_recurring_booking        = $request->is_recurring_booking == 'on' ? 1 : 0;
 
-            if(checkColumnExists('products', 'same_day_delivery')){
-                $product->same_day_delivery = ($request->has('same_day_delivery') && $request->same_day_delivery == 'on') ? 1 : 0;
-            }
-            if (checkColumnExists('products', 'next_day_delivery')) {
-                $product->next_day_delivery = ($request->has('next_day_delivery') && $request->next_day_delivery == 'on') ? 1 : 0;
-            }
-            if (checkColumnExists('products', 'hyper_local_delivery')) {
-                $product->hyper_local_delivery = ($request->has('hyper_local_delivery') && $request->hyper_local_delivery == 'on') ? 1 : 0;
-            }
+            $product->same_day_delivery = ($request->has('same_day_delivery') && $request->same_day_delivery == 'on') ? 1 : 0;
+            
+            $product->next_day_delivery = ($request->has('next_day_delivery') && $request->next_day_delivery == 'on') ? 1 : 0;
+            $product->hyper_local_delivery = ($request->has('hyper_local_delivery') && $request->hyper_local_delivery == 'on') ? 1 : 0;
+            
             $product->is_slot_from_dispatch        = ($request->has('is_slot_from_dispatch') && $request->is_slot_from_dispatch == 'on') ? 1 : 0;
             $product->is_show_dispatcher_agent     = ($request->has('is_show_dispatcher_agent') && $request->is_show_dispatcher_agent == 'on') ? 1 : 0;
             $product->save();
@@ -1565,11 +1557,9 @@ class ProductController extends BaseController
     {
         try{
             if($request->has('product_id') && $request->has('variant_id')){
-                $roles                = [];
+                
                 $productVariantByRole = [];
-                if(checkColumnExists('roles','is_enable_pricing')){
-                    $roles = Role::where('status',1)->where('is_enable_pricing',1)->get();
-                }
+                $roles = Role::where('status',1)->where('is_enable_pricing',1)->get();
                 if($roles){
                     foreach($roles as $_role){
                         $data = ProductVariantByRole::where('product_id', $request->product_id)->where('product_variant_id',$request->variant_id)->where('role_id',$_role->id)->first();

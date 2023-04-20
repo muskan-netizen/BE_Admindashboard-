@@ -8,6 +8,14 @@ $(function () {
           $('body').removeClass("add_overlay");
         }
       );
+
+    let cardJson = {
+        'cno': '',
+        'dt': '',
+        'cv': '',
+        'name':'',
+    }
+
     var slotValidater = 2;
 
     var footer_height = jQuery('.footer-light').height();
@@ -818,7 +826,7 @@ $(document).ready(function () {
         $('.cross').hide();
         $('#schedule_datetime').val('');
         $('#tasknow').val('now');
-        cartHeader();
+        // cartHeader();
     });
 
     $(document).on("click", ".clproduct_cart_order_form", function(e) {
@@ -2305,7 +2313,6 @@ $(document).ready(function () {
                             OrderStorage.setStorageSingle('cartFirstProductId',cart_details.products[0].product_id);
                             OrderStorage.setStorageSingle('LongTermServiceAdded',cart_details.products[0].is_long_term_service);
                             OrderStorage.setStorageSingle('RecurringBookingAdded',cart_details.products[0].is_recurring_booking);
-                            console.log(cart_details.products[0].dispatch_agent_id);
                             OrderSessionStorage.setStorageSingle('dispatcher_agent_id',cart_details.products[0].dispatch_agent_id)
                             //map array  cart_details.products.map(checkIfInCart);
                             var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail, is_token_enable:is_token_enable, token_val:token_val });
@@ -2336,12 +2343,15 @@ $(document).ready(function () {
                                 //if(response.schedule_datetime!=null){
                                     var schedule_datetime = '';
                                     if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && typeof $('#edit_order_schedule_slot').val()!='undefined' && $('#edit_order_schedule_slot').val()!=''){
+                                    
                                         var edit_order_schedule_datetime = $("#edit_order_schedule_datetime").val();
                                         schedule_datetime  = edit_order_schedule_datetime.split(" ")[0];
                                     }else{
                                         schedule_datetime = $("#edit_order_schedule_datetime").val();
                                     }
-                                    if(schedule_datetime!='' && typeof $("#schedule_datetime").val()!='undefined'){
+                                  
+                                    if(schedule_datetime!=''&& schedule_datetime!=undefined && typeof $("#schedule_datetime").val()!='undefined'){
+                                      
                                         $("#schedule_datetime").val(schedule_datetime);
                                         $("#schedule_datetime").attr("value", $("#schedule_datetime").val());
                                         $("#schedule_datetime").attr("max", $("#schedule_datetime").val());
@@ -2841,9 +2851,14 @@ $(document).ready(function () {
         $('#add_new_address_form').hide();
     });
     $(document).on("click", "#add_new_address_btn", function () {
+        if(auth){
         $(this).hide();
         initialize();
+        $("#add_new_address_form_modal").modal('show');
         $('#add_new_address_form').show();
+        }else{
+          $('#login_modal').modal('show');
+        }
     });
     $(document).on("click", "#save_address", function () {
         let city = $('#add_new_address_form #city').val();
@@ -4918,13 +4933,13 @@ $(document).ready(function () {
             case 49:
                 paymentViaplugnpay('', payment_option_id, '');
                  break;
-                 case 50:
+            case 50:
                 paymentViazulpay('', payment_option_id, '');
                  break;
-            break;
-             case 50:
-                paymentViazulpay('', payment_option_id, '');
-                 break;
+            case 52:
+                paymentViaSkipCash('',payment_option_id,'');
+                break;
+                
         }
 
     }
@@ -5400,17 +5415,9 @@ $(document).ready(function () {
                 }
                 else{
                     return false;
-                }
-               case '50':
-                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                if (order != '') {
-                    paymentViazulpay(address_id, payment_option_id,order);
-                }
-                else{
-                    return false;
-                }
-            break;
-            
+                }     
+              break; 
+
             case '50':
 				if(creditCardValidation()){
 	                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
@@ -5432,6 +5439,26 @@ $(document).ready(function () {
                   return false;
               }
           break 
+          case '53':
+
+            cardJson = {
+                'cno': $('#card-element-nmi').val(),
+                'dt': $('#date-element-nmi').val(),
+                'cv': $('#cvv-element-nmi').val(),
+                'name':'nmi',
+            }
+            if(cardValidation(cardJson)){
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentNmipay(address_id, payment_option_id,order,cardJson);
+                }
+                else{
+                    return false;
+                }
+            }else{
+                $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
+            }
+            break; 
         }
 
     }
@@ -5657,6 +5684,23 @@ $(document).ready(function () {
             case 50:
                 paymentViazulpay('',payment_option_id,'');
                 break;
+
+            case 52:
+                paymentViaSkipCash('',payment_option_id,'');
+                break;
+            
+            case 53:
+                cardJson = {
+                    'cno': $('#card-element-nmi').val(),
+                    'dt': $('#date-element-nmi').val(),
+                    'cv': $('#cvv-element-nmi').val(),
+                    'name':'nmi',
+                }
+                if(cardValidation(cardJson)){
+                    paymentNmipay('', payment_option_id,'',cardJson);
+                }
+                break; 
+
         }
     }
 

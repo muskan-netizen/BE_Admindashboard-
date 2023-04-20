@@ -1,7 +1,7 @@
  <!--- Left Sidebar filters -->
  <aside class="side_fillter mt-2">
 
-@if($category->type_id != 13)
+@if(@$category->type_id != 13)
     <div class="col-12 custom_filtter mt-3 mb-3">
         <select name="order_type" id='order_type' class="form-control sortingFilter p-1 mb-0">
             <option value="">{{__('Sort By')}}</option>
@@ -23,7 +23,7 @@
                 <h3 class="collapse-block-title">{{__('Brand')}}</h3>
                 <div class="collection-collapse-block-content">
                     <div class="collection-brand-filter">
-                        @foreach($category->brands as $key => $val)
+                        @foreach(@$category->brands as $key => $val)
                             <div class="custom-control custom-checkbox collection-filter-checkbox">
                                 <input type="checkbox" class="custom-control-input productFilter" fid="{{$val->id}}" used="brands" id="brd{{$val->id}}">
                                 @foreach($val->translation as $k => $v)

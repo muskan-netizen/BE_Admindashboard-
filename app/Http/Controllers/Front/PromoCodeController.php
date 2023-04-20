@@ -101,7 +101,6 @@ class PromoCodeController extends Controller{
             $customerCurrency = ClientCurrency::where('currency_id', $curId)->first();
 
             $doller_compare = $customerCurrency ?  $customerCurrency->doller_compare : 1 ;
-            //pr($firstOrderCheck);
             // $order_vendor_coupon_list = OrderVendor::whereNotNull('coupon_id')->where('user_id', $user->id)->get([DB::raw('coupon_id'),  DB::raw('sum(coupon_id) as total')]);
             $now = Carbon::now()->toDateTimeString();
             $now = convertDateTimeInClientTimeZone($now);
@@ -176,9 +175,7 @@ class PromoCodeController extends Controller{
                         $promo_codes = $promo_codes->merge($result1);
                     }
                 }
-
                 $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->where('refrence_id', $vendor_id)->pluck('promocode_id');
-               
                 $result2 = Promocode::where('restriction_on', 1)->where(function ($query) use ($vendor_promo_code_details) {
                     $query->where(function ($query2) use ($vendor_promo_code_details) {
                         $query2->where('restriction_type', 1);
@@ -197,6 +194,7 @@ class PromoCodeController extends Controller{
                     });
 
                 });
+                
                 if($firstOrderCheck){
                     $result2->where('first_order_only', 0);
                 }
@@ -402,10 +400,10 @@ class PromoCodeController extends Controller{
         $now = convertDateTimeInClientTimeZone($now);
         $promocode_product = $promocode_vendor = [];
         if( !empty($product_id) ) {
-            $promocode_product = Promocode::select('promocodes.name', 'promocodes.short_desc', 'promo_types.title as promo_type_title', 'promocodes.amount', 'promocodes.promo_type_id')->whereDate('expiry_date', '>=', $now)->join('promocode_details', 'promocode_details.promocode_id', 'promocodes.id')->join('promo_types', 'promo_types.id', 'promocodes.promo_type_id')->where('promocodes.restriction_on', '0')->where('promocode_details.refrence_id', $product_id)->get()->toArray();
+            $promocode_product = Promocode::select('promocodes.name', 'promocodes.short_desc', 'promo_types.title as promo_type_title', 'promocodes.amount', 'promocodes.promo_type_id')->whereDate('expiry_date', '>=', $now)->join('promocode_details', 'promocode_details.promocode_id', 'promocodes.id')->join('promo_types', 'promo_types.id', 'promocodes.promo_type_id')->where(['promocodes.promo_visibility' => 'public'])->where('promocodes.restriction_on', '0')->where('promocode_details.refrence_id', $product_id)->get()->toArray();
         }
         if( !empty($vendor_id) ) {
-            $promocode_vendor = Promocode::select('promocodes.name', 'promocodes.short_desc', 'promo_types.title as promo_type_title', 'promocodes.amount', 'promocodes.promo_type_id')->whereDate('expiry_date', '>=', $now)->join('promocode_details', 'promocode_details.promocode_id', 'promocodes.id')->join('promo_types', 'promo_types.id', 'promocodes.promo_type_id')->where('promocodes.restriction_on', '1')->where('promocode_details.refrence_id', $vendor_id)->get()->toArray();
+            $promocode_vendor = Promocode::select('promocodes.name', 'promocodes.short_desc', 'promo_types.title as promo_type_title', 'promocodes.amount', 'promocodes.promo_type_id')->whereDate('expiry_date', '>=', $now)->join('promocode_details', 'promocode_details.promocode_id', 'promocodes.id')->join('promo_types', 'promo_types.id', 'promocodes.promo_type_id')->where(['promocodes.promo_visibility' => 'public'])->where('promocodes.restriction_on', '1')->where('promocode_details.refrence_id', $vendor_id)->get()->toArray();
         }
         
         return array_merge($promocode_product, $promocode_vendor);

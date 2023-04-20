@@ -712,6 +712,7 @@
                         ="discount_amount" style="display:none;"></sub> <b id="real_total_amount">{{Session::get('currencySymbol')}}<%= (result.total_tags_price)%></b></label></h4>
                     <% } %>
                         <input type="hidden" id="hddn_amount_toll_fee" value="<%= (result.toll_fee)%>"/>
+                        <input type="hidden" name="cart_product_ids[]" value="<%= result.id %>">
                         <input type="hidden" id="hddn_real_amount" value="<%= (result.tags_price)%>"/>
                         <input type="hidden" id="hddn_currency_symbol" value="{{Session::get('currencySymbol')}}"/>
                         <input type="hidden" id="hddn_service_charge_amount" value="<%= (result.service_charge_amount)%>"/>
@@ -983,7 +984,7 @@
                             </div>
                         </div>
                         <div class="row">
-<div class="col-md-4">
+<div class="col-md-4 save-card-custom">
                      <input type="checkbox" name="save_card" class="form-check-input" id="azul-save_card" value="1">
                                     <label for="azul-save_card" class="">{{ __('Save Card') }}</label>
             </div>

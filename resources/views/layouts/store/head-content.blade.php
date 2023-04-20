@@ -1,18 +1,7 @@
-{{--<link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/font-awesome.min.css')}}">
-<link  rel="stylesheet" media="all" type="text/css" href="{{asset('front-assets/css/themify-icons.css')}}">
-<link rel="stylesheet"  href="{{asset('css/aos.css')}}">
-<link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/color1.css')}}" media="screen" id="color">
-<link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/style.css')}}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link rel="stylesheet" type="text/css" media="all" href="{{asset('css/waitMe.min.css')}}">
-<link rel="stylesheet" type="text/css" href="{{asset('css/sweetalert2.min.css')}}">
-<link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/custom-template-one.css')}}">--}}
 
 <link defer type="text/css" rel="stylesheet" media="all" href="{{asset('front-assets/css/icons-style.css')}}">
 <link defer type="text/css" href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" id="bs-default-stylesheet" />
-<link defer type="text/css" rel="stylesheet" href="{{asset('front-assets/css/color1-style.css')}}">
-
+<link defer type="text/css" rel="stylesheet" media="all" href="{{asset('front-assets/css/color1-style.css')}}">
 
 
 @if(Route::currentRouteName() != "userHome")
@@ -25,7 +14,7 @@
 
 @if((isset($set_template)  && $set_template->template_id == 1) || empty($set_template))
 <link defer type="text/css" rel="stylesheet" type="text/css"  media="all" href="{{asset('front-assets/css/custom.css')}}">
-<link defer type="text/css" rel="stylesheet" href="{{asset('front-assets/css/color1-style.css')}}">
+{{--<link defer type="text/css" rel="stylesheet" href="{{asset('front-assets/css/color1-style.css')}}">--}}
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_one/header/header.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_one/homepage/homepage.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_one/footer/footer.css')}}">
@@ -33,7 +22,7 @@
 @elseif(isset($set_template)  && $set_template->template_id == 2)
 
 <link defer type="text/css" rel="stylesheet" type="text/css"  media="all" href="{{asset('front-assets/css/custom.css')}}">
-<link defer type="text/css" rel="stylesheet" href="{{asset('front-assets/css/color1-style.css')}}">
+{{--<link defer type="text/css" rel="stylesheet" href="{{asset('front-assets/css/color1-style.css')}}">--}}
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_two/header/header.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_two/footer/footer.css')}}">
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/template_two/homepage/homepage.css')}}">

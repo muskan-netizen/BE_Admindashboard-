@@ -262,9 +262,9 @@ function initDataTable(table, status) {
                     {data: 'orders_count', class:'text-center', name: 'orders_count', orderable: false, searchable: false},
                     {data: 'currently_working_orders_count', class:'text-center', name: 'currently_working_orders_count', orderable: false, searchable: false},
                     
-                    {data: 'manager', name: 'manager', orderable: true, searchable: false, "mRender": function ( data, type, full ) {
-                        return  data;                       
-                    }},
+                    // {data: 'manager', name: 'manager', orderable: true, searchable: false, "mRender": function ( data, type, full ) {
+                    //     return  data;                       
+                    // }},
                     {data: 'edit_action', class:'text-center', name: 'edit_action', orderable: false, searchable: false, "mRender":function(data, type, full){
                         if(status == 2){
                             return "<div class='form-ul'><div class='inner-div d-inline-block'><a class='action-icon' userId='"+full.id+"' href='"+full.show_url+"'><i class='mdi mdi-eye'></i></a></div></div>"
@@ -301,9 +301,6 @@ function initDataTable(table, status) {
                     {data: 'products_count', class:'text-center', class:'text-center', name: 'products_count', orderable: false, searchable: false},
                     {data: 'orders_count', class:'text-center', name: 'orders_count', orderable: false, searchable: false},
                     {data: 'currently_working_orders_count', class:'text-center', name: 'currently_working_orders_count', orderable: false, searchable: false},
-                    {data: 'manager', name: 'manager', orderable: true, searchable: false, "mRender": function ( data, type, full ) {
-                        return  data; 
-                        }},
                         {data: 'edit_action', class:'text-center', name: 'edit_action', orderable: false, searchable: false, "mRender":function(data, type, full){
                         if(status == 2){
                             return "<div class='form-ul'><div class='inner-div d-inline-block'><a class='action-icon' userId='"+full.id+"' href='"+full.show_url+"'><i class='mdi mdi-eye'></i></a></div></div>"

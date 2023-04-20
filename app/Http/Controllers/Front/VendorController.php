@@ -28,15 +28,17 @@ class VendorController extends FrontController
            $vendorType = 'delivery';
         }
         $preferences = (object)Session::get('preferences');
+        $additionalPreference = getAdditionalPreference(['is_show_vendor_on_subcription']);
         $navCategories = $this->categoryNav($langId);
         $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 30;
         $ses_vendors = $this->getServiceAreaVendors();
 
         $categoryTypes = getServiceTypesCategory($vendorType);
 
-        $vendors = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+        $vendors = Vendor::byVendorSubscriptionRule($preferences)->whereHas('getAllCategory.category',function($q)use ($categoryTypes){
             $q->whereIn('type_id',$categoryTypes);
         })->with('products')->select('id', 'name', 'banner', 'address', 'order_pre_time','is_show_vendor_details' ,'order_min_amount', 'logo', 'slug', 'latitude', 'longitude')->where(['status'=> 1,$vendorType => 1]);
+       
 
         if (($preferences) && ($preferences->is_hyperlocal == 1)) {
             $latitude = Session::get('latitude') ?? $preferences->Default_latitude;
@@ -965,7 +967,7 @@ class VendorController extends FrontController
                     $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     $value->variant_price = ($value->variant->isNotEmpty()) ? $value->variant->first()->price : 0;
                     $value->variant_quantity = ($value->variant->isNotEmpty()) ? $value->variant->first()->quantity : 0;
-
+                    $value->category_type_id = (!empty($value->category->categoryDetail->first())) ? $value->category->categoryDetail->type_id : 0;
                     $cid = $value->category_id;
 
                     if(!in_array($cid, $category_list)){
@@ -1005,7 +1007,7 @@ class VendorController extends FrontController
             $returnHTML = view('frontend.vendor-search-products')->with(['vendor'=> $vendor,'tags'=>$tags,'tag_id'=> $tagId, 'listData'=>$listData,'tagId'=>$tagId, 'input'=>$request->all()])->render();
         }
 
-        return response()->json(array('status'=>'Success', 'html'=>$returnHTML));
+        return response()->json(array('status'=>'Success', 'html'=>mb_convert_encoding($returnHTML, "UTF-8", "auto")));
     }
 
 

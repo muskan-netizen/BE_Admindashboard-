@@ -390,7 +390,7 @@
                                             <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->total_delivery_fee * $clientCurrency->doller_compare) }}</span>
                                         </li>
                                     @endif
-                                    @if (checkColumnExists('orders', 'gift_card_amount') && $order->gift_card_amount > 0)
+                                    @if ($order->gift_card_amount > 0)
                                         <li class="d-flex align-items-center justify-content-between">
                                             <label class="m-0">{{ __('Gift Card Amount') }}</label>
                                             <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->gift_card_amount * $clientCurrency->doller_compare) }}</span>

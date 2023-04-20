@@ -1,17 +1,7 @@
 
 @if ($client_preference_detail->business_type != 'taxi')
 @if ($client_preference_detail->business_type != 'laundry')
-    <div class="col-md-4">
-        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-            <label for="celebrity_check" class="mr-2 mb-0"> {{ __('Refere and Earn by Influncer') }}
-                <small
-                    class="d-block pr-5">{{ __('Leverage the Influencer era by adding Influencers and associate product with them to create curated lists of products') }}.</small></label>
-            <span> <input type="checkbox" data-plugin="switchery"
-                    name="celebrity_check" id="celebrity_check" class="form-control"
-                    data-color="#43bee1"
-                    @if (isset($preference) && $preference->celebrity_check == '1') checked='checked' @endif></span>
-        </div>
-    </div>
+
     <div class="col-md-4">
         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
             <label for="pharmacy_check" class="mr-2 mb-0">{{ __('Pharmacy Mod') }}
@@ -33,13 +23,6 @@
         </div>
     </div>
 @endif
-{{-- <div class="col-md-4">
-        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                    <label for="off_scheduling_at_cart" class="mr-2 mb-0">{{__('Disable Scheduling Orders')}}<small class="d-block pr-5">Disable Order Scheduling across the platform to limit only to Instant Orders.</small></label>
-        <span> <input type="checkbox" data-plugin="switchery" name="off_scheduling_at_cart" id="off_scheduling_at_cart" class="form-control" data-color="#43bee1" @if (isset($preference) && $preference->off_scheduling_at_cart == '1') checked='checked' @endif>
-        </span>
-        </div>
-    </div> --}}
 <div class="col-md-4">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="isolate_single_vendor_order"
@@ -121,14 +104,6 @@
     </span>
 </div>
 </div>
-{{-- <div class="col-md-4">
-            <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                        <label for="delay_order" class="mr-2 mb-0">{{__('Delay Order')}}<small class="d-block pr-5">Option to add delay time per product separately for Dine In/ Delivery/ Takeaway to restrict order to scheduling only with added Delay.</small></label>
-            <span> <input type="checkbox" data-plugin="switchery" name="delay_order" id="delay_order" class="form-control" data-color="#43bee1" @if (isset($preference) && $preference->delay_order == '1') checked='checked' @endif>
-            </span>
-        </div>
-</div> 
---}}
 <div class="col-md-4">
 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
     <label for="product_order_form"
@@ -289,14 +264,6 @@
 </div>
 </div>
 
-<!-- <div class="col-md-4">
-    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-        <label for="enable_inventory_service" class="mr-2 mb-0">{{ __('Need Inventory?') }}<small class="d-block pr-5">{{ __('Enable to give permission to panel for inventory.') }}</small></label>
-        <span> <input type="checkbox" data-plugin="switchery" name="enable_inventory_service" id="enable_inventory_service" class="form-control" data-color="#43bee1" @if (isset($preference) && $preference->enable_inventory_service == '1') checked='checked' @endif>
-        </span>
-    </div>
-</div> -->
-
 <div class="col-md-4">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="book_for_friend"
@@ -443,7 +410,7 @@
 </div>
 </div>
 
-@if (checkColumnExists('products', 'is_long_term_service'))
+
 <div class="col-md-4 ">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="is_long_term_service_switch"
@@ -461,7 +428,7 @@
             name="is_long_term_service" id="is_long_term_service" />
     </div>
 </div>
-@endif
+
 <div class="col-md-4">
 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
     <label for="is_gst_required_for_vendor_registration_switch"
@@ -677,21 +644,13 @@
     </div>
     <div class="col-md-4">
         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-            <label for="is_influencer_refer_and_earn_switch" class="mr-2 mb-0">{{__('Influencer Module')}}<small class="d-block pr-5">{{__("Enable to allow influencer module.")}}</small></label>
-        <span> <input type="checkbox" data-plugin="switchery" name="is_influencer_refer_and_earn_switch" id="is_influencer_refer_and_earn_switch" class="form-control checkbox_change" data-className="is_influencer_refer_and_earn" data-color="#43bee1" @if($getAdditionalPreference['is_influencer_refer_and_earn'] == 1) checked='checked'  @endif>
-            </span>
-            <input type="hidden"  @if(@$getAdditionalPreference['is_influencer_refer_and_earn'] == 1) value="1" @else value="0" @endif  name="is_influencer_refer_and_earn"  id="is_influencer_refer_and_earn"/>
-        </div>
-        </div>
-    <div class="col-md-4">
-        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
             <label for="is_admin_vendor_rating" class="mr-2 mb-0">{{__('Admin Vendor Rating')}}<small class="d-block pr-5">{{__("Enable to Send Email on Customer Successfull Signup.")}}</small></label>
            <span> <input type="checkbox" data-plugin="switchery" name="is_admin_vendor_rating_switch" id="is_admin_vendor_rating_switch" class="form-control checkbox_change" data-className="is_admin_vendor_rating"  data-color="#43bee1" @if($getAdditionalPreference['is_admin_vendor_rating'] == 1) checked='checked' @endif>
             </span>
             <input type="hidden"  @if($getAdditionalPreference['is_admin_vendor_rating'] == 1) value="1" @else value="0" @endif  name="is_admin_vendor_rating"  id="is_admin_vendor_rating"/>
          </div>
         </div>
-        <div class="col-md-4 d-none">
+        <div class="col-md-4 ">
             <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                 <label for="is_enable_compare_product" class="mr-2 mb-0">{{__('Compare Product')}}<small class="d-block pr-5">{{__("Enable Compare Product Option in Product Details Recomended For ECommerce.")}}</small></label>
                 <span> <input type="checkbox" data-plugin="switchery" name="is_enable_compare_product" id="is_enable_compare_product_switch" class="form-control checkbox_change" data-className="is_enable_compare_product"  data-color="#43bee1" @if($getAdditionalPreference['is_enable_compare_product'] == 1) checked='checked' @endif>

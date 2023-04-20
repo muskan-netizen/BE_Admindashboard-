@@ -15,12 +15,12 @@ use Illuminate\Support\Str;
 use DateTimeZone;
 use App\Http\Traits\HomePage\HomePageTrait;
 use Session;
-use App\Http\Traits\{OrderTrait,ProductActionTrait};
+use App\Http\Traits\{OrderTrait,ProductActionTrait,VendorTrait};
 /**
  * HomeController
  */
 class HomeController extends BaseController{
-    use ApiResponser, HomePageTrait, OrderTrait, ProductActionTrait;
+    use ApiResponser, HomePageTrait, OrderTrait, ProductActionTrait,VendorTrait;
     public $cities = [];
     private $curLang = 0;
     private $field_status = 2;    
@@ -102,7 +102,7 @@ class HomeController extends BaseController{
             $langId = $user->language;
             $currency_id = $user->currency;
             $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
-            $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'is_service_area_for_banners')->first();
+            $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'is_service_area_for_banners','subscription_mode')->first();
             $latitude = $request->latitude;
             $longitude = $request->longitude;
             $paginate = $request->has('limit') ? $request->limit : 12;
@@ -121,11 +121,11 @@ class HomeController extends BaseController{
             $categoryTypes = getServiceTypesCategory($type);
             
         
-            $vendorData = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+            $vendorData = Vendor::byVendorSubscriptionRule($preferences)->whereHas('getAllCategory.category',function($q)use ($categoryTypes){
                 $q->whereIn('type_id',$categoryTypes);
             })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','id as is_vendor_closed' ,'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
 
-
+           
         
 
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
@@ -552,11 +552,11 @@ class HomeController extends BaseController{
         /**
          * put a limit to get vendors.
          */
-        $long_term_vendors = $vendors;
+        $long_term_vendors = $vendors->pluck('id')->toArray();
+        
         $vendors = $vendors->where('status', 1)
                     ->inRandomOrder()
                     ->limit(10)->get();
-// dd("sdfg");
 
         foreach ($vendors as $key => $value) {
             $vendor_ids[] = $value->id;
@@ -769,8 +769,9 @@ class HomeController extends BaseController{
 
          //get long term service 
          $long_term_service_products =[];
-         if(getAdditionalPreference(['is_long_term_service'])['is_long_term_service'] == 1){
-             $long_term_service_products = $this->longTermServiceProducts($long_term_vendors, $language_id, $currency_id,'', $request->type,$p_dim);
+         $additionalPreference = getAdditionalPreference(['is_long_term_service', 'is_token_currency_enable', 'token_currency']);
+         if(@$additionalPreference['is_long_term_service'] == 1){
+             $long_term_service_products = $this->longTermServiceProducts($long_term_vendors, $additionalPreference, $language_id, $currency_id,'', $request->type,$p_dim);
          }
           
         if($this->checkTemplateForAction(8)){
@@ -918,10 +919,8 @@ class HomeController extends BaseController{
           if(!empty($request->layout_id)){
             $selected_products = HomeProduct::with(['products.variants','products.media.image'])->where('layout_id',$request->layout_id)->paginate(15);
           } else{
-            if(checkColumnExists('products','spotlight_deals')){
-                $selected_products = Product::with(['variants','media.image'
-                ])->select('id', 'sku','title', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','spotlight_deals')->where('spotlight_deals', 1)->paginate(15);
-            } 
+            $selected_products = Product::with(['variants','media.image'
+            ])->select('id', 'sku','title', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','spotlight_deals')->where('spotlight_deals', 1)->paginate(15); 
           }
           return $this->successResponse($selected_products);
         }catch (Exception $e) {

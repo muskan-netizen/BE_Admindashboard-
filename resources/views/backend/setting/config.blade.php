@@ -259,155 +259,6 @@
             </div>
         </div>
 
-        {{-- @if ($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry')
-        <div class="row">
-            @if ($client_preference_detail->business_type != 'taxi')
-                <div class="col-lg-4 col-md-6 mb-3">
-                    <div class="row h-100">
-                        <div class="col-12">
-                            <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
-                                @csrf
-                                <!-- Hyperlocal start -->
-                                <div class="card-box h-100">
-                                    <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <h4 class="header-title mb-0">{{ __('Hyperlocal') }}</h4>
-                                        <button class="btn btn-info d-block" type="submit"> {{ __('Save') }} </button>
-                                    </div>
-                                    <p class="sub-header">
-                                        {{ __('Enable location based visibility of Vendors and set the Default Location.') }}
-                                    </p>
-                                    <input type="hidden" name="hyperlocals" id="hyperlocals" value="1">
-
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <div class="form-group mb-0">
-                                                <label for="is_hyperlocal" class="mr-3">{{ __('Enable') }}</label>
-                                                <input type="checkbox" data-plugin="switchery" name="is_hyperlocal"
-                                                    id="is_hyperlocal" class="form-control" data-color="#43bee1"
-                                                    @if (isset($preference) && $preference->is_hyperlocal == '1') checked @endif>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-12 mt-3 disableHyperLocal"
-                                                    style="{{ isset($preference) && $preference->is_hyperlocal == '1' ? '' : 'display:none;' }}">
-                                                    <div class="row">
-                                                        <div class="col-12">
-                                                            <div class="form-group mb-0">
-                                                                <label
-                                                                    for="Default_location_name">{{ __('Default Location') }}</label>
-                                                                <div class="input-group">
-                                                                    <input type="text" name="Default_location_name"
-                                                                        id="Default_location_name"
-                                                                        placeholder="Delhi, India" class="form-control"
-                                                                        value="{{ old('Default_location_name', $preference->Default_location_name ?? '') }}">
-                                                                    <div class="input-group-append">
-                                                                        <button
-                                                                            class="btn btn-xs btn-dark waves-effect waves-light showMap"
-                                                                            type="button" num="add1"> <i
-                                                                                class="mdi mdi-map-marker-radius"></i></button>
-                                                                    </div>
-                                                                </div>
-                                                                @if ($errors->has('Default_location_name'))
-                                                                    <span class="text-danger" role="alert">
-                                                                        <strong>{{ $errors->first('Default_location_name') }}</strong>
-                                                                    </span>
-                                                                @endif
-                                                            </div>
-                                                            <div class="form-group mt-3 mb-0">
-                                                                <label for="Default_latitude">{{ __('Latitude') }}</label>
-                                                                <input type="text" name="Default_latitude"
-                                                                    id="Default_latitude" placeholder="24.9876755"
-                                                                    class="form-control"
-                                                                    value="{{ old('Default_latitude', $preference->Default_latitude ?? '') }}">
-                                                                @if ($errors->has('Default_latitude'))
-                                                                    <span class="text-danger" role="alert">
-                                                                        <strong>{{ $errors->first('Default_latitude') }}</strong>
-                                                                    </span>
-                                                                @endif
-                                                            </div>
-                                                            <div class="form-group mt-3 mb-0">
-                                                                <label
-                                                                    for="Default_longitude">{{ __('Longitude') }}</label>
-                                                                <input type="text" name="Default_longitude"
-                                                                    id="Default_longitude" placeholder="11.9871371723"
-                                                                    class="form-control"
-                                                                    value="{{ old('Default_longitude', $preference->Default_longitude ?? '') }}">
-                                                                @if ($errors->has('Default_longitude'))
-                                                                    <span class="text-danger" role="alert">
-                                                                        <strong>{{ $errors->first('Default_longitude') }}</strong>
-                                                                    </span>
-                                                                @endif
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div><!-- Hyperlocal end -->
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            @endif
-
-            {{-- @if ($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry')
-
-            <div class="col-lg-4 col-md-6 mb-3">
-               <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
-      @csrf
-      <!-- On Demand Services section start -->
-      <div class="card-box h-100">
-         <div class="d-flex align-items-center justify-content-between mb-2">
-            <h4 class="header-title mb-0">{{ __('On Demand Services') }}</h4>
-            <button class="btn btn-info d-block" type="submit" name="need_dispacher_home_other_service_submit_btn" value="1"> {{ __("Save") }} </button>
-         </div>
-         <p class="sub-header">{{ __('Offer On Demand Services with Dispatcher.') }}</p>
-         <div class="row">
-            <div class="col-12">
-               <div class="form-group mb-0">
-                  <div class="form-group mb-0 switchery-demo">
-                     <label for="need_dispacher_home_other_service" class="mr-3">{{ __('Enable') }}</label>
-                     <input type="checkbox" data-plugin="switchery" name="need_dispacher_home_other_service" id="need_dispacher_home_other_service" class="form-control" data-color="#43bee1" @if (isset($preference) && $preference->need_dispacher_home_other_service == '1') checked='checked' @endif>
-                  </div>
-               </div>
-
-               <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
-                  <label for="dispacher_home_other_service_key_url">{{ __('Dispatcher URL') }} *(https://www.abc.com)</label>
-                  <input type="text" name="dispacher_home_other_service_key_url" id="dispacher_home_other_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('dispacher_home_other_service_key_url', $preference->dispacher_home_other_service_key_url ?? '')}}">
-                  @if ($errors->has('dispacher_home_other_service_key_url'))
-                  <span class="text-danger" role="alert">
-                     <strong>{{ $errors->first('dispacher_home_other_service_key_url') }}</strong>
-                  </span>
-                  @endif
-               </div>
-
-               <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
-                  <label for="dispacher_home_other_service_key_code">{{ __('Dispatcher Short code') }}</label>
-                  <input type="text" name="dispacher_home_other_service_key_code" id="dispacher_home_other_service_key_code" placeholder="" class="form-control" value="{{ old('dispacher_home_other_service_key_code', $preference->dispacher_home_other_service_key_code ?? '')}}">
-                  @if ($errors->has('dispacher_home_other_service_key_code'))
-                  <span class="text-danger" role="alert">
-                     <strong>{{ $errors->first('dispacher_home_other_service_key_code') }}</strong>
-                  </span>
-                  @endif
-               </div>
-
-               <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
-                  <label for="dispacher_home_other_service_key">{{ __('Dispatcher API key') }}</label>
-                  <input type="text" name="dispacher_home_other_service_key" id="dispacher_home_other_service_key" placeholder="" class="form-control" value="{{ old('dispacher_home_other_service_key', $preference->dispacher_home_other_service_key ?? '')}}">
-                  @if ($errors->has('dispacher_home_other_service_key'))
-                  <span class="text-danger" role="alert">
-                     <strong>{{ $errors->first('dispacher_home_other_service_key') }}</strong>
-                  </span>
-                  @endif
-               </div>
-
-            </div>
-         </div>
-      </div><!-- On Demand Services section end -->
-      </form>
-   </div>
-   @endif --}}
-
             @if ($client_preference_detail->enable_inventory_service == 1)
                 <div class="col-lg-3 col-md-6 mb-3">
                     <!-- Order Panel section start -->
@@ -479,151 +330,6 @@
                     </form>
                 </div>
             @endif
-
-            {{-- @if ($client_preference_detail->business_type == 'taxi' || $client_preference_detail->business_type == '' || $client_preference_detail->business_type == 'super_app')
-
-
-            <div class="col-lg-3 col-md-6 mb-3">
-               <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
-   @csrf
-   <!-- Pickup & Delivery section start -->
-   <div class="card-box h-100">
-      <div class="d-flex align-items-center justify-content-between mb-2">
-         <h4 class="header-title mb-0">{{ __("Pickup & Delivery") }}</h4>
-         <button class="btn btn-info d-block" type="submit" name="need_dispacher_ride_submit_btn" value="1"> {{ __("Save") }} </button>
-      </div>
-      <p class="sub-header">{{ __("Offer Pickup & Delivery with Dispatcher.") }}</p>
-      <div class="row">
-         <div class="col-12">
-            <div class="form-group mb-0">
-               <div class="form-group mb-0 switchery-demo">
-                  <label for="need_dispacher_ride" class="mr-3">{{ __("Enable") }}</label>
-                  <input type="checkbox" data-plugin="switchery" name="need_dispacher_ride" id="need_dispacher_ride" class="form-control" data-color="#43bee1" @if (isset($preference) && $preference->need_dispacher_ride == '1') checked='checked' @endif>
-               </div>
-            </div>
-
-            <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
-               <label for="pickup_delivery_service_key_url">{{ __("Dispatcher URL") }} * ( https://www.abc.com )</label>
-               <input type="text" name="pickup_delivery_service_key_url" id="pickup_delivery_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('pickup_delivery_service_key_url', $preference->pickup_delivery_service_key_url ?? '')}}">
-               @if ($errors->has('pickup_delivery_service_key_url'))
-               <span class="text-danger" role="alert">
-                  <strong>{{ $errors->first('pickup_delivery_service_key_url') }}</strong>
-               </span>
-               @endif
-            </div>
-
-            <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
-               <label for="delivery_service_key_code">{{ __("Dispatcher Short code") }}</label>
-               <input type="text" name="pickup_delivery_service_key_code" id="pickup_delivery_service_key_code" placeholder="" class="form-control" value="{{ old('pickup_delivery_service_key_code', $preference->pickup_delivery_service_key_code ?? '')}}">
-               @if ($errors->has('pickup_delivery_service_key_code'))
-               <span class="text-danger" role="alert">
-                  <strong>{{ $errors->first('pickup_delivery_service_key_code') }}</strong>
-               </span>
-               @endif
-            </div>
-
-            <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
-               <label for="pickup_delivery_service_key">{{ __("Dispatcher API key") }}</label>
-               <input type="text" name="pickup_delivery_service_key" id="pickup_delivery_service_key" placeholder="" class="form-control" value="{{ old('pickup_delivery_service_key', $preference->pickup_delivery_service_key ?? '')}}">
-               @if ($errors->has('pickup_delivery_service_key'))
-               <span class="text-danger" role="alert">
-                  <strong>{{ $errors->first('pickup_delivery_service_key') }}</strong>
-               </span>
-               @endif
-            </div>
-
-         </div>
-      </div>
-   </div><!-- Pickup & Delivery section end -->
-   </form>
-</div>
-@endif --}}
-
-
-
-        {{-- @if ($client_preference_detail->business_type == 'laundry')
-            <div class="col-lg-3 col-md-6 mb-3">
-               <!-- laundry section start -->
-               <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
-@csrf
-<div class="card-box h-100">
-   <div class="d-flex align-items-center justify-content-between mb-2">
-      <h4 class="header-title mb-0">{{ __("Laundry") }}</h4>
-      <button class="btn btn-info d-block" type="submit" name="laundry_submit_btn" value="1"> {{ __("Save") }} </button>
-   </div>
-   <p class="sub-header">{{ __("Offer laundry with Dispatcher.") }}</p>
-   <div class="row">
-      <div class="col-12">
-         <div class="form-group mb-0">
-            <div class="form-group mb-0 switchery-demo">
-               <label for="need_laundry_service" class="mr-3">{{ __("Enable") }}</label>
-               <input data-plugin="switchery" name="need_laundry_service" id="need_laundry_service" class="form-control" data-color="#43bee1" type="checkbox" @if (isset($preference) && $preference->need_laundry_service == '1') checked @endif >
-            </div>
-         </div>
-
-         <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{((isset($preference) && $preference->need_laundry_service == '1')) ? '' : 'display:none;'}}">
-            <label for="laundry_service_key_url">{{ __("Dispatcher URL") }} * ( https://www.abc.com )</label>
-            <input type="text" name="laundry_service_key_url" id="laundry_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('laundry_service_key_url', $preference->laundry_service_key_url ?? '')}}">
-            @if ($errors->has('laundry_service_key_url'))
-            <span class="text-danger" role="alert">
-               <strong>{{ $errors->first('laundry_service_key_url') }}</strong>
-            </span>
-            @endif
-         </div>
-         <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{((isset($preference) && $preference->need_laundry_service == '1')) ? '' : 'display:none;'}}">
-            <label for="laundry_service_key_code">{{ __("Dispatcher Short code") }}</label>
-            <input type="text" name="laundry_service_key_code" id="laundry_service_key_code" placeholder="" class="form-control" value="{{ old('laundry_service_key_code', $preference->laundry_service_key_code ?? '')}}">
-            @if ($errors->has('laundry_service_key_code'))
-            <span class="text-danger" role="alert">
-               <strong>{{ $errors->first('laundry_service_key_code') }}</strong>
-            </span>
-            @endif
-         </div>
-         <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{((isset($preference) && $preference->need_laundry_service == '1')) ? '' : 'display:none;'}}">
-            <label for="laundry_service_key">{{ __("Dispatcher API key") }}</label>
-            <input type="text" name="laundry_service_key" id="laundry_service_key" placeholder="" class="form-control" value="{{ old('laundry_service_key', $preference->laundry_service_key ?? '')}}">
-            @if ($errors->has('laundry_service_key'))
-            <span class="text-danger" role="alert">
-               <strong>{{ $errors->first('laundry_service_key') }}</strong>
-            </span>
-            @endif
-         </div>
-
-         @if ($laundry_teams != null && count($laundry_teams))
-         <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{(isset($preference) && $preference->need_laundry_service == '1') ? '' : 'display: none;'}}" id="laundryPickupTeamListDiv">
-            <div class="form-group">
-               {!! Form::label('title', __('Team Tag For Laundry Pickup'),['class' => 'control-label']) !!}
-               <select class="form-control" id="laundryPickupTeamList" name="laundry_pickup_team" data-toggle="select2">
-                  <option value="0">{{__('Select Team Tag')}}</option>
-                  @foreach ($laundry_teams as $nm)
-                  <option value="{{$nm['name']}}" @if ($preference->laundry_pickup_team == $nm['name']) selected="selected" @endif>{{$nm['name']}}</option>
-                  @endforeach
-
-               </select>
-            </div>
-         </div>
-
-         <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{(isset($preference) && $preference->need_laundry_service == '1') ? '' : 'display: none;'}}" id="laundryDropoffTeamListDiv">
-            <div class="form-group">
-               {!! Form::label('title', __('Team Tag For Laundry Dropoff'),['class' => 'control-label']) !!}
-               <select class="form-control" id="laundryDropoffTeamList" name="laundry_dropoff_team" data-toggle="select2">
-                  <option value="0">{{__('Select Team Tag')}}</option>
-                  @foreach ($laundry_teams as $nm)
-                  <option value="{{$nm['name']}}" @if ($preference->laundry_dropoff_team == $nm['name']) selected="selected" @endif>{{$nm['name']}}</option>
-                  @endforeach
-
-               </select>
-            </div>
-         </div>
-         @endif
-
-
-      </div>
-   </div>
-</div>
-</form>
-</div>
-@endif --}}
 
 
     </div>
@@ -1915,7 +1621,7 @@
         {{-- starts square POS integration --}}
         <div class="col-xl-4 col-lg-4 h-100">
             <div class="page-title-box">
-                <h4 class="page-title text-uppercase">Square POS integration</h4>
+                <h4 class="page-title text-uppercase">{{ __('Square POS integration') }}</h4>
             </div>
 
             <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
@@ -1991,6 +1697,104 @@
                 </div>
             </form>
         </div>
+        @if (isset($preference) && $preference->subscription_mode == '1') 
+            <div class="col-xl-4 col-lg-4 h-100">
+                <div class="page-title-box">
+                    <h4 class="page-title text-uppercase">{{  getNomenclatureName('Vendors', true). __(' Subscription rule') }}</h4>
+                </div>
+
+                <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
+                    @csrf
+                    <input type="hidden" name="vendor_subcription_rule" id="vendor_subcription_rule" value="1">
+                    <!-- HubSpot card start -->
+                    <div class="card-box h-100">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-0 switchery-demo">
+                                    <label class="d-flex align-items-center justify-content-between">
+                                        <h5 class="social_head text-uppercase">
+                                            <span>{{ __('Subscription rule') }}</span>
+                                        </h5>
+
+                                        <button class="btn btn-info btn-block save_btn" type="submit">
+                                            {{ __('Save') }} </button>
+                                    </label>
+                                    <p class="sub-header">
+                                        {{ __('vendor not showing in if thay dont have any Subscription') }}
+                                    </p>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                                <label for="is_show_vendor_on_subcription_switch" class="mr-3">{{ __("Enable") }} <br/></label>
+                                                <input type="checkbox" data-plugin="switchery" name="is_show_vendor_on_subcription_switch" id="is_show_vendor_on_subcription_switch" class="form-control checkbox_change" data-className="is_show_vendor_on_subcription" data-color="#43bee1" @if($getAdditionalPreference['is_show_vendor_on_subcription'] == 1) checked @endif>
+                                                <input type="hidden" @if($getAdditionalPreference['is_show_vendor_on_subcription'] == 1) value="1" @else value="0" @endif name="is_show_vendor_on_subcription" id="is_show_vendor_on_subcription" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        @endif
+
+        <div class="col-xl-4 col-lg-4 h-100">
+            <div class="page-title-box">
+                <h4 class="page-title text-uppercase">Influencer Module</h4>
+            </div>
+
+            <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
+                @csrf
+                <input type="hidden" name="influencer_mode" value="1">
+                <div class="card-box h-100">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label class="d-flex align-items-center justify-content-between">
+                                    <h5 class="social_head text-uppercase">
+                                        <span>{{ __('Manage Influencer') }}</span>
+                                    </h5>
+                                    <button class="btn btn-info btn-block save_btn" type="submit">
+                                        {{ __('Save') }} </button>
+                                </label>
+                            </div>
+                            
+                            @if ($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry')
+
+                            <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                <label for="is_influencer_refer_and_earn_switch" class="mr-2 mb-0">{{__('Influencer Module')}}<small class="d-block pr-5">{{__("Enable to allow influencer module.")}}</small></label>
+                            <span> <input type="checkbox" data-plugin="switchery" name="is_influencer_refer_and_earn_switch" id="is_influencer_refer_and_earn_switch" class="form-control checkbox_change" data-className="is_influencer_refer_and_earn" data-color="#43bee1" @if($getAdditionalPreference['is_influencer_refer_and_earn'] == 1) checked='checked'  @endif>
+                                </span>
+                                <input type="hidden"  @if($getAdditionalPreference['is_influencer_refer_and_earn'] == 1) value="1" @else value="0" @endif  name="is_influencer_refer_and_earn"  id="is_influencer_refer_and_earn"/>
+                            </div>
+
+                                
+                                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                        <label for="celebrity_check" class="mr-2 mb-0"> {{ __('Refer and Earn by Influencer') }}
+                                            <small
+                                                class="d-block pr-5">{{ __('Leverage the Influencer era by adding Influencers and associate product with them to create curated lists of products') }}.</small></label>
+                                        <span> <input type="checkbox" data-plugin="switchery"
+                                                name="celebrity_check" id="celebrity_check" class="form-control"
+                                                data-color="#43bee1"
+                                                @if (isset($preference) && $preference->celebrity_check == '1') checked='checked' @endif></span>
+                                                
+                                    </div>
+
+                                    
+                                
+                            @endif
+
+                        </div>
+                    </div>
+                </div>
+
+
+            </form>
+        </div>
 
     </div>
 
@@ -2021,63 +1825,7 @@
         </div>
     </div>
 
-    <div class="row">
-        {{-- <div class="col-lg-6">
-         <div class="page-title-box">
-            <h4 class="page-title text-uppercase">{{ __("Driver") }}</h4>
-</div>
-<div class="card-box pb-2">
-   <h4 class="header-title text-uppercase">{{ __("Driver Registration Documents") }}</h4>
-   <div class="d-flex align-items-center justify-content-end mt-2">
-      <a class="btn btn-info d-block" id="add_driver_registration_document_modal_btn">
-         <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
-      </a>
-   </div>
-   <div class="table-responsive mt-3 mb-1">
-      <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
-         <thead>
-            <tr>
-               <th>{{ __("Name") }}</th>
-               <th>{{ __("Type") }}</th>
-               <th>{{ __("Action") }}</th>
-            </tr>
-         </thead>
-         <tbody id="post_list">
-            @forelse($driver_registration_documents as $driver_registration_document)
-            <tr>
-               <td>
-                  <a class="edit_driver_registration_document_btn" data-driver_registration_document_id="{{$driver_registration_document->id}}" href="javascript:void(0)">
-                     {{$driver_registration_document->primary ? $driver_registration_document->primary->name : ''}}
-                  </a>
-               </td>
-               <td>{{$driver_registration_document->file_type}}</td>
-               <td>
-                  <div>
-                     <div class="inner-div" style="float: left;">
-                        <a class="action-icon edit_driver_registration_document_btn" data-driver_registration_document_id="{{$driver_registration_document->id}}" href="javascript:void(0)">
-                           <i class="mdi mdi-square-edit-outline"></i>
-                        </a>
-                     </div>
-                     <div class="inner-div">
-                        <button type="button" class="btn btn-primary-outline action-icon delete_driver_registration_document_btn" data-driver_registration_document_id="{{$driver_registration_document->id}}">
-                           <i class="mdi mdi-delete"></i>
-                        </button>
-                     </div>
-                  </div>
-               </td>
-            </tr>
-            @empty
-            <tr align="center">
-               <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
-            </tr>
-            @endforelse
-         </tbody>
-      </table>
-   </div>
-</div>
-</div> --}}
 
-    </div>
 
     <div style="display:none;">
         <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
@@ -2158,7 +1906,7 @@
                                                 <p class="mb-2"><span
                                                         class="font-weight-semibold mr-2">{{ __('From') }}:</span>
                                                     johndoe<span>
-                                                        < /span>contact@royodispatcher.com<span>></span>
+                                                        </span>contact@royodispatcher.com<span> ></span>
                                                 </p>
                                                 <p class="mb-2"><span
                                                         class="font-weight-semibold mr-2">{{ __('Reply To') }}:</span>

@@ -238,7 +238,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                                                 </a>
                                                                                             @endif
                                                                                                 
-                                                                                            @if(isset($data->category_type_id) && (!in_array($data->category_type_id,$category_type_idForNotShowshPlusMinus))) )
+                                                                                            @if(isset($data->category_type_id) && (!in_array($data->category_type_id,$category_type_idForNotShowshPlusMinus))) 
                                                                                                 <div class="number"
                                                                                                     id="show_plus_minus{{ $cartProductId }}">
                                                                                                     <span
@@ -356,7 +356,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                                 @endif
                                                                         </div>
                                                                     </div>
-                                                                    @if ($prod->averageRating > 0)
+                                                                    @if ($prod->averageRating > 0 && $client_preference_detail->rating_check == 1)
                                                                         <div class="rating-text-box">
                                                                             <span>{{ number_format($prod->averageRating, 1, '.', '') }}
                                                                             </span>

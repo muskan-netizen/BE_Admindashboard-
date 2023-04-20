@@ -70,6 +70,8 @@ $clientData = \App\Models\Client::select('socket_url')->first();
     </style>
 
 @endsection
+@section('css-compare')
+@endsection
 
 @section('content')
 
@@ -263,11 +265,6 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                         <h2 class="mb-0">
                                             {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
                                         </h2>
-                                        @if(!is_category_p2p($product->category))
-                                        @if($product->averageRating=="")
-                                            <span class="rating main-rating">0<i class="fa fa-star" aria-hidden="true"></i></span>
-                                            @endif
-                                        @endif
                                         <h6 class="sold-by">
                                             <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
                                         </h6>
@@ -777,7 +774,9 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 </li>
                                                 @endif
 
-                @if(@getAdditionalPreference(['is_enable_compare_product'])['is_enable_compare_product'])
+                                                @if(@getAdditionalPreference(['is_enable_compare_product'])['is_enable_compare_product'] && 
+                                                (in_array($product->category->category_id,getVendorAdditionalPreference($product->vendor_id,'compare_categories'))))
+                                                
                                                 <li class="nav-item ml-3"><a class="nav-link {{(count($rating_details)>0)?'':'active'}}" id="compare-product-tab" data-toggle="tab" href="#compare-product" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Compare products')}}</a>
                                                     <div class="material-border"></div>
                                                 </li>
@@ -826,10 +825,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                     <p>{{__('No Reviews Yet')}}</p>
                                                     @endforelse
                                                 </div>
-
-                                                @if(@getAdditionalPreference(['is_enable_compare_product'])['is_enable_compare_product'])
                                                     @include('frontend.compare-product-table')
-                                                @endif
                                                 
                                             </div>
                                         </div>
