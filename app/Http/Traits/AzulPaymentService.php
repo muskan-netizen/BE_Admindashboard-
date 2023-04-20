@@ -114,7 +114,7 @@ trait AzulPaymentService
                 'CustomOrderId' => $card['order_number'],
                 'SaveToDataVault' => $saveVault,
                 'DataVaultToken' => '',
-                'ForceNo3DS' => '0'
+                'ForceNo3DS' => '1'
             ];
             if($saveVault){
                $this->saveCardToDatavault($user_id, $card['cno'], $expiry, $card['cv']);
