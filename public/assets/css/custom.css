@@ -753,6 +753,9 @@ body .switchery>small {
     width: auto
 }
 
+.delay_time .modal-footer .buffer_time_btn {
+    font-size: 14px;padding: 0.45rem 0.9rem;
+}
 input#is_hyperlocal {
     display: none !important
 }
