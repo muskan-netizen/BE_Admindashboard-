@@ -13,8 +13,8 @@
                             <span>{{ dateTimeInUserTimeZone($order->created_at, $timezone) }}</span>
                         </div>
                         <div class="col-md-3 alOrderStatus">
-                            <h4>{{ __('Customer Name') }}</h4>
-                            <span><a class="text-capitalize">{{ $order->user->name }}</a></span>
+                            <h4>{{ __('Vendor Name') }}</h4>
+                            <span><a class="text-capitalize">{{ @$order->vendors[0]->vendor->name }}</a></span>
                         </div>
                         @if ($client_preference_detail->business_type != 'taxi')
                             <div class="col-md-3 ellipsis">
@@ -104,7 +104,6 @@
                                             <ul class="status_box mt-1 pl-0">
                                                 @if (!empty($vendor->order_status) && $vendor->order_status == "accepted")
                                                     <li>
-
                                                         <label class="m-0 in-progress">{{ __(ucfirst('cancelled')) }} </label>
                                                         <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="{{$vendor->reject_reason}}" aria-hidden="true"></i>
                                                     </li>
@@ -114,7 +113,11 @@
                                                         @if(@$is_exchanged_order)
                                                             {{__('Exchange Order')}}
                                                         @endif
-                                                        {{ __(ucfirst($vendor->order_status)) }} </label>
+                                                        @if($vendor->cancelled_by == Auth::id())
+                                                            {{ __(ucfirst('cancelled')) }} </label>
+                                                        @else
+                                                            {{ __(ucfirst($vendor->order_status)) }} </label>
+                                                        @endif
                                                         <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="{{$vendor->reject_reason}}" aria-hidden="true"></i>
                                                     </li>
                                                 @endif
@@ -134,6 +137,11 @@
                                                         <li>
                                                             <label class="items_price">{{ Session::get('currencySymbol') }}{{ decimal_format($product->price * $clientCurrency->doller_compare) }}</label>
                                                         </li>
+                                                        @if($product->schedule_slot && $product->schedule_slot_name )
+                                                        <li>
+                                                            <label class="schedule_slot"><span>Slots: {{ $product->schedule_slot_name }}</span></label>
+                                                        </li>
+                                                        @endif
                                                         @php
                                                             $product_total_price = $product->price * $clientCurrency->doller_compare;
                                                             $product_total_count += $product->quantity * $product_total_price;
@@ -181,10 +189,12 @@
                                                     <label
                                                         class="m-0">{{ __('Amount') }}</label>
                                                     @php
-                                                        $product_subtotal_amount = $product_total_count - $vendor->discount_amount + $vendor->delivery_fee;
+	                        $product_subtotal_amount = $vendor->subtotal_amount - $vendor->discount_amount + $vendor->total_container_charges +
+                                                                                                 $vendor->taxable_amount + $vendor->service_fee_percentage_amount + $vendor->fixed_fee +
+                                                                                                 $vendor->delivery_fee + $vendor->additional_price + $vendor->toll_amount-$order->wallet_amount_used;
                                                         $subtotal_order_price += $product_subtotal_amount;
                                                     @endphp
-                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->payable_amount
+                                                    <span>{{ Session::get('currencySymbol') }}{{decimal_format($product_subtotal_amount
                                                         *
                                                         $clientCurrency->doller_compare)}}</span>
                                                 </li>
@@ -192,6 +202,7 @@
                                             </ul>
                                         </div>
                                     </div>
+                                    @include('frontend.account.recurringItems')
                                 </div>
                             @endforeach
                         </div>
@@ -286,7 +297,7 @@
                                                 $clientCurrency->doller_compare)}}</span>
                                         </li>
                                     @endif
-                                    @if ( checkColumnExists('orders', 'gift_card_amount') &&  $order->gift_card_amount > 0)
+                                    @if ($order->gift_card_amount > 0)
                                         <li
                                             class="d-flex align-items-center justify-content-between">
                                             <label
@@ -300,8 +311,7 @@
                                         class="grand_total d-flex align-items-center justify-content-between">
                                         <label
                                             class="m-0">{{ __('Total Payable') }}</label>
-                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->payable_amount
-                                            - $order->total_discount_calculate *
+                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->payable_amount *
                                             $clientCurrency->doller_compare)}}</span>
                                     </li>
                                     {{-- mohit sir branch code added by sohail --}}
@@ -335,5 +345,5 @@
             </div>
         @endif
     </div>
-    {{ $pastOrders->appends(['pageType' => 'rejectedOrders'])->links() }}
+    {{ $rejectedOrders->appends(['pageType' => 'rejectedOrders'])->links() }}
 </div>

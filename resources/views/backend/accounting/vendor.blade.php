@@ -27,7 +27,7 @@
                                 <div class="text-center">
                                     <h3>
                                         <i class="fas fa-money-check-alt text-primary"></i>
-                                        <span data-plugin="counterup">{{$total_order_value}}</span>
+                                        <span data-plugin="counterup" id="total_order_value">{{$total_order_value}}</span>
                                     </h3>
                                     <p class="text-muted font-15 mb-0">{{ __("Total Order Value") }}</p>
                                 </div>
@@ -67,6 +67,11 @@
                             <div class="col-md-3">
                                  <input type="text" class="form-control al_box_height flatpickr-input" id="range-datepicker" placeholder="2018-10-03 to 2018-10-10" readonly="readonly">
                             </div>
+                            <div class="col-sm-3 mb-1">
+                                <button type="button" class="btn btn-danger al_box_height waves-effect waves-light" id="clear_filter_btn_icon">
+                                    <i class="mdi mdi-close"></i>
+                                </button>
+                            </div>
                         </div>
                    </div>
                     <div class="table-responsive">
@@ -80,6 +85,7 @@
                                     <th>{{ __("Promo [Vendor]") }}</th>
                                     <th>{{ __("Promo [Admin]") }}</th>
                                     <th>{{ __("Service Fee") }}</th>
+                                    <th>{{ __("Fixed Fee") }}</th>
                                     <th>{{ __("Cash Collected") }}</th>
                                     <th>{{ __("Payment Gateway") }}</th>
                                     <th>{{ __("Vendor Earning") }}</th>
@@ -109,6 +115,7 @@
             mode: "range",
             onClose: function(selectedDates, dateStr, instance) {
                 initDataTable();
+                getOrderCalculations();
             }
         });
 
@@ -154,6 +161,7 @@
                     {data: 'promo_vendor_amount', name: 'promo_vendor_amount', orderable: false, searchable: false},
                     {data: 'promo_admin_amount', name: 'promo_admin_amount', orderable: false, searchable: false},
                     {data: 'service_fee', name: 'service_fee', orderable: false, searchable: false},
+                    {data: 'fixed_fee', name: 'fixed_fee', orderable: false, searchable: false},
                     {data: 'cash_collected_amount', name: 'cash_collected_amount', orderable: false, searchable: false},
                     {data: 'payment_method', name: 'payment_method', orderable: false, searchable: false},
                     {data: 'vendor_earning', name: 'vendor_earning', orderable: false, searchable: false},
@@ -162,6 +170,27 @@
             });
 
         }
+        
+		function getOrderCalculations(){
+			 $.ajax({
+                 method:"GET",
+                  url: "{{route('account.vendor.calculations')}}",
+                  data:{
+                    date_filter: $('#range-datepicker').val(),
+                  },
+                  success:function(response){
+                  	$("#total_order_value").html(response.total_order_value);
+                  	$("#total_delivery_fees").html(response.total_delivery_fees);
+                  	$("#total_admin_commissions").html(response.total_admin_commissions);
+                  }
+            });
+		}
+		$("#clear_filter_btn_icon").click(function() {
+            $('#range-datepicker').val('');
+            initDataTable();
+            getOrderCalculations();
+            
+        });
     });
 </script>
 @endsection

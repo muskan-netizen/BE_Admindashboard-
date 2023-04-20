@@ -13,6 +13,7 @@
                 if(response.status == 'Success'){
                     $("#payment_modal .modal-body").html('');
                     let payment_methods_template = _.template($('#payment_methods_template').html());
+
                     $("#payment_modal .modal-body").append(payment_methods_template({payment_options: response.data}));
                     var selected = $('#pickup_now').attr("data-payment_method");
                     $("#payment_modal .select_cab_payment_method[value='"+selected+"']").prop("checked", true);
@@ -165,6 +166,26 @@ $(document).ready(function () {
         }
 
     });
+    
+     // PlugPay payment
+
+    $(document).on("click", "#paywithazulpay",function() {
+
+        cno = $('#azul-card-element').val();
+        dt  = $('#azul-date-element').val();
+        cv  = $('#azul-cvv-element').val();
+        if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == '') || creditCardValidation() == false)
+        {
+           // success_error_alert('error', 'Please Fill Details', "#azul_card_error");
+             $('#paywithazulpay').prop('disabled',false);
+            return false;
+        }else{
+            $("#pickup_now, #pickup_later").trigger('click');
+            $('#paywithazulpay').prop('disabled',true);
+        }
+
+    });
+    
     $(document).on("click", ".right-top",function() {
         var payment_option_id = $(".select_cab_payment_method:checked").val();
         if(payment_option_id == 49){
@@ -175,14 +196,28 @@ $(document).ready(function () {
            $('#plugnpay-date-element').val('');
            $('#plugnpay-cvv-element').val('');
         }
+        
+         if(payment_option_id == 50){
+           $("#azul_card_error").empty();
+           $("#proceed_to_azulpay_loader").hide();
+           $('#paywithazulpay').prop('disabled',false);
+           $('#azul-card-element').val('');
+           $('#azul-date-element').val('');
+           $('#azul-cvv-element').val('');
+        }
     });
+    
+    
+    
+    
+    
+    
 
     // please order dispatcher
     $(document).on("click", "#pickup_now, #pickup_later",function() {
 
         var payid = $(this).attr('data-payment_method');
         if(payid == 49){
-
             cno = $('#plugnpay-card-element').val();
             dt  = $('#plugnpay-date-element').val();
             cv  = $('#plugnpay-cvv-element').val();
@@ -199,7 +234,24 @@ $(document).ready(function () {
                 $("#proceed_to_pay_loader").show();
             }
         }
-
+         if(payid == 50){
+            cno = $('#azul-card-element').val();
+            dt  = $('#azul-date-element').val();
+            cv  = $('#azul-cvv-element').val();
+            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == '') || creditCardValidation() == false)
+            {
+                $('#azulpaymethod').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                $("#proceed_to_azulpay_loader").hide();
+                $('#paywithazulpay').prop('disabled',false);
+                return false;
+            }else{
+				$("#proceed_to_azulpay_loader").show();
+			}
+        }
+        
         var time_zone = (Intl.DateTimeFormat().resolvedOptions().timeZone);
         var schedule_datetime = '';
         if($(this).data('rel') =='pickup_later'){
@@ -276,7 +328,7 @@ $(document).ready(function () {
         let friendPhoneNumber= $('input[name=friendPhoneNumber]').val();
 
         var no_seats_for_pooling = $('input[name="no_seats_for_pooling"]').val();
-        var is_cab_pooling = $('input[name="is_cab_pooling"]:checked').val();
+        var is_cab_pooling = $('input[name="is_cab_pooling_radio"]:checked').val();
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -336,9 +388,16 @@ $(document).ready(function () {
                         payWithDpo(response.data);
                     }else if(payment_option_id == 30){
                         payWithFlutterWave(response.data);
-                    }
-                    else if(payment_option_id == 49){
+                    }else if(payment_option_id == 49){
+                        
                         paymentViaplugnpay(reload_route,'',response.data);
+                    }
+                    else if(payment_option_id == 50){
+                        
+                        paymentViazulpay(reload_route,'',response.data);
+                    }
+                    else if(payment_option_id == 52){
+                        paymentViaSkipCash('',response.data);
                     }
                     cabBookingPaymentOptions(payment_option_id, response.data);
                 }else{
@@ -512,7 +571,7 @@ $(document).ready(function () {
 
         });
         setTimeout(function(){
-            $(".pac-container").appendTo(".booking-experience #destination_location_add_temp");
+            //$(".pac-container").appendTo(".booking-experience #destination_location_add_temp");
         }, 300);
       }
     }
@@ -668,7 +727,7 @@ $(document).ready(function () {
         }
     });
 
-    $(document).on("change",".is_cab_pooling",function() {
+    $(document).on("change",".is_cab_pooling_radio",function() {
         getListOfCabs();
     });
 
@@ -706,11 +765,15 @@ $(document).ready(function () {
 
     $(document).on("click","#submit_product_rider_button",function(){
         let product_id = $('input[name="rider_product_id"]:checked').val();
-        let rider_id = 0;
-        let rider_type = $('input[name="is_for_friend"]:checked').val();
-        if(rider_type == 1 || rider_type == "1")
-        {
-            rider_id = $('input[name="rider_id"]:checked').val();
+        if(product_id === undefined){
+            alert("Please choose one "+category_name+" to process next");
+        }else{
+            let rider_id = 0;
+            let rider_type = $('input[name="is_for_friend"]:checked').val();
+            if(rider_type == 1 || rider_type == "1")
+            {
+                rider_id = $('input[name="rider_id"]:checked').val();
+            }
         }
         getVehicleDetail(product_id,rider_id);
 
@@ -828,8 +891,7 @@ $(document).ready(function () {
             data.longitude = destination_location_longitudes[index];
             locations.push(data);
         });
-        var is_cab_pooling = $('input[name="is_cab_pooling"]:checked').val();
-        $('input[name="no_seats_for_pooling"]').val(1);
+        var is_cab_pooling = $('input[name="is_cab_pooling_radio"]:checked').val();
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -844,17 +906,15 @@ $(document).ready(function () {
                     $('#search_product_main_div').html('');
                     $('#search_product_rider_main_div').html('');
                     if(response.data.length != 0){
-                        // var Helper = { formatPrice: function(x){   //x=x.toFixed(2)
-                        //     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                        //      } };
-                            var productData = _.extend({ Helper: NumberFormatHelper }, {results: response.data.products});
-
+                        var productData = _.extend({ Helper: NumberFormatHelper }, {results: response.data.products});
+                        
                         let products_template = _.template($('#products_template').html());
+
                         let products_rider_template = _.template($('#products_rider_template').html());
                         $("#search_product_main_div").append(products_template(productData));
                         $("#search_product_rider_main_div").append(products_rider_template(productData));
-
-                        if($('input[name="is_cab_pooling"]:checked').val() == 0)
+                        
+                        if($('input[name="is_cab_pooling_radio"]:checked').val() == 0 || $('input[name="is_cab_pooling_radio"]:checked').val() === undefined)
                         {
                             $("#search_product_main_div .double_price_p").hide();
                             $("#search_product_main_div .single_price_p").show();
@@ -867,7 +927,9 @@ $(document).ready(function () {
                         if(is_friend == undefined || is_friend == '0')
                         {
                             $("#search_product_main_div").show();
+                            $("#search_product_rider_main_div").hide();
                         }else{
+                            $("#search_product_main_div").hide();
                             $("#search_product_rider_main_div").show();
                         }
                     }else{
@@ -886,11 +948,12 @@ $(document).ready(function () {
         let amount = $(this).data('amount');
         let vendor_id = $(this).data('vendor_id');
         let product_id = $(this).data('product_id');
+         let cart_product_ids = $("input[name='cart_product_ids[]']").map(function(){return $(this).val();}).get();
         $.ajax({
             type: "POST",
             dataType: 'json',
             url: promo_code_list_url,
-            data: {amount:amount, vendor_id:vendor_id},
+            data: {amount:amount, vendor_id:vendor_id,cart_product_ids:cart_product_ids},
             success: function(response) {
                 if(response.status == 'Success'){
                     $('#cab_booking_promo_code_list_main_div').html('');
@@ -1016,7 +1079,7 @@ $(document).ready(function () {
             schedule_datetime = moment(schedule_datetimeset).format('YYYY-MM-DD HH:mm');
         }
         var no_seats_for_pooling = $('input[name="no_seats_for_pooling"]').val();
-        var is_cab_pooling = $('input[name="is_cab_pooling"]:checked').val();
+        var is_cab_pooling = $('input[name="is_cab_pooling_radio"]:checked').val();
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -1045,7 +1108,7 @@ $(document).ready(function () {
                         let cab_detail_box_template = _.template($('#cab_detail_box_template').html());
 
                         $("#cab_detail_box").append(cab_detail_box_template(cabData)).show();
-                        if($('input[name="is_cab_pooling"]:checked').val() == 0)
+                        if($('input[name="is_cab_pooling_radio"]:checked').val() == 0 || $('input[name="is_cab_pooling_radio"]:checked').val() === undefined)
                         {
                             $(".show_no_of_seats_if_pooling").hide();
                         }else{
@@ -2043,6 +2106,31 @@ function setLocationCoordinates(key, lat, lng) {
 google.maps.event.addDomListener(window, 'load', initMap);
 
 
+$(document).on("click",".btn-price-up-down",function(){    
+    var product_id = $("#bid_ride_now").attr('data-product_id');
+    type      = $(this).attr('data-type');
+    var input = $("input[name='cab_bid_price']");
+    var currentVal = parseInt(input.val());
+    if (!isNaN(currentVal)) {
+        if(type == 'minus') {
+            
+            if(currentVal > input.attr('min')) {
+                input.val(currentVal - 10).trigger('change');
+            } 
+            if(parseInt(input.val()) == input.attr('min')) {
+            }
 
+        } else if(type == 'plus') {
+
+            if(currentVal < input.attr('max')) {
+                input.val(currentVal + 10).trigger('change');
+            }
+            if(parseInt(input.val()) == input.attr('max')) {
+            }
+        }
+    } else {
+        input.val(input.attr('min'));
+    }
+});
 
 

@@ -3,11 +3,29 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
     Route::post('dispatcher/check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromDispatcher');
 
-    Route::post('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
+    Route::get('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
 
     Route::post('check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromInventory');
 
     Route::post('vendor-sync-inventory', 'Api\v1\VendorController@vendorSyncInventory')->middleware('ConnectDbFromInventory');
+
+    Route::group(['middleware' => ['ConnectDbFromInventory']], function () { //inventory
+        Route::group(['prefix' => 'inventory'], function () {
+            Route::post('getUnAssignedOrderCategory', 'Api\v1\InventoryController@getUnAssignedOrderCategory');
+            Route::post('getOrderVendorById', 'Api\v1\InventoryController@getOrderVendorById');
+            Route::post('getOrderVendors', 'Api\v1\InventoryController@getOrderVendors');
+            Route::post('getOrderCategories', 'Api\v1\InventoryController@getOrderCategories');
+            Route::post('getOrderVendorCategories', 'Api\v1\InventoryController@getOrderVendorCategories');
+            Route::post('syncVendorCategoryProducts', 'Api\v1\InventoryController@syncVendorCategoryProducts');
+            Route::post('updateRoyoProductQuantity', 'Api\v1\InventoryController@updateRoyoProductQuantity');
+            Route::post('getOrderProductBySku', 'Api\v1\InventoryController@getOrderProductBySku');
+            Route::post('deleteOrderProductBySku', 'Api\v1\InventoryController@deleteOrderProductBySku');
+            Route::post('needSyncWithOrder', 'Api\v1\InventoryController@needSyncWithOrder');
+            Route::post('getOrderCategoryById', 'Api\v1\InventoryController@getOrderCategoryById');
+        });
+    });
+
+    
 
 
 
@@ -47,6 +65,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('get/subcategory/vendor', 'Api\v1\HomeController@getSubcategoryVendor');
         Route::get('get/edited-orders', 'Api\v1\HomeController@getEditedOrders');
         Route::get('product/{id}', 'Api\v1\ProductController@productById');
+        Route::post('getShippingProductDeliverySlots', 'Api\v1\ProductController@getShippingProductDeliverySlots');
+        Route::post('getProductDeliverySlotsInterval', 'Api\v1\ProductController@getProductDeliverySlotsInterval');
         Route::POST('checkProductAvailibility', 'Api\v1\ProductController@checkProductAvailibility');
         Route::get('getAllProductTags', 'Api\v1\ProductController@getAllProductTags');
         Route::post('get-products', 'Api\v1\ProductController@productList');
@@ -101,6 +121,13 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('passbase/store', 'Api\v1\PassbaseController@storeAuthkey');
 
         Route::post('order-tracking', 'Api\v1\OrderController@OrderTracking');
+
+        Route::post('upload-cart-file', 'Api\v1\CartController@uploadOrderFile'); 
+        Route::get('remove-cart-file', 'Api\v1\CartController@RemoveOrderFile'); 
+        // get slot from dispatcher
+        Route::post('getslotsFormDispatcher', 'Api\v1\AppointmentController@getSlotFromDispatchDemand');
+        // get GerenalSlot slot from dispatcher
+        Route::get('getDispatcherGerenalSlot', 'Api\v1\DispatcherController@getDispatcherGerenalSlot');
     });
 
     Route::group(['middleware' => ['dbCheck', 'systemAuth']], function () { //apilogger

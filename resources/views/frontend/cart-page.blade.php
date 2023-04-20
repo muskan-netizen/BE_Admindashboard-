@@ -1,3 +1,4 @@
+
 <style>
     .alInfoIocn .tooltiptext {
         visibility: hidden;
@@ -61,14 +62,21 @@
         padding: 6px 6px;
         border-radius: 4px;
     }
+    .cart-checkout_btn #order_placed_btn{padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
+
 </style>
 
 @php
     $serviceType = Session::get('vendorType');
+
     $additionalPreference = $getAdditionalPreference;
+    $is_service_product_price_from_dispatch_forOnDemand = 0;
     $hidden_token = '';
     if ($additionalPreference['is_token_currency_enable'] == 1) {
         $hidden_token = 'd-none';
+    }
+    if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+        $is_service_product_price_from_dispatch_forOnDemand =1;
     }
 
 @endphp
@@ -182,9 +190,6 @@
                         $other_taxes_string = $cart_details->other_taxes_string;
                     @endphp
                     @foreach ($cart_details->products as $product)
-                        {{-- @php
-            dd($product->is_vendor_closed.' -- '.$product->closed_store_order_scheduled);
-            @endphp --}}
                         <div id="thead_{{ $product->vendor->id }}" class="mt-2 px-0">
                             <div class="row">
 
@@ -206,6 +211,13 @@
                                         <div class="text-danger">
                                             <i class="fa fa-exclamation-circle"></i>
                                             {{ __('We are not accepting orders right now. You can schedule this for ') }}{{ @$product->delaySlot }}
+                                        </div>
+                                    </div>
+                                 @elseif($product->delivery_status_message != '')
+                                    <div class="col-12">
+                                        <div class="text-danger">
+                                            <i class="fa fa-exclamation-circle"></i>
+                                          {{ $product->delivery_status_message }}
                                         </div>
                                     </div>
                                 @endif
@@ -236,9 +248,9 @@
                         </div>
 
                         <div class="col-12 cart-heading mt-2 px-0">
-                            <h5 class="my-1"><b>{{ $product->vendor->name }}</b></h5>
+                            <h5 class="my-1"><b>{{ $product->vendor ? @$product->vendor->name : '' }}</b></h5>
                             <input type="hidden" name="category_name" id="category_name"
-                                value="{{ $product->vendor->name }}" />
+                                value="{{ $product->vendor ? @$product->vendor->name : '' }}" />
                         </div>
 
 
@@ -248,8 +260,8 @@
 
                             @foreach ($product->vendor_products as $vendor_product)
                                 {{-- @php
-            pr($vendor_product);
-            @endphp --}}
+                                pr($vendor_product->schedule_slot_name);
+                                @endphp --}}
                                 <div class="row al align-items-md-center vendor_products_tr alFourTemplateCartPage"
                                     id="tr_vendor_products_{{ $vendor_product->id }}">
                                     <div class="product-img col-3 col-md-2">
@@ -268,7 +280,7 @@
                                         <div class="row align-items-md-center">
                                             <div class="col-md-3 order-md-1">
                                                 <h4 class="cart_product_name">
-                                                    {{ @$vendor_product->product->category_name->name }}</h4>
+                                                    {{ $vendor_product->product->category_name ? @$vendor_product->product->category_name->name : ''}}</h4>
                                                 <h4 class="mt-0 mb-1" style="word-wrap: break-word; line-height:20px">
                                                     <strong>{{ @$vendor_product->product->translation_one ? @$vendor_product->product->translation_one->title : @$vendor_product->product->sku }}</strong>
                                                 </h4>
@@ -289,9 +301,9 @@
                                                 <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
                                                     <div class="items-price">
                                                         @if ($additionalPreference['is_token_currency_enable'])
-                                                            {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier)) }}
+                                                            {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($vendor_product->pvariant->actual_price * (@$vendor_product->pvariant->multiplier ?? 1))) }}
                                                         @else
-                                                            {{ Session::get('currencySymbol') . decimal_format($vendor_product->pvariant->actual_price * $vendor_product->pvariant->multiplier) }}
+                                                            {{ Session::get('currencySymbol') . decimal_format($vendor_product->pvariant->actual_price * (@$vendor_product->pvariant->multiplier ?? 1)) }}
                                                         @endif
                                                         @if (in_array($serviceType, ['appointment', 'on_demand']))
                                                             <span class="">
@@ -301,7 +313,7 @@
                                                     </div>
                                                 </div>
                                             @endif
-                                            @if (!empty($vendor_product->quantity_price))
+                                            @if (!empty(@$vendor_product->quantity_price))
                                                 <div class="col-6 col-md-2 text-left order-md-4">
                                                     @if ($serviceType == 'rental')
                                                         @php
@@ -312,22 +324,24 @@
                                                         @endphp
                                                         <div class="items-price">
                                                             @if ($additionalPreference['is_token_currency_enable'])
-                                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($vendor_product->quantity_price + $additionalPrice)) }}
+                                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format((@$vendor_product->quantity_price) + $additionalPrice)) }}
                                                             @else
-                                                                {{ Session::get('currencySymbol') . decimal_format($vendor_product->quantity_price + $additionalPrice) }}
+                                                                {{ Session::get('currencySymbol') . decimal_format((@$vendor_product->quantity_price) + $additionalPrice) }}
                                                             @endif
                                                         </div>
                                                     @else
                                                         <div class="items-price">
                                                             @if ($additionalPreference['is_token_currency_enable'])
-                                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($vendor_product->quantity_price)) }}
+                                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format(@$vendor_product->quantity_price)) }}
                                                             @else
-                                                                {{ Session::get('currencySymbol') . decimal_format($vendor_product->quantity_price) }}
+                                                                {{ Session::get('currencySymbol') . decimal_format(@$vendor_product->quantity_price) }}
                                                             @endif
                                                         </div>
                                                     @endif
                                                 </div>
                                             @endif
+
+
                                             @if ($serviceType == 'rental')
                                                 <div class="col-10 col-md-4 text-md-center order-md-3">
                                                     <div class="number d-flex justify-content-md-center border-0">
@@ -352,8 +366,30 @@
                                                         </div>
 
                                                     </div>
+                                                    @if ($cart_details->pharmacy_check == 1)
+                                                    @php
+                                                        $class = '';
+                                                        if($vendor_product->product->validate_pharmacy_check == 1){
+                                                            $class = 'validate_prescription';
+                                                        }
+                                                    @endphp
+                                                    
+                                                    @if ($vendor_product->product->pharmacy_check == 1)
+                                                        <button type="button"
+                                                            class="float-left btn btn-solid prescription_btn mt-2 {{$class}}"
+                                                            data-cart="{{ $vendor_product->cart_id }}"
+                                                            data-product="{{ $vendor_product->product->id }}"
+                                                            data-vendor_id="{{ $vendor_product->vendor_id }}" data-cart_product_prescription="{{ $vendor_product->cart_product_prescription??0 }}">{{ __('Add Prescription') }}</button>
+                                                        @if ($vendor_product->cart_product_prescription > 0)
+                                                            <h4 class="mt-0 mb-1"
+                                                                style="word-wrap: break-word; line-height:20px">
+                                                                <strong>{{ $vendor_product->cart_product_prescription }}
+                                                                    {{ __('Prescription Added') }}</strong></h4>
+                                                        @endif
+                                                    @endif
+                                                @endif
                                                 </div>
-                                            @elseif($serviceType == 'appointment')
+                                            @elseif(($serviceType == 'appointment') || ($is_service_product_price_from_dispatch_forOnDemand ==1))
                                                 <div class="col-10 col-md-4 text-md-center order-md-3">
                                                     1
                                                 </div>
@@ -390,6 +426,7 @@
                                                     </div>
 
                                                     @if ($cart_details->pharmacy_check == 1)
+                                                    
                                                         @if ($vendor_product->product->pharmacy_check == 1)
                                                             <button type="button"
                                                                 class="float-left btn btn-solid prescription_btn mt-2"
@@ -422,9 +459,9 @@
                                             </div>
 
                                         </div>
-                                        @if ($serviceType == 'rental')
+                                        
+                                        @if($serviceType == 'rental')
                                             <hr class="my-2">
-
                                             <div class="row align-items-md-center alRentalStartDate">
                                                 <div class="col-3">
                                                     <h6 class="m-0 pl-0">{{ __('Start Date') }}</h6>
@@ -436,9 +473,13 @@
                                                     <p>{{ date('m/d/Y g:i A', strtotime($vendor_product->end_date_time)) }}
                                                     </p>
                                                 </div>
+                                                <div class="col-3">
+                                                    <h6 class="m-0 pl-0" style="font-weight: 600;">{{ __('Security Amount') }}</h6>
+                                                    <p>{{ Session::get('currencySymbol') . decimal_format($vendor_product->product->security_amount) }}</p>
+                                                </div>
                                             </div>
                                         @endif
-
+                                        
                                         @if (count($vendor_product->addon) != 0)
                                             <hr class="my-2">
                                             <div class="row align-items-md-center add_head">
@@ -456,18 +497,18 @@
                                                         <div class="col-md-6 col col-sm-4">
                                                             <div class="extra-items-price">
                                                                 @if ($additionalPreference['is_token_currency_enable'])
-                                                                    {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($addon->option->price_in_cart * $addon->option->multiplier)) }}
+                                                                    {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format(@$addon->option->price_in_cart *(@$addon->option->multiplier ?? 1))) }}
                                                                 @else
-                                                                    {{ Session::get('currencySymbol') . decimal_format($addon->option->price_in_cart * $addon->option->multiplier) }}
+                                                                    {{ Session::get('currencySymbol') . decimal_format(@$addon->option->price_in_cart * (@$addon->option->multiplier ?? 1)) }}
                                                                 @endif
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3 col col-sm-4">
                                                             <div class="extra-items-price">
                                                                 @if ($additionalPreference['is_token_currency_enable'])
-                                                                    {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($addon->option->quantity_price)) }}
+                                                                    {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format((@$addon->option->quantity_price ?? 0))) }}
                                                                 @else
-                                                                    {{ Session::get('currencySymbol') . decimal_format($addon->option->quantity_price) }}
+                                                                    {{ Session::get('currencySymbol') . decimal_format((@$addon->option->quantity_price??0)) }}
                                                                 @endif
                                                             </div>
                                                         </div>
@@ -518,81 +559,97 @@
 
 
                                         {{-- Home Service Schedual code Start at down --}}
-                                        {{-- @php
-                       pr($cart_details->closed_store_order_scheduled);
-                        @endphp --}}
-                                        @if (($cart_details->closed_store_order_scheduled == 1 ||
-                                            $client_preference_detail->off_scheduling_at_cart != 1) &&
-                                            (in_array($serviceType, ['appointment', 'on_demand']) && $vendor_product->product->mode_of_service == 'schedule'))
+                                       
+                                        @if (
+                                            ($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) 
+                                            && ((in_array($serviceType, ['appointment', 'on_demand'])  )
+                                            && ( ($vendor_product->product->mode_of_service == 'schedule') || ($is_service_product_price_from_dispatch_forOnDemand ==1))
+                                         ))
                                             <hr class="my-1">
                                             @if ($client_preference_detail->business_type != 'laundry')
                                                 @if (@$vendor_product->product->is_slot_from_dispatch != 1 || $vendor_product->product->Requires_last_mile != 1)
                                                     <div class="row mb-1 d-flex align-items-center vendor_product_schedule_datetime"
-                                                        style="{{ ($cart_details->schedule_type == 'schedule' || $vendor_product->product->mode_of_service=='schedule') ? '' : 'display:none!important' }}">
-                                                        <div class="col-5 offset-3 text-lg-right">
-                                                            <label class="m-0 radio">
-                                                                {{ __('Scheduled Slot') }} :</label>
-                                                        </div>
-                                                        <div class="col-4 vendor_slot_cart">
-                                                            <input type="hidden" class="custom-control-input check"
-                                                                id="tasknow" name="task_type" value='schedule'>
-                                                            @if ($product->slotsCnt != 0)
-                                                                <input type="date"
-                                                                    class="form-control vendor_schedule_datetime"
-                                                                    placeholder="Inline calendar"
-                                                                    data-schedule_type="date"
-                                                                    data-vendor_id="{{ $product->vendor_id }}"
-                                                                    data-cart_product_id="{{ $product->cart_product_id }}"
-                                                                    value="{{ $vendor_product->scheduled_date_time != '' ? $vendor_product->scheduled_date_time : $product->delay_date }}"
-                                                                    min="{{ $product->delay_date != '0' ? $product->delay_date : '' }}">
-                                                                <select
-                                                                    class="form-control vendor_product_schedule_slot vendor_schedule_slot "
-                                                                    id="vendor_schedule_slot_{{ $product->vendor_id }}"
-                                                                    data-schedule_type="time"
-                                                                    data-vendor_id="{{ $product->vendor_id }}"
-                                                                    data-cart_product_id="{{ $product->cart_product_id }}">
-                                                                    <option value="">{{ __('Select Slot') }}
-                                                                    </option>
-                                                                    @foreach ($product->slots as $slot)
-                                                                        <option value="{{ $slot->value }}"
-                                                                            {{ $slot->value == $product->schedule_slot ? 'selected' : '' }}>
-                                                                            {{ $slot->name }}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                            @else
-                                                                @if ($cart_details->delay_date != 0)
-                                                                    <input type="datetime-local"
-                                                                        id="vendor_schedule_slot_{{ $product->vendor_id }}"
-                                                                        data-schedule_type="ProductDateTime"
-                                                                        data-vendor_id="{{ $product->vendor_id }}"
-                                                                        data-cart_product_id="{{ $product->cart_product_id }}"
-                                                                        class="form-control vendor_schedule_datetime"
-                                                                        placeholder="Inline calendar"
-                                                                        value="{{ $vendor_product->manual_scheduled_date_time != '' ? $vendor_product->manual_scheduled_date_time : $product->delay_date }}"
-                                                                        min="{{ $cart_details->delay_date != '0' ? $cart_details->delay_date : '' }}"
-                                                                        data-cart_product_id="{{ $vendor_product->id }}">
-                                                                @else
-                                                                    <input type="datetime-local"
-                                                                        id="vendor_schedule_slot_{{ $product->vendor_id }}"
-                                                                        data-schedule_type="ProductDateTime"
-                                                                        data-vendor_id="{{ $product->vendor_id }}"
-                                                                        data-cart_product_id="{{ $product->cart_product_id }}"
-                                                                        class="form-control vendor_schedule_datetime"
-                                                                        placeholder="Inline calendar"
-                                                                        value="{{ $vendor_product->manual_scheduled_date_time != '' ? $vendor_product->manual_scheduled_date_time : $product->delay_date }} "
-                                                                        min="{{ $cart_details->delay_date != '0' ? $cart_details->delay_date : '' }}"
-                                                                        data-cart_product_id="{{ $vendor_product->id }}">
-                                                                @endif
+                                                        style="{{ ((($cart_details->schedule_type == 'schedule' || $vendor_product->product->mode_of_service=='schedule')) ||  ($is_service_product_price_from_dispatch_forOnDemand ==1)) ? '' : 'display:none!important' }}">
+                                                        <div class="col-{{( $is_service_product_price_from_dispatch_forOnDemand ==1 ? '9 d-flex ' : '5') }} offset-3 text-left">
+                                                            <p class="text-dark">{{ __('Scheduled Slot') }} :</p>
+                                                             @if($is_service_product_price_from_dispatch_forOnDemand ==1)
+                                                                <p class="m-0 mx-2">{{ $vendor_product->selected_dispatcher_time   }}  </p>
+                                                                
+                                                                <p class="m-0" > {{$vendor_product->schedule_slot_name}}</p>
+                                                               
                                                             @endif
-
                                                         </div>
+                                                        
+                                                        @if($is_service_product_price_from_dispatch_forOnDemand !=1)
+                                                            <div class="col-4 vendor_slot_cart">
+                                                                <input type="hidden" class="custom-control-input vendor_product_schedule_datetime check"
+                                                                    id="tasknow" name="task_type" value='schedule'>
+                                                                  
+                                                                        @if ($product->slotsCnt != 0)
+                                                                            <input type="date"
+                                                                                class="form-control vendor_schedule_datetime"
+                                                                                placeholder="Inline calendar"
+                                                                                data-schedule_type="date"
+                                                                                data-vendor_id="{{ $product->vendor_id }}"
+                                                                                data-cart_product_id="{{ $product->cart_product_id }}"
+                                                                                value="{{ $vendor_product->scheduled_date_time != '' ? $vendor_product->scheduled_date_time : $product->delay_date }}"
+                                                                                min="{{ $product->delay_date != '0' ? $product->delay_date : '' }}">
+                                                                            <select
+                                                                                class="form-control vendor_product_schedule_slot vendor_schedule_slot "
+                                                                                id="vendor_schedule_slot_{{ $product->vendor_id }}"
+                                                                                data-schedule_type="time"
+                                                                                data-vendor_id="{{ $product->vendor_id }}"
+                                                                                data-cart_product_id="{{ $product->cart_product_id }}">
+                                                                                <option value="">{{ __('Select Slot') }}
+                                                                                </option>
+                                                                                @foreach ($product->slots as $slot)
+                                                                                    <option value="{{ $slot->value }}"
+                                                                                        {{ $slot->value == $product->schedule_slot ? 'selected' : '' }}>
+                                                                                        {{ @$slot->name }}</option>
+                                                                                @endforeach
+                                                                            </select>
+                                                                        @else
+                                                                            @if ($cart_details->delay_date != 0)
+                                                                                <input type="datetime-local"
+                                                                                    id="vendor_schedule_slot_{{ $product->vendor_id }}"
+                                                                                    data-schedule_type="ProductDateTime"
+                                                                                    data-vendor_id="{{ $product->vendor_id }}"
+                                                                                    data-cart_product_id="{{ $product->cart_product_id }}"
+                                                                                    class="form-control vendor_schedule_datetime"
+                                                                                    placeholder="Inline calendar"
+                                                                                    value="{{ $vendor_product->manual_scheduled_date_time != '' ? $vendor_product->manual_scheduled_date_time : $product->delay_date }}"
+                                                                                    min="{{ $cart_details->delay_date != '0' ? $cart_details->delay_date : '' }}"
+                                                                                    data-cart_product_id="{{ $vendor_product->id }}">
+                                                                            @else
+                                                                                <input type="datetime-local"
+                                                                                    id="vendor_schedule_slot_{{ $product->vendor_id }}"
+                                                                                    data-schedule_type="ProductDateTime"
+                                                                                    data-vendor_id="{{ $product->vendor_id }}"
+                                                                                    data-cart_product_id="{{ $product->cart_product_id }}"
+                                                                                    class="form-control vendor_schedule_datetime"
+                                                                                    placeholder="Inline calendar"
+                                                                                    value="{{ $vendor_product->manual_scheduled_date_time != '' ? $vendor_product->manual_scheduled_date_time : $product->delay_date }} "
+                                                                                    min="{{ $cart_details->delay_date != '0' ? $cart_details->delay_date : '' }}"
+                                                                                    data-cart_product_id="{{ $vendor_product->id }}">
+                                                                            @endif
+                                                                        @endif
+                                                                     
+                                                            </div>
+                                                        @endif  
                                                     </div>
                                                 @else
-                                                    {{-- Dispatch sloat shoty --}}
+                                                    {{-- Dispatch sloat shot --}}
                                                     @include('frontend.cart.dispatchSlots')
                                                 @endif
                                             @endif
                                         @endif
+                                        @if ($vendor_product->product->is_long_term_service == 1)
+                                            @include('frontend.cart.longTermTimeSelection')
+                                        @endif
+                                        @if( $vendor_product->product->same_day_delivery ==  1 && $vendor_product->product->next_day_delivery ==  1)
+                                            @include('frontend.cart.deliverySlotSelection')
+                                        @endif
+
                                         @if ($vendor_product->product->is_long_term_service == 1)
                                             @include('frontend.cart.longTermTimeSelection')
                                         @endif
@@ -663,8 +720,8 @@
                                                 <img class="blur-up lazyload"
                                                     data-src="{{ asset('assets/images/discount_icon.svg') }}">
                                                 <label class="mb-0 ml-2">
-                                                    @if ($product->coupon)
-                                                        {{ $product->coupon->promo->name }}
+                                                    @if ($product->coupon && $product->coupon->promo )
+                                                        {{  @$product->coupon->promo->name ?? '' }}
                                                     @else
                                                         <a href="javascript:void(0)" class="promo_code_list_btn ml-1"
                                                             data-vendor_id="{{ $product->vendor->id }}"
@@ -673,10 +730,10 @@
                                                     @endif
                                                 </label>
                                             </div>
-                                            @if ($product->coupon)
+                                            @if ($product->coupon && $product->coupon->promo )
                                                 <label class="p-1 m-0"><a href="javascript:void(0)"
                                                         class="remove_promo_code_btn ml-1"
-                                                        data-coupon_id="{{ $product->coupon ? $product->coupon->promo->id : '' }}"
+                                                        data-coupon_id="{{ @$product->coupon->promo->id ?? '' }}"
                                                         data-cart_id="{{ $cart_details->id }}">Remove</a></label>
                                             @endif
                                         @endif
@@ -685,7 +742,7 @@
                                 <div class="col-lg-6">
                                     @if ($product->delOptions)
                                         <div
-                                            class="row mb-1 d-flex align-items-center   @if ($product->promo_free_deliver == 1) {{ $product->promo_free_deliver }} org_price @endif ">
+                                            class="row mb-1 d-flex align-items-center  dfsdf  @if ($product->promo_free_deliver == 1) {{ $product->promo_free_deliver }} org_price @endif ">
                                             <div class="col-5 text-lg-right">
                                                 <label class="m-0 radio">
                                                     {{ __('Delivery Fee') }} :</label>
@@ -702,7 +759,7 @@
                                                     {{ __('Processor Name') }} :</label>
                                             </div>
                                             <div class="col-7">
-                                                {!! $product->processor_product->name !!}
+                                                {!! ($product->processor_product ? $product->processor_product->name : '') !!}
                                             </div>
                                         </div>
                                         <div class="row mb-1 d-flex align-items-center">
@@ -771,7 +828,7 @@
                                                             @foreach ($product->slots as $slot)
                                                                 <option value="{{ $slot->value }}"
                                                                     {{ $slot->value == $product->selected_slot ? 'selected' : '' }}>
-                                                                    {{ $slot->name }}</option>
+                                                                    {{ @$slot->name }}</option>
                                                             @endforeach
                                                         </select>
                                                         {{-- onchange="checkSlotAvailability(this);" --}}
@@ -812,7 +869,17 @@
                                             </div>
                                         </div>
                                     @endif
-
+                                    @if (@$product->vendor->service_charge_amount > 0)
+                                        <div class="row">
+                                            <div class="col-5 text-lg-right">
+                                                <label class="m-0 radio">{{ __('Service Fee') }} :</label>
+                                            </div>
+                                            <div class="col-7 text-right">
+                                                <p class="total_amt m-0">{{ Session::get('currencySymbol') }}
+                                                    {{ decimal_format($product->vendor->service_charge_amount) }}</p>
+                                            </div>
+                                        </div>
+                                    @endif
                                     <div class="row">
                                         {{-- @if ($cart_details->vendorCnt > 1) --}}
                                         <div class="col-5 text-lg-right">
@@ -820,7 +887,10 @@
                                         </div>
                                         <div class="col-7 text-right">
                                             {{-- <p class="total_amt m-0">{{Session::get('currencySymbol')}} {{decimal_format($product->product_total_amount + $product->vendor->fixed_fee_amount - $product->bid_vendor_discount??0)}}</p> --}}
+
+
                                             <p class="total_amt m-0">
+
                                                 @if ($additionalPreference['is_token_currency_enable'])
                                                     {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($product->product_total_amount + $product->vendor->fixed_fee_amount)) }}@else{{ Session::get('currencySymbol') . decimal_format($product->product_total_amount + $product->vendor->fixed_fee_amount - $product->bid_vendor_discount ?? 0) }}
                                                 @endif
@@ -835,19 +905,17 @@
                             </div>
                         </div>
                     @endforeach
-
-
+                    @if(checkColumnExists('cart_products','recurring_booking_type'))
+                        @if ($vendor_product->recurring_booking_type == 1 || $vendor_product->recurring_booking_type == 2 || $vendor_product->recurring_booking_type == 3 || $vendor_product->recurring_booking_type == 4)
+                            @include('frontend.cart.recurrentBooking')
+                        @endif
+                    @endif
                 </div>
                 <div class="row m-0">
                     <div class="col-lg-12 left_box new_cart mt-4 p-3" id="left_address">
                         {!! $cart_details->left_section !!}
                     </div>
                 </div>
-
-
-
-
-
 
                 @if ($cart_details->guest_user)
                     <div class="col-lg-12 left_box new_cart mt-4 p-3">
@@ -871,6 +939,17 @@
                         </div>
                         <input type="hidden" name="without_category_kyc"
                             value="{{ $cart_details->without_category_kyc }}">
+
+                            @if(checkColumnExists('cart_products','recurring_booking_type'))
+                                @if ($vendor_product->recurring_booking_type == 1)
+                                    <input type="hidden" id="is_recurring_booking" value="{{ $vendor_product->recurring_booking_type }}" />
+                                @endif
+                                @else
+                                <input type="hidden" id="is_recurring_booking" value="0" />
+                            @endif
+
+
+
                         @if ($client_preference_detail->category_kyc_documents == 1)
                             @if (@$cart_details->category_kyc_count > 0)
                                 <div class=" col-3 {{ $cart_details->category_kyc_count }}"
@@ -954,7 +1033,7 @@
                                                             @foreach ($cart_details->slotsForPickup as $slot)
                                                                 <option value="{{ $slot->value }}"
                                                                     {{ $slot->value == $cart_details->scheduled->slot ? 'selected' : '' }}>
-                                                                    {{ $slot->name }}</option>
+                                                                    {{ @$slot->name }}</option>
                                                             @endforeach
                                                         @endif
                                                     </select>
@@ -986,7 +1065,7 @@
                                                             @foreach ($cart_details->slotsForDropoff as $slot)
                                                                 <option value="{{ $slot->value }}"
                                                                     {{ $slot->value == $cart_details->scheduled->slot ? 'selected' : '' }}>
-                                                                    {{ $slot->name }}</option>
+                                                                    {{ @$slot->name }}</option>
                                                             @endforeach
                                                         @endif
                                                     </select>
@@ -1005,6 +1084,15 @@
                                             id="specific_instructions"
                                             value="{{ $cart_details->specific_instructions ?? '' }}"
                                             name="specific_instructions">
+                                             {{-- @if($getAdditionalPreference['is_file_cart_instructions']) 
+                                                <div class="Instructions_file">
+                                                        <label>{{ __('Instructions file') }}</label>
+                                                        <div class="instructions_image">
+                                                            <input data-default-file="" accept="image/*" type="file" data-plugins="dropify" name="instructionsFile[]" class="dropify instructions_image" multiple />
+                                                        </div>
+                                                        <label class="logo-size text-right w-100">{{ __("image") }} 1000X1000</label>
+                                                </div>
+                                            @endif --}}
                                     </div>
                                 </div>
                                 @if (isset($cart_details->gift_card_id) && (isset($cart_details->gift_card) && !empty($cart_details->gift_card)))
@@ -1034,7 +1122,7 @@
 
                             @if ($cart_details->sub_total > 0)
                                 <div class="row">
-                                    <div class="col-6">{{ __('Sub Total') }}</div>
+                                    <div class="col-6">{{ __('Total') }}</div>
                                     {{-- <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->sub_total - $cart_details->bid_total_discount)}}</b></div> --}}
                                     <div class="col-6 text-right"><b>
                                             @if ($additionalPreference['is_token_currency_enable'])
@@ -1045,7 +1133,6 @@
                                 </div>
                                 <hr class="my-2">
                             @endif
-
                             @if ($cart_details->delivery_charges > 0)
                                 <div class="row">
                                     <div class="col-6">{{ __('Total Delivery Fee') }}</div>
@@ -1057,6 +1144,22 @@
                                     </div>
                                 </div>
                                 <hr class="my-2">
+                            @endif
+                            @if ($serviceType == 'rental')
+                                <div class="row">
+                                    <div class="col-6">{{ __('Security Amount') }}</div>
+                                    <div class="col-6 text-right">
+                                        <b>{{ Session::get('currencySymbol') . decimal_format($cart_details->security_amount) }}</b>
+                                    </div>
+                                </div>
+                                <hr class="my-2">
+                            @endif
+
+                            @if($product->slot_price != '' && $product->delivery_date != ''&& $product->slot_id != '')
+                                <div class="row">
+
+                                    <div class="col-6">{{__('Delivery Slot Fees')}}</div>
+                                    <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->delivery_slot_amount)}}</b></div>
                             @endif
                             @if ($cart_details->total_service_fee > 0 && $price_bifurcation != 1)
                                 <div class="row">
@@ -1117,7 +1220,7 @@
                             @if ($price_bifurcation != 1)
                                 <!-- <hr class="my-2"> -->
                                 <div class="row">
-                                    <div class="col-6">{{ __('Total') }}</div>
+                                    <div class="col-6">{{ __('Sub Total') }}</div>
                                     {{-- @if ($serviceType == 'rental')
                     <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($cart_details->gross_amount+$vendor_product->pvariant->incremental_price * $vendor_product->additional_increments_hrs_min)}}</b></span>
                     <span id="other_taxes" style="display:none;">{{$other_taxes}}</span></div>
@@ -1148,6 +1251,7 @@
                                             @else
                                                 {{ Session::get('currencySymbol') }}
                                             @endif
+                                           
                                             <span
                                                 id="total_taxable_amount">{{ $additionalPreference['is_token_currency_enable'] ? getInToken(decimal_format($cart_details->total_taxable_amount + $other_taxes)) : decimal_format($cart_details->total_taxable_amount + $other_taxes) }}</span>
                                         </b>
@@ -1389,7 +1493,7 @@
                                 <hr class="my-2">
                                 <div class="row">
                                     <div class="col-6">
-                                        <p class="total_amt m-0"> {{ __('Advanced Token Amount') }}</p>
+                                        <p class="total_amt m-0"> {{ __('Deposit Required') }}</p>
                                     </div>
                                     <div class="col-6 text-right">
                                         @if ($client_preference_detail->auto_implement_5_percent_tip == 1)
@@ -1430,7 +1534,7 @@
                                 <hr class="my-2">
                                 <div class="row">
                                     <div class="col-6">
-                                        <p class="total_amt m-0"> {{ __('Pending Amount') }}</p>
+                                        <p class="total_amt m-0"> {{ __('Outstanding Amount') }}</p>
                                     </div>
                                     <div class="col-6 text-right">
                                         @if ($client_preference_detail->auto_implement_5_percent_tip == 1)
@@ -1483,95 +1587,10 @@
                             $product->vendor->order_min_amount > 0 &&
                             $product->product_total_amount + $product->vendor->fixed_fee_amount < $product->vendor->order_min_amount
                         ))
-                            @if ($cart_details->is_long_term_service != 1 &&
-                                ($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) &&
-                                $cart_details->vendorCnt == 1 &&
-                                !in_array($serviceType, ['appointment', 'on_demand']))
-                                @if ($client_preference_detail->business_type != 'laundry')
-                                    <div class="row arabic-lng position-relative my-3" id="dateredio">
-                                        <div class=" col-md-12 mb-2 mb-md-0 text-right">
-                                            <div class="login-form col schedule_btn">
-                                                <ul
-                                                    class="list-inline ml-auto d-flex align-items-center justify-content-end">
-                                                    <li class="d-inline-block mr-1">
-                                                        <input type="hidden" class="custom-control-input check"
-                                                            id="vendor_id" name="vendor_id"
-                                                            value="{{ $cart_details->vendor_id }}">
-                                                        <input type="hidden" class="custom-control-input check"
-                                                            id="tasknow" name="task_type"
-                                                            value="{{ $cart_details->schedule_type == 'schedule' ? 'schedule' : 'now' }}">
-                                                    </li>
-                                                    @if ($cart_details->delay_date == 0)
-                                                        {{-- <li class="d-inline-block mr-1">
-                                <input type="radio" class="custom-control-input check" id="tasknow" name="tasktype" value="now" <%= ((cart_details->schedule_type == 'now' || cart_details->schedule_type == '' || cart_details->schedule_type == null) ? 'checked' : '') %> >
-                                <label class="btn btn-solid" for="tasknow">{{__('Now')}}</label>
-                            </li> --}}
-                                                    @endif
-                                                    <li class="d-inline-block ">
-                                                        <input type="radio"
-                                                            class="custom-control-input check taskschedulebtn"
-                                                            id="taskschedule" name="tasktype" value=""
-                                                            {{ $cart_details->schedule_type == 'schedule' || $cart_details->delay_date != 0 ? 'checked' : '' }}
-                                                            style="{{ $cart_details->schedule_type != 'schedule' ? '' : 'display:none!important' }}">
-                                                        <label class="btn btn-solid mb-0 taskschedulebtn"
-                                                            for="taskschedule"
-                                                            style="{{ $cart_details->schedule_type != 'schedule' ? '' : 'display:none!important' }}">{{ __('Schedule') }}</label>
-                                                    </li>
-                                                    @if ($cart_details->closed_store_order_scheduled != 1 && $cart_details->deliver_status == 0)
-                                                        <li class="close-window">
-                                                            <i class="fa fa-times cross" aria-hidden="true"></i>
-                                                        </li>
-                                                    @else
-                                                        <li class="close-window">
-                                                            <i class="fa fa-times cross"
-                                                                style="display:none!important" aria-hidden="true"></i>
-                                                        </li>
-                                                    @endif
-                                                </ul>
-                                                <div class=" col-sm-12 p-0 pull-right datenow d-flex align-items-center justify-content-end text-right mr-1"
-                                                    id="schedule_div"
-                                                    style="{{ $cart_details->schedule_type == 'schedule' ? '' : 'display:none!important' }}">
-
-
-                                                    @if ($cart_details->slotsCnt == 0)
-                                                        @if ($cart_details->delay_date != 0)
-                                                            <input type="datetime-local" id="schedule_datetime"
-                                                                class="form-control" placeholder="Inline calendar"
-                                                                value="{{ $cart_details->schedule_type == 'schedule' ? $cart_details->scheduled_date_time : '' }}"
-                                                                min="{{ $cart_details->delay_date != '0' ? $cart_details->delay_date : '' }}">
-                                                        @else
-                                                            <input type="datetime-local" id="schedule_datetime"
-                                                                class="form-control" placeholder="Inline calendar"
-                                                                value="{{ $cart_details->schedule_type == 'schedule' ? $cart_details->scheduled_date_time : '' }}"
-                                                                min="{{ $cart_details->delay_date != '0' ? $cart_details->delay_date : '' }}">
-                                                        @endif
-                                                    @else
-                                                        <input type="date" id="schedule_datetime"
-                                                            class="form-control schedule_datetime"
-                                                            placeholder="Inline calendar"
-                                                            value="{{ $cart_details->scheduled_date_time != '' ? $cart_details->scheduled_date_time : $cart_details->delay_date }}"
-                                                            min="{{ $cart_details->delay_date }}">
-                                                        <input type="hidden" id="checkSlot" value="1">
-                                                        <select name="slots" id="slot"
-                                                            onchange="checkSlotOrders();" class="form-control">
-                                                            <option value="">{{ __('Select Slot') }} </option>
-                                                            @foreach ($cart_details->slots as $slot)
-                                                                <option value="{{ $slot->value }}"
-                                                                    {{ $slot->value == $cart_details->scheduled->slot ? 'selected' : '' }}>
-                                                                    {{ $slot->name }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    @endif
-
-
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                @endif
-                            @endif
-
+                        @if($cart_details->is_recurring_booking != 1 && $serviceType != 'rental') 
+                              @include('frontend.cart.scheduleSlot')
+                        @endif
+                         
                             <div class="col-sm-6 col-lg-12 mt-2 text-sm-right cart-checkout_btn">
                                 @if (isset($ageVerify->status) && $ageVerify->status == 1)
                                     {{-- <button id="verify_your_age" class="btn btn-solid " type="button" >{{__('Verify Your Age')}}</button> --}}
@@ -1584,12 +1603,23 @@
                                     <input type="hidden" id="edit_order_schedule_slot"
                                         value="{{ $schedule_slots_edit }}">
                                 @endif
-
+                                @if ($serviceType == 'rental')
+                                    <div class="text-sm-left mb-2">
+                                        <input type="checkbox" name="agree_term_check" id="agree_term_check" value="" disabled> <a href="javascript:void(0);" class="agree_term_btn">Agree Term</a>
+                                    </div>
+                                @endif
+                                @php
+                                    $disablePlaceBtn = '';
+                                    if(count($cart_details->user_allAddresses) == 0 || $serviceType == 'rental'){
+                                        $disablePlaceBtn = 'disabled';
+                                    }
+                                @endphp
                                 @if ($additionalPreference['is_token_currency_enable'] == 1)
+                               
                                     @if ($cart_details->wallet_amount_used > 0)
                                         @if ($cart_error_message == '')
                                             <button id="order_placed_btn" class="btn btn-solid d-none" type="button"
-                                                {{ count($cart_details->user_allAddresses) == 0 ? 'disabled' : '' }}>{{ __('Place Order') }}</button>
+                                                {{ $disablePlaceBtn}}>{{ __('Place Order') }}</button>
                                         @else
                                             <div class="alert p-0" role="alert">
                                                 <div class="alert-danger p-1">{{ $cart_error_message }}</div>
@@ -1602,7 +1632,7 @@
                                 @else
                                     @if ($cart_error_message == '')
                                         <button id="order_placed_btn" class="btn btn-solid d-none" type="button"
-                                            {{ count($cart_details->user_allAddresses) == 0 ? 'disabled' : '' }}>{{ __('Place Order') }}</button>
+                                        {{ $disablePlaceBtn}}>{{ __('Place Order') }}</button>
                                     @else
                                         <div class="alert p-0" role="alert">
                                             <div class="alert-danger p-1">{{ $cart_error_message }}</div>
@@ -1611,21 +1641,17 @@
                                 @endif
 
                             </div>
-                        @endif
+
+
+                            </div>
+
+                        </div>
 
                     </div>
-
                 </div>
-
-            </div>
-        </div>
+            @endif
         {{-- -- End Right Section ---- --}}
-
-
-
-
-    </div>
-    {{-- Schedual code end at down --}}
+        </div>
     </div>
 
 
@@ -1636,7 +1662,7 @@
             <h3 class="mb-2 mt-4">{{ __('Frequently bought together') }}</h3>
             <div class="row">
                 <div class="col-12 p-0">
-                    <div class="product-4 product-m">
+                    <div class="product-4 product-m upsell-sell">
                         @foreach ($cart_details->upSell_products as $product)
                             <a class="common-product-box scale-effect text-center"
                                 href="{{ $product->vendor->slug . '/product/' . $product->url_slug }}">
@@ -1678,7 +1704,7 @@
             <h3 class="mb-2 mt-3">{{ __('You might be interested in') }}</h3>
             <div class="row">
                 <div class="col-12 p-0">
-                    <div class="product-4 product-m">
+                    <div class="product-4 product-m cross-sell">
                         @foreach ($cart_details->crossSell_products as $product)
                             <a class="common-product-box scale-effect text-center"
                                 href="{{ $product->vendor->slug . '/product/' . $product->url_slug }}">
@@ -1716,10 +1742,35 @@
     </div>
 
 @endif
-
+@if ($serviceType == "rental")
+    @include('frontend.cart.rentalConsentFormModal')
+@endif
 
 <script>
     $(document).ready(function() {
+         $('.dropify').dropify({
+            messages: {
+                'default': "Drag and drop a file here or click",
+                'replace': "Drag and drop or click to replace",
+                'remove':  "Remove",
+                'error':   "Ooops, something wrong happended."
+            }
+        });
+
+        $('.dropify-clear').click(function(e){
+            e.preventDefault();
+            $(".instructions_image").empty();
+
+        });
+        @if(!empty($r_schedule_datetime))
+            var schedule_datetime = "{{ $r_schedule_datetime }}";
+            $("#schedule_datetime").val(schedule_datetime);
+            $("#schedule_datetime").prop('disabled',true);
+            $(".schedule_btn").find('.close-window').hide();
+        @else
+            $("#schedule_datetime").prop('disabled',false);
+            $(".schedule_btn").find('.close-window').show();
+        @endif
         $(".upsell-sell").slick({
             arrows: true,
             dots: false,
@@ -1749,9 +1800,30 @@
                 }
             }]
         });
+        var serviceType = "{{$serviceType}}";
+        if(serviceType == "rental"){
+            $("#order_placed_btn").attr('disabled', true);
+        }
     });
+
+    $(document).on('click', '.agree_term_btn', function(){
+        $('#consent_form_rental').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    });
+
+    $(document).on('click', '#agree_btn', function(){
+        $('#agree_term_check').prop('checked', true);
+        $('#agree_term_check').attr('disabled', false);
+        $("#order_placed_btn").attr('disabled', false);
+        $('#consent_form_rental').modal('hide');
+    });
+
+
 </script>
 
 @section('script-bottom-js')
     <script defer type="text/javascript" src="{{ asset('js/giftCard/cartGiftCard.js') }}"></script>
+
 @endsection

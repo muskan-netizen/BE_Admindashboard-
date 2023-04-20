@@ -175,8 +175,8 @@
                                         <span class="invalid-feedback" id="account_number_error"><strong></strong></span>
                                     </div>
                                     <div class="col-md-3 mb-2" id="ifsc_codeInput">
-                                        <label for="ifsccode">{{__('IFSC Code')}}</label>
-                                        <input type="text" class="form-control" name="ifsc_code" placeholder="IFSC Code" value="{{$user ? $user->title : ''}}" placeholder="">
+                                        <label for="ifsccode">{{getNomenclatureName('IFSC Code', true)}}</label>
+                                        <input type="text" class="form-control" name="ifsc_code" placeholder="{{getNomenclatureName('IFSC Code', true)}}" value="{{$user ? $user->title : ''}}" placeholder="">
                                         <span class="invalid-feedback" id="ifsc_code_error"><strong></strong></span>
                                     </div>
                                 </div>
@@ -223,8 +223,8 @@
                                         <div class="col-md-6 mb-3" id="nameInput">
                                             <label for="vendortype">{{__('Vendor Type')}}</label>
                                             <select name="vendor_type" id="vendor_type" class="form-control">
-                                                <option value="1">ClickOKartPartner</option>
-                                                <option value="0">Shopper</option>
+                                                <option value="0">{{getNomenclatureName('Vendor', true)}}</option>
+                                                <option value="1">{{getNomenclatureName('Seller', true)}}</option>
                                             </select>
                                         </div>
                                     @endif

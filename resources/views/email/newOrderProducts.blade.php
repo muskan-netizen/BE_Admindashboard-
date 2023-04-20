@@ -1,11 +1,11 @@
 @php
-$timezone = Auth::user()->timezone;
+$timezone = @$user->timezone;
 @endphp
 
 <tr>
    <td colspan="2" style="text-align: center;">
-       <h2 style="color: #000000;font-size: 15px;font-weight: 500;letter-spacing: 0;line-height: 19px;">{{__('ORDER NO')}}. {{$order->order_number}}</h2>
-       <p style="opacity: 0.41;color: #000000;font-size: 12px;letter-spacing: 0;line-height: 15px;">{{ dateTimeInUserTimeZone($order->created_at, $timezone) }}</p>
+       <h2 style="color: #000000;font-size: 15px;font-weight: 500;letter-spacing: 0;line-height: 19px;">{{__('ORDER NO')}}. {{@$order->order_number}} (<span style="color:{{!empty(getClientPreferenceDetail()) ? getClientPreferenceDetail()->primary_color : '#000'}};"><strong>{{getNomenclatureName($luxuryOptionTitle ?? '')}}</strong></span>)</h2>
+       <p style="opacity: 0.41;color: #000000;font-size: 12px;letter-spacing: 0;line-height: 15px;">{{ dateTimeInUserTimeZone(@$order->created_at, @$timezone) }}</p>
    </td>
 </tr>
 
@@ -18,7 +18,7 @@ $timezone = Auth::user()->timezone;
             <tr>
                <th style="padding-right: 0;padding-left: 0;font-weight: 400;">
                   <label style="height: 22px;width: 22px;background-color: #ddd;border-radius: 50%;display: inline-block;vertical-align: middle;margin-right: 5px;"></label>
-                  <span style="color: #000000;font-size: 13px;letter-spacing: 0;line-height: 18px;">{{$product['vendor']['name']}}</span>
+                  <span style="color: #000000;font-size: 13px;letter-spacing: 0;line-height: 18px;">{{@$product['vendor']['name']}}</span>
                </th>
                <th style="text-align: right;padding-right: 0;padding-left: 0;color: #000000;font-size: 13px;letter-spacing: 0;line-height: 18px;font-weight: 400;">
                   {{$product['vendor']['address']}}
@@ -124,10 +124,12 @@ $timezone = Auth::user()->timezone;
                 <td style="text-align: left;"><b>{{__('Tax')}}:</b></td>
                 <td style="text-align: right;">{{$currencySymbol . decimal_format($order->taxable_amount)}}</td>
              </tr>
+            @if(!in_array($order->luxury_option_id,[2,3]))
              <tr>
                <td style="text-align: left;"><b>{{__('Delivery Fee')}}:</b></td>
                <td style="text-align: right;">{{$currencySymbol . decimal_format($order->total_delivery_fee)}}</td>
             </tr>
+            @endif
             <tr>
                <td style="text-align: left;"><b>{{__('Service fee')}}:</b></td>
                <td style="text-align: right;">{{$currencySymbol . decimal_format($order->total_service_fee)}}</td>
@@ -205,7 +207,7 @@ $timezone = Auth::user()->timezone;
 
                </td>
                <td style="width: 60%;text-align: right;font-size: 13px;line-height: 18px;color: #000000;">
-                  <p style="width: 240px;margin-left: auto;">{{Auth::user()->name}}
+                  <p style="width: 240px;margin-left: auto;">{{@$user->name}}
                      @php
                      $address ="";
                      $address_arr = \App\Models\UserAddress::where(['id' => $order->address_id])->first();
@@ -214,8 +216,8 @@ $timezone = Auth::user()->timezone;
                      }
                      @endphp
                      {{$address}}
-                    <a style="display: block;color: #32C5FF;" href="mailto:{{Auth::user()->email}}">{{Auth::user()->email}}</a>
-                    {{Auth::user()->dial_code}}{{Auth::user()->phone_number }}</p>
+                    <a style="display: block;color: #32C5FF;" href="mailto:{{@$user->email}}">{{@$user->email}}</a>
+                    {{@$user->dial_code}}{{@$user->phone_number }}</p>
                </td>
             </tr>
          </tbody>

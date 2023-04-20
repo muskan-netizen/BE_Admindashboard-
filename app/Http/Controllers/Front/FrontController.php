@@ -35,8 +35,8 @@ class FrontController extends Controller
                 if(!empty($client_preference->sms_secret) && !empty($client_preference->sms_from)){
                     $client = new TwilioClient($client_preference->sms_key, $client_preference->sms_secret);
                     $send =  $client->messages->create($to, ['from' => $client_preference->sms_from, 'body' => $body]);
-                    // Log::info('SMS twilio respons');
-                    // Log::info($send);
+                    //// Log::info('SMS twilio respons');
+                    //// Log::info($send);
                 }else{
                     return 2;
                 }
@@ -67,12 +67,22 @@ class FrontController extends Controller
             $crendentials = json_decode($client_preference->sms_credentials);
             $send = $this->africasTalking_sms($to,$body,$crendentials);
             }
+            elseif($client_preference->sms_provider == 7) //for Vonage gateway
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->vonage_sms($to,$body,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 8) //for SMS partner gateway France
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->sms_partner_gateway($to,$body,$crendentials);
+            }
             else{
                 if(!empty($sms_secret) && !empty($sms_from)){
                     $client = new TwilioClient($sms_key, $sms_secret);
                     $send =  $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
-                    // Log::info('SMS twilio respons');
-                    // Log::info($send);
+                    //// Log::info('SMS twilio respons');
+                    //// Log::info($send);
                 }else{
                     return 2;
                 }
@@ -80,14 +90,15 @@ class FrontController extends Controller
             //return $send;
         }
         catch(\Exception $e){
-            // Log::info('SMS logs');
-            // Log::info($e->getMessage());
+            //// Log::info('SMS logs');
+            //// Log::info($e->getMessage());
             return '2';
         }
         return '1';
 	}
     protected function sendSmsNew($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
         try{
+            $smsbody = $body['body']??'';
             $body = $body['body']??'';
             $template_id = $body['template_id']??'';
             $client_preference =  getClientPreferenceDetail();
@@ -96,8 +107,8 @@ class FrontController extends Controller
                 if(!empty($client_preference->sms_secret) && !empty($client_preference->sms_from)){
                     $client = new TwilioClient($client_preference->sms_key, $client_preference->sms_secret);
                     $send =  $client->messages->create($to, ['from' => $client_preference->sms_from, 'body' => $body]);
-                    // Log::info('SMS twilio respons');
-                    // Log::info($send);
+                    //// Log::info('SMS twilio respons');
+                    //// Log::info($send);
                 }else{
                     return 2;
                 }
@@ -128,12 +139,22 @@ class FrontController extends Controller
             $crendentials = json_decode($client_preference->sms_credentials);
             $send = $this->africasTalking_sms($to,$body,$crendentials);
             }
+            elseif($client_preference->sms_provider == 7) //for Vonage gateway
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->vonage_sms($to,$smsbody,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 8) //for SMS partner gateway France
+            {
+                $crendentials = json_decode($client_preference->sms_credentials);
+                $send = $this->sms_partner_gateway($to,$smsbody,$crendentials);
+            }
             else{
                 if(!empty($sms_secret) && !empty($sms_from)){
                     $client = new TwilioClient($sms_key, $sms_secret);
                     $send =  $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
-                    // Log::info('SMS twilio respons');
-                    // Log::info($send);
+                    //// Log::info('SMS twilio respons');
+                    //// Log::info($send);
                 }else{
                     return 2;
                 }
@@ -737,13 +758,7 @@ class FrontController extends Controller
         Session::put('vendorType', $type);
         return Session::get('vendorType');
     }
-    public function productDetail($product_id){
-        return Product::with(['vendor'=> function ($q1)  {
-            $q1->select('id', 'latitude','longitude');
-        },'productcategory'=> function ($q1)  {
-            $q1->select('id', 'type_id');
-        }])->find($product_id);
-    }
+   
 
     // get cart data in on demand product listing page
     public function getCartOnDemand($request)
@@ -753,6 +768,7 @@ class FrontController extends Controller
         $client_data = Client::first();
         $countries = Country::get();
         $langId = Session::get('customerLanguage');
+        $additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
         $guest_user = true;
         if ($user) {
             $cart = Cart::select('id', 'is_gift', 'item_count','scheduled_date_time')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
@@ -822,6 +838,7 @@ class FrontController extends Controller
             $cateTypeId = $productDetail ? ($productDetail->productcategory ? $productDetail->productcategory->type_id : '') : '';
             $is_slot_from_dispatch = $productDetail ? $productDetail->is_slot_from_dispatch  : '';
             $last_mile_check = $productDetail ? $productDetail->Requires_last_mile  : '';
+            $cartData[$key]->cateTypeId = $cateTypeId;
             if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ($last_mile_check == 1)){ 
                 $Dispatch =  $this->getDispatchAppointmentDomain();
                 $dispatchAgents = [];
@@ -852,34 +869,34 @@ class FrontController extends Controller
                 $cartData[$key]->is_dispatch_slot = 1 ;
             }else{
                 $time_slots = [];
-                if( $data->vendor->show_slot ==1 ){ // IF VENDOR 24*7 Availability
-                    $start_time = new DateTime("now", new  DateTimeZone($timezone) );
-                    $today = $start_time->format('Y-m-d');
-                    if($today < $selectedDate){
-                        $curr_time = date('Y-m-d 00:00');
-                    }else{
-                        $daten = new DateTime("now", new DateTimeZone($timezone) );
-                        $curr_time = $daten->format('Y-m-d h:i');
-                    }
-                    $start_time = $start_time->format('Y-m-d H:m');
-                    $end_time = date('Y-m-d 23:59');
-                    $timing   = $this->SplitTime($curr_time, $end_time, "60");
-                    foreach ($timing as $k=> $slt) {
-                        if($k+1 < count($timing)){
-                            $viewSlot['name'] = date('h:i:A', strtotime($slt)).' - '.date('h:i:A', strtotime($timing[$k+1]));
-                            $viewSlot['value'] = $slt.' - '.$timing[$k+1]; 
-                            $time_slots[] =  $viewSlot;
+                if(($cateTypeId == 8) && ($additionalPreference['is_service_product_price_from_dispatch'] !=1 )){ // no need to geting verdor slot when we get driver price
+                    if( $data->vendor->show_slot ==1 ){ // IF VENDOR 24*7 Availability
+                        $start_time = new DateTime("now", new  DateTimeZone($timezone) );
+                        $today = $start_time->format('Y-m-d');
+                        if($today < $selectedDate){
+                            $curr_time = date('Y-m-d 00:00');
+                        }else{
+                            $daten = new DateTime("now", new DateTimeZone($timezone) );
+                            $curr_time = $daten->format('Y-m-d h:i');
                         }
+                        $start_time = $start_time->format('Y-m-d H:m');
+                        $end_time = date('Y-m-d 23:59');
+                        $timing   = $this->SplitTime($curr_time, $end_time, "60");
+                        foreach ($timing as $k=> $slt) {
+                            if($k+1 < count($timing)){
+                                $viewSlot['name'] = date('h:i:A', strtotime($slt)).' - '.date('h:i:A', strtotime($timing[$k+1]));
+                                $viewSlot['value'] = $slt.' - '.$timing[$k+1]; 
+                                $time_slots[] =  $viewSlot;
+                            }
+                        }
+                    }else{
+                        $slotsRes = getShowSlot($selectedDate,$data->vendor_id,'delivery');
+                        $slots = (object)$slotsRes['slots'];
+                        $time_slots =  $slots;
                     }
-                }else{
-                    $slotsRes = getShowSlot($selectedDate,$data->vendor_id,'delivery');
-                    $slots = (object)$slotsRes['slots'];
-                    $time_slots =  $slots;
-                  
-
                 }
-
-                
+           
+                //$cartData->is_service_product_price_from_dispatch  = $additionalPreference['is_service_product_price_from_dispatch'] ;
                 $cartData[$key]->timeSlots = $time_slots;
                 $cartData[$key]->dispatchAgents = [];
             }
@@ -907,7 +924,6 @@ class FrontController extends Controller
     // get slot fron dispatcher
     public function getSlotFromDispatchDemand(Request $request)
     {
-       
            $product = $this->productDetail($request->product_id);
         
             $cateTypeId = $product ? ($product->productcategory ? $product->productcategory->type_id : '') : '';
@@ -1120,22 +1136,20 @@ class FrontController extends Controller
         $code = Client::orderBy('id','asc')->value('code');
         return $code;
     }
-    public function sendmailtest(){
+    
+    public function sendmailtest(Request $request,$domain='',$to){
 
         $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
         $data = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
-        //         echo "<pre>";
-        // print_r($data->toArray());
-        // exit();
 
         if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
                 $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
                 $client_name = $client->name;
                 $mail_from = $data->mail_from;
-                $sendto = "sandeep.kumar@codebrewinnovations.com";
+                $sendto = $to;
                 try{
                     $data = [
-                        'customer_name' => "harbans",
+                        'customer_name' => "Test user Email",
                         'code_text' => '',
                         'logo' => $client->logo['original'],
                         'frequency' => 'asd',
@@ -1145,11 +1159,11 @@ class FrontController extends Controller
                      $mail=   Mail::send('email.notifyUserSubscriptionBilling', ['mailData'=>$data],
                         function ($message) use($sendto, $client_name, $mail_from) {
                             $message->from($mail_from, $client_name);
-                            $message->to($sendto)->subject('Upcoming Subscription Billing');
+                            $message->to($sendto)->subject('Testing Email Credentials');
                         });
-        //                                 echo "<pre>";
-        // print_r($mail);
-        // exit();
+                    echo "<pre>";
+                    print_r($mail);
+                    exit();
                 $response['send_email'] = 1;
                 }
                 catch(\Exception $e){

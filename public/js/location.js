@@ -232,8 +232,15 @@ $(document).ready( async function () {
         let latitude = "";
         let longitude = "";
         let type = "";
+        let sessionType = "";
         //var id = $(this).attr('id');
-         type = $(this).attr('VendorType');
+        type = $(this).attr('VendorType');
+        sessionType = $(this).data("sessiontype");
+        console.log(type, sessionType);
+        if(type == sessionType){
+        window.location.href = home_page_url;
+        return false;
+        }
         if($("#address-latitude").length > 0){
             latitude = $("#address-latitude").val();
         }
@@ -1233,7 +1240,7 @@ function initMap() {
         });
 
         setTimeout(function(){
-            $(".pac-container").appendTo("#edit-address .address-input-group");
+            //$(".pac-container").appendTo("#edit-address .address-input-group");
         }, 300);
     }
 }

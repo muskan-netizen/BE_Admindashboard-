@@ -1477,9 +1477,9 @@ body.al_body_template_nine.p2p-module section.p2p-categories h2 {
 body.al_body_template_nine.p2p-module section.p2p-categories .cate-item a {
     background: linear-gradient(180deg, #e1dfdf 0%, #efe7e7 100%);
     border-radius: 9px;
-    padding: 15px;
+    padding: 20px 10px;
     margin-bottom: 25px;
-    min-height: 180px;
+    min-height: inherit;
     cursor: pointer;
     display: block;
 }
@@ -1544,7 +1544,7 @@ body.al_body_template_nine  .product-description .update_year  b{
     color:#ccc;
     font-size: 14px;
     padding-bottom: 18px;
-    border-bottom: 1px solid #f5f5f5;
+    border-bottom:unset;
     text-align: left;
     width: 100%;
 }
@@ -1554,6 +1554,9 @@ body.al_body_template_nine  .product-description .update_year  b{
 
 
 /*---------- 07-02-2023 home page css ---------*/
+body.al_body_template_nine  .common-product-box:hover,  body.al_body_template_nine  .product-box:hover, body.al_body_template_nine  .product-card-box:hover, body.al_body_template_nine  .suppliers-box:hover {
+    box-shadow: 0 0 0 1px rgb(113 91 204 / 14%), 0 1px 5px 0 rgb(113 91 204 / 14%);
+}
 body.al_body_template_nine .p2p-full-width {
     max-width: 98% !important;
 }
@@ -1562,19 +1565,23 @@ body.al_body_template_nine  .prod-details {
     justify-content: space-between;
     align-items: center;
     padding: 15px 0 10px;
+    border-top:1px solid var(--theme-deafult);
+}
+body.dark.al_body_template_nine  .prod-details{
+    border-color: #f5f5f5;
 }
 body.al_body_template_nine  .product-description .update_year b{
     font-size: 14px;
     padding-bottom: 12px;
-    border-bottom: 1px solid var(--theme-deafult);
-    ;
+    /* border-bottom: 1px solid var(--theme-deafult); */
+    
 }
 body.al_body_template_nine  .product-description  h6.card_title{
     text-align: left;
 }
 body.al_body_template_nine .product-m .item {
     width: 16.33%;
-    padding: 0 5px;
+    padding: 0 10px;
     
 }
 body.al_body_template_nine .product-m .item  .product-card-box{
@@ -1655,7 +1662,7 @@ body.al_body_template_nine .product-m .item .media-body{
     }
     section.home-slider-wrapper .cardbanner,
     .al_desktop_banner {
-        height: 210px !important;
+        height: auto !important;
     }
     .al_custom_brand .col-md-3 {
         width: 50%;

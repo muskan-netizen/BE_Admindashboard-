@@ -1115,7 +1115,6 @@
             if(action_for == 0){
                 return false;
             }
-
             $.ajax({
                 type: "post",
                 url: '{{route("product.update.action")}}',
@@ -1256,10 +1255,10 @@
             }
             // var charCode = String.fromCharCode(event.which || event.keyCode);
             // if (!regexp.test(charCode)) {
-            //     console.log(">>>ne");
+  
             //     return false;
             // }
-            // console.log(">>>ne2");
+           
             // var n1 = $('#sku').val();
             // $('#url_slug').val(n1+charCode)
 
@@ -1428,11 +1427,11 @@
             datatable_intent();
         });
         function datatable_intent(search =''){
-            $('#vendor_product_table').DataTable({
+            $('#sfsdf').DataTable({
                 "responsive": true,
                 "scrollX": true,
                 "destroy": true,
-                // "processing": true,
+                 "processing": true,
                 "serverSide": true,
                 "iDisplayLength": 25,
                 "lengthChange" : false,

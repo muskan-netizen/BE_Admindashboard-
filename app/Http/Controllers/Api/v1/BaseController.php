@@ -60,6 +60,16 @@ class BaseController extends Controller{
             $crendentials = json_decode($client_preference->sms_credentials);
             $send = $this->africasTalking_sms($to,$body,$crendentials);
             }
+            elseif($client_preference->sms_provider == 7) //for Vonage gateway
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->vonage_sms($to,$body,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 8) //for SMS partner gateway France
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->sms_partner_gateway($to,$body,$crendentials);
+            }
             else{
                 $client = new TwilioClient($sms_key, $sms_secret);
                 $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
@@ -105,6 +115,16 @@ class BaseController extends Controller{
             {
             $crendentials = json_decode($client_preference->sms_credentials);
             $send = $this->africasTalking_sms($to,$body,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 7) //for Vonage gateway
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->vonage_sms($to, $body, $crendentials);
+            }
+            elseif($client_preference->sms_provider == 8) //for SMS partner gateway France
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->sms_partner_gateway($to, $body, $crendentials);
             }
             else{
                 $client = new TwilioClient($sms_key, $sms_secret);
@@ -902,40 +922,37 @@ class BaseController extends Controller{
 
     /******************    ---- check Keys from order Panel keys -----   ******************/
     public function checkOrderPanelKeys(Request $request){
-
-        if(checkColumnExists('users', 'is_panel_auth_user')){
-            $user =  User::where('is_panel_auth_user', 1)->first();
-            if(!$user){
-                $user =  User::first();
-            }
-            
-            $token1 = new Token;
-            $token = $token1->make([
-                'key' => 'royoorders-jwt',
-                'issuer' => 'royoorders.com',
-                'expiry' => strtotime('+2 hour'),
-                'issuedAt' => time(),
-                'algorithm' => 'HS256',
-            ])->get();
-            $token1->setClaim('user_id', $user->id);
-
-            $device = UserDevice::updateOrCreate(
-                ['device_token' => 'dispather-login'],
-                [
-                    'user_id' => $user->id,
-                    'device_type' => 'web',
-                    'access_token' => $token,
-                    'is_vendor_app' => 0
-                ]
-            );
-            return response()->json([
-            'status' => 200,
-            'token' => $token,
-            'message' => 'Valid Order Panel API keys']);
+    
+        
+        $user =  User::where('is_panel_auth_user', 1)->first();
+        if(!$user){
+            $user =  User::first();
         }
+        
+        $token1 = new Token;
+        $token = $token1->make([
+            'key' => 'royoorders-jwt',
+            'issuer' => 'royoorders.com',
+            'expiry' => strtotime('+2 hour'),
+            'issuedAt' => time(),
+            'algorithm' => 'HS256',
+        ])->get();
+        $token1->setClaim('user_id', $user->id);
+
+        $device = UserDevice::updateOrCreate(
+            ['device_token' => 'dispather-login'],
+            [
+                'user_id' => $user->id,
+                'device_type' => 'web',
+                'access_token' => $token,
+                'is_vendor_app' => 0
+            ]
+        );
+
         return response()->json([
-            'status' => 401,
-            'message' => 'Authentication failed']);
+        'status' => 200,
+        'token' => $token,
+        'message' => 'Valid Order Panel API keys']);
     }
     public function generateBarcodeNumber()
     {
@@ -979,6 +996,16 @@ class BaseController extends Controller{
             return response()->json(['data' => $e->getMessage()]);
         }
         
+    }
+    # get prefereance if appointment on in config
+    public function getDispatchAppointmentDomain()
+    {
+        $preference = ClientPreference::select('need_appointment_service','appointment_service_key','appointment_service_key_url','appointment_service_key_code')->first();
+        if ($preference->need_appointment_service == 1 && !empty($preference->appointment_service_key) && !empty($preference->appointment_service_key_url) && !empty($preference->appointment_service_key_code)) {
+            return $preference;
+        } else {
+            return false;
+        }
     }
 
 

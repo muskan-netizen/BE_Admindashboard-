@@ -20,13 +20,13 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
 @endphp
 <section class="section-b-space ratio_asos">
     <div class="collection-wrapper">
-        <div class="container">
+        <div class="container" id="divFirst">
             <div class="row">
                 <div class="col-12">
                     <div class="top-banner-wrapper text-center">
-                        @if(!empty($category->image) && $category->image['is_original'])
-                            <div class="common-banner"><img alt="" class="blur-up lazyload" data-src="{{$category->image['image_fit'] . '1920/1080' . $category->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
-                        @endif
+                       
+                       @include('frontend.vendor-category-topbar-banner')
+                       
                         <div class="top-banner-content small-section">
                             <h4>{{ $category->translation_name }}</h4>
                             {{-- @if(!empty($category->childs) && count($category->childs) > 0)
@@ -61,177 +61,12 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                 </span><span class="active">Healthcare Device</span></a>
                             </li>
                         </ul> -->
-                    <aside class="side_fillter mt-2">
-                    <!-- side-bar colleps block stat -->
-                    @if( count($category->brands) > 0 || count($variantSets) > 0 )
-                    <div class="collection-filter-block bg-transparent p-0 m-0">
-                        <!-- <div class="collection-mobile-back">
-                            <span class="filter-back d-lg-none d-inline-block">
-                                <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
-                            </span>
-                        </div> -->
-                        @if(!empty($category->brands) && count($category->brands) > 0)
-                        <div class="collection-collapse-block open mb-2">
-                            <h3 class="collapse-block-title">{{__('Brand')}}</h3>
-                            <div class="collection-collapse-block-content">
-                                <div class="collection-brand-filter">
-                                    @foreach($category->brands as $key => $val)
-                                        <div class="custom-control custom-checkbox collection-filter-checkbox">
-                                            <input type="checkbox" class="custom-control-input productFilter" fid="{{$val->id}}" used="brands" id="brd{{$val->id}}">
-                                            @foreach($val->translation as $k => $v)
-                                                <label class="custom-control-label" for="brd{{$val->id}}">{{$v->title}}</label>
-                                            @endforeach
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-                        @endif
-                        @if(!empty($variantSets) && count($variantSets) > 0)
-                          @foreach($variantSets as $key => $sets)
-                            <div class="collection-collapse-block border-0 mb-2 open">
-                                <h3 class="collapse-block-title">{{$sets->title}}</h3>
-                                <div class="collection-collapse-block-content">
-                                    <div class="collection-brand-filter">
-                                    @if($sets->type == 2)
-                                        @foreach($sets->options as $ok => $opt)
-                                            <div class="chiller_cb small_label d-inline-block color-selector mt-2">
-                                                <?php $checkMark = ($key == 0) ? 'checked' : ''; ?>
-                                                <input class="custom-control-input productFilter" type="checkbox" {{$checkMark}} id="Opt{{$key.'-'.$opt->id}}" fid="{{$sets->variant_type_id}}" used="variants" optid="{{$opt->id}}">
-                                                <label for="Opt{{$key.'-'.$opt->id}}"></label>
-                                                @if(strtoupper($opt->hexacode) == '#FFF' || strtoupper($opt->hexacode) == '#FFFFFF')
-                                                    <span style="background: #FFFFFF; border-color:#000;" class="check_icon white_check"></span>
-                                                @else
-                                                    <span class="check_icon" style="background:{{$opt->hexacode}}; border-color: {{$opt->hexacode}};"></span>
-                                                @endif
-                                            </div>
-                                        @endforeach
-                                    @else
-                                        @foreach($sets->options as $ok => $opt)
-                                            <div class="custom-control custom-checkbox collection-filter-checkbox">
-                                                <input type="checkbox" class="custom-control-input productFilter" id="Opt{{$key.'-'.$opt->id}}" fid="{{$sets->variant_type_id}}" type="variants" optid="{{$opt->id}}">
-                                                <label class="custom-control-label" for="Opt{{$key.'-'.$opt->id}}">{{$opt->title}}</label>
-                                            </div>
-                                        @endforeach
-                                    @endif
-                                    </div>
-                                </div>
-                            </div>
-                          @endforeach
-                        @endif
-                        <div class="collection-collapse-block border-0 mb-2 open">
-                            <h3 class="collapse-block-title">{{__('Price')}}</h3>
-                            <div class="collection-collapse-block-content">
-                                <div class="wrapper mt-3">
-                                    <div class="range-slider">
-                                        <input type="text" class="js-range-slider rangeSliderPrice" value="" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </aside>
-           
-            @endif
-            @php $show_new_Products = 0; @endphp
-                    @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
-                    <div class="theme-card custom-inner-card">
-                        <h5 class="title-border d-flex align-items-center justify-content-between">
-                            <span>{{__('New Product')}}</span>
-                            <span class="filter-back d-lg-none d-inline-block">
-                                <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
-                            </span>
-                        </h5>
 
-                        <div class="offer-slider al">
-                           
-                                @foreach($newProducts as $newProds)
-                                    <div class="col-12 p-0">
-                                    @foreach($newProds as $new)
-                                        <?php /*$imagePath = '';
-                                        foreach ($new['media'] as $k => $v) {
-                                            $imagePath = $v['image']['path']['image_fit'].'300/300'.$v['image']['path']['image_path'];
-                                        }*/ ?>
-                                        <div class=" common-product-box scale-effect mb-2">
-                                            <a class="row  w-100" href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
-                                                <div class="col-4">
-                                                    <div class="img-outer-box position-relative  pr-0">
-                                                        <img class="blur-up lazyload p-0" data-src="{{$new['image_url']}}" alt="">
-                                                        <div class="pref-timing"></div>
-                                                        {{--<i class="fa fa-heart-o fav-heart" aria-hidden="true"></i>--}}
-                                                    </div>
-                                                </div>
-                                                <div class="col-8">
-                                                    <div class="media-body align-self-center ">
-                                                        <div class="inner_spacing px-0">
-                                                            <div class="product-description">
-                                                                <div class="d-flex align-items-center justify-content-between">
-                                                                    <h6 class="card_title ellips">{{ $new['translation_title'] }}</h6>
-                                                                    <!--<span class="rating-number">2.0</span>-->
-                                                                </div>
-                                                                <!-- <h3 class="mb-0 mt-2">{{ $new['translation_title'] }}</h3> -->
-                                                                <p>{{$new['vendor']['name']}}</p>
-                                                                <p class="pb-1">{{__('In')}} {{$new['category_name']}}</p>
-                                                                <div class="d-flex align-items-center justify-content-between">
-                                                                    <b>
-                                                                        @if($new['inquiry_only'] == 0)
-                                                                            <?php $multiply = $new['variant_multiplier']; ?>
-                                                                            {{ $additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($new['variant_price'] * $multiply)) : Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
-                                                                        @endif
-                                                                    </b>
 
-                                                                    <!-- @if($client_preference_detail)
-                                                                        @if($client_preference_detail->rating_check == 1)
-                                                                            @if($new['averageRating'] > 0)
-                                                                                <div class="rating-box">
-                                                                                    <i class="fa fa-star" aria-hidden="true"></i>
-                                                                                    <span>{{ $new['averageRating'] }}</span>
-                                                                                </div>
-                                                                            @endif
-                                                                        @endif
-                                                                    @endif   -->
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
+                    <!--- Left Sidebar filters -->
+                        @include('frontend.category-left-sidebar')
+                    <!---End Left Sidebar filters -->
 
-                                        {{-- <div class="media">
-                                            <a href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}} "><img class="img-fluid blur-up lazyload" style="max-width: 200px;" data-src="{{$imagePath}}" alt=""></a>
-                                            <div class="media-body align-self-center">
-                                                <div class="inner_spacing">
-                                                    <a href="{{route('productDetail', [$new['vendor']['slug'],$new['url_slug']])}}">
-                                                        <h3 class="d-flex align-items-center justify-content-between">
-                                                            <label class="mb-0"><b>{{ $new['translation_title'] }}</b></label>
-                                                        </h3>
-                                                        <h6 class="mt-0"><b>{{$new['vendor']['name']}}</b></h6>
-                                                        @if($client_preference_detail)
-                                                            @if($client_preference_detail->rating_check == 1)
-                                                                @if($new['averageRating'] > 0)
-                                                                    <span class="rating">{{ $new['averageRating'] }} <i class="fa fa-star text-white p-0"></i></span>
-                                                                @endif
-                                                            @endif
-                                                        @endif
-                                                        @if($new['inquiry_only'] == 0)
-                                                            <h4 class="mt-1">
-                                                                <//?php $multiply = $new['variant_multiplier']; ?>
-                                                                {{ Session::get('currencySymbol').' '.(decimal_format($new['variant_price'] * $multiply))}}
-                                                            </h4>
-                                                        @endif
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div> --}}
-                                    @endforeach
-                                    </div>
-                                @endforeach
-                            
-                        </div>
-                    </div>
-                    @endif
-                    </aside>
                 </div>
                 
                 <div class="collection-content col-lg-9 outter-fillter-data fillter_product">
@@ -284,92 +119,9 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                                         </div>
                                     </div>
                                     <div class="displayProducts main_category" id="category_products_filter">
-                                        <div class="col-12 custom_filtter mt-2">
-                                        <select name="order_type" id='order_type' class="sortingFilter p-1">
-                                                <option value="">{{__('Sort By')}}</option>
-                                                <option value="featured">{{_('Featured')}}</option>
-                                                <option value="a_to_z">{{_('A to Z')}}</option>
-                                                <option value="z_to_a">{{_('Z to A')}}</option>
-                                                <option value="low_to_high">{{_('Cost : Low to High')}}</option>
-                                                <option value="high_to_low">{{_('Cost : High to Low')}}</option>
-                                                <option value="rating">{{_('Avg. Customer Review')}}</option>
-                                                <option value="newly_added">{{_('Newest Arrivals')}}</option>
-                                            </select>
-                                            <!-- <ul>
-                                                <li><span>{{__('Sort By:')}}</span></li>
-                                                <li><a href="javascript:void(0)" class="active">{{__('Featured')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{__('A to Z')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{__('Z to A')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{__('Cost : Low to High')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{__('Cost : High to Low')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{__('Avg. Customer Review')}}</a></li>
-                                                <li><a href="javascript:void(0)">{{__('Newest Arrivals')}}</a></li>
-                                            </ul> -->
-                                        </div>
-                                        <div class="product-wrapper-grid">
-                                            <div class="row margin-res">
-                                              @if($listData->isNotEmpty())
-                                                @foreach($listData as $key => $data)
-                                                <?php /*$imagePath = $imagePath2 = '';
-                                                $mediaCount = count($data->media);
-                                                for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
-                                                    if($i == 0){
-                                                        $imagePath = $data->media[$i]->image->path['image_fit'].'300/300'.$data->media[$i]->image->path['image_path'];
-                                                    }
-                                                    $imagePath2 = $data->media[$i]->image->path['image_fit'].'300/300'.$data->media[$i]->image->path['image_path'];
-                                                }*/ ?>
-                                                <div class="col-xl-3 col-md-3 col-6 mt-3">
-                                                    <a href="{{route('productDetail', [$data->vendor->slug,$data->url_slug])}}" target="_blank" class="product-box scale-effect mt-0 product-card-box position-relative al_box_third_template al">
-                                                        <div class="product-image">
-                                                            <img class="img-fluid blur-up lazyload" data-src="{{$data->image_url}}" alt="">
-                                                        </div>
-                                                        <div class="media-body align-self-center">
-                                                            <div class="inner_spacing w-100">
-                                                                <h3 class="d-flex align-items-center justify-content-between">
-                                                                    <label class="mb-0"><b>{{ $data->translation_title }}</b></label>
-                                                                    @if($client_preference_detail)
-                                                                        @if($client_preference_detail->rating_check == 1)
-                                                                            @if($data->averageRating > 0)
-                                                                                <span class="rating">{{ number_format($data->averageRating, 1, '.', '') }} <i class="fa fa-star text-white p-0"></i></span>
-                                                                            @endif
-                                                                        @endif
-                                                                    @endif
-                                                                </h3>
-                                                                <div class="product-description_list border-bottom">
-                                                                    @if($dicountPercentage = productDiscountPercentage($data->variant_price, $data->variant_compare_at_price))
-                                                                        <span class="flag-discount">{{$dicountPercentage}}% Off</span>
-                                                                    @endif
-                                                                    <h6 class="mt-0 mb-1"><b>{{$data->vendor->name}}</b></h6>
-                                                                    @if(@$data->vendor->is_seller == 1)
-                                                                        <h6 class="sold-by d-flex">
-                                                                            <b> <img class="blur-up lazyload" data-src="{{$favicon}}" alt="{{$data->vendor->Name}}" style="width: 25px !important; height: 25px;"></b> <b> Order by clickokart </b>
-                                                                        </h6>
-                                                                    @endif
-                                                                    @if (strlen($data->translation_description) >= 65)
-                                                                        <p title="{{$data->translation_description}}">{{ substr($data->translation_description, 0, 64)." ..." }}</p>
-                                                                    @else
-                                                                        <p>{{ $data->translation_description }}</p>
-                                                                    @endif
-                                                                    </div>
-                                                                    @if($data->inquiry_only == 0)
-                                                                        @if ($additionalPreference ['is_token_currency_enable'] )
-                                                                        <i class='fa fa-money' aria-hidden='true'></i> {{ getInToken($data->variant_price * $data->variant_multiplier)}}
-                                                                        @else
-                                                                            <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
-                                                                        @endif
-                                                                    @endif
-                                                                
-                                                            </div>
-                                                        </div>
-                                                    </a>
-                                                </div>
-                                                @endforeach
-                                              @else
-                                                <div class="col-xl-12 col-12 mt-4"><h5 class="text-center">{{ __('No Product Found') }}</h5></div>
-                                              @endif
-                                            </div>
-                                        </div>
-                                        <div class="pagination pagination-rounded justify-content-end mb-0">
+                                       
+                                    @include('frontend.ajax.product-card')
+                                        <div class="pagination pagination-rounded justify-content-end mb-0 page-m-20">
                                             @if(!empty($listData))
                                                 {{ $listData->links() }}
                                             @endif
@@ -401,9 +153,9 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
         type: 'double',
         grid: false,
         min: 0,
-        max: 50000,
+        max: {{ $maxPrice??50000 }},
         from: 0,
-        to: 50000,
+        to: {{ $maxPrice??50000 }},
         prefix: " "
     });
     var ajaxCall = 'ToCancelPrevReq';
@@ -487,5 +239,9 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
             },
         });
     }
+    $(".page-link").on("click" ,function(){
+        document.getElementById("divFirst").scrollIntoView();
+
+});
 </script>
 @endsection

@@ -15,8 +15,8 @@
                                 <span>{{ dateTimeInUserTimeZone($order->created_at, $timezone) }}</span>
                             </div>
                             <div class="col-md-3 alOrderStatus">
-                                <h4>{{ __('Customer Name') }}</h4>
-                                <span><a class="text-capitalize">{{ $order->user->name }}</a></span>
+                                <h4>{{ __('Vendor Name') }}</h4>
+                                <span><a class="text-capitalize">{{ @$order->vendors[0]->vendor->name }}</a></span>
                             </div>
                             @if ($client_preference_detail->business_type != 'taxi')
                                 <div class="col-md-3">
@@ -145,11 +145,13 @@
                                                         <label
                                                             class="m-0">{{ __('Amount') }}</label>
                                                         @php
-                                                            $product_subtotal_amount = $product_total_count - $vendor->discount_amount + $vendor->delivery_fee;
+					                        $product_subtotal_amount = $vendor->subtotal_amount - $vendor->discount_amount + $vendor->total_container_charges +
+                                                                                                 $vendor->taxable_amount + $vendor->service_fee_percentage_amount + $vendor->fixed_fee +
+                                                                                                 $vendor->delivery_fee + $vendor->additional_price + $vendor->toll_amount-$order->wallet_amount_used;
                                                             $subtotal_order_price += $product_subtotal_amount;
                                                             $total_order_price += $product_subtotal_amount + $total_tax_order_price;
                                                         @endphp
-                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($vendor->payable_amount
+                                                        <span>{{ Session::get('currencySymbol') }}{{decimal_format($product_subtotal_amount
                                                             *
                                                             $clientCurrency->doller_compare)}}</span>
                                                     </li>
@@ -158,6 +160,7 @@
                                                 </ul>
                                             </div>
                                         </div>
+                                        @include('frontend.account.recurringItems')
                                     </div>
                                 @endforeach
                             </div>
@@ -242,7 +245,7 @@
                                                     $clientCurrency->doller_compare)}}</span>
                                             </li>
                                         @endif
-                                        @if ( checkColumnExists('orders', 'gift_card_amount') &&  $order->gift_card_amount > 0)
+                                        @if ($order->gift_card_amount > 0)
                                             <li
                                                 class="d-flex align-items-center justify-content-between">
                                                 <label

@@ -16,10 +16,7 @@ use DB;
 class OrderController extends Controller{
     use ApiResponser;
     public function index(Request $request){
-        $total_order_count = 0;
-        $total_delivery_fees = 0;
-        $total_cash_to_collected = 0;
-        $total_earnings_by_vendors = 0;
+          
         $dispatcher_status_options = DispatcherStatusOption::get();
         $order_status_options = OrderStatusOption::where('type', 1)->get();
         // all vendors
@@ -30,32 +27,29 @@ class OrderController extends Controller{
             });
         }
         $vendors = $vendors->get();
-
-        // vendor orders
-        $vendor_orders = OrderVendor::with(['orderDetail.paymentOption', 'user','vendor','payment']);
-        if (Auth::user()->is_superadmin == 0) {
-            $vendor_orders = $vendor_orders->whereHas('vendor.permissionToUser', function ($query) {
-                $query->where('user_id', Auth::user()->id);
-            });
-        }
-        $vendor_orders =$vendor_orders->get();
-
-        foreach ($vendor_orders as $vendor_order) {
-            $total_delivery_fees+= $vendor_order->delivery_fee;
-            $total_earnings_by_vendors+= $vendor_order->payable_amount;
-            if($vendor_order->orderDetail){
-                if(@$vendor_order->orderDetail->paymentOption->id == 1){
-                    $total_cash_to_collected += $vendor_order->payable_amount;
-                }
-            }
-        }
-        $total_order_count = $vendor_orders->count();
-        return view('backend.accounting.order', compact('vendors','order_status_options', 'dispatcher_status_options'))->with(['total_earnings_by_vendors' => decimal_format($total_earnings_by_vendors), 'total_delivery_fees' => decimal_format($total_delivery_fees), 'total_cash_to_collected' => decimal_format($total_cash_to_collected), 'total_order_count' => $total_order_count, 2]);
+        return view('backend.accounting.order', compact('vendors','order_status_options', 'dispatcher_status_options'))->with($this->getOrderVendorCalculations($request,true));
     }
-    public function filter(Request $request){
+    
+    
+    public function getOrderVendorCalculations(Request $request,$flag = false){
+        $order = $this->getOrdervendors($request);
+        $data['total_order_count'] = $order->count();
+        $data['total_delivery_fees'] = decimal_format($order->sum('delivery_fee'));
+        $data['total_cash_to_collected'] = decimal_format($order->whereHas('orderDetail', function ($query) {
+            return $query->where('payment_option_id', '=', 1);
+        })->sum('payable_amount'));
+            $data['total_earnings_by_vendors'] = decimal_format($order->sum('payable_amount'));    
+        
+        if($flag){
+            return $data;
+        }
+        return response()->json(['data' => $data]);       
+    }
+    
+    
+    public function getOrdervendors($request){
         $user = Auth::user();
         $search_value = $request->get('search');
-        $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
         
         $vendor_orders = OrderVendor::with(['orderDetail.paymentOption', 'user','vendor','payment','orderstatus.OrderStatusOption']);
         if (!empty($request->get('date_filter'))) {
@@ -64,23 +58,29 @@ class OrderController extends Controller{
             $from_date = $date_date_filter[0];
             $vendor_orders = $vendor_orders->between($from_date." 00:00:00", $to_date." 23:59:59");
         }
-
+        
         if (!empty($request->get('vendor_id'))) {
             $vendor_id = $request->get('vendor_id');
             $vendor_orders = $vendor_orders->where('vendor_id', $vendor_id);
         }
-
+        
         if (!empty($request->get('status_filter'))) {
             $status_filter = $request->get('status_filter');
-            $vendor_orders = $vendor_orders->where('order_status_option_id', $status_filter); 
+            $vendor_orders = $vendor_orders->where('order_status_option_id', $status_filter);
         }
-
+        
         if ($user->is_superadmin == 0) {
             $vendor_orders = $vendor_orders->whereHas('vendor.permissionToUser', function ($query) use($user){
                 $query->where('user_id', $user->id);
             });
         }
-        $vendor_orders = $vendor_orders->orderBy('id', 'DESC');
+      return $vendor_orders->orderBy('id', 'DESC');
+    }
+    
+    public function filter(Request $request){
+        $user = Auth::user();
+        $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
+        $vendor_orders = $this->getOrdervendors($request);
         
         return Datatables::of($vendor_orders)
             ->addColumn('view_url', function($vendor_orders) {
@@ -99,12 +99,31 @@ class OrderController extends Controller{
             ->addColumn('subtotal_amount', function($vendor_orders) {
                 return number_format($vendor_orders->subtotal_amount - $vendor_orders->total_markup_price??0, 2);
             })
+            ->addColumn('vendor_amount', function($vendor_orders) {
+               
+                return $vendor_orders->vendor_amount;
+            })
             ->addColumn('admin_commission', function($vendor_orders) {
                 // return number_format($vendor_orders->admin_commission_percentage_amount, 2).' ('.number_format($vendor_orders->vendor->commission_percent,2).'%)';
                 return number_format($vendor_orders->admin_commission_percentage_amount, 2);
             })
+            ->addColumn('fixed_fee', function($vendor_orders) {
+                // return number_format($vendor_orders->admin_commission_percentage_amount, 2).' ('.number_format($vendor_orders->vendor->commission_percent,2).'%)';
+                return number_format($vendor_orders->fixed_fee, 2);
+            })
+            ->addColumn('discount_amount', function($vendor_orders) {
+                // return number_format($vendor_orders->admin_commission_percentage_amount, 2).' ('.number_format($vendor_orders->vendor->commission_percent,2).'%)';
+                return number_format($vendor_orders->discount_amount, 2);
+            })->addColumn('taxable_amount', function($vendor_orders) {
+                // return number_format($vendor_orders->admin_commission_percentage_amount, 2).' ('.number_format($vendor_orders->vendor->commission_percent,2).'%)';
+                return number_format($vendor_orders->taxable_amount, 2);
+            })
+            ->addColumn('tip_amount', function($vendor_orders) {
+                // return number_format($vendor_orders->admin_commission_percentage_amount, 2).' ('.number_format($vendor_orders->vendor->commission_percent,2).'%)';
+                return !empty($vendor_orders->orderDetail)?number_format($vendor_orders->orderDetail->tip_amount, 2):0.00;
+            })
             ->addColumn('order_status', function($vendor_orders) {
-                return $vendor_orders->OrderStatusOption->title;
+                return $vendor_orders->OrderStatusOption ? ($vendor_orders->OrderStatusOption->title ?? 'N/A') : "N/A";
             })
             ->addColumn('vendor_name',function($vendor_orders){
                 return $vendor_orders->vendor ? __($vendor_orders->vendor->name) : '';
@@ -112,23 +131,23 @@ class OrderController extends Controller{
             ->addColumn('markup_price',function($vendor_orders){
                 return $vendor_orders->vendor ? __($vendor_orders->total_markup_price??0) : '0';
             })
-            ->addColumn('payable_amount', function($vendor_orders) {
-                return number_format($vendor_orders->payable_amount - $vendor_orders->total_markup_price??0, 2);
+            ->addColumn('total_price', function($vendor_orders) {                
+                return decimal_format($vendor_orders->total_price );
             })
             ->addColumn('payment_option_title',function($vendor_orders){
                
-                $title = __($vendor_orders->orderDetail->paymentOption->title);
-                if($vendor_orders->orderDetail->paymentOption->code == 'stripe'){
+                $title = __(@$vendor_orders->orderDetail->paymentOption->title);
+                if(@$vendor_orders->orderDetail->paymentOption->code == 'stripe'){
                     $title = __('Credit/Debit Card (Stripe)');
-                }elseif($vendor_orders->orderDetail->paymentOption->code == 'kongapay'){
+                }elseif(@$vendor_orders->orderDetail->paymentOption->code == 'kongapay'){
                     $title  = __('Pay Now');
-                }elseif($vendor_orders->orderDetail->paymentOption->code == 'mvodafone'){
+                }elseif(@$vendor_orders->orderDetail->paymentOption->code == 'mvodafone'){
                     $title = __('Vodafone M-PAiSA');
                 }
-                elseif($vendor_orders->orderDetail->paymentOption->code == 'mobbex'){
+                elseif(@$vendor_orders->orderDetail->paymentOption->code == 'mobbex'){
                     $title = __('Mobbex');
                 }
-                elseif($vendor_orders->orderDetail->paymentOption->code == 'offline_manual'){
+                elseif(@$vendor_orders->orderDetail->paymentOption->code == 'offline_manual'){
                     $json = json_decode($vendor_orders->orderDetail->paymentOption->credentials);
                     $title = $json->manule_payment_title;
                 }

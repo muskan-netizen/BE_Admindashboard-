@@ -928,7 +928,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                                                 <!--<span class="rating-number">2.0</span>-->
                                             </div>
                                             <p><%= product.vendor_name %></p>
-                                            <p class="border-bottom pb-1">In <%= product.category_name %></p>
+                                            <p class="border-bottom pb-1 d-none">In <%= product.category_name %></p>
                                             <div class="d-flex align-items-center justify-content-between">
                                                 <b><% if(product.inquiry_only == 0) { %>
                                                     {{ Session::get('currencySymbol') }}<%= Helper.formatPrice(product.variant_price) %>
@@ -980,7 +980,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                                             </div>
                                             <!-- <h3 class="m-0"><%= product.translation_title %></h3> -->
                                             <p><%= product.vendor_name %></p>
-                                            <p class="border-bottom pb-1">In <%= product.category_name %></p>
+                                            <p class="border-bottom pb-1 d-none">In <%= product.category_name %></p>
                                             <div class="d-flex align-items-center justify-content-between">
                                                 <b><% if(product.inquiry_only == 0) { %>
                                                     {{ Session::get('currencySymbol') }}<%= Helper.formatPrice(product.variant_price) %>
@@ -1696,6 +1696,8 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var validate_promocode_coupon_url = "{{ route('verify.promocode.validate_code') }}";
     var update_cart_product_schedule = "{{route('cart.updateProductSchedule')}}";
     var post_toyyibpay_via_gateway_url = "{{route('payment.toyyibpay.index')}}";
+
+
 
     var latitude = "{{ session()->has('latitude') ? session()->get('latitude') : 0 }}";
     var longitude = "{{ session()->has('longitude') ? session()->get('longitude') : 0 }}";

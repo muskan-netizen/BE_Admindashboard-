@@ -1,6 +1,12 @@
+<?php 
+use App\Models\PaymentOption;
+
+
+?>
 @php
 $urlImg = URL::to('/').'/assets/images/users/user-1.jpg';
 $clientData = \App\Models\Client::select('id', 'logo','socket_url')->first();
+$azulExist =  PaymentOption::where('code', 'azul')->where('status', 1)->first();
 $getAdditionalPreference = getAdditionalPreference(['is_gift_card','is_token_currency_enable']);
 @endphp
 @switch($client_preference_detail->business_type)
@@ -50,6 +56,14 @@ $getAdditionalPreference = getAdditionalPreference(['is_gift_card','is_token_cur
             <li class="{{ (request()->is('user/addressBook')) ? 'active' : '' }}"><a href="{{route('user.addressBook')}}">
                 {{ __('Address Book') }}
             </a></li>
+            @if(!empty($azulExist))
+            
+            <li class="{{ (request()->is('payment/get-user-cards')) ? 'active' : '' }}"><a href="{{route('payment.user.cards')}}">
+                {{ __('Saved Cards') }}
+            </a></li>
+            @endif
+            
+            
             <li class="{{ (request()->is('user/orders*')) ? 'active' : '' }}"><a href="{{route('user.orders')}}">{{ __('My '.getNomenclatureName($ordertitle, true) )}}</a></li>
             <li class="{{ (request()->is('user/wishlists')) ? 'active' : '' }}"><a href="{{route('user.wishlists')}}">{{ __(getNomenclatureName('Wishlist', true) )}}</a></li>
             <li class="{{ (request()->is('user/loyalty')) ? 'active' : '' }}"><a href="{{route('user.loyalty')}}">{{ __('My Loyalty') }}</a></li>
@@ -66,7 +80,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_gift_card','is_token_cur
             <li class="last {{ (request()->is('user/notification')) ? 'active' : '' }}"><a href="{{route('user.notification')}}">{{ __('Notification') }}</a></li>
             <li class="last {{ (request()->is('user/my-ads')) ? 'active' : '' }}"><a href="{{route('user.productList')}}">{{__('My Ads')}}</a></li>
             @if(is_p2p_vendor())
-                <li class=""><a href="{{route('vendor.index')}}">{{ __('Add Post') }}</a></li>
+                <li class=""><a href="{{route('posts.index', ['fullPage'=>1])}}">{{ __('Add Post') }}</a></li>
             @endif
             @if(@getAdditionalPreference(['is_gift_card'])['is_gift_card']==1)
                 <li class="{{ (request()->is('user/giftCard')) ? 'active' : '' }}"><a href="{{route('giftCard.index')}}">{{ __('Gift Card') }}</a></li>

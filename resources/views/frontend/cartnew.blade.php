@@ -1,10 +1,9 @@
 @extends('layouts.store', ['title' => __('Cart')])
-
 @section('css')
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.css')}}" rel="stylesheet" type="text/css" />
-
+<link href="{{asset('assets/css/azul.css')}}" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 
 <style type="text/css">
@@ -89,7 +88,7 @@ display: flex;align-items: center;justify-content: center;border: 1px solid#eee;
 .new_cart .add-address i {background: #fff;border: 1px solid#eee; padding: 16px;border-radius: 100%;height: 40px;width: 40px;display: flex;align-items: center;
 justify-content: center;font-size: 20px;box-shadow: 5px 6px 4px #eee;color: #ff3f3f;}
 .cart-checkout_btn button{width:100%;}
-.cart-checkout_btn #order_placed_btn {padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
+.cart-checkout_btn #order_placed_btn{padding: 10px 5px !important;display: inline-block;font-size: 14px !important;}
 .cart_delivery a i {font-weight: 600;font-size: 16px;}
 .schedule_btn ul li label.taskschedulebtn {padding: 6px 10px !important;font-size: 10px !important;}
 .cart-page-layout .alFourTemplateCartPage .add_head h6{color:#000;font-size: 14px;}
@@ -120,8 +119,15 @@ font-size: 12px;padding: 6.7px 10px;}
 .dark .coupon_box img.blur-up.lazyloaded{background-color: #fff;opacity: 1;padding: 0 4px;border-radius: 25px;}
 .login-form #schedule_div input{display:block;width: 100% !important;}
 .login-form #schedule_div input::-webkit-calendar-picker-indicator{color: rgba(0, 0, 0, 0);opacity: 1}
-/*------cart page css end here------ */
+.cart_login_popop .modal-header h5 {font-size: 18px;font-weight: 600;text-transform: capitalize;}
+.cart_login_popop input{border-radius: 3px;}
+.cart_login_popop .new-user{text-align: center;padding: 30px 0px 0px 0px;}
+.cart_login_popop .login_continue_btn{border-radius: 3px !important;}
+.cart_login_popop  .login-button{font-size: 16px;}
+.cart_login_popop .login_continue_btn{font-size: 16px;}
 
+
+/*------cart page css end here------ */
 @media (max-width:576px){
 .al_body_template_two .show-prescription-doc {width:100%;}
 .item-show-cart h4 {font-size:14px !important;}
@@ -146,6 +152,7 @@ font-size: 12px;padding: 6.7px 10px;}
 .cart-design .alFourTemplateCartButtons a.btn.shoping {font-size:10px;display: block;width: 100%;text-align: left;height:auto;}
 .cart-design .alFourTemplateCartButtons a.shoping i{font-size:10px;vertical-align: middle;}
 }
+
 </style>
 
 @endsection
@@ -287,7 +294,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                                                 <!--<span class="rating-number">2.0</span>-->
                                             </div>
                                             <p><%= product.vendor_name %></p>
-                                            <p class="border-bottom pb-1">In <%= product.category_name %></p>
+                                            <p class="border-bottom pb-1 d-none">In <%= product.category_name %></p>
                                             <div class="d-flex align-items-center justify-content-between">
                                                 <b><% if(product.inquiry_only == 0) { %>
                                                     {{ Session::get('currencySymbol') }}<%= Helper.formatPrice(product.variant_price) %>
@@ -339,7 +346,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                                             </div>
                                             <!-- <h3 class="m-0"><%= product.translation_title %></h3> -->
                                             <p><%= product.vendor_name %></p>
-                                            <p class="border-bottom pb-1">In <%= product.category_name %></p>
+                                            <p class="border-bottom pb-1 d-none">In <%= product.category_name %></p>
                                             <div class="d-flex align-items-center justify-content-between">
                                                 <b><% if(product.inquiry_only == 0) { %>
                                                     {{ Session::get('currencySymbol') }}<%= Helper.formatPrice(product.variant_price) %>
@@ -548,6 +555,9 @@ $client_preferences = \App\Models\ClientPreference::first();
                         <% if(payment_option.slug == 'plugnpay') { %>
                             <div class="col-md-12 mt-3 mb-3 plugnpay_element_wrapper option-wrapper d-none">
                                 <div class="row no-gutters">
+                                    <div class="col-12">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-name-element" placeholder="Enter card holder name" />
+                                    </div>
                                     <div class="col-6">
                                         <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="plugnpay-card-element" placeholder="Enter card Number" />
                                     </div>
@@ -557,12 +567,78 @@ $client_preferences = \App\Models\ClientPreference::first();
                                     <div class="col-3">
                                         <input type="password" max="3" style=" border-left: none;"  class="form-control" id="plugnpay-cvv-element" placeholder="CVV" />
                                     </div>
+                                     <div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-addr1-element" placeholder="Enter address"/>
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-addr2-element" placeholder="Enter alternate address (optional)" />
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-zip-element" placeholder="Enter zip code"/>
+                                    </div>
+<div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-city-element" placeholder="Enter city name"/>
+                                    </div>
+<div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-state-element" placeholder="Enter state code e.g. NY"/>
+                                    </div>
+<div class="col-6">
+                                        <input type="text" min="4" max="32" style=" border-right: none;" class="form-control" id="plugnpay-country-element" placeholder="Enter country code e.g. US"/>
+                                    </div>
                                 </div>
 
                                 <span class="error text-danger" id="plugnpay_card_error"></span>
                             </div>
                         <% } %>
+                      
+                <% if(payment_option.slug == 'azulpay') { %>
+                    <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper d-none">
+                        <div class="tab">
+    <a class="tablinks active" onclick="clickHandle(event, 'Add-Card')" href="javascript:void(0);">Add Card</a>
+    <a class="tablinks" onclick="clickHandle(event, 'Card-List')" href="javascript:void(0);">Card List</a>
+  </div>
 
+  <div id="Add-Card" class="tabcontent show" style="display:block">
+     <div class="row no-gutters">
+                            <div class="col-6">
+                                <input type="text"  maxlength="16" style=" border-right: none;" class="form-control demoInputBox" id="azul-card-element" placeholder="Enter Card Number" />
+                            </div>
+                            <div class="col-3">
+                                <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="azul-date-element" placeholder="MM/YYYY" />
+                            </div>
+                            <div class="col-3">
+                                <input type="password" max="4" style=" border-left: none;"  class="form-control demoInputBox" id="azul-cvv-element" placeholder="CVV" />
+                            </div>
+                        </div>
+<div class="row">
+<div class="col-md-4 save-card-custom">
+                     <input type="checkbox" name="save_card" class="form-check-input" id="azul-save_card" value="1">
+                                    <label for="azul-save_card" class="">{{ __('Save Card') }}</label>
+            </div>
+</div>
+                        <span class="error text-danger" id="azul_card_error"></span>
+  </div>
+  <div id="Card-List" class="tabcontent">
+  </div>
+                    </div>
+                <% } %>
+
+            <% if(payment_option.slug == 'nmi') { %>
+            <div class="col-md-12 mt-3 mb-3 nmi_element_wrapper option-wrapper d-none">
+                <div class="row no-gutters">
+                    <div class="col-6">
+                    <input type="text"  maxlength="16" style=" border-right: none;" class="form-control demoInputBox" id="card-element-nmi" placeholder="Enter Card Number" />
+                    </div>
+                    <div class="col-3">
+                    <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="date-element-nmi" placeholder="MM/YYYY" />
+                    </div>
+                    <div class="col-3">
+                    <input type="password" max="4" style=" border-left: none;"  class="form-control demoInputBox" id="cvv-element-nmi" placeholder="CVV" />
+                    </div>
+                    <span class="error text-danger" id="card_error_nmi"></span>
+                </div>
+            </div>
+            <% } %>
 
 
                     </div>
@@ -692,7 +768,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                     <input type="hidden" id="dialCode" name="dialCode" value="{{ old('dialCode') ? old('dialCode') : Session::get('default_country_phonecode','1') }}">
                     <input type="hidden" id="countryData" name="countryData" value="{{ strtolower(Session::get('default_country_code','US')) }}">
 
-                    <div class="login-with-username">
+                    <div class="login-with-username cart_login_popop">
                         <div class="modal-header px-0 pt-0">
                             <h5 class="modal-title">{{ __('Log in') }}</h5>
                             <button type="button" class="close m-0 p-0" data-dismiss="modal" aria-label="Close">
@@ -750,8 +826,8 @@ $client_preferences = \App\Models\ClientPreference::first();
                         @endif
                         @endif
 
-                        <div class="divider-line mb-2"></div>
-                        <p class="new-user mb-0">New to {{getClientDetail()->company_name}}? <a href="{{route('customer.register')}}">Create an
+                        {{-- <div class="divider-line mb-2"></div> --}}
+                        <p class="new-user mb-0"><a href="{{route('customer.register')}}">Create an
                                 account</a></p>
                     </div>
                     {{-- <div class="login-with-mail">
@@ -827,14 +903,15 @@ $client_preferences = \App\Models\ClientPreference::first();
                         <div class="col-sm-12 position-relative" id="imageInput">
                             <input type="hidden" id="vendor_idd" name="vendor_idd" value="" />
                             <input type="hidden" id="product_id" name="product_id" value="" />
-                            <input data-default-file="" accept="image/*" type="file" data-plugins="dropify" name="prescriptions[]" class="dropify uploaded-prescription-img" multiple />
+                            <input type="hidden" id="uploaded_pres_count" name="uploaded_pres_count" value="" />
+                            <input data-default-file="" accept="image/*" type="file" data-plugins="dropify" name="prescriptions[]" id="prescription_file" class="dropify uploaded-prescription-img" multiple />
                             <!-- <img id="uploaded-prescription" style="margin-top: 9px;display:none;" src="#"/> -->
                             <div class="uploaded-prescription"></div>
                             <p class="text-muted text-center mt-2 mb-0">{{__('Uploaded Prescription(s)')}}</p>
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
                             </span>
-
+                            <span class="validate-file-error text-danger"></span>
                         </div>
 
                     </div>
@@ -889,12 +966,14 @@ $client_preferences = \App\Models\ClientPreference::first();
       </div>
     </div>
   </div>
+
+
 @endsection
 
 @section('script')
-
 <script type="text/javascript" src="{{asset('assets/libs/jquery-clock-timepicker/jquery-clock-timepicker.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/cart_custom.js')}}"></script>
+<script src="{{asset('js/credit-card-validator.js')}}"></script>
 <script type="text/javascript">
     function handler(e) {
         $('.standard').clockTimePicker();
@@ -994,6 +1073,8 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var business_type = "<?= $client_preferences->business_type; ?>";
     var scheduling_with_slots = "<?= $client_preferences->scheduling_with_slots; ?>";
     var off_scheduling_at_cart = "<?= $client_preferences->off_scheduling_at_cart; ?>";
+    var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
+    var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
 </script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/payment.js')}}"></script>
@@ -1020,6 +1101,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var fpxBank = '';
     var idealBank = {};
     var guest_cart = {{ $guest_user ? 1 : 0 }};
+        var ajaxCall = 'ToCancelPrevReq';
     var base_url = "{{url('/')}}";
     var place_order_url = "{{route('user.placeorder')}}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
@@ -1033,6 +1115,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
     var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";
+    var payment_nmi_url = "{{route('nmi.pay')}}";
     var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";
@@ -1058,6 +1141,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_khalti_url = "{{route('payment.khaltiVerification')}}";
     var payment_khalti_complete_purchase = "{{route('payment.khaltiCompletePurchase')}}";
     var update_qty_url = "{{ url('product/updateCartQuantity') }}";
+	var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
 
     var promocode_list_url = "{{ route('verify.promocode.list') }}";
     var payment_option_list_url = "{{route('payment.option.list')}}";
@@ -1091,7 +1175,6 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var error_Schedule_date_is_required = "{{__('Schedule date time is required')}}";
     var error_Invalid_Schedule_date = "{{__('Invalid schedule date time')}}";
     var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
-    var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
     var error_unchanged_schedule_date = "{{__('Schedule date can not be changed, Because order being edited is scheduled order. In case of multi vendor, order can not be edited.')}}";
     var discard_order_editing_url = "{{route('user.discardeditorder')}}";
     var confirm_discard_edit_order_title = "{{__('Are you sure?')}}";
@@ -1786,6 +1869,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     $(document).delegate('#view_all_address', 'click', function() {
 
         $("#view_all_address").addClass("d-none");
+        $("#view_all_address").removeClass("d-block");
         $("#view_all_address_div").removeClass("d-none");
 
     });
@@ -1795,6 +1879,12 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         // $('#plus_icon_'+rel).hide();
         readURL(this, '#upload_logo_preview_'+rel);
     });
+
+
+
+
+
+
 
 </script>
 @if(in_array('kongapay',$client_payment_options))
@@ -1807,4 +1897,18 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 @endsection
 @section('script-bottom-js')
 <script defer type="text/javascript"  src="{{ asset('js/giftCard/cartGiftCard.js') }}"></script>
+<script>
+
+function addSlashes (element) {
+	
+    let ele = document.getElementById(element.id);
+    ele = ele.value.split('/').join('');    // Remove slash (/) if mistakenly entered.
+    if(ele.length < 4 && ele.length > 0){
+        let finalVal = ele.match(/.{1,2}/g).join('/');
+
+        document.getElementById(element.id).value = finalVal;
+    }
+}
+
+</script>
 @endsection

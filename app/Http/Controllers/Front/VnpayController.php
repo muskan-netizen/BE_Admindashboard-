@@ -430,7 +430,7 @@ class VnpayController  extends FrontController
            
         }
         catch(Exception $ex){
-            \Log::info($ex->getMessage());
+            //\Log::info($ex->getMessage());
         }
         http_response_code(200);
     }

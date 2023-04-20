@@ -108,10 +108,10 @@ class WindcaveController extends FrontController
             "callbackUrls" => ["approved"=> route('windcave.success').'?oid='.$order_number, "declined"=> route('windcave.fail').'?oid='.$order_number, "cancelled"=> route('windcave.fail').'?oid='.$order_number ],
             "notificationUrl" => route('windcave.success').'?oid='.$order_number
         );
-        \Log::info(json_encode($data));
+        //\Log::info(json_encode($data));
         $url = $this->postCurl($data,$this->token);
-        \Log::info('resp=');
-        \Log::info(json_encode($url));
+        //\Log::info('resp=');
+        //\Log::info(json_encode($url));
         return json_encode($url->links[1]);
     }
 
@@ -131,8 +131,8 @@ class WindcaveController extends FrontController
             "notificationUrl" => url($request->serverUrl.'payment/windcave/success?auth_token='.$user->id.'&oid='.$order_number)
         );
         $url = $this->postCurl($data,$this->token);
-        \Log::info('resp=');
-        \Log::info(json_encode($url));
+        //\Log::info('resp=');
+        //\Log::info(json_encode($url));
         return $this->successResponse($url->links[1]->href);
     }
 
@@ -155,10 +155,10 @@ class WindcaveController extends FrontController
         $result = curl_exec($ch);
         if (curl_errno($ch)) {
             // echo 'Error:' . curl_error($ch);
-            \Log::info(curl_error($ch));
+            //\Log::info(curl_error($ch));
         }
         curl_close($ch);
-       // \Log::info($result);
+       // //\Log::info($result);
         return json_decode($result); 
     }
 

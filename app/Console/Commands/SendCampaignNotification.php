@@ -54,7 +54,7 @@ class SendCampaignNotification extends Command
         $intervalTime = date('Y-m-d h:i:00');
         foreach ($clients as $client) {
             $database_name = 'royo_' . $client->database_name;
-            // Log::info("checking cart start: {$database_name}!");
+            //// Log::info("checking cart start: {$database_name}!");
             $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME =  ?";
             $db = DB::select($query, [$database_name]);
             if ($db) {
@@ -79,8 +79,8 @@ class SendCampaignNotification extends Command
                 // CampaignRoster::where('id',6287)->delete();
                 $notifications = CampaignRoster::where('notification_time', '<=',$intervalTime)->where('status',0)->with('campaign','user')->get();
                 // $notifications = CampaignRoster::whereBetween('notification_time', [$intervalTime, $add1Minute])->where('status',0)->with('campaign','user')->get();
-                // Log::info("CampaignRoster time: {$intervalTime}!");
-                // Log::info("CampaignRoster data: {$notifications}!");
+                //// Log::info("CampaignRoster time: {$intervalTime}!");
+                //// Log::info("CampaignRoster data: {$notifications}!");
                 if($notifications)
                 {
                 
@@ -190,10 +190,10 @@ class SendCampaignNotification extends Command
                 }               
                 
                 DB::disconnect($database_name);
-                // Log::info("checking cart end: {$database_name}!");
+                //// Log::info("checking cart end: {$database_name}!");
             } else {
                 DB::disconnect($database_name);
-                // Log::info("checking cart  end: {$database_name}!");
+                //// Log::info("checking cart  end: {$database_name}!");
             }
         }
     }
@@ -218,6 +218,16 @@ class SendCampaignNotification extends Command
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
                 $send = $this->unifonic($to,$body,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 7) //for Vonage gateway
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->vonage_sms($to,$body,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 8) //for SMS partner gateway France
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->sms_partner_gateway($to,$body,$crendentials);
             }else{
                 $client = new TwilioClient($sms_key, $sms_secret);
                 $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);

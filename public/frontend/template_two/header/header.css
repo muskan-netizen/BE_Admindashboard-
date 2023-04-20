@@ -61,6 +61,19 @@
     top: 28px
 }
 
+
+.search_bar .bg-cart-header{
+    color: #fff !important;
+    display: inline-block;
+    height: 18px;
+    background: #ff3f6c;
+    position: absolute;
+    border-radius: 50%;
+    top: 0px;
+    width: 18px;
+    right: 0px;
+}
+
 .al_toggle-menu.active i:nth-child(1) {
     top: 25px;
     -webkit-transform: rotateZ(45deg);
@@ -137,6 +150,9 @@ body.al_body_template_two .search_bar.menu-right ul.d-flex.align-items-center {
     body.al_body_template_two .menu-navigation {
         background: #f2f2f2;
         padding: 10px 0;
+    }
+    body.dark.al_body_template_two .menu-navigation {
+        background: transparent;
     }
 }
 @media (max-width: 767px) {
@@ -372,10 +388,10 @@ body.al_body_template_two .search_bar.menu-right ul.d-flex.align-items-center {
     .al_body_template_two ul#main-menu .slick-prev {
         left: -10px;
     }
+    body.dark.al_body_template_two .row.footer-theme.partition-f .footer-logo{
+        margin:20px 0!important;
+    }
 }
-
-
-
 
 /* menu css */
 .al_body_template_two .pixelstrap ul.alInnerMenu {
@@ -457,6 +473,17 @@ body.al_body_template_two .search_bar.menu-right ul.d-flex.align-items-center {
     background-color: transparent;
 }
 
+.al_body_template_two .search_bar.menu-right .icon-nav span {
+    color: #000;
+    font-weight: 400;
+    line-height: 17px;
+    font-size: 12px;
+    text-transform: capitalize;
+    margin-right: 0!important;
+}
+.al_body_template_two .search_bar.menu-right .icon-nav{
+    font-size:12px; 
+}
 /*hotfix product page css*/
 @media (max-width:767px) {
     .product_tag_filter {

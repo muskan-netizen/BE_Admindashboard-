@@ -174,7 +174,7 @@ $pages = \App\Models\Page::with([
                                         <li class="navigation-tab-item pr-lg-2" role="presentation">
                                             <a class="nav-link px-0 al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
                                         id="{{$VendorTypesName}}_tab" VendorType="{{$VendorTypesName}}" data-toggle="tab" href="#{{$VendorTypesName}}_tab" role="tab"
-                                        aria-controls="profile" aria-selected="false">
+                                        aria-controls="profile" aria-selected="false" data-sessiontype="{{Session::get('vendorType') ?? ''}}">
                                         <span class="al_tabsIcons">
                                         <img src="{{$client_preference_detail->$iconFiledName ? $client_preference_detail->$iconFiledName['proxy_url'].'36/36'.$client_preference_detail-> $iconFiledName['image_path'] : asset('images/al_custom3.png')}}" alt="{{$iconFiledName}}"></span>
                                         <span class="al_textTabsText">{{$NomenclatureName}} </span></a>
@@ -222,7 +222,7 @@ $pages = \App\Models\Page::with([
                                         @endphp
 
                                         @if($client_preference_detail->$clientVendorTypes == 1)
-                                        <li class="navigation-tab-item pr-lg-2" role="presentation">
+                                        <li class="navigation-tab-item pr-lg-2" role="presentation" data-sessionType="{{Session::get('vendorType') ?? ''}}">
                                         <a class="nav-link px-0 al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
                                         id="{{$VendorTypesName}}_tab" VendorType="{{$VendorTypesName}}" data-toggle="tab" href="#{{$VendorTypesName}}_tab" role="tab"
                                         aria-controls="profile" aria-selected="false">
@@ -292,11 +292,11 @@ $pages = \App\Models\Page::with([
                                                     <!-- <span>{{__('Cart')}}•</span> -->
                                                     <span id="cart_qty_span"></span>
                                                 </a> @endif @endif
-                                                <script type="text/template" id="header_cart_template"> <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%> <li id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>"> <a class='media' href='<%=show_cart_url %>'> 
+                                                <script type="text/template" id="header_cart_template"> <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%> <li id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>"> <a class='media' href='<%=show_cart_url %>'>
                                                     <% if(vendor_product.pvariant.media_one){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_one.pimage.image.path.image_path %>"> <%}else if(vendor_product.pvariant.media_second && vendor_product.pvariant.media_second.image != null){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_second.image.path.image_path %>"> <%}else{%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.image_url %>"> <%}%> <div class='media-body'> <h4><%=vendor_product.product.translation_one ? vendor_product.product.translation_one.title : vendor_product.product.sku %></h4>
                                                         <% if(cart_details.is_token){%>  <h4><span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price * vendor_product.pvariant.multiplier) * cart_details.token_value%></span></h4> <%}else{%>
                                                     <h4> <span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price * vendor_product.pvariant.multiplier) %></span> </h4> <%}%>
-                                                </div></a> <div class='close-circle'> <a href="javascript::void(0);" data-product="<%=vendor_product.id %>" class='remove-product'> <i class='fa fa-times' aria-hidden='true'></i> </a> </div></li><%}); %> <%}); %> <li><div class='total'><h5>{{__('Subtotal')}}: 
+                                                </div></a> <div class='close-circle'> <a href="javascript::void(0);" data-product="<%=vendor_product.id %>" class='remove-product'> <i class='fa fa-times' aria-hidden='true'></i> </a> </div></li><%}); %> <%}); %> <li><div class='total'><h5>{{__('Subtotal')}}:
                                                     <% if(cart_details.is_token){%>
                                                     <span id='totalCart'>{{Session::get('currencySymbol')}}<%=Helper.formatPrice(cart_details.gross_amount * cart_details.token_value) %></span>
                                                     <%}else{%>
@@ -491,7 +491,7 @@ $pages = \App\Models\Page::with([
 
    @endif
    @if(!empty($navCategories) && count($navCategories))
-   <div class="menu-navigation alThreeMenu">
+   <div class="menu-navigation alThreeMenu ">
        <div class="container-fluid">
            <div class="row">
                <div class="col-12">

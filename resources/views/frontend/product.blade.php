@@ -14,6 +14,10 @@ $clientData = \App\Models\Client::select('socket_url')->first();
     <link rel="stylesheet" href="{{ asset('front-assets/css/main.css') }}" /> -->
 
     <link rel="stylesheet" href="{{asset('css/jquery.exzoom.css')}}">
+    @if($product->is_recurring_booking == 1)
+        <link href="{{asset('assets/libs/bootstrap-datepicker/bootstrap-datepicker.min.css')}}" rel="stylesheet" type="text/css" />
+    @endif
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style type="text/css">
     /* .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.btn-disabled{opacity:.5;pointer-events:none}.fab{font:normal normal normal 14px/1 FontAwesome;font-size:inherit}
     #number{display:block}#exzoom{display:none}.exzoom .exzoom_btn a.exzoom_next_btn{right:-12px} .exzoom .exzoom_nav .exzoom_nav_inner{-webkit-transition:all .5s;-moz-transition:all .5s;transition:all .5s}
@@ -57,8 +61,16 @@ $clientData = \App\Models\Client::select('socket_url')->first();
         display: none;
     }
    
+    .select2-results__option{
+    width:100%;
+   }
+   .select2-container{
+    width:100%!important;
+   }
     </style>
 
+@endsection
+@section('css-compare')
 @endsection
 
 @section('content')
@@ -67,8 +79,9 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 @include('frontend.included_files.products_breadcrumb')
 @endif
 @php
+$category_name =  ($category->translation->first()) ? $category->translation->first()->name : $category->slug;
   $img = '';
-  $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency']);
+  $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency', 'add_to_cart_btn']);
 @endphp
 <!-- <div class="toast">
     <div class="toast-header">
@@ -215,8 +228,8 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             @endif
                                             </ul>
                                         </div>
-                                        @if(count($product->media) > 1)
-                                        <!-- <div class="exzoom_nav">
+                                        {{-- @if(count($product->media) > 1)
+                                        <div class="exzoom_nav">
                                             @if(!empty($product->media))
                                             @foreach($product->media as $k => $image)
                                             @php
@@ -236,13 +249,13 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 @endif
                                             @endforeach
                                             @endif
-                                        </div> -->
+                                        </div>
                                         <p class="exzoom_btn">
                                             <a href="javascript:void(0);" class="exzoom_prev_btn">
-                                                < </a> <a href="javascript:void(0);" class="exzoom_next_btn"> >
+                                                </a> <a href="javascript:void(0);" class="exzoom_next_btn"> >
                                             </a>
                                         </p>
-                                        @endif
+                                        @endif --}}
                                     </div>
                                     <div id="myresult" class="img-zoom-result"></div>
                                 </div>
@@ -252,9 +265,6 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                         <h2 class="mb-0">
                                             {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
                                         </h2>
-                                        @if(!is_category_p2p($product->category))
-                                            <span class="rating main-rating">4.1<i class="fa fa-star" aria-hidden="true"></i></span>
-                                        @endif
                                         <h6 class="sold-by">
                                             <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
                                         </h6>
@@ -266,9 +276,9 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 @endif
                                             @endif
                                         @endif
-                                        <div class="description_txt mt-3">
+                                       {{-- <div class="description_txt mt-3">
                                             <p>{{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_description : ''}}</p>
-                                        </div>
+                                        </div>--}}
                                         <input type="hidden" name="available_product_variant" id="available_product_variant" value="{{$product->variant[0]->id}}">
                                         <input type="hidden" name="start_time" id="start_time" value="">
                                         <input type="hidden" name="end_time" id="end_time" value="">
@@ -298,8 +308,27 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 $product->translation[0]->body_html : ''!!}
                                         </div>
 
+                                        <!--- Processor Details Farmmeat by Sohail -->
+                                        @if(isset($processorProduct))
+                                        @if (!empty($processorProduct) && $processorProduct->is_processor_enable == 1)
+                                            <div class="border-product al_disc">
+                                                <h6 class="product-title">{{__('Product processor Details')}}</h6>
+                                                <p>{{$processorProduct->name}}</p>
+                                                <p>{{$processorProduct->date}}</p>
+                                                <p>{{$processorProduct->address}}</p>
+                                            </div>
+                                        @elseif (!empty($product) && $processorProduct->is_processor_enable == 0)
+                                            <div class="border-product al_disc">
+                                                <h6 class="product-title">{{__('Product Vendor Details')}}</h6>
+                                                <p>{{$product->product_pickup_date}}</p>
+                                            </div>
+                                        @endif
+                                        @endif
+                                        
 
-                                        @if( is_category_p2p($product->category) )
+
+
+                                        @if( is_category_p2p($product->category) || is_attribute_enabled())
 
                                             @if( !empty($attr_array) )
                                                 @foreach($attr_array as $attr_key => $attr_val)
@@ -326,8 +355,6 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             <hr>
                                                 <h6 class="sold-by">
                                             @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
-
-
                                                     <?php /*<span>Sold by : </span>
                                                     <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a> */ ?>
                                                     <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}"><i class="fa fa-comments" aria-hidden="true"></i></a>
@@ -370,7 +397,11 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                                 $checked = ($selectedVariant == $optn->product_variant_id) ? 'checked' : '';
                                                                 ?>
                                                                     <label class="radio d-inline-block txt-14 col-4 position-relative pl-4 pr-2"> <span class="color_name ellipsis">{{$optn->title}}</span>
-                                                                    <span class="color_var" style="padding:8px; border: 1px dotted #CCC; background:{{$optn->hexacode}};"></span>
+                                                                      @if($variant->type == 2)
+                                                                    <span class="color_var var_{{$var_id}}" style="padding:8px; border: 1px dotted #CCC; background:{{$optn->hexacode}};" data-id="{{$var_id}}"></span>
+                                                                	@else
+                                                                    <span class="color_var radio_var radio_{{$var_id}}" style="padding:8px; border: 1px dotted #CCC; background:#fff;" data-id="{{$var_id}}"></span>
+                                                               	 	@endif
                                                                     <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}}>
                                                                     <span class="checkround"></span>
                                                                 </label>
@@ -386,10 +417,13 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                         <div id="variant_response">
                                             <span class="text-danger mb-2 mt-2"></span>
                                         </div>
+
+                                        @if($product->is_recurring_booking == 1)
+                                            @include('frontend.product-part.recurring-booking')
+                                        @endif
                                         @if($product->category->categoryDetail->type_id == 10)
                                             @include('frontend.product-part.booking-slot')
                                         @endif
-
 
 
                                         @if(!empty($product->addOn) && $product->addOn->count() > 0)
@@ -481,6 +515,109 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             </table>--}}
                                         </div>
                                         @endif
+
+                                        @if(@Auth::user()->role_id == 3)
+                                            <div class="border-product">
+                                                <h6 class="product-title">{{ __('Bulk Order')}}</h6>
+                                                <div id="bulk-order-table">
+
+                                                    @foreach ($product->productVariantByRoles as $key => $data)
+                                                        @if($data->role_id == 3)
+                                                            <h6 bulk_id="{{$data->id}}" class="header-title productAddonSet mb-1">{{__('Greater than or equal to quantity ').$data->quantity.' ( price '.Session::get('currencySymbol').''.$data->amount.' )'}}
+                                                            </h6>
+                                                        @endif
+                                                    @endforeach
+                                                    {{-- @foreach($product->addOn as $row => $addon)
+                                                        <div class="addon-product">
+                                                            <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet mb-2">{{$addon->title}}
+                                                                @php
+                                                                    $min_select = '';
+                                                                    $minText = __('Minimum');
+                                                                    $maxText = __('Maximum');
+                                                                    $andText = __('and');
+                                                                    if($addon->min_select > 0){
+                                                                        $min_select = $minText.' '.$addon->min_select;
+                                                                    }
+                                                                    $max_select = '';
+                                                                    if($addon->max_select > 0){
+                                                                        $max_select = $maxText.' '.$addon->max_select;
+                                                                    }
+                                                                    if( ($min_select != '') && ($max_select != '') ){
+                                                                        $min_select = $min_select.' '.$andText.' ';
+                                                                    }
+                                                                @endphp
+                                                                @if( ($min_select != '') || ($max_select != '') )
+                                                                    <small>({{__($min_select).__($max_select)}} {{ __('Selections Allowed')}})</small>
+                                                                @endif
+                                                            </h4>
+                                                        </div>
+                                                    @endforeach --}}
+                                                </div>
+
+
+                                                {{--<table class="table table-centered table-nowrap table-striped d-none" id="addon-table">
+                                                    <tbody>
+                                                        @foreach($product->addOn as $row => $addon)
+                                                        <tr>
+                                                            <td>
+                                                                <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet">{{$addon->title}}
+                                                                    @php
+                                                                        $min_select = '';
+                                                                        if($addon->min_select > 0){
+                                                                            $min_select = 'Minimum '.$addon->min_select;
+                                                                        }
+                                                                        $max_select = '';
+                                                                        if($addon->max_select > 0){
+                                                                            $max_select = 'Maximum '.$addon->max_select;
+                                                                        }
+                                                                        if( ($min_select != '') && ($max_select != '') ){
+                                                                            $min_select = $min_select.' and ';
+                                                                        }
+                                                                    @endphp
+                                                                    @if( ($min_select != '') || ($max_select != '') )
+                                                                        <small>({{$min_select.$max_select}} {{ __('Selections Allowed')}})</small>
+                                                                    @endif
+                                                                </h4>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
+                                                            <td>
+                                                                @foreach($addon->setoptions as $k => $option)
+                                                                <div class="checkbox checkbox-success form-check-inline">
+                                                                    <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}">
+                                                                    <label class="pl-2" for="inlineCheckbox_{{$row.'_'.$k}}">
+                                                                        {{$option->title .' ($'.decimal_format($option->price).')' }}</label>
+                                                                </div>
+                                                                @endforeach
+                                                            </td>
+                                                        </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>--}}
+                                            </div>
+                                        @endif
+
+                                        @if($product->same_day_delivery == 1 && $product->next_day_delivery == 1 && $product->hyper_local_delivery == 1)
+                                        <div class="enterPincodeMsg desktop-pin-message">
+                                            <strong> Enter correct Pincode for hassle free timely delivery.</strong>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <input type="number" class="form-control" name="pincode" id="pincode" value="" placeholder="Enter Pincode" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength = "6" autocomplete="off" data-vendor-id="{{$product->vendor->id??''}}"/>
+                                                    <span class="pincode-err text-danger" style="font-size: 14px;"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <input class="flatpickr flatpickr-input form-control" type="text" placeholder="Select Date.." data-id="minDate" name="date_input" id="date_input" readonly="readonly" disabled>
+                                                    <input type="hidden" name="sele_slot_id" id="sele_slot_id" value="" />
+                                                    <input type="hidden" name="sele_slot_price" id="sele_slot_price" value="" />
+                                                    <div id="selected_slot"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endif
                                         @php
                                             // check if vendor is closed or not, if closed then get slots otherwise no need.
                                             if($vendor_info->is_vendor_closed == 1)
@@ -489,7 +626,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                 $checkSlot = 0;
                                         @endphp
 
-                                        @if( !is_category_p2p($product->category) )
+                                        @if( $product->category->categoryDetail->type_id != 13 )
                                         <div class="btn-wrapper">
                                             <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'inline-block'; ?>">
                                                 @if($product->inquiry_only == 0)
@@ -550,8 +687,9 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 
 
                                                 @endphp
+                                                {{-- @dd($product->variant[0]->quantity) --}}
                                                 @if($is_available == 1)
-                                                    <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
+                                                    <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}" id="add_to_cart_btn">{{__('Add To Cart')}}</a>
                                                 @endif
 
                                                     @if($vendor_info->is_vendor_closed == 1 && $checkSlot == 0)
@@ -572,6 +710,17 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                             <button type="button" class="btn btn-solid addWishList mr-2" proSku="{{$product->sku}}" remWishlist="{{ __('Remove From Wishlist') }}" addWishlist="{{ __('Add To Wishlist') }}">
                                                 {{ (isset($product->inwishlist) && (!empty($product->inwishlist))) ? __('Remove From Wishlist') : __('Add To Wishlist') }}
                                             </button>
+                                            @endif
+                                            @php
+                                                if($product->sell_when_out_of_stock == 1 && $product->variant[0]->quantity == 0){
+                                                    $product_quantity_in_cart = 1;
+                                                    $product->variant[0]->quantity = 2;
+                                                }
+                                                else
+                                                    $product_quantity_in_cart = $product_in_cart->quantity??0;
+                                                @endphp
+                                            @if($is_available == 1 && $additionalPreference['add_to_cart_btn'] == 1)
+                                                <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
                                             @endif
                                         </div>
                                         @endif
@@ -619,22 +768,30 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                             class="icofont icofont-man-in-glasses"></i>Details</a>
                                                     <div class="material-border"></div>
                                                 </li> -->
-                                                @if($client_preference_detail && $client_preference_detail->rating_check == 1)
-                                                <li class="nav-item"><a class="nav-link active" id="review-top-tab" data-toggle="tab" href="#top-review" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Ratings & Reviews')}}</a>
+                                                @if($client_preference_detail && $client_preference_detail->rating_check == 1 && count($rating_details)>0)
+                                                <li class="nav-item "><a class="nav-link active" id="review-top-tab" data-toggle="tab" href="#top-review" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Ratings & Reviews')}}</a>
                                                     <div class="material-border"></div>
                                                 </li>
                                                 @endif
+
+                                                @if(@getAdditionalPreference(['is_enable_compare_product'])['is_enable_compare_product'] && 
+                                                (in_array($product->category->category_id,getVendorAdditionalPreference($product->vendor_id,'compare_categories'))))
+                                                
+                                                <li class="nav-item ml-3"><a class="nav-link {{(count($rating_details)>0)?'':'active'}}" id="compare-product-tab" data-toggle="tab" href="#compare-product" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Compare products')}}</a>
+                                                    <div class="material-border"></div>
+                                                </li>
+                                @endif
                                             </ul>
                                             <div class="tab-content nav-material" id="top-tabContent">
-                                                <div class="tab-pane fade" id="top-home" role="tabpanel" aria-labelledby="top-home-tab">
+                                                {{-- <div class="tab-pane fade" id="top-home" role="tabpanel" aria-labelledby="top-home-tab">
                                                     <p>{!! (!empty($product->translation) && isset($product->translation[0])) ?
                                                         $product->translation[0]->body_html : ''!!}</p>
                                                 </div>
                                                 <div class="tab-pane fade" id="top-profile" role="tabpanel" aria-labelledby="profile-top-tab">
                                                     <p>{!! (!empty($product->translation) && isset($product->translation[0])) ?
                                                         $product->translation[0]->body_html : ''!!}</p>
-                                                </div>
-                                                <div class="tab-pane show active" id="top-review" role="tabpanel" aria-labelledby="review-top-tab">
+                                                </div> --}}
+                                                <div class="tab-pane show {{(count($rating_details)>0)?'active':''}}" id="top-review" role="tabpanel" aria-labelledby="review-top-tab">
                                                     @forelse ($rating_details as $rating)
                                                     <div v-for="item in list" class="w-100 d-flex justify-content-between mb-3">
                                                         <div class="review-box">
@@ -665,9 +822,11 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                                                         </div>
                                                     </div>
                                                     @empty
-                                                    <p>{{__('No Result Found')}}</p>
+                                                    <p>{{__('No Reviews Yet')}}</p>
                                                     @endforelse
                                                 </div>
+                                                    @include('frontend.compare-product-table')
+                                                
                                             </div>
                                         </div>
                                     </div>
@@ -684,9 +843,13 @@ $clientData = \App\Models\Client::select('socket_url')->first();
                     @if(!empty($set_template) && !empty($set_template->template_id) && ($set_template->template_id == '8' || $set_template->template_id == '9'))
                     <div class="row">
                         <div class="col-md-12">
-                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_category_products, 'title' => 'Category Related Product'])
+                            @php
+                                $similar_title = getNomenclatureName('Similar Product', true);
+                                $similar_title_label = ($similar_title=="Similar Product")?__('Similar Product'):__($similar_title);
+                            @endphp
+                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_category_products, 'title' => $similar_title_label.' In '.$category_name ])
                             @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_brand_products, 'title' => 'Brand Related Product'])
-                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_vendor_products, 'title' => 'Vendor Related Product'])
+                            @include('frontend.product-component.category-related-product', ['realted_produuct' => $suggested_vendor_products, 'title' => $similar_title_label.' By '. $product->vendor->name])
                         </div>
                     </div>
                     @endif
@@ -831,7 +994,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
         </div>
     </div>
     <div class="container pb-md-4">
-        <div class="product-4 product-m  related-products pb-2 d-flex">
+        <div class="product-m  related-products pb-2  related-css">
             @forelse($product->related_products as $related_product)
             <div>
                 <a class="common-product-box scale-effect text-center"
@@ -960,6 +1123,21 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     var rePre = `<?php echo $rePre; ?>`;
     var fetchDe = `<?php echo $fetchDe; ?>`;
 </script>
+<div class="modal fade" id="delivery_form" tabindex="-1" aria-labelledby="delivery_formLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title" id="delivery_formLabel">{{__('Select Delivery Slot')}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="delivery_option">
+
+            </div>
+        </div>
+    </div>
+</div>
 
 @endsection
 @section('js-script')
@@ -969,11 +1147,14 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
 <script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
 <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
 <script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 @endsection
 @section('script')
 <script>
+    var recurringformPost = '';
     var maximumquantitylert = "{{__('Quantity is not available in stock')}}";
     var minimumquantitylert = "{{__('Minimum Quantity count is')}}";
+
     $(document).on('click', '.submitInquiryForm', function(e) {
         e.preventDefault();
         var formData = new FormData(document.getElementById("inquiry-form"));
@@ -1008,6 +1189,144 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
         });
     });
 
+    $("#pincode").blur(function(e){
+        e.preventDefault();
+        var vendor_id = $(this).data('vendor-id');
+        var pincode = $(this).val();
+        var url = "{{ route('pincode.checkVendorPincode') }}";
+        if(pincode != ''){
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                type: "post",
+                headers: {
+                    Accept: "application/json"
+                },
+                url: url,
+                data: {vendor_id:vendor_id,pincode:pincode},
+                dataType: "json",
+                success: function(response) {
+                    if(response.success == true){
+                        $('#date_input').prop("disabled", false);
+                        $('.pincode-err').text('');
+                    }else{
+                        $('#date_input').val("");
+                        $('#date_input').prop("disabled", true);
+                        $('.pincode-err').text('This product cannot be delivered here');
+                    }
+                },
+                error: function(response) {
+                    console.log(response);
+                },
+                complete: function() {}
+            });
+        }
+    });
+
+    // $('#date_input').change(function(){
+    //     var input_date = $(this).val();
+    //     $.ajax({
+    //         url: "{{route('pincode.getShippingMethod')}}",
+    //         type: "get",
+    //         datatype: "html",
+    //         data: {input_date:input_date},
+    //         success: function(data){
+    //             $('#delivery_form').modal('show');
+    //             $("#delivery_option").empty().html(data);
+    //         },
+    //         error: function() {
+    //             $("#delivery_option").empty().html('Something went wrong');
+    //         }
+    //     });
+    // });
+
+    $('#date_input').change(function(){
+        var input_date = $(this).val();
+        var product_id = "{{$product->id}}";
+        // var vendor_cutOff_time = "{{$product->vendor->cutOff_time??''}}";
+        if(input_date != ''){
+            $.ajax({
+                url: "{{route('product.getShippingProductDeliverySlots')}}",
+                type: "get",
+                datatype: "html",
+                data: {input_date:input_date,product_id:product_id}, //,vendor_cutOff_time:vendor_cutOff_time
+                success: function(data){
+                    $('#delivery_form').modal({backdrop: 'static', keyboard: false});
+                    $("#delivery_option").empty().html(data);
+                },
+                error: function() {
+                    $("#delivery_option").empty().html('Something went wrong');
+                }
+            });
+        }
+    });
+
+    // $(document).on('change', '#delivery_form .delivery_option', function(){
+    //     var shipping_method_id = $(this).val();
+    //     var product_id = "{{$product->id}}";
+    //     $.ajax({
+    //         url: "{{route('product.getShippingProductDeliverySlots')}}",
+    //         type: "get",
+    //         datatype: "html",
+    //         data: {shipping_method_id:shipping_method_id, product_id:product_id},
+    //         success: function(data){
+    //             $('#delivery_form .modal-title').text('Select Delivery Slots');
+    //             $("#delivery_option").empty().html(data);
+    //         },
+    //         error: function() {
+    //             $("#delivery_option").empty().html('Something went wrong');
+    //         }
+    //     });
+    // });
+
+    $(document).on('change', '#delivery_form .delivery_slot', function(){
+        $.ajax({
+            url: "{{route('product.getShippingSlotsInterval')}}",
+            type: "get",
+            datatype: "html",
+            data: {slot_id:$(this).val()},
+            success: function(data){
+                $('#delivery_form .modal-title').text('Select Delivery Slots');
+                $("#delivery_option").empty().html(data);
+            },
+            error: function() {
+                $("#delivery_option").empty().html('Something went wrong');
+            }
+        });
+    });
+
+    $(document).on('change', '#delivery_form .delivery_slot_interval', function(){
+        var slot_price = $(this).data('price');
+        var slot_id = $(this).val();
+        var slot_text = $(this).data('slot-text');
+        $('#sele_slot_id').val(slot_id);
+        $('#sele_slot_price').val(slot_price);
+        $('#selected_slot').text(slot_text);
+        $('#delivery_form').modal('hide');
+    });
+
+
+    $(document).ready(function(){
+        var cutOff_time = "{{@$current_time_response}}";
+        var date_var;
+
+        if( cutOff_time == 1) {
+            date_var = new Date();
+        } else {
+            date_var = new Date();
+            date_var.setDate(date_var.getDate()+1);
+        }
+
+        $('.flatpickr').flatpickr({
+            enableTime: false,
+            startDate: date_var,
+            minDate: date_var,
+            dateFormat: "Y-m-d" //H:i
+        });
+    });
 
     var valueHover = 0;
 
@@ -1053,9 +1372,15 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
         $(".starrate span.ctrl").width($(".starrate span.cont").width());
         $(".starrate span.ctrl").height($(".starrate span.cont").height());
         $(".color_var").click(function () {
-            $(".color_var").removeClass("var-active");
+        	var name  = $(this).attr("data-id");
+            $(".var_"+name).removeClass("var-active");
             $(this).toggleClass("var-active");
             });
+        $(".radio_var").click(function () {
+        	var name  = $(this).attr("data-id");
+            $(".radio_"+name).removeClass("radio-active");
+            $(this).toggleClass("radio-active");
+        });
     });
 </script>
 
@@ -1318,7 +1643,17 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
                 $(this).find('img').addClass("active");
             });
         });
+        
+        
+        $(document).on("click",".color_name",function(){
+        	if($(this).hasClass("ellipsis")){
+        		$(this).removeClass("ellipsis");
+        	}else{
+        		$(this).addClass("ellipsis");
+        	}
+        });
 
         </script>
 
 @endsection
+

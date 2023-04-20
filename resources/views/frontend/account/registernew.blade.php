@@ -49,7 +49,7 @@
                     <h3 class="mb-2">{{ __('New Customer') }}</h3>
 
                     @if (session('preferences'))
-                        @if (session('preferences')->fb_login == 1 || session('preferences')->twitter_login == 1 || session('preferences')->google_login == 1 || session('preferences')->apple_login == 1)
+                        @if (@session('preferences')->fb_login == 1 || @session('preferences')->twitter_login == 1 || @session('preferences')->google_login == 1 || @session('preferences')->apple_login == 1)
                             <ul class="social-links d-flex align-items-center mx-auto mb-4 mt-3">
                                 @if (session('preferences')->google_login == 1)
                                     <li>
@@ -58,21 +58,21 @@
                                         </a>
                                     </li>
                                 @endif
-                                @if (session('preferences')->fb_login == 1)
+                                @if (@session('preferences')->fb_login == 1)
                                     <li>
                                         <a href="{{ url('auth/facebook') }}">
                                             <img src="{{ asset('front-assets/images/facebook.svg') }}">
                                         </a>
                                     </li>
                                 @endif
-                                @if (session('preferences')->twitter_login)
+                                @if (@session('preferences')->twitter_login)
                                     <li>
                                         <a href="{{ url('auth/twitter') }}">
                                             <img src="{{ asset('front-assets/images/twitter.svg') }}">
                                         </a>
                                     </li>
                                 @endif
-                                @if (session('preferences')->apple_login == 1)
+                                @if (@session('preferences')->apple_login == 1)
                                     <li>
                                         <a href="javascript::void(0);">
                                             <img src="{{ asset('front-assets/images/apple.svg') }}">
@@ -87,15 +87,15 @@
                     @endif
                     <div class="row mt-3">
                         @if (session('preferences'))
-                        <div class="{{ (session('preferences')->concise_signup == 1)? 'mx-auto':'offset-xl-2 col-xl-8 text-left' }}">
+                        <div class="{{ (@session('preferences')->concise_signup == 1)? 'mx-auto':'offset-xl-2 col-xl-8 text-left' }}">
                             <form name="register" id="register" enctype="multipart/form-data" action="{{ route('customer.register') }}"
                                 class="px-lg-4" method="post"> @csrf
-                                @if(session('preferences')->concise_signup == 1)
+                                @if(@session('preferences')->concise_signup == 1)
                                 <input type="hidden" name="name" value="guest">
                                 <input type="hidden" name="email" id="guest-email" value="">
                                 @endif
-                                <div class="row form-group mb-0 {{ (session('preferences')->concise_signup == 1)? 'mx-auto':'' }}">
-                                    @if(session('preferences')->concise_signup == 0)
+                                <div class="row form-group mb-0 {{ (@session('preferences')->concise_signup == 1)? 'mx-auto':'' }}">
+                                    @if(@session('preferences')->concise_signup == 0)
                                     <div class="col-md-6 mb-3">
                                         <label for="">{{ __('Full Name') }}</label>
                                         <input type="text" class="form-control @error('name') is-invalid @enderror"
@@ -107,7 +107,7 @@
                                         @enderror
                                     </div>
                                     @endif
-                                    <div class="col-md-{{ (session('preferences')->concise_signup == 1)? '12 text-left':'6' }} mb-3">
+                                    <div class="col-md-{{ (@session('preferences')->concise_signup == 1)? '12 text-left':'6' }} mb-3">
                                         <label for="">{{ __('Phone No.') }}</label>
                                         <input type="tel"
                                             class="form-control @error('phone_number') is-invalid @enderror"
@@ -125,8 +125,8 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="row form-group mb-0 {{ (session('preferences')->concise_signup == 1)? 'mx-auto':'' }}">
-                                    @if(session('preferences')->concise_signup == 0)
+                                <div class="row form-group mb-0 {{ (@session('preferences')->concise_signup == 1)? 'mx-auto':'' }}">
+                                    @if(@session('preferences')->concise_signup == 0)
                                     <div class="col-md-6 mb-3">
                                         <label for="">{{ __('Email') }}</label>
                                         <input type="email" class="form-control @error('email') is-invalid @enderror"
@@ -138,7 +138,7 @@
                                         @enderror
                                     </div>
                                     @endif
-                                    <div class="col-md-{{ (session('preferences')->concise_signup == 1)? '12 text-left':'6' }} mb-3">
+                                    <div class="col-md-{{ (@session('preferences')->concise_signup == 1)? '12 text-left':'6' }} mb-3">
                                         <label for="">{{ __('Password') }}</label>
                                         <div class="position-relative">
                                             <input type="password" id="password-field"
@@ -156,12 +156,12 @@
                                     </div>
                                 </div>
 
-                                <div class="form-row ">
-                                    @if (count($user_registration_documents) > 0)
-                                        <div class="user-info d-block w-100">
-                                            <h2 class="py-1">User Document</h2>
-                                        </div>
-                                    @endif
+                                @if (count($user_registration_documents) > 0)    
+                                    <div class="user-info d-block w-100">
+                                        <h5 class="py-1">User Document</h5>
+                                    </div>
+                                @endif
+                                <div class="row form-group mb-0 ">
                                     @foreach ($user_registration_documents as $vendor_registration_document)
                                         @if (isset($vendor_registration_document->primary->slug) && !empty($vendor_registration_document->primary->slug))
                                             @if (strtolower($vendor_registration_document->file_type) == 'selector')
@@ -298,7 +298,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="row  mt-5">
+                                <div class="row  my-5">
                                     <div class="col-md-12">
                                         <input type="hidden" name="device_type" value="web">
                                         <input type="hidden" name="device_token" value="web">
@@ -322,7 +322,7 @@
     <script>
         $(document).ready(function() {
             @if (session('preferences'))
-                @if(session('preferences')->concise_signup == 1)
+                @if(@session('preferences')->concise_signup == 1)
                     $('#phone').change(function() {
                         var custPhone = $(this).val();
                         $('#guest-email').val(custPhone+'@gmail.com');

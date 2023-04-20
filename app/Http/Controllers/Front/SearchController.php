@@ -5,36 +5,39 @@ namespace App\Http\Controllers\Front;
 use Session;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,VendorTrait};
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Front\FrontController;
 use App\Models\{Currency, Banner, Category, Brand, Product, ClientLanguage, Vendor, ClientCurrency, Category_translation, ProductTranslation};
 
 class SearchController extends FrontController
 {
-    use ApiResponser;
+    use ApiResponser,VendorTrait;
     public function postAutocompleteSearch(Request $request)
     {
         $response = [];
         $keyword = $request->input('keyword');
         $language_id = Session::get('customerLanguage');
-        $preferences = getClientPreferenceDetail();
+       // $preferences = getClientPreferenceDetail();
+        $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'):  getClientPreferenceDetail();
+   
         $latitude = session('latitude');
         $longitude = session('longitude');
         $selectedAddress = session('selectedPlaceId');
         $vendorType = Session::get('vendorType');
         $allowed_vendors = $this->getServiceAreaVendors();
 
-        $vendors = Vendor::select('id', 'name', 'logo', 'slug', 'show_slot');
+        $vendors = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'name', 'logo', 'slug', 'show_slot');
         if (count($allowed_vendors) > 0) {
             $vendors = $vendors->whereIn('id', $allowed_vendors);
         }
+      
 
-        if ($preferences) {
+        if (@$preferences) {
             if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
-                $selectedAddress = $preferences->Default_location_name;
-                $latitude = $preferences->Default_latitude;
-                $longitude = $preferences->Default_longitude;
+                $selectedAddress = @$preferences->Default_location_name;
+                $latitude = @$preferences->Default_latitude;
+                $longitude = @$preferences->Default_longitude;
                 Session::put('latitude', $latitude);
                 Session::put('longitude', $longitude);
                 Session::put('selectedAddress', $selectedAddress);
@@ -162,20 +165,22 @@ class SearchController extends FrontController
         $mapViewVendorList = [];
         $keyword = $keyword;
         $language_id = Session::get('customerLanguage');
-        $preferences = Session::get('preferences');
+      // $preferences = Session::get('preferences');
+        $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'):  getClientPreferenceDetail();
         $vendorType = Session::get('vendorType');
         $vendorMapView = '';
-        $vendors = Vendor::select('id', 'name', 'logo', 'slug', 'latitude', 'longitude', 'address', 'dial_code', 'phone_no')->where($vendorType, 1);
-        if ($preferences) {
+        $vendors = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'name', 'logo', 'slug', 'latitude', 'longitude', 'address', 'dial_code', 'phone_no')->where($vendorType, 1);
+        
+        if (@$preferences) {
             if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
-                $selectedAddress = $preferences->Default_location_name;
-                $latitude = $preferences->Default_latitude;
-                $longitude = $preferences->Default_longitude;
+                $selectedAddress = @$preferences->Default_location_name;
+                $latitude = @$preferences->Default_latitude;
+                $longitude = @$preferences->Default_longitude;
                 Session::put('latitude', $latitude);
                 Session::put('longitude', $longitude);
                 Session::put('selectedAddress', $selectedAddress);
             }
-            if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+            if ((@$preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
 
                 if (!empty($latitude) && !empty($longitude)) {
                     $vendors = $vendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
@@ -184,7 +189,7 @@ class SearchController extends FrontController
                     });
                 }
             }
-            if (($preferences->map_on_search_screen == 1)) {
+            if ((@$preferences->map_on_search_screen == 1)) {
                 $vendorMapView = 1;
             }
         }
@@ -329,6 +334,7 @@ class SearchController extends FrontController
                 }
             }
         }
+        // dd($response);
 
         return view('frontend.searchResults')->with(['listData' => $response, 'mapViewVendorList' => $mapViewVendorList, 'vendorMapView' => $vendorMapView, 'vendorLatLong' => $vendorLatLong, 'navCategories' => $navCategories, 'keyword' => $keyword]);
     }

@@ -4,16 +4,16 @@
 											<a class="suppliers-box d-block" href="{{route('vendorDetail')}}/{{ $vendor->slug }}">
 												<div class="suppliers-img-outer position-relative " style="height:100px">
 													@if($vendor->is_vendor_closed==1) 
-														<img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="{{ $vendor->logo['image_fit'] }}200/200{{ $vendor->logo['image_path'] }}" alt="" title="">
+														<img class="fluid-img mx-auto blur-up lazyload grayscale-image" data-src="{{ get_file_path($vendor->logo,'FILL_URL','200','200') }}" alt="" title="">
 													@else
-														<img  class="fluid-img mx-auto blur-up lazyload" data-src="{{ $vendor->logo['image_fit'] }}200/200{{ $vendor->logo['image_path'] }}" alt="" title="">
+														<img  class="fluid-img mx-auto blur-up lazyload" data-src="{{ get_file_path($vendor->logo,'FILL_URL','200','200') }}" alt="" title="">
 													@endif
 						
 												</div>
 												<div class="supplier-rating">
 													<h6 class="mb-1 ellips">{{ $vendor->name }}</h6>
-														@if($vendor['timeofLineOfSightDistance'] != 0)
-															<div class="pref-timing"> <span>{{$vendor['timeofLineOfSightDistance']}}</span> </div>
+														@if(@$vendor->timeofLineOfSightDistance != 0)
+															<div class="pref-timing"> <span>{{$vendor->timeofLineOfSightDistance}}</span> </div>
 														@endif
 												</div>
 												@if($client_preference_detail && $client_preference_detail->rating_check==1)

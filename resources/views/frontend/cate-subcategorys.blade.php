@@ -21,9 +21,8 @@
                 <div class="col-12">
                     <div class="top-banner-wrapper text-center">
 
-                        @if(!empty($category->image) && $category->image['is_original'])
-                        <div class="common-banner"><img alt="" data-src="{{$category->image['proxy_url'] . '1370/300' . $category->image['image_path']}}" class="img-fluid blur-up lazyload"></div>
-                        @endif
+                    @include('frontend.vendor-category-topbar-banner')   
+
 
                         <div class="top-banner-content small-section">
                             <h4>{{ $category->translation_name }}</h4>
@@ -31,9 +30,9 @@
                     </div>
                 </div>
             </div>
-            <div class="row mb-5 homepageSix">
+            <div class="row mb-5 homepageSix vendor_onetem">
                 {{-- @dd($category->childs) --}}
-                <div class="collection-filter col-lg-3 main-fillter al">
+                <div class="collection-filter col-lg-3 main-fillter al catery_eight">
                     <div class="theme-card custom-inner-card">
 
                     <div class="accordion" id="accordionExample">
@@ -201,7 +200,7 @@
                                     </div>
                                     <div class="displayProducts">
                                         <div class="product-wrapper-grid card-product">
-                                            <div class="row margin-res">
+                                            <div class="row margin-res categories_img">
                                                 @if(!empty($category->childs) && count($category->childs) > 0)
                                                     @foreach($category->childs->toArray() as $cate)
                                                     <div class="col-md-3 col-6 col-grid-box">
@@ -248,22 +247,22 @@
 </script>
 <script type="text/javascript">
 	function changeImage(image2, check) {
-       var image = $(image2).children('.product-image').children("img");
-       var  icon = image.attr('data-icon');
-       var  icon_two = image.attr('data-icon_two');
-       if(check == 1)
-       {
-	        setTimeout(function () {
-	            image.attr('data-src',icon_two);
-	            image.attr('src',icon_two);
-	        },200);
-       }else if(check == 0){
-            setTimeout(function () {
-                image.attr('data-src',icon);
-                image.attr('src',icon);
-            },200);
+    //    var image = $(image2).children('.product-image').children("img");
+    //    var  icon = image.attr('data-icon');
+    //    var  icon_two = image.attr('data-icon_two');
+    //    if(check == 1)
+    //    {
+	//         setTimeout(function () {
+	//             image.attr('data-src',icon_two);
+	//             image.attr('src',icon_two);
+	//         },200);
+    //    }else if(check == 0){
+    //         setTimeout(function () {
+    //             image.attr('data-src',icon);
+    //             image.attr('src',icon);
+    //         },200);
 
-       }
+    //    }
     }
 </script>
 @endsection

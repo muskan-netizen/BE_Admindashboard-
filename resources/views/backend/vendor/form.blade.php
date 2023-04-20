@@ -235,8 +235,8 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="ifsccode">{{__('IFSC Code')}}</label>
-                            <input type="text" class="form-control" name="ifsc_code" placeholder="IFSC Code" value="{{$vendor->VendorAdditionalInfo->ifsc_code??''}}" placeholder="">
+                            <label for="ifsccode">{{getNomenclatureName('IFSC Code', true)}}</label>
+                            <input type="text" class="form-control" name="ifsc_code" placeholder="{{getNomenclatureName('IFSC Code', true)}}" value="{{$vendor->VendorAdditionalInfo->ifsc_code??''}}" placeholder="">
                             <span class="invalid-feedback" id="ifsc_code_error"><strong></strong></span>
                         </div>
                     </div>
@@ -313,7 +313,7 @@
                             if($vendor_registration_document->file_type == 'Text' || $vendor_registration_document->file_type == 'selector' ){
                                 $field_value = $vendor_doc->file_name;
                             } else {
-                                $field_value = $vendor_doc->image_file['storage_url'];
+                                $field_value = isset($vendor_doc->image_file['storage_url'])?$vendor_doc->image_file['storage_url']:'';
                             }
                         }
                     }
@@ -338,11 +338,11 @@
                         <input id="input_file_logo_{{$vendor_registration_document->id}}" type="text" name="{{$vendor_registration_document->primary->slug??''}}" class="form-control" value="{{ $field_value }}">
                     @else
                         @if(strtolower($vendor_registration_document->file_type) == 'image')
-                        <label for="">{{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}</label>
+                        <label class="d-flex align-items-center justify-content-between" for="">{{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}<a href="{{ $field_value }}" target="__blank"><i class="fa fa-eye" aria-hidden="true"></i></a></label>
                         <input type="file" accept="image/*" data-plugins="dropify" name="{{$vendor_registration_document->primary->slug??''}}" class="dropify" data-default-file="{{ $field_value }}" />
                         @else
                         <label class="d-flex align-items-center justify-content-between" for="">{{$vendor_registration_document->primary ? $vendor_registration_document->primary->name : ''}}<a href="{{ $field_value }}" target="__blank"><i class="fa fa-eye" aria-hidden="true"></i></a></label>
-                        <input type="file" accept=".pdf" data-plugins="dropify" name="{{$vendor_registration_document->primary->slug??''}}" class="dropify" data-default-file="" />
+                        <input type="file" accept=".pdf" data-plugins="dropify" name="{{$vendor_registration_document->primary->slug??''}}" class="dropify" data-default-file="{{ $field_value }}" />
                         @endif
                     @endif
                     <span class="invalid-feedback" role="alert">

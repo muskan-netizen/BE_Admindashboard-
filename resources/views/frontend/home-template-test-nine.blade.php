@@ -128,7 +128,7 @@
 
 <!-- html code here -->
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
-@if(count($banners))
+@if(@$banners && count($banners))
 <section class="home-slider-wrapper pt-md-0 pb-0">
 
 	<div class="container-alFulid">
@@ -141,11 +141,11 @@
 				</ol>
 			<div class="carousel-inner">
 				@foreach($banners as $key => $banner)
-				@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
+				@php $url=''; if($banner->link=='category'){if(!empty($banner->category_slug)){$url=route('categoryDetail', $banner->category_slug);}}else if($banner->link=='vendor'){if(!empty($banner->vendor_slug)){$url=route('vendorDetail', $banner->vendor_slug);}}else if($banner->link=='url'){if($banner->link_url !=null){$url=$banner->link_url;}}@endphp
 				<div class="carousel-item @if($key == 0) active @endif">
-					<a class="banner-img-outer" href="{{$url??'#'}}">
-						<link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '1170/500' . $banner->image['image_path']}}" />
-						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '1170/400' . $banner->image['image_path']}}">
+					<a class="banner-img-outer" href="{{$url??'#'}}" target="_blank">
+						<link rel="preload" as="image" href="{{ get_file_path($banner->image,'IMG_URL1','1170','500') }}" />
+						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{ get_file_path($banner->image,'IMG_URL1','1170','400') }}">
 					</a>
 				</div>
 				@endforeach
@@ -165,11 +165,11 @@
 			<div class="carousel-inner">
 
 				@foreach($mobile_banners as $key => $banner)
-				@php $url=''; if($banner->link=='category'){if($banner->category !=null){$url=route('categoryDetail', $banner->category->slug);}}else if($banner->link=='vendor'){if($banner->vendor !=null){$url=route('vendorDetail', $banner->vendor->slug);}}@endphp
+				@php $url=''; if($banner->link=='category'){if(!empty($banner->category_slug)){$url=route('categoryDetail', $banner->category_slug);}}else if($banner->link=='vendor'){if(!empty($banner->vendor_slug)){$url=route('vendorDetail', $banner->vendor_slug);}}@endphp
 				<div class="carousel-item @if($key == 0) active @endif">
 					<a class="banner-img-outer" href="{{$url??'#'}}">
-						<link rel="preload" as="image" href="{{$banner->image['proxy_url'] . '400/150' . $banner->image['image_path']}}" />
-						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{$banner->image['proxy_url'] . '400/150' . $banner->image['image_path']}}">
+						<link rel="preload" as="image" href="{{ get_file_path($banner->image,'IMG_URL1','400','150') }}" />
+						<img alt="" title="" class="blur-up lazyload w-100" data-src="{{ get_file_path($banner->image,'IMG_URL1','400','150') }}">
 					</a>
 				</div>
 				@endforeach
@@ -485,6 +485,36 @@
 				</div>
 			</div>
 		</section>
+		@elseif($homePageLabel->slug == 'banner' && (count($homePageData['banners']) != 0))
+		@if(!empty(@$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]))
+			<section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
+				<div class="top-heading d-flex justify-content-between">
+					<h2 class="h2-heading"> @php
+						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
+					@endphp </h2>
+				</div>
+				<div class="custom_banner">
+					<div class="container">
+						<div class="text-center">
+							@php
+								$url = $homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]; // replace with your URL
+								$extension = pathinfo($url, PATHINFO_EXTENSION);
+								$image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']; // list of image extensions
+								$video_extensions = ['mp4', 'avi', 'mov', 'wmv']; // list of video extensions
+							@endphp
+							@if(in_array($extension, $image_extensions))
+								<img alt="" title="" class="blur-up lazyload w-100" src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" height="300">	
+							@elseif (in_array($extension, $video_extensions))
+								<video id="video1" width="100%" controls autoplay muted>
+									<source src="{{$homePageData['banners'][$homePageLabel->translations->first()->cab_booking_layout_id]}}" type="video/mp4">
+								</video>
+							@else
+							@endif
+						</div>
+					</div>
+				</div>
+			</section>
+		@endif
 		@elseif($homePageLabel->slug == 'cities' && (count($homePageData['cities']) != 0))
 		<section class="d-none suppliers-section container render_full_{{$homePageLabel->slug}}">
 			<div class=" top-heading d-flex justify-content-between align-self-center">
@@ -642,6 +672,7 @@
 				</div>
 			</div>
 		</section>
+
 		@elseif($homePageLabel->slug == 'best_sellers' && (count($homePageData['best_sellers']) != 0))
 		<section class="d-none container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 			<div class="top-heading d-flex justify-content-between">
@@ -681,8 +712,7 @@
 			</div>
 			</div>
 		</section>
-		</section>
-		@elseif($homePageLabel->slug == 'selected_products' && (count($homePageData[$homePageLabel->slug]) != 0))
+		@elseif(isset($homePageData[$homePageLabel->slug]) && $homePageLabel->slug == 'selected_products' && (count($homePageData[$homePageLabel->slug]) != 0))
 		<section class="d-none main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}} bg-light-gray" id="{{$homePageLabel->slug.$key}}">
 			<div class="container">
 				<div class="top-heading d-flex justify-content-between">
@@ -704,7 +734,7 @@
 				</div>
 			</div>
 		</section>
-		@elseif($homePageLabel->slug == 'most_popular_products' && (count($homePageData[$homePageLabel->slug]) != 0))
+		@elseif(isset($homePageData[$homePageLabel->slug]) && $homePageLabel->slug == 'most_popular_products' && (count($homePageData[$homePageLabel->slug]) != 0))
 		<section class="d-none main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 			<div class="container">
 				<div class="top-heading d-flex justify-content-between">

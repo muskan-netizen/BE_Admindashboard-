@@ -163,7 +163,7 @@ class CashfreeGatewayController extends FrontController
             }
         }
         catch(\Exception $ex){
-            Log::info($ex->getMessage());
+          Log::info($e->getMessage());
             return $this->errorResponse('Server Error', 400);
         }
     }
@@ -321,14 +321,14 @@ class CashfreeGatewayController extends FrontController
         // Notify cashfree that information has been received
         //dd('sad');
         
-        // \Log::info($request->all());
+        // //\Log::info($request->all());
 
         try{
             
-            // \Log::info($request->txStatus);
+            // //\Log::info($request->txStatus);
             $response = $request->has('data') ? $request->data : [];
-             \Log::info($response);
-            // \Log::info($response['payment']);
+             //\Log::info($response);
+            // //\Log::info($response['payment']);
             $user_id = $cart_id = $payment_form = $order_number = $subscription_id = $payStatus = '';
             if(!empty($response) && ($response['payment']['payment_status'] == 'SUCCESS')) {
                 $transactionId = $response['payment']['cf_payment_id'];
@@ -447,7 +447,7 @@ class CashfreeGatewayController extends FrontController
                     $err = curl_error($curl);
                     curl_close($curl);
                     $response = json_decode($response);
-                    // \Log::info($response);
+                    // //\Log::info($response);
 
                     if(!$err && $response){
                         $user_id = $payment_form = $order_number = '';
@@ -476,7 +476,7 @@ class CashfreeGatewayController extends FrontController
             }
         }
         catch(\Exception $ex){
-            \Log::info($ex->getMessage());
+            //\Log::info($ex->getMessage());
             return response([],200);
         }
         return response([],200);

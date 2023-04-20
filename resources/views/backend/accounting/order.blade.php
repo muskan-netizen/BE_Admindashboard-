@@ -116,13 +116,17 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                                     <th>{{ __('Date & Time') }}</th>
                                     <th>{{ __('Customer Name') }}</th>
                                     <th>{{ __('Vendor') }}</th>
+                                    <th>{{ __('Vendor Earning') }}</th>
                                     <th>{{ __('Subtotal Amount') }}</th>
                                     @if(auth()->user()->is_superadmin ==1)
                                         <th>{{ __('Markup Price') }}({{ __("Visible For Admin") }})</th>
                                     @endif
                                     <th>{{ __('Promo Code Discount') }}</th>
+                                     <th>{{ __('Tax') }}</th>
                                     <th>{{ __('Delivery Fee') }}</th>
                                     <th>{{ __('Service Fee') }}</th>
+                                    <th>{{ __('Fixed Fee') }}</th>
+                                    <th>{{ __('Tip Amount') }}</th>
                                     <th>{{ __('Admin Commission') }} [{{ __("Fixed") }}]</th>
                                     <th>{{ __('Admin Commission') }} [%{{ __("Age") }}]
                                     <a href="javascript:void(0);" onclick="alert('First, it shows the total admin commission of the sub total amount then it shows the total percentage value.');" rel="noopener noreferrer"> <i class="fa fa-info-circle"></i> </a>
@@ -150,12 +154,15 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
             }
         });
-        function getPercentageAmount(percent,amount){
-
+       function getPercentageAmount(percent,amount){
             // var totalPercent = (percent/amount * 100);
-            var totalPercent = (percent * 100) / amount; // Added by ovi
-
-            return parseFloat(totalPercent).toFixed(2);
+           if(amount == 0.00){
+            	return amount;
+            }else{
+            	var totalPercent = (percent * 100) / amount; // Added by ovi
+            	return parseFloat(totalPercent).toFixed(2);
+            }
+            
         }
 
 
@@ -181,6 +188,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                     mode: "range",
                     onClose: function(selectedDates, dateStr, instance) {
                         initDataTable();
+                        getOrderCalculations();
                     }
                 });
                 $("#clear_filter_btn_icon").click(function() {
@@ -188,9 +196,12 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                     $('#vendor_select_box').val('');
                     $('#order_status_option_select_box').val('');
                     initDataTable();
+                    getOrderCalculations();
+                    
                 });
                 $("#vendor_select_box, #order_status_option_select_box").change(function() {
                     initDataTable();
+                    getOrderCalculations();
                 });
                 function initDataTable() {
                     $('#accounting_vendor_datatable').DataTable({
@@ -234,6 +245,10 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                             {data: 'created_date', name: 'name',orderable: false, searchable: false},
                             {data: 'user_name', name: 'Customer Name',orderable: false, searchable: false},
                             {data: 'vendor_name', name: 'vendor_name', orderable: false, searchable: false},
+                             {data: 'vendor_amount', name: 'action', orderable: false, searchable: false,
+                            "mRender": function(data, type, full) {
+                                return numberWithCommas(data);
+                            }},
                             {data: 'subtotal_amount', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
                                 return numberWithCommas(data);
@@ -247,6 +262,10 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                                 return numberWithCommas(data);
                             }},
 
+                            {data: 'taxable_amount', name: 'action', orderable: false, searchable: false,
+                            "mRender": function(data, type, full) {
+                                return numberWithCommas(data);
+                            }},
                             {data: 'delivery_fee', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
                                 return numberWithCommas(data);
@@ -256,7 +275,14 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                             "mRender": function(data, type, full) {
                                 return numberWithCommas(data);
                             }},
-
+							{data: 'fixed_fee', name: 'action', orderable: false, searchable: false,
+                            "mRender": function(data, type, full) {
+                                return numberWithCommas(data);
+                            }},
+                            {data: 'tip_amount', name: 'action', orderable: false, searchable: false,
+                            "mRender": function(data, type, full) {
+                                return numberWithCommas(data);
+                            }},
                             {data: 'admin_commission_fixed_amount', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
                                 return numberWithCommas(data);
@@ -264,11 +290,16 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
 
                             {data: 'admin_commission', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
-                                return data+" ("+getPercentageAmount(data,full.subtotal_amount)+"%)";
+                            	var discount = 0.00;
+                            	var amount = full.subtotal_amount;
+                            	if(full.coupon_paid_by == 0){
+                            		discount = full.discount_amount;
+                            	}
+                            	amount = amount - discount;
+                                return data+" ("+getPercentageAmount(data,amount)+"%)";
                                 // return numberWithCommas(data)+" ("+getPercentageAmount(data,full.subtotal_amount)+"%)";
                             }},
-
-                            {data: 'payable_amount', name: 'action', orderable: false, searchable: false,
+                            {data: 'total_price', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
                                 return numberWithCommas(data);
                             }},
@@ -298,6 +329,25 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                     });
                 }
 
+				function getOrderCalculations(){
+					 $.ajax({
+                         method:"GET",
+                          url: "{{route('account.order.calculations')}}",
+                          data:{
+                            search: $('input[type="search"]').val(),
+                            date_filter: $('#range-datepicker').val(),
+                            vendor_id :$('#vendor_select_box option:selected').val(),
+                            status_filter : $('#order_status_option_select_box option:selected').val()
+                          },
+                          success:function(response){
+                          	$("#total_earnings_by_vendors").html(response.total_earnings_by_vendors);
+                          	$("#total_cash_to_collected").html(response.total_cash_to_collected);
+                          	$("#total_delivery_fees").html(response.total_delivery_fees);
+                          	$("#total_order_count").html(response.total_order_count);
+                          }
+                        });
+				
+				}
             });
         }
     });

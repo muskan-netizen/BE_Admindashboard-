@@ -23,6 +23,9 @@
                                     <span class="plan-price">{{$clientCurrency->currency->symbol}}{{ decimal_format($subscription->subscription_amount) }} / {{ $subscription->frequency }}</span>
                                 </div>
                                 <p>{{ $subscription->plan->description }}</p>
+                                @if(@getAdditionalPreference(['is_show_vendor_on_subcription'])['is_show_vendor_on_subcription'] == 1)
+                                <p>{{ $subscription->order_count }}</p>
+                                @endif
                             </div>
 
                             <div class="col-sm-6 form-group mb-0">
@@ -53,14 +56,14 @@
                                 @if($subscription->status_id == 2)
                                     @if( $subscription->end_date >= $now )
                                         @if($subscription->plan->status == 1)
-                                            <a class="btn btn-info subscribe_btn" href="javascript:void(0)" data-toggle="modal" data-id="{{ $subscription->plan->slug }}">{{ __("Pay now") }} (${{ $subscription->plan->price }})</a>
+                                            <a class="btn btn-info subscribe_btn" href="javascript:void(0)" data-toggle="modal" data-id="{{ $subscription->plan->slug }}">{{ __("Pay now") }} ({{$clientCurrency->currency->symbol}}{{ number_format($subscription->plan->price,2) }})</a>
                                         @endif
                                         @if(empty($subscription->cancelled_at))
                                             <a class="cancel-subscription-link btn btn-info" href="#cancel-subscription" data-toggle="modal" data-id="{{ $subscription->slug }}">{{ __('Cancel') }}</a>
                                         @endif
                                     @else
                                         @if($subscription->plan->status == 1)
-                                            <a class="btn btn-info subscribe_btn" href="javascript:void(0)" data-toggle="modal" data-id="{{ $subscription->plan->slug }}">{{ __("Renew") }} (${{ $subscription->plan->price }})</a>
+                                            <a class="btn btn-info subscribe_btn" href="javascript:void(0)" data-toggle="modal" data-id="{{ $subscription->plan->slug }}">{{ __("Renew") }} ({{$clientCurrency->currency->symbol}}{{ number_format($subscription->plan->price,2) }})</a>
                                         @endif
                                     @endif
                                 @endif
@@ -220,6 +223,24 @@
                             </label>
                         </div>
                         <span class="error text-danger" id="stripe_card_error"></span>
+                    </div>
+                <% } %>
+
+                <% if(payment_option.slug == 'plugnpay') { %>
+                    <div class="col-md-12 mt-3 mb-3 plugnpay_element_wrapper option-wrapper d-none">
+                        <div class="row no-gutters">
+                            <div class="col-6">
+                                <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="plugnpay-card-element" placeholder="Enter card Number"  />
+                            </div>
+                            <div class="col-3">
+                                <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="5"  id="plugnpay-date-element" placeholder="MM/YY"  />
+                            </div>
+                            <div class="col-3">
+                                <input type="password" max="3" style=" border-left: none;"  class="form-control" id="plugnpay-cvv-element" placeholder="CVV"  />
+                            </div>
+                        </div>
+
+                        <span class="error text-danger" id="plugnpay_card_error"></span>
                     </div>
                 <% } %>
 

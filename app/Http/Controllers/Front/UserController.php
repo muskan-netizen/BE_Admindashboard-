@@ -28,7 +28,7 @@ class UserController extends FrontController{
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
         $user = User::where('id', Auth::user()->id)->first();
-        $preference = ClientPreference::select('verify_email', 'verify_phone','third_party_accounting')->where('id', '>', 0)->first();
+        $preference = ClientPreference::select('verify_email', 'verify_phone','third_party_accounting','sms_credentials')->where('id', '>', 0)->first();
         $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
         if(Session::has('user_type')){
             Session::forget('user_type');
@@ -66,7 +66,8 @@ class UserController extends FrontController{
         }else{
             $verify_page = "account.verifyaccountnew";
         }
-        return view('frontend.'.$verify_page)->with(['preference' => $preference, 'navCategories' => $navCategories, 'user' => $user]);
+        $staticOtpEnable = !empty(getUserToken($preference)['status'] == false)?true:false;
+        return view('frontend.'.$verify_page)->with(['preference' => $preference, 'navCategories' => $navCategories, 'user' => $user,'staticOtpEnable'=>$staticOtpEnable]);
     }
 
     /**
@@ -85,7 +86,7 @@ class UserController extends FrontController{
             return redirect()->back()->with('err_user', __('Account already verified.'));
         }
         $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
-        $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
+        $data = ClientPreference::select('sms_credentials','sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
         $newDateTime = \Carbon\Carbon::now()->addMinutes(10)->toDateTimeString();
         if ($request->type == "phone") {
             $check_user = User::where('phone_number', $request->phone)->count();
@@ -96,25 +97,29 @@ class UserController extends FrontController{
             }
             $message = __('An otp has been sent to your phone. Please check.');
             if ($user->is_phone_verified == 0) {
-                $otp = mt_rand(100000, 999999);
+                $otp = getUserToken($data)['otp'];
                 $user->phone_token = $otp;
                 $user->phone_token_valid_till = $newDateTime;
-                $provider = $data->sms_provider;
-                $to = '+'.$request->dial_code.str_replace(' ', '', $request->phone);
-               // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $otp . " to verify your account.";
-                $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$otp];
-                $body = sendSmsTemplate('verify-account',$keyData);
-                 if (!empty($data->sms_key) && !empty($data->sms_secret) && !empty($data->sms_from)) {
-                    $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
-                    if ($send) {
-                        $notified = 1;
+                if(getUserToken($data)['status']){
+                    $provider = $data->sms_provider;
+                    $to = '+'.$request->dial_code.str_replace(' ', '', $request->phone);
+                   // $body = "Dear " . ucwords($user->name) . ", Please enter OTP " . $otp . " to verify your account.";
+                    $keyData = ['{user_name}'=>ucwords($user->name),'{otp_code}'=>$otp];
+                    $body = sendSmsTemplate('verify-account',$keyData);
+                     if (!empty($data->sms_key) && !empty($data->sms_secret) && !empty($data->sms_from)) {
+                        $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
+                        if ($send) {
+                            $notified = 1;
+                        }
                     }
+                }else{
+                    $notified = 1;
                 }
             }
         }else{
             if ($user->is_email_verified == 0) {
                 $message = __('An otp has been sent to your email. Please check.');
-                $otp = mt_rand(100000, 999999);
+                $otp = getUserToken($data)['otp'];
                 $user->email_token = $otp;
                 $user->email_token_valid_till = $newDateTime;
                 if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_port) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
@@ -160,8 +165,8 @@ class UserController extends FrontController{
         }
     }catch(\Execption $e)
     {
-        Log::info('SMS logs');
-        Log::info($e->getMessage());
+       // Log::info('SMS logs');
+       // Log::info($e->getMessage());
         return response($e->getMessage(),400);
     }
     }

@@ -41,10 +41,11 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
             </div>
             <div class="col-sm-9 col-md-10 top-header bg-transparent">
                <ul class="header-dropdown d-flex align-items-center justify-content-md-end justify-content-center">
-                  @if ($client_preference_detail->header_quick_link == 1)
                   @if( p2p_module_status() )
                      <li><a href="{{route('posts.index', ['fullPage'=>1])}}">{{ __('Add Post') }}</a></li>
                   @endif
+                  @if ($client_preference_detail->header_quick_link == 1)
+
                   <li class="onhover-dropdown quick-links quick-links">
                      <span class="quick-links ml-1 align-middle">{{ __('Quick Links') }}</span>
                      <ul class="onhover-show-div">
@@ -162,12 +163,12 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
    </div>
    <!-- End Cab Booking Header From Here -->
    @else
-   @if(!p2p_module_status())
+   @if ($client_preference_detail->business_type == 'super_app')
    <div class="main-menu @if((\Request::route()->getName() != 'userHome')) no-category-image @endif">
       <div class="container_fluid_al d-block" >
           <div class="row align-items-center justify-content-center position-initial">
               <div class="col-lg-12">
-                  <div class="container al_mobile-header lign-items-center position-relative">
+                  <div class="container al_mobile-header align-items-center position-relative">
                       <div class="al_count_tabs_new_design"  >
                           @if($mod_count > 1)
                           <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-lg-3 vendor_mods justify-content-center" id="top-tab" role="tablist">
@@ -178,7 +179,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                   $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
                                   $iconFiledName = config('constants.VendorTypesIcon.'.$vendor_typ_key)
                                   @endphp
-      
+
                                   @if($client_preference_detail->$clientVendorTypes == 1)
                                   <li class="navigation-tab-item pr-lg-2" role="presentation">
                                       <a class="nav-link px-0 al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
@@ -213,12 +214,12 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                   </a>
                               </li>
                               @endif --}}
-      
+
                               <div class="navigation-tab-overlay_alnew_design"></div>
                           </ul>
                           @endif
                       </div>
-      
+
                       <div class="al_count_tabs_new_design al_tab_mobile position-fixed d-block d-sm-none">
                           @if($mod_count > 1)
                           <ul class="nav nav-tabs navigation-tab_al nav-material tab-icons mr-lg-3 vendor_mods d-flex justify-content-around" id="top-tab" role="tablist">
@@ -229,7 +230,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                   $NomenclatureName = getNomenclatureName($vendor_typ_value, true);
                                   $iconFiledName = config('constants.VendorTypesIcon.'.$vendor_typ_key)
                                   @endphp
-      
+
                                   @if($client_preference_detail->$clientVendorTypes == 1)
                                   <li class="navigation-tab-item pr-lg-2" role="presentation">
                                   <a class="nav-link px-0 al_delivery d-flex align-items-center {{($mod_count==1 || (Session::get('vendorType')==$VendorTypesName) || (Session::get('vendorType')=='')) ? 'active' : ''}}"
@@ -267,8 +268,8 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                           </ul>
                           @endif
                       </div>
-      
-                      
+
+
                   </div>
               </div>
           </div>
@@ -277,7 +278,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
    @endif
    @endif
    @if(!empty($navCategories) && count($navCategories) && \Route::current()->getName() != 'userHome')
-   <div class="menu-navigation alThreeMenu">
+   <div class="menu-navigation alThreeMenu ">
       <div class="container-fluid">
          <div class="row">
             <div class="col-12">
@@ -333,7 +334,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
         icon_two_url =  category.icon.image_fit + '200/200' + category.icon.image_path;
       }
       %>
-   
+
    <li class="al_main_category"  >
        <a href="{{route('categoryDetail')}}/<%=category.slug %>" class="{{isset($category[0]) && $category->slug == $cate[0]['slug'] ? 'current_category' : ''}}">
            @if($client_preference_detail->show_icons==1)

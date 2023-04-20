@@ -9,7 +9,7 @@
                         </h5>
                         <ul style="padding: 0; margin: 0;">
                             @if($order->luxury_option_name != '')
-                                <li style="display: inline-block;vertical-align: middle;margin-right: 10px"><span style="font-family: Lato,sans-serif; background-color: #05C3DF;color: #fff;border-radius: 10px;font-size: 12px;padding: 2px 7px">Delivery</span></li>
+                                <li style="display: inline-block;vertical-align: middle;margin-right: 10px"><span style="font-family: Lato,sans-serif; background-color: #05C3DF;color: #fff;border-radius: 10px;font-size: 12px;padding: 2px 7px">{{ $order->luxury_option_name ?? 'Delivery' }}</span></li>
                             @endif
                             <li style="display: inline-block;vertical-align: middle;"><span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __("Items from Order") }} #{{$order->order_number}}</span></li>
                         </ul>
@@ -47,6 +47,7 @@
                             @php
                                 $sub_total = 0;
                                 $taxable_amount = 0;
+                                $vendor_service_fee = 0;
                             @endphp
                             @foreach($vendor->products as $product)
                             @if($product->order_id == $order->id)
@@ -143,7 +144,7 @@
                                 <td><p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px;">{{$clientCurrency->currency->symbol}}{{decimal_format($vendor_service_fee)}}</p></td>
                             </tr>
                             @endif
-                            <!-- <tr>
+                            {{--  <tr>
                                 <td scope="row" colspan="4">
                                     <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px"><b style="font-size: 14px;font-family: Lato,sans-serif; width:200px;">{{$client_head->name}} {{ __("Revenue") }} :</b></p>
                                 </td>
@@ -154,7 +155,7 @@
                                     <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px"><b style="font-size: 14px;font-family: Lato,sans-serif; width:200px;">{{ __("Store Earning") }} :</b></p>
                                 </td>
                                 <td><p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">{{$clientCurrency->currency->symbol}}@money($vendor->payable_amount * $clientCurrency->doller_compare - $revenue)</p></td>
-                            </tr> -->
+                            </tr> --}}
                             @if($vendor->reject_reason)
                             <tr>
                                 <td scope="row" colspan="4">

@@ -23,7 +23,7 @@ class DeliveryOptionController extends Controller
         $ahoyOption = ShippingOption::where('code', 'ahoy')->first();
         $shippoOption = ShippingOption::where('code', 'shippo')->first();
         $kwikOption = ShippingOption::where('code', 'kwikapi')->first();
-        $preference = ClientPreference::select('id','need_delivery_service','delivery_service_key_url','delivery_service_key_code','delivery_service_key')->first();
+        $preference = ClientPreference::select('id','need_delivery_service','delivery_service_key_url','delivery_service_key_code','delivery_service_key','last_mile_team')->first();
         # if last mile on
         $last_mile_teams = [];
         if(isset($preference) && $preference->need_delivery_service == '1') {

@@ -2,7 +2,7 @@
     <div class="col-md-12">
         <div class="row">
             <div class="col-md-6">
-                <div class="form-group">
+                <div class="form-group scroll_res">
                     {!! Form::label('title', __('Select '. getNomenclatureName('Variant')),['class' => 'control-label']) !!}
                     <select class="selectize-select form-control" required id="cateSelectBox" name="cate_id">
                         <option value="">{{ __("Select Category") }}...</option>

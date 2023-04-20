@@ -104,21 +104,21 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                         class="icofont icofont-ui-home"></i>{{ __('Active ') }}</a>
                                                 <div class="material-border"></div>
                                             </li>
-                                            <li class="nav-item">
+                                            {{-- <li class="nav-item">
                                                 <a class="nav-link {{ Request::query('pageType') == 'pastOrders' ? 'active show' : '' }}"
                                                     id="past_order-tab" data-toggle="tab" href="#past_order" role="tab"
                                                     aria-selected="false"><i
                                                         class="icofont icofont-man-in-glasses"></i>{{ __('Past ') }}</a>
                                                 <div class="material-border"></div>
-                                            </li>
+                                            </li> --}}
                                           
-                                            <li class="nav-item">
+                                            {{-- <li class="nav-item">
                                                 <a class="nav-link {{ Request::query('pageType') == 'rejectedOrders' ? 'active show' : '' }}"
                                                     id="return_order-tab" data-toggle="tab" href="#rejected_order" role="tab"
                                                     aria-selected="false"><i
                                                         class="icofont icofont-man-in-glasses"></i>{{ __('Rejected/Cancel ') }}</a>
                                                 <div class="material-border"></div>
-                                            </li>
+                                            </li> --}}
                                         </ul>
                                         <div class="tab-content nav-material al" id="top-tabContent">
                                             <div class="tab-pane fade {{ Request::query('pageType') === null || Request::query('pageType') == 'activeOrders' ? 'active show' : '' }}"
@@ -163,7 +163,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                             </div>
                                                                         @endif
                                                                         
-                                                                    </div>
+                                                                        </div>
 
                                                                 </div>
                                                                
@@ -184,7 +184,7 @@ $show_long_term = (getAdditionalPreference(['is_long_term_service'])['is_long_te
                                                                                 <tbody>
                                                                                 @foreach ($order->bidProducts as $key => $products)
                                                                                     @php
-                                                                                        $totalPrice += @$products->product->variant[0]->price??0;
+                                                                                        $totalPrice += @$products->product->variant[0]->price * $products->quantity??0;
                                                                                     @endphp
                                                                                     <tr>
                                                                                         <td>{{$products->product->title}}</td>
