@@ -82,7 +82,7 @@ trait AzulPaymentService
                 'ForceNo3DS' => '0'
             ];
         }else{
-            
+            $forceNo3DS = 1;
             if (isset($card['come_from']) && $card['come_from'] == 'app') {
                 $expiry = $card['dt'];
             }else{
@@ -91,6 +91,7 @@ trait AzulPaymentService
             }
             if(isset($card['save_card']) && $card['save_card'] == 1){
                 $saveVault = 1;
+                $forceNo3DS = 0;
             }
             
             $request = [
@@ -114,7 +115,7 @@ trait AzulPaymentService
                 'CustomOrderId' => $card['order_number'],
                 'SaveToDataVault' => $saveVault,
                 'DataVaultToken' => '',
-                'ForceNo3DS' => '0'
+                'ForceNo3DS' => $forceNo3DS
             ];
             if($saveVault){
                $this->saveCardToDatavault($user_id, $card['cno'], $expiry, $card['cv']);
@@ -411,12 +412,10 @@ trait AzulPaymentService
             ]);
             $response['message'] = $result->getReasonPhrase();
             $response['code'] = $result->getStatusCode();
+            $response['data'] = json_decode($result->getBody());
         } catch (ClientException $e) {
-            $response = $e->getResponse();
-            $response['data'] = $response->getBody();
-            // Life is too short to handle exceptions.
+           $response['message'] =$e->getMessage(); 
         }
-        $response['data'] = json_decode($result->getBody());
 
         // $curl = curl_init();
 
