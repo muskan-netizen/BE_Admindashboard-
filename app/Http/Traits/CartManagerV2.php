@@ -270,8 +270,7 @@ trait CartManagerV2{
        * Get Cart Items
        *{requestType}:1 if for webb and 2 for api
        */
-      public function getCartsNewV2($obj = ['code'=>'D','address_id'=>0,'schedule_datetime_del'=>'','currency'=>'','type'=>'','language'=>'','requestType'=>1,'cart'=>[]],$request)
-      {
+    public function getCartsNewV2($obj = ['code'=>'D','address_id'=>0,'schedule_datetime_del'=>'','currency'=>'','type'=>'','language'=>'','requestType'=>1,'cart'=>[]],$request){
 
         $cart = $obj['cart'];
         //Request type 1 variables
@@ -319,9 +318,11 @@ trait CartManagerV2{
         $action = (session()->has('vendorType')) ? session()->get('vendorType') : 'delivery';
         $is_service_product_price_from_dispatch = 0;
         if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( $action == 'on_demand')){
-            $is_service_product_price_from_dispatch =1;
-            $this->is_service_product_price_from_dispatch =1;
+            $onDemandPricingSelected = (session()->has('onDemandPricingSelected')) ? session()->get('onDemandPricingSelected') : 'vendor';
+            $getOnDemandPricingRule = getOnDemandPricingRule($action,  $onDemandPricingSelected,$additionalPreference);
+            $this->is_service_product_price_from_dispatch = $is_service_product_price_from_dispatch =  $getOnDemandPricingRule['is_price_from_freelancer'];;
         }
+        //pr($is_service_product_price_from_dispatch );
 
         if($user){
             $user_timezone =  $user->timezone ?? $user_timezone  ;
@@ -1724,7 +1725,7 @@ trait CartManagerV2{
             $cart->products = $cartData->toArray();
         }
         return $cart;
-      }
+    }
 
     public function hideSecretKeysV2($res){
         return $res->makeHidden(['map_key','map_secret', 'mail_password', 'mail_host', 'mail_username', 'sms_secret',

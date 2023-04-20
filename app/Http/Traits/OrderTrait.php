@@ -317,7 +317,7 @@ trait OrderTrait
             $return_response = 2;
             $paymentSentAlready = 0;
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address','order_pre_time')->first();
-            Log::info("this is the id of vendor".$vendor_details->order_pre_time);
+         
             $order_vendor = OrderVendor::with(['products.product.categoryName', 'products.order_product_status'])->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
          
             foreach( $order_vendor->products as $product){

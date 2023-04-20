@@ -36,7 +36,7 @@
 <div class="modal fade" id="ondemand_price_selection_model" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button type="button" class="close text-right" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             <div class="modal-body text-center">

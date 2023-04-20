@@ -1466,11 +1466,12 @@ class OrderController extends BaseController
     public function checkIfanyProductLastMileon($request)
     {
         $order_dispatchs = 2;
-        $AdditionalPreference  =  getAdditionalPreference(['is_place_order_delivery_zero','is_service_product_price_from_dispatch']);
-        $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $AdditionalPreference  =  getAdditionalPreference(['is_place_order_delivery_zero']);
+        $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption','products')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $luxury_option_id = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
         $is_place_order_delivery_zero = $AdditionalPreference['is_place_order_delivery_zero'];
         $is_restricted = $checkdeliveryFeeAdded->is_restricted;
+       
         /// luxury option 8 ( static ) for appointment you can check it on luxuryOptionSeeder
         if ($luxury_option_id == 8) { // only for appointment type
             $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
@@ -1523,21 +1524,16 @@ class OrderController extends BaseController
                         'service_type'     => 'on_demand'
                     ];
                  
-                    if(( $AdditionalPreference['is_service_product_price_from_dispatch'] == 1)  && ( $prod->product->category->categoryDetail->type_id == 8)){
+                    if(( $prod->is_price_buy_driver ==1)  && ( $prod->product->category->categoryDetail->type_id == 8)){
                        
                         $dispatch_domain['rejectable_order'] = 1;
                         $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain, $request);
-                        //$order_dispatchs = $this->placeRequestToDispatchSingleProductUpdate($request->order_id, $request->vendor_id, $dispatch_domain, $prod,$is_restricted,$request);
-                       
                         if ($order_dispatchs && $order_dispatchs == 1) {
                             $OnDemand = 1;
                             return 1;
                         }
                     }
                     else if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
-
-                        //  $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
-                        //echo $Appointment . 'app';
 
                         if ($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false && $OnDemand == 0  && $checkdeliveryFeeAdded->delivery_fee > 0) {
 

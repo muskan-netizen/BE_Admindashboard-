@@ -80,6 +80,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                     <!-- Start Conent Wrapper -->
                                     <div id='main-wrapper'  class="@if(app('request')->input('addons') == 1) d-none @endif">
                                                 @foreach ($category->childs as $key => $childs)
+                                               
                                                 @if( in_array($childs->type_id , [8,12]))
 
                                                 <h4><b>{{ $childs->translation_name }}</b></h4>
@@ -94,7 +95,6 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                                             @foreach ($childs->products as $data)
 
                                                             @php
-
                                                                 $data->translation_title = (!empty($data->translation->first())) ? $data->translation->first()->title : $data->sku;
                                                                 $data->translation_description = (!empty($data->translation->first())) ? $data->translation->first()->body_html : $data->sku;
                                                                 $data->variant_multiplier = (!empty($clientCurrency)) ? $clientCurrency->doller_compare : 1;
@@ -102,7 +102,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                                                 $productInquiryCheck = $data->inquiry_only  ; 
                                                                 $redirec = ($data->is_recurring_booking ==1) ? route('productDetail', [@$data->vendor->slug, $data->url_slug]) : 'javascript:void(0)' ;
                                                                 $class = ($data->is_recurring_booking ==1) ? 'add_on_demand_btn' : 'add_on_demand' ;
-                                                                
+                                                                $data->category_type_id = $childs->type_id
                                                             @endphp
 
                                                             <div class="row classes_wrapper no-gutters align-items-center" href="#">
@@ -111,6 +111,31 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                                                     <div class="productDetails pr-2">
                                                                         <p class="mb-1 ">{!! (!empty($data->translation->first())) ? $data->translation->first()->body_html : $data->sku !!}</p>
                                                                     </div>
+                                                                    
+                                                                </div>
+
+
+
+
+                                                                <div class="col-md-3 col-sm-4 mb-sm-0 mb-3">
+                                                                    <?php $imagePath = $imagePath2 = '';
+                                                                        $mediaCount = count($data->media);
+                                                                        for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
+                                                                            if($i == 0){
+                                                                                $imagePath = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
+                                                                            }
+                                                                            $imagePath2 = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
+                                                                        } ?>
+                                                                    <div class="class_img">
+                                                                        @if($imagePath != '')
+                                                                        <img src="{{$imagePath}}" alt="">
+                                                                        @else
+
+                                                                        @endif
+
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12 ac-royo-btn">
                                                                     <div class="d-flex align-items-center justify-content-between productBookingBtns">
                                                                         @if($productInquiryCheck == 0)
                                                                     
@@ -134,6 +159,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                                                             @else
                                                                                 <a class="btn btn-solid {{  $class }}" style="display:none;" id="add_button _href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="{{ $redirec }}">Add <i class="fa fa-plus"></i></a>
                                                                             @endif
+
                                                                             @if(
                                                                                 isset($data->category_type_id) && 
                                                                                 ( 
@@ -183,29 +209,6 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
 
                                                                             @endif
                                                                         @endif
-
-                                                                    </div>
-                                                                </div>
-
-
-
-
-                                                                <div class="col-md-3 col-sm-4 mb-sm-0 mb-3">
-                                                                    <?php $imagePath = $imagePath2 = '';
-                                                                        $mediaCount = count($data->media);
-                                                                        for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
-                                                                            if($i == 0){
-                                                                                $imagePath = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
-                                                                            }
-                                                                            $imagePath2 = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
-                                                                        } ?>
-                                                                    <div class="class_img">
-                                                                        @if($imagePath != '')
-                                                                        <img src="{{$imagePath}}" alt="">
-                                                                        @else
-
-                                                                        @endif
-
                                                                     </div>
                                                                 </div>
 
