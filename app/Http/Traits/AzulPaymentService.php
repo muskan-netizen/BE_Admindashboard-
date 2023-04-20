@@ -114,7 +114,7 @@ trait AzulPaymentService
                 'CustomOrderId' => $card['order_number'],
                 'SaveToDataVault' => $saveVault,
                 'DataVaultToken' => '',
-                'ForceNo3DS' => '0'
+                'ForceNo3DS' => '1'
             ];
             if($saveVault){
                $this->saveCardToDatavault($user_id, $card['cno'], $expiry, $card['cv']);
@@ -411,12 +411,10 @@ trait AzulPaymentService
             ]);
             $response['message'] = $result->getReasonPhrase();
             $response['code'] = $result->getStatusCode();
+            $response['data'] = json_decode($result->getBody());
         } catch (ClientException $e) {
-            $response = $e->getResponse();
-            $response['data'] = $response->getBody();
-            // Life is too short to handle exceptions.
+           $response['message'] =$e->getMessage(); 
         }
-        $response['data'] = json_decode($result->getBody());
 
         // $curl = curl_init();
 
