@@ -411,13 +411,12 @@ trait AzulPaymentService
             ]);
             $response['message'] = $result->getReasonPhrase();
             $response['code'] = $result->getStatusCode();
+            $response['data'] = json_decode($result->getBody());
         } catch (ClientException $e) {
             $response = $e->getResponse();
-            $response['data'] = $response->getBody();
+            $response['message'] = $e->getMessage();
             // Life is too short to handle exceptions.
         }
-        $response['data'] = json_decode($result->getBody());
-
         // $curl = curl_init();
 
         // curl_setopt_array($curl, array(
