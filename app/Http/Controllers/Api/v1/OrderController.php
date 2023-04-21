@@ -2596,7 +2596,7 @@ class OrderController extends BaseController
                             $product->address = '';
                         }
                         //till here
-
+                        $product->scheduled_date_time = (($product->scheduled_date_time!=null)?dateTimeInUserTimeZone($product->scheduled_date_time, $user->timezone):null);
                         $product_addons = [];
                         $variant_options = [];
                         $vendor_total_container_charges = 0;
