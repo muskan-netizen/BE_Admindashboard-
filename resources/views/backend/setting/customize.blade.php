@@ -6,7 +6,6 @@
 </style>
 @endsection
 @section('content')
-
 <div class="container-fluid" id="alCustomizePage">
     {{--<div class="row">
         <div class="col-12">
