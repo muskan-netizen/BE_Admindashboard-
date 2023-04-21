@@ -635,6 +635,10 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 		Route::get('get-product-order-form', 'Front\PickupDeliveryController@getProductOrderForm')->name('get-product-order-form');
 
         Route::post('create/user/bid_ride_request', 'Front\PickupDeliveryController@createBidRideRequest')->name('createBid');
+        Route::post('order-ride-bid-details', 'Front\PickupDeliveryController@getBidsRelatedToOrderRide')->name('getBidsRelatedToOrderRide');
+        Route::post('accept-ride-bid', 'Front\PickupDeliveryController@acceptBidsRelatedToBidRideOrderRide')->name('acceptBidByCustomer');
+
+
 
 	});
 	Route::post('upload-file', 'Front\RatingController@uploadFile')->name('uploadfile');

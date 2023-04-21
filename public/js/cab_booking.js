@@ -1106,7 +1106,6 @@ $(document).ready(function () {
                             // console.log('innset');
                         }
                         var isBid = $('#bid_radio').prop("checked");
-                        console.log({cabData});
                         if(isBid){
                             let vehicle_bid_template = _.template($('#vehicle_bid_template').html());
                             $("#cab_detail_box").append(vehicle_bid_template(cabData)).show();
@@ -2144,15 +2143,17 @@ $(document).on("click",".btn-price-up-down",function(){
     }
 });
 
-$(document).on("click","#create_bid",function(){    
+var driverInterval = null;
+$(document).on("click","#create_bid", async function(){    
     var product_id = $(this).attr('data-product_id');
     var vendor_id = $(this).attr('data-vendor_id');
     var requested_price = $('input[name="cab_bid_price"]').val();
     var min_requested_price = 0;
     var max_requested_price = 0;
     var tags = $(this).attr('data-tags');
-    
-    $.ajax({
+    let OrderId = null;
+
+    await $.ajax({
         type: "POST",
         dataType: 'json',
         url: create_bid_url,
@@ -2161,13 +2162,53 @@ $(document).on("click","#create_bid",function(){
             if(response.status == 200){
                 $("#create_bid_btns").hide();
                 $("#driver_acceptance_list").removeClass('d-none');
+                OrderId = response.data.id;
             }
         },
         error: function(response) {
             $('#show_error_of_bid').text(response.responseJSON.message);
-
         } 
     });
 
+    driverInterval = setInterval(driverBidingList, 5000, OrderId);
+
+    function driverBidingList(id) {
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            url: driver_biding_list_url,
+            data : { order_id: id },
+            success: function(response) {
+                console.log({response})
+                if(response.status == 'Success'){
+                    let driver_biding_list = _.template($('#driver_biding_list').html());
+                    if((response.data.biddata).length != 0)
+                    {
+                        $("#driver_acceptance_list").html(driver_biding_list({results: response.data.biddata}));
+                    }
+                }
+            },
+            error: function(response) {
+            } 
+        });   
+    }
 });
 
+$(document).on("click","#accept_driver_bid", function(){    
+    var bid_id = $(this).attr('data-bid_id');
+
+    $.ajax({
+        type: "POST",
+        dataType: 'json',
+        url: accept_bid_by_customer,
+        data : {bid_id},
+        success: function(response) {
+            if(response.status == "Success"){
+                $("#driver_acceptance_list").html(`<div class="text-loader"> ${response.message} </div>`);
+                clearInterval(driverInterval);
+            }
+        },
+        error: function(response) {
+        } 
+    });
+});

@@ -1249,5 +1249,34 @@ class PickupDeliveryController extends FrontController{
             return $data;
         }
     }
-    
+
+    public function getBidsRelatedToOrderRide(Request $request)
+    {
+        try
+        {
+            $getAdditionalPreference = getAdditionalPreference(['bid_expire_time_limit_seconds']);
+            $order_bid_id = $request->order_id;
+            $task_type    = $request->task_type;
+            $biddata      = PickDropDriverBid::where('order_bid_id', $order_bid_id)->where('status', 0)->get();
+            return $this->successResponse(['biddata' => $biddata, 'bid_expire_time_limit_seconds' => $getAdditionalPreference['bid_expire_time_limit_seconds']], 200);
+        }
+        catch (\Exception $e) {
+            \Log::error($e->getMessage());
+            return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
+        }
+    }
+
+    public function acceptBidsRelatedToBidRideOrderRide(Request $request)
+    {
+        try
+        {
+            $bid_id       = $request->bid_id;
+            $update       = PickDropDriverBid::where('id', $bid_id)->update(['status' => 1]);
+            return $this->successResponse($update, "Request accepted successfully", 200);
+        }
+        catch (\Exception $e) {
+            \Log::error($e->getMessage());
+            return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
+        }
+    }
 }

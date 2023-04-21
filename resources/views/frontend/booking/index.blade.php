@@ -267,6 +267,54 @@ input[type=number]::-webkit-outer-spin-button {
     appearance: none;
     margin: 0; 
 }
+
+.bid-btnleft {
+    width: 100%;
+    max-width: 50%;
+    margin: 0 auto;
+}
+
+.driver_info img {
+    width: 126px;
+    margin-right: 20px;
+}
+.driver_info {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.driver_info .user-info h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #000;
+}
+
+.driver_info .user-info p {
+    font-size: 14px;
+}
+
+.driver_info .user-info p span {
+    float: right;
+}
+
+.driver_info .user-info button {
+    border: none;
+    padding: 6px 20px;
+}
+.driver_info .user-info button:hover{
+    background-color:#51089b;color:#fff !important;
+}
+
+.text-loader {
+    text-align: center;
+    padding: 40px 0px;
+    font-size: 14px;
+}
+
+.text-loader i {
+    font-size: 16px !important;
+}
     </style>
     <section id="alTaxiBookingWrapper" class="cab-booking pt-0 pb-0">
         <div class="alFullMapArea col-md-12 p-0 h-100">
@@ -293,34 +341,32 @@ input[type=number]::-webkit-outer-spin-button {
                         </div>
                     @endif
                     
-                    @if($is_cab_pooling ==1)
-                    <div class="pool_radio_controls text-center">
-                        <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_booking" name="is_cab_pooling_radio"
-                            value="0" checked>
-                        <label class="pool_label mb-0  my-2 active " for="cab_booking" id="label_cab_booking">
-                            <h5 class="m-0" id="pool_5">{{ __('Booking') }}</h5>
-                        </label>
-                        
-                        <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_pooling" name="is_cab_pooling_radio"
-                            value="1">
-                        <label class="pool_label mb-0  my-2" for="cab_pooling" id="label_cab_pooling">
-                            <h5 class="m-0" id="pool_5">{{ __('Pooling') }}</h5>
-                        </label>
-                        
-                    </div>
+                    @if($is_cab_pooling == 1 || $is_bid_ride_enable == 1)
+                        <div class="pool_radio_controls text-center">
+                            <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_booking" name="is_cab_pooling_radio"
+                                value="0" checked>
+                            <label class="pool_label mb-0  my-2 active " for="cab_booking" id="label_cab_booking">
+                                <h5 class="m-0" id="pool_5">{{ __('Booking') }}</h5>
+                            </label>
+
+                            @if ($is_cab_pooling == 1 ) 
+                                <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_pooling" name="is_cab_pooling_radio"
+                                    value="1">
+                                <label class="pool_label mb-0  my-2" for="cab_pooling" id="label_cab_pooling">
+                                    <h5 class="m-0" id="pool_5">{{ __('Pooling') }}</h5>
+                                </label>
+                            @endif
+
+                            @if($is_bid_ride_enable == 1)
+                                <input type="radio" id="bid_radio"  name="is_cab_pooling_radio" value="1">
+                                <label class="mb-0  my-2" >
+                                    <h5 class="m-0" id="">Bid</h5>
+                                </label>
+                            @endif
+                        </div>
                     @endif
+
                     
-                    <div class="pool_radio_controls text-center">
-                        <input type="radio" id="cab_booking" name="bid_radio" value="0" checked>
-                        <label class="mb-0  my-2 active ">
-                            <h5 class="m-0" id="">Booking</h5>
-                        </label>
-                        
-                        <input type="radio" id="bid_radio"  name="bid_radio" value="1">
-                        <label class="mb-0  my-2" >
-                            <h5 class="m-0" id="">Bid</h5>
-                        </label>    
-                    </div>
 
                     <div class="location-box check-pick-first">
                         <div class="where-to-go">
@@ -718,34 +764,39 @@ input[type=number]::-webkit-outer-spin-button {
                 </div>
             </div>
 
-            <div class="col-6" id="create_bid_btns">
-                <div class="input-get-value">
-                    <div class="input-group">
-                        <span class="input-group-btn mr-10">
-                            <button type="button" class="btn btn-danger btn-price-up-down" data-type="minus">
-                                <i class="fa fa-minus" aria-hidden="true"></i> 10
-                            </button>
-                        </span>
-                        <input type="number" name="cab_bid_price" value="<%= (result.total_tags_price)%>" id="cab_bid_price" class="form-control price-number-up-down text-center" min="10" max="">
-                        <span class="input-group-btn ml-10">
-                            <button type="button" class="btn btn-success btn-price-up-down" data-type="plus">
-                                <i class="fa fa-plus" aria-hidden="true"></i> 10
-                            </button>
-                        </span>
+            <div id="create_bid_btns">
+                <div class="col-6 my-2 bid-btnleft">
+                    <div class="input-get-value">
+                        <div class="input-group">
+                            <span class="input-group-btn mr-10">
+                                <button type="button" class="btn btn-danger btn-price-up-down" data-type="minus">
+                                    <i class="fa fa-minus" aria-hidden="true"></i> 10
+                                </button>
+                            </span>
+                            <input type="number" name="cab_bid_price" value="<%= (result.total_tags_price)%>" id="cab_bid_price" class="form-control price-number-up-down text-center" min="10" max="">
+                            <span class="input-group-btn ml-10">
+                                <button type="button" class="btn btn-success btn-price-up-down" data-type="plus">
+                                    <i class="fa fa-plus" aria-hidden="true"></i> 10
+                                </button>
+                            </span>
+                        </div>
                     </div>
                 </div>
-            
-                <br>
 
-                <button class="btn btn-solid w-100" id="create_bid" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-task_type="now" data-tags="<%=(result.tags)%>">{{__('Create Bid')}}</button>
+                <div class="row">
+                    <div class="col-md-12 create-bid-btn">
+                        <button class="btn btn-solid w-100" id="create_bid" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-task_type="now" data-tags="<%=(result.tags)%>">{{__('Create Bid')}}</button>
+                    </div>
+                </div>
             </div>
 
             <div id="driver_acceptance_list" class="d-none"> 
-
-                Wait for driver acceptance
-
+                <div class="text-loader"> 
+                    <i class="fa fa-circle-o-notch fa-spin"></i>
+                    Wait for driver acceptance 
+                </div>
             </div>
-
+            
             <span id="show_error_of_bid" class="text-danger"></span>
             
             {{-- <div class="payment-promo-container p-2">
@@ -768,6 +819,23 @@ input[type=number]::-webkit-outer-spin-button {
                     </div>
                 </div>
             </div> --}}
+        </script>
+
+        <script type="text/template" id="driver_biding_list">
+            <div>
+                <% _.each(results, function(result, key){%>
+
+                    <div class="driver_info">
+                        <img src="https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/Clientlogo/642eb4fa0a32d.png" alt="">
+                        <div class="user-info">
+                            <h4><%=result.driver_name%></h4>
+                            <p>Price<span>{{Session::get('currencySymbol')}} <%=parseFloat(result.bid_price).toFixed(2)%></span></p>
+                            <button class="btn-solid btn" type="button" id="accept_driver_bid" data-bid_id="<%=result.id%>">Accept</button>
+                        </div>
+                    </div>
+
+                <% }); %>
+            </div>
         </script>
 
                 <script type="text/template" id="cab_detail_box_template">
@@ -1443,6 +1511,8 @@ input[type=number]::-webkit-outer-spin-button {
         var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
         var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
         var create_bid_url = "{{route('createBid')}}";
+        var driver_biding_list_url = "{{route('getBidsRelatedToOrderRide')}}";
+        var accept_bid_by_customer = "{{route('acceptBidByCustomer')}}";
 
         @if ($client_preference_detail->distance_unit_for_time == 'mile')
             var distance_unit = "IMPERIAL";
