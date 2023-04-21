@@ -486,6 +486,11 @@ class HomeController extends BaseController{
         $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'): ClientPreference::first();
         $currency_id = Session::get('customerCurrency');
         $language_id = Session::get('customerLanguage');
+        if(is_null($language_id) ){
+            $local = ($request->hasHeader('language')) ? $request->header('language') : 1;
+           
+            $language_id = $local;
+        }
 
         $currency_id = $this->setCurrencyInSesion();
 
@@ -678,7 +683,7 @@ class HomeController extends BaseController{
         //get Most Selling Vendors
         $mostSellingVendors = $this->getMostSellingVendors($preferences, $vendor_ids);
         
-        $on_sale_product_details = $this->vendorProducts_v2($vendor_ids, $language_id, 'USD', '', $request->type);
+        $on_sale_product_details = $this->vendorProducts_v2($vendor_ids, $language_id, 'USD', 'on_sale', $request->type);
         $new_product_details = $this->vendorProducts_v2($vendor_ids, $language_id, $currency_id, 'is_new', $request->type);
         $feature_product_details = $this->vendorProducts_v2($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type);
       
@@ -705,6 +710,7 @@ class HomeController extends BaseController{
                 'vendor' => $new_product_detail->vendor,
                 'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->price??0 * $multiply,',')),
                 'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug,
+                'translation' => $new_product_detail->translation,
                 'is_p2p' => $is_p2p
             );
         }
@@ -731,6 +737,7 @@ class HomeController extends BaseController{
                 'vendor' => $feature_product_detail->vendor,
                 'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$feature_product_detail->variant->first()->price * $multiply,',')),
                 'category' => (@$feature_product_detail->category->categoryDetail->translation) ? @$feature_product_detail->category->categoryDetail->translation->first()->name : @$feature_product_detail->category->categoryDetail->slug,
+                'translation' => $feature_product_detail->translation,
                 'is_p2p' => $is_p2p
             );
         }
@@ -761,6 +768,7 @@ class HomeController extends BaseController{
                 'vendor' => $on_sale_product_detail->vendor,
                 'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$on_sale_product_detail->variant->first()->price??0 * $multiply,',')),
                 'category' => $cat_name,
+                'translation' => $on_sale_product_detail->translation,
                 'is_p2p' => $is_p2p
             );
         }
