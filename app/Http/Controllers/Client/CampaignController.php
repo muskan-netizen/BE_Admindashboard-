@@ -18,7 +18,7 @@ class CampaignController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(){ 
+    public function index(){
         $campaigns = Campaign::all();
         if($campaigns)
         {
@@ -30,24 +30,24 @@ class CampaignController extends BaseController
                     $pendingnotification = CampaignRoster::where(['campaign_id'=>$singlecampaign->id])->count();
                     $livecount = $singlecampaign->total_request_count - $pendingnotification;
                     $campaigns[$i]->livecount = $livecount ?? 0;
-                    $i++; 
+                    $i++;
                 }
             }
-            
-        }        
+
+        }
         return view('backend.campaign.index')->with(['campaigns' => $campaigns]);
     }
 
     // public function testnotification()
     // {
-    //     $client_preferences = ClientPreference::first();   
+    //     $client_preferences = ClientPreference::first();
     //     $from = $client_preferences->fcm_server_key ?? "";
     //     $headers = [
     //         'Authorization: key=' . $from,
     //         'Content-Type: application/json',
-    //     ]; 
-       
-    //     $intervalTime = Carbon::now();         
+    //     ];
+
+    //     $intervalTime = Carbon::now();
     //     $notifications = CampaignRoster::where('notification_time', '<=', $intervalTime)->where('status',0)->with('campaign','user')->get();
     //             if($notifications)
     //             {
@@ -56,9 +56,9 @@ class CampaignController extends BaseController
     //                 //     $to = '+919996687653';
     //                 //     $provider = $client_preferences->sms_provider;
     //                 //     $body = "Hi ".$client_preferences->sms_key;
-                        
+
     //                 //     $this->sendSms($provider, $client_preferences->sms_key, $client_preferences->sms_secret, $client_preferences->sms_from, $to, $body);
-                        
+
 
     //                 // //test email
     //                 // $sendto = "testu00091@gmail.com";
@@ -67,7 +67,7 @@ class CampaignController extends BaseController
 
     //                 // $email_data = [
     //                 //     'email' => $sendto,
-    //                 //     'mail_from' => $client_preferences->mail_from,                        
+    //                 //     'mail_from' => $client_preferences->mail_from,
     //                 //     'subject' => $subject,
     //                 //     'email_template_content' => $body,
     //                 //     'send_to_cc' => 0
@@ -92,7 +92,7 @@ class CampaignController extends BaseController
     //                                 }
     //                                 $provider = $client_preferences->sms_provider;
     //                                 $body = "Hi " . $singlenotification->user->name . ", " . $singlenotification->campaign->sms_text;
-    //                                 if (!empty($client_preferences->sms_provider)) {                                        
+    //                                 if (!empty($client_preferences->sms_provider)) {
     //                                     $send = $this->sendSms($provider, $client_preferences->sms_key, $client_preferences->sms_secret, $client_preferences->sms_from, $to, $body);
     //                                     if($send)
     //                                     {
@@ -103,13 +103,13 @@ class CampaignController extends BaseController
     //                                         }else{
     //                                             //remove notification if success
     //                                             CampaignRoster::where('id',$singlenotification->id)->delete();
-    //                                         }                                            
+    //                                         }
     //                                     }else{
     //                                         //change status if failed
     //                                         CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
-    //                                     }    
+    //                                     }
     //                                 }
-                                    
+
     //                             } catch (\Exception $ex) {
     //                             }
     //                             break;
@@ -120,10 +120,10 @@ class CampaignController extends BaseController
     //                                     $useremail = $singlenotification->user->email;
     //                                     $email_subject = $singlenotification->campaign->email_subject;
     //                                     $email_body = $singlenotification->campaign->email_body;
-                                        
+
     //                                     $email_data = [
     //                                         'email' => $useremail,
-    //                                         'mail_from' => $client_preferences->mail_from,                        
+    //                                         'mail_from' => $client_preferences->mail_from,
     //                                         'subject' => $email_subject,
     //                                         'email_template_content' => $email_body,
     //                                         'send_to_cc' => 0
@@ -143,7 +143,7 @@ class CampaignController extends BaseController
     //                             }
     //                             break;
     //                         case '3':
-    //                             //send push                                
+    //                             //send push
     //                             //$redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/viewcart";
     //                             $redirect_URL = $singlenotification->campaign->push_url_option_value;
     //                             $data = [
@@ -182,7 +182,7 @@ class CampaignController extends BaseController
     //                             }else{
     //                                 //change status if failed
     //                                 CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
-    //                             }                            
+    //                             }
     //                         break;
     //                     }
     //                 }
@@ -225,12 +225,12 @@ class CampaignController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request){      
+    public function store(Request $request){
         //dd($request->all());
 
         // $timezonedetail = Client::with('getTimezone')->first('timezone');
         // $tz = new Timezone();
-        // $usertimezone = $tz->timezone_name($timezonedetail->timezone);        
+        // $usertimezone = $tz->timezone_name($timezonedetail->timezone);
         // echo $notification_time = Carbon::parse($request->schedule_datetime . $usertimezone ?? 'UTC')->tz('UTC');
         //  return $newnotification_time = $notification_time->addMinute($request->request_time_gap);
 
@@ -259,7 +259,7 @@ class CampaignController extends BaseController
             $campaign->push_title = $request->push_title??$request->title;
             $campaign->push_message_body = $request->push_message_body;
             $campaign->push_url_option = $request->push_url_option;
-            
+
             $option = '';
             if($request->push_url_option == '2'){
                 $categorySlug = Category::where('id',$request->push_url_option_value)->first();
@@ -276,7 +276,7 @@ class CampaignController extends BaseController
 
             $campaign->push_url_option_value = (($request->push_url_option == '1')?$request->push_url_option_value:$option);
 
-        }        
+        }
         $campaign->send_to = $request->send_to;
         $campaign->schedule_datetime = $request->schedule_datetime;
         $campaign->request_user_count = $request->request_user_count;
@@ -295,7 +295,7 @@ class CampaignController extends BaseController
             $usertype = $request->send_to;
             $timezonedetail = Client::with('getTimezone')->first('timezone');
             $tz = new Timezone();
-            $usertimezone = $tz->timezone_name($timezonedetail->timezone);        
+            $usertimezone = $tz->timezone_name($timezonedetail->timezone);
             $notification_time = Carbon::parse($request->schedule_datetime . $usertimezone ?? 'UTC')->tz('UTC');
             $notification_type = $request->type;
             if($usertype==1)    // for all users
@@ -306,9 +306,12 @@ class CampaignController extends BaseController
                 }
                 if($request->type==2){
                     $users->whereNotNull('email')->groupBy('email');
-                }                
+                }
+                if ($request->type == 3) {
+                    $users->whereHas('device');
+                }
                 $users = $users->get();
-                $getusercount = count($users);                
+                $getusercount = count($users);
                 $totalbatches = ceil($getusercount/$request->request_user_count);
                 for ($i=1;$i<=$totalbatches;$i++)
                 {
@@ -316,16 +319,16 @@ class CampaignController extends BaseController
                     if($i==1)
                     {
                         $notification_time = $notification_time;
-                    }else{                        
+                    }else{
                         $notification_time = $notification_time->addMinute($request->request_time_gap);
                     }
                     $roasterdata = [];
                     $conditionalvalue = (($i*$usercount)<=$getusercount)?$i*$usercount:$getusercount;
                     for($j = (($i-1)*$usercount); $j<$conditionalvalue;$j++)
-                    {                             
+                    {
                         if($request->type==3)
                         {
-                            $getdevicedetail = UserDevice::where('user_id',$users[$j]->id)->orderBy('id','DESC')->first();
+                            $getdevicedetail = UserDevice::where('user_id',$users[$j]->id)->latest()->first();
                             if($getdevicedetail)
                             {
                                 $roasterdata[] = array(
@@ -337,7 +340,7 @@ class CampaignController extends BaseController
                                     'device_token'   =>  $getdevicedetail->device_token,
                                     'status'    =>  0
                                 );
-                            } 
+                            }
                         }else{
                             $roasterdata[] = array(
                                 'campaign_id'   =>  $campaign->id,
@@ -348,27 +351,27 @@ class CampaignController extends BaseController
                                 'device_token'   =>  "",
                                 'status'    =>  0
                             );
-                        }               
-                                               
+                        }
+
                     }
                     $insertroaster = CampaignRoster::insert($roasterdata);
                 }
                 $total_requests = CampaignRoster::where('campaign_id',$campaign->id)->count();
                 Campaign::where('id',$campaign->id)->update(['total_request_count'=>$total_requests]);
-                
+
             }else{  //for vendors only
                 $vendors = UserVendor::select('user_id')->with('user')->groupBy('user_id')->get();
-                $getusercount = count($vendors);                
+                $getusercount = count($vendors);
                 $usercount = $request->request_user_count;
                 $totalbatches = ceil($getusercount/$usercount);
                 for ($i=1;$i<=$totalbatches;$i++)
-                {                    
+                {
                     if($i==1)
                     {
                         $notification_time = $notification_time;
-                    }else{                        
+                    }else{
                         $notification_time = $notification_time->addMinute($request->request_time_gap);
-                    }                    
+                    }
                     $roasterdata = [];
                     $conditionalvalue = (($i*$usercount)<=$getusercount)?$i*$usercount:$getusercount;
                     for($j = (($i-1)*$usercount); $j<$conditionalvalue;$j++)
@@ -387,7 +390,7 @@ class CampaignController extends BaseController
                                     'device_token'   =>  $getdevicedetail->device_token,
                                     'status'    =>  0
                                 );
-                            } 
+                            }
                         }else{
                             $roasterdata[] = array(
                                 'campaign_id'   =>  $campaign->id,
@@ -398,7 +401,7 @@ class CampaignController extends BaseController
                                 'device_token'   =>  "",
                                 'status'    =>  0
                             );
-                        } 
+                        }
                     }
                     $insertroaster = CampaignRoster::insert($roasterdata);
                 }
@@ -417,9 +420,9 @@ class CampaignController extends BaseController
     {
         $pushoption =  $request->pushvalue;
         $html='<select class="form-control" name="push_url_option_value" id="push_url_option_value"> ';
-        if($pushoption==2)  //categories        
+        if($pushoption==2)  //categories
         {
-            $getcategories = Category::where('status',1)->with('translation_one')->get(['id','slug']);            
+            $getcategories = Category::where('status',1)->with('translation_one')->get(['id','slug']);
             foreach($getcategories as $singlecategory)
             {
                 $html .= '<option value="'.$singlecategory->id.'">'.$singlecategory->translation_one->name.'</option>';
@@ -448,7 +451,7 @@ class CampaignController extends BaseController
     public function edit($domain = '', $id)
     {
         $campaign = Campaign::where('id', $id)->first();
-        
+
         $returnHTML = view('backend.campaign.form')->with(['campaign' => $campaign])->render();
         return response()->json(array('success' => true, 'html' => $returnHTML));
     }
