@@ -84,14 +84,9 @@ body.al_body_template_six.dark h6.card_title.ellips {
     /* flex-wrap: wrap; */
     display: inline-block!important;
     margin: 0 auto;
+    width: 100vw;
 }
-.alSixMainMenu .menu-navigation_al .container-fulid .row > .col-12 {
-    text-align: center;
-}
-.alSixMainMenu .menu-navigation_al .container-fulid .row > .col-12  .al_main_category_list{
-    max-height: 40vh;
-    overflow-y: auto;
-}
+
 
 /* ================================ Shimmer effect Start Form Here =========================================*/
 
@@ -271,12 +266,12 @@ body.al_body_template_six.dark h6.card_title.ellips {
 
 .al_body_template_six .alSixMainMenu .slick-next.slick-arrow,
 .al_body_template_six .vendors .slick-next.slick-arrow {
-    right: 0;
+    right: 10px;
 }
 
 .al_body_template_six .alSixMainMenu .slick-prev.slick-arrow,
 .al_body_template_six .vendors .slick-prev.slick-arrow {
-    left: 0;
+    left: 5px;
 }
 
 .al_body_template_six .alSixMainMenu .slick-arrow,
