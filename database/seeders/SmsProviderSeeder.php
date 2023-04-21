@@ -64,6 +64,12 @@ class SmsProviderSeeder extends Seeder
                 'keyword' => 'sms_partner',
                 'status' => '1'
             ),
+            array(
+                'id' => 9,
+                'provider' => 'SMS Ethiopia',
+                'keyword' => 'ethiopia',
+                'status' => '1'
+            ),
         );
         if($sms_count == 0)
         {

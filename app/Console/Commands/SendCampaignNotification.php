@@ -74,8 +74,8 @@ class SendCampaignNotification extends Command
                 ];
                 Config::set("database.connections.$database_name", $default);
                 DB::setDefaultConnection($database_name);
-                $client_preferences = ClientPreference::first();   
-                 
+                $client_preferences = ClientPreference::first();
+
                 // CampaignRoster::where('id',6287)->delete();
                 $notifications = CampaignRoster::where('notification_time', '<=',$intervalTime)->where('status',0)->with('campaign','user')->get();
                 // $notifications = CampaignRoster::whereBetween('notification_time', [$intervalTime, $add1Minute])->where('status',0)->with('campaign','user')->get();
@@ -83,7 +83,7 @@ class SendCampaignNotification extends Command
                 //// Log::info("CampaignRoster data: {$notifications}!");
                 if($notifications)
                 {
-                
+
                   foreach($notifications as $singlenotification)
                     {
                         //CampaignRoster::where('id',6290)->delete();
@@ -113,13 +113,13 @@ class SendCampaignNotification extends Command
                                         //     }else{
                                         //         //remove notification if success
                                         //         CampaignRoster::where('id',$singlenotification->id)->delete();
-                                        //     } 
+                                        //     }
                                         // }else{
                                         //     //change status if failed
                                         //     CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
-                                        // }    
+                                        // }
                                     }
-                                    
+
                                 } catch (\Exception $ex) {
                                 }
                                 break;
@@ -130,10 +130,10 @@ class SendCampaignNotification extends Command
                                         $useremail = $singlenotification->user->email;
                                         $email_subject = $singlenotification->campaign->email_subject;
                                         $email_body = $singlenotification->campaign->email_body;
-                                        
+
                                         $email_data = [
                                             'email' => $useremail,
-                                            'mail_from' => $client_preferences->mail_from,                        
+                                            'mail_from' => $client_preferences->mail_from,
                                             'subject' => $email_subject,
                                             'email_template_content' => $email_body,
                                             'send_to_cc' => 0
@@ -153,7 +153,7 @@ class SendCampaignNotification extends Command
                                 }
                                 break;
                             case '3':
-                                //send push                             
+                                //send push
                                 $redirect_URL = $singlenotification->campaign->push_url_option_value;
                                 $attachmentImg = (!empty($singlenotification->campaign->push_image['proxy_url'])) ? $singlenotification->campaign->push_image['proxy_url'] . '200/200' . $singlenotification->campaign->push_image['image_path'] : '';
 
@@ -183,12 +183,12 @@ class SendCampaignNotification extends Command
                                 // }else{
                                 //     //change status if failed
                                 //     CampaignRoster::where('id',$singlenotification->id)->update(array('status'=>2));
-                                // }                            
+                                // }
                             break;
                         }
                     }
-                }               
-                
+                }
+
                 DB::disconnect($database_name);
                 //// Log::info("checking cart end: {$database_name}!");
             } else {
@@ -228,6 +228,10 @@ class SendCampaignNotification extends Command
             {
             $crendentials = json_decode($client_preference->sms_credentials);
             $send = $this->sms_partner_gateway($to,$body,$crendentials);
+            }elseif($client_preference->sms_provider == 9) //for SMS Ethiopia gateway
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->sms_ethiopia_gateway($to,$body,$crendentials);
             }else{
                 $client = new TwilioClient($sms_key, $sms_secret);
                 $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
@@ -240,16 +244,16 @@ class SendCampaignNotification extends Command
 	}
 
     // protected function sendEmail($client_preferences,$sendto,$subject,$body){
-        
+
     //     $mailfrom = $client_preferences->mail_from;
     //     $confirured = $this->setMailDetail($client_preferences->mail_driver, $client_preferences->mail_host, $client_preferences->mail_port, $client_preferences->mail_username, $client_preferences->mail_password, $client_preferences->mail_encryption);
     //     // Mail::to($this->details['email'])->send($data);
-        
-            
+
+
     //         //$sendto =  $user->email;
     //         //$client_name = 'Sales';
     //         //$mail_from = $data->mail_from;
-    //         try {                
+    //         try {
     //             $data = [
     //                 'link' => "link",
     //                 'email' => $sendto,
@@ -263,7 +267,7 @@ class SendCampaignNotification extends Command
     //             Mail::to($sendto)->send($data);
     //         } catch (\Exception $e) {
     //         }
-        
+
     // }
 
     // public function setMailDetail($mail_driver, $mail_host, $mail_port, $mail_username, $mail_password, $mail_encryption){
