@@ -768,7 +768,14 @@ class FrontController extends Controller
         $client_data = Client::first();
         $countries = Country::get();
         $langId = Session::get('customerLanguage');
-        $additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
+        $additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch','is_service_price_selection']);
+        $is_service_product_price_from_dispatch_forOnDemand = 0;
+
+        $getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'), (@Session::get('onDemandPricingSelected') ?? ''),$additionalPreference);
+        if($getOnDemandPricingRule['is_price_from_freelancer']==1){
+            $is_service_product_price_from_dispatch_forOnDemand =1;
+        }
+
         $guest_user = true;
         if ($user) {
             $cart = Cart::select('id', 'is_gift', 'item_count','scheduled_date_time')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
@@ -869,7 +876,7 @@ class FrontController extends Controller
                 $cartData[$key]->is_dispatch_slot = 1 ;
             }else{
                 $time_slots = [];
-                if(($cateTypeId == 8) && ($additionalPreference['is_service_product_price_from_dispatch'] !=1 )){ // no need to geting verdor slot when we get driver price
+                if(($cateTypeId == 8) && ($is_service_product_price_from_dispatch_forOnDemand !=1 )){ // no need to geting verdor slot when we get driver price
                     if( $data->vendor->show_slot ==1 ){ // IF VENDOR 24*7 Availability
                         $start_time = new DateTime("now", new  DateTimeZone($timezone) );
                         $today = $start_time->format('Y-m-d');

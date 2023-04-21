@@ -281,13 +281,14 @@ class UserhomeController extends FrontController
 
     public function index(Request $request, $domain='')
     {
+       // pr(Session::get('onDemandPricingSelected'));
         try {
             $home = array();
             $vendor_ids = array();
             if ($request->has('ref')) {
                 session(['referrer' => $request->query('ref')]);
             }
-            $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating', 'is_service_product_price_from_dispatch']);
+            $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating', 'is_service_product_price_from_dispatch','is_service_price_selection']);
             $latitude = Session::get('latitude') ?? null;
             $longitude = Session::get('longitude') ?? null;
             $curId = Session::get('customerCurrency');
@@ -418,10 +419,13 @@ class UserhomeController extends FrontController
             }
 
             $is_service_product_price_from_dispatch_forOnDemand = 0;
-
-            if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
-                $is_service_product_price_from_dispatch_forOnDemand =1;
-            }
+          
+            $getOnDemandPricingRule = getOnDemandPricingRule($vendor_type, Session::get('onDemandPricingSelected'),$additionalPreference);
+         
+            $is_service_product_price_from_dispatch_forOnDemand =$getOnDemandPricingRule['is_price_from_freelancer'];
+            // if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+            //     $is_service_product_price_from_dispatch_forOnDemand =1;
+            // }
             
             $homeData = ['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $client_preferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData ,'is_service_product_price_from_dispatch_forOnDemand'=> $is_service_product_price_from_dispatch_forOnDemand];
             return view('frontend.'.$view_page)->with($homeData);
@@ -455,6 +459,13 @@ class UserhomeController extends FrontController
             if($selectedPlaceId)
             Session::put('selectedPlaceId', $selectedPlaceId);
        // }
+        return redirect()->route('userHome');
+    }
+    public function setondemandPricingSession(Request $request)
+    {
+        $type  =  $request->type ?? 'vendor';
+        Session::put('onDemandPricingSelected',  $type );
+        ///pr(Session::get('onDemandPricingSelected'));
         return redirect()->route('userHome');
     }
     /**
