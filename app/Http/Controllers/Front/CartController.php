@@ -1757,10 +1757,11 @@ class CartController extends FrontController
         $message = '';
         $status = 'Success';
         $vendorId = $request->vendor_id;
+        $delivery = $request->delivery??'delivery';
         $option = "";
         //type must be a : delivery , takeaway,dine_in
         $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
-        $slots = (object)showSlot($request->date,$vendorId,'delivery',$duration->slot_minutes, 0);
+        $slots = (object)showSlot($request->date,$vendorId,$delivery,$duration->slot_minutes, 0);
         $option ="<option value=''>".__("Select Slot")."</option>";
         if(count((array)$slots)<=0){
             $message = 'Slot not found.';
@@ -2186,6 +2187,7 @@ class CartController extends FrontController
             $cart_details->tokenAmount = $tokenAmount;
         }
         // till here
+        
         return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'', 'cart_error_message' => $error_message]);//'token_val' => $tokenAmount , 'is_token_enable' => $is_token_enable
     }
 
