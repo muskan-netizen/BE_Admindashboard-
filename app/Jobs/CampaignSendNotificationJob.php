@@ -27,21 +27,22 @@ class CampaignSendNotificationJob implements ShouldQueue
      *
      * @return void
      */
-    // public function __construct($notifications,$client_preferences,$headers){
-    //     $this->notifications = $notifications;
-    //     $this->client_preferences = $client_preferences;
-    // }
+    public function __construct($notifications,$client_preferences,$headers){
+        $this->notifications = $notifications;
+        $this->client_preferences = $client_preferences;
+        $this->headers = $headers;
+    }
 
     /**
      * Execute the job.
      *
      * @return void
      */
-    public function __construct($notifications,$client_preferences,$headers)
+    public function handle()
     {
-        // $notifications = $this->notifications;
-        // $client_preferences = $this->client_preferences;
-        // $headers = $this->headers;
+        $notifications = $this->notifications;
+        $client_preferences = $this->client_preferences;
+        $headers = $this->headers;
         foreach($notifications as $singlenotification)
         {
             //CampaignRoster::where('id',6290)->delete();

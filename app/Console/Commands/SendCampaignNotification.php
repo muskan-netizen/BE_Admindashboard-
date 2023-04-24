@@ -71,7 +71,7 @@ class SendCampaignNotification extends Command
                 ];
                 Config::set("database.connections.$database_name", $default);
                 DB::setDefaultConnection($database_name);
-                $client_preferences = ClientPreference::first();
+                $client_preferences = ClientPreference::first(['fcm_server_key','sms_provider','sms_key','sms_secret','sms_from','mail_host','mail_port','mail_driver','mail_from','favicon']);
                 $from = $client_preferences->fcm_server_key ?? "";
                 $headers = [
                     'Authorization: key=' . $from,

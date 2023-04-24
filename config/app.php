@@ -74,7 +74,7 @@ return [
         Campaign Chunk Send Notification Value
     */
 
-    'campaign_chunk' => 100,
+    'campaign_chunk' => 1000,
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

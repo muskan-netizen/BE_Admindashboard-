@@ -821,7 +821,6 @@ class StripeGatewayController extends FrontController
             ////// Create webhook Endpoint ///////
             $secret_key = stripeOXXOPaymentCredentials()->secret_key;
             $stripe = new \Stripe\StripeClient($secret_key);
-
             $webhook_url = 'https://'.$domain.'/payment/webhook/stripe_oxxo';
             $webhook_exists = false;
 
@@ -1397,9 +1396,7 @@ class StripeGatewayController extends FrontController
             http_response_code(400);
             exit();
         }
-        \Log::info("stripeOXXOWebhook event");
 
-        \Log::info($event);
         Webhook::create(['tracking_order_id'=>'','response'=>$request->getContent() ?? json_encode($payload)]);
 
         // Handle the event
@@ -1427,9 +1424,6 @@ class StripeGatewayController extends FrontController
                     $order_number = @$charges->metadata->order_number;
                     $cart_id = @$charges->metadata->cart_id ?? '';
                     $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
-                    \Log::info("stripeOXXOWebhook order");
-
-                    Log::info($order);
                     if ($order) {
                         $order->payment_status = 1;
                         $order->save();
@@ -1596,6 +1590,8 @@ class StripeGatewayController extends FrontController
             $event = \Stripe\Event::constructFrom(
                 json_decode($payload, true)
                 );
+                \Log::info('event');
+                \Log::info($event);
         } catch(\UnexpectedValueException $e) {
             // Invalid payload
             http_response_code(400);
@@ -1610,6 +1606,8 @@ class StripeGatewayController extends FrontController
                 $transactionId = $user_id = $cart_id = $payment_form = $order_number = '';
                 $payment_intent_id = $paymentIntent->id;
                 $intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
+                \Log::info('intent');
+                \Log::info($intent);
                 if(!empty($intent->charges) && !empty($intent->charges->data)){
                     $charges = $intent->charges->data[0];
                     $transactionId = @$charges->balance_transaction;
@@ -1628,6 +1626,8 @@ class StripeGatewayController extends FrontController
                     $cart_id = @$charges->metadata->cart_id ?? '';
                     $order = Order::with(['paymentOption', 'user_vendor', 'vendors:id,order_id,vendor_id'])->where('order_number', $order_number)->first();
                     if ($order) {
+                        \Log::info('order');
+                        \Log::info($order);
                         $order->payment_status = 1;
                         $order->save();
                         $payment_exists = Payment::where('transaction_id', $transactionId)->first();
@@ -1692,7 +1692,7 @@ class StripeGatewayController extends FrontController
 
             case 'payment_intent.payment_failed':
                 $paymentIntent = $event->data->object;
-                // //\Log::info($paymentIntent);
+                \Log::info($paymentIntent);
 
                 $meta = $paymentIntent->metadata;
                 // //\Log::info($meta);
@@ -1708,6 +1708,8 @@ class StripeGatewayController extends FrontController
                     $order_number = $meta->order_number;
                     $order = Order::where('order_number', $order_number)->first();
                     if($order){
+                        \Log::info('cart-order');
+                        \Log::info($order);
                         $wallet_amount_used = $order->wallet_amount_used;
                         if($wallet_amount_used > 0){
                             $wallet = $user->wallet;
