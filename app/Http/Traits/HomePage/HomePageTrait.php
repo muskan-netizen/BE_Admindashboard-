@@ -405,8 +405,13 @@ trait HomePageTrait
                  $q->groupBy('product_id');
              },
          ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only');
-         if ($where !== '') {
+         if ($where !== '' && $where !== 'on_sale') {
              $products = $products->where($where, 1);
+         }
+         if($where == 'on_sale'){
+            $products = $products->whereHas('variant' , function($q){
+                $q->where('compare_at_price',  '>',  0);
+            });
          }
          $pndCategories = Category::where('type_id', 7)->pluck('id');
          // if (is_array($venderIds)) {

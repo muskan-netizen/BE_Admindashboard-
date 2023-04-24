@@ -1840,12 +1840,21 @@ if (!function_exists('getDaysArrayBetweenTwoDates')) {
 
 if( !function_exists('get_file_path') ) {
     function get_file_path($url,$type="FILL_URL",$height="260",$width="260")  {
+        
         $img = 'default/default_image.png';
       if(!empty($url)){
         $img = $url;
       }
       $ex = checkImageExtension($img);
-      $values =  \Config::get('app.'.$type);
+      $return_url = $values =  \Config::get('app.'.$type);
+
+      $img = str_replace(' ', '', $img);
+      if (substr($img, 0, 7) == "http://" || substr($img, 0, 8) == "https://"){
+        $return_url  = $values.$height.'/'.$width.\Config::get('app.IMG_URL2').'/'.$img;
+      } else {
+        $return_url  = $values.$height.'/'.$width.\Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+      }
+   
       //pr($values);
     //   $img = 'default/default_image.png';
     //   if(!empty($value)){
@@ -1857,7 +1866,8 @@ if( !function_exists('get_file_path') ) {
     //   $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
     //   $values['image_fit'] = \Config::get('app.FIT_URl');
     //   $values['image'] = $value;
-      return $values.$height.'/'.$width.\Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+      //return $values.$height.'/'.$width.\Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+      return   $return_url  ;
     }
 }
 

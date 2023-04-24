@@ -267,8 +267,8 @@
 <div class="rightbar-overlay"></div>
 
 <!-- Modal -->
-<div class="modal fade received-orders" id="received_new_orders" tabindex="-1" aria-labelledby="received_ordersLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+<div class="modal fade received-orders order_received1" id="received_new_orders" tabindex="-1" aria-labelledby="received_ordersLabel" aria-hidden="true">
+    <div class="modal-dialog  modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="received_ordersLabel">{{__('New Order Received')}}</h5>
