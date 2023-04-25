@@ -228,7 +228,7 @@ trait smsManager{
     }
 
 
-    public function sms_na_delivery_gateway($to, $message, $crendentials){
+    public function naDelivery($to, $message, $crendentials){
         $to_number = substr($to, 1);
         try{
             $apiurl = 'http://197.156.70.196:9095/api/send_sms';
