@@ -204,25 +204,24 @@ class AppServiceProvider extends ServiceProvider
         // return false;
 
         $preference = ClientPreference::first();
-        if( isset($preference) && Schema::hasColumn('client_preferences', 'business_type') && $preference->business_type == 'taxi'){
-            if ( Schema::hasColumn('client_preferences', 'need_dispacher_ride') && Schema::hasColumn('client_preferences', 'pickup_delivery_service_key')  && Schema::hasColumn('client_preferences', 'pickup_delivery_service_key_code')  ) {
+        if( isset($preference)  && $preference->business_type == 'taxi'){
+        
                 if($preference->need_dispacher_ride == 1 && !empty($preference->pickup_delivery_service_key) && !empty($preference->pickup_delivery_service_key_code) && !empty($preference->pickup_delivery_service_key_url))
                 return $preference;
                 else
                 return false;
-            }
-            return false;
-        }elseif(  isset($preference)  && Schema::hasColumn('client_preferences', 'business_type') &&  $preference->business_type == 'laundry'){
-            if ( Schema::hasColumn('client_preferences', 'need_laundry_service') && Schema::hasColumn('client_preferences', 'laundry_service_key')  && Schema::hasColumn('client_preferences', 'laundry_service_key_code')  ) {
+         
+          
+        }elseif(  isset($preference)  &&  $preference->business_type == 'laundry'){
+           
                 if($preference->need_laundry_service == 1 && !empty($preference->laundry_service_key) && !empty($preference->laundry_service_key_code) && !empty($preference->laundry_service_key_url))
                 return $preference;
                 else
                 return false;
-            }
-            return false;
+           
 
         } else{
-            if (isset($preference) && Schema::hasColumn('client_preferences', 'need_delivery_service') && Schema::hasColumn('client_preferences', 'delivery_service_key_url')  && Schema::hasColumn('client_preferences', 'delivery_service_key_code')  ) {
+            if (isset($preference)  ) {
                 if($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
                 return $preference;
                 else
