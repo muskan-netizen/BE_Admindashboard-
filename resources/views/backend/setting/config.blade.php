@@ -908,9 +908,9 @@
 
                          <!-- For NaDelivery -->
                          <div class="sms_fields row mx-0" id="na_delivery_fields"
-                         style="display : {{ $preference->sms_provider == 1 ? 'flex' : 'none' }};">
+                         style="display : {{ $preference->sms_provider == 9  ? 'flex' : 'none' }};">
                          <div class="col-12">
-                             <span  class="text-danger">{{ __('Only Available For +251 Country Code') }}</span>
+                             <span  class="text-danger">{{ __('Only Available For +251, +09 And +9 Country Code') }}</span>
                              <div class="form-group mb-2">
                                  <label for="sms_username">{{ __('Username') }}</label>
                                  <input type="text" name="sms_username" id="sms_username" placeholder=""
