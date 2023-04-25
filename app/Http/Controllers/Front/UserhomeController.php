@@ -20,12 +20,12 @@ use Redirect;
 use DB;
 use Illuminate\Http\Response;
 use Cookie;
-use App\Http\Traits\{OrderTrait,ProductActionTrait};
+use App\Http\Traits\{OrderTrait,ProductActionTrait,VendorTrait};
 use App\Http\Traits\HomePage\{HomePageTrait};
 
 class UserhomeController extends FrontController
 {
-    use ApiResponser, OrderTrait,ProductActionTrait, HomePageTrait;
+    use ApiResponser, OrderTrait,ProductActionTrait, HomePageTrait,VendorTrait;
     private $field_status = 2;
     public $cities = [];
     public $additionalPreference =[];
@@ -65,7 +65,6 @@ class UserhomeController extends FrontController
         $client_preferences = $this->client_preferences;
         $client_preferences = $client_preferences->makeHidden(['customer_support_key','delivery_service_key','fcm_server_key','fcm_api_key','mail_username','mail_password','sms_key','sms_secret','sms_credentials','fb_client_secret','fcm_storage_bucket','customer_support_application_id','pickup_delivery_service_key']);
         return response()->json(['success' => true, 'client_preferences' => $client_preferences]);
-
     }
 
     public function getLastMileTeams()
@@ -466,6 +465,9 @@ class UserhomeController extends FrontController
      */
     public function postHomePageData(Request $request,$set_template,$enable_layout,$additionalPreference)
     {
+     
+        //pr($enable_layout);
+       // $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating','is_show_vendor_on_subcription']);
         $vendor_ids = $vendors = [];
         $new_products = [];
         $feature_products = [];
@@ -558,6 +560,8 @@ class UserhomeController extends FrontController
         Session::put('vendorType', $request->type);
       
         if ($preferences) {
+            // check vendor Subscription0
+           
             if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
                 $selectedAddress = $preferences->Default_location_name;
                 $latitude = $preferences->Default_latitude??null;
@@ -611,7 +615,7 @@ class UserhomeController extends FrontController
         }
         $on_sale_product_details =$on_sale_products = [];
         if (in_array('on_sale', $enable_layout)) {  # if enable new_products section in 
-            $on_sale_products = $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', 'all', $request->type,$on_sale_title, $p_dim);
+            $on_sale_products = $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', 'on_sale', $request->type,$on_sale_title, $p_dim);
         }
         $new_product_details =$new_products = [];
         if (in_array('new_products', $enable_layout)) {  # if enable new_products section in 

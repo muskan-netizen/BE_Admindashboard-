@@ -3824,5 +3824,6 @@ body.al_body_template_six .alFourTemplateOrderSucces .product-order {
 }
 
 .al_body_template_six.homeHeader .container .col-12 .sortingFilter.p-1 {
-    margin: 10px;
+    margin: 0px;
+    width:100%;
 }

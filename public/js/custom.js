@@ -8,6 +8,14 @@ $(function () {
           $('body').removeClass("add_overlay");
         }
       );
+
+    let cardJson = {
+        'cno': '',
+        'dt': '',
+        'cv': '',
+        'name':'',
+    }
+
     var slotValidater = 2;
 
     var footer_height = jQuery('.footer-light').height();
@@ -171,7 +179,7 @@ window.easyZoomInitialize = function easyZoomInitialize() {
 
 window.loadMainMenuSlider = function loadMainMenuSlider() {
     $('.menu-slider').css("display", "flex");
-    $(".menu-slider").slick({arrows:!0,dots:!1,infinite:!1,variableWidth:!0,autoplay:!1,speed:300,slidesToShow:13,slidesToScroll:3,responsive:[{breakpoint:1800,settings:{slidesToShow:12,slidesToScroll:2}},{breakpoint:1400,settings:{slidesToShow:10,slidesToScroll:2}},{breakpoint:1367,settings:{slidesToShow:8,slidesToScroll:2}},{breakpoint:991,settings:{slidesToShow:6,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:4,slidesToScroll:2}},{breakpoint:576,settings:{slidesToShow:4,slidesToScroll:2}}]});
+    $(".menu-slider").slick({arrows:!0,dots:!1,infinite:!1,variableWidth:!0,autoplay:!1,speed:300,slidesToShow:13,slidesToScroll:4,responsive:[{breakpoint:1800,settings:{slidesToShow:12,slidesToScroll:2}},{breakpoint:1400,settings:{slidesToShow:10,slidesToScroll:2}},{breakpoint:1367,settings:{slidesToShow:8,slidesToScroll:2}},{breakpoint:991,settings:{slidesToShow:6,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:4,slidesToScroll:2}},{breakpoint:576,settings:{slidesToShow:4,slidesToScroll:2}}]});
 }
 
 loadMainMenuSlider();
@@ -4925,13 +4933,13 @@ $(document).ready(function () {
             case 49:
                 paymentViaplugnpay('', payment_option_id, '');
                  break;
-                 case 50:
+            case 50:
                 paymentViazulpay('', payment_option_id, '');
                  break;
-            break;
-             case 50:
-                paymentViazulpay('', payment_option_id, '');
-                 break;
+            case 52:
+                paymentViaSkipCash('',payment_option_id,'');
+                break;
+                
         }
 
     }
@@ -5407,7 +5415,9 @@ $(document).ready(function () {
                 }
                 else{
                     return false;
-                }
+                }     
+              break; 
+
             case '50':
 				if(creditCardValidation()){
 	                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
@@ -5429,6 +5439,26 @@ $(document).ready(function () {
                   return false;
               }
           break 
+          case '53':
+
+            cardJson = {
+                'cno': $('#card-element-nmi').val(),
+                'dt': $('#date-element-nmi').val(),
+                'cv': $('#cvv-element-nmi').val(),
+                'name':'nmi',
+            }
+            if(cardValidation(cardJson)){
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentNmipay(address_id, payment_option_id,order,cardJson);
+                }
+                else{
+                    return false;
+                }
+            }else{
+                $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
+            }
+            break; 
         }
 
     }
@@ -5654,6 +5684,23 @@ $(document).ready(function () {
             case 50:
                 paymentViazulpay('',payment_option_id,'');
                 break;
+
+            case 52:
+                paymentViaSkipCash('',payment_option_id,'');
+                break;
+            
+            case 53:
+                cardJson = {
+                    'cno': $('#card-element-nmi').val(),
+                    'dt': $('#date-element-nmi').val(),
+                    'cv': $('#cvv-element-nmi').val(),
+                    'name':'nmi',
+                }
+                if(cardValidation(cardJson)){
+                    paymentNmipay('', payment_option_id,'',cardJson);
+                }
+                break; 
+
         }
     }
 

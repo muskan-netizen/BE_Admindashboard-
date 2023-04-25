@@ -40,8 +40,7 @@ class CartController extends FrontController
     }
 
     public function showCart(Request $request, $domain = '')
-    {
-       
+    {       
         if(($request->has('gateway')) && (($request->gateway == 'mobbex')||($request->gateway == 'yoco'))){
             if($request->has('order')){
                 $order = Order::where('order_number', $request->order)->first();
@@ -2178,10 +2177,10 @@ class CartController extends FrontController
 
             $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message])->render();
         }
-        //sandeep sir code
+       
         $tokenAmount = 1;
         $is_token_enable = @$getAdditionalPreference['is_token_currency_enable'];
-        if($is_token_enable){
+        if($is_token_enable && $cart_details){
             $tokenAmount = getJsToken();
             $cart_details->is_token_enable = $is_token_enable;
             $cart_details->tokenAmount = $tokenAmount;

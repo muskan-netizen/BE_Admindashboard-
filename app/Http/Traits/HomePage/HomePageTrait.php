@@ -401,12 +401,17 @@ trait HomePageTrait
                  $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
              },
              'variant' => function ($q) use ($langId) {
-                 $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
+                 $q->select('sku', 'product_id', 'quantity', 'price', 'barcode','compare_at_price');
                  $q->groupBy('product_id');
              },
          ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only');
-         if ($where !== '') {
+         if ($where !== '' && $where !== 'on_sale') {
              $products = $products->where($where, 1);
+         }
+         if($where == 'on_sale'){
+            $products = $products->whereHas('variant' , function($q){
+                $q->where('compare_at_price',  '>',  0);
+            });
          }
          $pndCategories = Category::where('type_id', 7)->pluck('id');
          // if (is_array($venderIds)) {

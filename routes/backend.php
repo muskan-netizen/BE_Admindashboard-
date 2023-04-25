@@ -366,6 +366,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('customer/pay-receive', 'Client\UserController@payReceive')->name('customer.pay.receive');
         Route::post('order/updateReport', 'Client\OrderController@uploadReport')->name('order.upload.report');
         Route::get('orderReport/delete/{id}', 'Client\OrderController@deleteReport')->name('order.report.delete');
+        Route::post('order/delay_time', 'Client\OrderController@addExtraPrepTimeToOrder')->name('order.delay_time');
 
         Route::get('rental-return-modal/get-rental-return-product-modal', 'Client\OrderController@getRentalReturnProductModal')->name('get-rental-return-product-modal');
         Route::post('order/update-product-rental-return-client', 'Client\OrderController@updateProductRentalReturn')->name('update.order.rental.return.client');

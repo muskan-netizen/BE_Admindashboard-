@@ -60,6 +60,7 @@
     <!-- start page title -->
     <div class="row">
         <div class="col-12">
+            @include('alert')
             <div class="page-title-box">
                 @if(isset($subadmin))
                 <h4 class="page-title">{{ __('Update Customer') }}</h4>
@@ -69,7 +70,6 @@
     </div>
     <!-- end page title -->
     <div class="row">
-        {{-- @include('alert') --}}
         <div class="col-md-7">
             <div class="card">
                 <div class="card-body">
@@ -115,7 +115,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="password" class="control-label">{{ __("User Role") }}</label>
-                                    <select name="role" class="form-control">
+                                    <select name="role" class="form-control" id="user-roles">
                                         <option value="" >Select Role</option>
                                         @foreach($rolesNew as $role)
                                         <option value="{{$role->id}}" @if($role->id==$userRole) selected @endif>{{$role->name}}</option>
@@ -157,7 +157,7 @@
                         </div>
 
                         <div class="row">
-                            @if (isset($getAdditionalPreference['is_price_by_role']))
+                         {{--   @if (isset($getAdditionalPreference['is_price_by_role']))
                                 @if($getAdditionalPreference['is_price_by_role'] == '1')
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -172,7 +172,7 @@
                                         </div>
                                     </div>
                                 @endif
-                            @endif
+                            @endif--}}
                             <div class="col-md-3">
                                 <div class="form-group">
                                     {!! Form::label('title', __('Email Verified'),['class' => 'control-label']) !!}
@@ -254,7 +254,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-lg-6 mb-lg-0 mb-3 user_perm_section table-responsive">
+                            <div class="col-lg-6 mb-lg-0 mb-3 user_perm_section table-responsive d-none">
                                 @php
                                     $userpermissions = [];
                                     if(isset($user_permissions))
@@ -331,7 +331,7 @@
                                 </table>
                             </div>
 
-                            <div class="col-lg-6 team_perm_section table-responsive">
+                            <div class="col-lg-6 team_perm_section table-responsive d-none">
 
                                 <table class="table table-borderless table-nowrap table-hover table-centered m-0">
 
@@ -619,6 +619,23 @@
                 $('.vendor_permission_check').prop('checked', false);
             }
         });
-        </script>
+        
+        $(document).ready(function(){
+        	var role = '{{ $userRole??'' }}';
+        	getRoleVal(role);
+        });
+        
+        $("#user-roles").change(function(){
+        	 getRoleVal($(this).val());
+        });
+        
+        function getRoleVal(role){
+        	if(role == 4){
+        		$(".team_perm_section").removeClass("d-none");
+        	}else{
+        		$(".team_perm_section").addClass("d-none");
+        	}
+        }
+   </script>
 
 @endsection

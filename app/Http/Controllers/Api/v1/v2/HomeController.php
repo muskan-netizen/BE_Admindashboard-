@@ -15,12 +15,12 @@ use Illuminate\Support\Str;
 use DateTimeZone;
 use App\Http\Traits\HomePage\HomePageTrait;
 use Session;
-use App\Http\Traits\{OrderTrait,ProductActionTrait};
+use App\Http\Traits\{OrderTrait,ProductActionTrait,VendorTrait};
 /**
  * HomeController
  */
 class HomeController extends BaseController{
-    use ApiResponser, HomePageTrait, OrderTrait, ProductActionTrait;
+    use ApiResponser, HomePageTrait, OrderTrait, ProductActionTrait,VendorTrait;
     public $cities = [];
     private $curLang = 0;
     private $field_status = 2;    
@@ -102,7 +102,7 @@ class HomeController extends BaseController{
             $langId = $user->language;
             $currency_id = $user->currency;
             $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
-            $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'is_service_area_for_banners')->first();
+            $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'is_service_area_for_banners','subscription_mode')->first();
             $latitude = $request->latitude;
             $longitude = $request->longitude;
             $paginate = $request->has('limit') ? $request->limit : 12;
@@ -121,11 +121,11 @@ class HomeController extends BaseController{
             $categoryTypes = getServiceTypesCategory($type);
             
         
-            $vendorData = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+            $vendorData = Vendor::byVendorSubscriptionRule($preferences)->whereHas('getAllCategory.category',function($q)use ($categoryTypes){
                 $q->whereIn('type_id',$categoryTypes);
             })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','id as is_vendor_closed' ,'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
 
-
+           
         
 
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
@@ -486,6 +486,11 @@ class HomeController extends BaseController{
         $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'): ClientPreference::first();
         $currency_id = Session::get('customerCurrency');
         $language_id = Session::get('customerLanguage');
+        if(is_null($language_id) ){
+            $local = ($request->hasHeader('language')) ? $request->header('language') : 1;
+           
+            $language_id = $local;
+        }
 
         $currency_id = $this->setCurrencyInSesion();
 
@@ -678,7 +683,7 @@ class HomeController extends BaseController{
         //get Most Selling Vendors
         $mostSellingVendors = $this->getMostSellingVendors($preferences, $vendor_ids);
         
-        $on_sale_product_details = $this->vendorProducts_v2($vendor_ids, $language_id, 'USD', '', $request->type);
+        $on_sale_product_details = $this->vendorProducts_v2($vendor_ids, $language_id, 'USD', 'on_sale', $request->type);
         $new_product_details = $this->vendorProducts_v2($vendor_ids, $language_id, $currency_id, 'is_new', $request->type);
         $feature_product_details = $this->vendorProducts_v2($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type);
       
@@ -705,6 +710,7 @@ class HomeController extends BaseController{
                 'vendor' => $new_product_detail->vendor,
                 'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$new_product_detail->variant->first()->price??0 * $multiply,',')),
                 'category' => (@$new_product_detail->category->categoryDetail->translation) ? @$new_product_detail->category->categoryDetail->translation->first()->name : @$new_product_detail->category->categoryDetail->slug,
+                'translation' => $new_product_detail->translation,
                 'is_p2p' => $is_p2p
             );
         }
@@ -731,6 +737,7 @@ class HomeController extends BaseController{
                 'vendor' => $feature_product_detail->vendor,
                 'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$feature_product_detail->variant->first()->price * $multiply,',')),
                 'category' => (@$feature_product_detail->category->categoryDetail->translation) ? @$feature_product_detail->category->categoryDetail->translation->first()->name : @$feature_product_detail->category->categoryDetail->slug,
+                'translation' => $feature_product_detail->translation,
                 'is_p2p' => $is_p2p
             );
         }
@@ -761,6 +768,7 @@ class HomeController extends BaseController{
                 'vendor' => $on_sale_product_detail->vendor,
                 'price' => Session::get('currencySymbol') . ' ' . (decimal_format(@$on_sale_product_detail->variant->first()->price??0 * $multiply,',')),
                 'category' => $cat_name,
+                'translation' => $on_sale_product_detail->translation,
                 'is_p2p' => $is_p2p
             );
         }

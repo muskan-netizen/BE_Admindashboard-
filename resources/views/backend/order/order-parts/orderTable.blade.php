@@ -42,7 +42,7 @@
                 @endif
             </div>
 
-            <div class="row">
+            <div class="row mb-3">
                 <div class="col-md-9">
 
                     @foreach ($order['vendors'] as $ve => $vendor)
@@ -118,7 +118,7 @@
                                                                     @endif
                                                                 @else
                                                                     <span class="ml-2">{{ __('Order scheduled for') }}
-                                                                        {{ $order->scheduled_date_time }},
+                                                                        {{ $order->order_schedule_date }},
                                                                         {{ __('Slot') }} :
                                                                         {{ $order->scheduled_slot }}</span>
                                                                 @endif
@@ -143,7 +143,7 @@
                                                 </li>
                                             </ul>
                                         </div>
-                                        <div class="col-7 col-sm-6">
+                                        <div class="col-6 col-sm-5">
                                             <div class="row no-gutters product_list align-items-center flex-wrap">
 
                                                 @foreach ($vendor['products'] as $pr => $product)
@@ -166,7 +166,7 @@
                                             </div>
                                         </div>
                                         
-                                        <div class="col-md-3 mt-md-0 mt-sm-2">
+                                        <div class="col-md-4 mt-md-0 mt-sm-2">
                                             <ul class="price_box_bottom m-0 p-0">
 
                                                 @if ($vendor['subtotal_amount'] > 0 || $vendor['subtotal_amount'] < 0)
@@ -271,8 +271,7 @@
                                                         {{ $vendor['delivery_fee'] = 0 }}
                                                     @endif
 
-
-                                                    <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($vendor['subtotal_amount'] - $vendor['discount_amount'] + $vendor['total_container_charges'] + $vendor['taxable_amount'] + $vendor['service_fee_percentage_amount'] + $order['fixed_fee_amount'] + $vendor['delivery_fee'] + $vendor['additional_price'] + $vendor['additional_price'] + $vendor['toll_amount']) }}
+                                                    <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($vendor['subtotal_amount'] - $vendor['discount_amount'] + $vendor['total_container_charges'] + $vendor['taxable_amount'] + $vendor['service_fee_percentage_amount'] + $vendor['fixed_fee'] + $vendor['delivery_fee'] + $vendor['additional_price'] + $vendor['toll_amount']-$order->wallet_amount_used) }}
                                                     </span>
                                                 </li>
                                             </ul>

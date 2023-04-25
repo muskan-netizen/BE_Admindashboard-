@@ -67,7 +67,6 @@ trait DispatcherSlot{
                 if ($response && $response['status'] === 200) {
                     return $response['data'];
                 }
-                 pr( $response['status']);
                 return [];
                
         } catch (\Exception $e) {
