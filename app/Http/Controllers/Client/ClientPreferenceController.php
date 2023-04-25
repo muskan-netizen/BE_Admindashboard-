@@ -378,7 +378,7 @@ class ClientPreferenceController extends BaseController{
                     'sender_id' => $request->sms_partner_sender_id,
                 ];
             }
-            elseif($request->sms_provider == 9) // for ethiopia
+            elseif($request->sms_provider == 9) // for NaDelivery
             {
                 $sms_credentials = [
                     'sms_username' => $request->sms_username,

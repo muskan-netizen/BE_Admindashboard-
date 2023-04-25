@@ -81,7 +81,7 @@ trait smsManager{
         $api_url = "https://sms.arkesel.com/sms/api?action=send-sms&";
         $endpoint = $api_url.'api_key='.$crendentials->api_key.'&to='.$to_number.'&from='.$crendentials->sender_id.'&sms='.urlencode($message);
 
-        
+
         $curl = curl_init();
         curl_setopt_array($curl, array(
         CURLOPT_URL => $endpoint,
@@ -228,7 +228,7 @@ trait smsManager{
     }
 
 
-    public function sms_ethiopia_gateway($to, $message, $crendentials){
+    public function sms_na_delivery_gateway($to, $message, $crendentials){
         $to_number = substr($to, 1);
         try{
             $apiurl = 'http://197.156.70.196:9095/api/send_sms';
