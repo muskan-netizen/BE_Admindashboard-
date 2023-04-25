@@ -1645,64 +1645,6 @@ $(document).ready(function () {
         });
     }
 
-    function paymentViaOboPay() {
-        console.log("obo");
-        let total_amount = 0;
-        let tip = 0;
-        let tipElement = $("#cart_tip_amount");
-        let cartElement = $("input[name='cart_total_payable_amount']");
-        let walletElement = $("input[name='wallet_amount']");
-        let ajaxData = {};
-        if (cartElement.length > 0) {
-            total_amount = cartElement.val();
-            tip = tipElement.val();
-            ajaxData.tip = tip;
-        } else if (walletElement.length > 0) {
-            total_amount = walletElement.val();
-        }
-        ajaxData.amount = total_amount;
-        ajaxData.returnUrl = path;
-        ajaxData.cancelUrl = path;
-
-        if (typeof tip_for_past_order !== 'undefined') {
-            if (tip_for_past_order != undefined && tip_for_past_order == 1) {
-                let order_number = $("#order_number").val();
-                ajaxData.order_number = order_number;
-                order_number = order_number;
-            }
-        }
-
-        $.ajax({
-            type: "POST",
-            dataType: 'json',
-            url: payment_obo_url,
-            data: ajaxData,
-            success: function (response) {
-                if (response.status == "Success") {
-                    window.location.href = response.data;
-                } else {
-                    if (cartElement.length > 0) {
-                        success_error_alert('error', response.message, ".payment_response");
-                        $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
-                    } else if (walletElement.length > 0) {
-                        success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
-                        $(".topup_wallet_confirm").removeAttr("disabled");
-                    }
-                }
-            },
-            error: function (error) {
-                var response = $.parseJSON(error.responseText);
-                if (cartElement.length > 0) {
-                    success_error_alert('error', response.message, ".payment_response");
-                    $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
-                } else if (walletElement.length > 0) {
-                    success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
-                    $(".topup_wallet_confirm").removeAttr("disabled");
-                }
-            }
-        });
-    }
-
 
     function paymentViaRazorpay_wallet(address_id, payment_option_id) {
         let walletElement = $("input[name='wallet_amount']");
@@ -4998,9 +4940,9 @@ $(document).ready(function () {
             case 52:
                 paymentViaSkipCash('',payment_option_id,'');
                 break;
-            case 55:
-                paymentViaOboPay('', payment_option_id);
-            break;
+            // case 55:
+            //     paymentViaOboPay('', payment_option_id);
+            // break;
 
         }
 
@@ -5009,7 +4951,6 @@ $(document).ready(function () {
     function cartPaymentOptions(payment_option_id,address_id,tip, delivery_type)
     {
         var action =  payment_option_id;
-        console.log(action);
         switch (action) {
             case '3':
                     paymentViaPaypal(address_id, payment_option_id);
@@ -5523,7 +5464,10 @@ $(document).ready(function () {
             }
             break;
             case '55':
-                paymentViaOboPay(address_id, payment_option_id);
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaOboPay(address_id, payment_option_id, order);
+                }
             break;
         }
 
@@ -5766,9 +5710,9 @@ $(document).ready(function () {
                     paymentNmipay('', payment_option_id,'',cardJson);
                 }
                 break;
-                case 55:
-                    paymentViaOboPay('', payment_option_id);
-                break;
+                // case 55:
+                //     paymentViaOboPay('', payment_option_id);
+                // break;
         }
     }
 

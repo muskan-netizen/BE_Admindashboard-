@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Http\Traits\ApiResponser;
+use App\Models\ClientCurrency;
 use App\Models\PaymentOption;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -12,6 +13,7 @@ class OboPaymentController extends Controller
 {
     use ApiResponser;
 
+    public $currency;
     private $obo_business_name;
     private $obo_client_id;
     private $obo_key_id;
@@ -27,19 +29,25 @@ class OboPaymentController extends Controller
         $this->obo_key_id          = $credentials->obo_key_id;
         $this->obo_market_place_id = $credentials->obo_market_place_id;
         $this->testMode            = $payOption->test_mode;
+
+        $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+        $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
     }
 
 
 
     public function beforePayment(Request $request)
-    { dd($request->all());
+    {
         $tokenData =  $this->token();
         if (isset($tokenData['httpStatus']) &&  $tokenData['httpStatus'] == "OK") {
             $token = $tokenData['token'];
             if (isset($token)) {
+                // user details
                 $user = auth()->user();
-                \Log::info($user);
-
+                $userEmail       = $user->email;
+                $userPhone       = $user->dial_code.$user->phone_number;
+                $userFirstName   = strtok($user->name, " ");
+                $userLastName    = substr(strstr($user->name," "), 1);
                 if ($this->testMode == 1) {
                     $apiUrl = "https://www.obo-pay.co.rw/test/payments/v1/payment";
                 } else {
@@ -50,17 +58,17 @@ class OboPaymentController extends Controller
                     'token' => $token
                 ];
                 $input = json_encode([
-                    "amount" => "1",
-                    "currency" => "RWF",
-                    "email" => "devlopertester@yopmail.com",
-                    "phone" => "1234567890",
-                    "reference_id" => "ordttt77trr_ih234",
-                    "first_name" => "Test",
-                    "last_name" => "User",
-                    "merchant" => $this->obo_business_name,
-                    "cancel_url" => url($request->url),
-                    "return_url" => "viewcart",
-                    "custom_pg_id" => $this->obo_market_place_id,
+                    "amount"        => $request->amount,
+                    "currency"      => $this->currency,
+                    "email"         => $userEmail,
+                    "phone"         => $userPhone,
+                    "reference_id"  => $request->order_number,
+                    "first_name"    => $userFirstName,
+                    "last_name"     => $userLastName,
+                    "merchant"      => $this->obo_business_name,
+                    "cancel_url"    => url($request->cancelUrl),
+                    "return_url"    => url($request->returnUrl),
+                    "custom_pg_id"  => $this->obo_market_place_id,
                 ], JSON_UNESCAPED_SLASHES);
                 $responce = Http::withBody($input, 'application/json')->withHeaders($header)->post($apiUrl);
                 $responceData = json_decode($responce->body(), true);
