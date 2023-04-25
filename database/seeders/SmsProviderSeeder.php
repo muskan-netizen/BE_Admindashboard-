@@ -66,8 +66,8 @@ class SmsProviderSeeder extends Seeder
             ),
             array(
                 'id' => 9,
-                'provider' => 'NaDelivery',
-                'keyword' => 'na_delivery',
+                'provider' => 'Ethiopia',
+                'keyword' => 'ethiopia',
                 'status' => '1'
             ),
         );
