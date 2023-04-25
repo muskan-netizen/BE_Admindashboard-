@@ -2103,6 +2103,12 @@ class StoreController extends BaseController{
 				$product->is_live = 1;
 				$product->publish_at = date('Y-m-d H:i:s');
 				$product->vendor_id = $user_vendor->vendor_id;
+				if(@$request->longitude){
+					$product->longitude = $request->longitude;
+				}
+				if(@$request->latitude){
+					$product->latitude = $request->latitude;
+				}
 				$client_lang = ClientLanguage::where('is_primary', 1)->first();
 				if (!$client_lang) {
 					$client_lang = ClientLanguage::where('is_active', 1)->first();
@@ -2124,6 +2130,15 @@ class StoreController extends BaseController{
 					$product_category->save();
 					$proVariant = new ProductVariant();
 					$proVariant->price = $request->price ?? 0;
+					if(@$request->week_price){
+						$proVariant->week_price = $request->week_price ?? 0;
+					}
+					if(@$request->month_price){
+						$proVariant->month_price = $request->month_price ?? 0;
+					}
+					if(@$request->emirate){
+						$proVariant->emirate = $request->emirate;
+					}
 					$proVariant->sku = $slug;
 					$proVariant->title =$slug . '-' .  empty($request->product_name) ?$slug : $request->product_name;
 					$proVariant->product_id = $product->id;
