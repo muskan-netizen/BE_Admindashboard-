@@ -804,7 +804,9 @@ li.grand_total.d-flex.align-items-center.justify-content-between label.m-0 {
         width: 50px !important;
         height: 50px !important;
     }
-
+    .filter-back {
+        font-size: 14px;
+    }
     .al_body_template_three .btn.btn-solid {
         font-size: 12px;
     }
