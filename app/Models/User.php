@@ -185,6 +185,6 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
 
     public function userVendor()
     {
-        return $this->hasOne(UserVendor::class);
+        return $this->hasMany(UserVendor::class);
     }
 }

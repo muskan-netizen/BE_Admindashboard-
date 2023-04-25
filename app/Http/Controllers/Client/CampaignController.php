@@ -297,7 +297,7 @@ class CampaignController extends BaseController
                 $users = User::where(['status' => 1]);
                   $rosterData = $this->getRosterData($request, $users, $campaign->id, $notification_time, $notification_type);
             } else {  //for vendors only
-                $vendors = User::has('userVendor')->where(['status' => 1]);
+                $vendors = User::whereHas('userVendor')->where(['status' => 1]);
                 $rosterData = $this->getRosterData($request, $vendors, $campaign->id, $notification_time, $notification_type);
                 }
                 if($rosterData){
@@ -343,16 +343,16 @@ class CampaignController extends BaseController
               $conditionalvalue = (($i * $usercount) <= $getusercount) ? $i * $usercount : $getusercount;
             for ($j = (($i - 1) * $usercount); $j < $conditionalvalue; $j++) {
                 if ($request->type == 3) {
-                    $getdevicedetails = UserDevice::where('user_id', $users[$j])->get(['device_token','device_type']);
+                    $getdevicedetails = UserDevice::where('user_id', $users[$j])->pluck('device_token');
                     if (count($getdevicedetails) > 0) {
-                        foreach ($getdevicedetails as $key => $getdevicedetail) {
+                        foreach ($getdevicedetails as  $getdevicedetail) {
                             $roasterdata[] = array(
                                 'campaign_id'   =>  $campaign_id,
                                 'user_id'   =>  $users[$j],
                                 'notification_time'   =>  $notification_time,
                                 'notofication_type'   =>  $notification_type,
-                                'device_type'   =>  $getdevicedetail->device_type,
-                                'device_token'   =>  $getdevicedetail->device_token,
+                                'device_type'   =>  '',
+                                'device_token'   =>  $getdevicedetail,
                                 'status'    =>  0
                             );
                         }
