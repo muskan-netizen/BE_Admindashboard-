@@ -2044,7 +2044,7 @@ body.al_body_template_six.dark.homeHeader .main-fillter .side_fillter {
     }
     .collection-product-wrapper .product-top-filter .filter-main-btn,
     .filter-main-btn span {
-        margin-top: -100px;
+        /* margin-top: -100px; */
         margin-left: 20px;
     }
     /* .offer-slider.al .col-12.p-0{display: block;} */
@@ -3921,7 +3921,7 @@ body.al_body_template_one .footer-theme .sub-title li {
         height:auto;
     }
     .collection-product-wrapper .product-top-filter .filter-main-btn, .filter-main-btn span {
-        margin-top: -100px;
+        /* margin-top: -100px; */
         margin-left: 20px;
     }
     body.al_body_template_eight.homeHeader  .img-outer-box.position-relative {
