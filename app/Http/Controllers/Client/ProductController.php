@@ -194,6 +194,10 @@ class ProductController extends BaseController
             $with_array[] = 'ProductAttribute';
         }
 
+        if( checkTableExists('delivery_slots_product') ) {
+            $with_array[] = 'syncProductDeliverySlot';
+        }
+
         $product = Product::with($with_array)->where('id', $id)->firstOrFail();
 
 

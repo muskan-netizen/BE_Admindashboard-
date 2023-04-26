@@ -94,7 +94,6 @@ class SendCampaignNotification extends Command
 
 
 
-
     // protected function sendEmail($client_preferences,$sendto,$subject,$body){
 
     //     $mailfrom = $client_preferences->mail_from;
