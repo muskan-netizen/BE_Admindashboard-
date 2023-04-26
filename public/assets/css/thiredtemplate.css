@@ -911,7 +911,7 @@ li.grand_total.d-flex.align-items-center.justify-content-between label.m-0 {
     }
 
     .al_box_third_template {
-        padding: 0 10px !important;
+        padding: 10px 10px !important;
     }
 
     .al_new_wrapper_design .top-banner-wrapper.text-center .common-banner {
@@ -1154,7 +1154,7 @@ li.grand_total.d-flex.align-items-center.justify-content-between label.m-0 {
     }
 
     .al_body_template_three span.rating-number {
-        top: 0;
+        top: 20px;
     }
 
     .al_body_template_three .al_custom_brand .brand-box h6 {
@@ -1466,6 +1466,13 @@ li.grand_total.d-flex.align-items-center.justify-content-between label.m-0 {
     ul.exzoom_img_ul {
         min-height: auto;
     }
+}
+
+@media (max-width:320px){
+    .slick-slider .d-flex.align-items-center.justify-content-between.al_clock b{
+        font-size: 12px !important;
+    }
+
 }
 
 @media (max-width: 1366px) {
