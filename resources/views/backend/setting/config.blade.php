@@ -906,8 +906,8 @@
                             </div>
                         </div>
 
-                         <!-- For NaDelivery -->
-                         <div class="sms_fields row mx-0" id="na_delivery_fields"
+                         <!-- For Ethiopia -->
+                         <div class="sms_fields row mx-0" id="ethiopia_fields"
                          style="display : {{ $preference->sms_provider == 9  ? 'flex' : 'none' }};">
                          <div class="col-12">
                              <span  class="text-danger">{{ __('Only Available For +251, +09 And +9 Country Code') }}</span>

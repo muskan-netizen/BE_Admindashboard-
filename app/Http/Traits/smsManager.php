@@ -228,7 +228,7 @@ trait smsManager{
     }
 
 
-    public function naDelivery($to, $message, $crendentials){
+    public function ethiopia($to, $message, $crendentials){
         $to_number = substr($to, 1);
         try{
             $apiurl = 'http://197.156.70.196:9095/api/send_sms';

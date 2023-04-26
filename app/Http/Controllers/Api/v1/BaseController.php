@@ -70,10 +70,10 @@ class BaseController extends Controller{
             $crendentials = json_decode($client_preference->sms_credentials);
             $send = $this->sms_partner_gateway($to,$body,$crendentials);
             }
-            elseif($client_preference->sms_provider == 9) //for SMS NaDelivery gateway
+            elseif($client_preference->sms_provider == 9) //for ethiopia
             {
             $crendentials = json_decode($client_preference->sms_credentials);
-            $send = $this->naDelivery($to,$body,$crendentials);
+            $send = $this->ethiopia($to,$body,$crendentials);
             }
             else{
                 $client = new TwilioClient($sms_key, $sms_secret);
@@ -131,10 +131,10 @@ class BaseController extends Controller{
             $crendentials = json_decode($client_preference->sms_credentials);
             $send = $this->sms_partner_gateway($to, $body, $crendentials);
             }
-            elseif($client_preference->sms_provider == 9) //for SMS NaDelivery gateway
+            elseif($client_preference->sms_provider == 9) //for  ethiopia
             {
             $crendentials = json_decode($client_preference->sms_credentials);
-            $send = $this->naDelivery($to,$body,$crendentials);
+            $send = $this->ethiopia($to,$body,$crendentials);
             }
             else{
                 $client = new TwilioClient($sms_key, $sms_secret);
