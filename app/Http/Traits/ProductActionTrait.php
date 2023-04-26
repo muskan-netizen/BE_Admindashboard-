@@ -189,9 +189,12 @@ trait ProductActionTrait{
                         $title = $value->translation->first() ? $value->translation->first()->title : $value->sku;
                         $image_url = $value->media->first() ? $value->media->first()->image->path['proxy_url'] . $p_dim . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                         $productArray[] = array(
+                            'id' => $value->id,
                             'tag_title' => $products_tag_title??0,
                             'image_url' => $image_url,
                             'sku' => $value->sku,
+                            'variant' => $value->variant,
+                            'media' => $value->media,
                             'title' => Str::limit($title, 18, '..'),
                             'url_slug' => $value->url_slug,
                             'averageRating' => number_format($value->averageRating, 1, '.', ''),
