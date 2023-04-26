@@ -327,7 +327,7 @@ trait ProductActionTrait{
                 $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
 
             }
-            if($where!=='all'){
+            if($where!=='all' && $where!=='on_sale'){
                 
                     if($where =='single_category_products' || $where == 'selected_products' || $where == 'popular_products' || $where == 'top_rated_products' ||  $where == 'recent_viewed'){
                         $single_category_product_ids = $this->getProductsId($where);
@@ -343,12 +343,16 @@ trait ProductActionTrait{
                         $completeWhere = ' AND `products`.'.$where.' = 1';
                     }
             }
+            $whereComparePriceNotNull = '';
+            if($where == 'on_sale'){
+                $whereComparePriceNotNull = ' and `product_variant`.`compare_at_price` > 0  ';
+            }
             //Check product of selected category type
             $whereProductType = '';
             $categoryTypesArray = @getServiceTypesCategory($type);
             if(!empty($categoryTypesArray)){
                 $categoryTypesArray = implode(',',$categoryTypesArray);
-                $whereProductType = ' and `categories`.`type_id`  IN ('.$categoryTypesArray.')';
+                $whereProductType = ' and `categories`.`type_id`  IN ('.$categoryTypesArray.') ';
             }
 
             $raw_query = "SELECT 
@@ -410,7 +414,7 @@ trait ProductActionTrait{
                     `products`.`deleted_at` IS NULL 
                         AND `vendors`.`status` = 1 
                         AND `products`.`is_live` = 1
-
+                        $whereComparePriceNotNull
                         $completeWhere
                                     
                         $vendorWhereIN 
