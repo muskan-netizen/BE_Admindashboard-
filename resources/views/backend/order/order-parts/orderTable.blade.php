@@ -394,12 +394,12 @@
                                 </li>
                             @endif
 
-                            @if ($order->taxable_amount > 0 || $order->taxable_amount < 0)
+                       {{--     @if ($order->taxable_amount > 0 || $order->taxable_amount < 0)
                                 <li class="d-flex align-items-center justify-content-between">
                                     <label class="m-0">{{ __('Tax') }}</label>
                                     <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($order->taxable_amount) }}</span>
                                 </li>
-                            @endif
+                            @endif--}}
 
                             {{-- need to check --}}
 
