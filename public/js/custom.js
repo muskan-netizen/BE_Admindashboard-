@@ -4940,9 +4940,9 @@ $(document).ready(function () {
             case 52:
                 paymentViaSkipCash('',payment_option_id,'');
                 break;
-            // case 55:
-            //     paymentViaOboPay('', payment_option_id);
-            // break;
+            case 55:
+                paymentViaOboPay('', payment_option_id);
+            break;
 
         }
 
@@ -5465,6 +5465,7 @@ $(document).ready(function () {
             break;
             case '55':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                // var order = 111111;
                 if (order != '') {
                     paymentViaOboPay(address_id, payment_option_id, order);
                 }
@@ -5710,9 +5711,9 @@ $(document).ready(function () {
                     paymentNmipay('', payment_option_id,'',cardJson);
                 }
                 break;
-                // case 55:
-                //     paymentViaOboPay('', payment_option_id);
-                // break;
+                case 55:
+                    paymentViaOboPay('', payment_option_id);
+                break;
         }
     }
 

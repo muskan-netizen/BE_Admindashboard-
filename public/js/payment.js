@@ -3161,17 +3161,28 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
         let cartElement = $("input[name='cart_total_payable_amount']");
         let walletElement = $("input[name='wallet_amount']");
         let ajaxData = {};
-        if (cartElement.length > 0) {
+        console.log(path.indexOf("wallet") !== -1);
+        if (path.indexOf("cart") !== -1) {
+            payment_from = 'cart';
             total_amount = cartElement.val();
-            tip = tipElement.val();
-            ajaxData.tip = tip;
-        } else if (walletElement.length > 0) {
-            total_amount = walletElement.val();
         }
+        else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            payment_from = 'wallet';
+        }
+        // if (cartElement.length > 0) {
+        //     total_amount = cartElement.val();
+        //     tip = tipElement.val();
+        //     ajaxData.tip = tip;
+        // } else if (walletElement.length > 0) {
+        //     total_amount = walletElement.val();
+        // }
+
         ajaxData.amount       = total_amount;
-        ajaxData.returnUrl    = path;
+        // ajaxData.returnUrl    = path;
         ajaxData.cancelUrl    = path;
-        ajaxData.order_number = order.order_number;
+        ajaxData.order_number = order.order_number;  // order.order_number
+        ajaxData.payment_from = payment_from;
 
         $.ajax({
             type: "POST",

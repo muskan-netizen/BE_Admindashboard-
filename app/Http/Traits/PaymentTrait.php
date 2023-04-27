@@ -15,7 +15,7 @@ trait PaymentTrait{
 
         }elseif($type=='wallet')
         {
-            $paymentOptions = ['paypal','azul', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash', 'dpo','openpay','userede','upay','conekta','telr','khalti','plugnpay','nmi','yappy','skip_cash'];
+            $paymentOptions = ['paypal','azul', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash', 'dpo','openpay','userede','upay','conekta','telr','khalti','plugnpay','nmi','yappy','skip_cash','obo'];
 
         }elseif($type=='pickup_delivery')
         {

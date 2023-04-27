@@ -169,6 +169,7 @@ Route::group(['middleware' => ['domain']], function () {
 
     // obo-pay
     Route::post('payment/obo','Front\OboPaymentController@beforePayment')->name('obo.pay');
+    Route::get('webhook/obo','Front\OboPaymentController@webhook')->name('webhook.obo.pay');
 
 	Route::post('checkVendorPincode','Front\PincodeController@checkVendorPincode')->name('pincode.checkVendorPincode');
 	Route::get('getShippingMethod','Front\PincodeController@getShippingMethod')->name('pincode.getShippingMethod');
