@@ -2177,11 +2177,72 @@ $(document).on("click","#create_bid", async function(){
     var tags = $(this).attr('data-tags');
     let OrderId = null;
     var $i = 0;
+
+    var time_zone = (Intl.DateTimeFormat().resolvedOptions().timeZone);
+        var schedule_datetime = '';
+        if($(this).data('rel') =='pickup_later'){
+            let temp_schedule_datetime = $('#schedule_datetime').val();
+            if(!temp_schedule_datetime){
+                $('#schedule_datetime_main_div').show();
+                return false;
+            }
+            schedule_datetime = moment(temp_schedule_datetime).format('YYYY-MM-DD HH:mm');
+        }
+        
+        var tasks = [];
+        var tasks2 = [];
+
+        let schedule_datetimeset = $('#schedule_date').val();
+        if(schedule_datetimeset != undefined && schedule_datetimeset != 0){
+            schedule_datetime = moment(schedule_datetimeset).format('YYYY-MM-DD HH:mm');
+            var task_type = 'schedule';
+        }
+        else{
+            var task_type = 'now';
+        }
+        if(time_zone != undefined || time_zone.length != 0){
+            time_zone = time_zone;
+        }
+
+        var pickup_location_names = $('input[name="pickup_location_name[]"]').map(function(){return this.value;}).get();
+        var destination_location_names = $('input[name="destination_location_name[]"]').map(function(){return this.value;}).get();
+        var pickup_location_latitudes = $('input[name="pickup_location_latitude[]"]').map(function(){return this.value;}).get();
+        var pickup_location_longitudes = $('input[name="pickup_location_longitude[]"]').map(function(){return this.value;}).get();
+        var destination_location_latitudes = $('input[name="destination_location_latitude[]"]').map(function(){return this.value;}).get();
+        var destination_location_longitudes = $('input[name="destination_location_longitude[]"]').map(function(){return this.value;}).get();
+
+        $(pickup_location_latitudes).each(function(index, latitude) {
+            var sample_array = {};
+            sample_array.barcode = null;
+            sample_array.task_type_id = 1;
+            sample_array.post_code = null;
+            sample_array.short_name = null;
+            sample_array.latitude = latitude;
+            sample_array.appointment_duration = null;
+            sample_array.address = pickup_location_names[index];
+            sample_array.longitude = pickup_location_longitudes[index];
+            tasks.push(sample_array);
+            tasks2.push(sample_array);
+        });
+
+        $(destination_location_latitudes).each(function(index, latitude) {
+            var sample_array = {};
+            sample_array.barcode = null;
+            sample_array.task_type_id = 2;
+            sample_array.post_code = null;
+            sample_array.short_name = null;
+            sample_array.latitude = latitude;
+            sample_array.appointment_duration = null;
+            sample_array.address = destination_location_names[index];
+            sample_array.longitude = destination_location_longitudes[index];
+            tasks.push(sample_array);
+        });
+
     await $.ajax({
         type: "POST",
         dataType: 'json',
         url: create_bid_url,
-        data : {product_id, vendor_id, requested_price,min_requested_price,max_requested_price,tags},
+        data : {product_id, vendor_id, requested_price,min_requested_price,max_requested_price,tags,tasks},
         success: function(response) {
             if(response.status == 200){
                 $("#create_bid_btns").hide();
