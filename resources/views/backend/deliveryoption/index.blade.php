@@ -511,7 +511,7 @@
                             <div class="col-md-6">
                                 <div class="form-group mb-0">
                                     <label for="dunzo_app_url" class="mr-3">{{ __("App URL") }}</label>
-                                    <input type="text" name="app_url" id="dunzo_app_url" class="form-control" value="{{$app_url}}" >
+                                    <input type="text" name="app_url" id="dunzo_app_url" class="form-control" value="{{$app_url}}" readonly>
                                 </div>
                             </div>
                             <div class="col-md-6">
