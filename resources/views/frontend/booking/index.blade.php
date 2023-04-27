@@ -760,6 +760,18 @@ input[type=number]::-webkit-outer-spin-button {
                         <div class="col-6 mb-2 text-right" id="distance"><%= result.distance %> {{__($client_preference_detail->distance_unit_for_time)}}</div>
                         <div class="col-6 mb-2">{{__('Duration')}}</div>
                         <div class="col-6 mb-2 text-right" id="duration"><%= result.duration %> {{__('mins')}}</div>
+                        <% if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){ %>
+                            <div class="col-6 mb-2">{{__('Subscription Discount')}}</div>
+                            <div class="col-6 mb-2 text-right" id="subscription-percent"><%= result.subscription_percent_value+'%' %></div>
+                            <input type="hidden" id="subscription-percent-h" value="<%= result.subscription_percent_value %>">
+                            <div class="col-6 mb-2"><p class="total_amt m-0">{{__('Amount Payable')}}</p></div>
+                            <div class="col-6 mb-2 text-right" id="discount"><p class="total_amt m-0" id="subscription-amout">{{Session::get('currencySymbol')}}<%= result.subscription_discount %></p></div>
+                            <input type="hidden" id="subscription-amout-h" value="<%= result.subscription_discount %>">
+                        <% } %>
+                        <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>
+                            <div class="col-6 mb-2">Loyalty</div>
+                            <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved %></div>
+                        <% } %>
                     </div>
                 </div>
             </div>
@@ -821,16 +833,27 @@ input[type=number]::-webkit-outer-spin-button {
             </div> --}}
         </script>
 
+        <div class="payment-promo-container p-2 d-none" id="paymentMethods">
+            <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal_bid" type='bid'>
+                <span id="payment_type_bid">
+                    <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
+                </span>
+                <i class="fa fa-angle-down" aria-hidden="true"></i>
+            </h4>
+        </div>
+
         <script type="text/template" id="driver_biding_list">
             <div>
                 <% _.each(results, function(result, key){%>
 
                     <div class="driver_info">
-                        <img src="https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/Clientlogo/642eb4fa0a32d.png" alt="">
+                        <img src="<%=result.driver_image%>" alt="">
                         <div class="user-info">
                             <h4><%=result.driver_name%></h4>
                             <p>Price<span>{{Session::get('currencySymbol')}} <%=parseFloat(result.bid_price).toFixed(2)%></span></p>
-                            <button class="btn-solid btn" type="button" id="accept_driver_bid" data-bid_id="<%=result.id%>">Accept</button>
+                            {{-- <button class="btn-solid btn" type="button" id="accept_driver_bid" data-bid_id="<%=result.id%>">Accept</button> --}}
+                            <button class="btn btn-solid w-100" id="pickup_now_bid" data-payment_method="1" data-product_id="<%= product_id %>" data-driver_id="<%= result.driver_id %>" data-bid_id="<%=result.id%>" data-coupon_id =""  data-subscriptionPayableAmount ="" data-vendor_id="<%= vendor_id %>" data-amount="<%= result.bid_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Accept')}}</button>
+
                         </div>
                     </div>
 
@@ -1018,7 +1041,7 @@ input[type=number]::-webkit-outer-spin-button {
             <div class="modal-footer d-block text-center">
                 <div class="row">
                     <div class="col-sm-12 p-0 d-flex flex-fill">
-                        <button type="button" class="btn btn-solid ml-1 select_payment_option_done">{{__('Done')}}</button>
+                        <button type="button" class="btn btn-solid ml-1 select_payment_option_done" data-type="<%= type %>">{{__('Done')}}</button>
                     </div>
                 </div>
             </div>
@@ -1200,7 +1223,6 @@ input[type=number]::-webkit-outer-spin-button {
     </div>
  </div>
 
-
     <!-- Paymentoption Modal -->
     <div class="modal fade payment-modal payment-modal-width" id="payment_modal" data-backdrop="static"
         data-keyboard="false" tabindex="-1" aria-labelledby="payment_modalLabel" aria-hidden="true">
@@ -1220,6 +1242,23 @@ input[type=number]::-webkit-outer-spin-button {
         </div>
     </div>
 
+    <div class="modal fade payment-modal payment-modal-width" id="payment_modal_bid" data-backdrop="static"
+    data-keyboard="false" tabindex="-1" aria-labelledby="payment_modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header pb-0">
+                <h5 class="modal-title" id="payment_modalLabel">{{ __('Select Payment Method') }}</h5>
+                <button type="button" class="close right-top" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body booking_mayment_method">
+                {{-- <h4 class="d-flex align-items-center justify-content-between mb-2 mt-3 px-3 select_cab_payment_method" data-payment_method="1"><span><i class="fa fa-money mr-3" aria-hidden="true"></i> {{__('Cash')}}</span></h4>
+            <h4 class="d-flex align-items-center justify-content-between mb-2 mt-3 px-3 select_cab_payment_method" data-payment_method="2"><span><i class="fa fa-money mr-3" aria-hidden="true"></i> {{__('Wallet/Card')}}</span></h4> --}}
+            </div>
+        </div>
+    </div>
+</div>
     <!-- Select Payment Option -->
     <div class="modal fade select-payment-option payment-modal-width" id="select_payment_option" data-backdrop="static"
         data-keyboard="false" tabindex="-1" aria-labelledby="select_payment_optionLabel" aria-hidden="true">

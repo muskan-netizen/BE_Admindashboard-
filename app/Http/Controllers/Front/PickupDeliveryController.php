@@ -460,7 +460,7 @@ class PickupDeliveryController extends FrontController{
                 }
             }
         }catch(\Exception $e){
-
+            return $e->getMessage();
         }
     }
     # check if last mile delivery on
@@ -960,6 +960,7 @@ class PickupDeliveryController extends FrontController{
                     'no_seats_for_pooling' => (isset($request->is_cab_pooling) && $request->is_cab_pooling== 1 && isset($request->no_seats_for_pooling))?$request->no_seats_for_pooling:0,
                     'is_cab_pooling' => isset($request->is_cab_pooling)?$request->is_cab_pooling:0,
                     'available_seats' => $product->seats_for_booking,
+                    'driver_id' => $request->driver_id ?? null,
                 ];
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
