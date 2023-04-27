@@ -71,6 +71,7 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->chat_button = (int) $getAdditionalPreference['chat_button'];
             $homeData['profile']->preferences->call_button = (int) $getAdditionalPreference['call_button'];
             $homeData['profile']->preferences->is_user_kyc_for_registration = (int) $getAdditionalPreference['is_user_kyc_for_registration'];
+            $homeData['profile']->preferences->rating_check = $preferences->preferences->rating_check;
             //dd($homeData['profile']);
 
 

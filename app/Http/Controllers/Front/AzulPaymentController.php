@@ -113,7 +113,7 @@ class AzulPaymentController extends FrontController
 
         // //\Log::info(json_encode($request->all()));
         $dataResponse = $this->payWithCard($request->all());
-        //\Log::info(json_encode($dataResponse));
+       //\Log::info(json_encode($dataResponse));
         // $dataResponse = json_decode($responsePay);
         if ($dataResponse['ok'] === false && $this->mode) {
             $response['status'] = 'Fail';

@@ -688,7 +688,6 @@ if (!function_exists('showSlot')) {
                     ->get();
         }
 
-
         // check if vendor has added slots. if not added then no need to execute this.
         if (isset($slots) && count($slots)>0) {
             $min[] = '';
@@ -1841,12 +1840,21 @@ if (!function_exists('getDaysArrayBetweenTwoDates')) {
 
 if( !function_exists('get_file_path') ) {
     function get_file_path($url,$type="FILL_URL",$height="260",$width="260")  {
+        
         $img = 'default/default_image.png';
       if(!empty($url)){
         $img = $url;
       }
       $ex = checkImageExtension($img);
-      $values =  \Config::get('app.'.$type);
+      $return_url = $values =  \Config::get('app.'.$type);
+
+      $img = str_replace(' ', '', $img);
+      if (substr($img, 0, 7) == "http://" || substr($img, 0, 8) == "https://"){
+        $return_url  = $values.$height.'/'.$width.\Config::get('app.IMG_URL2').'/'.$img;
+      } else {
+        $return_url  = $values.$height.'/'.$width.\Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+      }
+   
       //pr($values);
     //   $img = 'default/default_image.png';
     //   if(!empty($value)){
@@ -1858,7 +1866,8 @@ if( !function_exists('get_file_path') ) {
     //   $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
     //   $values['image_fit'] = \Config::get('app.FIT_URl');
     //   $values['image'] = $value;
-      return $values.$height.'/'.$width.\Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+      //return $values.$height.'/'.$width.\Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+      return   $return_url  ;
     }
 }
 
@@ -1876,5 +1885,38 @@ if (!function_exists('getUserToken')) {
             }
         } 
             return $data;
+    }
+}
+
+if (!function_exists('getOnDemandPricingRule')) {    
+    /**
+     * getOnDemandPricingRule
+     *
+     * @param  mixed $vendorType = user selected vendor mode 
+     * @param  mixed $userSelection =  user selected pricing geting from vendor or freelancer
+     * @param  mixed $is_service_product_price_from_dispatch custoom mode selecter by admin 
+     * @param  mixed $is_service_price_selection custoom mode selecter by admin  $is_service_product_price_from_dispatch = 0,$is_service_price_selection = 0,
+     * @return void
+     */
+    function getOnDemandPricingRule($vendorType = "on_demand",$userSelection = "vendor",$additionalPreference)
+    {
+       
+        $is_service_product_price_from_dispatch = @$additionalPreference['is_service_product_price_from_dispatch'] ?? 0;
+        $is_service_price_selection             = @$additionalPreference['is_service_price_selection'] ?? 0;
+        $return['is_price_from_freelancer'] = 0;
+        $return['is_ondemand_multi_pricing'] = 0;
+            $value = 0;
+            if(($vendorType == "on_demand") && ($is_service_product_price_from_dispatch ==1 )){
+                $return['is_price_from_freelancer'] =1;
+                if($is_service_price_selection ==1 ){
+                    $return['is_ondemand_multi_pricing'] = 1;
+                    if($userSelection =='freelancer'){
+                        $return['is_price_from_freelancer'] =1;
+                    }else{
+                        $return['is_price_from_freelancer'] =0;
+                    }
+                }
+            }
+            return $return;
     }
 }

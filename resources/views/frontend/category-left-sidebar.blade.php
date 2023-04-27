@@ -1,6 +1,10 @@
  <!--- Left Sidebar filters -->
- <aside class="side_fillter mt-2">
-
+ <aside class="side_fillter">
+                        <h5 class="title-border text-right">
+                            <span class="filter-back d-lg-none d-inline-block">
+                                <i class="fa fa-angle-left" aria-hidden="true"></i> {{__('Back')}}
+                            </span>
+                        </h5>
 @if(@$category->type_id != 13)
     <div class="col-12 custom_filtter mt-3 mb-3">
         <select name="order_type" id='order_type' class="form-control sortingFilter p-1 mb-0">

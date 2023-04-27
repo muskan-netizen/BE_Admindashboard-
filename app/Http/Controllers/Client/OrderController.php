@@ -573,6 +573,8 @@ class OrderController extends BaseController
             //}
             if(!empty($order->total_other_taxes)){
                 $order->total_other_taxes_amount  =   (float) array_sum(explode(":", $order->total_other_taxes));
+            }else{
+                $order->total_other_taxes_amount = $order->taxable_amount;
             }
             
             foreach ($order->vendors as $vendor) {

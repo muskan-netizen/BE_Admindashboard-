@@ -5138,7 +5138,8 @@ input.form-control.pac-target-input.gm-err-autocomplete {
     color: #c2c2c2;
     font-size: 14px;
     font-weight: 400;
-    width: 100px
+    /* width: 100px; */
+    width: max-content;
 }
 
 .step-order p {
