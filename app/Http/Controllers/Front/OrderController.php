@@ -2674,7 +2674,7 @@ class OrderController extends FrontController
             $user = User::find($user_id);
         }
         foreach ($order_vendors as $ov) {
-            //// Log::info($ov);
+          Log::info($ov);
             //// Log::info($ov->order_id);
             $request = $ov;
 
@@ -2804,7 +2804,6 @@ class OrderController extends FrontController
         $is_place_order_delivery_zero = getAdditionalPreference([
             'is_place_order_delivery_zero'
         ])['is_place_order_delivery_zero'];
-        // Create Shipping place order request for Dunzo
         $checkdeliveryFeeAdded = OrderVendor::where([
             'order_id' => $request->order_id,
             'vendor_id' => $request->vendor_id
