@@ -342,7 +342,7 @@
             </div><!-- Social Logins title end -->
         </div>
     </div>
-    
+
     <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
         <input type="hidden" name="social_login" id="social_login" value="1">
         @csrf
@@ -685,6 +685,17 @@
                         <button class="btn btn-info d-block" type="submit"> {{ __('Save') }} </button>
                     </div>
                     <p class="sub-header">{{ __("View and update your SMS Gateway and it's API keys.") }}</p>
+                    <div class="d-flex align-items-center justify-content-between mt-3 mb-2">
+                        <h5 class="font-weight-normal m-0">{{ __('Send Static Otp ') }}</h5>
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input"
+                                id="cancelOrderCustomSwitch_static_otp"
+                                name="static_otp"
+                                {{ (isset( $sms_crendential->static_otp ) && $sms_crendential->static_otp == 1) ? 'checked' : '' }}>
+                            <label class="custom-control-label"
+                                for="cancelOrderCustomSwitch_static_otp"></label>
+                        </div>
+                    </div>
                     <div class="row mb-0">
                         <div class="col-12">
                             <div class="form-group mb-2">
@@ -894,6 +905,38 @@
                                 </div>
                             </div>
                         </div>
+
+                         <!-- For Ethiopia -->
+                         <div class="sms_fields row mx-0" id="ethiopia_fields"
+                         style="display : {{ $preference->sms_provider == 9  ? 'flex' : 'none' }};">
+                         <div class="col-12">
+                             <span  class="text-danger">{{ __('Only Available For +251, +09 And +9 Country Code') }}</span>
+                             <div class="form-group mb-2">
+                                 <label for="sms_username">{{ __('Username') }}</label>
+                                 <input type="text" name="sms_username" id="sms_username" placeholder=""
+                                     class="form-control" value="{{ old('sms_username', $sms_crendential->sms_username ?? '') }}">
+                                 @if ($errors->has('sms_username'))
+                                     <span class="text-danger" role="alert">
+                                         <strong>{{ $errors->first('sms_username') }}</strong>
+                                     </span>
+                                 @endif
+                             </div>
+                         </div>
+                         <div class="col-12">
+                             <div class="form-group mb-2">
+                                 <label for="sms_secret">{{ __('Password') }}</label>
+                                 <input type="password" name="sms_password" id="sms_password" placeholder=""
+                                     class="form-control"
+                                     value="{{ old('sms_password', $sms_crendential->sms_password ?? '') }}">
+                                 @if ($errors->has('sms_password'))
+                                     <span class="text-danger" role="alert">
+                                         <strong>{{ $errors->first('sms_password') }}</strong>
+                                     </span>
+                                 @endif
+                             </div>
+                         </div>
+                     </div>
+
                     </div>
                 </div>
             </form><!-- SMS Configuration end -->
@@ -1274,7 +1317,7 @@
 
     </div>
 
-   
+
     <div class="row">
         {{-- hubspot form --}}
         <div class="col-xl-4 col-lg-4 mb-3">
@@ -1388,7 +1431,7 @@
                                 @if ($getAdditionalPreference['add_to_cart_btn'] == 1) value="1" @else value="0" @endif
                                 name="add_to_cart_btn" id="add_to_cart_btn" />
                         </div>
-                        
+
                         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                             <label for="chat_button_switch" class="mr-2 mb-0">{{ __('Chat Button') }}<small
                                     class="d-block pr-5">{{ __('Enable to allow customers to chat button.') }}</small></label>
@@ -1401,7 +1444,7 @@
                                 @if ($getAdditionalPreference['chat_button'] == 1) value="1" @else value="0" @endif
                                 name="chat_button" id="chat_button" />
                         </div>
-                        
+
                         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                             <label for="call_button_switch" class="mr-2 mb-0">{{ __('Call Button') }}<small
                                     class="d-block pr-5">{{ __('Enable to allow customers to chat button.') }}</small></label>
@@ -1429,7 +1472,7 @@
 
                         </div>
                     </div>
-                       
+
 
 
                 </div><!-- HubSpot card end -->
@@ -1470,7 +1513,7 @@
                                 <input type="hidden"
                                     @if (@$getAdditionalPreference['is_postpay_enable'] == 1) value="1" @else value="0" @endif
                                     name="is_postpay_enable" id="is_postpay_enable" /> -->
-                            </div>  
+                            </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group mb-0 d-flex switchery-demo">
@@ -1482,8 +1525,8 @@
                                 <input type="hidden"
                                     @if (@$getAdditionalPreference['is_order_edit_enable'] == 1) value="1" @else value="0" @endif
                                     name="is_order_edit_enable" id="is_order_edit_enable" />
-                            </div>  
-                        
+                            </div>
+
                             <div class="row mt-2" id="edit_order_time_limit_div" style="display:@if (@$getAdditionalPreference['is_order_edit_enable'] == 1) @else none @endif;">
                                 <div class="col-8">
                                     <label for="" class="mr-3">{{ __('Disable Order Edit before (Hours)') }}</label>
@@ -1533,7 +1576,7 @@
                         </div>
                     </div>
                 </div>
-            
+
             </form>
         </div><!-- Post Pay Card end -->
     </div>
@@ -1583,14 +1626,14 @@
                                     $accounting_status = (isset($accounting) && !empty($accounting)) ? $accounting->status : 0;
                                     $creds = (isset($accounting) && !empty($accounting)) ? json_decode($accounting->credentials, true) : [];
                                 @endphp
-                                
+
                                 <div class="row">
                                     <div class="col-12">
                                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                                         <label for="xero_enable_switch" class="mr-3">{{ __("Xero Configuration") }} <br/><small>{{__('View and update your Xero Keys')}}</small></label>
                                         <input type="checkbox" data-plugin="switchery" name="xero_status" id="xero_enable_switch" class="form-control" data-color="#43bee1" @if(($accounting_status == '1')) checked='checked' @endif>
                                     </div>
-                                        
+
                                         <div class="mt-2 xeroFields" @if( $accounting_status != 1) style="display:none" @endif>
                                         <div class="row">
                                             <div class="col-12">
@@ -1697,7 +1740,7 @@
                 </div>
             </form>
         </div>
-        @if (isset($preference) && $preference->subscription_mode == '1') 
+        @if (isset($preference) && $preference->subscription_mode == '1')
             <div class="col-xl-4 col-lg-4 h-100">
                 <div class="page-title-box">
                     <h4 class="page-title text-uppercase">{{  getNomenclatureName('Vendors', true). __(' Subscription rule') }}</h4>
@@ -1762,7 +1805,7 @@
                                         {{ __('Save') }} </button>
                                 </label>
                             </div>
-                            
+
                             @if ($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry')
 
                             <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
@@ -1772,7 +1815,7 @@
                                 <input type="hidden"  @if($getAdditionalPreference['is_influencer_refer_and_earn'] == 1) value="1" @else value="0" @endif  name="is_influencer_refer_and_earn"  id="is_influencer_refer_and_earn"/>
                             </div>
 
-                                
+
                                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                                         <label for="celebrity_check" class="mr-2 mb-0"> {{ __('Refer and Earn by Influencer') }}
                                             <small
@@ -1781,11 +1824,11 @@
                                                 name="celebrity_check" id="celebrity_check" class="form-control"
                                                 data-color="#43bee1"
                                                 @if (isset($preference) && $preference->celebrity_check == '1') checked='checked' @endif></span>
-                                                
+
                                     </div>
 
-                                    
-                                
+
+
                             @endif
 
                         </div>
@@ -1801,7 +1844,7 @@
 
 
     <div class="row">
-            
+
         <div class="col-md-12">
             <!-- Custom Mods start -->
             <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
@@ -1816,7 +1859,7 @@
                         <div class="row align-items-start">
                           @include('backend.setting.customMode')
                         </div>
-                       
+
 
                     </div>
                 </div>
@@ -2607,7 +2650,7 @@
 
         if (need_inventory_service.length > 0) {
             need_inventory_service[0].onchange = function() {
-                if ($('#need_inventory_service:checked').length != 1) 
+                if ($('#need_inventory_service:checked').length != 1)
                 {
                     $('.inventoryFields').hide();
                     var is_order_edit_enable = $('#is_order_edit_enable_switch');
@@ -2752,7 +2795,7 @@
         if(xero_enable_switch.length > 0){
             xero_enable_switch[0].onchange = function() {
 
-                if ($('#xero_enable_switch:checked').length != 1) 
+                if ($('#xero_enable_switch:checked').length != 1)
                 {
                     $("#xero_client_id").val('');$("#xero_secret_id").val('');
                     $('.xeroFields').hide();
@@ -2767,7 +2810,7 @@
         if(square_enable_status_switch.length > 0){
             square_enable_status_switch[0].onchange = function() {
 
-                if ($('#square_enable_status_switch:checked').length != 1) 
+                if ($('#square_enable_status_switch:checked').length != 1)
                 {
                     $("#xero_client_id").val('');$("#xero_secret_id").val('');
                     $('.squareFields').hide();

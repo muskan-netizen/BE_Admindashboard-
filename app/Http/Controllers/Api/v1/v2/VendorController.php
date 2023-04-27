@@ -2842,7 +2842,6 @@ class VendorController extends BaseController{
                     $products = $products->orderBy('product_translations.title', 'asc');
                 }
                 $products = $products->groupBy('products.id')->paginate($limit, $page);
-           
                 $response['products'] = $products ?? [];
            
             return response()->json(['data' => $response]);

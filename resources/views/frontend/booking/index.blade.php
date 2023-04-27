@@ -370,7 +370,7 @@ input[type=number]::-webkit-outer-spin-button {
 
                     <div class="location-box check-pick-first">
                         <div class="where-to-go">
-                            <div class="title title-36">{{ __('Where can we pick you up?') }}</div>
+                            <div class="title title-36">{{ __(getDynamicTypeName('Where can we pick you up?')) }}</div>
                         </div>
                     </div>
                     <div class="location-box check-dropoff-secpond" style="display:none">
@@ -381,7 +381,7 @@ input[type=number]::-webkit-outer-spin-button {
                                 </div>
                             </li>
                             <li class="d-flex dots where-to-first">
-                                <div class="title title-36 pr-3 position-relative">{{ __('Where To?') }}</div>
+                                <div class="title title-36 pr-3 position-relative">{{ __(getDynamicTypeName('Where To?')) }}</div>
                             </li>
                             <li class="d-flex dots where-to-second" style="display:none !important;">
                                 <div class="title title-24 position-relative edit-dropoff"> {{ __('To') }} - <span

@@ -49,6 +49,7 @@ class CategoryController extends FrontController{
         'allParentsAccount'])
         ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products', 'parent_id', 'sub_cat_banners')
         ->where('slug', $slug)->firstOrFail();
+       
         $category->translation_name = ($category->translation->first()) ? $category->translation->first()->name : $category->slug;
         foreach($category->childs as $key => $child){
             $child->translation_name = ($child->translation->first()) ? $child->translation->first()->name : $child->slug;
@@ -169,7 +170,7 @@ class CategoryController extends FrontController{
                 return view('frontend.booking.index')->with(['maxPrice'=>$maxPrice,'clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders, 'is_cab_pooling' => $getAdditionalPreference['is_cab_pooling'], 'is_bid_ride_enable' => $getAdditionalPreference['is_bid_ride_enable'],'is_postpay_enable' => $getAdditionalPreference['is_postpay_enable']]);
             }
         }elseif($page == 'on demand service' || $page == 'appointment'){
-
+         
             $cartDataGet = $this->getCartOnDemand($request);
             if($request->step == 2 && empty($request->addons) && empty($request->dataset)){
                 $addos = 0;

@@ -393,6 +393,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('/setSessionIndex', 'Front\UserhomeController@setSessionIndex')->name('setSessionIndex');
 
 	Route::get('/updateLocation', 'Front\UserhomeController@setHyperlocalAddress')->name('updateLocation');
+	Route::get('/ondemandPricing', 'Front\UserhomeController@setondemandPricingSession')->name('updateLocation');
 	Route::get('/homeTemplateOne', 'Front\UserhomeController@indexTemplateOne')->name('indexTemplateOne');
 	//Route::get('page/driver-registration', 'Front\UserhomeController@driverSignup')->name('page/driver-registration');
 	Route::post('page/driverSignup', 'Front\OrderController@driverSignup')->name('page.driverSignup');

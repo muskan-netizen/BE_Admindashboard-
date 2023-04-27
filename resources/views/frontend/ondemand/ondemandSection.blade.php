@@ -1,13 +1,20 @@
 
 @section('customcss')
 <link defer type="text/css" href="{{asset('css/ondemand.css')}}" rel="stylesheet" id="bs-default-stylesheet" />
+<style>
+.home-serivces .step-indicator .step1 p{
+    width: max-content;
+}   
+</style>
 @endsection
 @php
 $add_to_cart =  route('addToCart') ;
-$additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
+$additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch','is_service_price_selection']);
+$getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'), (@Session::get('onDemandPricingSelected') ?? ''),$additionalPreference);
+
 $is_service_product_price_from_dispatch_forOnDemand = 0;
 $category_type_idForNotShowshPlusMinus = ['12'];
-if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+if($getOnDemandPricingRule['is_price_from_freelancer']==1){
     $is_service_product_price_from_dispatch_forOnDemand =1;
     array_push($category_type_idForNotShowshPlusMinus,8);
 }
@@ -73,6 +80,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                     <!-- Start Conent Wrapper -->
                                     <div id='main-wrapper'  class="@if(app('request')->input('addons') == 1) d-none @endif">
                                                 @foreach ($category->childs as $key => $childs)
+                                               
                                                 @if( in_array($childs->type_id , [8,12]))
 
                                                 <h4><b>{{ $childs->translation_name }}</b></h4>
@@ -87,7 +95,6 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                             @foreach ($childs->products as $data)
 
                                                             @php
-
                                                                 $data->translation_title = (!empty($data->translation->first())) ? $data->translation->first()->title : $data->sku;
                                                                 $data->translation_description = (!empty($data->translation->first())) ? $data->translation->first()->body_html : $data->sku;
                                                                 $data->variant_multiplier = (!empty($clientCurrency)) ? $clientCurrency->doller_compare : 1;
@@ -95,7 +102,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                 $productInquiryCheck = $data->inquiry_only  ; 
                                                                 $redirec = ($data->is_recurring_booking ==1) ? route('productDetail', [@$data->vendor->slug, $data->url_slug]) : 'javascript:void(0)' ;
                                                                 $class = ($data->is_recurring_booking ==1) ? 'add_on_demand_btn' : 'add_on_demand' ;
-                                                                
+                                                                $data->category_type_id = $childs->type_id
                                                             @endphp
 
                                                             <div class="row classes_wrapper no-gutters align-items-center" href="#">
@@ -104,6 +111,31 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                     <div class="productDetails pr-2">
                                                                         <p class="mb-1 ">{!! (!empty($data->translation->first())) ? $data->translation->first()->body_html : $data->sku !!}</p>
                                                                     </div>
+                                                                    
+                                                                </div>
+
+
+
+
+                                                                <div class="col-md-3 col-sm-4 mb-sm-0 mb-3">
+                                                                    <?php $imagePath = $imagePath2 = '';
+                                                                        $mediaCount = count($data->media);
+                                                                        for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
+                                                                            if($i == 0){
+                                                                                $imagePath = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
+                                                                            }
+                                                                            $imagePath2 = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
+                                                                        } ?>
+                                                                    <div class="class_img">
+                                                                        @if($imagePath != '')
+                                                                        <img src="{{$imagePath}}" alt="">
+                                                                        @else
+
+                                                                        @endif
+
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12 ac-royo-btn">
                                                                     <div class="d-flex align-items-center justify-content-between productBookingBtns">
                                                                         @if($productInquiryCheck == 0)
                                                                     
@@ -127,6 +159,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                             @else
                                                                                 <a class="btn btn-solid {{  $class }}" style="display:none;" id="add_button _href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="{{ $redirec }}">Add <i class="fa fa-plus"></i></a>
                                                                             @endif
+
                                                                             @if(
                                                                                 isset($data->category_type_id) && 
                                                                                 ( 
@@ -176,29 +209,6 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
 
                                                                             @endif
                                                                         @endif
-
-                                                                    </div>
-                                                                </div>
-
-
-
-
-                                                                <div class="col-md-3 col-sm-4 mb-sm-0 mb-3">
-                                                                    <?php $imagePath = $imagePath2 = '';
-                                                                        $mediaCount = count($data->media);
-                                                                        for ($i = 0; $i < $mediaCount && $i < 2; $i++) {
-                                                                            if($i == 0){
-                                                                                $imagePath = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
-                                                                            }
-                                                                            $imagePath2 = $data->media[$i]->image->path['proxy_url'].'300/300'.$data->media[$i]->image->path['image_path'];
-                                                                        } ?>
-                                                                    <div class="class_img">
-                                                                        @if($imagePath != '')
-                                                                        <img src="{{$imagePath}}" alt="">
-                                                                        @else
-
-                                                                        @endif
-
                                                                     </div>
                                                                 </div>
 
@@ -279,7 +289,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                     $cartcount = 1;
                                                                 @endphp
                                                             @endif
-                                                                @if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand'))
+                                                                @if($is_service_product_price_from_dispatch_forOnDemand==1)
                                                                 @if($cartcount > 0)
                                                                         <h5 class="my-sm-0 my-3 "></h5>
                                                                         <a class="btn btn-solid float-right"  id="added_button_href{{$data->variant[0]->checkIfInCart['0']['id']}}" data-variant_id = {{$data->variant[0]->id}} data-add_to_cart_url = "{{ $add_to_cart }}" data-vendor_id="{{$data->vendor_id}}" data-product_id="{{$data->id}}" href="javascript:void(0)">{{ __('Added') }}</a>
@@ -442,7 +452,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                         @php
                                          $last_cart_product_id =  $cart_data->id
                                          @endphp
-                                        @if(($cart_data->cateTypeId ==8) && ($additionalPreference['is_service_product_price_from_dispatch'] !=1))
+                                        @if(($cart_data->cateTypeId ==8) && ($is_service_product_price_from_dispatch_forOnDemand !=1))
                                             @if(!empty($cart_data->product->mode_of_service) && $cart_data->product->mode_of_service == 'schedule')
                                             @php
                                                 $productDate = trim(date('Y-m-d', strtotime($cart_data->scheduled_date_time)));

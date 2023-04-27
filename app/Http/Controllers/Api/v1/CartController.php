@@ -724,6 +724,9 @@ class CartController extends BaseController
             $taxRates[$tax->id]=['tax_rate'=>$tax->tax_rate,'tax_amount'=>$tax->tax_amount];
         }
 
+        $client_timezone = DB::table('clients')->first('timezone');
+        $user_timezone = $client_timezone->timezone ?? 'Asia/Kolkata';
+
         $loyalty_amount_saved = 0;
         $subscription_features = array();
         $user_subscription = null;
@@ -740,6 +743,8 @@ class CartController extends BaseController
             //     }
             // }
             $user = User::find($cart->user_id);
+            $user_timezone =  $user->timezone ?? $user_timezone;
+
             $cart->scheduled_date_time = !empty($cart->scheduled_date_time) ? convertDateTimeInTimeZone($cart->scheduled_date_time, $user->timezone, 'Y-m-d\TH:i') : NULL;
             $cart->schedule_pickup = !empty($cart->schedule_pickup) ? convertDateTimeInTimeZone($cart->schedule_pickup, $user->timezone, 'Y-m-d\TH:i') : NULL;
             $cart->schedule_dropoff = !empty($cart->schedule_dropoff) ? convertDateTimeInTimeZone($cart->schedule_dropoff, $user->timezone, 'Y-m-d\TH:i') : NULL;
@@ -789,6 +794,22 @@ class CartController extends BaseController
 
             $delivery_slot_amount = 0;
             foreach ($cartData as $ven_key => $vendorData) {
+
+            $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user_timezone);
+            $vendorData->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime));
+            $slotsRes = getShowSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery');
+
+            $slots = (array)$slotsRes['slots'];
+            // this variable for get slot from dispatc
+            $slotsdate = $slotsRes['date'];
+            $slotcount =count((array)$slots);
+            
+            $vendorData->slotsdate = $slotsdate;
+            $vendorData->slots = $slots;
+            $vendorData->slotsCnt =  $slotcount;
+            // $vendorData->delay_date = date('Y-m-d');
+
+
                 $opt_quantity_price_new = 0.00;
                 $deliver_fee_charges = 0;
                 $total_fixed_fee_tax = 0;
@@ -963,6 +984,8 @@ class CartController extends BaseController
                             }
                         }
                         $prod->product_out_of_stock =  $product_out_of_stock;
+                        $prod->scheduled_date_time =  (($prod->scheduled_date_time !=null)?date('Y-m-d',strtotime(dateTimeInUserTimeZone($prod->scheduled_date_time,$user_timezone))):null);
+
 
                         $price_in_currency = $price_in_doller_compare = $pro_disc = $quantity_price = 0;
 
@@ -1762,15 +1785,17 @@ class CartController extends BaseController
         $delivery = $request->delivery??'delivery';
         //type must be a : delivery , takeaway,dine_in
         $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
-       // $duration = $duration->slot_minutes??'';
-        $slots = showSlot($request->date,$vendorId,$delivery,$duration->slot_minutes, 1, 'pickup'); // Added 1 for pickup
+        $duration = $duration->slot_minutes??'';
+        $slots = showSlot($request->date,$vendorId,$delivery,$duration, 1, 'pickup'); // Added 1 for pickup
         if(count($slots)<=0){
             $slot = [];
         }else{
             $slot = $slots;
         }
 
-        return response()->json($slot);
+        $data = ['data'=>$slots];
+
+        return response()->json($data);
     }
 
     /**
@@ -2004,7 +2029,7 @@ class CartController extends BaseController
                 }else{
                     $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
-                CartProduct::where('id', $request->cart_product_id)->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt]);
+                CartProduct::where('id', $request->cart_product_id)->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt,'schedule_slot' => $request->schedule_time]);
                 DB::commit();
                 return response()->json(['status'=>'Success', 'message'=>'Cart has been scheduled']);
             }
