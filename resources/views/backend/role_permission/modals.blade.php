@@ -1,5 +1,4 @@
-<div id="add-role-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static"
-    data-keyboard="false">
+<div id="add-role-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header border-bottom">
@@ -20,21 +19,11 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="col-md-12 select2">
-                            <div class="form-group" id="nameInput">
-                                {!! Form::label('title', __('Permission'), ['class' => 'control-label']) !!}
-                                {{-- <select class="permissoin-multiple selectTo" name="permission[]" multiple="multiple">
-                                    @foreach ($permissions as $perm)
-                                    <option value="{{$perm->id}}" >{{$perm->name}}</option>
-                                    @endforeach
-                                </select> --}}
-                            </div>
-                        </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit"
-                            class="btn btn-info waves-effect waves-light submitAddSubscriptionForm">{{ __('Submit') }}</button>
+                        <button type="submit" class="btn btn-info waves-effect waves-light submitAddSubscriptionForm">{{ __('Submit') }}</button>
                     </div>
+                </div>
             </form>
         </div>
     </div>

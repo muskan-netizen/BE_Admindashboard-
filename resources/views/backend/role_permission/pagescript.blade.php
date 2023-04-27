@@ -1,10 +1,4 @@
 <script>
-    $('.permissoin-multiple').select2();
-    var table = $('#vendor_payouts_datatable').DataTable({
-        // rowReorder: true,
-        sort:false
-    });
-
     $(document).delegate(".add-role", "click", function(){
         $('.role-name').val('');
         $('.role-id').val('');
@@ -14,10 +8,6 @@
     $(document).on('click', '.edit-role', function(e) {
         var id = $(this).attr('data-id');
         callAjax(id)
-    });
-    
-    $(document).on('click', '.close', function(e) {
-        $(".select2").hide();
     });
 
     $(document).ready(function(){
@@ -34,10 +24,12 @@
     });
 
     function getRolePermission(role_id) {
+        spinnerJS.showSpinner();
         const url = "{{ route('get.role.permission') }}";
         const data = { role_id: role_id };
     
         $.post(url, data, function(response) {
+            spinnerJS.hideSpinner();
             $('#permission-data').html(response.data.permission_html);
         }, 'json');
     }
@@ -47,7 +39,7 @@
         var checkedPermission = $('.access_module:checked').map(function() {
             return $(this).val();
         }).get();
-        const url = "{{ route('save.roles') }}";
+        const url = "{{ route('save.role.permissions') }}";
         const data = { role_id: role_id, checkedPermission:checkedPermission };
         $.post(url, data, function(response) {
             console.log(response.status);
