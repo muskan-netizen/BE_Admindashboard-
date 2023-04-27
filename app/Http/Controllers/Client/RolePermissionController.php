@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Http\Traits\{ApiResponser};
+use Illuminate\Support\Facades\Cache;
 
 class RolePermissionController extends Controller
 {
@@ -111,27 +112,29 @@ class RolePermissionController extends Controller
 
     public function getRolePermission(Request $request){
         try {
+            $cacheKey = 'permissions_by_controller';
+            $permissionsByController = Cache::rememberForever($cacheKey, function () {
+                $permissions = Permission::whereNotNull('controller')->get();
+                return $permissions->groupBy('controller')
+                ->map(function ($permissions) {
+                    return $permissions->map(function ($permission) {
+                        return [
+                            'id' => $permission->id,
+                            'web' => $permission->web,
+                            'name' => $permission->name,
+                            'controller' => $permission->controller,
+                        ];
+                    });
+                })->toArray();
+            });
+        
             $roles = Role::with('permissions')->findOrFail($request->role_id);
-            $permissions = Permission::whereNotNull('controller')->get();
-            $permissionsByController = collect($permissions)
-            ->groupBy('controller')
-            ->map(function ($permissions) {
-                return $permissions->map(function ($permission) {
-                    return [
-                        'id' => $permission->id,
-                        'web' => $permission->web,
-                        'name' => $permission->name,
-                        'controller' => $permission->controller,
-                    ];
-                });
-            })
-            ->toArray();
             $role_has_permission_ids = $roles->permissions->pluck('id')->toArray();
             if ($request->ajax()) {
-                $permission_html = view('backend.role_permission.roleTable')->with([ 'role_has_permission_ids' => $role_has_permission_ids, 'prmArr' => $permissionsByController ])->render();
+                $permission_html = view('backend.role_permission.roleTable', ['role_has_permission_ids' => $role_has_permission_ids,'prmArr' => $permissionsByController])->render();
                 return $this->successResponse(['permission_html' => $permission_html], '', 201);
             }
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             \Log::error('Error: ' . $e->getMessage() . ' in file: ' . $e->getFile() . ' at line: ' . $e->getLine());
             return response()->json(['success' => false, 'message' => 'Something went wrong, please try again later'], 500);
         }
