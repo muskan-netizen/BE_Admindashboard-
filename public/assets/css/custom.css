@@ -597,6 +597,17 @@ div.dataTables_wrapper div.dataTables_processing {
     justify-content: center
 }
 
+
+.module-role tr, td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.module-role tr:nth-child(even) {
+    background-color: #f7f7f7;
+}
+
+
 .tutorial_main_div .radio_new:hover .btn.btn-danger {
     opacity: 1
 }
