@@ -22,37 +22,37 @@ class RevenueController extends Controller
 				->get();
 			return $this->successResponse($order_details, '', 201);
 		} catch (Exception $e) {
-			
+
 		}
 	}
 
 	public function getDashboardDetails(Request $request){
 		try {
 			$validator = Validator::make($request->all(), [
-				'vendor_id' => 'required',	
+				'vendor_id' => 'required',
 			]);
             $vendor_id = $request->vendor_id;
 
-			if ($validator->fails()) {			
+			if ($validator->fails()) {
 				return $this->errorResponse($validator->errors()->first(), 422);
 			}
 
 			$type = $request->type;
             $start_date = $request->start_date;
-            if($start_date){                
+            if($start_date){
                 $from_date = $start_date.' 00:00:00';
             }
 			$end_date = $request->end_date;
-            if($end_date){                
+            if($end_date){
                 $end_date = $end_date.' 23:59:59';
             }
-			
+
             $total_brands = Brand::where('status', 1);
             if($start_date && $end_date){
                 $total_brands->whereBetween('created_at', [$from_date, $end_date]);
             }
             $total_brands = $total_brands->count();
-            /// Vendors count 
+            /// Vendors count
             $total_vendor = Vendor::orderBy('id','desc');
             if (Auth::user()->is_superadmin == 0) {
                 $total_vendor = $total_vendor->whereHas('permissionToUser', function ($query) {
@@ -87,12 +87,8 @@ class RevenueController extends Controller
             }
             $total_categories = $total_categories->where('id', '>', '1')->where('deleted_at', NULL)->count();
             $total_revenue = Order::whereHas('vendors', function($q) use($vendor_id){
-                $q->where('vendor_id', $vendor_id);
-            })
-            ->whereHas('orderStatusVendor', function ($query) {
-                $query->where('order_status_option_id','!=',3);
-            })
-            ->orderBy('id','desc');
+                $q->where('vendor_id', $vendor_id)->where('order_status_option_id','!=',3);
+            })->orderBy('id','desc');
             if (Auth::user()->is_superadmin == 0) {
                 $total_revenue = $total_revenue->whereHas('vendors.vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);
@@ -106,7 +102,7 @@ class RevenueController extends Controller
                 });
             }
             $today_sales = $today_sales->sum('payable_amount');
-            #all pending orders 
+            #all pending orders
             $total_pending_order = OrderVendor::where('order_status_option_id',1);
             if (Auth::user()->is_superadmin == 0) {
                 $total_pending_order = $total_pending_order->whereHas('vendor.permissionToUser', function ($query) {
@@ -200,7 +196,7 @@ class RevenueController extends Controller
                     break;
                     case 'weekly':
                         Carbon::setWeekStartsAt(Carbon::SUNDAY);
-                        $monthly_sales_query->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]); 
+                        $monthly_sales_query->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
                     break;
                     case 'yearly':
                         $monthly_sales_query->whereRaw('YEAR(created_at) = ?', [date('Y')]);
@@ -244,25 +240,25 @@ class RevenueController extends Controller
                 // 'labels' => $labels,
                 // 'series' => $series,
                 // 'markers' => $markers,
-                
-                'today_sales' => $today_sales, 
-                'total_vendor' => $total_vendor, 
-                'total_brands' => $total_brands, 
-                'total_banners' => $total_banners, 
-                'total_revenue' => $total_revenue, 
-                'total_products' => $total_products, 
+
+                'today_sales' => $today_sales,
+                'total_vendor' => $total_vendor,
+                'total_brands' => $total_brands,
+                'total_banners' => $total_banners,
+                'total_revenue' => $total_revenue,
+                'total_products' => $total_products,
                 'return_requests' => $return_requests,
                 'total_categories' => $total_categories,
-                'total_active_order' => $total_active_order, 
-                'total_pending_order' => $total_pending_order, 
-                'total_rejected_order' => $total_rejected_order, 
-                'total_delivered_order' => $total_delivered_order, 
+                'total_active_order' => $total_active_order,
+                'total_pending_order' => $total_pending_order,
+                'total_rejected_order' => $total_rejected_order,
+                'total_delivered_order' => $total_delivered_order,
 				'total_order' => $total_active_order + $total_pending_order + $total_rejected_order + $total_delivered_order
             ];
             return $this->successResponse($response);
 			//return Auth::user();
 		} catch (Exception $e) {
-			
+
 		}
 	}
 }
