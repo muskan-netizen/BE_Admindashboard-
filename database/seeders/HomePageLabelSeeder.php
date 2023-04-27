@@ -217,6 +217,16 @@ class HomePageLabelSeeder extends Seeder
                 'created_at' => Carbon::now(),
             ]);
         }
+
+        $already = HomePageLabel::where('slug', 'ordered_products')->count();
+        if($already == 0){
+            $home_page = HomePageLabel::insertGetId([
+                'title'      => 'Ordered Products',
+                'slug'       => 'ordered_products',
+                'order_by'   => 19,
+                'created_at' => Carbon::now(),
+            ]);
+        }
         
     }
 }

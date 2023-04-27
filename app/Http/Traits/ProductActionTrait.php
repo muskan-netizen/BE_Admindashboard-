@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Traits;
-use App\Models\{ProductRecentlyViewed,WebStylingOption,Product,Category,HomeProduct,ProductCategory,OrderVendorProduct,OrderProductRating, VendorCategory, Vendor, SubscriptionInvoicesVendor};
+use App\Models\{ProductRecentlyViewed,WebStylingOption,Product,Category,HomeProduct,ProductCategory,OrderVendorProduct,OrderProductRating,OrderProduct, VendorCategory, Vendor, SubscriptionInvoicesVendor};
 use Illuminate\Support\Str;
 use Auth;
 use Session;
@@ -670,6 +670,23 @@ trait ProductActionTrait{
                 $vendors = $vendors->inRandomOrder();
             }
             return $vendors->pluck('id')->toArray();
+        }
+        catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    public function getLastProductOrdered()
+    {
+        try 
+        {
+            $user_id = Auth::user()->id;
+            // $user_id = 233;
+            $vendors =  OrderProduct::distinct('product_id')->whereHas('order_vendor', function($q) use ($user_id){
+                $q->where('user_id', $user_id);
+            })->take(10);
+            // ->inRandomOrder();
+            return $vendors->pluck('product_id')->toArray();
         }
         catch (\Exception $e) {
             return [];

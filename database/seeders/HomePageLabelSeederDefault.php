@@ -156,6 +156,16 @@ class HomePageLabelSeederDefault extends Seeder
                 'created_at' => Carbon::now(),
             ]);
         }
+
+        $already = CabBookingLayout::where('slug', 'ordered_products')->count();
+        if($already == 0){
+            $home_page = CabBookingLayout::insertGetId([
+                'title'      => 'Ordered Products',
+                'slug'       => 'ordered_products',
+                'order_by'   => 13,
+                'created_at' => Carbon::now(),
+            ]);
+        }
         
     }
 }
