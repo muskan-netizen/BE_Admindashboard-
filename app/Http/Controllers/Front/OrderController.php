@@ -2674,7 +2674,6 @@ class OrderController extends FrontController
             $user = User::find($user_id);
         }
         foreach ($order_vendors as $ov) {
-          Log::info($ov);
             //// Log::info($ov->order_id);
             $request = $ov;
 
