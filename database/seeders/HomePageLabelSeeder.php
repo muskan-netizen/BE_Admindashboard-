@@ -27,7 +27,7 @@ class HomePageLabelSeeder extends Seeder
             ['title' => 'On Sale',     'slug' => 'on_sale',     'order_by' => 4,     'created_at' => Carbon::now()],
             ['title' => 'Best Sellers',     'slug' => 'best_sellers',     'order_by' => 5,     'created_at' => Carbon::now()],
             ['title' => 'Brands',     'slug' => 'brands',     'order_by' => 6,     'created_at' => Carbon::now()],
-            ['id' => 7,     'title' => 'Pickup Delivery',     'slug' => 'pickup_delivery',     'order_by' => 7,     'is_active' => 0,     'created_at' => Carbon::now()],
+            ['title' => 'Pickup Delivery',     'slug' => 'pickup_delivery',     'order_by' => 7,     'is_active' => 0,     'created_at' => Carbon::now()],
             ['title' => 'Dynamic HTML',     'slug' => 'dynamic_page',     'order_by' => 8,     'created_at' => Carbon::now()],
             ['title' => 'Trending Vendors',     'slug' => 'trending_vendors',     'order_by' => 9,     'created_at' => Carbon::now()],
             ['title' => 'Recent Orders',     'slug' => 'recent_orders',     'order_by' => 10,     'created_at' => Carbon::now()],
