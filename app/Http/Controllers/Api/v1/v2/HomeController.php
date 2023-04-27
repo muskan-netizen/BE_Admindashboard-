@@ -374,6 +374,7 @@ class HomeController extends BaseController
 
 
             $home_page_labels = $home_page_labels->get();
+            
 
             if (count($home_page_labels) == 0)
                 $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
@@ -793,9 +794,10 @@ class HomeController extends BaseController
         if (@$additionalPreference['is_long_term_service'] == 1) {
             $long_term_service_products = $this->longTermServiceProducts($long_term_vendors, $additionalPreference, $language_id, $currency_id, '', $request->type, $p_dim);
         }
-        $recently_viewed = $this->productvendorProducts($vendor_ids, $language_id, $currency_id, '', $request->type, $p_dim);
+        $ordered_products = [];
         if ($this->checkTemplateForAction(8)) {
-            
+
+            $recently_viewed = $this->productvendorProducts($vendor_ids, $language_id, $currency_id, '', $request->type, $p_dim);
             $spot_light_products = $this->getSpotLight($preferences, $vendor_ids, $language_id, $currency_id, $p_dim); // get spotlight product i.e. max discounted products
 
             $single_category_product_ids = $this->getSingleCategoryProducts(); // get single selected category's products
@@ -809,6 +811,11 @@ class HomeController extends BaseController
 
             $top_rated_products_ids = $this->getTopRatedProducts();  // get selected products to display 
             $top_rated_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $top_rated_products_ids);
+
+            $ordered_products = $this->getProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $this->getLastProductOrdered(), 10);
+
+
+            
         }
         /**  Recent order */
         $activeOrders = [];
@@ -887,6 +894,7 @@ class HomeController extends BaseController
                 'vendors' => $vendors,
                 'new_products' => $new_products,
                 'top_rated'       => $top_rated_products,
+                'ordered_products'       => $ordered_products,
                 'recently_viewed' => $recently_viewed,
                 'homePageLabels' => $home_page_labels,
                 'featured_products' => $feature_products,
@@ -994,7 +1002,10 @@ class HomeController extends BaseController
         $categoryTypes = getServiceTypesCategory($action);
         $vendors = Vendor::whereHas('getAllCategory.category', function ($q) use ($categoryTypes) {
             $q->whereIn('type_id', $categoryTypes);
-        })->select('id', 'name  as dataname', 'logo', 'slug', 'address', 'show_slot')->where($action, 1);
+        })
+        ->select('id', 'name', 'name  as dataname', 'logo', 'address',  'slug', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude')
+        ->withAvg('product', 'averageRating','closed_store_order_scheduled')
+        ->where($action, 1);
         if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
 
             if (!empty($latitude) && !empty($longitude)) {
