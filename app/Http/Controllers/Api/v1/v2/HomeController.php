@@ -960,7 +960,7 @@ class HomeController extends BaseController
     public function searchCategories($langId, $keyword, $limit, $page)
     {
 
-        $orderBy = "  ";
+        $orderBy = "";
         foreach ($keyword as $key=>$word) {
             $orderBy .= " WHEN cts.name LIKE '$word%' THEN ".$key."  ";
         }
@@ -978,9 +978,11 @@ class HomeController extends BaseController
                         ->orWhere('categories.slug', 'LIKE', '%' . $word . '%')
                         ->orWhere('cts.trans-slug', 'LIKE', '%' . $word . '%');
                 }
-            })
-            ->orderByRaw("CASE ".$orderBy." ELSE 10 END, cts.name")
-            ->orderBy('categories.parent_id', 'asc')
+            });
+            if(@$orderBy){
+                $categories = $categories->orderByRaw("CASE ".$orderBy." ELSE 10 END, cts.name");
+            }
+            $categories = $categories->orderBy('categories.parent_id', 'asc')
             ->orderBy('categories.position', 'asc')
             ->groupBy('cts.category_id')
             // ->limit(5)->get();
@@ -1006,7 +1008,7 @@ class HomeController extends BaseController
     public function  searchVendors($langId, $keyword, $limit, $page, $action, $latitude, $longitude)
     {
 
-        $orderBy = "  ";
+        $orderBy = "";
         foreach ($keyword as $key=>$word) {
             $orderBy .= " WHEN name LIKE '$word%' THEN ".$key."  ";
         }
@@ -1050,10 +1052,12 @@ class HomeController extends BaseController
             foreach ($keyword as $word) {
                 $q->orwhere('name', 'LIKE', '%' . $word . '%')->orWhere('address', 'LIKE', '%' . $word . '%');
             }
-        })->where('status', 1)
-        ->orderByRaw("CASE ".$orderBy." ELSE 10 END, name")
+        })->where('status', 1);
+        if(@$orderBy){
+            $vendors = $vendors->orderByRaw("CASE ".$orderBy." ELSE 10 END, name");
+        }
             // ->limit(5)->get();
-            ->paginate($limit, $page);
+            $vendors = $vendors->paginate($limit, $page);
 
         $vendor_results = [];
         foreach ($vendors as $vendor) {
@@ -1074,7 +1078,7 @@ class HomeController extends BaseController
     }
     public function searchBrand($langId, $keyword, $limit, $page)
     {
-        $orderBy = "  ";
+        $orderBy = "";
         foreach ($keyword as $key=>$word) {
             $orderBy .= " WHEN bt.title LIKE '$word%' THEN ".$key."  ";
         }
@@ -1087,11 +1091,14 @@ class HomeController extends BaseController
             })
 
             ->where('brands.status', '!=', '2')
-            ->where('bt.language_id', $langId)
-            ->orderByRaw("CASE ".$orderBy." ELSE 10 END, bt.title")
+            ->where('bt.language_id', $langId);
+            if(@$orderBy){
+                $brands = $brands->orderByRaw("CASE ".$orderBy." ELSE 10 END, bt.title");
+            }
+            
             // ->orderBy('brands.position', 'asc')
             // ->limit(5)->get();
-            ->paginate($limit, $page);
+            $brands = $brands->paginate($limit, $page);
         $brand_results = [];
         foreach ($brands as $brand) {
             $brand->response_type = 'brand';
@@ -1111,7 +1118,7 @@ class HomeController extends BaseController
 
     public function searchProduct($langId, $keyword, $limit, $page, $action, $latitude, $longitude)
     {
-        $orderBy = "  ";
+        $orderBy = "";
         foreach ($keyword as $key=>$word) {
             $orderBy .= " WHEN pt.title LIKE '$word%' THEN ".$key."  ";
         }
@@ -1130,9 +1137,11 @@ class HomeController extends BaseController
                     $q->orwhere('products.sku', ' LIKE', '%' . $word . '%')->orWhere('products.url_slug', 'LIKE', '%' . $word . '%')->orWhere('pt.title', 'LIKE', '%' . $word . '%');
                 }
             })->where('products.is_live', 1)->whereNull('deleted_at')->groupBy('products.id')
-            ->whereIn('vendor_id', $allowed_vendors)
-            ->orderByRaw("CASE ".$orderBy." ELSE 10 END, pt.title")
-            ->paginate($limit, $page);
+            ->whereIn('vendor_id', $allowed_vendors);
+            if(@$orderBy){
+                $products = $products->orderByRaw("CASE ".$orderBy." ELSE 10 END, pt.title");
+            }
+            $products = $products->paginate($limit, $page);
         $product_results = [];
         foreach ($products as $product) {
             $product->response_type = 'product';
@@ -1150,6 +1159,7 @@ class HomeController extends BaseController
 
     private  function createSearchKeywords($request){
         $searchQuery = $request->keyword;
+        $results = [];
         $results = $keyword = explode(' ', $searchQuery);
 
         for ($i = 0; $i < count($keyword); $i++) {
