@@ -471,6 +471,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
 	var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
 	var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
+    var payment_obo_url = "{{route('obo.pay')}}";
 
     $(document).on('change', '#subscription_payment_methods input[name="subscription_payment_method"]', function() {
         var method = $(this).val();
@@ -523,7 +524,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/payment.js')}}"></script>
 <script>
-function addSlashes (element) {	
+function addSlashes (element) {
     let ele = document.getElementById(element.id);
     ele = ele.value.split('/').join('');    // Remove slash (/) if mistakenly entered.
     if(ele.length < 4 && ele.length > 0){

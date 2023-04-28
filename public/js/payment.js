@@ -3157,9 +3157,10 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
     window.paymentViaOboPay = function paymentViaOboPay(address_id='', payment_option_id='', order='') {
         let total_amount = 0;
         let tip = 0;
-        let tipElement = $("#cart_tip_amount");
-        let cartElement = $("input[name='cart_total_payable_amount']");
-        let walletElement = $("input[name='wallet_amount']");
+        let tipElement          = $("#cart_tip_amount");
+        let cartElement         = $("input[name='cart_total_payable_amount']");
+        let walletElement       = $("input[name='wallet_amount']");
+        let subscriptionElement = $("input[name='subscription_amount']");
         let ajaxData = {};
         console.log(path.indexOf("wallet") !== -1);
         if (path.indexOf("cart") !== -1) {
@@ -3169,6 +3170,9 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
         else if (path.indexOf("wallet") !== -1) {
             total_amount = walletElement.val();
             payment_from = 'wallet';
+        }else if (path.indexOf("subscription") !== -1) {
+            total_amount = subscriptionElement.val();
+            payment_from = 'subscription';
         }
         // if (cartElement.length > 0) {
         //     total_amount = cartElement.val();

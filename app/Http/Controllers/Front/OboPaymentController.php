@@ -58,6 +58,9 @@ class OboPaymentController extends Controller
                 } elseif ($request->payment_from == 'wallet') {
                     $orderNumber = $number;
                     $UrlParams   = "transactionid=$orderNumber&paymentfrom=wallet&success=true";
+                }elseif ($request->payment_from == 'subscription') {
+                    $orderNumber = $number;
+                    $UrlParams   = "transactionid=$orderNumber&paymentfrom=subscription&success=true";
                 }
                 if ($this->testMode == 1) {
                     $apiUrl = "https://www.obo-pay.co.rw/test/payments/v1/payment";
@@ -123,6 +126,10 @@ class OboPaymentController extends Controller
                 $wallet  = $user->wallet;
                 $wallet->depositFloat($payment->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $payment->transaction_id . '</b>']);
                 return redirect()->route('user.wallet');
+            }elseif ($request->paymentfrom == 'subscription') {
+                $payment = Payment::where('transaction_id', $transactionId)->first();
+                
+
             }
         } else {
             return "error";
@@ -162,6 +169,17 @@ class OboPaymentController extends Controller
                 'date' => date('Y-m-d'),
                 'user_id' => $user_id,
                 'payment_from'=>$request->user_from ?? 'web'
+            ]);
+        }elseif ($request->payment_from == 'subscription') {
+            $time = $request->subsid??$request->subscription_id . '_' . time();
+            Payment::create([
+                'amount' => 0,
+                'transaction_id' => $time,
+                'balance_transaction' => $amount,
+                'type' => 'subscription',
+                'date' => date('Y-m-d'),
+                'user_id' => $user_id,
+                'payment_from'=>$request->user_from ??'web'
             ]);
         }
         return $time;

@@ -5465,7 +5465,6 @@ $(document).ready(function () {
             break;
             case '55':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                // var order = 111111;
                 if (order != '') {
                     paymentViaOboPay(address_id, payment_option_id, order);
                 }

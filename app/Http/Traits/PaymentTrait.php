@@ -11,7 +11,7 @@ trait PaymentTrait{
 
         }elseif($type=='Subscription')
         {
-            $paymentOptions = ['stripe', 'dpo','azul', 'stripe_fpx', 'paystack','yoco', 'paylink', 'razorpay','simplify','square','ozow','pagarme', 'checkout','authorize_net','kongapay','ccavenue', 'cashfree','viva_wallet','easebuzz','vnpay','paytab','mvodafone','flutterwave','easypaisa','braintree','payphone','windcave','paytech','windcave','stripe_oxxo', 'mycash','stripe_ideal','userede','openpay','khalti','mtn_momo','plugnpay','nmi','yappy','skip_cash'];
+            $paymentOptions = ['stripe', 'dpo','azul', 'stripe_fpx', 'paystack','yoco', 'paylink', 'razorpay','simplify','square','ozow','pagarme', 'checkout','authorize_net','kongapay','ccavenue', 'cashfree','viva_wallet','easebuzz','vnpay','paytab','mvodafone','flutterwave','easypaisa','braintree','payphone','windcave','paytech','windcave','stripe_oxxo', 'mycash','stripe_ideal','userede','openpay','khalti','mtn_momo','plugnpay','nmi','yappy','skip_cash','obo'];
 
         }elseif($type=='wallet')
         {
