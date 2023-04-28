@@ -54,6 +54,9 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                                 <i class="fa fa-heart" aria-hidden="true"></i>
                             </a>
                         </li> -->
+                        @if( $is_ondemand_multi_pricing ==1 )
+                            @include('layouts.store.onDemandTopBarli')
+                        @endif
                         @if($client_preference_detail->header_quick_link == 1)
                         <li class="onhover-dropdown quick-links quick-links">
 
