@@ -652,7 +652,7 @@ class UserhomeController extends FrontController
             // dd($single_category_products);
             //$selected_product_ids = $this->getSelectedProducts(); // get single selected category's products
             $selected_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'selected_products', $request->type, $featured_products_title,$p_dim);
-
+            
             //$popular_product_ids = $this->getMostPopularProducts();  // get selected products to display 
             $popular_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'popular_products', $request->type, $featured_products_title,$p_dim);
 

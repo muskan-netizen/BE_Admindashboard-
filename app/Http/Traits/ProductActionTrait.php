@@ -358,6 +358,9 @@ trait ProductActionTrait{
                 $whereProductType = ' and `categories`.`type_id`  IN ('.$categoryTypesArray.') ';
             }
 
+            $type_id = 7;
+            $status = 1;
+
             $raw_query = "SELECT 
                 `products`.`id`, 
                 `products`.`sku`, 
@@ -404,19 +407,19 @@ trait ProductActionTrait{
 
                 IFNULL(`products`.`is_long_term_service`, 0) AS `is_long_term_service`
                 FROM 
-                    `products` LEFT JOIN   `categories` as `categories` ON `products`.`category_id` = `categories`.`id`  AND `categories`.`type_id` != 7
+                    `products` LEFT JOIN   `categories` as `categories` ON `products`.`category_id` = `categories`.`id`  AND `categories`.`type_id` != ?
                     LEFT JOIN   `product_images` as `product_images` ON `product_images`.`product_id` = `products`.`id` 
-                    LEFT JOIN   `vendors` as `vendors` ON `vendors`.`id` = `products`.`vendor_id` AND `vendors`.`status` = 1 
+                    LEFT JOIN   `vendors` as `vendors` ON `vendors`.`id` = `products`.`vendor_id` AND `vendors`.`status` = ? 
                     LEFT JOIN   `vendor_media` as `vendor_media` ON `vendor_media`.`id` = `product_images`.`media_id`
-                    LEFT JOIN   `product_translations` as `product_translation` ON `product_translation`.`product_id` = `products`.`id` AND `product_translation`.`language_id` = $langId
+                    LEFT JOIN   `product_translations` as `product_translation` ON `product_translation`.`product_id` = `products`.`id` AND `product_translation`.`language_id` = ?
                     LEFT JOIN   `product_variants` as `product_variant` ON `product_variant`.`product_id` = `products`.`id`
-                    LEFT JOIN   `category_translations` as `category_translation` ON `category_translation`.`category_id` = `products`.`category_id` AND `category_translation`.`language_id` = $langId
+                    LEFT JOIN   `category_translations` as `category_translation` ON `category_translation`.`category_id` = `products`.`category_id` AND `category_translation`.`language_id` = ?
                     LEFT JOIN   `product_attributes` as `product_attribute` ON `product_attribute`.`product_id` = `products`.`id` AND `product_attribute`.`key_name` = 'Location'
                     
                 WHERE 
                     `products`.`deleted_at` IS NULL 
-                        AND `vendors`.`status` = 1 
-                        AND `products`.`is_live` = 1
+                        AND `vendors`.`status` = ? 
+                        AND `products`.`is_live` = ?
                         $whereComparePriceNotNull
                         $completeWhere
                                     
@@ -431,10 +434,13 @@ trait ProductActionTrait{
                 
                         LIMIT 
                             10";
-            
-            $products = DB::select( DB::raw($raw_query));
 
+            $sqlParams = [$type_id, $status, $langId, $langId, $status, $status];
+            
+            $products = DB::select( DB::raw($raw_query), $sqlParams);
+            
             $returnArray = $products;
+            // dd($returnArray);
             return $returnArray;
         }
         catch (\Exception $e) {
@@ -472,17 +478,17 @@ trait ProductActionTrait{
                 GROUP_CONCAT(DISTINCT `category_translations`.`name` SEPARATOR ', ') AS `categoriesList`,
                 (SELECT count(`order_vendors`.`id`) FROM `order_vendors` WHERE `order_vendors`.`vendor_id` = `vendors`.`id`) AS `selling_count`,
                 (SELECT CONCAT(`vendor_slot_dates`.`start_time`, '##', `vendor_slot_dates`.`end_time`) FROM `vendor_slot_dates` WHERE `vendor_slot_dates`.`vendor_id` = `vendors`.`id` LIMIT 0,1) AS `slotdate_start_end_time`,
-                (SELECT CONCAT(`vendor_slots`.`start_time`, '##', `vendor_slots`.`end_time`) FROM `vendor_slots` WHERE `vendor_slots`.`vendor_id` = `vendors`.`id` AND `vendor_slots`.`start_time` < CAST('".$current_time."' AS time) AND `vendor_slots`.`end_time` > CAST('".$current_time."' AS time)  LIMIT 0,1) AS `slot_start_end_time`,
-                6371 * acos(cos(radians(" . $latitude . ")) 
+                (SELECT CONCAT(`vendor_slots`.`start_time`, '##', `vendor_slots`.`end_time`) FROM `vendor_slots` WHERE `vendor_slots`.`vendor_id` = `vendors`.`id` AND `vendor_slots`.`start_time` < CAST('?' AS time) AND `vendor_slots`.`end_time` > CAST('?' AS time)  LIMIT 0,1) AS `slot_start_end_time`,
+                6371 * acos(cos(radians(?)) 
                                             * cos(radians(`vendors`.`latitude`)) 
-                                            * cos(radians(`vendors`.`longitude`) - radians(" . $longitude . ")) 
-                                            + sin(radians(" .$latitude. ")) 
+                                            * cos(radians(`vendors`.`longitude`) - radians(?)) 
+                                            + sin(radians(?)) 
                                             * sin(radians(`vendors`.`latitude`))) AS `lineOfSightDistance`
                 ";
         
                 $joinQuery  = " LEFT JOIN `vendor_categories` ON `vendor_categories`.`vendor_id`= `vendors`.`id` ";
                 $joinQuery .= " LEFT JOIN `categories` ON `categories`.`id`= `vendor_categories`.`category_id` ";
-                $joinQuery .= " LEFT JOIN `category_translations` ON `category_translations`.`category_id`= `categories`.`id` AND `category_translations`.`language_id` = $language_id ";
+                $joinQuery .= " LEFT JOIN `category_translations` ON `category_translations`.`category_id`= `categories`.`id` AND `category_translations`.`language_id` = ? ";
                 $whereQuery  = " where `vendors`.`status` = 1 AND `vendor_categories`.`status` = 1";
 
             $whereInQuery = '';
@@ -491,9 +497,9 @@ trait ProductActionTrait{
             
             $mainQuery = "SELECT $selectQuery FROM `vendors` $joinQuery $whereQuery $whereInQuery";
             
-
-            
             $mainQuery .= " GROUP BY `vendors`.`id` ";
+
+            $sqlParams = [$current_time, $current_time, $latitude, $longitude, $latitude, $language_id];
 
             //------based on hyper location------------
             if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
@@ -503,7 +509,6 @@ trait ProductActionTrait{
                 $distance_to_time_multiplier = ($preferences->distance_to_time_multiplier > 0) ? $preferences->distance_to_time_multiplier : 2;
 
                 $mainQuery .= " HAVING (SELECT COUNT(`service_areas`.`id`) FROM `service_areas` WHERE `service_areas`.`vendor_id` = `vendors`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)'))) > 0 ";
-            
             }
 
             if ($vendor_title == "best_sellers") {
@@ -519,9 +524,9 @@ trait ProductActionTrait{
             }
             
             $mainQuery .= " LIMIT 10";
-
-            
-            $vendors = DB::select( DB::raw($mainQuery));
+           
+            // dd($sqlParams);
+            $vendors = DB::select( DB::raw($mainQuery), $sqlParams);
 
             $vendor_ids = [];
 
