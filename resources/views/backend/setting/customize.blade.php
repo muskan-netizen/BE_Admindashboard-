@@ -3024,7 +3024,6 @@ $(document).ready(function(){
      $(document).on('click','.add_more_button',function(){
         var main_id = $(this).data('id');
         addoptionTemplate(main_id);
-        console.log($('.add_more_button').length);
     });
     $(document).on('click','.remove_more_button',function(){
         var main_id =$(this).data('id');

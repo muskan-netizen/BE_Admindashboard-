@@ -54,6 +54,10 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('role/add', 'Client\RolePermissionController@indexRole')->name('roles');
         Route::post('role/save', 'Client\RolePermissionController@saveRole')->name('save.roles');
         Route::POST('role/getRole', 'Client\RolePermissionController@getRole')->name('get.role');
+        
+        Route::POST('role/getRolePermission', 'Client\RolePermissionController@getRolePermission')->name('get.role.permission');
+        Route::post('role/savePermissions', 'Client\RolePermissionController@saveRolePermissions')->name('save.role.permissions');
+
         Route::get('permission/add', 'Client\RolePermissionController@indexPermission')->name('permissions');
         Route::post('permission/save', 'Client\RolePermissionController@savePermission')->name('save.permission');
         Route::post('permission/assign', 'Client\RolePermissionController@assignPermission')->name('assign.permissions');
