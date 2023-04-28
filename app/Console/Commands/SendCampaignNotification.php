@@ -71,24 +71,23 @@ class SendCampaignNotification extends Command
                 ];
                 Config::set("database.connections.$database_name", $default);
                 DB::setDefaultConnection($database_name);
-                $client_preferences = ClientPreference::first(['fcm_server_key','sms_provider','sms_key','sms_secret','sms_from','mail_host','mail_port','mail_driver','mail_from','favicon']);
+                $client_preferences = ClientPreference::first(['fcm_server_key', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'mail_host', 'mail_port', 'mail_driver', 'mail_from', 'favicon']);
                 $from = $client_preferences->fcm_server_key ?? "";
                 $headers = [
                     'Authorization: key=' . $from,
                     'Content-Type: application/json',
                 ];
-                $chunk = config('app.campaign_chunk') ?? 100;
-                $chunk_notifications = CampaignRoster::where('notification_time', '<=', $intervalTime)->where('status', 0)->with('campaign', 'user')->get()->chunk($chunk);
-
-                if ($chunk_notifications) {
-                    foreach ($chunk_notifications as $notifications)
-                        CampaignSendNotificationJob::dispatch($notifications, $client_preferences, $headers);
+                $chunk_notifications = CampaignRoster::where('notification_time', '<=', $intervalTime)->where('status', 0)->with('campaign', 'user')->get();
+                $chunk_notifications = $chunk_notifications->groupBy(function ($item) {
+                    return $item->notofication_type;
+                });
+                if (count($chunk_notifications) > 0) {
+                        CampaignSendNotificationJob::dispatch($chunk_notifications, $client_preferences, $headers);
                 }
             } else {
 
                 DB::disconnect($database_name);
             }
-            // Log::info("CampaignSendNotification : ".now());
         }
     }
 
