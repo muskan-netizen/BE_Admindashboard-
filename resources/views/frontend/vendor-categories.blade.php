@@ -26,10 +26,13 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
         </div>
 </div>
         <div class="row homepageSix mt-4">
-            <div class="row mb-sm-5 mb-2 mt-5 ml-0">
-            @php $show_new_Products = 0; @endphp      
-            @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
-            @foreach($newProducts as $newProds)
+            <div class="w-100 row mb-sm-5 mb-2 mt-5 ml-0">
+            @php $show_new_Products = 0;
+            $col ='12';
+            @endphp      
+                 @if($show_new_Products && !empty($newProducts) && count($newProducts) > 0)
+                 @php $col ='9'; @endphp      
+                  @foreach($newProducts as $newProds)
                 <div class="collection-filter col-lg-3">
                     <div class="theme-card">
                         <h5 class="title-border d-flex align-items-center justify-content-between">
@@ -102,7 +105,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                 </div>
                 @endif
 
-                <div class="collection-content col-lg-9">
+                <div class="collection-content  col-lg-{{$col}}">
                     <div class="page-main-content">
                         <div class="col-12">
                             <div class="collection-product-wrapper">

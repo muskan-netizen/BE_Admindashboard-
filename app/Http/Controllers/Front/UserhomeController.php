@@ -65,7 +65,6 @@ class UserhomeController extends FrontController
         $client_preferences = $this->client_preferences;
         $client_preferences = $client_preferences->makeHidden(['customer_support_key','delivery_service_key','fcm_server_key','fcm_api_key','mail_username','mail_password','sms_key','sms_secret','sms_credentials','fb_client_secret','fcm_storage_bucket','customer_support_application_id','pickup_delivery_service_key']);
         return response()->json(['success' => true, 'client_preferences' => $client_preferences]);
-
     }
 
     public function getLastMileTeams()
@@ -616,7 +615,7 @@ class UserhomeController extends FrontController
         }
         $on_sale_product_details =$on_sale_products = [];
         if (in_array('on_sale', $enable_layout)) {  # if enable new_products section in 
-            $on_sale_products = $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', 'all', $request->type,$on_sale_title, $p_dim);
+            $on_sale_products = $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', 'on_sale', $request->type,$on_sale_title, $p_dim);
         }
         $new_product_details =$new_products = [];
         if (in_array('new_products', $enable_layout)) {  # if enable new_products section in 

@@ -753,6 +753,9 @@ body .switchery>small {
     width: auto
 }
 
+.delay_time .modal-footer .buffer_time_btn {
+    font-size: 14px;padding: 0.45rem 0.9rem;
+}
 input#is_hyperlocal {
     display: none !important
 }
@@ -1847,9 +1850,14 @@ i.mdi.mdi-exclamation-thick {
 }
 
 .nav-second-level li a {
-    position: relative
+    position: relative;
 }
-
+/*dashboard pagination hover css remove */
+.content-page li.paginate_button.page-item.active:hover {
+    background: inherit !important;
+    border: 1px solid #fff0;
+}
+/*end here*/
 .nav-second-level li .collapse li a:before {
     content: "";
     width: 6px;
@@ -3214,7 +3222,9 @@ body .page-title-box .page-title {
 .order_head h4 {
     opacity: 0
 }
-
+.order_received1 .order_head h4{
+    opacity: inherit;
+}
 .al_box_height {
     height: 40px!important;
     padding-left: 4px!important
@@ -4995,6 +5005,9 @@ body[dir=rtl] .modal-header .close {
     }
     .received-orders .modal-dialog.modal-dialog-centered {
         max-width: 600px;
+    }
+    .order_received1 .modal-dialog.modal-dialog-centered {
+        max-width: 940px;
     }
     .add_product .modal-dialog {
         max-width: 650px;

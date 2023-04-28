@@ -5138,7 +5138,8 @@ input.form-control.pac-target-input.gm-err-autocomplete {
     color: #c2c2c2;
     font-size: 14px;
     font-weight: 400;
-    width: 100px
+    /* width: 100px; */
+    width: max-content;
 }
 
 .step-order p {
@@ -10688,7 +10689,6 @@ body.al_body_template_one .footer-theme .sub-title li {
     padding: 15px 0;
     border-bottom: 1px solid #D9D9D9 !important;
 }
-
 .al_body_template_one .main-fillter .side_fillter .collection-collapse-block .collapse-block-title:after {
     right: 12px;
 }
@@ -11117,11 +11117,6 @@ body.al_body_template_nine div#replace_order_model .table-responsive table tr th
     width: 50%;
     color: #000;
     border: 1px solid#ccc;
-}
-
-body.al_body_template_one ul.exzoom_img_ul img {
-    height: 550px;
-    object-fit: cover;
 }
 
 body.al_body_template_two ul.exzoom_img_ul img {

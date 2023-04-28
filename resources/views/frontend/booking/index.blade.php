@@ -304,7 +304,7 @@
                     
                     <div class="location-box check-pick-first">
                         <div class="where-to-go">
-                            <div class="title title-36">{{ __('Where can we pick you up?') }}</div>
+                            <div class="title title-36">{{ __(getDynamicTypeName('Where can we pick you up?')) }}</div>
                         </div>
                     </div>
                     <div class="location-box check-dropoff-secpond" style="display:none">
@@ -315,7 +315,7 @@
                                 </div>
                             </li>
                             <li class="d-flex dots where-to-first">
-                                <div class="title title-36 pr-3 position-relative">{{ __('Where To?') }}</div>
+                                <div class="title title-36 pr-3 position-relative">{{ __(getDynamicTypeName('Where To?')) }}</div>
                             </li>
                             <li class="d-flex dots where-to-second" style="display:none !important;">
                                 <div class="title title-24 position-relative edit-dropoff"> {{ __('To') }} - <span
@@ -984,7 +984,7 @@
                             </div>
                         </div>
                         <div class="row">
-<div class="col-md-4">
+<div class="col-md-4 save-card-custom">
                      <input type="checkbox" name="save_card" class="form-check-input" id="azul-save_card" value="1">
                                     <label for="azul-save_card" class="">{{ __('Save Card') }}</label>
             </div>

@@ -611,7 +611,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                             </div>
                         </div>
 <div class="row">
-<div class="col-md-4">
+<div class="col-md-4 save-card-custom">
                      <input type="checkbox" name="save_card" class="form-check-input" id="azul-save_card" value="1">
                                     <label for="azul-save_card" class="">{{ __('Save Card') }}</label>
             </div>
@@ -622,6 +622,25 @@ $client_preferences = \App\Models\ClientPreference::first();
   </div>
                     </div>
                 <% } %>
+
+            <% if(payment_option.slug == 'nmi') { %>
+            <div class="col-md-12 mt-3 mb-3 nmi_element_wrapper option-wrapper d-none">
+                <div class="row no-gutters">
+                    <div class="col-6">
+                    <input type="text"  maxlength="16" style=" border-right: none;" class="form-control demoInputBox" id="card-element-nmi" placeholder="Enter Card Number" />
+                    </div>
+                    <div class="col-3">
+                    <input type="text" style=" border-left: none; border-right: none;" class="form-control demoInputBox" onkeyup="addSlashes(this)" maxlength=7  id="date-element-nmi" placeholder="MM/YYYY" />
+                    </div>
+                    <div class="col-3">
+                    <input type="password" max="4" style=" border-left: none;"  class="form-control demoInputBox" id="cvv-element-nmi" placeholder="CVV" />
+                    </div>
+                    <span class="error text-danger" id="card_error_nmi"></span>
+                </div>
+            </div>
+            <% } %>
+
+
                     </div>
                 <% }); %>
                 {{-- <div class="" id="" role="tabpanel">
@@ -1096,6 +1115,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var create_viva_wallet_pay_url = "{{route('vivawallet.pay')}}";
     var create_mvodafone_pay_url = "{{route('mvodafone.pay')}}";
     var create_ccavenue_url = "{{route('ccavenue.pay')}}";
+    var payment_nmi_url = "{{route('nmi.pay')}}";
     var post_payment_via_gateway_url = "{{route('payment.gateway.postPayment', ':gateway')}}";
     var payment_stripe_url = "{{route('payment.stripe')}}";
     var payment_retrive_stripe_fpx_url = "{{url('payment/retrieve/stripe_fpx')}}";

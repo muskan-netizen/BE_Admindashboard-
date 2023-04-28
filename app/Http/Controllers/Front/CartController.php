@@ -40,8 +40,7 @@ class CartController extends FrontController
     }
 
     public function showCart(Request $request, $domain = '')
-    {
-       
+    {       
         if(($request->has('gateway')) && (($request->gateway == 'mobbex')||($request->gateway == 'yoco'))){
             if($request->has('order')){
                 $order = Order::where('order_number', $request->order)->first();
@@ -1758,10 +1757,11 @@ class CartController extends FrontController
         $message = '';
         $status = 'Success';
         $vendorId = $request->vendor_id;
+        $delivery = $request->delivery??'delivery';
         $option = "";
         //type must be a : delivery , takeaway,dine_in
         $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
-        $slots = (object)showSlot($request->date,$vendorId,'delivery',$duration->slot_minutes, 0);
+        $slots = (object)showSlot($request->date,$vendorId,$delivery,$duration->slot_minutes, 0);
         $option ="<option value=''>".__("Select Slot")."</option>";
         if(count((array)$slots)<=0){
             $message = 'Slot not found.';
@@ -2178,15 +2178,16 @@ class CartController extends FrontController
 
             $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message])->render();
         }
-        //sandeep sir code
+       
         $tokenAmount = 1;
         $is_token_enable = @$getAdditionalPreference['is_token_currency_enable'];
-        if($is_token_enable){
+        if($is_token_enable && $cart_details){
             $tokenAmount = getJsToken();
             $cart_details->is_token_enable = $is_token_enable;
             $cart_details->tokenAmount = $tokenAmount;
         }
         // till here
+        
         return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'', 'cart_error_message' => $error_message]);//'token_val' => $tokenAmount , 'is_token_enable' => $is_token_enable
     }
 

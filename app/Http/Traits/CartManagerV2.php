@@ -471,8 +471,8 @@ trait CartManagerV2{
                 $subscription_discount_delivery  = 0;
                 $subscription_discount_vendor    = 0;
                // if(!empty($user)){
-                    $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user_timezone);
-                    $vendorData->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime)) ;
+                $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user_timezone);
+                $vendorData->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime)) ;
                 // }else{
                 //     $vendorData->scheduled_date_time = date('Y-m-d',strtotime($vendorData->scheduled_date_time)) ;
                 // }
@@ -494,7 +494,7 @@ trait CartManagerV2{
              
                 $vendorData->slotsdate = $slotsdate;
                 $vendorData->slots = $slots;
-                $vendorData->slotsCnt =  $slotcount ;
+                $vendorData->slotsCnt =  $slotcount;
                 $vendorData->delay_date = date('Y-m-d');
 
                 if(session()->has('vendorTable')) {
@@ -1607,7 +1607,7 @@ trait CartManagerV2{
             $other_taxes_string='tax_fixed_fee:'.$taxCharges['total_fixed_fee_tax'].',tax_service_charges:'.$taxCharges['total_service_fee'].',tax_delivery_charges:'.$taxCharges['deliver_fee_charges'].',tax_markup_fee:'.$taxCharges['total_markup_fee_tax'].',product_tax_fee:'.$total_taxable_amount;;
 
 
-
+            $cart->address_id = $address_id??'';
             $cart->bid_total_discount = $bid_total_discount??0;
             $gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount);
             $cart->other_taxes = $other_taxes;

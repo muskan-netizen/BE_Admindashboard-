@@ -150,7 +150,7 @@ Route::group(['middleware' => ['domain']], function () {
 	//Skip Cash
 
 	Route::post('payment/skipcash', 'Front\SkipCashController@showSkipCashPage')->name('payment.skipcash');
-	Route::get('order/success', 'Front\SkipCashController@successPage')->name('payment.skipcash.success');
+	Route::get('success/skipcash', 'Front\SkipCashController@successPage')->name('payment.skipcash.success');
 	Route::post('/skipcash/webhook', 'Front\SkipCashController@handleWebhook');
 
 
@@ -165,7 +165,7 @@ Route::group(['middleware' => ['domain']], function () {
     Route::match(['get','post'],'payment/plugnpay','Front\PlugnpayController@beforePayment')->name('payment.plugnpay.beforePayment');
     
     //azulpay
-    Route::match(['get','post'],'payment/azulpay','Front\AzulPaymentController@beforePayment')->name('payment.azulpay.beforePayment');
+    Route::match(['get','post'],'payment/nmi','Front\NmiPaymentController@beforePayment')->name('nmi.pay');
 
 	Route::post('checkVendorPincode','Front\PincodeController@checkVendorPincode')->name('pincode.checkVendorPincode');
 	Route::get('getShippingMethod','Front\PincodeController@getShippingMethod')->name('pincode.getShippingMethod');

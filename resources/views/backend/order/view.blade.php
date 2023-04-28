@@ -374,7 +374,7 @@ $timezone = Auth::user()->timezone;
                             @endIf
                            
                          
-                            <button class=" badge badge-info"  data-toggle="modal" data-target="#showDelayTimeModal">{{ __('Add Delay Time') }} <img src=""> </button>
+                            <button class=" badge badge-info border-0"  data-toggle="modal" data-target="#showDelayTimeModal">{{ __('Add Delay Time') }} <img src=""> </button>
  
 
                             @if(@$order->vendors[0]->exchanged_of_order)
@@ -787,11 +787,18 @@ $timezone = Auth::user()->timezone;
                             <td>{{ $clientCurrency->currency->symbol }}{{ decimal_format($adminRevenue) }}
                             </td>
                         </tr>
+<tr>
+                            <th scope="row" colspan="4" class="text-end">
+                                {{ __('Admin Commission') }} :
+                            </th>
 
+                            <td>{{ $clientCurrency->currency->symbol }}{{ decimal_format($vendor->admin_commission_percentage_amount) }}
+                            </td>
+                        </tr>
                         <tr>
                             <th scope="row" colspan="4" class="text-end">{{ __("Store Earning") }} :</th>
                             {{-- <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->sub_total * $clientCurrency->doller_compare - $revenue - $vendorDiscount)}}</td> --}}
-                            <td>{{$clientCurrency->currency->symbol}}{{decimal_format($storeRevenue)}}</td>
+                            <td>{{$clientCurrency->currency->symbol}}{{decimal_format($vendor->vendor_amount)}}</td>
                         </tr>
                         {{-- @endif --}}
                         @if($order->tip_amount > 0)
@@ -1172,7 +1179,7 @@ $timezone = Auth::user()->timezone;
 </div>
 </div>
       <!-- modal for Delay Time -->
-<div class="modal fade" id="showDelayTimeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade delay_time" id="showDelayTimeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
    <div class="modal-dialog" role="document">
       <div class="modal-content">
          <div class="modal-header">
@@ -1183,18 +1190,18 @@ $timezone = Auth::user()->timezone;
          </div>
          @foreach ($order->vendors as $vendor)
          @if($vendor->vendor_id == $vendor_id)
-         <div class="modal-body">
+         <div class="modal-body mt-0 pt-0">
             <div class="form-group">
                <label for="message-text" class="col-form-label">Enter Time(in minutes):</label>
                <input type="number" class="form-control" value="{{$vendor->extra_time}}" id="buffer_time">               
             </div>
          </div>
-         <div class="modal-footer">
+         <div class="modal-footer pt-0">
             @php
             $track = explode('/', $vendor->dispatch_traking_url);
             $track_code = end($track);
             @endphp
-            <button class="buffer_time_btn  badge badge-info"   data-tracking_id={{$track_code}} data-tracking_url={{$vendor->dispatch_traking_url}}   data-order_id={{$order->id}} data-vendor_id={{$vendor_id}}>{{ __('Save') }} <img src=""> </button>
+            <button class="buffer_time_btn  badge badge-info border-0"   data-tracking_id={{$track_code}} data-tracking_url={{$vendor->dispatch_traking_url}}   data-order_id={{$order->id}} data-vendor_id={{$vendor_id}}>{{ __('Save') }} <img src=""> </button>
          </div>
          @endif
          @endforeach

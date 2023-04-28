@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
 use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, PaymentOption, PickDropDriverBid};
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,PaymentTrait};
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
@@ -21,11 +21,11 @@ use Log,DateTime,DateTimeZone;
 
 class PickupDeliveryController extends FrontController{
 
-    use ApiResponser;
+    use ApiResponser,PaymentTrait;
 
     public function getPaymentOptions(Request $request, $domain = '')
     {
-        $code = array('cod', 'dpo', 'razorpay','stripe','paystack', 'payfast','authorize_net','payphone', 'khalti','flutterwave','plugnpay','azul');
+        $code = $this->paymentOptionArray('pickup_delivery');
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials' ,'title', 'off_site']);
         foreach($payment_options as $option){
             if($option->code == 'stripe'){
@@ -970,22 +970,15 @@ class PickupDeliveryController extends FrontController{
                     $up_web_hook_code = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])
                                     ->update(['web_hook_code' => $dynamic,'dispatch_traking_url' => $dispatch_traking_url]);
                     $response['dispatch_traking_url'] = $dispatch_traking_url;
-
-
                     $or_ids = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->with(['vendor'])->first();
 
-                    // if($or_ids->vendor->auto_accept_order==1){
-                        $update_vendor = VendorOrderStatus::updateOrCreate([
-                            'order_id' =>  $order->id,
-                            'order_status_option_id' => 2,
-                            'vendor_id' =>  $vendor,
-                            'order_vendor_id' =>  $or_ids->id]);
+                    $update_vendor = VendorOrderStatus::updateOrCreate([
+                        'order_id' =>  $order->id,
+                        'order_status_option_id' => 2,
+                        'vendor_id' =>  $vendor,
+                        'order_vendor_id' =>  $or_ids->id]);
 
-                        OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['order_status_option_id' => 2,'dispatcher_status_option_id' => 1]);
-                    // }
-                    // else {
-                    //     OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['dispatcher_status_option_id' => 1]);
-                    // }
+                    OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['order_status_option_id' => 2,'dispatcher_status_option_id' => 1]);
 
                     $update = VendorOrderDispatcherStatus::updateOrCreate(['dispatcher_id' => null,
                     'order_id' =>  $order->id,

@@ -448,7 +448,6 @@ class OrderController extends BaseController
                                     $vendor_products_total_amount = $vendor_products_total_amount + $opt_quantity_price;
                                 }
                             }
-
                             $vendor_taxable_amount = 0;
                             if (isset($vendor_cart_product->product->taxCategory)) {
                                 foreach ($vendor_cart_product->product->taxCategory->taxRate as $tax_rate_detail) {
@@ -872,15 +871,19 @@ class OrderController extends BaseController
                         $Order_bid_discount += $bid_vendor_discount??0;
                         $vendor_info = Vendor::where('id', $vendor_id)->first();
                         if ($vendor_info) {
-                            if (($vendor_info->commission_percent) != null && $vendor_payable_amount > 0) {
-                                $actual_amountComm = $vendor_payable_amount - $vendor_markup_amount;
+                            if(isset($coupon_paid_by)){
+                                $actual_amount = $actual_amount - $vendor_discount_amount;
+                            }
+                            if (($vendor_info->commission_percent) != null && $actual_amount > 0) {
+                                $actual_amountComm = $actual_amount - $vendor_markup_amount;
                                 $order_vendor->admin_commission_percentage_amount = round($vendor_info->commission_percent * ($actual_amountComm / 100), 2);
                             }
-                            if (($vendor_info->commission_fixed_per_order) != null && $vendor_payable_amount > 0) {
+                            if (($vendor_info->commission_fixed_per_order) != null && $actual_amount > 0) {
                                 $order_vendor->admin_commission_fixed_amount = $vendor_info->commission_fixed_per_order;
                             }
                             if($vendor_info->fixed_fee_amount > 0){
                                 $fixed_fee_amount = $fixed_fee_amount + $vendor_info->fixed_fee_amount;
+                                $order_vendor->fixed_fee =  $vendor_info->fixed_fee_amount;
                             }
                         }
                         $order_vendor->save();
@@ -1500,20 +1503,7 @@ class OrderController extends BaseController
             $customer = User::find($order->user_id);
             $cus_address = UserAddress::find($order->address_id);
             $tasks = array();
-            if ($order->payment_option_id == 1) {
-                $cash_to_be_collected = 'Yes';
-                $payable_amount = $order->payable_amount;
-            } else {
-                
-                if($order->is_postpay==1 && $order->payment_status == 0)
-                {
-                    $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order->payable_amount;
-                }else{
-                    $cash_to_be_collected = 'No';
-                    $payable_amount = 0.00;
-                }
-            }
+            
             $dynamic = uniqid($order->id . $vendor);
             $client = Client::orderBy('id', 'asc')->first();
             if (isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain)
@@ -1525,6 +1515,21 @@ class OrderController extends BaseController
             $order_vendor = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])->first();
             $tasks = array();
             $meta_data = '';
+
+            if ($order->payment_option_id == 1 && ($order->payable_amount >0)) {
+                $cash_to_be_collected = 'Yes';
+                $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
+            } else {
+
+                if($order->is_postpay==1 && $order->payment_status == 0)
+                {
+                    $cash_to_be_collected = 'Yes';
+                    $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
+                }else{
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                }
+            }
 
             $team_tag = null;
             if (!empty($dispatch_domain->last_mile_team))
@@ -1570,10 +1575,10 @@ class OrderController extends BaseController
                 // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                 $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
-            Log::info("order Pre Time is ".$vendor_details->order_pre_time);
+            //Log::info("order Pre Time is ".$vendor_details->order_pre_time);
             $postdata =  [
                 'order_number' =>  $order->order_number,
-                'customer_name' => $customer->name ?? 'Dummy Customer',
+                'customer_name' => $customer->name ?? 'Customer',
                 'customer_phone_number' =>$customerno ?? rand(111111, 11111),
                 'customer_dial_code' => $customer->dial_code ?? null,
                 'customer_email' => $customer->email ?? null,
@@ -2042,7 +2047,7 @@ class OrderController extends BaseController
                     $cartDetails = $this->getCart($cart);
                 }
                 //pr( $cartDetails->toArray());
-                $luxuryOptionTitle = ($request->has('type')) ? $request->type : 'delivery';
+                $luxuryOptionTitle = !empty($order->luxury_option) ? $order->luxury_option->title : 'delivery';
                 if ($email_template) {
 
                     $email_template_content = $email_template->content;
@@ -2225,12 +2230,13 @@ class OrderController extends BaseController
             $order->scheduled_slot  = $order->orderDetail->scheduled_slot;
             $order->schedule_dropoff = date('d/m/Y',strtotime($order->orderDetail->schedule_dropoff));
             $order->dropoff_scheduled_slot  = $order->orderDetail->dropoff_scheduled_slot;
-            
-            $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
-            
-            
-            $order->is_edited   = (isset($order->orderDetail->is_edited)) ? $order->orderDetail->is_edited : 0;
-            
+            $order->payable_amount = $order->total_price;
+            if(checkColumnExists('orders', 'is_postpay')){
+                $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
+            }
+            if(checkColumnExists('orders', 'is_edited')){
+                $order->is_edited   = (isset($order->orderDetail->is_edited)) ? $order->orderDetail->is_edited : 0;
+            }
             if(!empty($order->orderDetail->scheduled_date_time) && $is_order_edit_enable == 1 && $order_edit_before_hours > 0 && ($order->orderDetail->payment_option_id==1 || $order->orderDetail->payment_status !=1)){
                 if((strtotime($order->orderDetail->scheduled_date_time) - strtotime($editlimit_datetime)) > 0){
                     $order->is_editable  = 1;
@@ -2582,7 +2588,7 @@ class OrderController extends BaseController
                             $product->address = '';
                         }
                         //till here
-
+                        $product->scheduled_date_time = (($product->scheduled_date_time!=null)?dateTimeInUserTimeZone($product->scheduled_date_time, $user->timezone):null);
                         $product_addons = [];
                         $variant_options = [];
                         $vendor_total_container_charges = 0;

@@ -111,6 +111,13 @@ class OrderController extends Controller{
                 // return number_format($vendor_orders->admin_commission_percentage_amount, 2).' ('.number_format($vendor_orders->vendor->commission_percent,2).'%)';
                 return number_format($vendor_orders->fixed_fee, 2);
             })
+            ->addColumn('discount_amount', function($vendor_orders) {
+                // return number_format($vendor_orders->admin_commission_percentage_amount, 2).' ('.number_format($vendor_orders->vendor->commission_percent,2).'%)';
+                return number_format($vendor_orders->discount_amount, 2);
+            })->addColumn('taxable_amount', function($vendor_orders) {
+                // return number_format($vendor_orders->admin_commission_percentage_amount, 2).' ('.number_format($vendor_orders->vendor->commission_percent,2).'%)';
+                return number_format($vendor_orders->taxable_amount, 2);
+            })
             ->addColumn('tip_amount', function($vendor_orders) {
                 // return number_format($vendor_orders->admin_commission_percentage_amount, 2).' ('.number_format($vendor_orders->vendor->commission_percent,2).'%)';
                 return !empty($vendor_orders->orderDetail)?number_format($vendor_orders->orderDetail->tip_amount, 2):0.00;
@@ -124,10 +131,8 @@ class OrderController extends Controller{
             ->addColumn('markup_price',function($vendor_orders){
                 return $vendor_orders->vendor ? __($vendor_orders->total_markup_price??0) : '0';
             })
-            ->addColumn('payable_amount', function($vendor_orders) {
-                $tip = !empty($vendor_orders->orderDetail)?number_format($vendor_orders->orderDetail->tip_amount, 2):0.00;
-                
-                return number_format(($vendor_orders->payable_amount +$tip)- $vendor_orders->total_markup_price??0, 2);
+            ->addColumn('total_price', function($vendor_orders) {                
+                return decimal_format($vendor_orders->total_price );
             })
             ->addColumn('payment_option_title',function($vendor_orders){
                

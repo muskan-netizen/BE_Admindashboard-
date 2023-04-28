@@ -22,7 +22,7 @@ use GuzzleHttp\Client;
 use App\Models\Client as CP;
 use App\Models\Transaction;
 use App\Models\AutoRejectOrderCron;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,OrderTrait};
 use Log;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -32,8 +32,7 @@ class OrderController extends BaseController
 {
     private $folderName = '/order/reports';
 
-    use ApiResponser;
-    use \App\Http\Traits\OrderTrait;
+    use ApiResponser,OrderTrait;
     public $from_date;
     public $to_date;
     public $setWeekDate;
@@ -574,6 +573,8 @@ class OrderController extends BaseController
             //}
             if(!empty($order->total_other_taxes)){
                 $order->total_other_taxes_amount  =   (float) array_sum(explode(":", $order->total_other_taxes));
+            }else{
+                $order->total_other_taxes_amount = $order->taxable_amount;
             }
             
             foreach ($order->vendors as $vendor) {
@@ -1290,37 +1291,37 @@ class OrderController extends BaseController
         ]);
     }
 
-    public function sendSuccessNotification($id, $vendorId)
-    {
-        $super_admin = User::where('is_superadmin', 1)->pluck('id');
-        $user_vendors = UserVendor::where('vendor_id', $vendorId)->pluck('user_id');
-        $devices = UserDevice::whereNotNull('device_token')->where('user_id', $id)->pluck('device_token');
-        foreach ($devices as $device) {
-            $token[] = $device;
-        }
-        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_vendors)->pluck('device_token');
-        foreach ($devices as $device) {
-            $token[] = $device;
-        }
-        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $super_admin)->pluck('device_token');
-        foreach ($devices as $device) {
-            $token[] = $device;
-        }
-        //$token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
+    // public function sendSuccessNotification($id, $vendorId)
+    // {
+    //     $super_admin = User::where('is_superadmin', 1)->pluck('id');
+    //     $user_vendors = UserVendor::where('vendor_id', $vendorId)->pluck('user_id');
+    //     $devices = UserDevice::whereNotNull('device_token')->where('user_id', $id)->pluck('device_token');
+    //     foreach ($devices as $device) {
+    //         $token[] = $device;
+    //     }
+    //     $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_vendors)->pluck('device_token');
+    //     foreach ($devices as $device) {
+    //         $token[] = $device;
+    //     }
+    //     $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $super_admin)->pluck('device_token');
+    //     foreach ($devices as $device) {
+    //         $token[] = $device;
+    //     }
+    //     //$token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
 
-        $notification_content = NotificationTemplate::where('id', 2)->first();
+    //     $notification_content = NotificationTemplate::where('id', 2)->first();
 
-        if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
-            $data = [
-                "registration_ids" => $token,
-                "notification" => [
-                    'title' => $notification_content->label,
-                    'body'  => $notification_content->content,
-                ]
-            ];
-            sendFcmCurlRequest($data);
-        }
-    }
+    //     if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
+    //         $data = [
+    //             "registration_ids" => $token,
+    //             "notification" => [
+    //                 'title' => $notification_content->label,
+    //                 'body'  => $notification_content->content,
+    //             ]
+    //         ];
+    //         sendFcmCurlRequest($data);
+    //     }
+    // }
     /// ******************  check If any Product Last Mile on   ************************ ///////////////
     public function placeOrderRequestShippo($request)
     {
@@ -1834,25 +1835,26 @@ class OrderController extends BaseController
             $customer = User::find($order->user_id);
             $cus_address = UserAddress::find($order->address_id);
             $tasks = array();
-            if ($order->payment_option_id == 1) {
-                $cash_to_be_collected = 'Yes';
-                $payable_amount = $order->payable_amount;
-            } else {
-                
-                    if($order->is_postpay==1 && $order->payment_status == 0)
-                    {
-                        $cash_to_be_collected = 'Yes';
-                        $payable_amount = $order->payable_amount;
-                    }else{
-                        $cash_to_be_collected = 'No';
-                        $payable_amount = 0.00;
-                    }
-                
-            }
+           
             $dynamic = uniqid($order->id . $vendor);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'phone_no', 'email', 'name', 'latitude', 'longitude', 'address','order_pre_time')->first();
             $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->first();
-            // pr($orderVendorDetails);
+            
+            if ($order->payment_option_id == 1 && ($order->payable_amount >0)) {
+                $cash_to_be_collected = 'Yes';
+                $payable_amount = $orderVendorDetails->payable_amount + $orderVendorDetails->taxable_amount;
+            } else {
+
+                if($order->is_postpay==1 && $order->payment_status == 0)
+                {
+                    $cash_to_be_collected = 'Yes';
+                    $payable_amount = $orderVendorDetails->payable_amount + $orderVendorDetails->taxable_amount;
+                }else{
+                    $cash_to_be_collected = 'No';
+                    $payable_amount = 0.00;
+                }
+            }
+
             if(!empty($orderVendorDetails->web_hook_code))
             {
                 $dynamic = $orderVendorDetails->web_hook_code;
@@ -1944,7 +1946,7 @@ class OrderController extends BaseController
                             $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                         }
                         $client = CP::orderBy('id', 'asc')->first();
-                        Log::info("order Pre Time is ".$vendor_details->order_pre_time);
+                        //Log::info("order Pre Time is ".$vendor_details->order_pre_time);
                         $postdata =  [
                             'order_number' =>  $order->order_number,
                             'customer_name' => $customer->name ?? 'Dummy Customer',
