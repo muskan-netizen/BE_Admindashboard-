@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Traits;
-use App\Models\{ProductRecentlyViewed,WebStylingOption,Product,Category,HomeProduct,ProductCategory,OrderVendorProduct,OrderProductRating, VendorCategory, Vendor, SubscriptionInvoicesVendor};
+use App\Models\{ProductRecentlyViewed,WebStylingOption,Product,Category,HomeProduct,ProductCategory,OrderVendorProduct,OrderProductRating,OrderProduct, VendorCategory, Vendor, SubscriptionInvoicesVendor};
 use Illuminate\Support\Str;
 use Auth;
 use Session;
@@ -189,9 +189,12 @@ trait ProductActionTrait{
                         $title = $value->translation->first() ? $value->translation->first()->title : $value->sku;
                         $image_url = $value->media->first() ? $value->media->first()->image->path['proxy_url'] . $p_dim . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                         $productArray[] = array(
+                            'id' => $value->id,
                             'tag_title' => $products_tag_title??0,
                             'image_url' => $image_url,
                             'sku' => $value->sku,
+                            'variant' => $value->variant,
+                            'media' => $value->media,
                             'title' => Str::limit($title, 18, '..'),
                             'url_slug' => $value->url_slug,
                             'averageRating' => number_format($value->averageRating, 1, '.', ''),
@@ -667,6 +670,23 @@ trait ProductActionTrait{
                 $vendors = $vendors->inRandomOrder();
             }
             return $vendors->pluck('id')->toArray();
+        }
+        catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    public function getLastProductOrdered()
+    {
+        try 
+        {
+            $user_id = Auth::user()->id;
+            // $user_id = 233;
+            $vendors =  OrderProduct::distinct('product_id')->whereHas('order_vendor', function($q) use ($user_id){
+                $q->where('user_id', $user_id);
+            })->take(10);
+            // ->inRandomOrder();
+            return $vendors->pluck('product_id')->toArray();
         }
         catch (\Exception $e) {
             return [];
