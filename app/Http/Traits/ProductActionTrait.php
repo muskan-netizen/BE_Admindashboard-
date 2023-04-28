@@ -598,12 +598,12 @@ trait ProductActionTrait{
             (CASE WHEN `bt`.`title` IS NULL THEN `br`.`title` ELSE `bt`.`title` END) AS `translation_title`
             FROM `brands` AS `br` 
 
-            LEFT JOIN `brand_translations` AS `bt` ON `bt`.`brand_id` = `br`.`id` AND `bt`.`language_id` = $language_id 
+            LEFT JOIN `brand_translations` AS `bt` ON `bt`.`brand_id` = `br`.`id` AND `bt`.`language_id` = ? 
 
-            WHERE `br`.`status` !=$field_status
+            WHERE `br`.`status` !=?
             GROUP BY `br`.`id`";
         
-            $brands = DB::select( DB::raw($mainQuery));
+            $brands = DB::select( DB::raw($mainQuery), [$language_id, $field_status]);
             return $brands;
         }
         catch (\Exception $e) {
@@ -641,16 +641,17 @@ trait ProductActionTrait{
             $joinQuery = "LEFT JOIN `categories` AS `ct` ON `ct`.`id` = `ba`.`redirect_category_id` AND `ct`.`deleted_at` IS NULL ";
             $joinQuery.= "LEFT JOIN `vendors` AS `vn` ON `vn`.`id` = `ba`.`redirect_vendor_id` ";
 
-            $mainQuery.= " $joinQuery WHERE `ba`.`status` =1 AND `ba`.`validity_on` = 1 AND (`ba`.`start_date_time` is null or (date(`ba`.`start_date_time`) <= '".$carbon_now."' and date(`ba`.`end_date_time`) >= '".$carbon_now."'))  ";
+            $mainQuery.= " $joinQuery WHERE `ba`.`status` =1 AND `ba`.`validity_on` = 1 AND (`ba`.`start_date_time` is null or (date(`ba`.`start_date_time`) <= ? and date(`ba`.`end_date_time`) >= ?))  ";
 
             if(isset($client_preferences->is_service_area_for_banners) && ($client_preferences->is_service_area_for_banners == 1) && ($client_preferences->is_hyperlocal == 1) && (!empty($latitude) && !empty($longitude))){
-                $mainQuery .= " HAVING (SELECT `id` FROM `$banner_service_areas_table` AS `bsa` where `ba`.`id` = `bsa`.`banner_id` AND EXISTS (select `id` from `$service_area_for_banners_table` AS `safb` WHERE `bsa`.`service_area_id` = `safb`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)')) and `type` = $type) > 0) > 0 ";
+                $mainQuery .= " HAVING (SELECT `id` FROM `$banner_service_areas_table` AS `bsa` where `ba`.`id` = `bsa`.`banner_id` AND EXISTS (select `id` from `$service_area_for_banners_table` AS `safb` WHERE `bsa`.`service_area_id` = `safb`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(?)')) and `type` = ?) > 0) > 0 ";
             }
             
             $mainQuery.= " ORDER BY `ba`.`sorting` ASC";
             
+            $latLng = $latitude.' '.$longitude;
         
-            $banners = DB::select( DB::raw($mainQuery));
+            $banners = DB::select( DB::raw($mainQuery), [$carbon_now, $carbon_now, $latLng, $type]);
             return $banners;
         }
         catch (\Exception $e) {
