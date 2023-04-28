@@ -58,6 +58,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('permission/save', 'Client\RolePermissionController@savePermission')->name('save.permission');
         Route::post('permission/assign', 'Client\RolePermissionController@assignPermission')->name('assign.permissions');
         
+        Route::POST('role/getRolePermission', 'Client\RolePermissionController@getRolePermission')->name('get.role.permission');
+        Route::post('role/savePermissions', 'Client\RolePermissionController@saveRolePermissions')->name('save.role.permissions');
+        
         Route::get('dashboard', 'Client\DashBoardController@index')->name('client.dashboard');
         Route::get('dashboard_old', 'Client\DashBoardController@dashboard_old')->name('client.dashboard_old');
         Route::get('dashboard/filter', 'Client\DashBoardController@postFilterData')->name('client.dashboard.filter');

@@ -2006,6 +2006,9 @@ class OrderController extends FrontController
                     } else {
                         // ----Percent amount----------
                         $percentage_amount = ($vendor_payable_amount * $vendor_cart_product->coupon->promo->amount / 100);
+                        $total_discount += $percentage_amount;
+                        $vendor_payable_amount -= $percentage_amount;
+                        $vendor_discount_amount += $percentage_amount;
                     }
                     if ($vendor_cart_product->coupon->promo->allow_free_delivery == 1) {
                         $vendor_discount_amount = $vendor_discount_amount + $delivery_fee;
@@ -2671,7 +2674,6 @@ class OrderController extends FrontController
             $user = User::find($user_id);
         }
         foreach ($order_vendors as $ov) {
-            //// Log::info($ov);
             //// Log::info($ov->order_id);
             $request = $ov;
 
@@ -2801,7 +2803,6 @@ class OrderController extends FrontController
         $is_place_order_delivery_zero = getAdditionalPreference([
             'is_place_order_delivery_zero'
         ])['is_place_order_delivery_zero'];
-        // Create Shipping place order request for Dunzo
         $checkdeliveryFeeAdded = OrderVendor::where([
             'order_id' => $request->order_id,
             'vendor_id' => $request->vendor_id
