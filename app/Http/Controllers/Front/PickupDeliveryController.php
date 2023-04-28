@@ -919,7 +919,7 @@ class PickupDeliveryController extends FrontController{
                 }
                 $schedule_datetime_del = NULL;
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
-                    $schedule_datetime_del = Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                    $schedule_datetime_del = $request->schedule_time;//Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
 
                 $postdata =  [
