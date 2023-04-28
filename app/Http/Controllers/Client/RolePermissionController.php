@@ -130,6 +130,7 @@ class RolePermissionController extends Controller
         
             $roles = Role::with('permissions')->findOrFail($request->role_id);
             $role_has_permission_ids = $roles->permissions->pluck('id')->toArray();
+            //pr($role_has_permission_ids);
             if ($request->ajax()) {
                 $permission_html = view('backend.role_permission.roleTable', ['role_has_permission_ids' => $role_has_permission_ids,'prmArr' => $permissionsByController])->render();
                 return $this->successResponse(['permission_html' => $permission_html], '', 201);

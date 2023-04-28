@@ -99,7 +99,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="permision_btn">
-                        <h4>Module Permission	</h4>
+                        {{-- <h4>Module Permission	</h4> --}}
                         {{-- <a href="#">Click</a> --}}
                     </div>
                 </div>
