@@ -1258,7 +1258,11 @@ class PickupDeliveryController extends FrontController{
             $getAdditionalPreference = getAdditionalPreference(['bid_expire_time_limit_seconds']);
             $order_bid_id = $request->order_id;
             $task_type    = $request->task_type;
-            $biddata      = PickDropDriverBid::where('order_bid_id', $order_bid_id)->where('expired_at', '>', now()->format('Y-m-d H:i:s'))->where('status', 0)->get();
+            $biddata      = PickDropDriverBid::where('order_bid_id', $order_bid_id)->where(function($q) use ($task_type){
+                if(isset($task_type)){
+                    $q->where('task_type', $task_type);
+                }
+            })->where('expired_at', '>', now()->format('Y-m-d H:i:s'))->where('status', 0)->get();
             return $this->successResponse(['biddata' => $biddata, 'bid_expire_time_limit_seconds' => $getAdditionalPreference['bid_expire_time_limit_seconds']], 200);
         }
         catch (\Exception $e) {

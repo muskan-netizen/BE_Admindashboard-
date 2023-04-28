@@ -797,7 +797,7 @@ input[type=number]::-webkit-outer-spin-button {
 
                 <div class="row">
                     <div class="col-md-12 create-bid-btn">
-                        <button class="btn btn-solid w-100" id="create_bid" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-task_type="now" data-tags="<%=(result.tags)%>">{{__('Create Bid')}}</button>
+                        <button class="btn btn-solid w-100" id="create_bid" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-task_type="bid_ride_request" data-tags="<%=(result.tags)%>">{{__('Create Bid')}}</button>
                     </div>
                 </div>
             </div>

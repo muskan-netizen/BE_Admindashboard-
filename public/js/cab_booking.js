@@ -2170,6 +2170,7 @@ $(document).on("click",".btn-price-up-down",function(){
 var driverInterval = null;
 $(document).on("click","#create_bid", async function(){    
     var product_id = $(this).attr('data-product_id');
+    var taskType = $(this).attr('data-task_type');
     var vendor_id = $(this).attr('data-vendor_id');
     var requested_price = $('input[name="cab_bid_price"]').val();
     var min_requested_price = 0;
@@ -2255,15 +2256,16 @@ $(document).on("click","#create_bid", async function(){
         } 
     });
 
-    driverInterval = setInterval(driverBidingList, 5000, OrderId,product_id,vendor_id);
+    driverInterval = setInterval(driverBidingList, 5000, OrderId,product_id,vendor_id,taskType);
 
-    function driverBidingList(id,product_id,vendor_id) {
+    function driverBidingList(id,product_id,vendor_id,taskType) {
         $.ajax({
             type: "POST",
             dataType: 'json',
             url: driver_biding_list_url,
-            data : { order_id: id },
+            data : { order_id: id, task_type: taskType },
             success: function(response) {
+                console.log({response});
                 if(response.status == 'Success'){
                     let driver_biding_list = _.template($('#driver_biding_list').html());
                     if((response.data.biddata).length != 0)
