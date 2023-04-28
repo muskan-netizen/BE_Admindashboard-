@@ -959,6 +959,11 @@ class HomeController extends BaseController
     }
     public function searchCategories($langId, $keyword, $limit, $page)
     {
+
+        $orderBy = "  ";
+        foreach ($keyword as $key=>$word) {
+            $orderBy .= " WHEN cts.name LIKE '$word%' THEN ".$key."  ";
+        }
         $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
             ->leftjoin('types', 'types.id', 'categories.type_id')
             ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to')
@@ -973,7 +978,9 @@ class HomeController extends BaseController
                         ->orWhere('categories.slug', 'LIKE', '%' . $word . '%')
                         ->orWhere('cts.trans-slug', 'LIKE', '%' . $word . '%');
                 }
-            })->orderBy('categories.parent_id', 'asc')
+            })
+            ->orderByRaw("CASE ".$orderBy." ELSE 10 END, cts.name")
+            ->orderBy('categories.parent_id', 'asc')
             ->orderBy('categories.position', 'asc')
             ->groupBy('cts.category_id')
             // ->limit(5)->get();
@@ -998,6 +1005,11 @@ class HomeController extends BaseController
 
     public function  searchVendors($langId, $keyword, $limit, $page, $action, $latitude, $longitude)
     {
+
+        $orderBy = "  ";
+        foreach ($keyword as $key=>$word) {
+            $orderBy .= " WHEN name LIKE '$word%' THEN ".$key."  ";
+        }
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'slots_with_service_area')->first();
         $categoryTypes = getServiceTypesCategory($action);
         $vendors = Vendor::whereHas('getAllCategory.category', function ($q) use ($categoryTypes) {
@@ -1039,6 +1051,7 @@ class HomeController extends BaseController
                 $q->orwhere('name', 'LIKE', '%' . $word . '%')->orWhere('address', 'LIKE', '%' . $word . '%');
             }
         })->where('status', 1)
+        ->orderByRaw("CASE ".$orderBy." ELSE 10 END, name")
             // ->limit(5)->get();
             ->paginate($limit, $page);
 
@@ -1061,6 +1074,10 @@ class HomeController extends BaseController
     }
     public function searchBrand($langId, $keyword, $limit, $page)
     {
+        $orderBy = "  ";
+        foreach ($keyword as $key=>$word) {
+            $orderBy .= " WHEN bt.title LIKE '$word%' THEN ".$key."  ";
+        }
         $brands = Brand::join('brand_translations as bt', 'bt.brand_id', 'brands.id')
             ->select('brands.id', 'bt.title  as dataname', 'image')
             ->where(function ($q) use ($keyword) {
@@ -1071,7 +1088,8 @@ class HomeController extends BaseController
 
             ->where('brands.status', '!=', '2')
             ->where('bt.language_id', $langId)
-            ->orderBy('brands.position', 'asc')
+            ->orderByRaw("CASE ".$orderBy." ELSE 10 END, bt.title")
+            // ->orderBy('brands.position', 'asc')
             // ->limit(5)->get();
             ->paginate($limit, $page);
         $brand_results = [];
@@ -1093,6 +1111,10 @@ class HomeController extends BaseController
 
     public function searchProduct($langId, $keyword, $limit, $page, $action, $latitude, $longitude)
     {
+        $orderBy = "  ";
+        foreach ($keyword as $key=>$word) {
+            $orderBy .= " WHEN pt.title LIKE '$word%' THEN ".$key."  ";
+        }
         $allowed_vendors = $this->getServiceAreaVendors($latitude, $longitude, $action);
         $products = Product::byProductCategoryServiceType($action)->with(['category.categoryDetail.translation' => function ($q) use ($langId) {
             $q->where('category_translations.language_id', $langId);
@@ -1109,6 +1131,7 @@ class HomeController extends BaseController
                 }
             })->where('products.is_live', 1)->whereNull('deleted_at')->groupBy('products.id')
             ->whereIn('vendor_id', $allowed_vendors)
+            ->orderByRaw("CASE ".$orderBy." ELSE 10 END, pt.title")
             ->paginate($limit, $page);
         $product_results = [];
         foreach ($products as $product) {
@@ -1125,13 +1148,39 @@ class HomeController extends BaseController
         return 0;
     }
 
+    private  function createSearchKeywords($request){
+        $searchQuery = $request->keyword;
+        $results = $keyword = explode(' ', $searchQuery);
+
+        for ($i = 0; $i < count($keyword); $i++) {
+            for ($j = $i + 1; $j < count($keyword); $j++) {
+                $result = $keyword[$i] . ' ' . $keyword[$j];
+                array_push($results, $result);
+            }
+        }
+        
+        // Add three-word combinations to the results
+        for ($i = 0; $i < count($keyword); $i++) {
+            for ($j = $i + 1; $j < count($keyword); $j++) {
+                for ($k = $j + 1; $k < count($keyword); $k++) {
+                    $result = $keyword[$i] . ' ' . $keyword[$j] . ' ' . $keyword[$k];
+                    array_push($results, $result);
+                }
+            }
+        }
+
+       return array_reverse($results);
+    }
+
     public function globalSearch(Request $request, $for = 'all', $dataId = 0)
     {
         // return 1;
         try {
             $for = $request->view_type ?? 'all';
-            $searchQuery = $request->keyword;
-            $keyword = explode(' ', $searchQuery);
+            
+            $keyword = $this->createSearchKeywords($request);
+            // Display the results
+            // print_r($keyword);
             $langId = Auth::user()->language;
             $curId = Auth::user()->language;
             $limit = $request->has('limit') ? $request->limit : 10;
