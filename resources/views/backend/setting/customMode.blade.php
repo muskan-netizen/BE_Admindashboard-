@@ -557,6 +557,20 @@
 </div>
 </div>
 
+<div class="col-md-4">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_road_side_switch" class="mr-2 mb-0">{{ __('Road Side') }}<small
+                class="d-block pr-5">{{ __('Enable to allow customers to book Road Side.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_road_side_switch"
+                id="is_road_side_switch" class="form-control checkbox_change"
+                data-className="is_road_side" data-color="#43bee1"
+                @if ($getAdditionalPreference['is_road_side'] == 1) checked='checked' @endif>
+        </span>
+        <input type="hidden"
+            @if ($getAdditionalPreference['is_road_side'] == 1) value="1" @else value="0" @endif
+            name="is_road_side" id="is_road_side" />
+    </div>
+</div>
 
 <div class="col-md-4">
 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
