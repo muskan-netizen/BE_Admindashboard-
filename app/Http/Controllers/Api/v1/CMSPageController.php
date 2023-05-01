@@ -106,6 +106,7 @@ class CMSPageController extends BaseController
             $data['driver_types'] = $driver_types;
             $data['teams'] = $driverDocs['all_teams'];
             $data['tags'] = $driverDocs['agent_tags'];
+            
         }
 
         return $this->successResponse($data, '', 200);
