@@ -138,7 +138,6 @@ class CategoryController extends FrontController{
         
         $listData = $this->listData($langId, $category->id, $redirect_to,$vendorIds,false);
         $maxPrice = DB::select("SELECT MAX(product_variants.price) as max_price FROM product_variants INNER JOIN products ON products.id = product_variants.product_id WHERE product_variants.status = 1 AND products.is_live = 1 AND products.category_id = ?", [$category->id])[0]->max_price;
-        \Log::info($maxPrice);
         $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';
         // $newProducts =  $this->getNewProducts($vendorIds, $langId, $curId);
         $productAttributes = '';        
