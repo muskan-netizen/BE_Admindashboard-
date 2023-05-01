@@ -30,7 +30,7 @@ class CMSPageController extends BaseController
         })
             ->where(['page_translations.language_id' => $locallanguage, 'page_translations.is_published' => 1])
            // ->orderBy('pages.id', 'Desc')
-            ->orderBy('pages.order_by','ASC')
+            ->orderBy('pages.order_by','ASC')->groupBy('pages.id')
             ->get([
                 'page_translations.id',
                 'pages.slug',

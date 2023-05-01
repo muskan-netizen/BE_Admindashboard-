@@ -681,8 +681,8 @@
 			<div class="container p2p-full-width">
 				<div class="row ">
 					<div class="col-md-12">
-						<div class=" top-heading text-center">
-							<h2 class="h2-heading">{{$homePageLabel->slug=='top_rated' ? __('Top')." ".getNomenclatureName('Rated', true) : __($homePageLabel->title)}}</h2>
+						<div class=" top-heading text-center d-flex justify-content-between">
+							<h2 class="col h2-heading">{{$homePageLabel->slug=='top_rated' ? __('Top')." ".getNomenclatureName('Rated', true) : __($homePageLabel->title)}}</h2>
 							<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>
 						</div>
 					</div>

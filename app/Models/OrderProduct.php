@@ -156,4 +156,8 @@ class OrderProduct extends Model{
     public function RecurringService(){
       return $this->hasMany('App\Models\OrderLongTermServiceSchedule', 'order_vendor_product_id', 'id');
     }
+
+    public function order_vendor(){
+      return $this->belongsTo('App\Models\OrderVendor', 'order_vendor_id', 'id');
+  }
 }

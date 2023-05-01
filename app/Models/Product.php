@@ -509,7 +509,10 @@ class Product extends Model implements Auditable
   {
     return $this->belongsTo('App\Models\VehicleEmissionType', 'emission_type_id', 'id')->select('id', 'emission_type', 'desc');
   }
+
   public function syncProductDeliverySlot(){
     return $this->belongsToMany('App\Models\DeliverySlot', 'delivery_slots_product', 'product_id', 'delivery_slot_id')->withTimestamps();
   }
+
+
 }
