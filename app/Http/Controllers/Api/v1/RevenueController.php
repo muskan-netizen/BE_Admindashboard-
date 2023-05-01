@@ -89,7 +89,6 @@ class RevenueController extends Controller
             $total_revenue = Order::whereHas('vendors', function($q) use($vendor_id){
                 $q->where('vendor_id', $vendor_id)->where('order_status_option_id','!=',3);
             })->orderBy('id','desc');
-
             if (Auth::user()->is_superadmin == 0) {
                 $total_revenue = $total_revenue->whereHas('vendors.vendor.permissionToUser', function ($query) {
                     $query->where('user_id', Auth::user()->id);
