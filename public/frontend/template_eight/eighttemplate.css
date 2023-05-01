@@ -1768,7 +1768,7 @@ body.al_body_template_eight .outter-fillter-data .product-card-box.position-rela
 }
 
 body.al_body_template_eight.homeHeader .outter-fillter-data .product-wrapper-grid .product-image img {
-    position: relative;
+    position: absolute;
     height: auto;
     width: 100%;
     object-fit: fill;
@@ -1798,7 +1798,7 @@ body.al_body_template_eight .page-main-content .col-grid-box {
     padding: 0 0 10px;
     border-radius: 15px;
     /* box-shadow: 0px 4px 10px rgb(0 0 0 / 10%); */
-    border:1px solid#e5e3e3;
+    /* border:1px solid#e5e3e3; */
     overflow: hidden;
     max-width: 23%;
     margin-right: 20px;
