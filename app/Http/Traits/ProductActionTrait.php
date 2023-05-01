@@ -437,6 +437,7 @@ trait ProductActionTrait{
 
             $sqlParams = [$type_id, $status, $langId, $langId, $status, $status];
             
+            
             $products = DB::select( DB::raw($raw_query), $sqlParams);
             
             $returnArray = $products;
