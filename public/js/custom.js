@@ -2302,12 +2302,15 @@ $(document).ready(function () {
                     var token_val = response.token_val;
                     // console.log(cart_details);
                     if (cart_details!= undefined) {
+						
                         // if((response.is_token_enable == 1) && (response.token_val > 0) ){
                         //     response.token_val;
                         // }
                         OrderStorage.setStorageSingle('cartData',JSON.stringify(cart_details));
                         if (cart_details.products.length > 0) {
-                            $(`input:radio[name=address_id][value=${cart_details.address_id}]`).prop('checked', true)
+							if(cart_details.address_id != ''){
+                            	$(`input:radio[name=address_id][value=${cart_details.address_id}]`).prop('checked', true);
+                        	}
                             OrderStorage.setStorageSingle('cartAddressId',cart_details.address_id);
                             OrderStorage.setStorageSingle('cartProductCount',cart_details.products.length);
                             OrderStorage.setStorageSingle('cartFirstProductId',cart_details.products[0].product_id);

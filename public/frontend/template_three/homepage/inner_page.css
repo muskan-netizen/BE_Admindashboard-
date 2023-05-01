@@ -3570,6 +3570,16 @@ footer#footer {
     .al_body_template_three .tip_label {
         padding: 5px 8px;
     }
+    .product-image {
+        height: auto !important;
+        min-width: auto !important;
+    }
+    .img-outer-box{
+        min-height: auto !important;
+    }
+    body.al_body_template_three .main-fillter .side_fillter{margin-top:0px !important;}
+    .collection-filter { margin: 0px;padding: 0px 6px;}
+    .al_body_template_three .cab-banner-area .container-fluid{padding:12px 20px !important;}
 }
 
 

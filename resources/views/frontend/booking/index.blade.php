@@ -565,6 +565,7 @@
                         <div class="row no-gutters">
                             <div class="col vehicle-details">
                                 <h4 class="m-0"><b><%= result.name %></b></h4>
+                               <h6 class="m-0"><%= result.description %></h6>
                             </div>
                             <div class="col ride-price pl-2 text-right">
                             <p class="mb-0"><b>{{Session::get('currencySymbol')}}<%= result.tags_price%></b></p>
@@ -592,6 +593,7 @@
                     <% _.each(results, function(result, key){%>
                                 <a href="javascript:void(0)" class="vehical-view-box-bid-ride" data-totalTagPrice="<%= result.tags_price%>" data-totalMinTagPrice="<%= result.total_minimum%>" data-totalDistance="<%= result.distance%>" data-product_id="<%= result.id %>" data-productName="<%= result.name %>"><img src="<%= result.image_url %>">
                                 <h5 class="m-0 text-center"><%= result.name %></h5>
+                               <h6 class="m-0"><%= result.description %></h6>
                                 </a>
                     <% }); %>
                             </div>
