@@ -1,4 +1,4 @@
-@extends('layouts.store', ['title' => '{{__('Forgot Password')}}'])
+@extends('layouts.store', ['title' => {{__('Forgot Password')}}])
 @section('css')
 <style type="text/css">
     .main-menu .brand-logo {
