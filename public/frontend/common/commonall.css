@@ -5,7 +5,9 @@
 .al_body_template_one ul.header-dropdown li span {
     font-size: 12px;
 }
-
+body .pac-container{
+	z-index:1051 !important;
+}
 .navigation-tab {
     border-radius: 40px;
     background: none !important;
