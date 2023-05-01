@@ -46,7 +46,6 @@ class CMSPageController extends BaseController
         $code = $request->header('code');
         $client = Client::where('code',$code)->first();
         $server_url = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/";
-
         $data['terms_and_conditions'] = $server_url . 'page/terms-conditions';
         $data['privacy_policy'] = $server_url . 'page/privacy-policy';
 
