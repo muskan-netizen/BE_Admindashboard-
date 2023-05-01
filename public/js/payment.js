@@ -3161,6 +3161,8 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
         let cartElement         = $("input[name='cart_total_payable_amount']");
         let walletElement       = $("input[name='wallet_amount']");
         let subscriptionElement = $("input[name='subscription_amount']");
+        let subscription_id     = $("input[name='subscription_id']");
+
         let ajaxData = {};
         console.log(path.indexOf("wallet") !== -1);
         if (path.indexOf("cart") !== -1) {
@@ -3171,22 +3173,17 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
             total_amount = walletElement.val();
             payment_from = 'wallet';
         }else if (path.indexOf("subscription") !== -1) {
-            total_amount = subscriptionElement.val();
-            payment_from = 'subscription';
+            total_amount            = subscriptionElement.val();
+            payment_from            = 'subscription';
+            ajaxData.subscriptionId = subscription_id.val()
         }
-        // if (cartElement.length > 0) {
-        //     total_amount = cartElement.val();
-        //     tip = tipElement.val();
-        //     ajaxData.tip = tip;
-        // } else if (walletElement.length > 0) {
-        //     total_amount = walletElement.val();
-        // }
 
-        ajaxData.amount       = total_amount;
-        // ajaxData.returnUrl    = path;
-        ajaxData.cancelUrl    = path;
-        ajaxData.order_number = order.order_number;  // order.order_number
-        ajaxData.payment_from = payment_from;
+
+        ajaxData.amount         = total_amount;
+        ajaxData.cancelUrl      = path;
+        ajaxData.order_number   = order.order_number;  // order.order_number
+        ajaxData.payment_from   = payment_from;
+
 
         $.ajax({
             type: "POST",

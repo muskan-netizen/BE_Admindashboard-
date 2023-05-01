@@ -4,7 +4,7 @@
  $hidereturn = 1;  ?>
 @break
 @default
-<?php $ordertitle = 'Orders'; 
+<?php $ordertitle = 'Orders';
  $hidereturn = 0;
 ?>
 
@@ -19,7 +19,7 @@ $orderTitles = [
 $clientData = \App\Models\Client::select('socket_url')->first();
 
 if($additionalPreference['is_service_product_price_from_dispatch'] == 1){
-    $hidereturn = 1; 
+    $hidereturn = 1;
     $orderTitles = [
         'Active' => "Confirmed ",
         'Past'   =>  "Done ",
@@ -302,12 +302,12 @@ $timezone = Auth::user()->timezone;
                                                         aria-selected="false"><i
                                                             class="icofont icofont-man-in-glasses"></i>{{ __('Long Term Serivces') }}</a>
                                                     <div class="material-border"></div>
-                                                </li>
+                                            </li>
                                             @endif
                                         </ul>
                                         <div class="tab-content nav-material al" id="top-tabContent">
                                             @if($additionalPreference['is_service_product_price_from_dispatch'] == 1)
-                                             {{-- @include('frontend.account.orders.pending_orders') --}}
+                                             @include('frontend.account.orders.pending_orders')
                                             @endif
                                             @include('frontend.account.orders.active_orders')
                                             @include('frontend.account.orders.past_orders')
@@ -320,7 +320,7 @@ $timezone = Auth::user()->timezone;
 
                                         </div>
                                     </div>
-                                   
+
                                 </div>
                             </div>
                         </div>
@@ -678,7 +678,7 @@ $timezone = Auth::user()->timezone;
     });
     var ajaxCall = 'ToCancelPrevReq';
     var credit_tip_url = "{{ route('user.tip_after_order') }}";
-    var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";    
+    var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
     var payment_stripe_url = "{{ route('payment.stripe') }}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
     var create_payphone_url = "{{route('payphone.createHash')}}";
@@ -721,7 +721,7 @@ $timezone = Auth::user()->timezone;
     var confirm_discard_edit_order_desc = "{{__('You want to discard editing Order.')}}";
     var success_error_container = ".order_response";
     var payment_option_list_url = "{{route('payment.option.list')}}";
-    var user_cards_url = "{{ route('payment.azulpay.getCards') }}";        
+    var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
      @if(!empty($client_preference_detail->is_postpay_enable))
         var post_pay_edit_order = "{{$client_preference_detail->is_postpay_enable}}";
     @else
@@ -1084,7 +1084,7 @@ $(document).delegate(".order_placed_btn_pending", "click", function() {
 
 
 
-    
+
     $(document).on('click', '#extend-btn', function(){
         $.ajax({
             data: {},
@@ -1100,7 +1100,7 @@ $(document).delegate(".order_placed_btn_pending", "click", function() {
                     let payment_method_template = _.template($('#payment_method_template').html());
                     $("#v_pills_tab").append(payment_method_template({ payment_options: response.data }));
                     let payment_method_tab_pane_template = _.template($('#payment_method_tab_pane_template').html());
-                    
+
                     $("#v_pills_tabContent").append(payment_method_tab_pane_template({ payment_options: response.data }));
                     $('#extend_order_rental').modal('hide');
                     $('#proceed_to_pay_modal').modal('show');
@@ -1135,9 +1135,9 @@ $(document).delegate(".order_placed_btn_pending", "click", function() {
         });
         // $('#proceed_to_pay_modal').modal();
     });
-    
+
     function addSlashes (element) {
-	
+
     let ele = document.getElementById(element.id);
     ele = ele.value.split('/').join('');    // Remove slash (/) if mistakenly entered.
     if(ele.length < 4 && ele.length > 0){
@@ -1146,7 +1146,7 @@ $(document).delegate(".order_placed_btn_pending", "click", function() {
         document.getElementById(element.id).value = finalVal;
     }
 }
-    
+
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/additional-methods.min.js"></script>

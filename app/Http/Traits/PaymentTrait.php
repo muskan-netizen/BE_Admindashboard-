@@ -7,7 +7,7 @@ trait PaymentTrait{
     {
         if($type=='cart')
         {
-            $paymentOptions = ['cod','azul', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','offline_manual','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash','dpo','openpay','userede','upay','conekta','telr','khalti','plugnpay','nmi','yappy','skip_cash'];
+            $paymentOptions = ['cod','azul', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','offline_manual','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash','dpo','openpay','userede','upay','conekta','telr','khalti','plugnpay','nmi','yappy','skip_cash','obo'];
 
         }elseif($type=='Subscription')
         {
@@ -19,11 +19,11 @@ trait PaymentTrait{
 
         }elseif($type=='pickup_delivery')
         {
-            $paymentOptions = ['cod','azul', 'dpo', 'razorpay','paystack','stripe','payfast','offline_manual','authorize_net','payphone','khalti','flutterwave','plugnpay','nmi','yappy','skip_cash'];
+            $paymentOptions = ['cod','azul', 'dpo', 'razorpay','paystack','stripe','payfast','offline_manual','authorize_net','payphone','khalti','flutterwave','plugnpay','nmi','yappy','skip_cash','obo'];
 
         }elseif($type=='tip')
         {
-            $paymentOptions = [];
+            $paymentOptions = ['obo'];
 
         }elseif($type=='payout')
         {

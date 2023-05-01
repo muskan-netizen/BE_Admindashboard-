@@ -60,7 +60,7 @@ class OboPaymentController extends Controller
                     $UrlParams   = "transactionid=$orderNumber&paymentfrom=wallet&success=true";
                 }elseif ($request->payment_from == 'subscription') {
                     $orderNumber = $number;
-                    $UrlParams   = "transactionid=$orderNumber&paymentfrom=subscription&success=true";
+                    $UrlParams   = "transactionid=$orderNumber&subscription_id=$request->subscriptionId&amount=$request->amount&success=true";
                 }
                 if ($this->testMode == 1) {
                     $apiUrl = "https://www.obo-pay.co.rw/test/payments/v1/payment";
@@ -122,13 +122,32 @@ class OboPaymentController extends Controller
                 }
             } elseif ($request->paymentfrom == 'wallet') {
                 $payment = Payment::where('transaction_id', $transactionId)->first();
+                if ($payment) {
+                    $payment->viva_order_id = $transactionId;
+                    $payment->save();
+                }
                 $user    = auth()->user();
                 $wallet  = $user->wallet;
                 $wallet->depositFloat($payment->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $payment->transaction_id . '</b>']);
                 return redirect()->route('user.wallet');
-            }elseif ($request->paymentfrom == 'subscription') {
+            }elseif (isset($request->subscription_id)) {
                 $payment = Payment::where('transaction_id', $transactionId)->first();
-                
+                if ($payment) {
+                    $payment->viva_order_id = $transactionId;
+                    $payment->save();
+                }
+
+                $data['transaction_id'] = $payment->transaction_id;
+                $data['payment_option_id'] = 55;
+                $data['subsid'] = $request->subscription_id;
+                $data['subscription_id'] = $request->subscription_id;
+                $data['amount'] = $request->amount;
+
+                $request = new \Illuminate\Http\Request($data);
+
+                $subscriptionController = new UserSubscriptionController();
+                $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
+                return redirect()->route('user.subscription.plans');
 
             }
         } else {
@@ -171,7 +190,6 @@ class OboPaymentController extends Controller
                 'payment_from'=>$request->user_from ?? 'web'
             ]);
         }elseif ($request->payment_from == 'subscription') {
-            $time = $request->subsid??$request->subscription_id . '_' . time();
             Payment::create([
                 'amount' => 0,
                 'transaction_id' => $time,
