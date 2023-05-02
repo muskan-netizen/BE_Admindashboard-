@@ -1151,7 +1151,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
 @endsection
 @section('script')
 <script>
-    var recurringformPost = '';
+    var recurringformPost = {};
     var maximumquantitylert = "{{__('Quantity is not available in stock')}}";
     var minimumquantitylert = "{{__('Minimum Quantity count is')}}";
 
