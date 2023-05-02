@@ -314,7 +314,7 @@ class Product extends Model implements Auditable
   public function OrderProduct()
   {
     return $this->hasMany('App\Models\OrderProduct')->where(function ($q) {
-      $q->groupBy('order_id ');
+      $q->groupBy('order_id');
     });
   }
 
