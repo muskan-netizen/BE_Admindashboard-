@@ -3088,7 +3088,7 @@ $(document).ready(function () {
             }
         }
 
-
+        
        // Recuring booking code
         if($('#is_recurring_booking').length > 0){
             // var booking_type   = $('input[name="booking_type"]:checked').val();
@@ -3098,6 +3098,8 @@ $(document).ready(function () {
                 sweetAlert.error('',message);
                 return false;
             }
+        }else{
+            var recurringformPost = {};
         }
 
 
