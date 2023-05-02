@@ -36,6 +36,7 @@ class CMSPageController extends BaseController
                 'pages.slug',
                 'page_translations.title',
             ]);
+            $pages = $pages->unique('slug')->values()->all();
         return $this->successResponse($pages, '', 201);
     }
 
