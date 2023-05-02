@@ -1957,6 +1957,15 @@ class OrderController extends FrontController
                         $total_service_fee = $total_service_fee + $service_fee_percentage_amount;
                         $vendor_payable_amount += $service_fee_percentage_amount;
                     }
+                    
+                    if ($vendor_cart_product->vendor->fixed_service_charge > 0) {
+                        // $vendor_service_fee_percentage_amount = ($vendor_payable_amount * $vendor_cart_product->vendor->service_fee_percent) / 100; // wrong percentage_amount
+                        $service_fee_percentage_amount        = $vendor_cart_product->vendor->service_charge_amount;
+                        $vendor_service_fee_percentage_amount = $vendor_service_fee_percentage_amount + $service_fee_percentage_amount;
+                        $payable_amount += $service_fee_percentage_amount;
+                        $total_service_fee = $total_service_fee + $service_fee_percentage_amount;
+                        $vendor_payable_amount += $service_fee_percentage_amount;
+                    }
 
                     $cart_addons = CartAddon::where('cart_product_id', $vendor_cart_product->id)->get();
                     if ($cart_addons) {
