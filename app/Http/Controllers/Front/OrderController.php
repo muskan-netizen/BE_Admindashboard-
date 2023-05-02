@@ -1374,7 +1374,6 @@ class OrderController extends FrontController
                 0,
                 1
             ])
-                ->where('cart_id', $cart->id)
                 ->orderBy('created_at', 'asc')
                 ->get();
 
