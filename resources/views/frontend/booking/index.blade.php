@@ -785,7 +785,7 @@ input[type=number]::-webkit-outer-spin-button {
                                     <i class="fa fa-minus" aria-hidden="true"></i> 10
                                 </button>
                             </span>
-                            <input type="number" name="cab_bid_price" value="<%= (result.total_tags_price)%>" id="cab_bid_price" class="form-control price-number-up-down text-center" min="10" max="">
+                            <input type="number" name="cab_bid_price" value="<%= (result.total_tags_price)%>" id="cab_bid_price" class="form-control price-number-up-down text-center" min="<%= (result.min_tags_price)%>" max="">
                             <span class="input-group-btn ml-10">
                                 <button type="button" class="btn btn-success btn-price-up-down" data-type="plus">
                                     <i class="fa fa-plus" aria-hidden="true"></i> 10
