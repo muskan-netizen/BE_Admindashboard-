@@ -1629,6 +1629,7 @@ input[type=number]::-webkit-outer-spin-button {
         integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="{{ asset('js/cab_booking.js') }}"></script>
+    <script src="{{ asset('js/biding.js') }}"></script>
     <script>
         var category_id = "{{ $category->id ?? '' }}";
         var category_name = "{{ @$category->translation[0]->name ?? '' }}";
