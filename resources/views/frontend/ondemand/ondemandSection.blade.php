@@ -442,7 +442,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                         @php
                                          $last_cart_product_id =  $cart_data->id
                                          @endphp
-                                        @if(($cart_data->cateTypeId ==8) && ($additionalPreference['is_service_product_price_from_dispatch'] !=1))
+                                        @if( in_array($cart_data->cateTypeId , [8,12]) && ($additionalPreference['is_service_product_price_from_dispatch'] !=1))
                                             @if(!empty($cart_data->product->mode_of_service) && $cart_data->product->mode_of_service == 'schedule')
                                             @php
                                                 $productDate = trim(date('Y-m-d', strtotime($cart_data->scheduled_date_time)));
