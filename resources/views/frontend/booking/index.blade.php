@@ -802,6 +802,16 @@ input[type=number]::-webkit-outer-spin-button {
                 </div>
             </div>
 
+            <div class="payment-promo-container p-2 d-none" id="paymentMethods">
+                <input type="hidden" id="payment-method-for-bid" value="1">
+                <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal_bid" type='bid'>
+                    <span id="payment_type_bid">
+                        <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
+                    </span>
+                    <i class="fa fa-angle-down" aria-hidden="true"></i>
+                </h4>
+            </div>
+            
             <div id="driver_acceptance_list" class="d-none"> 
                 <div class="text-loader"> 
                     <i class="fa fa-circle-o-notch fa-spin"></i>
@@ -833,15 +843,6 @@ input[type=number]::-webkit-outer-spin-button {
             </div> --}}
         </script>
 
-        <div class="payment-promo-container p-2 d-none" id="paymentMethods">
-            <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal_bid" type='bid'>
-                <span id="payment_type_bid">
-                    <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
-                </span>
-                <i class="fa fa-angle-down" aria-hidden="true"></i>
-            </h4>
-        </div>
-
         <script type="text/template" id="driver_biding_list">
             <div>
                 <% _.each(results, function(result, key){%>
@@ -852,7 +853,7 @@ input[type=number]::-webkit-outer-spin-button {
                             <h4><%=result.driver_name%></h4>
                             <p>Price<span>{{Session::get('currencySymbol')}} <%=parseFloat(result.bid_price).toFixed(2)%></span></p>
                             {{-- <button class="btn-solid btn" type="button" id="accept_driver_bid" data-bid_id="<%=result.id%>">Accept</button> --}}
-                            <button class="btn btn-solid w-100" id="pickup_now_bid" data-payment_method="1" data-product_id="<%= product_id %>" data-driver_id="<%= result.driver_id %>" data-bid_id="<%=result.id%>" data-coupon_id =""  data-subscriptionPayableAmount ="" data-vendor_id="<%= vendor_id %>" data-amount="<%= result.bid_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Accept')}}</button>
+                            <button class="btn btn-solid w-100" id="pickup_now_bid" data-payment_method="1" data-product_id="<%= product_id %>" data-driver_id="<%= result.driver_id %>" data-bid_id="<%=result.id%>" data-coupon_id =""  data-subscriptionPayableAmount ="" data-vendor_id="<%= vendor_id %>" data-amount="<%= result.bid_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now" booking-type="bid">{{__('Accept')}}</button>
 
                         </div>
                     </div>
