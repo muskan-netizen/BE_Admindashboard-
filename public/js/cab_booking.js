@@ -399,6 +399,9 @@ $(document).ready(function () {
                     else if(payment_option_id == 52){
                         paymentViaSkipCash('',response.data);
                     }
+                    else if(payment_option_id == 22){
+                        payWithCcAvenue('',response.data);
+                    }
                     cabBookingPaymentOptions(payment_option_id, response.data);
                 }else{
                     $('#show_error_of_booking').html(response.message);
