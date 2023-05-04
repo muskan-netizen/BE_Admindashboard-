@@ -83,6 +83,7 @@ class SendCampaignNotification extends Command
                 });
                 if (count($chunk_notifications) > 0) {
                         CampaignSendNotificationJob::dispatch($chunk_notifications, $client_preferences, $headers);
+                        DB::disconnect($database_name);
                 }
             } else {
 
