@@ -75,9 +75,14 @@ class CcavenueController extends Controller
 
         }elseif($request->from == 'subscription')
         {
-            $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
+            $time = ($request->transaction_id)??'PD_'.time();
             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d')]);
             
+        }
+        elseif($request->from == 'pickup_delivery')
+        {
+            $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
+            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'pickup_delivery','date'=>date('Y-m-d')]);
         }
         return $time;
    }
