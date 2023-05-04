@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -19,7 +18,7 @@ use Illuminate\Support\Facades\Log;
 
 class CampaignSendNotificationJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable;
     protected $allNotifications;
     protected $client_preferences;
     protected $headers;
@@ -41,13 +40,11 @@ class CampaignSendNotificationJob implements ShouldQueue
      * @return void
      */
 
-        public function handle()
-        {
+    public function handle(){
         $allNotifications = $this->allNotifications;
         $client_preferences = $this->client_preferences;
         $headers = $this->headers;
         foreach ($allNotifications as $key => $notifications) {
-
             //CampaignRoster::where('id',6290)->delete();
             //	type => 1 sms, 2 email, 3 push notification
             switch ($key) {
@@ -87,7 +84,6 @@ class CampaignSendNotificationJob implements ShouldQueue
                 case '2':
                     //send email
                     foreach ($notifications as $key => $singlenotification) {
-
                         try {
                             if (!empty($client_preferences->mail_driver) && !empty($client_preferences->mail_host) && !empty($client_preferences->mail_port) && !empty($client_preferences->mail_password) && !empty($client_preferences->mail_encryption)) {
                                 $useremail = $singlenotification->user->email;
