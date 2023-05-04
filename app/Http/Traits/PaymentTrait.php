@@ -19,7 +19,7 @@ trait PaymentTrait{
 
         }elseif($type=='pickup_delivery')
         {
-            $paymentOptions = ['cod','azul', 'dpo', 'razorpay','paystack','stripe','payfast','offline_manual','authorize_net','payphone','khalti','flutterwave','plugnpay','nmi','yappy','skip_cash'];
+            $paymentOptions = ['cod','azul', 'dpo', 'razorpay','paystack','stripe','payfast','offline_manual','authorize_net','payphone','khalti','flutterwave','plugnpay','nmi','yappy','skip_cash','ccavenue'];
 
         }elseif($type=='tip')
         {

@@ -2421,11 +2421,17 @@ class OrderController extends FrontController
                         $user_vendors = UserVendor::where([
                             'vendor_id' => $vendor_value->vendor_id
                         ])->pluck('user_id');
-                        $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
+
+                        if ($request->payment_option_id == 1 || $order->is_postpay == 1 || $order->payment_status == 1) {
+                            $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
+                        }
                     }
                     $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
                     $super_admin = User::where('is_superadmin', 1)->pluck('id');
-                    $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+                    
+                    if ($request->payment_option_id == 1 || $order->is_postpay == 1 || $order->payment_status == 1) {
+                        $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+                    }
                 } else {
                     $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
 
