@@ -207,7 +207,9 @@ class OrderController extends BaseController
                     $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
                     $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
 
-                    $cart_products = CartProduct::with('product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon', 'product.addon','vendorProducts.productVariantByRoles')->where('cart_id', $cart->id)->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
+                    $cart_products = CartProduct::with(['product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon' => function ($query) use ($cart) {
+                        $query->where('cart_id', $cart->id);
+                    },'coupon.promo', 'product.addon','vendorProducts.productVariantByRoles'])->where('cart_id', $cart->id)->where('status', [0, 1])->orderBy('created_at', 'asc')->get();
                     $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0;
                     $total_subscription_discount = 0;
 
@@ -831,6 +833,15 @@ class OrderController extends BaseController
                             $vendor_service_fee_percentage_amount = $vendor_service_fee_percentage_amount + $service_fee_percentage_amount;
                             $vendor_payable_amount += $service_fee_percentage_amount;
                             $payable_amount += $service_fee_percentage_amount;
+                        }
+                        
+                        if ($vendor_cart_product->vendor->fixed_service_charge > 0) {
+                            // $vendor_service_fee_percentage_amount = ($vendor_payable_amount * $vendor_cart_product->vendor->service_fee_percent) / 100; // wrong percentage_amount
+                            $service_fee_percentage_amount        = $vendor_cart_product->vendor->service_charge_amount;
+                            $vendor_service_fee_percentage_amount = $vendor_service_fee_percentage_amount + $service_fee_percentage_amount;
+                            $payable_amount += $service_fee_percentage_amount;
+                            $total_service_fee = $total_service_fee + $service_fee_percentage_amount;
+                            $vendor_payable_amount += $service_fee_percentage_amount;
                         }
 
                         //End applying service fee on vendor products total

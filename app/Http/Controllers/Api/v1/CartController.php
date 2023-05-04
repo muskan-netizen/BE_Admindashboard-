@@ -155,7 +155,7 @@ class CartController extends BaseController
             $client_timezone = DB::table('clients')->first('timezone');
             $timezone        = $user->timezone ? $user->timezone :  ($client_timezone->timezone ?? 'Asia/Kolkata' );
             $unique_identifier = '';
-            if (!$user_id) {
+            if (@$user_id) {
                 if (empty($user->system_user)) {
                     return $this->errorResponse(__('System id should not be empty.'), 404);
                 }
@@ -197,7 +197,7 @@ class CartController extends BaseController
 
 
             $additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
-            if( ($luxury_option->id == 6) && ($additionalPreference['is_service_product_price_from_dispatch'] ==1) ){
+            if( (@$luxury_option->id == 6) && ($additionalPreference['is_service_product_price_from_dispatch'] ==1) ){
                 $CartProduct = CartProduct::where(['cart_id' => $cart_detail->id])->select('id','dispatch_agent_id')->first();
                 $dispatcherAgentData= $request->has('dispatcherAgentData') ? $request->dispatcherAgentData : [];
                 $request_dispatch_agent_id = isset($dispatcherAgentData['agent_id'] ) ?  $dispatcherAgentData['agent_id']: "";
