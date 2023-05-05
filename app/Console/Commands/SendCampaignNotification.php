@@ -71,7 +71,7 @@ class SendCampaignNotification extends Command
                 ];
                 Config::set("database.connections.$database_name", $default);
                 DB::setDefaultConnection($database_name);
-                $client_preferences = ClientPreference::first(['fcm_server_key', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'mail_host', 'mail_port', 'mail_driver', 'mail_from', 'favicon']);
+                $client_preferences = ClientPreference::first(['fcm_server_key', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'mail_host', 'mail_port', 'mail_driver', 'mail_from', 'favicon', 'mail_password', 'mail_encryption']);
                 $from = $client_preferences->fcm_server_key ?? "";
                 $headers = [
                     'Authorization: key=' . $from,
@@ -82,11 +82,10 @@ class SendCampaignNotification extends Command
                     return $item->notofication_type;
                 });
                 if (count($chunk_notifications) > 0) {
-                        CampaignSendNotificationJob::dispatch($chunk_notifications, $client_preferences, $headers);
-                        DB::disconnect($database_name);
+                    CampaignSendNotificationJob::dispatch($chunk_notifications, $client_preferences, $headers);
+                    DB::disconnect($database_name);
                 }
             } else {
-
                 DB::disconnect($database_name);
             }
         }

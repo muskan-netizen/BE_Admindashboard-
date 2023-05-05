@@ -28,7 +28,8 @@ class CampaignSendNotificationJob implements ShouldQueue
      * @return void
      */
 
-    public function __construct($allNotifications, $client_preferences, $headers){
+    public function __construct($allNotifications, $client_preferences, $headers)
+    {
         $this->allNotifications = $allNotifications;
         $this->client_preferences = $client_preferences;
         $this->headers = $headers;
@@ -40,17 +41,19 @@ class CampaignSendNotificationJob implements ShouldQueue
      * @return void
      */
 
-    public function handle(){
+    public function handle()
+    {
         $allNotifications = $this->allNotifications;
         $client_preferences = $this->client_preferences;
         $headers = $this->headers;
         foreach ($allNotifications as $key => $notifications) {
+
             //CampaignRoster::where('id',6290)->delete();
             //	type => 1 sms, 2 email, 3 push notification
             switch ($key) {
                 case '1':
                     //send sms
-                    foreach ($notifications as $key => $singlenotification) {
+                    foreach ($notifications as  $singlenotification) {
 
                         try {
                             // $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
@@ -83,7 +86,8 @@ class CampaignSendNotificationJob implements ShouldQueue
                     break;
                 case '2':
                     //send email
-                    foreach ($notifications as $key => $singlenotification) {
+                    foreach ($notifications as  $singlenotification) {
+
                         try {
                             if (!empty($client_preferences->mail_driver) && !empty($client_preferences->mail_host) && !empty($client_preferences->mail_port) && !empty($client_preferences->mail_password) && !empty($client_preferences->mail_encryption)) {
                                 $useremail = $singlenotification->user->email;
@@ -108,6 +112,7 @@ class CampaignSendNotificationJob implements ShouldQueue
                                 //$this->sendEmail($client_preferences,$useremail,$email_subject,$email_body);
                             }
                         } catch (\Exception $ex) {
+                            Log::info($ex);
                         }
                     }
                     break;
@@ -117,8 +122,7 @@ class CampaignSendNotificationJob implements ShouldQueue
                     $redirect_URL = $notifications[0]->campaign->push_url_option_value;
                     $title =  $notifications[0]->campaign->push_title;
                     $body = $notifications[0]->campaign->push_message_body;
-                    $chunk = config('app.campaign_chunk') ?? 100;
-                    $bulkNotifications = $notifications->chunk($chunk);
+                    $bulkNotifications = $notifications->chunk(500);
                     foreach ($bulkNotifications as $bulkNotification) {
                         $tokens = $bulkNotification->pluck('device_token');
                         $roster_ids = $bulkNotification->pluck('id');
