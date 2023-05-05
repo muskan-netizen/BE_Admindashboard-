@@ -28,7 +28,7 @@
                 }
             }
         });
-        clearInterval(driverInterval);
+        // clearInterval(driverInterval);
    });
    var card = '';
    var stripe = '';
@@ -64,6 +64,7 @@
        $('#pickup_now').attr("data-payment_method",payment_method);
        $('#pickup_now_bid').attr("data-payment_method",payment_method);
        $('#pickup_later').attr("data-payment_method",payment_method);
+       $('#payment-method-for-bid').val(payment_method);
 
         //$("#payment_modal").modal('toggle');
    });
@@ -235,8 +236,13 @@ $(document).ready(function () {
 
     // please order dispatcher
     $(document).on("click", "#pickup_now, #pickup_now_bid, #pickup_later",function() {
-
-        var payid = $(this).attr('data-payment_method');
+        var bookingType = $(this).attr('booking-type');
+        if(bookingType == 'bid')
+        {
+            var payid = $('#payment-method-for-bid').val();
+        }else{
+            var payid = $(this).attr('data-payment_method');
+        }
         if(payid == 49){
             cno = $('#plugnpay-card-element').val();
             dt  = $('#plugnpay-date-element').val();
