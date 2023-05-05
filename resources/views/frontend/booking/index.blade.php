@@ -284,7 +284,7 @@
                             </label>
                         </div>
                     @endif
-                    
+
                     @if($is_cab_pooling ==1)
                     <div class="pool_radio_controls text-center">
                         <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_booking" name="is_cab_pooling_radio"
@@ -292,16 +292,16 @@
                         <label class="pool_label mb-0  my-2 active " for="cab_booking" id="label_cab_booking">
                             <h5 class="m-0" id="pool_5">{{ __('Booking') }}</h5>
                         </label>
-                        
+
                         <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_pooling" name="is_cab_pooling_radio"
                             value="1">
                         <label class="pool_label mb-0  my-2" for="cab_pooling" id="label_cab_pooling">
                             <h5 class="m-0" id="pool_5">{{ __('Pooling') }}</h5>
                         </label>
-                        
+
                     </div>
                     @endif
-                    
+
                     <div class="location-box check-pick-first">
                         <div class="where-to-go">
                             <div class="title title-36">{{ __(getDynamicTypeName('Where can we pick you up?')) }}</div>
@@ -965,7 +965,7 @@
             </div>
             <div class="modal-body booking_mayment_method">
                 <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper">
-                   
+
                          <div class="tab">
     <a class="tablinks active" onclick="clickHandle(event, 'Add-Card')" href="javascript:void(0);">Add Card</a>
     <a class="tablinks" onclick="clickHandle(event, 'Card-List')" href="javascript:void(0);">Card List</a>
@@ -1327,8 +1327,9 @@
         var add_rider_url = "{{ route('rider.create') }}";
         var remove_rider_url = "{{ route('rider.remove') }}";
         var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
-         var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
-         	var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
+        var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
+        var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
+        var payment_obo_url = "{{route('obo.pay')}}";
         @if ($client_preference_detail->distance_unit_for_time == 'mile')
             var distance_unit = "IMPERIAL";
         @else
@@ -1501,13 +1502,13 @@
             }
 
         });
-        
-    function addSlashes (element) {	
+
+    function addSlashes (element) {
         let ele = document.getElementById(element.id);
         ele = ele.value.split('/').join('');    // Remove slash (/) if mistakenly entered.
         if(ele.length < 4 && ele.length > 0){
             let finalVal = ele.match(/.{1,2}/g).join('/');
-    
+
             document.getElementById(element.id).value = finalVal;
         }
     }

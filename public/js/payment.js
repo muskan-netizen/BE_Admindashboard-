@@ -3162,9 +3162,8 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
         let walletElement       = $("input[name='wallet_amount']");
         let subscriptionElement = $("input[name='subscription_amount']");
         let subscription_id     = $("input[name='subscription_id']");
-
+        let cabElement          = $("#pickup_now");
         let ajaxData = {};
-        console.log(path.indexOf("wallet") !== -1);
         if (path.indexOf("cart") !== -1) {
             payment_from = 'cart';
             total_amount = cartElement.val();
@@ -3177,11 +3176,13 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
             payment_from            = 'subscription';
             ajaxData.subscriptionId = subscription_id.val()
         }
-
-
+        else if (cabElement.length > 0) {
+            total_amount = cabElement.data('amount');
+            payment_from            = 'pickup_delivery';
+        }
         ajaxData.amount         = total_amount;
         ajaxData.cancelUrl      = path;
-        ajaxData.order_number   = order.order_number;  // order.order_number
+        ajaxData.order_number   = order.order_number;
         ajaxData.payment_from   = payment_from;
 
 

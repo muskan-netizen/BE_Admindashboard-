@@ -166,7 +166,7 @@ $(document).ready(function () {
         }
 
     });
-    
+
      // PlugPay payment
 
     $(document).on("click", "#paywithazulpay",function() {
@@ -185,7 +185,7 @@ $(document).ready(function () {
         }
 
     });
-    
+
     $(document).on("click", ".right-top",function() {
         var payment_option_id = $(".select_cab_payment_method:checked").val();
         if(payment_option_id == 49){
@@ -196,7 +196,7 @@ $(document).ready(function () {
            $('#plugnpay-date-element').val('');
            $('#plugnpay-cvv-element').val('');
         }
-        
+
          if(payment_option_id == 50){
            $("#azul_card_error").empty();
            $("#proceed_to_azulpay_loader").hide();
@@ -206,12 +206,12 @@ $(document).ready(function () {
            $('#azul-cvv-element').val('');
         }
     });
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
 
     // please order dispatcher
     $(document).on("click", "#pickup_now, #pickup_later",function() {
@@ -251,7 +251,7 @@ $(document).ready(function () {
 				$("#proceed_to_azulpay_loader").show();
 			}
         }
-        
+
         var time_zone = (Intl.DateTimeFormat().resolvedOptions().timeZone);
         var schedule_datetime = '';
         if($(this).data('rel') =='pickup_later'){
@@ -389,15 +389,18 @@ $(document).ready(function () {
                     }else if(payment_option_id == 30){
                         payWithFlutterWave(response.data);
                     }else if(payment_option_id == 49){
-                        
+
                         paymentViaplugnpay(reload_route,'',response.data);
                     }
                     else if(payment_option_id == 50){
-                        
+
                         paymentViazulpay(reload_route,'',response.data);
                     }
                     else if(payment_option_id == 52){
                         paymentViaSkipCash('',response.data);
+                    }
+                    else if(payment_option_id == 55){
+                       paymentViaOboPay('','',response.data);
                     }
                     cabBookingPaymentOptions(payment_option_id, response.data);
                 }else{
@@ -907,13 +910,13 @@ $(document).ready(function () {
                     $('#search_product_rider_main_div').html('');
                     if(response.data.length != 0){
                         var productData = _.extend({ Helper: NumberFormatHelper }, {results: response.data.products});
-                        
+
                         let products_template = _.template($('#products_template').html());
 
                         let products_rider_template = _.template($('#products_rider_template').html());
                         $("#search_product_main_div").append(products_template(productData));
                         $("#search_product_rider_main_div").append(products_rider_template(productData));
-                        
+
                         if($('input[name="is_cab_pooling_radio"]:checked').val() == 0 || $('input[name="is_cab_pooling_radio"]:checked').val() === undefined)
                         {
                             $("#search_product_main_div .double_price_p").hide();
@@ -2106,17 +2109,17 @@ function setLocationCoordinates(key, lat, lng) {
 google.maps.event.addDomListener(window, 'load', initMap);
 
 
-$(document).on("click",".btn-price-up-down",function(){    
+$(document).on("click",".btn-price-up-down",function(){
     var product_id = $("#bid_ride_now").attr('data-product_id');
     type      = $(this).attr('data-type');
     var input = $("input[name='cab_bid_price']");
     var currentVal = parseInt(input.val());
     if (!isNaN(currentVal)) {
         if(type == 'minus') {
-            
+
             if(currentVal > input.attr('min')) {
                 input.val(currentVal - 10).trigger('change');
-            } 
+            }
             if(parseInt(input.val()) == input.attr('min')) {
             }
 

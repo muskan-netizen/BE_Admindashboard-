@@ -62,6 +62,10 @@ class OboPaymentController extends Controller
                     $orderNumber = $number;
                     $UrlParams   = "transactionid=$orderNumber&subscription_id=$request->subscriptionId&amount=$request->amount&success=true";
                 }
+                elseif ($request->payment_from == 'pickup_delivery') {
+                    $orderNumber = $request->order_number;
+                    $UrlParams   = "transactionid=$orderNumber&paymentfrom=pickup_delivery&success=true";
+                }
                 if ($this->testMode == 1) {
                     $apiUrl = "https://www.obo-pay.co.rw/test/payments/v1/payment";
                 } else {
@@ -148,7 +152,8 @@ class OboPaymentController extends Controller
                 $subscriptionController = new UserSubscriptionController();
                 $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
                 return redirect()->route('user.subscription.plans');
-
+            } elseif ($request->paymentfrom == 'pickup_delivery') {
+                return redirect()->route('front.booking.details',$transactionId);
             }
         } else {
             return "error";
