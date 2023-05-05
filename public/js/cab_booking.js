@@ -400,7 +400,7 @@ $(document).ready(function () {
                         paymentViaSkipCash('',response.data);
                     }
                     else if(payment_option_id == 22){
-                        payWithCcAvenue('',response.data);
+                        payWithCcAvenue(response.data);
                     }
                     cabBookingPaymentOptions(payment_option_id, response.data);
                 }else{
