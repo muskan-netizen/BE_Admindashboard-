@@ -647,7 +647,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                     order_luxury_option_id: order_luxury_option_id
                                 },
                                 success: function(response) {
-
+                                    if($('#received_new_orders').hasClass('show')){
+                                            $("#received_new_orders").modal('hide');
+                                    }
                                     if(response.status=='error'){
                                         if (count == 0) {
                                             $(full_div).slideUp(1000, function() {
