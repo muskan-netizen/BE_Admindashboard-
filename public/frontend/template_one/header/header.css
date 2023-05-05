@@ -306,9 +306,9 @@ background:none;border:none !important;
     font-size: 18px
 }
 
-body.al_body_template_one a.navbar-brand img {
+/* body.al_body_template_one a.navbar-brand img {
     height: 40px
-}
+} */
 
 body.al_body_template_two {
     background-color: #fff
@@ -987,7 +987,7 @@ body.al_body_template_two {
     }
     .navbar-brand {
         padding: 0;
-        height: 40px !important
+        height: 60px !important
     }
     .top-header.site-topbar.al_template_one {
         height: auto;
@@ -1113,6 +1113,9 @@ ul.header-dropdown.d-none.d-sm-inline li {
     text-align: left;
     top: auto;
 }
+.menu-navigation ul.sm.pixelstrap.sm-horizontal li.al_main_category {
+    border-bottom: 2px  solid transparent;
+}   
 .menu-navigation ul.sm.pixelstrap.sm-horizontal li.al_main_category:hover{
     border-bottom:2px solid#000;
     padding-bottom: 4px;
