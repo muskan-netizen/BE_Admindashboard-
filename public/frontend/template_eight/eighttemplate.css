@@ -1774,6 +1774,10 @@ body.al_body_template_eight.homeHeader .outter-fillter-data .product-wrapper-gri
     object-fit: fill;
     border-radius: 10px 10px 0 0;
     padding-top: 0;
+     top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 /* .al_body_template_eight .margin-res .product-image img {
     margin-top: 10px !important;
@@ -3751,7 +3755,7 @@ body.al_body_template_eight.homeHeader .main-fillter .side_fillter .range-slider
         padding: 20px !important;
     }
     body.al_body_template_eight.homeHeader .product-wrapper-grid .product-image img {
-        height: 100px !important;
+        height: auto !important;
         width: 100px !important;
     }
     .row.eccomerce-temp .top-heading.mt-5.pt-5 h2.h2-heading{margin-bottom: 0 !important; width: 100% !important; text-align: left !important;}
