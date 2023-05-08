@@ -677,6 +677,7 @@ $timezone = Auth::user()->timezone;
         $("#order_number").val(order_number);
     });
     var ajaxCall = 'ToCancelPrevReq';
+    var payment_obo_url = "{{route('obo.pay')}}";
     var credit_tip_url = "{{ route('user.tip_after_order') }}";
     var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
     var payment_stripe_url = "{{ route('payment.stripe') }}";

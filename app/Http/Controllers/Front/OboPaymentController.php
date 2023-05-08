@@ -64,7 +64,10 @@ class OboPaymentController extends Controller
                 }
                 elseif ($request->payment_from == 'pickup_delivery') {
                     $orderNumber = $request->order_number;
-                    $UrlParams   = "transactionid=$orderNumber&paymentfrom=pickup_delivery&success=true";
+                    $UrlParams   = "transactionid=$orderNumber&paymentfrom=pickup_delivery&reload_route=$request->reload_route&amount=$request->amount&success=true";
+                } elseif ($request->payment_from == 'tip') {
+                    $orderNumber = $number;
+                    $UrlParams   = "transactionid=$orderNumber&order_number=$request->order_number&paymentfrom=tip&amount=$request->amount&success=true";
                 }
                 if ($this->testMode == 1) {
                     $apiUrl = "https://www.obo-pay.co.rw/test/payments/v1/payment";
@@ -153,7 +156,24 @@ class OboPaymentController extends Controller
                 $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
                 return redirect()->route('user.subscription.plans');
             } elseif ($request->paymentfrom == 'pickup_delivery') {
+
+                $data['payment_option_id'] = 55;
+                $data['transaction_id'] = $transactionId;
+                $data['amount'] = $request->amount;
+                $data['order_number'] = $transactionId;
+                $data['reload_route'] = $request->reload_route;
+                $request = new \Illuminate\Http\Request($data);
+                $plaseOrderForPickup = new PickupDeliveryController();
+                $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
                 return redirect()->route('front.booking.details',$transactionId);
+            }elseif ($request->paymentfrom == 'tip') {
+                $data['tip_amount'] = $request->amount;
+                $data['order_number'] = $request->order_number;
+                $data['transaction_id'] = $transactionId;
+                $request = new \Illuminate\Http\Request($data);
+                $orderController = new OrderController();
+                $orderController->tipAfterOrder($request);
+                return redirect()->route('user.orders');
             }
         } else {
             return "error";
@@ -200,6 +220,16 @@ class OboPaymentController extends Controller
                 'transaction_id' => $time,
                 'balance_transaction' => $amount,
                 'type' => 'subscription',
+                'date' => date('Y-m-d'),
+                'user_id' => $user_id,
+                'payment_from'=>$request->user_from ??'web'
+            ]);
+        }elseif ($request->payment_from == 'tip') {
+            Payment::create([
+                'amount' => 0,
+                'transaction_id' => $time,
+                'balance_transaction' => $amount,
+                'type' => 'tip',
                 'date' => date('Y-m-d'),
                 'user_id' => $user_id,
                 'payment_from'=>$request->user_from ??'web'

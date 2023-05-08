@@ -3099,7 +3099,6 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
                 { name: 'amount', value: total_amount },
             );
         }
-
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -3156,7 +3155,7 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
     ///////////////////////////Obo payment Gateway //////////////////////////////
     window.paymentViaOboPay = function paymentViaOboPay(address_id='', payment_option_id='', order='') {
         let total_amount = 0;
-        let tip = 0;
+        let orderNumber         = order.order_number ?? "";
         let tipElement          = $("#cart_tip_amount");
         let cartElement         = $("input[name='cart_total_payable_amount']");
         let walletElement       = $("input[name='wallet_amount']");
@@ -3179,12 +3178,17 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
         else if (cabElement.length > 0) {
             total_amount = cabElement.data('amount');
             payment_from            = 'pickup_delivery';
+            ajaxData.reload_route   = address_id;
+        }
+        else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = tipElement.val();
+            payment_from = 'tip';
+            orderNumber  = $("#order_number").val();
         }
         ajaxData.amount         = total_amount;
         ajaxData.cancelUrl      = path;
-        ajaxData.order_number   = order.order_number;
+        ajaxData.order_number   = orderNumber;
         ajaxData.payment_from   = payment_from;
-
 
         $.ajax({
             type: "POST",
@@ -3205,14 +3209,14 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
                 }
             },
             error: function (error) {
-                var response = $.parseJSON(error.responseText);
-                if (cartElement.length > 0) {
-                    success_error_alert('error', response.message, ".payment_response");
-                    $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
-                } else if (walletElement.length > 0) {
-                    success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
-                    $(".topup_wallet_confirm").removeAttr("disabled");
-                }
+                // var response = $.parseJSON(error.responseText);
+                // if (cartElement.length > 0) {
+                //     success_error_alert('error', response.message, ".payment_response");
+                //     $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                // } else if (walletElement.length > 0) {
+                //     success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
+                //     $(".topup_wallet_confirm").removeAttr("disabled");
+                // }
             }
         });
     }
