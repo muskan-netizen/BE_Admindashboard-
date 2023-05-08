@@ -417,6 +417,7 @@ span.org_price.ml-1.font-14 {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 1.5;
 }
 .al_body_template_four  .categories_img .product-image img{
     object-fit:cover;
