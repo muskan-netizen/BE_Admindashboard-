@@ -20,7 +20,7 @@ class InventoryController extends Controller
     {
        try{
             if(isset($request->assigned_order_side_vendor_id) && is_array($request->assigned_order_side_vendor_id)){
-                $unAssignedOrderCategory = Vendor::select('id', 'name')->whereNotIn('id', $request->assigned_order_side_vendor_id)->where('status', 1)->get();
+                $unAssignedOrderCategory = Vendor::select('id', 'name')->where('status', 1)->get(); //->whereNotIn('id', $request->assigned_order_side_vendor_id)
 
                 return response()->json([
                     'status' => 200,
@@ -45,11 +45,13 @@ class InventoryController extends Controller
     {
         try{
             if(@$request->vendor_id){
-                $vendor = Vendor::select('id', 'name')->where('id', $request->vendor_id)->first();
+                $vendorIds = $request->vendor_id;
+                $vendors = Vendor::select('id', 'name')->whereIn('id', $vendorIds)->get();
+
                 return response()->json([
                     'status' => 200,
                     'message' => 'fetched succesfully',
-                    'data' => $vendor
+                    'data' => $vendors
                 ]);
             }else{
                 throw new \ErrorException('parameter missing', 400);
