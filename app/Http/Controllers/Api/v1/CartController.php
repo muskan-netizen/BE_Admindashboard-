@@ -86,7 +86,7 @@ class CartController extends BaseController
                         $cartData->cart_error_message = __("You can not edit this order. Either order is in processed or in processing. Please discard order editing.");
                     }
                 }
-                
+
 
                 $age_restriction = CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
                                 $q->where('age_restriction',1);
@@ -145,7 +145,7 @@ class CartController extends BaseController
     /**     * Add product In Cart    *           */
     public function add(Request $request)
     {
-     
+
         try {
             $preference = ClientPreference::first();
             $luxury_option = LuxuryOption::where('title', $request->type)->first();
@@ -159,8 +159,8 @@ class CartController extends BaseController
                 if (empty($user->system_user)) {
                     return $this->errorResponse(__('System id should not be empty.'), 404);
                 }
-                $unique_identifier = $user->system_user;
             }
+            $unique_identifier = $user->system_user;
 
             $product = Product::where('sku', $request->sku)->first();
 
@@ -196,7 +196,7 @@ class CartController extends BaseController
                 $CartProduct = CartProduct::where(['cart_id' => $cart_detail->id])->select('id','dispatch_agent_id')->first();
                 $dispatcherAgentData= $request->has('dispatcherAgentData') ? $request->dispatcherAgentData : [];
                 $request_dispatch_agent_id = isset($dispatcherAgentData['agent_id'] ) ?  $dispatcherAgentData['agent_id']: "";
-              
+
                 if($CartProduct &&  ( $CartProduct->dispatch_agent_id != $request_dispatch_agent_id)){
                     return $this->errorResponse('Please select the service of same provider', 404);
                 }
@@ -216,7 +216,7 @@ class CartController extends BaseController
             $isLongTermService =0;
             if( $request->has('service_start_time')){
                 $isLongTermService  =1;
-               
+
                 $time = '1998-01-14 '.$request->service_start_time; /**only need time */
                 $service_start_time = Carbon::parse($time, $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 $start_date_time = $service_start_time ; /** we user start_date_time for long term order timing */
@@ -334,7 +334,7 @@ class CartController extends BaseController
                     'scheduled_date_time' => $request->has('scheduled_date_time') ? $request->scheduled_date_time : null,
                 ];
 
-                
+
             //Recurring Booking
             $recurring_days = '';
             if($product->is_recurring_booking == 1){
@@ -343,19 +343,19 @@ class CartController extends BaseController
                     return $this->errorResponse(__('Recurring booking type not be empty.'), 404);
                 }
 
-               
+
                 $cartRecurringCall = new FrontCartController();
                 $recurringformPost = $cartRecurringCall->recurringCalculationFunction($request);
                 $action = '5';
                 //Check if recurring_booking_type,recurring_week_day,recurring_week_type,recurring_day_data,recurring_booking_time coulmn exists in table
-               
+
                    $start_date             = $recurringformPost->startDate;
                    $end_date               = $recurringformPost->endDate;
                    $recurring_days  = @$recurringformPost->selectedCustomdates??null;
                    $weekTypes  = @$recurringformPost->weekTypes??null;
                    $action = $recurringformPost->action??5;
                    $schedule_time = $recurringformPost->schedule_time??null;
-               
+
 
                 //In case of on recurringformPost
                 if (!empty($request->recurringformPost)) {
@@ -367,10 +367,10 @@ class CartController extends BaseController
                 }
 
             }
-           
+
 
                 if($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData)){
-                  
+
                     $dataTime = Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                     $slot = @$request->dispatcherAgentData['slot'] ?  @$request->dispatcherAgentData['slot'] : Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('H:i:s');
                     $cart_product_detail['schedule_type'] = 'schedule';
@@ -807,7 +807,7 @@ class CartController extends BaseController
                 $vendorData->delaySlot = (($slotsDate)? ( $slotsDate['datetime']?  $slotsDate['datetime'] : '' ):'');
                 $vendorStartDate =  (($slotsDate)? ( $slotsDate['date'] ?  $slotsDate['date'] : '' ):'');
                 $vendorStartTime =  (($slotsDate)? ( $slotsDate['time'] ?  $slotsDate['time'] : '' ):'');
-                
+
                 $vendorData->vendor->closed_store_order_scheduled = $vendorData->vendor->closed_store_order_scheduled;
                 $vendorData->vendor->fixed_fee_amount;
                 if ($action != 'delivery') {
@@ -860,7 +860,7 @@ class CartController extends BaseController
                 $previousdeliveryfee = 0;
 
                 foreach ($vendorData->vendorProducts as $pkey => $prod) {
-                    
+
                     //mohit sir branch code updated by sohail farm meat
                     if ($action == 'takeaway') {
                         $processorProduct = ProcessorProduct::where('product_id', $prod->product_id)->first();
@@ -887,7 +887,7 @@ class CartController extends BaseController
                         $prod->recurring_date_count = $cnt != 0 ? $cnt : 1;
                         $is_recurring_booking        = 1;
                     }
-                    
+
                     $is_slot_from_dispatch = $prod->product->is_slot_from_dispatch ;
                     $show_dispatcher_agent = $prod->product->is_show_dispatcher_agent  ;
                     $last_mile_check       = $prod->product->Requires_last_mile  ;
@@ -897,7 +897,7 @@ class CartController extends BaseController
                     if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ( $last_mile_check ==1) ){
                         $Dispatch =  $this->getDispatchAppointmentDomain();
                         $dispatchAgents = [];
-    
+
                         if($Dispatch){
                             $location[] = array(
                                 'latitude' =>   $vendor_longitude,
@@ -915,7 +915,7 @@ class CartController extends BaseController
                                 'schedule_date'    => $getSlotingDate,
                                 'slot_start_time'  => $vendorStartTime
                             ];
-                          
+
                             $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
                         }
                         $prod->dispatchAgents =  $dispatchAgents;
@@ -1145,7 +1145,7 @@ class CartController extends BaseController
                                             $code = $deliveries[0]['code'];
                                         }
 
-                                        
+
                                         if($prod->product->individual_delivery_fee == 1) {
                                             $quantity_deliveryCharges = $deliveryCharges*$prod->quantity;
                                             $vendorTotalDeliveryFee = $vendorTotalDeliveryFee + $quantity_deliveryCharges;
@@ -1353,7 +1353,7 @@ class CartController extends BaseController
                         $delivery_status = 0;
                     }
                 }
-                if($is_service_product_price_from_dispatch !=1){ // no need to check slot and web styling 
+                if($is_service_product_price_from_dispatch !=1){ // no need to check slot and web styling
                     if (($vendorData->vendor->show_slot == 0)  ) {
                         if (($vendorData->vendor->slotDate->isEmpty()) && ($vendorData->vendor->slot->isEmpty())) {
                             $vendorData->vendor->is_vendor_closed = 1;
@@ -1398,7 +1398,7 @@ class CartController extends BaseController
                     }
                 }
                 $vendorData->is_promo_code_available = $is_promo_code_available;
-               
+
 
                 $totalDeliveryCharges+=$vendorTotalDeliveryFee;
 
@@ -1484,7 +1484,7 @@ class CartController extends BaseController
             }
 
             } //End Tax Code
-            
+
             // Add Delivery Slot Price In total amount
             if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
                 $delivery_slot_amount += decimal_format($prod->slot_price);
@@ -1607,18 +1607,18 @@ class CartController extends BaseController
         $cart->total_tax = decimal_format($total_fixed_fee_tax + $total_service_fee_tax + $deliver_fee_charges_tax + $total_markup_fee_tax + $container_charges_tax + $total_taxable_amount);
         $cart->tax_details = $tax_details;
         $cart->total_taxable_amount = decimal_format($total_taxable_amount);
-        
+
         $cart->total_delivery_fee = $totalDeliveryCharges;
         $cart->total_fixed_fee_amount = $total_fixed_fee_amount;
         $cart->gross_paybale_amount = $order_sub_total;
 
-        
+
         $cart->total_addon_price = $total_addon_price;
         $cart->total_discount_amount = $total_disc_amount * $clientCurrency->doller_compare;
         $cart->products = $cartData;
         $cart->item_count = $item_count;
         $cart->is_long_term_added = $is_long_term;
-        
+
         $cart->delivery_slot_amount = $delivery_slot_amount;
 
         $temp_total_paying = $total_paying  + $total_tax - $total_disc_amount;
@@ -1671,7 +1671,7 @@ class CartController extends BaseController
             $cart->deliver_status = $delivery_status;
         }
         $cart->loyalty_amount = $loyalty_amount_saved;
-      
+
 
         if (isset($cart_product_luxury_id) && isset($cart_product_luxury_id->luxury_option_id) && $cart_product_luxury_id->luxury_option_id ==4) {
         $additional_price=($cart_product_luxury_id->additional_increments_hrs_min/$prod->pvariant->incremental_price_per_min);
@@ -1714,7 +1714,7 @@ class CartController extends BaseController
         }
 
         $total_payable_amount_calc_tip = $cart->total_payable_amount - $total_taxable_amount;
-        
+
         $cart->tip = array(
             ['label' => '5%', 'value' => decimal_format(0.05 * $total_payable_amount_calc_tip)],
             ['label' => '10%', 'value' => decimal_format(0.1 * $total_payable_amount_calc_tip)],
@@ -1956,7 +1956,7 @@ class CartController extends BaseController
             if($orderVendor->schedule_slot == $schedule_slot && $if_order_scheduled == 0){
                 $schedule_pickup = Carbon::parse($orderVendor->scheduled_date_time);
                 $schedule_pickup_final = convertDateTimeInTimeZone($schedule_pickup, $timezone, 'Y-m-d');
-                
+
                 if($schedule_pickup_final == $schedule_datetime){
                     // Increment orderCount and return this count to front end for validation
                     $orderCount++;
@@ -2314,10 +2314,10 @@ class CartController extends BaseController
 
     }
 
-     # upload image/pdf for order 
+     # upload image/pdf for order
     public function uploadOrderFile(Request $request)
     {
-     
+
         // $validator = Validator::make($request->all(), [
         //     'files.*' => 'mimes:jpeg,bmp,png,gif,svg,pdf',
         //     'cart_id' => 'required'
@@ -2328,7 +2328,7 @@ class CartController extends BaseController
         //    foreach ($request->instructions_files as $instructions_file) {
         //         $file = $request->file('instructions_file');
         //         $file_url = Storage::disk('s3')->put('orderFile', $instructions_file,'public');
-             
+
         //         $OrderFile = new OrderFiles();
         //         $OrderFile->cart_id =$request->cart_id;
         //         $OrderFile->file =$file_url;
@@ -2342,10 +2342,10 @@ class CartController extends BaseController
         //     $data['message'] =  $e->getMessage();
         //     return $data;
         // }
- 
+
     }
 
-     # REMOVE image/pdf for order 
+     # REMOVE image/pdf for order
      public function RemoveOrderFile(Request $request)
      {
         $OrderFiles =  OrderFiles::where('id',$request->order_file_id)->delete();
