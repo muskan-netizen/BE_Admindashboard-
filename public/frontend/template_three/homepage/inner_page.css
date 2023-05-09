@@ -85,9 +85,10 @@
     display: block;
     border-radius: 20px;
     text-transform: uppercase;
-    width: 60px;
+    width: fit-content;
     font-size: 12px;
-    margin: 0 auto
+    margin: 0 auto;
+    padding: 8px 10px;
 }
 .al_body_template_three .add_vendor_product_btn {
     border: 1px solid var(--theme-deafult);
