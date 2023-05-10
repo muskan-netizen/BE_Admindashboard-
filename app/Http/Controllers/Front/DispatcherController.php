@@ -99,6 +99,19 @@ class DispatcherController extends FrontController
 
                     }
 
+                if($request->newDeliveryFee)
+                {
+                    // \Log::info('update fee : '.$request->newDeliveryFee);
+                    // \Log::info('vendor_id  : '.$checkiftokenExist->vendor_id);
+                    // \Log::info('delivery_fee : '.$checkiftokenExist->delivery_fee);
+                    
+                    OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['delivery_fee' => ($checkiftokenExist->delivery_fee + $request->newDeliveryFee??0)]);
+                    $totalDelFee = Order::where('id',$checkiftokenExist->order_id)->value('total_delivery_fee');
+                    
+                    // \Log::info('totalDelFee : '.$totalDelFee);
+                    
+                    Order::where('id', $checkiftokenExist->order_id)->update(['total_delivery_fee' => ($totalDelFee + $request->newDeliveryFee??0)]);
+                }
 
 
             if(isset($request->dispatch_traking_url) && !empty($request->dispatch_traking_url))
