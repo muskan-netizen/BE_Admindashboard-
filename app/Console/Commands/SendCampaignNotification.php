@@ -48,7 +48,7 @@ class SendCampaignNotification extends Command
     public function handle()
     {
         $clients = Client::select('database_name', 'sub_domain')->get();
-        $intervalTime = date('Y-m-d h:i:00');
+        $intervalTime = now();
         foreach ($clients as $client) {
             $database_name = 'royo_' . $client->database_name;
             //// Log::info("checking cart start: {$database_name}!");
@@ -71,7 +71,7 @@ class SendCampaignNotification extends Command
                 ];
                 Config::set("database.connections.$database_name", $default);
                 DB::setDefaultConnection($database_name);
-                $client_preferences = ClientPreference::first(['fcm_server_key', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'mail_host', 'mail_port', 'mail_driver', 'mail_from', 'favicon']);
+                $client_preferences = ClientPreference::first(['fcm_server_key', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'mail_host', 'mail_port', 'mail_driver', 'mail_from', 'favicon', 'mail_password', 'mail_encryption']);
                 $from = $client_preferences->fcm_server_key ?? "";
                 $headers = [
                     'Authorization: key=' . $from,
@@ -82,59 +82,12 @@ class SendCampaignNotification extends Command
                     return $item->notofication_type;
                 });
                 if (count($chunk_notifications) > 0) {
-                        CampaignSendNotificationJob::dispatch($chunk_notifications, $client_preferences, $headers);
-                        DB::disconnect($database_name);
+                    CampaignSendNotificationJob::dispatch($chunk_notifications, $client_preferences, $headers);
+                    DB::disconnect($database_name);
                 }
             } else {
-
                 DB::disconnect($database_name);
             }
         }
     }
-
-
-
-    // protected function sendEmail($client_preferences,$sendto,$subject,$body){
-
-    //     $mailfrom = $client_preferences->mail_from;
-    //     $confirured = $this->setMailDetail($client_preferences->mail_driver, $client_preferences->mail_host, $client_preferences->mail_port, $client_preferences->mail_username, $client_preferences->mail_password, $client_preferences->mail_encryption);
-    //     // Mail::to($this->details['email'])->send($data);
-
-
-    //         //$sendto =  $user->email;
-    //         //$client_name = 'Sales';
-    //         //$mail_from = $data->mail_from;
-    //         try {
-    //             $data = [
-    //                 'link' => "link",
-    //                 'email' => $sendto,
-    //                 'mail_from' => $client_preferences->mail_from,
-    //                 // 'client_name' => $client_name,
-    //                 // 'logo' => $client->logo['original'],
-    //                 'subject' => $subject,
-    //                 //'customer_name' => $name,
-    //                 'email_template_content' => $body,
-    //             ];
-    //             Mail::to($sendto)->send($data);
-    //         } catch (\Exception $e) {
-    //         }
-
-    // }
-
-    // public function setMailDetail($mail_driver, $mail_host, $mail_port, $mail_username, $mail_password, $mail_encryption){
-    //     $config = array(
-    //         'pretend' => false,
-    //         'host' => $mail_host,
-    //         'port' => $mail_port,
-    //         'driver' => $mail_driver,
-    //         'username' => $mail_username,
-    //         'password' => $mail_password,
-    //         'encryption' => $mail_encryption,
-    //         'sendmail' => '/usr/sbin/sendmail -bs',
-    //     );
-    //     Config::set('mail', $config);
-    //     $app = App::getInstance();
-    //     $app->register('Illuminate\Mail\MailServiceProvider');
-    //     return true;
-    // }
 }
