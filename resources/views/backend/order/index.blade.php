@@ -462,7 +462,6 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             $(this).remove();
         });
         $(".nav-link").click(function() {
-            console.log("asdf");
             $('#order_list_order').show();
             var rel = $(this).data('rel');
             var url = "{{ route('orders.filter') }}";

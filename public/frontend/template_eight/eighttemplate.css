@@ -1788,6 +1788,9 @@ body.al_body_template_eight.homeHeader .outter-fillter-data .product-wrapper-gri
 }
 body.al_body_template_eight .outter-fillter-data .media-body.align-self-center h6 {
     margin: 10px 0 !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .fixed-bar li.al_main_category a {
     font-weight: 500 !important;
@@ -2743,7 +2746,7 @@ body.al_body_template_eight .p2p-full-width {
 .al_body_template_eight #al_new_design .pixelstrap li a{
     font-size: 14px!important;
     font-weight:400;position: relative;
-    line-height: 16.2px;
+    line-height: 1.5;
     padding:0 20px;
 }
 .al_body_template_eight .menu-navigation.alThreeMenu li.al_main_category a i {

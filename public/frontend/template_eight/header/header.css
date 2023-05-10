@@ -1122,7 +1122,7 @@ body.al_body_tebody.al_body_template_eight.homeHeader .menu-navigation.alThreeMe
 }
 
 body.al_body_template_eight.homeHeader #al_new_design .pixelstrap ul {
-    top: 40px;
+    top: 100%;
 }
 
 body.al_body_template_eight ul#header_cart_main_ul {

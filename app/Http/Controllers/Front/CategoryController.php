@@ -155,6 +155,7 @@ class CategoryController extends FrontController{
                     ->orderBy('position', 'asc')->get();
             }
         }
+        
        
         $newProducts = [];
         if($page == 'pickup/delivery'){
@@ -537,12 +538,14 @@ class CategoryController extends FrontController{
                             }
                             $q->groupBy('product_id');
                         },
-                    ])->select('products.id', 'products.sku', 'products.brand_id', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count', 'products.is_featured','products.batch_count', 'products.updated_at')
+                    ])
+                    ->select('products.id', 'products.sku', 'products.brand_id', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count', 'products.is_featured','products.batch_count', 'products.updated_at')
                             ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
                             ->join('product_translations', 'product_translations.product_id', '=', 'products.id') // Or whatever the join logic is
                     // ->where('vendor_id', $vid)
                     ->where('products.category_id', $cid)
                     ->where('products.is_live', 1)
+                    ->distinct('products.id')
                     ->whereHas('vendor',function($q){
                         $q->where('status',1);
                     })
@@ -551,7 +554,8 @@ class CategoryController extends FrontController{
                             ->where('price', '>=', $startRange)
                             ->where('price', '<=', $endRange);
                     });
-            
+
+           
             $getAdditionalPreference = getAdditionalPreference(['is_attribute']);
             
             $calc_value = 30; //kilometer
@@ -619,9 +623,10 @@ class CategoryController extends FrontController{
             }else{
                 //
             }
+           
             // $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
-
             $products = $products->paginate($limit, $page);
+            
         if(!empty($products)){
             foreach ($products as $key => $value) {
                 $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
@@ -637,7 +642,7 @@ class CategoryController extends FrontController{
             }
         }
         $listData = $products;
-
+         
         $returnHTML = view('frontend.ajax.productList')->with(['data'=>$request->all(),'listData' => $listData,'category'=>$category])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML));
     }
