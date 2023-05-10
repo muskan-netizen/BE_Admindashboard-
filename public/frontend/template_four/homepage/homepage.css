@@ -4059,8 +4059,8 @@ body[dir=rtl] .alFourThLogo {
     right: 0;
     height: max-content;
     top: auto !important;
+    z-index: 10000;
 }
-
 .dark .scrollspy-menu {
     background: #242424
 }

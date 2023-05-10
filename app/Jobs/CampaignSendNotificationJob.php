@@ -112,7 +112,7 @@ class CampaignSendNotificationJob implements ShouldQueue
                                 //$this->sendEmail($client_preferences,$useremail,$email_subject,$email_body);
                             }
                         } catch (\Exception $ex) {
-                            Log::info($ex);
+                            // Log::info($ex);
                         }
                     }
                     break;
