@@ -95,6 +95,19 @@
             box-shadow: 0 0 5px rgb(0 0 0 / 30%);
             z-index: 99;
             cursor: pointer;
+
+    x1
+    serviceroom
+    $10.00
+
+    Product Total
+    $10.00
+    Delivery Fee
+    $10.00
+    Amount
+    $20.00
+
+            
             display: none;
             -webkit-transition: all .3s ease;
             transition: all .3s ease
@@ -1445,6 +1458,7 @@
 
     <script type="text/javascript">
         $(document).ready(function(e) {
+                	$("#get-current-location").trigger("click");
             var daterang = $('input[name="schedule_pickup_date"]').daterangepicker({
                 singleDatePicker: true,
                 startDate: moment().add('10', 'minutes'),
