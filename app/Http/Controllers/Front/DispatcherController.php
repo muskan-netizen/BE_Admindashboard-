@@ -98,6 +98,7 @@ class DispatcherController extends FrontController
 
 
                     }
+                    \Log::info($request->all());
 
                 if($request->waiting_price && $request->waiting_price>0)
                 {   
