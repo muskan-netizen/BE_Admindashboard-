@@ -907,9 +907,13 @@ display: inline-block;
 }.supplier-rating p{height: unset;font-size: 12px;font-weight: 400;color: #535766;}
 .cart-main-box{z-index: 1;}
 .al_body_template_eight .product-card-box .img-outer-box.position-relative{
-    min-height: 230px;
+    min-height:220px;
     height: 100%;
     overflow: hidden;
+}
+.al_body_template_eight section#homepage_top_rated .product-m.render_top_rated .row .img-outer-box.position-relative {
+    min-height: 220px;
+    height: 100%;
 }
 .al_body_template_eight .categories_sliderEight .slick-track {
     margin-left: auto !important;
@@ -945,7 +949,7 @@ height: 100% !important;
 }
 
 .al_body_template_eight .similar-products-vitamin .product-card-box .img-outer-box {
-    height: 300px !important;
+    height:100%;
     min-height: 300px !important;
 }
 .al_body_template_three .product-image img .img-fluid.blur-up .lazyloaded {
@@ -1209,14 +1213,30 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
     }
     section.main-product.single_category_products .deals-product.product-card-box.position-relative.text-center.al_custom_vendors_sec{
         min-height: 340px;
+        height: 100%;
     }
     .al_body_template_eight .product-card-box.position-relative.al_box_third_template.al{
         height: 100%;
         min-height: 320px;
     }
     .al_body_template_eight .alNewSliderTopBrand .brand-img {height: 100%;min-height: 180px;}
-    .al_body_template_eight .product-card-box .img-outer-box.position-relative{min-height: 212px;height: 100%;}
+    .al_body_template_eight .product-card-box .img-outer-box.position-relative{min-height: 230px;height: 100%;}
+    .vender-logo.deals-product.product-card-box.position-relative.text-center.al_custom_vendors_sec .suppliers-img-outer.position-relative{
+        min-height: 260px;
+    }
+    .al_body_template_eight section.main-product.single_category_products .supplier-rating{
+        max-height: 120px;
+        overflow: auto;
+        height: 100%;
+        min-height: 120px;
+        position: relative;
+        z-index: -1;
+    }
 }
+
+
+
+
 @media (max-width:991px){
     .al_body_template_four .vender-icon img {
         width: 70px;
