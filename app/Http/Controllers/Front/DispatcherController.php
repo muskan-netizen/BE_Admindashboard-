@@ -445,8 +445,8 @@ class DispatcherController extends FrontController
     public function dispatchPickupDeliveryUpdate(Request $request, $domain = '', $web_hook_code)
     {
         try {
-            \Log::info('in call pickup status'.$request->waiting_price);
-            
+            //\Log::info('in call pickup status'.$request->waiting_price);
+
             DB::beginTransaction();
             $checkiftokenExist = OrderVendor::where('web_hook_code',$web_hook_code)->first();
             $type = $request->task_type??1;
@@ -514,7 +514,7 @@ class DispatcherController extends FrontController
                     $total_waiting_price = $orderVendDetail->sum('waiting_price');
                     $total_waiting_time = $orderVendDetail->sum('waiting_time');
                    
-                    \Log::info('total_waiting_price : '.$total_waiting_price.' -- total_waiting_time ='.$total_waiting_time);
+                   // \Log::info('total_waiting_price : '.$total_waiting_price.' -- total_waiting_time ='.$total_waiting_time);
                     $payable_amount =  Order::where('id', $checkiftokenExist->order_id)->value('payable_amount');
                     $old_payable_amount =  Order::where('id', $checkiftokenExist->order_id)->value('old_payable_amount');
                     $payable_amount = (($old_payable_amount>0)?$old_payable_amount:$payable_amount);
