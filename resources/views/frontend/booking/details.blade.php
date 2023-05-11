@@ -175,7 +175,7 @@
                     <div class="col-6 mb-2 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(result.payable_amount) %></div>
 
                     <% if(result.total_waiting_price != null){%>
-                    <div class="col-6 mb-2" >{{__('Waiting Time')}} ({{result.total_waiting_time}})</div>
+                    <div class="col-6 mb-2" >{{__('Waiting Time')}} (<%=result.total_waiting_time %>)</div>
                     <div class="col-6 mb-2 text-right">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(result.total_waiting_price) %></div>
                     <%}%>
 
