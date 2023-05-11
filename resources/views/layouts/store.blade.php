@@ -22,7 +22,12 @@ if($client_preference_detail->show_dark_mode == 1){
     $dark_mode = session()->get('config_theme');
   }
 }
-
+$analytics = getAdditionalPreference(['gtag_id', 'fpixel_id','is_service_product_price_from_dispatch','is_service_price_selection']);
+$getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'),'',$analytics);
+//pr($getOnDemandPricingRule);
+$is_ondemand_multi_pricing = $getOnDemandPricingRule['is_ondemand_multi_pricing']; 
+    
+//pr($is_ondemand_multi_pricing);
 $body_class = "al_body_template_one";
 $left_sidebar = 'layouts.store/left-sidebar-template-one';
 $footer_content = 'layouts.store/footer-content-template-one';
