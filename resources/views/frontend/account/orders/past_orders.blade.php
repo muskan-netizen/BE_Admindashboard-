@@ -273,12 +273,20 @@
                                                         <label class="m-0">{{ __('Delivery Fee') }}</label>
                                                         <span>{{ Session::get('currencySymbol') }}{{ decimal_format($vendor->delivery_fee * $clientCurrency->doller_compare) }}</span>
                                                     </li>
+                                                    <li class="d-flex align-items-center justify-content-between">
+                                                        <label class="m-0">{{ __('Waiting Time').(($order->total_waiting_time)?'('.$order->total_waiting_time.'Min)':'') }}</label>
+                                                        <span>{{$additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($vendor->waiting_price
+                                                        *
+                                                        $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($vendor->waiting_price
+                                                        *
+                                                        $clientCurrency->doller_compare)}}</span>
+                                                        </li>
                                                 @endif
                                                 <li
                                                     class="grand_total d-flex align-items-center justify-content-between">
                                                     <label class="m-0">{{ __('Amount') }}</label>
                                                     @php
-                                                        $product_subtotal_amount = $product_total_count - $vendor->discount_amount + $vendor->delivery_fee;
+                                                        $product_subtotal_amount = $product_total_count - $vendor->discount_amount + $vendor->delivery_fee + $vendor->waiting_price;
                                                         $subtotal_order_price += $product_subtotal_amount;
                                                     @endphp
                                                     <span>{{ Session::get('currencySymbol') }}{{ decimal_format($product_subtotal_amount * $clientCurrency->doller_compare) }}</span>
@@ -340,7 +348,7 @@
                                 <ul class="price_box_bottom m-0 pl-0 pt-1">
                                     <li class="d-flex align-items-center justify-content-between">
                                         <label class="m-0">{{ __('Sub Total') }}</label>
-                                        <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->total_amount + $order->total_delivery_fee * $clientCurrency->doller_compare) }}</span>
+                                        <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->total_amount + $order->total_delivery_fee + $order->total_waiting_price * $clientCurrency->doller_compare) }}</span>
                                     </li>
                                     @if ($order->wallet_amount_used > 0)
                                         <li class="d-flex align-items-center justify-content-between">
@@ -390,6 +398,12 @@
                                             <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->total_delivery_fee * $clientCurrency->doller_compare) }}</span>
                                         </li>
                                     @endif
+                                    @if ($order->total_waiting_price > 0)
+                                    <li class="d-flex align-items-center justify-content-between">
+                                        <label class="m-0">{{ __('Waiting Time ').(($order->total_waiting_time)?'('.$order->total_waiting_time.'Min)':'') }}</label>
+                                        <span>{{ Session::get('currencySymbol') }}{{ decimal_format($order->total_waiting_price * $clientCurrency->doller_compare) }}</span>
+                                    </li>
+                                @endif
                                     @if ($order->gift_card_amount > 0)
                                         <li class="d-flex align-items-center justify-content-between">
                                             <label class="m-0">{{ __('Gift Card Amount') }}</label>

@@ -13,7 +13,7 @@ class Order extends Model implements Auditable
     use \OwenIt\Auditing\Auditable;
     
     protected $casts = ['total_amount' => 'float'];
-	protected $fillable = ['total_delivery_fee'];
+	protected $fillable = ['total_delivery_fee','total_waiting_price','total_waiting_time'];
 
 
     public function products()
