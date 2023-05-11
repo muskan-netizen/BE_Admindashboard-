@@ -305,6 +305,7 @@
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                             @endif
+
                                                                                             @if ($vendor->delivery_fee > 0)
                                                                                                 <li
                                                                                                     class="d-flex align-items-center justify-content-between">
@@ -316,6 +317,7 @@
                                                                                                         *
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
+
                                                                                             @endif
 
                                                                                             @if ($vendor->toll_amount > 0)
