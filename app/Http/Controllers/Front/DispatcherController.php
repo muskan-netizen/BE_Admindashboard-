@@ -98,7 +98,7 @@ class DispatcherController extends FrontController
 
 
                     }
-                    \Log::info($request->all());
+                 
 
                 if($request->waiting_price && $request->waiting_price>0)
                 {   
@@ -445,6 +445,8 @@ class DispatcherController extends FrontController
     public function dispatchPickupDeliveryUpdate(Request $request, $domain = '', $web_hook_code)
     {
         try {
+            \Log::info('in call pickup status'.$request->waiting_price);
+            
             DB::beginTransaction();
             $checkiftokenExist = OrderVendor::where('web_hook_code',$web_hook_code)->first();
             $type = $request->task_type??1;
@@ -503,6 +505,23 @@ class DispatcherController extends FrontController
             }
 
             OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['dispatcher_status_option_id' => $request->dispatcher_status_option_id]);
+
+            if($request->waiting_price && $request->waiting_price>0)
+                {   
+                    OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['waiting_price' => $request->waiting_price??0,'waiting_time'=>$request->waiting_time]);
+                 
+                    $orderVendDetail = OrderVendor::where('order_id', $checkiftokenExist->order_id);
+                    $total_waiting_price = $orderVendDetail->sum('waiting_price');
+                    $total_waiting_time = $orderVendDetail->sum('waiting_time');
+                   
+                    \Log::info('total_waiting_price : '.$total_waiting_price.' -- total_waiting_time ='.$total_waiting_time);
+                    $payable_amount =  Order::where('id', $checkiftokenExist->order_id)->value('payable_amount');
+                    $old_payable_amount =  Order::where('id', $checkiftokenExist->order_id)->value('old_payable_amount');
+                    $payable_amount = (($old_payable_amount>0)?$old_payable_amount:$payable_amount);
+                    Order::where('id', $checkiftokenExist->order_id)->update(['total_waiting_price' => $total_waiting_price??0 ,'total_waiting_time'=>$total_waiting_time,'payable_amount'=>$payable_amount+$total_waiting_price,'old_payable_amount'=>$payable_amount]);
+                }
+
+
               DB::commit();
                     $message = "Order status updated.";
                     return $this->successResponse($update, $message);
