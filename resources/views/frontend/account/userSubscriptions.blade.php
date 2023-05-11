@@ -471,6 +471,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
 	var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
 	var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
+    var pesapal_payment_url = "{{ route('pesapal.payment') }}";
 
     $(document).on('change', '#subscription_payment_methods input[name="subscription_payment_method"]', function() {
         var method = $(this).val();

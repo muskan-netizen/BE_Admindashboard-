@@ -4944,6 +4944,9 @@ $(document).ready(function () {
             case 52:
                 paymentViaSkipCash('',payment_option_id,'');
                 break;
+            case 57:
+                payWithPesapal(payment_option_id,'');
+            break;
                 
         }
 
@@ -5464,6 +5467,15 @@ $(document).ready(function () {
                 $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
             }
             break; 
+
+            case '57':
+              var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+              if (order != '') {
+                payWithPesapal(payment_option_id, order);
+              } else {
+                  return false;
+              }
+            break;
         }
 
     }
@@ -5706,6 +5718,9 @@ $(document).ready(function () {
                 }
                 break; 
 
+            case 57:
+                payWithPesapal(payment_option_id,'');
+            break;
         }
     }
 
