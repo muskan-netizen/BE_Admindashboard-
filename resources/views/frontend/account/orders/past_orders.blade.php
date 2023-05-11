@@ -273,15 +273,18 @@
                                                         <label class="m-0">{{ __('Delivery Fee') }}</label>
                                                         <span>{{ Session::get('currencySymbol') }}{{ decimal_format($vendor->delivery_fee * $clientCurrency->doller_compare) }}</span>
                                                     </li>
-                                                    <li class="d-flex align-items-center justify-content-between">
-                                                        <label class="m-0">{{ __('Waiting Time').(($order->total_waiting_time)?'('.$order->total_waiting_time.'Min)':'') }}</label>
-                                                        <span>{{$additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($vendor->waiting_price
-                                                        *
-                                                        $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($vendor->waiting_price
-                                                        *
-                                                        $clientCurrency->doller_compare)}}</span>
-                                                        </li>
+                                                   
                                                 @endif
+                                            @if ($vendor->waiting_price > 0)
+                                                <li class="d-flex align-items-center justify-content-between">
+                                                    <label class="m-0">{{ __('Waiting Time').(($order->total_waiting_time)?'('.$order->total_waiting_time.'Min)':'') }}</label>
+                                                    <span>{{$additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($vendor->waiting_price
+                                                    *
+                                                    $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($vendor->waiting_price
+                                                    *
+                                                    $clientCurrency->doller_compare)}}</span>
+                                                    </li>
+                                            @endif
                                                 <li
                                                     class="grand_total d-flex align-items-center justify-content-between">
                                                     <label class="m-0">{{ __('Amount') }}</label>
