@@ -24,9 +24,9 @@ use Illuminate\Support\Facades\Redirect;
 class PesapalPaymentController extends Controller
 {
     use PesapalPaymentTrait;
+    const PaymentId = 57;
     public function payByPesapal(Request $request)
     {
-        Log::error([ 'sub' => $request->all()]);
         $data = $request->all();
         $user = auth()->user();
         $data['come_from'] = 'app';
@@ -49,7 +49,7 @@ class PesapalPaymentController extends Controller
         {
             $data = [
                 'amount' => $request->total_amount,
-                'payment_option_id' => 57,
+                'payment_option_id' => $this::PaymentId,
                 'transaction_id' => $response['order_tracking_id'],
                 'balance_transaction' => $request->total_amount,
                 'order_id' => $order->id ?? '',
@@ -61,7 +61,7 @@ class PesapalPaymentController extends Controller
         {
             $data = [
                 'amount' => $request->total_amount,
-                'payment_option_id' => 57,
+                'payment_option_id' => $this::PaymentId,
                 'transaction_id' => $response['order_tracking_id'],
                 'balance_transaction' => $request->total_amount,
                 'viva_order_id' => $request->order_number ?? '',
@@ -73,7 +73,7 @@ class PesapalPaymentController extends Controller
         else{
             $data = [
                 'amount' => $request->total_amount,
-                'payment_option_id' => 57,
+                'payment_option_id' => $this::PaymentId,
                 'transaction_id' => $response['order_tracking_id'],
                 'balance_transaction' => $request->total_amount,
                 'viva_order_id' => $request->order_number ?? '',
@@ -193,7 +193,7 @@ class PesapalPaymentController extends Controller
     {
         $data['amount'] =  $payment->amount;
         $data['transaction_id'] =  $payment->transaction_id;
-        $data['payment_option_id'] =  57;
+        $data['payment_option_id'] =  $this::PaymentId;
         $request = new \Illuminate\Http\Request($data);
         $this->creditMyWallet($request);
         if(isset($request->come_from) && $request->come_from == 'app')
@@ -258,7 +258,7 @@ class PesapalPaymentController extends Controller
     public function completeOrderSubs($request, $payment)
     {
         $data['transaction_id'] = $payment->transaction_id;
-        $data['payment_option_id'] = 57;
+        $data['payment_option_id'] = $this::PaymentId;
         $data['subsid'] = $request['subscription_id'];
         $data['subscription_id'] = $request['subscription_id'];
         $data['amount'] = $request['amount'];
@@ -291,7 +291,7 @@ class PesapalPaymentController extends Controller
                     $payment->date = date('Y-m-d');
                     $payment->type = 'pickup_delivery';
                     $payment->order_id = $order->id ?? '';
-                    $payment->payment_option_id = 57;
+                    $payment->payment_option_id = $this::PaymentId;
                     $payment->user_id = $order->user_id ?? '';
                     $payment->transaction_id = $request->OrderMerchantReference;
                     $payment->balance_transaction = $order->payable_amount ?? '';
@@ -306,6 +306,7 @@ class PesapalPaymentController extends Controller
                     $response['status'] = 'Success';
                     $response['msg'] = 'Success Added Pickup.';
                     $response['payment_from'] = 'pickup_delivery';
+                    $response['order'] = $order;
                     return response()->json($response, 200);
                 }
 

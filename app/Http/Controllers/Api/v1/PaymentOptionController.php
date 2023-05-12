@@ -18,6 +18,7 @@ use App\Http\Controllers\Front\MpesaController;
 use App\Http\Controllers\Front\MvodafoneController;
 use App\Http\Controllers\Front\NmiPaymentController;
 use App\Http\Controllers\Front\PayphoneController;
+use App\Http\Controllers\Front\PesapalPaymentController;
 use App\Http\Controllers\Front\SkipCashController;
 use App\Http\Controllers\Front\ToyyibPayController;
 use App\Http\Controllers\Front\VivawalletController;
@@ -811,6 +812,9 @@ class PaymentOptionController extends BaseController{
 
 
 
-
+    public function postPaymentVia_pesapal(Request $request){
+        $gateway = new PesapalPaymentController();
+        return $gateway->PesapalPayment($request);
+    }
 
 }

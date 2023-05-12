@@ -47,6 +47,16 @@ trait PesapalPaymentTrait
         ]);
     }
 
+    public function pinList()
+    {
+        $url = $this->test_mode ? 'https://cybqa.pesapal.com/pesapalv3/api/URLSetup/GetIpnList' : 'https://pay.pesapal.com/v3/api/URLSetup/GetIpnList';
+
+        return Http::withHeaders([
+            'Content-Type' =>'application/json',
+            'Authorization' => 'Bearer '.$this->token()['token']
+        ])->get($url);
+    }
+
     public function pesaPalTransApi(Request $request,$description)
     {
         $token = $this->token()['token'];
