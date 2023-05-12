@@ -156,6 +156,8 @@ Route::group(['middleware' => ['domain']], function () {
 
 	// Route::post('payment/skipcashpay', 'Front\SkipCashController@checkPayment')->name('payment.skipcash.pay');
 
+	Route::post('powertrans-payment', 'Front\PowerTransPaymentController@payByPowerTrans')->name('powertrans.payment');
+	Route::get('success/powertrans', 'Front\PowerTransPaymentController@successPage')->name('payment.powertrans.success');
 
 	//GCash
 	Route::post('payment/gcash', 'Front\GCashController@beforePayment')->name('payment.gcash.beforePayment');

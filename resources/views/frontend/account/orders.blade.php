@@ -721,7 +721,9 @@ $timezone = Auth::user()->timezone;
     var confirm_discard_edit_order_desc = "{{__('You want to discard editing Order.')}}";
     var success_error_container = ".order_response";
     var payment_option_list_url = "{{route('payment.option.list')}}";
-    var user_cards_url = "{{ route('payment.azulpay.getCards') }}";        
+    var user_cards_url = "{{ route('payment.azulpay.getCards') }}";  
+    var powertrans_payment_url = "{{ route('powertrans.payment') }}";
+          
      @if(!empty($client_preference_detail->is_postpay_enable))
         var post_pay_edit_order = "{{$client_preference_detail->is_postpay_enable}}";
     @else

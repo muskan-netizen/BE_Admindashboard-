@@ -780,6 +780,16 @@ class PaymentOptionController extends BaseController
                                 'nmi_key_id' => $request->nmi_key_id,
                             ));
                         break;
+                        case 'powertrans':
+                            $request->validate([
+                                'powertrans_id' => 'required',
+                                'powertrans_password' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'powertrans_id' => $request->powertrans_id,
+                                'powertrans_password' => $request->powertrans_password,
+                            ));
+                        break;
                     }
                 }
             }
