@@ -317,6 +317,14 @@
                                         <input class="form-control" type="number" name="price" min="0" required="required">
                                     </div>
                                 </div>
+                                @if(@getAdditionalPreference(['is_show_vendor_on_subcription'])['is_show_vendor_on_subcription'] == 1)
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="">{{ __("Order Count") }}</label>
+                                        <input class="form-control" type="number" name="order_count" min="0" required="required">
+                                    </div>
+                                </div>
+                                @endif
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="">{{ __("Frequency") }}</label>

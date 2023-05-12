@@ -56,6 +56,11 @@ class Order extends Model implements Auditable
     {
         return $this->hasMany('App\Models\VendorOrderStatus', 'order_id', 'id');
     }
+
+    public function order_product_status()
+    {
+        return $this->hasMany('App\Models\VendorOrderProductStatus', 'order_id');
+    }
     public function scopeBetween($query, $from, $to)
     {
         $query->whereBetween('created_at', [$from, $to]);
@@ -94,11 +99,7 @@ class Order extends Model implements Auditable
 
     public function getTotalDiscountCalculateAttribute()
     {
-        if(checkColumnExists('order_vendors', 'subscription_discount_admin')){
-            return $this->vendors()->sum('discount_amount') + $this->vendors()->sum('subscription_discount_admin') + $this->vendors()->sum('subscription_discount_vendor');
-        }else{
-            return $this->vendors()->sum('discount_amount');
-        }
+        return $this->vendors()->sum('discount_amount') + $this->vendors()->sum('subscription_discount_admin') + $this->vendors()->sum('subscription_discount_vendor');
     }
 
     public function luxury_option()
@@ -146,8 +147,17 @@ class Order extends Model implements Auditable
     {
         return $this->hasOne('App\Models\Cart', 'order_id', 'id');
     }
+    public function OrderFiles()
+    {
+        return $this->hasMany('App\Models\OrderFiles'); //, 'order_id', 'id'
+    }
     public function scopeOnlyEnabledLuxuryOptions($query,$EnabledLuxuryOptions=[])
     {
         return $query->whereIn('luxury_option_id',$EnabledLuxuryOptions);
+    }
+    
+    public function getOrderScheduleDateAttribute(){
+        $timezone = \Auth::user()->timezone;
+        return dateTimeInUserTimeZone($this->scheduled_date_time,$timezone,true,false,false);
     }
 }

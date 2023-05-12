@@ -207,12 +207,13 @@ header#al_new_design .main-menu .al_count_tabs_new_design.d-none.d-sm-block ul#t
     display: flex;
     -webkit-box-pack: justify;
     -ms-flex-pack: justify;
-    justify-content: space-between;
+    /*justify-content: space-between;*/
+    justify-content:unset;
     -webkit-box-align: center;
     -ms-flex-align: center;
     align-items: center;
     z-index: 99;
-    border-bottom: 1px solid #f5f5f5;
+    /* border-bottom: 1px solid #f5f5f5; */
 }
 
 .dark .main-menu {
@@ -502,14 +503,17 @@ li {
 
 .sm ul.al_main_category_list {
     z-index: 9;
-    /*display: none;*/
+    display: block;
     opacity: 0;
     list-style: none;
     margin: 0;
     line-height: normal;
     direction: ltr;
     text-align: left;
-    padding: 0
+    padding: 0;
+    transition: all 0.1s!important;
+    transform: translateY(-20px);
+    visibility: hidden;
 }
 
 .menu-slider.slick-slider {
@@ -628,16 +632,15 @@ li.onhover-dropdown.change-language {
     border-top: 1px solid #ddd;
     /*-webkit-transition: .5s;
     transition: .5s;*/
-    -webkit-transition: all .25s ease;
-	-moz-transition: all .25s ease;
-	-ms-transition: all .25s ease;
-	-o-transition: all .25s ease;
-	transition: all .25s ease;
+
 }
 
 .menu-navigation.alThreeMenu li.al_main_category:hover ul.al_main_category_list {
     /*display: block*/
     opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+
 }
 
 .menu-navigation.alThreeMenu li.al_main_category a .nav-cate-img.activ_nav {
@@ -710,16 +713,12 @@ header#al_new_design.site-header.fixed-bar .menu-navigation.alThreeMenu {
     transform: scale(1);
     letter-spacing: 0;
     display: block;
-    -webkit-transition: all .25s ease;
-	-moz-transition: all .25s ease;
-	-ms-transition: all .25s ease;
-	-o-transition: all .25s ease;
-	transition: all .25s ease;
 }
 
 #al_new_design .pixelstrap ul {
     padding: 0;
-    background: #fff
+    background: #fff;
+
 }
 
 #al_new_design .pixelstrap ul a:hover {
@@ -898,11 +897,19 @@ li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center {
     letter-spacing: 0;
     display: block;
     font-style: normal;
-    font-weight: 400;
-    font-size: 14px;
+    font-weight: 500;
+    font-size: 14px;    
     line-height: 16px;
     font-weight:600;
     color: #222;
+}
+.menu-navigation.alThreeMenu .slick-slider .slick-next{
+    right: -50px;
+    top: 8px;
+}
+.menu-navigation.alThreeMenu .slick-slider .slick-prev{
+    left: -50px;
+    top: 8px;
 }
 
 .al_body_template_eight .al_custom_head .onhover-dropdown span:before,
@@ -953,7 +960,6 @@ li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center {
 
 .al_body_template_eight .top-header .header-dropdown .onhover-dropdown .onhover-show-div li a {
     margin-top: 5px;
-    font-family: sans-serif !important;
 }
 
 .al_body_template_eight .top-header .header-dropdown li i {
@@ -982,7 +988,7 @@ li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center {
 .al_body_template_eight .al_custom_head .onhover-dropdown span:before,
 .al_custom_head.top-header .header-dropdown li a,
 .al_custom_head.top-header .header-dropdown li span svg path {
-    fill: var(--theme-deafult);
+    fill:#aaa;
 }
 
 .al_body_template_eight .al_custom_head_map_box {
@@ -999,24 +1005,12 @@ li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center {
 
 .al_body_template_eight .top-header .header-dropdown li.onhover-dropdown ul.onhover-show-div {
     width: 200px;
-    padding:0px 0px;transform: translateY(2px);
+    padding:0px 0px;
 }
 .al_body_template_eight  .top-header .header-dropdown li{padding-bottom: 0px;}
 
 .al_body_template_eight li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center span.mr-1 {
     position: relative;
-}
-
-.al_body_template_eight span#cart_qty_span {
-    width: 20px;
-    height: 20px;
-    background: var(--theme-deafult);
-    color: #fff;
-    border-radius: 50%;
-    position: absolute;
-    top: 0;
-    left: 15px;
-    font-size: 12px !important;
 }
 
 .al_body_template_eight #header_cart_main_ul img.mr-2.blur-up.lazyloaded {
@@ -1039,8 +1033,10 @@ li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center {
 }
 
 header#al_new_design.site-header.fixed-bar .menu-navigation.alThreeMenu {
-    padding-top: 0;
-    padding-bottom: 0;
+ padding:8px 0px;
+}
+.menu-navigation.alThreeMenu {
+    padding: 8px 0px !important;
 }
 
 .site-header.fixed-bar .nav-cate-img.activ_nav {
@@ -1052,26 +1048,25 @@ header#al_new_design.site-header.fixed-bar .menu-navigation.alThreeMenu {
     height: 65px !important;
     padding-top: 20px !important;
 } */
-
+/* 
 header#al_new_design.site-header.fixed-bar .menu-navigation.alThreeMenu ul.al_main_category_list {
     top: 40px !important;
-}
-
-body.al_body_template_eight.homeHeader .menu-navigation.alThreeMenu {
-    height: 100px !important;
-    padding-top: 5px !important;
+} */
+.navscroll ul li ul{
+    position: fixed;
+    top: 208px !important;
 }
 
 body.al_body_template_eight #al_new_design .pixelstrap ul {
-    top: 40px;box-shadow: none;
+    top: 24px;
+    /* top:40px; */
+    box-shadow: none;
 }
 
 .al_body_template_eight .menu-navigation.alThreeMenu li.al_main_category {
-    padding: 0 20px;
+    padding: 0 0;
     top: -6px;
 }
-
-
 /* .al_body_template_eight #al_new_design .pixelstrap li a:hover:after {
     content: '';
     width: 100%;
@@ -1086,13 +1081,12 @@ body.al_body_template_eight #al_new_design .pixelstrap ul {
     display: none;
 }
 
-.al_body_template_eight .pixelstrap a,
+ .al_body_template_eight .pixelstrap a,
 .pixelstrap a:active,
 .pixelstrap a:hover,
 .pixelstrap li>a {
     width: unset !important;
-}
-
+} 
 .menu-navigation.alThreeMenu li.al_main_category a .nav-cate-img img {
     width: 50px !important;
     height: 50px !important;
@@ -1117,7 +1111,7 @@ body.dark.al_body_template_eight .top-header .cutom_add_wishlist div a.fav-butto
 
 body.al_body_template_eight.homeHeader .menu-navigation.alThreeMenu {
     height: auto !important;
-    padding: 0;
+    padding:10px 0px;
 }
 
 body.al_body_tebody.al_body_template_eight.homeHeader .menu-navigation.alThreeMenu li.al_main_category {
@@ -1171,15 +1165,30 @@ body.al_body_template_eight ul#header_cart_main_ul li .total {
 }
 
 .al_body_template_eight .menu-navigation.alThreeMenu li.al_main_category {
-    padding: 0 20px;
-    top: 0px;
-    height: 53px;
-    display: flex !important;
+    /* padding:0 20px; */
+    top: 0;
     align-items: center;
+    /* height: 53px; */
+    display: flex !important;
 }
 
 .al_body_template_eight .onhover-dropdown:before {
     display: none;
+}
+
+/*
+.menu-slider.slick-track:after, .slick-track:before {
+    content: "\f104";
+    display: table;
+    font-family: 'FontAwesome';
+    color:#000;
+}
+
+.menu-slider.slick-track:after {
+    content: "\f105" !important;
+    display: table;
+    font-family: 'FontAwesome' !important;
+    color:#000;
 }
 
 
@@ -1205,9 +1214,6 @@ body.al_body_template_eight ul#header_cart_main_ul li .total {
     }
     body.al_body_template_eight.homeHeader .menu-navigation.alThreeMenu {
         display: none;
-    }
-    .al_body_template_eight .menu-navigation.alThreeMenu {
-        padding: 0;
     }
     body.al_body_template_eight .similar-prod-data {
         margin-bottom: 30px;
@@ -1273,3 +1279,75 @@ a.navbar-brand.mr-3 {
     font-size: 24px !important;
     font-weight: 500;
 }
+
+.category-related-product .img-outer-box.position-relative {
+    min-height: 270px !important;
+    height: 270px!important;
+}
+
+.al_custom_categories .slick-slide > div {
+    padding: 0 8px!important;
+}
+
+
+.main-pro-slider .slick-slide>div {
+    margin: 0 !important;
+    padding: 0;
+}
+
+.main-pro-slider .slick-track {
+    margin-left:15px !important;
+}
+
+/* svg color css*/
+
+span.icon-icLang.align-middle svg {
+    fill: #aaa;
+}
+
+.al_body_template_eight span#cart_qty_span {
+    width: 20px;
+    height: 20px;
+    background: var(--theme-deafult);
+    color: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 15px;
+    font-size: 12px !important;
+}
+/* navbar scroll css
+
+.navscroll {
+    width: 1170px;
+    margin: auto;
+    overflow-y: auto;
+    white-space: nowrap;
+}
+ 
+
+
+.navscroll ul {
+    display: table;
+    width: 100%;
+}
+
+.navscroll ul li{
+    position: relative;
+    display: inline-block;
+}
+
+.navscroll ul li ul{
+    position: absolute;
+    position: fixed;
+    top: 198px !important;
+}
+
+*/
+
+
+
+
+
+
+

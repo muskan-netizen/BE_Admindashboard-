@@ -22,7 +22,7 @@ class BidRequest extends Model
 
     public function bid()
     {
-        return $this->hasOne(Bid::class, 'bid_req_id');
+        return $this->hasOne(Bid::class, 'bid_req_id','id');
     }
 
     public function bidCounts()

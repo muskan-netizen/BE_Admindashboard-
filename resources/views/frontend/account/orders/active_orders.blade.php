@@ -6,8 +6,10 @@
                                                         @php
 
                                                             $total_other_taxes=0.00;
-                                                            foreach(explode(":",$order->total_other_taxes) as $row){
-                                                                $total_other_taxes+=(float)$row;
+                                                         	if(!empty($order->total_other_taxes)){
+                                                                $total_other_taxes  =   (float) array_sum(explode(":", $order->total_other_taxes));
+                                                            }else{
+                                                                $total_other_taxes = $order->taxable_amount;
                                                             }
 
                                                         @endphp
@@ -121,7 +123,7 @@
                                                                                                             Dropoff: N/A
                                                                                                         @endif
                                                                                                     @else
-                                                                                                        {{ (($order->scheduled_slot)?dateTimeInUserTimeZone($order->scheduled_date_time, $timezone).'. Slot: '.$order->scheduled_slot:dateTimeInUserTimeZone($order->scheduled_date_time, $timezone) ) }}
+                                                                                                        {{ (($order->scheduled_slot)?dateTimeInUserTimeZone($order->scheduled_date_time, $timezone,true,false,false).'. Slot: '.$order->scheduled_slot:dateTimeInUserTimeZone($order->scheduled_date_time, $timezone) ) }}
                                                                                                     @endif
                                                                                                 </span>
                                                                                         @elseif(!empty($vendor->ETA))
@@ -280,14 +282,25 @@
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                             @endif
+                                                                                            @if ($vendor->taxable_amount  > 0)
+                                                                                    <li
+                                                                                        class="d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Tax') }}</label>
+                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format(($vendor->taxable_amount) * $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format(($vendor->taxable_amount)
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)}}</span>
+                                                                                    </li>
+                                                                                @endif
+                                                                                            
                                                                                             @if ($order->fixed_fee_amount > 0)
                                                                                                 <li
                                                                                                     class="d-flex align-items-center justify-content-between">
                                                                                                     <label
                                                                                                         class="m-0">{{ __($fixedFee) }}</label>
-                                                                                                    <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->fixed_fee_amount
+                                                                                                    <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($vendor->fixed_fee
                                                                                                         *
-                                                                                                        $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($order->fixed_fee_amount
+                                                                                                        $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($vendor->fixed_fee
                                                                                                         *
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
@@ -331,12 +344,15 @@
                                                                                                 <label
                                                                                                     class="m-0">{{ __('Amount') }}</label>
                                                                                                 @php
-                                                                                                    $product_subtotal_amount = $product_total_count - $vendor->discount_amount + $vendor->delivery_fee;
+                                                                                                    $product_subtotal_amount = $vendor->subtotal_amount - $vendor->discount_amount + $vendor->total_container_charges +
+                                                                                                 $vendor->taxable_amount + $vendor->service_fee_percentage_amount + $vendor->fixed_fee +
+                                                                                                 $vendor->delivery_fee + $vendor->additional_price + $vendor->toll_amount-$order->wallet_amount_used;
                                                                                                     $subtotal_order_price += $product_subtotal_amount;
+                                                                                                    
                                                                                                 @endphp
-                                                                                                <span>{{$additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($vendor->payable_amount+$order->fixed_fee_amount
+                                                                                                <span>{{$additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($product_subtotal_amount
                                                                                                     *
-                                                                                                    $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($vendor->payable_amount+$order->fixed_fee_amount
+                                                                                                    $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($product_subtotal_amount
                                                                                                     *
                                                                                                     $clientCurrency->doller_compare)}}</span>
                                                                                             </li>
@@ -487,17 +503,17 @@
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
-                                                                                @if ($order->taxable_amount + $total_other_taxes > 0)
+                                                                                @if ($total_other_taxes > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Tax') }}</label>
-                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format(($order->taxable_amount+$total_other_taxes) * $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format(($order->taxable_amount+$total_other_taxes)
+                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format(($total_other_taxes) * $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format(($total_other_taxes)
                                                                                             *
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
-
+															
                                                                                 @if ($order->total_container_charges > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
@@ -596,7 +612,7 @@
                                                                                 <li class="grand_total d-flex align-items-center justify-content-between">
                                                                                     <label
                                                                                         class="m-0">{{ __('Total Payable') }}</label>
-                                                                                    <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->payable_amount+$order->fixed_fee_amount)) : Session::get('currencySymbol') .decimal_format($order->payable_amount+$order->fixed_fee_amount)}}
+                                                                                    <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->payable_amount)) : Session::get('currencySymbol') .decimal_format($order->payable_amount)}}
 
                                                                                     @if(!checkColumnExists('orders', 'is_postpay'))
                                                                                         $order->is_postpay = 0;

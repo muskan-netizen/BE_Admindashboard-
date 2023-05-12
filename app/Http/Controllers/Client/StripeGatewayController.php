@@ -34,9 +34,11 @@ class StripeGatewayController extends BaseController{
         $this->gateway->setTestMode(true); //set it to 'false' when go live
 
         $payout_creds = PayoutOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
-        $payout_creds_arr = json_decode($payout_creds->credentials);
-        $this->payout_secret_key = (isset($payout_creds_arr->secret_key)) ? $payout_creds_arr->secret_key : '';
-        $this->payout_client_id = (isset($payout_creds_arr->client_id)) ? $payout_creds_arr->client_id : '';
+        if($payout_creds){
+            $payout_creds_arr = json_decode($payout_creds->credentials);
+            $this->payout_secret_key = (isset($payout_creds_arr->secret_key)) ? $payout_creds_arr->secret_key : '';
+            $this->payout_client_id = (isset($payout_creds_arr->client_id)) ? $payout_creds_arr->client_id : '';
+        }
 
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : '';

@@ -3,7 +3,7 @@
 use App\Models\CartProduct;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
-use App\Models\{CaregoryKycDoc, Cart, CartAddon, CartCoupon, CartProductPrescription, Currency, SmsTemplate, User, TempCartProduct, Vendor, WebStylingOption};
+use App\Models\{CaregoryKycDoc, Cart, CartAddon, CartCoupon, CartProductPrescription, Currency, SmsTemplate, User, TempCartProduct, Vendor, VendorAdditionalInfo, WebStylingOption};
 use App\Models\Nomenclature;
 use App\Models\UserRefferal;
 use App\Models\ProductVariant;
@@ -13,18 +13,23 @@ use App\Models\PaymentOption;
 use App\Models\ShippingOption;
 use App\Models\ShowSubscriptionPlanOnSignup;
 use App\Models\{VendorSlot, ClientCurrency, Order, Type, ClientPreferenceAdditional, UserVendor, VendorCategory, Product};
+use Carbon\CarbonPeriod;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Redis;
 
-function setUserCode(){
-    $userCode = session()->has('userCode');
-    if(!$userCode){
-        $user = ClientData::first();
-        session()->put('userCode', $user->code);
+if (!function_exists('setUserCode')) {
+    function setUserCode(){
+        $userCode = session()->has('userCode');
+        if(!$userCode){
+            $user = ClientData::first();
+            session()->put('userCode', $user->code);
+        }
     }
 }
+
+
 
 // Returns the values of the additional preferences.
 if (!function_exists('checkColumnExists')) {
@@ -54,13 +59,13 @@ if (!function_exists('getAdditionalPreference')) {
         $return = [];
         $dbreturn= [];
         if(sizeof($key)){
-            $result = (checkColumnExists('client_preference_additional','key_name')) ? ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->where(['client_code' => session()->get('userCode')])->get() : [];
+            $result = ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
             $return = array_column($result->toArray(), 'key_value', 'key_name');
             if (sizeof($result)) {
                 $dbreturn = array_column($result->toArray(), 'key_value', 'key_name');
             }
             $emp = array_diff($key, array_keys($dbreturn));
-            $emptyArr = array_fill_keys($emp, '');
+            $emptyArr = array_fill_keys($emp, 0);
             $return = array_merge($emptyArr, $dbreturn);
         }
         return $return;
@@ -85,6 +90,22 @@ if (!function_exists('getAdditionalPreference')) {
 //     }
 // }
 
+if (!function_exists('getVendorAdditionalPreference')) {
+    function getVendorAdditionalPreference($vendorId,$key = ''){
+        $vendorInfo =  VendorAdditionalInfo::where('vendor_id',$vendorId);
+        if($key){
+            $data =  $vendorInfo->value($key);
+            if($key == 'compare_categories' && !empty($data))
+                $data = explode(',',$data);
+
+        }else{
+            $data =$vendorInfo->first();
+        }   
+
+        return $data??[];
+    }
+}
+
 if (!function_exists('changeDateFormate')) {
     function changeDateFormate($date,$date_format){
         return \Carbon\Carbon::createFromFormat('Y-m-d', $date)->format($date_format);
@@ -104,12 +125,11 @@ if (!function_exists('getInToken')) {
 
         $tokenCurrency = $redis->get("tCurrency_".session()->get('userCode'));
         $tokenCurrency = json_decode($tokenCurrency);
-        if($tokenCurrency == null){
+        if(empty($tokenCurrency)){
             $tokenCurrency = getAdditionalPreference(['token_currency'])['token_currency'];
             $redis->set("tCurrency_".session()->get('userCode'), json_encode($tokenCurrency), 'EX', 36000);
         }
-
-        return decimal_format(($amount * ( session()->get('compareCurrency') ?? 1)) * ($tokenCurrency ?? 1));
+        return decimal_format(($amount * ( session()->get('compareCurrency') ?? 1)) * (!empty($tokenCurrency) ? $tokenCurrency : 1));
     }
 }
 
@@ -119,11 +139,11 @@ if (!function_exists('getJsToken')) {
         $redis = Redis::connection();
         $tokenCurrency = $redis->get("tCurrency_".session()->get('userCode'));
         $tokenCurrency = json_decode($tokenCurrency);
-        if($tokenCurrency == null){
+        if(empty($tokenCurrency)){
             $tokenCurrency = getAdditionalPreference(['token_currency'])['token_currency'];
             $redis->set("tCurrency_".session()->get('userCode'), json_encode($tokenCurrency), 'EX', 36000);
         }
-        return decimal_format($tokenCurrency ?? 1);
+        return decimal_format(!empty($tokenCurrency) ? $tokenCurrency : 1);
     }
 }
 
@@ -142,9 +162,11 @@ if (!function_exists('checkShowSubscriptionPlanOnSignup')) {
 if (!function_exists('sendFcmCurlRequest')) {
     function sendFcmCurlRequest($data ,$fcm_server_key = '')
     {
-        $client_preferences = ClientPreference::first();
-        $fcm_server_key = ($fcm_server_key =='') ? $client_preferences->fcm_server_key :  $fcm_server_key ;
+   
+        $fcm_server_key = ($fcm_server_key =='') ? ClientPreference::select('fcm_server_key')->first()->fcm_server_key :  $fcm_server_key ;
+
          if (!empty($fcm_server_key )) {
+           
             $headers = [
                 'Authorization: key='.$fcm_server_key ,
                 'Content-Type: application/json',
@@ -161,6 +183,7 @@ if (!function_exists('sendFcmCurlRequest')) {
             //     die('Oops! FCM Send Error: ' . curl_error($ch));
             // }
             curl_close($ch);
+       
             return $result;
         } else {
             return false;
@@ -643,7 +666,7 @@ if (!function_exists('showSlot')) {
         $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
         //type must be a : delivery , takeaway,dine_in
         $client = ClientData::select('timezone')->first();
-        $preferences = ClientPreference::first();
+        $preferences = ClientPreference::select('scheduling_with_slots', 'business_type')->first();
         $viewSlot = array();
         if (!empty($myDate)) {
             $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
@@ -712,36 +735,44 @@ if (!function_exists('showSlot')) {
 }
 
 if (!function_exists('showPriceWithCurrency')) {
-function showPriceWithCurrency($price = 0,$multiply = 0,$compare = 0)
+function showPriceWithCurrency($price = 0,$compare = 0)
     {
-            $currencysymbol = session()->get('currencySymbol').' ';
-            $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
-            if($additionalPreference['is_token_currency_enable'] == 1)
-            {
-                $currencysymbol = "<i class='fa fa-money' aria-hidden='true'></i> ";
-                $amount =  getInToken($price * $multiply);
-            }else{
-                $amount =  decimal_format($price * $multiply);
-            }
+        setUserCode();
+        $redis = Redis::connection();
+        $multiply =  session()->get('currencyMultiplier') ?? 1;
+        $currencysymbol = session()->get('currencySymbol').' ';
+        $is_token_currency = $redis->get("ifTCurrency_".session()->get('userCode'));
+        if($is_token_currency == null){
+            $is_token_currency = getAdditionalPreference(['is_token_currency_enable'])['is_token_currency_enable'];
+            $redis->set("ifTCurrency_".session()->get('userCode'), $is_token_currency, 'EX', 36000);
+        }
+        
+        if($is_token_currency == 1)
+        {
+            $currencysymbol = "<i class='fa fa-money' aria-hidden='true'></i> ";
+            $amount =  getInToken($price * $multiply);
+        }else{
+            $amount =  decimal_format($price * $multiply);
+        }
 
-            //check to compare price greater > 0 return
-            if($compare>0)
-            {
-                if($price>0){
-                    return $currencysymbol.' <del class="ml-2 compare_at_price">'.$amount.'</del>';
-                 }else{
-                    return '';
-                }
+        //check to compare price greater > 0 return
+        if($compare>0)
+        {
+            if($price>0){
+                return '<del class="ml-2 compare_at_price">'.$currencysymbol.$amount.'</del>';
+                }else{
+                return '';
             }
+        }
 
-            return $currencysymbol.$amount;
+        return $currencysymbol.$amount;
     }
 }
 
 if (!function_exists('showNumericPrice')) {
-    function showNumericPrice($price = 0,$multiply = 0)
+    function showNumericPrice($price = 0)
         {
-                //$currencysymbol = Session::get('currencySymbol').' ';
+                $multiply =  session()->get('currencyMultiplier') ?? 1;
                 $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                 if($additionalPreference['is_token_currency_enable'] == 1)
                 {
@@ -966,7 +997,7 @@ if (!function_exists('GoogleDistanceMatrix')) {
     function GoogleDistanceMatrix($latitude, $longitude)
     {
         $send   = [];
-        $client = ClientPreference::where('id', 1)->first();
+        $client = ClientPreference::select('map_key', 'distance_unit')->where('id', 1)->first();
         $lengths = count($latitude) - 1;
         $value = [];
 
@@ -1086,7 +1117,7 @@ if (!function_exists('stripeOXXOPaymentCredentials')) {
 if (!function_exists('stripeDynamicPaymentCredentials')) {
     function stripeDynamicPaymentCredentials($name){
         $stripe_creds = PaymentOption::select('credentials')->where('code', $name)->where('status', 1)->first();
-        $creds_arr = json_decode($stripe_creds->credentials);
+        $creds_arr = @json_decode(@$stripe_creds->credentials);
         $response = collect();
         $response->secret_key = (isset($creds_arr->secret_key)) ? $creds_arr->secret_key : '';
         $response->publishable_key = (isset($creds_arr->publishable_key)) ? $creds_arr->publishable_key : '';
@@ -1183,27 +1214,56 @@ if (!function_exists('taxRates')) {
     }
 }
 
+if (!function_exists('getRoleId')) {
+    function getRoleId($name){
+        if($name){
+            return  \Spatie\Permission\Models\Role::where('name',$name)->value('id');
+        }else{
+            return null;
+        }
+    }
+}
+
+
 
 if (!function_exists('getServiceTypesCategory')) {
     /**
      * config('constants.ServiceTypes')
      */
-    function getServiceTypesCategory($vendorType) {
-        //echo $vendorType; exit();
+    function getServiceTypesCategory($vendorType, $client_preference = NULL) {
         try {
-            $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
-            $client_preference = ClientPreference::select('business_type', 'p2p_check')->first();
-            // if(isset($set_template)  && $set_template->template_id == 9){
-
-            //     if(@$client_preference->p2p_check){
-            //         $vendorType = 'p2p';
-            //         // session()->put('vendorType', 'p2p');
-            //     }
-            // }
+            if($client_preference ==NULL){
+                $client_preference = ClientPreference::select('business_type', 'p2p_check')->first();
+            }
+            
+            
 
             $types =   Type::query();
+
             $service_types = [];
-            if ($vendorType == "delivery" || $vendorType == "dine_in" || $vendorType == "takeaway") {
+
+            $alltypes = [
+                'delivery'     => ['products_service'],
+                'dine_in'      => ['products_service'],
+                'takeaway'     => ['products_service'],
+                'rental'       => ['rental_service'],
+                'pick_drop'    => ['pick_drop_service'],
+                'on_demand'    => ['on_demand_service'],
+                'laundry'      => ['laundry_service'],
+                'appointment'  => ['appointment_service'],
+                'taxi'         => ['pick_drop_service'],
+                'p2p'          => ['p2p'],
+                'home_service' => ['on_demand_service', 'appointment_service'],
+            ];
+            
+            if ($vendorType == 'delivery' || $vendorType == 'dine_in' || $vendorType == 'takeaway' || $vendorType == 'rental' || $vendorType == 'pick_drop' || $vendorType == 'on_demand' || $vendorType == 'laundry' || $vendorType == 'appointment' || $vendorType == 'p2p') {
+                $service_types = $alltypes[$vendorType];
+            }
+
+            if ($client_preference->business_type == 'taxi' || $client_preference->business_type == 'laundry' || $client_preference->business_type == 'home_service' || $client_preference->business_type == 'p2p') {
+                $service_types = $alltypes[$client_preference->business_type];
+            }
+            /* if ($vendorType == "delivery" || $vendorType == "dine_in" || $vendorType == "takeaway") {
                 $service_types = ['products_service'];
             } elseif ($vendorType == "rental") {
                 $service_types = ['rental_service'];
@@ -1215,15 +1275,13 @@ if (!function_exists('getServiceTypesCategory')) {
                 $service_types = ['laundry_service'];
             } elseif ($vendorType == "appointment") {
                 $service_types = ['appointment_service'];
-            }
-            // elseif ($vendorType == "p2p") {
-            //     $service_types = ['products_service'];
-            // }
+            } 
+            
             elseif ($vendorType == "p2p") {
                 $service_types = ['p2p'];
-            }
+            }*/
 
-            if ($client_preference->business_type == 'taxi') {
+            /* if ($client_preference->business_type == 'taxi') {
                 $service_types = ['pick_drop_service'];
             } elseif ($client_preference->business_type == 'laundry') {
                 $service_types = ['laundry_service'];
@@ -1238,7 +1296,7 @@ if (!function_exists('getServiceTypesCategory')) {
             // }
             if ($client_preference->business_type == 'p2p') {
                 $service_types = ['p2p'];
-            }
+            } */
             $types =  $types->whereIn('service_type', $service_types);
             $types_id = $types->pluck('id')->toArray();
             return $types_id ;
@@ -1275,10 +1333,7 @@ if (!function_exists('getCategoryTypes')) {
                 $typeArray = ['p2p'];
                 break;
             case "super_app":
-                $typeArray = ['delivery', 'dinein', 'takeaway', 'rental', 'pick_drop', 'on_demand', 'appointment' ];
-                if( checkColumnExists('client_preferences', 'p2p_check') ) {
-                    $typeArray[] = 'p2p';
-                }
+                $typeArray = ['delivery', 'dinein', 'takeaway', 'rental', 'pick_drop', 'on_demand', 'appointment', 'p2p' ];
                 break;
             default:
             $typeArray =['delivery','dinein','takeaway','pick_drop','on_demand','appointment'];
@@ -1387,6 +1442,37 @@ if (!function_exists('sendSmsTemplate')) {
     }
 }
 
+
+
+if (!function_exists('inventorySyncOnOff')) {
+    function inventorySyncOnOff($vendor_id)
+    {
+        if (!empty($vendor_id)) {
+            $client_preferences = ClientPreference::first();
+
+            $client = new \GuzzleHttp\Client([
+                'headers' => [
+                    'shortcode' => $client_preferences->inventory_service_key_code,
+                    'content-type' => 'application/json'
+                ]
+            ]);
+            $url = $client_preferences->inventory_service_key_url;
+
+            $request = $client->get($url . '/api/v1/sync-status', [
+                'json' => ['royo_vendor_id' => $vendor_id]
+            ]);
+
+            $response = json_decode($request->getBody());
+            // \Log::info('Response Data');
+            // \Log::info(json_encode($response));
+            if ($response->status) {
+                return $response->msg;
+            }
+        } else {
+            return false;
+        }
+    }
+}
 // Returns the values of the additional preferences.
 if (!function_exists('checkTableExists')) {
     /** check if column exits in table
@@ -1402,30 +1488,26 @@ if (!function_exists('checkTableExists')) {
     }
 }
 if (!function_exists('inventorySyncOnOff')) {
-    function inventorySyncOnOff($vendor_id)
+    function inventorySyncOnOff($vendor_id, $client_preferences)
     {
-        if (!empty($vendor_id) && checkColumnExists('client_preferences', 'inventory_service_key_url')) {
+        if (!empty($vendor_id)) 
+        {
+            $client = new \GuzzleHttp\Client([
+                'headers' => [
+                    'shortcode' => $client_preferences->inventory_service_key_code,
+                    'content-type' => 'application/json'
+                ]
+            ]);
+            $url = $client_preferences->inventory_service_key_url;
 
-            $client_preferences = ClientPreference::first();
-            if(isset($client_preferences) && ($client_preferences->inventory_service_key_url !='')){
+            $request = $client->get($url . '/api/v1/sync-status', [
+                'json' => ['royo_vendor_id' => $vendor_id]
+            ]);
 
-                $client = new \GuzzleHttp\Client([
-                    'headers' => [
-                        'shortcode' => $client_preferences->inventory_service_key_code,
-                        'content-type' => 'application/json'
-                    ]
-                ]);
-                $url = $client_preferences->inventory_service_key_url;
+            $response = json_decode($request->getBody());
 
-                $request = $client->get($url . '/api/v1/sync-status', [
-                    'json' => ['royo_vendor_id' => $vendor_id]
-                ]);
-
-                $response = json_decode($request->getBody());
-
-                if ($response->status) {
-                    return $response->msg;
-                }
+            if ($response->status) {
+                return $response->msg;
             }
             return false;
         } else {
@@ -1436,9 +1518,7 @@ if (!function_exists('inventorySyncOnOff')) {
 
 if( !function_exists('clientPrefrenceModuleStatus') ) {
     function clientPrefrenceModuleStatus($module_name) {
-        if( checkColumnExists('client_preferences', $module_name) ) {
-            return ClientPreference::first()->value($module_name);
-        }
+            return ClientPreference::select($module_name)->first()->value($module_name);
 
     }
 }
@@ -1447,6 +1527,16 @@ if( !function_exists('p2p_module_status') ) {
     function p2p_module_status() {
         $additional_preference = getAdditionalPreference(['is_attribute']);
         if(clientPrefrenceModuleStatus('p2p_check') && $additional_preference['is_attribute']) {
+            return true;
+        }
+        return false;
+    }
+}
+
+if( !function_exists('is_attribute_enabled') ) {
+    function is_attribute_enabled() {
+        $additional_preference = getAdditionalPreference(['is_attribute']);
+        if($additional_preference['is_attribute']) {
             return true;
         }
         return false;
@@ -1542,7 +1632,7 @@ if( !function_exists('is_category_products') ) {
 //     }
 // }
 
-if( !function_exists('productDiscountPercentage()') ) {
+if( !function_exists('productDiscountPercentage') ) {
     function productDiscountPercentage($product_price = 0, $product_compare_price)
     {
         if($product_compare_price > 0) {
@@ -1628,19 +1718,206 @@ if( !function_exists('makeCartEmpty') ) {
         return true;
     }
 }
+if (!function_exists('GerenalSlot')) {
+    function GerenalSlot($myDate, $StartTime, $EndTime, $Duration="60",$delayMin=0)
+    {
+        $myDate  = date('Y-m-d',strtotime($myDate));
+        //pr($myDate);
+        $Duration = (($Duration==0)?'60':$Duration);
+
+        $user = Auth::user();
+        if (isset($user->timezone) && !empty($user->timezone)) {
+            $timezoneset = $user->timezone;
+        } else {
+            $client = ClientData::orderBy('id', 'desc')->select('id', 'timezone')->first();
+
+            if (isset($client->timezone) && !empty($client->timezone)) {
+                $timezoneset = $client->timezone;
+            } else {
+                $timezoneset = 'Asia/Kolkata';
+            }
+        }
+        $cr = Carbon::now()->addMinutes($delayMin);
+        $now = dateTimeInUserTimeZone24($cr, $timezoneset);
+        $nowT = strtotime($now);
+        $nowA = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$StartTime);
+        $nowS = Carbon::createFromFormat('Y-m-d H:i:s', $nowA)->timestamp;
+        $nowE = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$EndTime)->timestamp;
+        if ($nowT > $nowE) {
+            return [];
+        } else {
+            $StartTime = date('H:i', strtotime($nowA));
+        }
+
+        $ReturnArray = array();
+        $StartTime = strtotime($StartTime); //Get Timestamp
+        $EndTime = strtotime($EndTime); //Get Timestamp
+        $AddMins = $Duration * 60;
+        $endtm = 0;
+        $key = 0;
+        while ($StartTime <= $EndTime) {
+            $endtm = $StartTime + $AddMins;
+            if ($endtm>$EndTime) {
+                $endtm = $EndTime;
+            }
+            if( $StartTime < $endtm){
+
+                if ($nowT>$nowS && $StartTime > $nowT ){
+                    $key++;
+                    //Condition to get slots from next available time on current datetime according to start time set while creating slots in vendor configuration
+                  //  $ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+                
+                    $ReturnArray[$key]['name'] = date('h:i A',$StartTime).' - '.date('h:i A', $endtm);
+                    $ReturnArray[$key]['value'] = date("G:i", $StartTime).'-'.date("G:i", $endtm);
+                }
+                if($nowT <= $nowS){//Condition to get slots from next available time on other than current datetime according to start time set while creating slots in vendor configuration
+                     $key++;
+                    //$ReturnArray[] = date("G:i", $StartTime).' - '.date("G:i", $endtm);
+                    $ReturnArray[$key]['name'] = date('h:i A',$StartTime).' - '.date('h:i A', $endtm);
+                    $ReturnArray[$key]['value'] = date("G:i", $StartTime).'-'.date("G:i", $endtm);
+                }
+            }
+
+            $StartTime += $AddMins;
+            $endtm = 0;
+           
+        }
+        return $ReturnArray;
+    }
+}
+
+
+
+if (!function_exists('GetDayFromDate')) {
+    function GetDayFromDate($date)
+    {
+        return strtolower(date('l', strtotime($date)));
+    }
+}
+
+if (!function_exists('weekDaysArray')) {
+    function weekDaysArray($daysArray='')
+    {
+        $daysArray = explode(',',$daysArray);
+        $daysArrayName = [];
+        $days = ['0'=>'Sunday','1'=>'Monday','2'=>'Tuesday','3'=>'Wednesday','4'=>'Thursday','5'=>'Friday','6'=>'Saturday'];
+        foreach($days as $key=> $day)
+        {
+            if(in_array($key,$daysArray)){
+                $daysArrayName[] = $day; 
+            }
+        }
+        return implode(',',$daysArrayName);
+    }
+}
+
+if (!function_exists('getDaysArrayBetweenTwoDates')) {
+
+    function getDaysArrayBetweenTwoDates($sdate,$edate,$matchDays=[],$alternate = ''){
+      $period = CarbonPeriod::create($sdate, $edate);
+        // Iterate over the period
+        $periods = [];
+            foreach ($period as $k => $date) {
+                if($alternate){
+
+                    if($k%2==0)
+                        $periods[] =  $date->format('Y-m-d');
+
+
+                }elseif(count($matchDays)>0){
+                    $dayNumber = $date->dayOfWeek; // get day number
+                    if(in_array($dayNumber,$matchDays))
+                    {
+                        $periods[] =  $date->format('Y-m-d');
+                    }
+                }else{
+                    $periods[] =  $date->format('Y-m-d');
+                }
+            }
+        // Convert the period to an array of dates
+        return $periods;
+    }
+}
+
+if( !function_exists('get_file_path') ) {
+    function get_file_path($url,$type="FILL_URL",$height="260",$width="260")  {
+        
+        $img = 'default/default_image.png';
+      if(!empty($url)){
+        $img = $url;
+      }
+      $ex = checkImageExtension($img);
+      $return_url = $values =  \Config::get('app.'.$type);
+
+      $img = str_replace(' ', '', $img);
+      if (substr($img, 0, 7) == "http://" || substr($img, 0, 8) == "https://"){
+        $return_url  = $values.$height.'/'.$width.\Config::get('app.IMG_URL2').'/'.$img;
+      } else {
+        $return_url  = $values.$height.'/'.$width.\Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+      }
+   
+      //pr($values);
+    //   $img = 'default/default_image.png';
+    //   if(!empty($value)){
+    //     $img = $value;
+    //     $values['is_original'] = true; 
+    //   }
+    //   $ex = checkImageExtension($img);
+    //   $values['proxy_url'] = \Config::get('app.IMG_URL1');
+    //   $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+    //   $values['image_fit'] = \Config::get('app.FIT_URl');
+    //   $values['image'] = $value;
+      //return $values.$height.'/'.$width.\Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+      return   $return_url  ;
+    }
+}
+
 if (!function_exists('getUserToken')) {
     function getUserToken($credential)
     {
+        $data['otp'] = rand(100000, 999999);
+        $data['status'] = true;
         if(!empty($credential) && isset($credential->sms_credentials)){
+            
             $credentials = json_decode($credential->sms_credentials);
             if (isset($credentials->static_otp) && $credentials->static_otp == '1') {
                 $data['otp'] = '123456';
                 $data['status'] = false;
-                return $data;
             }
-        }
-        $data['otp'] = rand(100000, 999999);
-        $data['status'] = true;
-        return $data;
+        } 
+            return $data;
+    }
+}
+
+if (!function_exists('getOnDemandPricingRule')) {    
+    /**
+     * getOnDemandPricingRule
+     *
+     * @param  mixed $vendorType = user selected vendor mode 
+     * @param  mixed $userSelection =  user selected pricing geting from vendor or freelancer
+     * @param  mixed $is_service_product_price_from_dispatch custoom mode selecter by admin 
+     * @param  mixed $is_service_price_selection custoom mode selecter by admin  $is_service_product_price_from_dispatch = 0,$is_service_price_selection = 0,
+     * @return void
+     */
+    function getOnDemandPricingRule($vendorType = "on_demand",$userSelection = "vendor",$additionalPreference)
+    {
+       
+        $is_service_product_price_from_dispatch = @$additionalPreference['is_service_product_price_from_dispatch'] ?? 0;
+        $is_service_price_selection             = @$additionalPreference['is_service_price_selection'] ?? 0;
+        $return['is_price_from_freelancer'] = 0;
+        $return['is_ondemand_multi_pricing'] = 0;
+            $value = 0;
+            if(($vendorType == "on_demand") && ($is_service_product_price_from_dispatch ==1 )){
+                $return['is_price_from_freelancer'] =1;
+                if($is_service_price_selection ==1 ){
+                    $return['is_ondemand_multi_pricing'] = 1;
+                    if($userSelection =='freelancer'){
+                        $return['is_price_from_freelancer'] =1;
+                    }else{
+                        $return['is_price_from_freelancer'] =0;
+                    }
+                }
+            }
+            return $return;
     }
 }

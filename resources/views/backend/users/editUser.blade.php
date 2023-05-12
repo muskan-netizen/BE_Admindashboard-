@@ -60,6 +60,7 @@
     <!-- start page title -->
     <div class="row">
         <div class="col-12">
+            @include('alert')
             <div class="page-title-box">
                 @if(isset($subadmin))
                 <h4 class="page-title">{{ __('Update Customer') }}</h4>
@@ -108,7 +109,31 @@
                             </div>
                         </div>
 
+                        @if(auth()->user()->can('user-add-role-permission') || auth()->user()->is_superadmin)
+                      
                         <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="password" class="control-label">{{ __("User Role") }}</label>
+                                    <select name="role" class="form-control" id="user-roles">
+                                        <option value="" >Select Role</option>
+                                        @foreach($rolesNew as $role)
+                                        <option value="{{$role->id}}" @if($role->id==$userRole) selected @endif>{{$role->name}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                    <div class="form-group">
+                                    {!! Form::label('title', __('Select Geo Fence Regions'),['class' => 'control-label'],['placeholder'=>'Search']) !!}
+                                    <select class="permissoin-multiple selectToGeo" name="geo_ids[]" multiple="multiple">
+                                        @foreach($serviceArea as $perm)
+                                        <option value="{{$perm->id}}" @if(in_array($perm->id,$geoIds)) selected @endif >{{$perm->name}}</option>
+                                        @endforeach
+                                    </select>
+                                    </div>
+                            </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="password" class="control-label">{{ __("Status") }}</label>
@@ -132,7 +157,7 @@
                         </div>
 
                         <div class="row">
-                            @if (isset($getAdditionalPreference['is_price_by_role']))
+                         {{--   @if (isset($getAdditionalPreference['is_price_by_role']))
                                 @if($getAdditionalPreference['is_price_by_role'] == '1')
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -147,8 +172,23 @@
                                         </div>
                                     </div>
                                 @endif
-                            @endif
-
+                            @endif--}}
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    {!! Form::label('title', __('Email Verified'),['class' => 'control-label']) !!}
+                                    <div>
+                                        <input type="checkbox" data-plugin="switchery" name="is_email_verified" class="form-control email_verify_add" @if($subadmin->is_email_verified == 1) checked @endif>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    {!! Form::label('title', __('Phone Verified'),['class' => 'control-label']) !!}
+                                    <div>
+                                        <input type="checkbox" data-plugin="switchery" name="is_phone_verified" class="form-control phone_verify_add" @if($subadmin->is_phone_verified == 1) checked @endif>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
 
@@ -170,7 +210,8 @@
                                 }
                             @endphp
                             @if(strtolower($user_registration_document->file_type) == 'selector')
-                                    <div class="col-md-6 mb-3" id="{{$user_registration_document->primary->slug??''}}Input">
+                                @if($user_registration_document->options)    
+                                <div class="col-md-6 mb-3" id="{{$user_registration_document->primary->slug??''}}Input">
                                         <label for="">{{$user_registration_document->primary ? $user_registration_document->primary->name : ''}}</label>
                                         <select class="form-control {{ (!empty($user_registration_document->is_required))?'required':''}}" name="{{$user_registration_document->primary->slug}}"  id="input_file_selector_{{$user_registration_document->id}}">
                                             <option value="" >{{__('Please Select '). ($user_registration_document->primary ? $user_registration_document->primary->name : '') }}</option>
@@ -180,6 +221,7 @@
                                         </select>
                                         <span class="invalid-feedback" id="{{$user_registration_document->primary->slug}}_error"><strong></strong></span>
                                     </div>
+                                    @endif
                             @else
                             <div class="col-md-6" >
                                 <div class="form-group" id="{{$user_registration_document->primary->slug??''}}Input">
@@ -212,7 +254,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-lg-6 mb-lg-0 mb-3 user_perm_section table-responsive">
+                            <div class="col-lg-6 mb-lg-0 mb-3 user_perm_section table-responsive d-none">
                                 @php
                                     $userpermissions = [];
                                     if(isset($user_permissions))
@@ -289,7 +331,7 @@
                                 </table>
                             </div>
 
-                            <div class="col-lg-6 team_perm_section table-responsive">
+                            <div class="col-lg-6 team_perm_section table-responsive d-none">
 
                                 <table class="table table-borderless table-nowrap table-hover table-centered m-0">
 
@@ -340,6 +382,7 @@
                             </div>
 
                         </div>
+                        @endif
 
                         <div class="row mb-2 mt-4">
                             <div class="col-12">
@@ -568,6 +611,7 @@
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="{{ asset('assets/css/jquery-ui.css') }}">
     <script>
+         $('.permissoin-multiple').select2();
          $(".all_vendor_check").click(function() {
             if ($(this).is(':checked')) {
                 $('.vendor_permission_check').prop('checked', true);
@@ -575,6 +619,23 @@
                 $('.vendor_permission_check').prop('checked', false);
             }
         });
-        </script>
+        
+        $(document).ready(function(){
+        	var role = '{{ $userRole??'' }}';
+        	getRoleVal(role);
+        });
+        
+        $("#user-roles").change(function(){
+        	 getRoleVal($(this).val());
+        });
+        
+        function getRoleVal(role){
+        	if(role == 4){
+        		$(".team_perm_section").removeClass("d-none");
+        	}else{
+        		$(".team_perm_section").addClass("d-none");
+        	}
+        }
+   </script>
 
 @endsection

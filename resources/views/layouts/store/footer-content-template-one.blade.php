@@ -10,6 +10,7 @@ $languageList = \App\Models\ClientLanguage::with('language')->where('is_active',
 $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primary', 'desc')->get();
 $preference = $client_preference_detail;
 $paymentMethod = \App\Models\PaymentMethod::where('is_show',1)->get();
+$company_name = \App\Models\ClientPreferenceAdditional::where('key_name','bottom_name')->first();
 @endphp
 </article>
 @if($clientData->whatsapp_url)
@@ -164,7 +165,7 @@ $paymentMethod = \App\Models\PaymentMethod::where('is_show',1)->get();
                                 <ul>
                                 @foreach($paymentMethod as $payment_method)
                                     <li>
-                                        <a href="#"><img  src="{{ $payment_method->image_url }}"></a>
+                                        <a href="#" aria-label="{{ $payment_method->name}}"><img alt="{{ $payment_method->name}}"  src="{{ $payment_method->image_url }}"></a>
                                     </li>
                                     @endforeach
                                         <!-- <li>
@@ -216,7 +217,7 @@ $paymentMethod = \App\Models\PaymentMethod::where('is_show',1)->get();
                                 $prevYear = $currYear - 1;
                                 $currYear = substr($currYear, -2);
                             @endphp
-                            <p><i class="fa fa-copyright" aria-hidden="true"></i> {{$prevYear}}-{{$currYear}} | {{__('All rights reserved')}}</p>
+                            <p><i class="fa fa-copyright" aria-hidden="true"></i> {{$prevYear}}-{{$currYear}} @if(isset($company_name)) @if(!empty($company_name->key_value)) | {{$company_name->key_value}}  @endif @endif| {{__('All rights reserved')}}</p>
                         </div>
                     </div>
                 </div>

@@ -2,6 +2,7 @@
 @section('css')
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
+<script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <style type="text/css">
     .main-menu .brand-logo {
         display: inline-block;
@@ -189,7 +190,7 @@
 </div>
 @endsection
 @section('script')
-<script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+
 <script src="{{asset('assets/libs/dropzone/dropzone.min.js')}}"></script>
 <script src="{{asset('assets/libs/dropify/dropify.min.js')}}"></script>
 <script src="{{asset('assets/js/pages/form-fileuploads.init.js')}}"></script>

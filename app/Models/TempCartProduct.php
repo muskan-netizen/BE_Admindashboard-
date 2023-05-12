@@ -9,7 +9,7 @@ class TempCartProduct extends Model{
 
     use HasFactory;
 
-    protected $fillable = ['cart_id','product_id', 'vendor_id', 'vendor_dinein_table_id', 'quantity', 'status', 'variant_id', 'is_tax_applied', 'tax_rate_id', 'currency_id', 'tax_category_id', 'luxury_option_id','schedule_type','scheduled_date_time'];
+    protected $fillable = ['cart_id','product_id', 'vendor_id', 'vendor_dinein_table_id', 'quantity', 'status', 'variant_id', 'is_tax_applied', 'tax_rate_id', 'currency_id', 'tax_category_id', 'luxury_option_id','schedule_type','scheduled_date_time','dispatch_agent_id','dispatch_agent_price','is_payment_done'];
 
     protected $touches = ['cart'];
 
@@ -47,7 +47,7 @@ class TempCartProduct extends Model{
     }
 
     public function vendorProducts(){
-      return $this->hasMany(TempCartProduct::class, 'vendor_id', 'vendor_id')->leftjoin('client_currencies as cc', 'cc.currency_id', 'temp_cart_products.currency_id')->select('temp_cart_products.id', 'temp_cart_products.cart_id', 'temp_cart_products.product_id', 'temp_cart_products.quantity', 'temp_cart_products.variant_id', 'temp_cart_products.is_tax_applied', 'temp_cart_products.tax_category_id', 'temp_cart_products.currency_id', 'cc.doller_compare', 'temp_cart_products.vendor_id', 'temp_cart_products.scheduled_date_time')->orderBy('temp_cart_products.created_at', 'asc')->orderBy('temp_cart_products.vendor_id', 'asc');
+      return $this->hasMany(TempCartProduct::class, 'vendor_id', 'vendor_id')->leftjoin('client_currencies as cc', 'cc.currency_id', 'temp_cart_products.currency_id')->select('temp_cart_products.id', 'temp_cart_products.cart_id', 'temp_cart_products.product_id', 'temp_cart_products.quantity', 'temp_cart_products.variant_id', 'temp_cart_products.is_tax_applied', 'temp_cart_products.tax_category_id', 'temp_cart_products.currency_id', 'cc.doller_compare', 'temp_cart_products.vendor_id', 'temp_cart_products.scheduled_date_time', 'temp_cart_products.dispatch_agent_price','temp_cart_products.is_payment_done')->orderBy('temp_cart_products.created_at', 'asc')->orderBy('temp_cart_products.vendor_id', 'asc');
     }
 
 

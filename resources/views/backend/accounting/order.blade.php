@@ -290,10 +290,16 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
 
                             {data: 'admin_commission', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
-                                return data+" ("+getPercentageAmount(data,full.subtotal_amount)+"%)";
+                            	var discount = 0.00;
+                            	var amount = full.subtotal_amount;
+                            	if(full.coupon_paid_by == 0){
+                            		discount = full.discount_amount;
+                            	}
+                            	amount = amount - discount;
+                                return data+" ("+getPercentageAmount(data,amount)+"%)";
                                 // return numberWithCommas(data)+" ("+getPercentageAmount(data,full.subtotal_amount)+"%)";
                             }},
-                            {data: 'payable_amount', name: 'action', orderable: false, searchable: false,
+                            {data: 'total_price', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
                                 return numberWithCommas(data);
                             }},

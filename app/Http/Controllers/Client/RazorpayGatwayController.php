@@ -238,7 +238,7 @@ class RazorpayGatwayController extends Controller
             if (curl_errno($ch)) {
                 echo 'Error:' . curl_error($ch);
             }
-            \Log::info($result);
+            //\Log::info($result);
             curl_close($ch);
             return json_decode($result); 
         }
@@ -265,7 +265,7 @@ class RazorpayGatwayController extends Controller
             if (curl_errno($ch)) {
                 echo 'Error:' . curl_error($ch);
             }
-            \Log::info($result);
+            //\Log::info($result);
             curl_close($ch);
             return json_decode($result); 
         }

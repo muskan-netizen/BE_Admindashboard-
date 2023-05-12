@@ -1894,6 +1894,19 @@ span.org_price {
     font-weight: 600;
     text-transform: uppercase
 }
+body .add_vendor_product_btn {
+    border: 1px solid;
+    height: 30px;
+    display: inline-block;
+    line-height: 30px;
+    max-width: 60px;
+    width: 100%;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    min-width: 80px;
+}
 
 .shopping-cart .media-body h6 {
     margin: 0
@@ -2763,7 +2776,7 @@ section.section-b-space.light-layout_alFour {
 .list-box {
     box-shadow: 0 16px 32px 0 rgb(0, 0, 0, .5) !important;
     border-radius: 0 0 10px 10px !important;
-    padding: 10px 0;
+    padding: 10px;
     background: #fff;
     position: absolute;
     top: 100%;
@@ -2774,7 +2787,8 @@ section.section-b-space.light-layout_alFour {
     height: auto;
     max-height: 200px;
     overflow-y: auto;
-    overflow-x: hidden
+    overflow-x: hidden;
+    width:300px!important;
 }
 
 .al_search_viewall {
@@ -3721,6 +3735,9 @@ body[dir=rtl] .alFourThLogo {
 }
 
 @media(max-width:767px) {
+    .list-box{
+        width: 100%!important;
+    }
     body .shimmer_effect .grid-row .card_image {
         height: 90px !important
     }
@@ -4042,8 +4059,8 @@ body[dir=rtl] .alFourThLogo {
     right: 0;
     height: max-content;
     top: auto !important;
+    z-index: 10000;
 }
-
 .dark .scrollspy-menu {
     background: #242424
 }
@@ -4239,11 +4256,12 @@ body.al_body_template_four .vendor-signup  input#phone {
     border-radius: 0 !important;
     font-size: 16px
 }
-
+/* 
 body.al_body_template_four .inner_spacing.w-100 label.mb-0 {
     font-size: 16px;
-    width: 70%;
-}
+    width: 100%;
+    font-weight: 400;
+} */
 
 body.al_body_template_four div#category_products_filter span.rating {
     background: green;

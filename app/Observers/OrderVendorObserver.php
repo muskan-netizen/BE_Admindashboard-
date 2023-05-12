@@ -15,8 +15,8 @@ class OrderVendorObserver
     public function created(OrderVendor $orderVendor)
     {
         //
-        Log::info('created');
-        Log::info($orderVendor);
+       // Log::info('created');
+       // Log::info($orderVendor);
     }
 
     /**
@@ -27,106 +27,104 @@ class OrderVendorObserver
      */
     public function updated(OrderVendor $orderVendor) 
     {
-        // Log::info('### order side vendor called ###');
-        // Log::info($orderVendor);
-        
-        // Log::info('### orderVendor status ###');
-        // Log::info($orderVendor->order_status_option_id);
-        if($orderVendor->order_status_option_id == 6 && inventorySyncOnOff($orderVendor->vendor_id))  // 6 = marked as delivered
+        $client_preferences = ClientPreference::first();
+        if(checkColumnExists('client_preferences', 'inventory_service_key_url'))
         {
-          //  Log::info('inside the if part');
-            $client_preferences = ClientPreference::first();
-            $orders = Order::with(['vendors.products'=>function($q){
-                $q->withoutAppends();
-            }, 'vendors.status', 'orderStatusVendor', 'address', 'user', 'vendors.products.product', 'vendors.vendor'])
-            ->where('id', $orderVendor->order_id)->get();
-            // dd($orders->toArray());
-            // $cart_details = Cart::with('cartProducts')->where('user_id', 2)->first();
-            //Log::info($orders);
-            $product_details = [];
-            
-            foreach($orders as $key => $val) {
-
-                // order table data
-                $product_details[$key]['order_id'] = $val->id;
-                $product_details[$key]['order_number'] = $val->order_number;
-                $product_details[$key]['date_time'] = \Carbon\Carbon::parse($val->created_at)->toDateString();
-
-                $product_details[$key]['customer_name'] = optional($val->user)->name;
-                $product_details[$key]['customer_phone_number'] = optional($val->user)->phone_number;
-                
-                $product_details[$key]['payment_methods'] = $val->payment_option_id ?? '';
-                // $product_details[$key]['profit_loss'] = '';
-
-                if( !empty($val->vendors) ) {
+            if(!empty($client_preferences->inventory_service_key_url) && !empty($client_preferences->inventory_service_key_code))
+            {
+                if($orderVendor->order_status_option_id == 6 && inventorySyncOnOff($orderVendor->vendor_id))  // 6 = marked as delivered
+                {
+                    Log::info('@@@ sync status @@@');
+                    Log::info('Inside if condition');
+                    $orders = Order::with(['vendors.products'=>function($q){
+                        $q->withoutAppends();
+                    }, 'vendors.status', 'orderStatusVendor', 'address', 'user', 'vendors.products.product', 'vendors.vendor'])
+                    ->where('id', $orderVendor->order_id)->get();
                     
-                    foreach($val->vendors as $inn_key => $inn_val) {
+                    $product_details = [];
+                    
+                    foreach($orders as $key => $val) {
+
+                        // order table data
+                        $product_details[$key]['order_id'] = $val->id;
+                        $product_details[$key]['order_number'] = $val->order_number;
+                        $product_details[$key]['date_time'] = \Carbon\Carbon::parse($val->created_at)->toDateString();
+
+                        $product_details[$key]['customer_name'] = optional($val->user)->name;
+                        $product_details[$key]['customer_phone_number'] = optional($val->user)->phone_number;
                         
-                        // order vendor table data
-                        $product_details[$key]['subtotal_amount']   = $inn_val->subtotal_amount;
-                        $product_details[$key]['payable_amount']    = $inn_val->payable_amount;
-                        $product_details[$key]['discount_amount']   = $inn_val->discount_amount;        
-                        $product_details[$key]['taxable_amount']   = $inn_val->taxable_amount;        
-                        $product_details[$key]['order_status_option_id'] = $inn_val->order_status_option_id;        
-                        $product_details[$key]['order_side_vendor_id'] = $inn_val->vendor_id;        
+                        $product_details[$key]['payment_methods'] = $val->payment_option_id ?? '';
+                        // $product_details[$key]['profit_loss'] = '';
 
-                        if( !empty($inn_val->products) ) {
-                            Log::info('@@@ inside the if part @@@');
-                            Log::info($inn_val->products);
+                        if( !empty($val->vendors) ) {
+                            
+                            foreach($val->vendors as $inn_key => $inn_val) {
+                                
+                                // order vendor table data
+                                $product_details[$key]['subtotal_amount']   = $inn_val->subtotal_amount;
+                                $product_details[$key]['payable_amount']    = $inn_val->payable_amount;
+                                $product_details[$key]['discount_amount']   = $inn_val->discount_amount;        
+                                $product_details[$key]['taxable_amount']   = $inn_val->taxable_amount;        
+                                $product_details[$key]['order_status_option_id'] = $inn_val->order_status_option_id;        
+                                $product_details[$key]['order_side_vendor_id'] = $inn_val->vendor_id;        
 
-                            foreach($inn_val->products as $product_key => $product_val) {
-                                if( !empty($product_val->product) && !empty($product_val->product->sku)) {
-                                    Log::info('### product_val ###');
-                                    Log::info($product_val);
-                                    // product table data
-                                    $product_details[$key]['products_list'][$product_key]['product_id'] = $product_val->product_id ?? null;
-                                    $product_details[$key]['products_list'][$product_key]['product_quantity'] = $product_val->quantity ?? null;
+                                if( !empty($inn_val->products) ) {
+                                   // Log::info('@@@ inside the if part @@@');
+                                   // Log::info($inn_val->products);
 
-                                    // we use model inside the loop because one product had multiple variant to fetach exact variant used sku code
-                                    $product_varaint = ProductVariant::where('id', $product_val->variant_id)->first();
-                                    if( !empty($product_varaint) ) {
-                                        $product_details[$key]['products_list'][$product_key]['sku'] = $product_varaint->sku;
-                                        $product_details[$key]['products_list'][$product_key]['product_amount'] = $product_varaint->price ?? '0.00';
-                                    } else {
-                                        $product_details[$key]['products_list'][$product_key]['sku'] = '';
-                                        $product_details[$key]['products_list'][$product_key]['product_amount'] = '0.00';
+                                    foreach($inn_val->products as $product_key => $product_val) {
+                                        if( !empty($product_val->product) && !empty($product_val->product->sku)) {
+                                           // Log::info('### product_val ###');
+                                           // Log::info($product_val);
+                                            // product table data
+                                            $product_details[$key]['products_list'][$product_key]['product_id'] = $product_val->product_id ?? null;
+                                            $product_details[$key]['products_list'][$product_key]['product_quantity'] = $product_val->quantity ?? null;
+
+                                            // we use model inside the loop because one product had multiple variant to fetach exact variant used sku code
+                                            $product_varaint = ProductVariant::where('id', $product_val->variant_id)->first();
+                                            if( !empty($product_varaint) ) {
+                                                $product_details[$key]['products_list'][$product_key]['sku'] = $product_varaint->sku;
+                                                $product_details[$key]['products_list'][$product_key]['product_amount'] = $product_varaint->price ?? '0.00';
+                                            } else {
+                                                $product_details[$key]['products_list'][$product_key]['sku'] = '';
+                                                $product_details[$key]['products_list'][$product_key]['product_amount'] = '0.00';
+                                            }
+                                        }
+                                        
                                     }
                                 }
-                                
                             }
                         }
+                        
+                        // vendor or warehouse name
+                        if( !empty($val->vendors[$key]) && !empty($val->vendors[$key]->vendor) ) {
+                            $product_details[$key]['warehouse'] = $val->vendors[$key]->vendor->name;
+                        } else {
+                            $product_details[$key]['warehouse'] = '';
+                        }
+                        
+                    }
+                   // Log::info('before guzzle called');
+                    $client = new \GuzzleHttp\Client(['headers' => ['shortcode' => $client_preferences->inventory_service_key_code,
+                        'content-type' => 'application/json']
+                    ]);
+                    $url = $client_preferences->inventory_service_key_url;
+                    // $url = '127.0.0.1:9002';
+                    // $base_url = $url.'/api/v1/log-order';
+                    
+                    $request = $client->get($url.'/api/v1/log-order', [
+                        'json' => ['product_details' => $product_details]
+                    ]);
+                    
+                    echo $request->getStatusCode(); 
+                    // Product decrement successfully
+                    if($request->getStatusCode() == 200) {
+                       // Log::info('Product decrement successfully');
+                    }
+                    else {
+                       // Log::info('Product not decrement successfully');
                     }
                 }
-                
-                // vendor or warehouse name
-                if( !empty($val->vendors[$key]) && !empty($val->vendors[$key]->vendor) ) {
-                    $product_details[$key]['warehouse'] = $val->vendors[$key]->vendor->name;
-                } else {
-                    $product_details[$key]['warehouse'] = '';
-                }
-                
-            }
-            Log::info('before guzzle called');
-            $client = new \GuzzleHttp\Client(['headers' => ['shortcode' => $client_preferences->inventory_service_key_code,
-                'content-type' => 'application/json']
-            ]);
-            $url = $client_preferences->inventory_service_key_url;
-            // $url = '127.0.0.1:9002';
-            // $base_url = $url.'/api/v1/log-order';
-
-            // Log::info('## base_url ##');
-            // Log::info($base_url);
-            $request = $client->get($url.'/api/v1/log-order', [
-                'json' => ['product_details' => $product_details]
-            ]);
-            
-            echo $request->getStatusCode(); 
-            // Product decrement successfully
-            if($request->getStatusCode() == 200) {
-                Log::info('Product decrement successfully');
-            }
-            else {
-                Log::info('Product not decrement successfully');
             }
         }
     }
@@ -141,7 +139,7 @@ class OrderVendorObserver
     public function deleted(OrderVendor $orderVendor)
     {
         //
-        Log::info('deleted');
+       // Log::info('deleted');
     }
 
     /**
@@ -153,7 +151,7 @@ class OrderVendorObserver
     public function restored(OrderVendor $orderVendor)
     {
         //
-        Log::info('restored');
+       // Log::info('restored');
     }
 
     /**
@@ -165,6 +163,6 @@ class OrderVendorObserver
     public function forceDeleted(OrderVendor $orderVendor)
     {
         //
-        Log::info('force deleted');
+       // Log::info('force deleted');
     }
 }

@@ -19,7 +19,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                 <div class="col-12">
                     <div class="top-banner-wrapper">
                     @include('frontend.vendor-category-topbar-banner')
-       
+                        
                     @include('frontend.vendor-details-in-banner')
                        
             </div>

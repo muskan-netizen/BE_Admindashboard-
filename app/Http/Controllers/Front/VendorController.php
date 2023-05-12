@@ -28,15 +28,17 @@ class VendorController extends FrontController
            $vendorType = 'delivery';
         }
         $preferences = (object)Session::get('preferences');
+        $additionalPreference = getAdditionalPreference(['is_show_vendor_on_subcription']);
         $navCategories = $this->categoryNav($langId);
         $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 30;
         $ses_vendors = $this->getServiceAreaVendors();
 
         $categoryTypes = getServiceTypesCategory($vendorType);
 
-        $vendors = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+        $vendors = Vendor::byVendorSubscriptionRule($preferences)->whereHas('getAllCategory.category',function($q)use ($categoryTypes){
             $q->whereIn('type_id',$categoryTypes);
         })->with('products')->select('id', 'name', 'banner', 'address', 'order_pre_time','is_show_vendor_details' ,'order_min_amount', 'logo', 'slug', 'latitude', 'longitude')->where(['status'=> 1,$vendorType => 1]);
+       
 
         if (($preferences) && ($preferences->is_hyperlocal == 1)) {
             $latitude = Session::get('latitude') ?? $preferences->Default_latitude;
@@ -855,8 +857,8 @@ class VendorController extends FrontController
 
         $vendor_categories = collect(); // final data
         if( !$check_service_area || ( $check_service_area && in_array($vid, $vendors) ) ){
-
-            $products = Product::with(['media.image',
+            $type = Session::get('vendorType');
+            $products = Product::byProductCategoryServiceType($type)->with(['media.image',
                 'translation' => function($q) use($langId, $keyword){
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                     if($keyword){
@@ -882,7 +884,7 @@ class VendorController extends FrontController
                     $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
                     $q2->where('apt.language_id', $langId);
                 },'tags'
-            ])->select('products.id', 'products.sku','products.title', 'products.url_slug','products.weight_unit','products.category_id', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count')
+            ])->select('products.id', 'products.sku','products.title', 'products.url_slug','products.weight_unit','products.category_id', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count','products.is_recurring_booking')
             ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
             ->join('product_translations', 'product_translations.product_id', '=', 'products.id');
 
@@ -965,7 +967,7 @@ class VendorController extends FrontController
                     $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     $value->variant_price = ($value->variant->isNotEmpty()) ? $value->variant->first()->price : 0;
                     $value->variant_quantity = ($value->variant->isNotEmpty()) ? $value->variant->first()->quantity : 0;
-
+                    $value->category_type_id = (!empty($value->category->categoryDetail->first())) ? $value->category->categoryDetail->type_id : 0;
                     $cid = $value->category_id;
 
                     if(!in_array($cid, $category_list)){
@@ -1005,7 +1007,7 @@ class VendorController extends FrontController
             $returnHTML = view('frontend.vendor-search-products')->with(['vendor'=> $vendor,'tags'=>$tags,'tag_id'=> $tagId, 'listData'=>$listData,'tagId'=>$tagId, 'input'=>$request->all()])->render();
         }
 
-        return response()->json(array('status'=>'Success', 'html'=>$returnHTML));
+        return response()->json(array('status'=>'Success', 'html'=>mb_convert_encoding($returnHTML, "UTF-8", "auto")));
     }
 
 

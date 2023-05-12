@@ -51,6 +51,12 @@ body.al_body_template_six span.rating.main-rating {
 .al_body_template_six .common-product-box, .al_body_template_six .product-card-box {
     border: 1px solid#ccc;
 }
+/*inner category show border none css*/
+.margin-res .alInnerBox {
+    border: none !important;
+}
+
+
 .al_body_template_six .col-md-12.text-left.vender-peragraph.mt-3.mb-2 {
     padding-left: 58px;
     margin-top: 0 !important;
@@ -1135,6 +1141,15 @@ body .royo_whatsapp_img {
     fill: #000!important;
     opacity: 1;
 }
+.al_body_template_six .vendor-design_new {
+    width: 100%;
+}   
+.dark.al_body_template_six .vendor-design_new .vendor-info li svg g {
+    stroke: #fff;
+    fill: #fff!important;
+    opacity: 1;
+}
+
 @media (max-width:576px) {
     .rightHead {
         order: 2;

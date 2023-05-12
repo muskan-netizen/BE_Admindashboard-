@@ -7,7 +7,7 @@ use App\Http\Controllers\Client\BaseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Permissions;
+use App\Models\PermissionsOld;
 use App\Models\{Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory,CartProduct};
 use App\Models\UserPermissions;
 use Illuminate\Support\Facades\Storage;
@@ -35,7 +35,7 @@ class AclController extends BaseController
      */
     public function create()
     {
-        $permissions = Permissions::all();
+        $permissions = PermissionsOld::all();
        
         return view('backend.acl.form')->with(['permissions'=>$permissions]);
     }
@@ -180,7 +180,7 @@ class AclController extends BaseController
     public function edit($domain = '', $id)
     {
         $subadmin = User::find($id);
-        $permissions = Permissions::all();
+        $permissions = PermissionsOld::all();
         $user_permissions = UserPermissions::where('user_id', $id)->get();
         
         return view('backend.acl.form')->with(['subadmin'=> $subadmin,'permissions'=>$permissions,'user_permissions'=>$user_permissions]);

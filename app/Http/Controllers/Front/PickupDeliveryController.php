@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, PaymentOption};
-use App\Http\Traits\ApiResponser;
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, PaymentOption, PickDropDriverBid};
+use App\Http\Traits\{ApiResponser,PaymentTrait};
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
@@ -21,11 +21,11 @@ use Log,DateTime,DateTimeZone;
 
 class PickupDeliveryController extends FrontController{
 
-    use ApiResponser;
+    use ApiResponser,PaymentTrait;
 
     public function getPaymentOptions(Request $request, $domain = '')
     {
-        $code = array('cod', 'azul','dpo', 'razorpay','stripe','paystack', 'payfast','authorize_net','payphone', 'khalti','flutterwave','plugnpay');
+        $code = $this->paymentOptionArray('pickup_delivery');
         $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials' ,'title', 'off_site']);
         foreach($payment_options as $option){
             if($option->code == 'stripe'){
@@ -45,7 +45,9 @@ class PickupDeliveryController extends FrontController{
                 $json = json_decode($option->credentials);
                 $option->title = $json->manule_payment_title;
             }
+
             $option->title = __($option->title);
+            $option->slug = strtolower(str_replace(' ', '_', $option->title));
         }
         return $this->successResponse($payment_options, '', 201);
     }
@@ -68,7 +70,7 @@ class PickupDeliveryController extends FrontController{
                         }
                         $date = Carbon::parse($order['order_detail']['scheduled_date_time'], 'UTC');
                         $date->setTimezone( $user->timezone);
-                        $schudelDate =  $date->format('d M ,y H:i A');; //$date->isoFormat('d.m.Y, H:i A');
+                        $schudelDate =  $date->format('d M,Y | h:i A'); //$date->isoFormat('d.m.Y, H:i A');
                        //date("F j, Y, g:i a"); //dateTimeInUserTimeZone($order['order_detail']['scheduled_date_time'], $user->timezone)
                         $order['dispatcher_status'] = __('You have successfully scheduled your ride for:') . $schudelDate   ;
                     }
@@ -164,9 +166,9 @@ class PickupDeliveryController extends FrontController{
 
         $schedule_datetime_del = '';
         if(isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
-            $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery)->format('Y-m-d H:i:s');
+            $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
         }else{
-            $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
+            $schedule_datetime_del = Carbon::now()->timezone('UTC')->format('Y-m-d H:i:s');
         }
 
         $product = Product::with(['category.categoryDetail','media.image', 'vendor', 'tollpass', 'travelmode', 'emissiontype', 'translation' => function($q) use($language_id){
@@ -270,16 +272,16 @@ class PickupDeliveryController extends FrontController{
             $preferences->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
             $user = Auth::user();
             $userid = $user->id;
-            if(!empty($user)){
+            if(empty($user->timezone)){
                 $client_timezone = DB::table('clients')->first('timezone');
                 $user->timezone = $client_timezone->timezone ?? $user->timezone;
             }
 
             $schedule_datetime_del = '';
             if (isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
-                $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery)->format('Y-m-d H:i:s');
+                $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
             }else{
-                $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
+                $schedule_datetime_del = Carbon::now()->timezone('UTC')->format('Y-m-d H:i:s');
             }
 
             $paginate = $request->has('limit') ? $request->limit : 12;
@@ -379,14 +381,14 @@ class PickupDeliveryController extends FrontController{
             $langId = Auth::user()->language;
 
             $user   = Auth::user();
-            if(!empty($user)){
+            if(empty($user->timezone)){
                 $client_timezone = DB::table('clients')->first('timezone');
                 $user->timezone = $client_timezone->timezone ?? $user->timezone;
             }
 
             $schedule_datetime_del = '';
             if(isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
-                $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery)->format('Y-m-d H:i:s');
+                $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
             }else{
                 $schedule_datetime_del = Carbon::now()->timezone($user->timezone)->format('Y-m-d H:i:s');
             }
@@ -473,6 +475,7 @@ class PickupDeliveryController extends FrontController{
      * create order for booking
     */
      public function createOrder(Request $request){
+       
         try {
             DB::beginTransaction();
             if(isset($request->schedule_datetime) && !empty($request->schedule_datetime))
@@ -480,10 +483,11 @@ class PickupDeliveryController extends FrontController{
                 $timezone = $request->time_zone;
                 $given = new DateTime($request->schedule_datetime, new DateTimeZone($timezone));
                 $given->setTimezone(new DateTimeZone("UTC"));
-                $request->schedule_time = $given->format("Y-m-d H:i:s");
+                $request->merge(['schedule_time' => $given->format("Y-m-d H:i:s")]);
+
             }
 
-
+           // pr($request->all());
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
 
@@ -560,8 +564,8 @@ class PickupDeliveryController extends FrontController{
                 }
             }
             $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
-            Log::info("Request To Dispatch");
-            Log::info($request_to_dispatch);
+            //Log::info("Request To Dispatch");
+           //// Log::info($request_to_dispatch);
 
             if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                 $user = User::find($order->user_id);
@@ -645,13 +649,9 @@ class PickupDeliveryController extends FrontController{
                 $order->is_postpay          = ($request->postpay_enable)?$request->postpay_enable:0;
                 $schedule_datetime_del      = NULL;
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
-                    $schedule_datetime_del  = Carbon::parse($request->schedule_time)->format('Y-m-d H:i:s');
+                    $schedule_datetime_del  =$request->schedule_time ;// Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
-
-                $schedule_datetime_del      = NULL;
-                if (isset($request->schedule_time) && !empty($request->schedule_time)) {
-                    $schedule_datetime_del  = Carbon::parse($request->schedule_time)->format('Y-m-d H:i:s');
-                }
+               
                 $order->scheduled_date_time = $schedule_datetime_del;
                 /*book for a friend*/
                 $order->type                = $request->type;
@@ -854,7 +854,7 @@ class PickupDeliveryController extends FrontController{
         }
     }
 
-     // place Request To Dispatch
+    // place Request To Dispatch
     public function placeRequestToDispatch($request,$order,$vendor){
         try {
             $meta_data = '';
@@ -872,7 +872,7 @@ class PickupDeliveryController extends FrontController{
                     $payable_amount = 0.00;
 
                 }
-            //    Log::info($cash_to_be_collected);
+            //   // Log::info($cash_to_be_collected);
                 $unique = $customer->code;
                 $team_tag = $unique."_".$vendor;
                 $dynamic = uniqid($order->id.$vendor);
@@ -911,9 +911,15 @@ class PickupDeliveryController extends FrontController{
                 $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
                 $client = Client::orderBy('id', 'asc')->first();
 
+                $user = Auth::user();
+                if(empty($user->timezone))
+                {
+                    $client_timezone = DB::table('clients')->first('timezone');
+                    $user->timezone = $client_timezone->timezone ?? $user->timezone;
+                }
                 $schedule_datetime_del = NULL;
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
-                    $schedule_datetime_del = Carbon::parse($request->schedule_time)->format('Y-m-d H:i:s');
+                    $schedule_datetime_del = Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
 
                 $postdata =  [
@@ -964,22 +970,15 @@ class PickupDeliveryController extends FrontController{
                     $up_web_hook_code = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])
                                     ->update(['web_hook_code' => $dynamic,'dispatch_traking_url' => $dispatch_traking_url]);
                     $response['dispatch_traking_url'] = $dispatch_traking_url;
-
-
                     $or_ids = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->with(['vendor'])->first();
 
-                    // if($or_ids->vendor->auto_accept_order==1){
-                        $update_vendor = VendorOrderStatus::updateOrCreate([
-                            'order_id' =>  $order->id,
-                            'order_status_option_id' => 2,
-                            'vendor_id' =>  $vendor,
-                            'order_vendor_id' =>  $or_ids->id]);
+                    $update_vendor = VendorOrderStatus::updateOrCreate([
+                        'order_id' =>  $order->id,
+                        'order_status_option_id' => 2,
+                        'vendor_id' =>  $vendor,
+                        'order_vendor_id' =>  $or_ids->id]);
 
-                        OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['order_status_option_id' => 2,'dispatcher_status_option_id' => 1]);
-                    // }
-                    // else {
-                    //     OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['dispatcher_status_option_id' => 1]);
-                    // }
+                    OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['order_status_option_id' => 2,'dispatcher_status_option_id' => 1]);
 
                     $update = VendorOrderDispatcherStatus::updateOrCreate(['dispatcher_id' => null,
                     'order_id' =>  $order->id,
@@ -1137,6 +1136,5 @@ class PickupDeliveryController extends FrontController{
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
-
 
 }

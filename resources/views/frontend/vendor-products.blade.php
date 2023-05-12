@@ -32,9 +32,9 @@ $currentPage = $_GET['page']??1;
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                           @include('frontend.vendor-category-topbar-banner')   
-                    </div>
-                        @include('frontend.vendor-details-in-banner')
+                    @include('frontend.vendor-category-topbar-banner')   
+                </div>
+                @include('frontend.vendor-details-in-banner')
             </div>
 
             
