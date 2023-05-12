@@ -17,6 +17,7 @@ use App\Http\Controllers\Front\KongapayController;
 use App\Http\Controllers\Front\MpesaController;
 use App\Http\Controllers\Front\MvodafoneController;
 use App\Http\Controllers\Front\NmiPaymentController;
+use App\Http\Controllers\Front\OboPaymentController;
 use App\Http\Controllers\Front\PayphoneController;
 use App\Http\Controllers\Front\SkipCashController;
 use App\Http\Controllers\Front\ToyyibPayController;
@@ -31,6 +32,7 @@ class PaymentOptionController extends BaseController{
     public $gateway;
 
     public function getPaymentOptions(Request $request, $page = ''){
+ 
         $code = $this->paymentOptionArray($page);
         //mohit sir branch code added by sohail
         $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage']);
@@ -98,6 +100,11 @@ class PaymentOptionController extends BaseController{
         }
     }
 
+    public function postPaymentVia_obo(Request $request){
+        $gateway = new OboPaymentController();
+          return $gateway->mobilePay($request);
+    }
+
     public function postPaymentVia_skip_cash(Request $request){
         $gateway = new SkipCashController();
           return $gateway->mobilePay($request);
@@ -107,7 +114,7 @@ class PaymentOptionController extends BaseController{
         $gateway = new NmiPaymentController();
           return $gateway->mobilePay($request);
     }
-    
+
     public function postPaymentVia_azul(Request $request){
              $gateway = new AzulPaymentController();
                return $gateway->beforePayment($request);

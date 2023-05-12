@@ -3209,14 +3209,14 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
                 }
             },
             error: function (error) {
-                // var response = $.parseJSON(error.responseText);
-                // if (cartElement.length > 0) {
-                //     success_error_alert('error', response.message, ".payment_response");
-                //     $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
-                // } else if (walletElement.length > 0) {
-                //     success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
-                //     $(".topup_wallet_confirm").removeAttr("disabled");
-                // }
+                var response = $.parseJSON(error.responseText);
+                if (cartElement.length > 0) {
+                    success_error_alert('error', response.message, ".payment_response");
+                    $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                } else if (walletElement.length > 0) {
+                    success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
+                    $(".topup_wallet_confirm").removeAttr("disabled");
+                }
             }
         });
     }

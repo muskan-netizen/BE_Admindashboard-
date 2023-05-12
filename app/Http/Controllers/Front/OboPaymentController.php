@@ -6,9 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Traits\{ApiResponser, OrderTrait};
 use App\Models\{ClientCurrency, Order, Payment, PaymentOption};
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Session;
 
 class OboPaymentController extends Controller
 {
@@ -37,9 +35,45 @@ class OboPaymentController extends Controller
 
 
 
-    public function beforePayment(Request $request)
+    public function beforePayment(Request $request, $domain='',$app='')
     {
-        // dd($request->all());
+        /////////// dumy testing ////////////////
+        // \Log::info($request->all());
+        $orderNumber = $this->orderNumber($request);
+
+        \Log::info($orderNumber);
+        if ($request->payment_from == 'cart') {
+            // $orderNumber = $request->order_number;
+            $urlParams   = "transactionid=$orderNumber&paymentfrom=cart&success=true";
+        } elseif ($request->payment_from == 'wallet') {
+            // $orderNumber = $number;
+            $urlParams   = "transactionid=$orderNumber&paymentfrom=wallet&success=true";
+        }elseif ($request->payment_from == 'subscription') {
+            // $orderNumber = $number;
+            $subscriptionId = $request->subscriptionId ?? $request->subscription_id;
+            $urlParams   = "transactionid=$orderNumber&subscription_id=$subscriptionId&amount=$request->amount&success=true";
+        }
+        elseif ($request->payment_from == 'pickup_delivery') {
+            // $orderNumber = $request->order_number;
+            $urlParams   = "transactionid=$orderNumber&paymentfrom=pickup_delivery&reload_route=$request->reload_route&amount=$request->amount&success=true";
+        } elseif ($request->payment_from == 'tip') {
+            // $orderNumber = $number;
+            $urlParams   = "transactionid=$orderNumber&order_number=$request->order_number&paymentfrom=tip&amount=$request->amount&success=true";
+        }
+
+        $url = route('webhook.obo.pay',$urlParams);
+            \Log::info(url('webhook/obo'."?$urlParams"));
+        return response()->json([
+            'status' => 'Success',
+            'data'   => 'https://www.obo-pay.co.rw/payment?v=aaf08420-37f0-424b-8f1a-defede7aa38b'
+        ]);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
         $tokenData =  $this->token();
         if (isset($tokenData['httpStatus']) &&  $tokenData['httpStatus'] == "OK") {
             $token = $tokenData['token'];
@@ -51,23 +85,23 @@ class OboPaymentController extends Controller
                 $userFirstName   = strtok($user->name, " ");
                 $userLastName    = substr(strstr($user->name, " "), 1);
 
-                $number = $this->orderNumber($request);
+                $orderNumber = $this->orderNumber($request);
                 if ($request->payment_from == 'cart') {
-                    $orderNumber = $request->order_number;
-                    $UrlParams   = "transactionid=$orderNumber&paymentfrom=cart&success=true";
+                    // $orderNumber = $request->order_number;
+                    $urlParams   = "transactionid=$orderNumber&paymentfrom=cart&success=true";
                 } elseif ($request->payment_from == 'wallet') {
-                    $orderNumber = $number;
-                    $UrlParams   = "transactionid=$orderNumber&paymentfrom=wallet&success=true";
+                    // $orderNumber = $number;
+                    $urlParams   = "transactionid=$orderNumber&paymentfrom=wallet&success=true";
                 }elseif ($request->payment_from == 'subscription') {
-                    $orderNumber = $number;
-                    $UrlParams   = "transactionid=$orderNumber&subscription_id=$request->subscriptionId&amount=$request->amount&success=true";
+                    // $orderNumber = $number;
+                    $urlParams   = "transactionid=$orderNumber&subscription_id=$request->subscriptionId&amount=$request->amount&success=true";
                 }
                 elseif ($request->payment_from == 'pickup_delivery') {
-                    $orderNumber = $request->order_number;
-                    $UrlParams   = "transactionid=$orderNumber&paymentfrom=pickup_delivery&reload_route=$request->reload_route&amount=$request->amount&success=true";
+                    // $orderNumber = $request->order_number;
+                    $urlParams   = "transactionid=$orderNumber&paymentfrom=pickup_delivery&reload_route=$request->reload_route&amount=$request->amount&success=true";
                 } elseif ($request->payment_from == 'tip') {
-                    $orderNumber = $number;
-                    $UrlParams   = "transactionid=$orderNumber&order_number=$request->order_number&paymentfrom=tip&amount=$request->amount&success=true";
+                    // $orderNumber = $number;
+                    $urlParams   = "transactionid=$orderNumber&order_number=$request->order_number&paymentfrom=tip&amount=$request->amount&success=true";
                 }
                 if ($this->testMode == 1) {
                     $apiUrl = "https://www.obo-pay.co.rw/test/payments/v1/payment";
@@ -88,7 +122,7 @@ class OboPaymentController extends Controller
                     "last_name"     => $userLastName,
                     "merchant"      => $this->obo_business_name,
                     "cancel_url"    => url($request->cancelUrl),
-                    "return_url"    => route('webhook.obo.pay', $UrlParams),
+                    "return_url"    => route('webhook.obo.pay', $urlParams),
                     "custom_pg_id"  => $this->obo_market_place_id,
                 ], JSON_UNESCAPED_SLASHES);
                 \Log::info($input);
@@ -105,7 +139,7 @@ class OboPaymentController extends Controller
                 }
             }
         } else {
-            return $this->errorResponse($tokenData['message'], 400);
+            return $this->errorResponse('Token api is not working', 400);
         }
     }
 
@@ -117,6 +151,12 @@ class OboPaymentController extends Controller
 
         if ($request->has('success') && $request->success === "true") {
             $transactionId = $request->transactionid;
+            $payment = Payment::where('transaction_id', $transactionId)->first();
+            if ($payment) {
+                $payment->viva_order_id = $transactionId;
+                $payment->payment_option_id = 55;
+                $payment->save();
+            }
             if ($request->paymentfrom == 'cart') {
                 \Log::info($transactionId);
                 $order = Order::where('order_number', $transactionId)->first();
@@ -125,36 +165,42 @@ class OboPaymentController extends Controller
                     $order->payment_status = '1';
                     $order->save();
                     $this->orderSuccessCartDetail($order);
-                    return redirect()->route('order.success', $order->id);
+                    if($payment->payment_from == 'web'){
+                            return redirect()->route('order.success', $order->id);
+                        }else{
+                            $responseArray['status'] = '200';
+                            $responseArray['msg'] = 'Success Order.';
+                            return $responseArray;
+                        }
                 }
             } elseif ($request->paymentfrom == 'wallet') {
-                $payment = Payment::where('transaction_id', $transactionId)->first();
-                if ($payment) {
-                    $payment->viva_order_id = $transactionId;
-                    $payment->save();
-                }
                 $user    = auth()->user();
                 $wallet  = $user->wallet;
                 $wallet->depositFloat($payment->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $payment->transaction_id . '</b>']);
-                return redirect()->route('user.wallet');
-            }elseif (isset($request->subscription_id)) {
-                $payment = Payment::where('transaction_id', $transactionId)->first();
-                if ($payment) {
-                    $payment->viva_order_id = $transactionId;
-                    $payment->save();
+                if($payment->payment_from == 'web'){
+                    return redirect()->route('user.wallet');
+                }else{
+                    $responseArray['status'] = '200';
+                    $responseArray['msg'] = 'Success';
+                    return $responseArray;
                 }
+            }elseif (isset($request->subscription_id)) {
 
                 $data['transaction_id'] = $payment->transaction_id;
                 $data['payment_option_id'] = 55;
                 $data['subsid'] = $request->subscription_id;
                 $data['subscription_id'] = $request->subscription_id;
                 $data['amount'] = $request->amount;
-
                 $request = new \Illuminate\Http\Request($data);
-
                 $subscriptionController = new UserSubscriptionController();
                 $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
-                return redirect()->route('user.subscription.plans');
+                if($payment->payment_from == 'web'){
+                    return redirect()->route('user.subscription.plans');
+                }else{
+                    $responseArray['status'] = '200';
+                    $responseArray['msg'] = 'Success';
+                    return $responseArray;
+                }
             } elseif ($request->paymentfrom == 'pickup_delivery') {
 
                 $data['payment_option_id'] = 55;
@@ -165,15 +211,28 @@ class OboPaymentController extends Controller
                 $request = new \Illuminate\Http\Request($data);
                 $plaseOrderForPickup = new PickupDeliveryController();
                 $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
-                return redirect()->route('front.booking.details',$transactionId);
+                if($payment->payment_from == 'web'){
+                    return redirect()->route('front.booking.details',$transactionId);
+                }else{
+                    $responseArray['status'] = '200';
+                    $responseArray['msg'] = 'Success';
+                    return $responseArray;
+                }
             }elseif ($request->paymentfrom == 'tip') {
+
                 $data['tip_amount'] = $request->amount;
                 $data['order_number'] = $request->order_number;
                 $data['transaction_id'] = $transactionId;
                 $request = new \Illuminate\Http\Request($data);
                 $orderController = new OrderController();
                 $orderController->tipAfterOrder($request);
-                return redirect()->route('user.orders');
+                if($payment->payment_from == 'web'){
+                    return redirect()->route('user.orders');
+                }else{
+                    $responseArray['status'] = '200';
+                    $responseArray['msg'] = 'Success';
+                    return $responseArray;
+                }
             }
         } else {
             return "error";
@@ -204,7 +263,19 @@ class OboPaymentController extends Controller
         $time    = time();
         $user_id = auth()->id();
         $amount  = $request->amount;
-        if ($request->payment_from == 'wallet') {
+        if ($request->payment_from == 'cart') {
+            $time = $request->order_number;
+            Payment::create([
+                'amount' => 0,
+                'transaction_id' => $time,
+                'balance_transaction' => $amount,
+                'type' => 'cart',
+                'date' => date('Y-m-d'),
+                'user_id' => $user_id,
+                'payment_from'=>$request->user_from??'web'
+            ]);
+        }
+        elseif ($request->payment_from == 'wallet') {
             Payment::create([
                 'amount' => 0,
                 'transaction_id' => $time,
@@ -234,7 +305,30 @@ class OboPaymentController extends Controller
                 'user_id' => $user_id,
                 'payment_from'=>$request->user_from ??'web'
             ]);
+        } else if ($request->payment_from == 'pickup_delivery') {
+            $time = $request->order_id  ?? $request->order_number;
+            Payment::create([
+                'amount' => 0,
+                'transaction_id' => $time,
+                'balance_transaction' => $amount,
+                'type' => 'pickup_delivery',
+                'date' => date('Y-m-d'),
+                'user_id' => $user_id,
+                'payment_from'=>$request->user_from??'web'
+            ]);
         }
         return $time;
     }
+
+
+    public function mobilePay(Request $request,$domain='')
+   {
+       $request->request->add(['payment_from' => $request->action,'from'=>$request->action,'amt'=>$request->amount,'subsid'=>$request->subscription_id??'','user_from'=>'app']);
+       $data =  $this->beforePayment($request,$domain,'app');
+       if(isset($data) && !empty($data))
+       {
+           return $data;
+       }
+   }
+
 }
