@@ -33,26 +33,8 @@ trait PowerTransPaymentTrait
         $url = $this->test_mode ? 'https://staging.ptranz.com/api/auth' : 'https://tbd.ptranz.com/api/auth';
         $name = explode(' ',auth()->user()->name);
 
-        $response = [
-            "TransactionType" => 1,
-            "Approved" => true,
-            "AuthorizationCode" => "123456",
-            "TransactionIdentifier" => Str::uuid(),
-            "TotalAmount" => 1.0,
-            "CurrencyCode" => "978",
-            "RRN" => "223919793834",
-            "CardBrand" => " MasterCard",
-            "IsoResponseCode" => "00",
-            "ResponseMessage" => "Transaction is approved",
-            "PanToken" => "jy81o9recp0nsppkhcm3g1qpr7gae9d3w9skm0vhjrytzk2r8",
-            "OrderIdentifier" => " INT-95e75078-7d58-40e8-8053-c3d488f05f59-Orc 3569",
-        ];
 
-        $response['redirect_url'] = $redirct_url;
-
-        return $response;
-
-        return Http::withHeaders([
+        $response = Http::withHeaders([
             'Content-Type' => 'application/json',
             'PowerTranz-PowerTranzId' => $this->powertrans_id, 
             'PowerTranz-PowerTranzPassword' => $this->powertrans_password
@@ -71,17 +53,19 @@ trait PowerTransPaymentTrait
             "BillingAddress" => [
                 "FirstName" => $name[0] ?? '',
                 "LastName" => $name[1] ?? '',
-                "Line1" => "1200 Whitewall Blvd.",
-                "Line2" => "Unit 15",
-                "City" => "Boston",
-                "State" => "NY",
+                "Line1" => "",
+                "Line2" => "",
+                "City" => "",
+                "State" => "",
                 "PostalCode" => "200341",
                 "CountryCode" => "840",
                 "EmailAddress" => auth()->user()->email ?? '',
                 "PhoneNumber" => auth()->user()->phone_number ?? ''
             ],
             "AddressMatch"=> false
-        ]);
+        ])->json();
+        $response['redirect_url'] = $redirct_url;
+        return $response;
     }
 
     public function powerTransPayment(Request $request)

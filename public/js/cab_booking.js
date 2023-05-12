@@ -50,6 +50,10 @@
             }else if (payment_method == 49) {
                  $("#cab_payment_method_form .plugnpay_element_wrapper").removeClass('d-none');
             }
+            else if (payment_method == 58) {
+                $("#cab_payment_method_form .powertrans_element_wrapper").removeClass('d-none');
+                $("#cab_payment_method_form .stripe_element_wrapper").addClass('d-none');
+            }
             else {
                 $("#cab_payment_method_form .stripe_element_wrapper").addClass('d-none');
             }

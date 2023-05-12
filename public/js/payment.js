@@ -3950,8 +3950,11 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
                 data: data,
         
                 success: function (response) {
-                    window.location.href = response.redirect_url+'?TransactionIdentifier='+response.TransactionIdentifier;
-                    // console.log({response});
+                    if (response.IsoResponseCode != 00) {
+                        window.location.href = response.redirect_url+'?TransactionIdentifier='+response.TransactionIdentifier;
+                    }else{
+                        console.log('Something wrong in payment');
+                    }
                     return true;
                 }
             });
@@ -4009,4 +4012,90 @@ function clickHandle(evt, tabName) {
   
   
   }
+}
+
+window.powerTransCardValidation =  function powerTransCardValidation()
+   {
+        var valid = true;	 
+        $(".demoInputBox").css('background-color','');
+        var message = "";
+
+        var cvvRegex = /^[0-9]{3,3}$/;
+        
+        var cardNumber = $("#powertrans-card-element").val();
+        var cvv = $("#powertrans-cvv-element").val();
+        
+        var expiry = $("#powertrans-date-element").val();
+        expiry = expiry.split('/');
+
+
+        var today, someday;
+        var exMonth=expiry[0];
+        var exYear=expiry[1];
+        today = new Date();
+        someday = new Date();
+        someday.setFullYear(exYear, exMonth, 1);
+
+	
+
+            if(cardNumber == "" || cvv == "" || expiry == '') {
+                message  += "<div>All Fields are Required.</div>";  
+                
+                if(cardNumber == "") {
+                    $("#powertrans-card-element").css('background-color','#FFFFDF');
+                }
+                if (cvv == "") {
+                    $("#powertrans-cvv-element").css('background-color','#FFFFDF');
+                }
+                    if (expiry == "") {
+                    $("#powertrans-date-element").css('background-color','#FFFFDF');
+                }
+            valid = false;
+            }
+    
+            if(cardNumber != "") {
+                    $('#powertrans-card-element').validateCreditCard(function(result){
+                    if(!(result.valid)){
+                            message  += "<div>Card Number is Invalid</div>";    
+                            $("#card-number").css('background-color','#FFFFDF');
+                            valid = false;
+                    }
+                });
+            }
+    
+            if (cvv != "" && !cvvRegex.test(cvv)) {
+                message  += "<div>CVV is Invalid</div>";    
+                $("#powertrans-cvv-element").css('background-color','#FFFFDF');
+                    valid = false;
+            }
+    
+    
+            if (expiry != "") { 
+                    if (someday < today) {
+                    message  += "<div>Expiry date is Invalid</div>";    
+                    $("#powertrans-date-element").css('background-color','#FFFFDF');
+                                valid = false;
+                        }    
+                }
+                
+            var powertrans_card_id = $("input[type='radio'][name='powertrans_card_id']:checked").val();
+                if(powertrans_card_id){
+                    message = '';
+                    valid = true;
+                }
+    
+    
+            if(message != "") {
+                $("#powertrans_card_error").show();
+                $("#powertrans_card_error").html(message);
+                $(document).find('.topup_wallet_confirm').prop('disabled',false);
+                $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
+                $(".subscription_confirm_btn").attr("disabled", false);
+            }else{
+                $("#powertrans_card_error").html('');
+                $(document).find('.topup_wallet_confirm').prop('disabled',true);
+                $(document).find(".proceed_to_pay").prop('disabled',true);
+                $(".subscription_confirm_btn").attr("disabled", true);
+            }
+        return valid;
 }

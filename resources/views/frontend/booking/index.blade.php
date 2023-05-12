@@ -1029,7 +1029,26 @@ input[type=number]::-webkit-outer-spin-button {
                         </div>
                     <% } %>
 
-
+                    <% if(payment_option.slug == 'powertrans') { %>
+                        <div class="col-md-12 mt-3 mb-3 powertrans_element_wrapper option-wrapper d-none">
+                            <div class="row no-gutters">
+                                <div class="col-6">
+                                    <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="powertrans-card-element" placeholder="Enter card Number" required />
+                                </div>
+                                <div class="col-3">
+                                    <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="6"  id="powertrans-date-element" placeholder="YYMM" required />
+                                </div>
+                                <div class="col-3">
+                                    <input type="password" max="4" style=" border-left: none;"  class="form-control" id="powertrans-cvv-element" placeholder="CVV" required />
+                                </div>
+                                <div class="col-3">
+                                    <input type="text"style=" border-left: none;"  class="form-control" id="powertrans-name-element" placeholder="Holder Name" required />
+                                </div>
+                            </div>
+    
+                            <span class="error text-danger" id="powertrans_card_error"></span>
+                        </div>
+                    <% } %>
 
                 </div>
             <% }); %>
@@ -1415,6 +1434,27 @@ input[type=number]::-webkit-outer-spin-button {
                     </div>
                 <% } %>
 
+                <% if(payment_option.slug == 'powertrans') { %>
+                    <div class="col-md-12 mt-3 mb-3 powertrans_element_wrapper option-wrapper d-none">
+                        <div class="row no-gutters">
+                            <div class="col-6">
+                                <input type="number" min="16" max="16" style=" border-right: none;" class="form-control" id="powertrans-card-element" placeholder="Enter card Number" required />
+                            </div>
+                            <div class="col-3">
+                                <input type="text" style=" border-left: none; border-right: none;" class="form-control" max="6"  id="powertrans-date-element" placeholder="YYMM" required />
+                            </div>
+                            <div class="col-3">
+                                <input type="password" max="4" style=" border-left: none;"  class="form-control" id="powertrans-cvv-element" placeholder="CVV" required />
+                            </div>
+                            <div class="col-3">
+                                <input type="text"style=" border-left: none;"  class="form-control" id="powertrans-name-element" placeholder="Holder Name" required />
+                            </div>
+                        </div>
+
+                        <span class="error text-danger" id="powertrans_card_error"></span>
+                    </div>
+                <% } %>
+
             <% } %>
         <% }); %>
     <% } %>
@@ -1608,6 +1648,9 @@ input[type=number]::-webkit-outer-spin-button {
             var method = $(this).val();
             if (method == 'stripe') {
                 $("#wallet_payment_methods .stripe_element_wrapper").removeClass('d-none');
+            } else if(method == 'powertrans') {
+                $("#wallet_payment_methods .powertrans_element_wrapper").removeClass('d-none');
+                $("#wallet_payment_methods .stripe_element_wrapper").addClass('d-none');
             } else {
                 $("#wallet_payment_methods .stripe_element_wrapper").addClass('d-none');
             }

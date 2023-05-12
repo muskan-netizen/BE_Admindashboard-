@@ -1899,6 +1899,21 @@ $(document).ready(function () {
 	        }
         }
 
+        if(payment_option_id == 58){
+            cno = $('#powertrans-card-element').val();
+            dt = $('#powertrans-date-element').val();
+            cv = $('#powertrans-cvv-element').val();
+            
+            $("#powertrans_card_error").html();
+            if(!powerTransCardValidation()){
+	            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+	            {
+	                success_error_alert('error', 'Please Fill Details', "#powertrans_card_error");
+	                return false;
+	            }
+	        }
+        }
+
         $('#proceed_to_pay_loader').show();
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
          $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
@@ -2050,6 +2065,21 @@ $(document).ready(function () {
                 success_error_alert('error', 'Please Fill Details', ".payment_response");
                 return false;
             }
+        }
+
+        if(payment_option_id == 58){
+            cno = $('#powertrans-card-element').val();
+            dt = $('#powertrans-date-element').val();
+            cv = $('#powertrans-cvv-element').val();
+            
+            $("#powertrans_card_error").html();
+            if(!powerTransCardValidation()){
+	            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+	            {
+	                success_error_alert('error', 'Please Fill Details', "#powertrans_card_error");
+	                return false;
+	            }
+	        }
         }
 
         if ((payment_option_id == undefined || payment_option_id <= 0) && (payment_method_required_error_msg != undefined)) {
