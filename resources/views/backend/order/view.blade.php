@@ -441,7 +441,7 @@ $timezone = Auth::user()->timezone;
                                         <th scope="row" class="product-modal2">
 
 
-                                            <a href={{ $product_url }}" @if ($product_url !='javascript:void(0)' ) target="_blank" @endif>
+                                            <a href="{{ $product_url }}" @if ($product_url !='javascript:void(0)' ) target="_blank" @endif>
                                                 {{ $product->product_name }} @if(@$product->product->is_long_term_service && $product->product->is_long_term_service ==1) <span class="badge badge-info"> {{ __('Long Term Service') }}</span> @endif
                                             </a>
 
@@ -1398,7 +1398,7 @@ $timezone = Auth::user()->timezone;
                                     "#5ba035", "success");
                             //location.reload();
                             setTimeout(function() {
-                                location.reload();
+                               // location.reload();
                             }, 3000);
                         },
                         beforeSend: function() {
