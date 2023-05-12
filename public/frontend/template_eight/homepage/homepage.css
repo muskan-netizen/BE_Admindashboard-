@@ -254,6 +254,9 @@ article#page-container section .vendors section {
     right: 5px;
     position: absolute;
 }
+.render_top_rated span.rating-number{
+top: 62% !important;
+}
 .al_body_template_eight span.rating-number {
     top: 50%;
     position: absolute;
@@ -984,7 +987,8 @@ body.al_body_template_eight section.container.popular-brands.left-shape_.positio
     height: 164px;
 }
 .al_body_template_eight .alNewSliderTopBrand .brand-img{
-    height: 210px;
+    height: 100%;
+    min-height:273px;
 }
 .al_body_template_eight .alNewSliderTopBrand .brand-img img{
     width: 100%;height: 100%;
@@ -1006,7 +1010,7 @@ body.al_body_template_eight section.container.popular-brands.left-shape_.positio
 .al_body_template_eight .p2p-full-width .alNewSliderTopBrand.render_brands .logo_brand .brand-img img.blur-up.brand-logo.lazyloaded {
     min-width: 100%;
     /* min-height: 270px !important; */
-    object-fit: cover;
+    object-fit: cover;margin:0px;
 }
 .al_body_template_eight .custom_filtter select {
     border-radius: 15px !important;
@@ -1501,7 +1505,8 @@ section.suppliers-section.container.vender_slider .supplier-rating h5 {
 
 .vender-logo.deals-product.product-card-box.position-relative.text-center.al_custom_vendors_sec .suppliers-img-outer.position-relative {
     border-radius: 10px 10px 0 0;
-    height: 250px;
+    min-height: 360px;
+    height: 100%;
 }
 
 /* .render_full_spotlight_deals .supplier-rating {
@@ -1565,6 +1570,8 @@ section#homepage_top_rated .slick-slider .slick-next {
     background-color: #fff;
     box-sizing: border-box!important;
     border: 1px solid #e8e8e8!important;
+    height: 100%;
+    min-height: 330px;
 }
 
 .al_body_template_eight .product-card-box.position-relative.al_box_third_template.al:hover {
@@ -1581,8 +1588,8 @@ section.main-product.single_category_products .deals-product.product-card-box.po
     background: #fff;
     border-radius: 10px;
     /* min-height: 325px; */
-    min-height: 380px;
-    height: 380px;
+    min-height: 436px;
+    height: 100%;
 }
 
 section.main-product.single_category_products .deals-product.product-card-box.position-relative.text-center.al_custom_vendors_sec:after {
@@ -1592,7 +1599,8 @@ section.main-product.single_category_products .deals-product.product-card-box.po
 section.main-product.single_category_products .suppliers-img-outer.position-relative {
     object-fit: cover;
     border-radius: 10px 10px 0 0;
-    height: 200px;
+    height: 100%;
+    min-height: 200px;
 }
 
 section.main-product.single_category_products .supplier-rating {
