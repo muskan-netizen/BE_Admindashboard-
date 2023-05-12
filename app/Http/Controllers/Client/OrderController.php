@@ -300,7 +300,7 @@ class OrderController extends BaseController
         $pending_orders = clone $order_count;
         $active_orders = clone $order_count;
         $orders_history = clone $order_count;
-
+        $auto_accept = 0;
 
 
         $lux_id = 0;
@@ -580,15 +580,15 @@ class OrderController extends BaseController
             foreach ($order->vendors as $vendor) {
                 $vendor->isAlert = false;
                 $vendor->alertMessage = "";
+                $auto_accept = (isset($vendor) && !empty($vendor->auto_accept_order))?$vendor->auto_accept_order:0;
                 if (isset($vendor) && !empty($vendor->vendor_id))
                     $vendor->vendor_detail_url = route('order.show.detail', [$order->id, @$vendor->vendor_id]);
                 else
                     $vendor->vendor_detail_url = '#';
-
                 if(isset($vendor) && !empty($vendor->vendor_id) && @$vendor->exchanged_to_order){
                     $vendor->exchanged_to_order->vendor_detail_url = route('order.show.detail', [$vendor->exchanged_to_order->order_id, @$vendor->exchanged_to_order->vendor_id]);
                 }
-
+                
                 if(isset($vendor) && !empty($vendor->vendor_id && @$vendor->exchanged_of_order)){
                     $vendor->exchanged_of_order->vendor_detail_url = route('order.show.detail', [$vendor->exchanged_of_order->order_id, @$vendor->exchanged_of_order->vendor_id]);
                 }
@@ -670,7 +670,7 @@ class OrderController extends BaseController
         $response2['p2p_orders'] = $p2p_orders??0;
         $response2['pagination'] ='';
         $response2['ClassName'] =$ClassName;
-       
+        $response2['auto_accept_status'] =$auto_accept;
         if(!empty($response2['next_page_url'])){
            // $nextPageUrl = str_replace("/order","/orders/filter",$response2['next_page_url']); 
             $url_components = parse_url($response2['next_page_url']);
