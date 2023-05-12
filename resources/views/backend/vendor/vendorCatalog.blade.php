@@ -760,7 +760,7 @@ pr($products->toArray());
                      <div class="row mb-2">
                          @if ($client_preferences->business_type != 'taxi')
                              <div class="col-md-6 justify-content-between mb-2" id="for_new" style="display:none;">
-                                 {!! Form::label('11title', __('New'), ['class' => 'control-label']) !!}
+                                 {!! Form::label('title', __('New'), ['class' => 'control-label']) !!}
                                  <input type="checkbox" id="is_new" data-plugin="switchery" name="is_new"
                                      class="chk_box" data-color="#43bee1">
                              </div>
