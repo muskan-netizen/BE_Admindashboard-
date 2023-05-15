@@ -1587,10 +1587,16 @@ class HomeController extends BaseController
         if (in_array('best_sellers', $enable_layout)) {
             if(!empty($vendors)){
                 $mostSellingVendors = collect($vendors);
-                $mostSellingVendors = $mostSellingVendors->sortByDesc('selling_count');
+                if(sizeof($mostSellingVendors)){
+                    $mostSellingVendors[] = $mostSellingVendors->sortByDesc('selling_count');
+                }
+                
             }else{
                 if(count($vendor_ids) > 0){
-                    $mostSellingVendors = $this->getVendorForHomePage($preferences, "best_sellers", $timezone, 0, $request->type, $language_id, $latitude, $longitude, $vendor_ids);
+                    $dataMo = $this->getVendorForHomePage($preferences, "best_sellers", $timezone, 0, $request->type, $language_id, $latitude, $longitude, $vendor_ids);
+                    if(sizeof($dataMo)){
+                        $mostSellingVendors[] = $dataMo;
+                    }
                 }
             }
         }
