@@ -8,6 +8,7 @@ use App\Jobs\SyncToDispatcher;
 use App\Models\Category;
 use App\Models\ClientPreference;
 use App\Models\Vendor;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Traits\InventoryTrait;
 
@@ -20,7 +21,7 @@ class InventoryController extends Controller
     {
        try{
             if(isset($request->assigned_order_side_vendor_id) && is_array($request->assigned_order_side_vendor_id)){
-                $unAssignedOrderCategory = Vendor::select('id', 'name')->where('status', 1)->get(); //->whereNotIn('id', $request->assigned_order_side_vendor_id)
+                $unAssignedOrderCategory = Vendor::select('id', 'name', 'logo')->where('status', 1)->get(); //->whereNotIn('id', $request->assigned_order_side_vendor_id)
 
                 return response()->json([
                     'status' => 200,
@@ -41,12 +42,37 @@ class InventoryController extends Controller
            
     }
 
+    public function getSyncStoreOrderCatIds(Request $request)
+    {
+       try{
+            if(isset($request->order_vendor_id) && isset($request->inv_store_id)){
+                $syncCatIds = Product::where('store_id', $request->inv_store_id)->where('vendor_id', $request->order_vendor_id)->distinct('sync_inventory_side_cat')->pluck('sync_inventory_side_cat')->toArray();
+
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'fetched succesfully',
+                    'data' => $syncCatIds
+                ]);
+            }else{
+                throw new \ErrorException('parameter missing', 400);
+            }
+            
+       }catch(\Exception $e){
+            return response()->json([
+                'status' => 400,
+                'message' => $e->getMessage(),
+                'data' => []
+            ]);
+       }
+           
+    }
+
     public function getOrderVendorById(Request $request)
     {
         try{
             if(@$request->vendor_id){
                 $vendorIds = $request->vendor_id;
-                $vendors = Vendor::select('id', 'name')->whereIn('id', $vendorIds)->get();
+                $vendors = Vendor::select('id', 'name', 'logo')->whereIn('id', $vendorIds)->get();
 
                 return response()->json([
                     'status' => 200,
