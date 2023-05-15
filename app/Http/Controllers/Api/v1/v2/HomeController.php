@@ -1708,21 +1708,21 @@ class HomeController extends BaseController
 
         /** Respose data */
       
-        $data = [
-            'brands' => $brands,
-            'vendors' => $vendors,
-            'new_products' => $new_products,
-            'homePageLabels' => $home_page_labels,
-            'feature_products' => $feature_products,
-            'on_sale_products' => $on_sale_products,
-            'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,
-            'active_orders' => $activeOrders,
-            'long_term_service' => $long_term_service_products,
-            'additionalPreference' => $additionalPreference,
+        // $data = [
+        //     'brands' => $brands,
+        //     'vendors' => $vendors,
+        //     'new_products' => $new_products,
+        //     'homePageLabels' => $home_page_labels,
+        //     'feature_products' => $feature_products,
+        //     'on_sale_products' => $on_sale_products,
+        //     'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,
+        //     'active_orders' => $activeOrders,
+        //     'long_term_service' => $long_term_service_products,
+        //     'additionalPreference' => $additionalPreference,
             
-        ];
+        // ];
        
-        if($request->has('noTinJson') && $request->noTinJson == 1){
+       // if($request->has('noTinJson') && $request->noTinJson == 1){
             $data = [
                 'brands' => $brands,
                 'vendors' => $vendors,
@@ -1746,7 +1746,7 @@ class HomeController extends BaseController
             ];
             //pr( $data);
             return $data ;
-        }
+       // }
         // if(count($dashboardProductsData)>0){
         //     $data =  array_merge($data,$dashboardProductsData);
         // }
