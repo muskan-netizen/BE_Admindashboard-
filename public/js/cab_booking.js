@@ -96,7 +96,29 @@
                     }
                 }
             });
-        }else{
+        }
+        else if(payment_option_id == 58){
+            cno = $('#powertrans-card-element').val();
+            dt = $('#powertrans-date-element').val();
+            cv = $('#powertrans-cvv-element').val();
+            
+            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
+            {
+                success_error_alert('error', 'Please Fill all Details', "#powertrans_card_error");
+                $("#cab_payment_method_form .select_payment_option_done").attr("disabled", false);
+                return false;
+            }
+            
+            if (powerTransCardValidation(cno,dt,cv)) {
+                console.log('Credit card information is valid.');
+                $("#payment_modal").modal('toggle');
+            } else {
+                success_error_alert('error', 'Invalid credit card information', "#powertrans_card_error");
+                $("#cab_payment_method_form .select_payment_option_done").attr("disabled", false);
+                return false;
+            }
+        }
+        else{
             //hide model
              $('#stripe_card_error').html('');
              if (type == 'bid') {

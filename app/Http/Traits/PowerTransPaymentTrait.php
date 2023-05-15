@@ -44,9 +44,9 @@ trait PowerTransPaymentTrait
             "CurrencyCode" => "840",
             "ThreeDSecure" => false,
             "Source" => [
-                "CardPan" => "5115010000000001",
-                "CardCvv" => "1",
-                "CardExpiration" => "2512",
+                "CardPan" => $request->card_number,
+                "CardCvv" => $request->cvv,
+                "CardExpiration" => $request->exp_date,
                 "CardholderName" => auth()->user()->name
             ],
             "OrderIdentifier" => Str::uuid(),
@@ -57,7 +57,7 @@ trait PowerTransPaymentTrait
                 "Line2" => "",
                 "City" => "",
                 "State" => "",
-                "PostalCode" => "200341",
+                "PostalCode" => "",
                 "CountryCode" => "840",
                 "EmailAddress" => auth()->user()->email ?? '',
                 "PhoneNumber" => auth()->user()->phone_number ?? ''

@@ -3943,6 +3943,10 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
             data.payment_option_id = payment_option_id;
             data._token = $('input[name=_token]').val();
         
+            data.card_number = $('#powertrans-card-element').val();
+            data.exp_date = $('#powertrans-date-element').val();
+            data.cvv = $('#powertrans-cvv-element').val();
+
             $.ajax({
                 type: "post",
                 dataType: "json",
@@ -4020,88 +4024,41 @@ function clickHandle(evt, tabName) {
   }
 }
 
-window.powerTransCardValidation =  function powerTransCardValidation()
-   {
-        var valid = true;	 
-        $(".demoInputBox").css('background-color','');
-        var message = "";
+window.powerTransCardValidation = function powerTransCardValidation(cardNumber, expirationDate, cvv) {
+    
+    if (!/^\d{16}$/.test(cardNumber)) {
+      return false;
+    }
+  
+    var card = $('#powertrans-card-element').validateCreditCard();
+    if(!card.valid){
+        return false;
+    }
+    
+    var currentDate = new Date();
+    var currentYear = currentDate.getFullYear() % 100;
+    var currentMonth = currentDate.getMonth() + 1;
+    
+    var [expirationMonth, expirationYear] = [expirationDate.slice(2), expirationDate.slice(0, 2)];
+  
+    expirationMonth = parseInt(expirationMonth, 10);
+    expirationYear = parseInt(expirationYear, 10);
+    
+    if (
+      isNaN(expirationMonth) ||
+      isNaN(expirationYear) ||
+      expirationYear < currentYear ||
+      (expirationYear === currentYear && expirationMonth < currentMonth) ||
+      expirationMonth > 12 ||
+      expirationMonth < 1
+    ) {
+      return false;
+    }
+  
+    if (!/^\d{3,4}$/.test(cvv)) {
+      return false;
+    }
 
-        var cvvRegex = /^[0-9]{3,3}$/;
-        
-        var cardNumber = $("#powertrans-card-element").val();
-        var cvv = $("#powertrans-cvv-element").val();
-        
-        var expiry = $("#powertrans-date-element").val();
-        expiry = expiry.split('/');
+    return true;
+  }
 
-
-        var today, someday;
-        var exMonth=expiry[0];
-        var exYear=expiry[1];
-        today = new Date();
-        someday = new Date();
-        someday.setFullYear(exYear, exMonth, 1);
-
-	
-
-            if(cardNumber == "" || cvv == "" || expiry == '') {
-                message  += "<div>All Fields are Required.</div>";  
-                
-                if(cardNumber == "") {
-                    $("#powertrans-card-element").css('background-color','#FFFFDF');
-                }
-                if (cvv == "") {
-                    $("#powertrans-cvv-element").css('background-color','#FFFFDF');
-                }
-                    if (expiry == "") {
-                    $("#powertrans-date-element").css('background-color','#FFFFDF');
-                }
-            valid = false;
-            }
-    
-            if(cardNumber != "") {
-                    $('#powertrans-card-element').validateCreditCard(function(result){
-                    if(!(result.valid)){
-                            message  += "<div>Card Number is Invalid</div>";    
-                            $("#card-number").css('background-color','#FFFFDF');
-                            valid = false;
-                    }
-                });
-            }
-    
-            if (cvv != "" && !cvvRegex.test(cvv)) {
-                message  += "<div>CVV is Invalid</div>";    
-                $("#powertrans-cvv-element").css('background-color','#FFFFDF');
-                    valid = false;
-            }
-    
-    
-            if (expiry != "") { 
-                    if (someday < today) {
-                    message  += "<div>Expiry date is Invalid</div>";    
-                    $("#powertrans-date-element").css('background-color','#FFFFDF');
-                                valid = false;
-                        }    
-                }
-                
-            var powertrans_card_id = $("input[type='radio'][name='powertrans_card_id']:checked").val();
-                if(powertrans_card_id){
-                    message = '';
-                    valid = true;
-                }
-    
-    
-            if(message != "") {
-                $("#powertrans_card_error").show();
-                $("#powertrans_card_error").html(message);
-                $(document).find('.topup_wallet_confirm').prop('disabled',false);
-                $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
-                $(".subscription_confirm_btn").attr("disabled", false);
-            }else{
-                $("#powertrans_card_error").html('');
-                $(document).find('.topup_wallet_confirm').prop('disabled',true);
-                $(document).find(".proceed_to_pay").prop('disabled',true);
-                $(".subscription_confirm_btn").attr("disabled", true);
-            }
-        return valid;
-}

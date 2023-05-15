@@ -183,7 +183,7 @@
                             </div>
                         </div>
 
-                        <span class="error text-danger" id="powertrans_card_error"></span>
+                        <span class="text-danger" id="powertrans_card_error"></span>
                     </div>
                 <% } %>
 
