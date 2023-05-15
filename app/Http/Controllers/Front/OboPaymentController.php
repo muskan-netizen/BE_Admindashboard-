@@ -38,7 +38,7 @@ class OboPaymentController extends Controller
     public function beforePayment(Request $request, $domain='',$app='')
     {
         /////////// dumy testing ////////////////
-        // \Log::info($request->all());
+        \Log::info($request->all());
         $orderNumber = $this->orderNumber($request);
 
         \Log::info($orderNumber);
@@ -168,9 +168,13 @@ class OboPaymentController extends Controller
                     if($payment->payment_from == 'web'){
                             return redirect()->route('order.success', $order->id);
                         }else{
-                            $responseArray['status'] = '200';
-                            $responseArray['msg'] = 'Success Order.';
-                            return $responseArray;
+
+                                $returnUrl = route('payment.gateway.return.response').'/?gateway=obo'.'&status=200&order='.$order->order_number;
+                                return redirect($returnUrl);
+
+                            // $responseArray['status'] = '200';
+                            // $responseArray['msg'] = 'Success Order.';
+                            // return $responseArray;
                         }
                 }
             } elseif ($request->paymentfrom == 'wallet') {
@@ -180,9 +184,13 @@ class OboPaymentController extends Controller
                 if($payment->payment_from == 'web'){
                     return redirect()->route('user.wallet');
                 }else{
-                    $responseArray['status'] = '200';
-                    $responseArray['msg'] = 'Success';
-                    return $responseArray;
+
+                    $returnUrl = route('payment.gateway.return.response').'/?gateway=obo'.'&status=200&transaction_id='.$payment->transaction_id.'&action=wallet';
+                    return redirect($returnUrl);
+
+                    // $responseArray['status'] = '200';
+                    // $responseArray['msg'] = 'Success';
+                    // return $responseArray;
                 }
             }elseif (isset($request->subscription_id)) {
 
@@ -197,9 +205,13 @@ class OboPaymentController extends Controller
                 if($payment->payment_from == 'web'){
                     return redirect()->route('user.subscription.plans');
                 }else{
-                    $responseArray['status'] = '200';
-                    $responseArray['msg'] = 'Success';
-                    return $responseArray;
+
+                    $returnUrl = route('payment.gateway.return.response').'/?gateway=obo'.'&status=200&transaction_id='.$payment->transaction_id.'&action=subscription';
+                    return redirect($returnUrl);
+
+                    // $responseArray['status'] = '200';
+                    // $responseArray['msg'] = 'Success';
+                    // return $responseArray;
                 }
             } elseif ($request->paymentfrom == 'pickup_delivery') {
 
@@ -214,9 +226,13 @@ class OboPaymentController extends Controller
                 if($payment->payment_from == 'web'){
                     return redirect()->route('front.booking.details',$transactionId);
                 }else{
-                    $responseArray['status'] = '200';
-                    $responseArray['msg'] = 'Success';
-                    return $responseArray;
+
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=obo'.'&status=200&order='.$transactionId;
+                   return redirect($returnUrl);
+
+                    // $responseArray['status'] = '200';
+                    // $responseArray['msg'] = 'Success';
+                    // return $responseArray;
                 }
             }elseif ($request->paymentfrom == 'tip') {
 
@@ -229,9 +245,13 @@ class OboPaymentController extends Controller
                 if($payment->payment_from == 'web'){
                     return redirect()->route('user.orders');
                 }else{
-                    $responseArray['status'] = '200';
-                    $responseArray['msg'] = 'Success';
-                    return $responseArray;
+
+                    $returnUrl = route('payment.gateway.return.response').'/?gateway=ono'.'&status=200&order='.$transactionId.'&action=tip';
+                    return Redirect::to($returnUrl);
+
+                    // $responseArray['status'] = '200';
+                    // $responseArray['msg'] = 'Success';
+                    // return $responseArray;
                 }
             }
         } else {
