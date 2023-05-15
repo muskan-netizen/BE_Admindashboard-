@@ -56,6 +56,10 @@ trait DataTransTrait
                 "successUrl" => $redirect,
                 "cancelUrl" => $cancel_redirect,
                 "errorUrl" => $redirect
+            ],
+            "autoSettle" => true,
+            "option" =>[
+                "createAlias" => true
             ]
         ]);
     }
