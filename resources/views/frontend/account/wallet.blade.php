@@ -738,6 +738,9 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 @if(in_array('flutterwave',$client_payment_options))
 <script src="https://checkout.flutterwave.com/v3.js"></script>
 @endif
+@if(in_array('data_trans',$client_payment_options))
+    <script src="{{ $data_trans_script_url }}"></script>
+@endif
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script src="{{asset('js/payment.js')}}"></script>
 
