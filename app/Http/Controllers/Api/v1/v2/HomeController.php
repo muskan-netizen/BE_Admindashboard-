@@ -1504,7 +1504,7 @@ class HomeController extends BaseController
                     $titles['recent_orders_title'] = $result->title;
                     break;
                 case "banner":
-                    $titles['on_sale_title'] = $result->title;
+                    $titles['banner_title'] = $result->title;
                     break;
                 case "selected_products":
                     $titles['selected_products_title'] = $result->title;
@@ -1587,10 +1587,10 @@ class HomeController extends BaseController
         if (in_array('best_sellers', $enable_layout)) {
             if(!empty($vendors)){
                 $mostSellingVendors = collect($vendors);
-                $mostSellingVendors[] = $mostSellingVendors->sortByDesc('selling_count');
+                $mostSellingVendors = $mostSellingVendors->sortByDesc('selling_count');
             }else{
                 if(count($vendor_ids) > 0){
-                    $mostSellingVendors[] = $this->getVendorForHomePage($preferences, "best_sellers", $timezone, 0, $request->type, $language_id, $latitude, $longitude, $vendor_ids);
+                    $mostSellingVendors = $this->getVendorForHomePage($preferences, "best_sellers", $timezone, 0, $request->type, $language_id, $latitude, $longitude, $vendor_ids);
                 }
             }
         }
@@ -1700,7 +1700,7 @@ class HomeController extends BaseController
         /**  Get cities */
         if (in_array('cities', $enable_layout)) {   # if enable recent_orders section in 
             if($preferences->is_hyperlocal==1){
-                $this->getCities($language_id);
+                $this->getCities_v2($language_id);
             }
         }
         /**  Get cities end */

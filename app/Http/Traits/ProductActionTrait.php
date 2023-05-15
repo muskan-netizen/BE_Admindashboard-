@@ -420,9 +420,9 @@ trait ProductActionTrait{
                     }
             }
             $whereComparePriceNotNull = '';
-            if($where == 'on_sale'){
-                $whereComparePriceNotNull = ' and `product_variant`.`compare_at_price` > 0  ';
-            }
+            // if($where == 'on_sale'){
+            //     $whereComparePriceNotNull = ' and `product_variant`.`compare_at_price` > 0  ';
+            // }
             //Check product of selected category type
             $whereProductType = '';
             if(!empty($categoryTypes)){
@@ -512,14 +512,14 @@ trait ProductActionTrait{
                         $whereProductType 
                         ORDER BY RAND() LIMIT 6";
 
-            $products           = DB::select( DB::raw($raw_query));
-            $collectionproducts = collect($products)->unique('id');
-            if(empty($single_category_product_ids)){
-                //$collectionproducts = $collectionproducts->random(10);
-            }
+            $returnArray           = DB::select( DB::raw($raw_query));
+            // //$collectionproducts = collect($products)->unique('id');
+            // if(empty($single_category_product_ids)){
+            //     //$collectionproducts = $collectionproducts->random(10);
+            // }
 
-            $returnArray = $collectionproducts;
-            
+            // $returnArray = $products;
+            //pr($returnArray);
             return $returnArray;
         }
         catch (\Exception $e) {
