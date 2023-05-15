@@ -600,9 +600,9 @@ trait ProductActionTrait{
                 }
             }
             
-            if(!empty($set_template) && $set_template->template_id != 3){
+            //if(!empty($set_template) && $set_template->template_id != 3){
                 $mainQuery .= " LIMIT 6";
-            }
+            //}
             
 
             
