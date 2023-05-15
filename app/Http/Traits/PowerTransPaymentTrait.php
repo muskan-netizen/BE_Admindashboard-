@@ -41,15 +41,15 @@ trait PowerTransPaymentTrait
         ])->post($url,[
             "TransactionIdentifier" => Str::uuid(),
             "TotalAmount" => 1,
-            "CurrencyCode" => "978",
+            "CurrencyCode" => "840",
             "ThreeDSecure" => false,
             "Source" => [
                 "CardPan" => "5115010000000001",
                 "CardCvv" => "1",
                 "CardExpiration" => "2512",
-                "CardholderName" => "John Doe"
+                "CardholderName" => auth()->user()->name
             ],
-            "OrderIdentifier" => "INT-c339a65d-0c21-42e7-9942-f3cd675531af-Orc 3569",
+            "OrderIdentifier" => Str::uuid(),
             "BillingAddress" => [
                 "FirstName" => $name[0] ?? '',
                 "LastName" => $name[1] ?? '',

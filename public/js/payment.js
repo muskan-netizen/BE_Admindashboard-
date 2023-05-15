@@ -3950,9 +3950,15 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
                 data: data,
         
                 success: function (response) {
-                    if (response.IsoResponseCode != 00) {
+                    console.log({response});
+                    if (response.IsoResponseCode == 00) {
                         window.location.href = response.redirect_url+'?TransactionIdentifier='+response.TransactionIdentifier;
                     }else{
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Something went wrong in Payment!',
+                        });
                         console.log('Something wrong in payment');
                     }
                     return true;
