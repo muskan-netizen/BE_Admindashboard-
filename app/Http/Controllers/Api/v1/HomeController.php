@@ -61,7 +61,7 @@ class HomeController extends BaseController
                         $vendorMode[] = $vendorData;
                     }
             }
-            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo']);
+            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo','is_service_price_selection']);
     
             //pr($vendorMode);
             //mohit sir branch code updated by sohail farm meat
@@ -71,6 +71,7 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->chat_button = (int) $getAdditionalPreference['chat_button'];
             $homeData['profile']->preferences->call_button = (int) $getAdditionalPreference['call_button'];
             $homeData['profile']->preferences->is_user_kyc_for_registration = (int) $getAdditionalPreference['is_user_kyc_for_registration'];
+            $homeData['profile']->preferences->rating_check = $preferences->preferences->rating_check;
             //dd($homeData['profile']);
 
 
@@ -88,8 +89,10 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->is_one_push_book_enable    = (int) $getAdditionalPreference['is_one_push_book_enable'];
             $homeData['profile']->preferences->is_bid_ride_enable         = (int) $getAdditionalPreference['is_bid_ride_enable'];
             
-            $homeData['profile']->preferences->is_service_product_price_from_dispatch         = (int) $getAdditionalPreference['is_service_product_price_from_dispatch'];
-
+            // on demand service pricing 
+            $homeData['profile']->preferences->is_service_product_price_from_dispatch   = (int) $getAdditionalPreference['is_service_product_price_from_dispatch'];
+            $homeData['profile']->preferences->is_service_price_selection               = (int) $getAdditionalPreference['is_service_price_selection'];
+            
             if($homeData['profile']->preferences->is_one_push_book_enable == 1){
                 $homeData['profile']->preferences->pick_drop_instant_booking_vendor = Vendor::select('id', 'slug', 'name', 'is_vendor_instant_booking', 'status')
                                                                                       ->with(['products' => function ($v) {
@@ -313,8 +316,8 @@ class HomeController extends BaseController
             $currency_id = $user->currency;
             $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
             $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'is_service_area_for_banners','subscription_mode')->first();
-            $latitude = $request->latitude;
-            $longitude = $request->longitude;
+            $latitude = !empty($request->latitude) ? ($request->latitude ?? $user->latitude ) :  $preferences->Default_latitude ;
+            $longitude =!empty($request->longitude) ? ($request->longitude ?? $user->longitude ) :  $preferences->Default_longitude ;
             $paginate = $request->has('limit') ? $request->limit : 12;
             $distance_to_time_multiplier = $preferences->distance_to_time_multiplier??2;
             //filter
@@ -340,10 +343,12 @@ class HomeController extends BaseController
            
 
             $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
+            
+            $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
+            $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
 
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
-                $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+                
                 $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
                 //3961 for miles and 6371 for kilometers
                 $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;

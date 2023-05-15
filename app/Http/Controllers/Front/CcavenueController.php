@@ -28,32 +28,35 @@ class CcavenueController extends Controller
    private $access_key;
    private $merchant_id;
    private $url;
-   private $access_code;
+   private $access_code; 
 
    public function __construct()
    {
       $payOpt = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'ccavenue')->where('status', 1)->first();
-      $json = json_decode($payOpt->credentials);
-      $this->access_key = $json->enc_key;
-      $this->access_code = $json->access_code;
-      $this->merchant_id = $json->merchant_id;
-      if($payOpt->test_mode =='1')
-      {
-       if($json->custom_url=='ae'){
-          $this->url = 'https://secure.ccavenue.ae/transaction/transaction.do?command=initiateTransaction';
-     }else{
-       $this->url = 'https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction';
-      } 
-      }else{
-      if($json->custom_url=='ae'){
-          $this->url = 'https://secure.ccavenue.ae/transaction/transaction.do?command=initiateTransaction';
-      }else{
-        $this->url='https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction';
-      }
+      if(@$payOpt && (!empty($payOpt->credentials))){
+
+        $json = json_decode($payOpt->credentials);
+        $this->access_key = $json->enc_key;
+        $this->access_code = $json->access_code;
+        $this->merchant_id = $json->merchant_id;
+        if($payOpt->test_mode =='1')
+        {
+         if($json->custom_url=='ae'){
+            $this->url = 'https://secure.ccavenue.ae/transaction/transaction.do?command=initiateTransaction';
+       }else{
+         $this->url = 'https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction';
+        } 
+        }else{
+        if($json->custom_url=='ae'){
+            $this->url = 'https://secure.ccavenue.ae/transaction/transaction.do?command=initiateTransaction';
+        }else{
+          $this->url='https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction';
+        }
+        }
       }
 
    }
-
+   
    public function orderNumber($request)
    {
         if($request->from == 'cart')
@@ -72,9 +75,14 @@ class CcavenueController extends Controller
 
         }elseif($request->from == 'subscription')
         {
-            $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
+            $time = ($request->transaction_id)??'S_'.time();
             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d')]);
             
+        }
+        elseif($request->from == 'pickup_delivery')
+        {
+            $time = ($request->subscription_id)??'PD_'.time().'_'.$request->subsid;
+            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'pickup_delivery','date'=>date('Y-m-d')]);
         }
         return $time;
    }

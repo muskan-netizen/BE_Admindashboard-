@@ -776,7 +776,6 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::label('title', __('Spotlight Deals'),['class' => 'control-label']) !!}
                             <input type="checkbox" bid="" id="replaceable" data-plugin="switchery" name="spotlight_deals" class="chk_box" data-color="#43bee1" @if($product->spotlight_deals == 1) checked @endif>
                         </div>
-
                         @if($configData->need_dispacher_ride == 1 && $product->category->categoryDetail->type_id == 7)
                         <div class="col-md-6 d-flex justify-content-between mb-2">
                             {!! Form::label('title', __('Dispatcher Tags'),['class' => 'control-label']) !!}

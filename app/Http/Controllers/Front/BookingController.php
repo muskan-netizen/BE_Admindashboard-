@@ -33,24 +33,29 @@ class BookingController extends FrontController
         $navCategories = $this->categoryNav($langId);
         $user_addresses = UserAddress::get();
         $order = Order::where('order_number',$order_id)->where('user_id',Auth::id())->first();
-        
+        $order->vendors->first()->dispatch_traking_url;
         $route = route('front.booking.orderplacedetails',$order->id);
         
         
         $order['dispatch_traking_url'] = $order->vendors->first()->dispatch_traking_url ?? null;
         //dd($order);
         $order['dispatch_traking_url'] = str_replace("/order/","/order-details/",$order['dispatch_traking_url']);
-        if ($order['dispatch_traking_url']) {
+        if($order['dispatch_traking_url'] != null){
             $response = Http::get($order['dispatch_traking_url']);
+            $tasks = array();
+            $agent_location = '';
+            if($response->status() == 200){
+               $response = $response->json();
+               $order['dispatch_order'] = $response;
+               $tasks = $response['tasks'];
+               $agent_location = $response['agent_location'];
+            }
+        }else{
+            $tasks = [];
+           $agent_location = [];
         }
-        $tasks = array();
-        $agent_location = '';
-        if(isset($response) && $response->status() == 200){
-           $response = $response->json();
-           $order['dispatch_order'] = $response;
-           $tasks = $response['tasks'];
-           $agent_location = $response['agent_location'];
-        }
+        
+        
 
         $vendor = OrderVendor::where('order_id',$order->id)->first();
         return view('frontend.booking.details')->with(['user_addresses' => $user_addresses, 'navCategories' => $navCategories,'order' => $order,'vendor' => $vendor,'route' => $route,'tasks' => $tasks,'agent_location' => $agent_location]);

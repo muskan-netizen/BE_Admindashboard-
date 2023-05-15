@@ -11,12 +11,12 @@ use Carbon\Carbon;
 use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag,DeliverySlotProduct, DeliverySlot,UserAddress};
 use Validation;
 use DB;
-use App\Http\Traits\{ApiResponser,ProductTrait};
+use App\Http\Traits\{ApiResponser,ProductTrait, ProductActionTrait};
 
 class ProductController extends BaseController
 {
     private $field_status = 2;
-    use ApiResponser,ProductTrait;
+    use ApiResponser,ProductTrait, ProductActionTrait;
     /**
      * Get Company ShortCode
      *
@@ -163,6 +163,9 @@ class ProductController extends BaseController
             if(!$product){
                 return response()->json(['error' => 'No record found.'], 404);
             }
+            if ($this->checkTemplateForAction(8)) {
+            $this->RecentView($pid);
+            }
             $product->vendor->is_vendor_closed = 0;
             if($product->vendor->show_slot == 0){
                 if( ($product->vendor->slotDate->isEmpty()) && ($product->vendor->slot->isEmpty()) ){
@@ -306,6 +309,54 @@ class ProductController extends BaseController
                 }
             }
 
+            $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = [];
+
+            $suggested_product = Product::with(['media.image','vendor', 'translation', 'variant', 'productVariantByRoles']);
+            if( !empty($product->category->category_id) ) {
+                $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)->groupBy('id')->orderby('id', 'desc')->limit(20)->get();
+            }
+
+
+            foreach($suggested_category_products as $r_product){
+                foreach ($r_product->variant as $key => $value) {
+                    if(isset($r_product->variant[$key])){
+                        $r_product->variant[$key]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : '1.00';
+                    }
+                }
+            }
+
+            if( !empty($product->brand_id) ) {
+                $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);
+                $suggested_brand_products = $suggested_product->where('brand_id', $product->brand_id)->orderby('id', 'desc')->limit(20)->get();
+            }
+
+
+                foreach($suggested_brand_products as $r_product){
+                foreach ($r_product->variant as $key => $value) {
+                    if(isset($r_product->variant[$key])){
+                    $r_product->variant[$key]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : '1.00';
+                    }
+                }
+            }
+
+            if( !empty($product->vendor_id) ) {
+                $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);
+                $suggested_vendor_products = $suggested_product->where('vendor_id', $product->vendor_id)->orderby('id', 'desc')->limit(20)->get();
+            }
+
+
+                foreach($suggested_vendor_products as $r_product){
+                foreach ($r_product->variant as $key => $value) {
+                    if(isset($r_product->variant[$key])){
+                    $r_product->variant[$key]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : '1.00';
+                    }
+                }
+            }
+
+        
+            $response['suggested_category_products'] =  $suggested_category_products;
+            $response['suggested_brand_products'] =  $suggested_brand_products;
+            $response['suggested_vendor_products'] =  $suggested_vendor_products;
             $response['products'] = $product;
             $response['relatedProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'relate', $product->related);
             $response['upSellProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'upSell', $product->upSell);

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class OrderVendor extends Model{
     use HasFactory;
     const CANCEL_STATUS = 'Cancelled';
-	protected $fillable = ['web_hook_code','payment_option_id', 'is_restricted','dispatch_traking_url','delivery_response'];
+	protected $fillable = ['web_hook_code','payment_option_id', 'is_restricted','dispatch_traking_url','delivery_response','delivery_fee','waiting_price','waiting_time'];
 	
 	public function orderDetail(){
 	    return $this->hasOne('App\Models\Order' , 'id', 'order_id'); 
@@ -141,8 +141,6 @@ class OrderVendor extends Model{
         if($this->coupon_paid_by == 0){
             $discount = $this->discount_amount;
         }
-        $tip = !empty($this->orderDetail)?number_format($this->orderDetail->tip_amount, 2):0.00;
-        $vendor_amount += $tip;
         return decimal_format($vendor_amount - $discount - $this->admin_commission_percentage_amount);
     }
     

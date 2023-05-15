@@ -18,7 +18,7 @@ $orderTitles = [
 
 $clientData = \App\Models\Client::select('socket_url')->first();
 
-if($additionalPreference['is_service_product_price_from_dispatch'] == 1){
+if($is_service_product_price_from_dispatch_forOnDemand == 1){
     $hidereturn = 1; 
     $orderTitles = [
         'Active' => "Confirmed ",
@@ -257,7 +257,7 @@ $timezone = Auth::user()->timezone;
                                 <div class="row" id="orders_wrapper">
                                     <div class="col-sm-12 col-lg-12 tab-product al_custom_ordertabs mt-md-3 p-0">
                                         <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
-                                            @if($additionalPreference['is_service_product_price_from_dispatch'] == 1)
+                                            @if($is_service_product_price_from_dispatch_forOnDemand == 1)
                                             <li class="nav-item">
                                                 <a class="nav-link {{ Request::query('pageType') == 'pendingOrders' ? 'active show' : '' }} " id="pending-orders-tab" data-toggle="tab" href="#pending-orders" role="tab"
                                                     aria-selected="true"><i
@@ -306,8 +306,8 @@ $timezone = Auth::user()->timezone;
                                             @endif
                                         </ul>
                                         <div class="tab-content nav-material al" id="top-tabContent">
-                                            @if($additionalPreference['is_service_product_price_from_dispatch'] == 1)
-                                             {{-- @include('frontend.account.orders.pending_orders') --}}
+                                            @if($is_service_product_price_from_dispatch_forOnDemand == 1)
+                                                @include('frontend.account.orders.pending_orders')
                                             @endif
                                             @include('frontend.account.orders.active_orders')
                                             @include('frontend.account.orders.past_orders')

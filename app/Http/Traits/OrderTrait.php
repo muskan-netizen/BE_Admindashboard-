@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Traits\{ValidatorTrait, ApiResponser, SquareInventoryManager,smsManager};
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
-use App\Models\{CaregoryKycDoc, Order, ProductVariant, OrderVendor, VendorOrderCancelReturnPayment, ClientPreference, ProductBooking, User, UserAddress, Vendor, OrderProduct, OrderProductDispatchRoute, VendorOrderProductDispatcherStatus, Product, OrderLongTermServices, VendorOrderStatus, VendorOrderDispatcherStatus, OrderLongTermServiceSchedule, UserDevice, SmsTemplate, Cart, ClientCurrency, LuxuryOption, CartProduct, CartAddon, CartCoupon, OrderProductPrescription, CartProductPrescription, UserVendor, VendorOrderProductStatus};
+use App\Models\{CaregoryKycDoc, Order, ProductVariant, OrderVendor, VendorOrderCancelReturnPayment, ClientPreference, ProductBooking, User, UserAddress, Vendor, OrderProduct, OrderProductDispatchRoute, VendorOrderProductDispatcherStatus, Product, OrderLongTermServices, VendorOrderStatus, VendorOrderDispatcherStatus, OrderLongTermServiceSchedule, UserDevice, SmsTemplate, Cart, ClientCurrency, LuxuryOption, CartProduct, CartAddon, CartCoupon, OrderProductPrescription, CartProductPrescription, UserVendor, VendorOrderProductStatus,NotificationTemplate};
 use Illuminate\Support\Facades\Redirect;
 
 trait OrderTrait
@@ -317,7 +317,7 @@ trait OrderTrait
             $return_response = 2;
             $paymentSentAlready = 0;
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address','order_pre_time')->first();
-            Log::info("this is the id of vendor".$vendor_details->order_pre_time);
+         
             $order_vendor = OrderVendor::with(['products.product.categoryName', 'products.order_product_status'])->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
          
             foreach( $order_vendor->products as $product){
@@ -434,7 +434,7 @@ trait OrderTrait
                                 $call_back_url = "https://" . $client->custom_domain . "/dispatch-order-product-status-update/" . $dynamic;
                             else
                                 $call_back_url = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/dispatch-order-product-status-update/" . $dynamic;
-                                Log::info("order Pre Time is ".$vendor_details->order_pre_time);
+                               // Log::info("order Pre Time is ".$vendor_details->order_pre_time);
 
                             $postdata =  [
                                 'order_number'  =>  $order->order_number,
@@ -1287,6 +1287,44 @@ trait OrderTrait
             DB::rollback();
             \Log::error($e->getMessage());
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
+        }
+    }
+
+    public function sendSuccessNotification($id, $vendorId)
+    {
+        $super_admin = User::where('is_superadmin', 1)->pluck('id');
+        $user_vendors = UserVendor::where('vendor_id', $vendorId)->pluck('user_id');
+        $devices = UserDevice::whereNotNull('device_token')->where('user_id', $id)->pluck('device_token');
+        foreach ($devices as $device) {
+            $token[] = $device;
+        }
+        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_vendors)->pluck('device_token');
+        foreach ($devices as $device) {
+            $token[] = $device;
+        }
+        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $super_admin)->pluck('device_token');
+        foreach ($devices as $device) {
+            $token[] = $device;
+        }
+        // $token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
+        // dd($token);
+
+        // $from = env('FIREBASE_SERVER_KEY');
+
+        $notification_content = NotificationTemplate::where('id', 2)->first();
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+        if ($notification_content && ! empty($token) && ! empty($client_preferences->fcm_server_key)) {
+
+            $data = [
+                "registration_ids" => $token,
+                "notification" => [
+                    'title' => $notification_content->label,
+                    'body' => $notification_content->content
+                ]
+            ];
+            $dataString = $data;
+
+            sendFcmCurlRequest($data);
         }
     }
 

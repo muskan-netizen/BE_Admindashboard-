@@ -728,7 +728,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="delivery_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="delivery_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Delivery'))}}">
+                                    <input type="text" name="delivery_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 'Delivery') }}">
                                     @if($k == 0)
                                         @if($errors->has('delivery_names.0'))
                                             <span class="text-danger" role="alert">
@@ -750,7 +750,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="dinein_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="dinein_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Dine-In'))}}">
+                                    <input type="text" name="dinein_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Dine-In')}}">
                                     @if($k == 0)
                                         @if($errors->has('dinein_names.0'))
                                             <span class="text-danger" role="alert">
@@ -773,7 +773,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="takeaway_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="takeaway_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Takeaway'))}}">
+                                    <input type="text" name="takeaway_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Takeaway')}}">
                                     @if($k == 0)
                                         @if($errors->has('takeaway_names.0'))
                                             <span class="text-danger" role="alert">
@@ -796,7 +796,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="rentals_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="rentals_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Rentals'))}}">
+                                    <input type="text" name="rentals_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Rentals')}}">
                                     @if($k == 0)
                                         @if($errors->has('rentals_names.0'))
                                             <span class="text-danger" role="alert">
@@ -818,7 +818,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="pick_drop_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="pick_drop_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Pick & Drop'))}}">
+                                    <input type="text" name="pick_drop_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Pick & Drop')}}">
                                     @if($k == 0)
                                         @if($errors->has('pick_drop_names.0'))
                                             <span class="text-danger" role="alert">
@@ -841,7 +841,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="on_demand_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="on_demand_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Services'))}}">
+                                    <input type="text" name="on_demand_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Services')}}">
                                     @if($k == 0)
                                         @if($errors->has('on_demand_names.0'))
                                             <span class="text-danger" role="alert">
@@ -864,7 +864,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="laundry_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="laundry_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Laundry'))}}">
+                                    <input type="text" name="laundry_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Laundry')}}">
                                     @if($k == 0)
                                         @if($errors->has('laundry_names.0'))
                                             <span class="text-danger" role="alert">
@@ -887,7 +887,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="appointment_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="appointment_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Appointment'))}}">
+                                    <input type="text" name="appointment_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Appointment')}}">
                                     @if($k == 0)
                                         @if($errors->has('appointment_names.0'))
                                             <span class="text-danger" role="alert">
@@ -911,7 +911,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('vendors'))}}">
+                                    <input type="text" name="names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'vendors')}}">
                                     @if($k == 0)
                                         @if($errors->has('names.0'))
                                             <span class="text-danger" role="alert">
@@ -933,7 +933,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="seller_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="seller_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('sellers'))}}">
+                                    <input type="text" name="seller_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'sellers')}}">
                                     @if($k == 0)
                                         @if($errors->has('seller_names.0'))
                                             <span class="text-danger" role="alert">
@@ -955,7 +955,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="loyalty_cards_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="loyalty_cards_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Loyalty Cards'))}}">
+                                    <input type="text" name="loyalty_cards_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Loyalty Cards')}}">
                                     @if($k == 0)
                                         @if($errors->has('loyalty_cards_names.0'))
                                             <span class="text-danger" role="alert">
@@ -977,7 +977,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="search_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="search_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Search'))}}">
+                                    <input type="text" name="search_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Search')}}">
                                     @if($k == 0)
                                         @if($errors->has('search_names.0'))
                                             <span class="text-danger" role="alert">
@@ -999,7 +999,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="wishlist_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="wishlist_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Wishlist'))}}">
+                                    <input type="text" name="wishlist_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Wishlist')}}">
                                     @if($k == 0)
                                         @if($errors->has('wishlist_names.0'))
                                             <span class="text-danger" role="alert">
@@ -1021,7 +1021,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="zipCode_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="zipCode_name[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Zip Code'))}}">
+                                    <input type="text" name="zipCode_name[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Zip Code')}}">
                                     @if($k == 0)
                                         @if($errors->has('zipCode_name.0'))
                                             <span class="text-danger" role="alert">
@@ -1092,7 +1092,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="royo_dispatcher_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="royo_dispatcher_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Royo Dispatcher'))}}">
+                                    <input type="text" name="royo_dispatcher_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Royo Dispatcher')}}">
                                     @if($k == 0)
                                         @if($errors->has('royo_dispatcher_names.0'))
                                             <span class="text-danger" role="alert">
@@ -1115,7 +1115,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="referral_code_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="referral_code_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Referral Code'))}}">
+                                    <input type="text" name="referral_code_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Referral Code')}}">
                                     @if($k == 0)
                                         @if($errors->has('referral_code_names.0'))
                                             <span class="text-danger" role="alert">
@@ -1137,7 +1137,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="rides_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="rides_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Rides'))}}">
+                                    <input type="text" name="rides_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Rides')}}">
                                     @if($k == 0)
                                         @if($errors->has('rides_names.0'))
                                             <span class="text-danger" role="alert">
@@ -1159,7 +1159,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="orders_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="orders_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Orders'))}}">
+                                    <input type="text" name="orders_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Orders')}}">
                                     @if($k == 0)
                                         @if($errors->has('orders_names.0'))
                                             <span class="text-danger" role="alert">
@@ -1184,7 +1184,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="product_order_form_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="product_order_form_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Product Order Form'))}}">
+                                    <input type="text" name="product_order_form_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Product Order Form')}}">
                                     @if($k == 0)
                                         @if($errors->has('product_order_form_names.0'))
                                             <span class="text-danger" role="alert">
@@ -1210,7 +1210,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="enter_drop_location_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="enter_drop_location_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Enter Drop Location'))}}">
+                                    <input type="text" name="enter_drop_location_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Enter Drop Location')}}">
                                     @if($k == 0)
                                         @if($errors->has('enter_drop_location_names.0'))
                                             <span class="text-danger" role="alert">
@@ -1236,7 +1236,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="enter_vendor_name_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="enter_vendor_name_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Vendor Name'))}}">
+                                    <input type="text" name="enter_vendor_name_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Vendor Name')}}">
                                     @if($k == 0)
                                         @if($errors->has('enter_vendor_name_names.0'))
                                             <span class="text-danger" role="alert">
@@ -1262,7 +1262,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="ride_accepted_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="ride_accepted_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Ride Accepted'))}}">
+                                    <input type="text" name="ride_accepted_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Ride Accepted')}}">
                                     @if($k == 0)
                                         @if($errors->has('ride_accepted_names.0'))
                                             <span class="text-danger" role="alert">
@@ -1288,7 +1288,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="search_nearby_driver_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="search_nearby_driver_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Searching For Nearby Drivers'))}}">
+                                    <input type="text" name="search_nearby_driver_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Searching For Nearby Drivers')}}">
                                     @if($k == 0)
                                         @if($errors->has('search_nearby_driver_names.0'))
                                             <span class="text-danger" role="alert">
@@ -1314,7 +1314,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="looking_driver_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="looking_driver_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Hold On! We are looking for drivers nearby!'))}}">
+                                    <input type="text" name="looking_driver_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Hold On! We are looking for drivers nearby!')}}">
                                     @if($k == 0)
                                         @if($errors->has('looking_driver_names.0'))
                                             <span class="text-danger" role="alert">
@@ -1341,7 +1341,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="product_name_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="product_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Product Name'))}}">
+                                    <input type="text" name="product_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Product Name')}}">
                                     @if($k == 0)
                                         @if($errors->has('product_names.0'))
                                             <span class="text-danger" role="alert">
@@ -1367,7 +1367,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="ifsc_code_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="ifsc_code[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('IFSC Code'))}}">
+                                    <input type="text" name="ifsc_code[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'IFSC Code')}}">
                                     @if($k == 0)
                                         @if($errors->has('ifsc_code.0'))
                                             <span class="text-danger" role="alert">
@@ -1393,7 +1393,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="stock_status_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="stock_status_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Stock Status'))}}">
+                                    <input type="text" name="stock_status_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Stock Status')}}">
                                     @if($k == 0)
                                         @if($errors->has('stock_status_names.0'))
                                             <span class="text-danger" role="alert">
@@ -1418,7 +1418,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="variant_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="variant_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Variant'))}}">
+                                    <input type="text" name="variant_names[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Variant')}}">
                                     @if($k == 0)
                                         @if($errors->has('variant_names.0'))
                                             <span class="text-danger" role="alert">
@@ -1441,7 +1441,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="account_name_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="account_name[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Account Name'))}}">
+                                    <input type="text" name="account_name[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Account Name')}}">
                                     @if($k == 0)
                                         @if($errors->has('account_name.0'))
                                             <span class="text-danger" role="alert">
@@ -1464,7 +1464,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="bank_name_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="bank_name[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Bank Name'))}}">
+                                    <input type="text" name="bank_name[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Bank Name')}}">
                                     @if($k == 0)
                                         @if($errors->has('bank_name.0'))
                                             <span class="text-danger" role="alert">
@@ -1487,7 +1487,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="account_number_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="account_number[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Account Number'))}}">
+                                    <input type="text" name="account_number[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Account Number')}}">
                                     @if($k == 0)
                                         @if($errors->has('account_number.0'))
                                             <span class="text-danger" role="alert">
@@ -1510,7 +1510,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="ifsc_code_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="ifsc_code[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('IFSC Code'))}}">
+                                    <input type="text" name="ifsc_code[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, 'IFSC Code')}}">
                                     @if($k == 0)
                                         @if($errors->has('ifsc_code.0'))
                                             <span class="text-danger" role="alert">
@@ -1533,7 +1533,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="aadhaar_front_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="aadhaar_front[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Aadhaar Front'))}}">
+                                    <input type="text" name="aadhaar_front[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Aadhaar Front')}}">
                                     @if($k == 0)
                                         @if($errors->has('aadhaar_front.0'))
                                             <span class="text-danger" role="alert">
@@ -1556,7 +1556,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="aadhaar_back_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="aadhaar_back[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Aadhaar Back'))}}">
+                                    <input type="text" name="aadhaar_back[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Aadhaar Back')}}">
                                     @if($k == 0)
                                         @if($errors->has('aadhaar_back.0'))
                                             <span class="text-danger" role="alert">
@@ -1579,7 +1579,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="aadhaar_number_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="aadhaar_number[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Aadhaar Number'))}}">
+                                    <input type="text" name="aadhaar_number[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Aadhaar Number')}}">
                                     @if($k == 0)
                                         @if($errors->has('aadhaar_number.0'))
                                             <span class="text-danger" role="alert">
@@ -1602,7 +1602,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="upi_id_language_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="upi_id[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('UPI Id'))}}">
+                                    <input type="text" name="upi_id[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'UPI Id')}}">
                                     @if($k == 0)
                                         @if($errors->has('upi_id.0'))
                                             <span class="text-danger" role="alert">
@@ -1628,9 +1628,85 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             <div class="col-sm-2">
                                 <div class="form-group mb-0">
                                     <input type="hidden" name="similar_product_ids[]" value="{{$client_language->langId}}">
-                                    <input type="text" name="similar_product[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId, App\Models\Nomenclature::getIdByName('Similar Product'))}}">
+                                    <input type="text" name="similar_product[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Similar Product')}}">
                                     @if($k == 0)
                                         @if($errors->has('similar_product.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        
+                      <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("P2P") }}</label>
+                                </div>
+                            </div>
+                            @php
+                        
+                            @endphp
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="p2p_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="p2p_id[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'p2p')}}">
+                                    @if($k == 0)
+                                        @if($errors->has('p2p_id.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                      <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Where can we pick you up?") }}</label>
+                                </div>
+                            </div>
+                            @php
+                        
+                            @endphp
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="pickup_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="pickup_id[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Where can we pick you up?')}}">
+                                    @if($k == 0)
+                                        @if($errors->has('pickup_id.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                      <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="custom_domain">{{ __("Where To?") }}</label>
+                                </div>
+                            </div>
+                            @php
+                        
+                            @endphp
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="where_to_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="where_to_id[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Where To?')}}">
+                                    @if($k == 0)
+                                        @if($errors->has('where_to_id.0'))
                                             <span class="text-danger" role="alert">
                                                 <strong>{{ __("The primary language name field is required.") }}</strong>
                                             </span>
@@ -2948,7 +3024,6 @@ $(document).ready(function(){
      $(document).on('click','.add_more_button',function(){
         var main_id = $(this).data('id');
         addoptionTemplate(main_id);
-        console.log($('.add_more_button').length);
     });
     $(document).on('click','.remove_more_button',function(){
         var main_id =$(this).data('id');

@@ -242,7 +242,7 @@ pr($products->toArray());
                                                         <th><input type="checkbox" class="all-product_check"
                                                                 name="all_product_id" id="all-product_check"></th>
                                                         <th>#</th>
-                                                        <th>{{ __('Name 11') }}</th>
+                                                        <th>{{ __('Name') }}</th>
                                                         <th>{{ __('Category') }}</th>
                                                         @if ($client_preference_detail->business_type != 'taxi')
                                                             <th>{{ __('Brand') }}</th>
@@ -1401,9 +1401,10 @@ pr($products->toArray());
                     {data: 'product_image', name: 'product_image', orderable: false, searchable: false},
                     {data: 'product_name', name: 'product_name', orderable: true, searchable: false},
                     {data: 'product_category', name: 'phone_number', orderable: false, searchable: false},
+                    {data: 'bar_code', name: 'bar_code', orderable: false, searchable: false},
                     {data: 'product_is_live', name: 'product_is_live', orderable: false, searchable: false},
-                    {data: 'action', name: 'action', orderable: false, searchable: false},
-                    {data: 'rental_product_count', name: 'rental_product_count', orderable: false, searchable: false}
+                    {data: 'expiry_date', name: 'expiry_date', orderable: false, searchable: false},
+                    {data: 'action', name: 'action', orderable: false, searchable: false}
                 ];
             }else{
                 return [

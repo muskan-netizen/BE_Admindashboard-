@@ -500,6 +500,61 @@ div.dataTables_wrapper div.dataTables_processing {
     color: #000;
     background-color: #f8ecec
 }
+.role_table_per .table-responsive {
+    height: 680px;
+    min-height: 680px;
+    overflow-y: auto;
+}
+.role-left h4 {
+    font-size: 16px;
+}
+.role-left a {
+    display: block;
+    background: #44bee1;
+    margin-bottom: 10px;
+    color: #fff;
+    text-align: center;
+    padding:4px 0px;
+    border-radius: 16px;
+}
+
+.role-left ul li a {
+    background: transparent;
+    border-radius: 0px;
+    font-size: 14px;
+    color: #6e768e;
+    text-align: left;
+    padding: 10px 8px;
+    margin: 0px !important;
+}
+
+.role-left ul li {
+    list-style: none;
+    padding: 0px;
+    line-height: 10px;
+}
+.role-left ul li:nth-child(even){
+    background-color: #efefef;
+}
+.role-left ul li:nth-child(odd){
+    background-color: #fff;
+}
+.role_table_per .table-responsive tbody tr, td span {
+    vertical-align: top;padding-left:2px;font-size: 13px;
+}
+.role-left ul li a:hover{
+    color:#44bee1;
+}
+.role-left ul {
+    background: #fff;
+    padding: 8px 8px !important;
+    box-shadow: 2px 2px 8px 4px #a3a1a124;
+    height: 290px;
+    min-height: 290px;
+    overflow-y: auto;
+}
+
+
 
 .upload-img-btn {
     background-color: #f8ecec;
@@ -541,6 +596,17 @@ div.dataTables_wrapper div.dataTables_processing {
     align-items: flex-end;
     justify-content: center
 }
+
+
+.module-role tr, td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.module-role tr:nth-child(even) {
+    background-color: #f7f7f7;
+}
+
 
 .tutorial_main_div .radio_new:hover .btn.btn-danger {
     opacity: 1
@@ -597,6 +663,13 @@ span.inner-div {
 .vendor-category .dd3-content {
     padding: 8px 16px
 }
+
+.dataTables_length select {
+    width: 100% !important;
+    padding: 2px 4px !important;
+    height: auto !important;
+}
+
 
 .table-borderless td,
 .table-borderless th {
@@ -753,6 +826,9 @@ body .switchery>small {
     width: auto
 }
 
+.delay_time .modal-footer .buffer_time_btn {
+    font-size: 14px;padding: 0.45rem 0.9rem;
+}
 input#is_hyperlocal {
     display: none !important
 }
@@ -1382,6 +1458,7 @@ td.lasttd.d-flex.align-items-center.justify-content-center {
     position: relative;
     margin-bottom: 10px !important
 }
+
 
 .order_detail:before {
     content: "";
@@ -3219,7 +3296,9 @@ body .page-title-box .page-title {
 .order_head h4 {
     opacity: 0
 }
-
+.order_received1 .order_head h4{
+    opacity: inherit;
+}
 .al_box_height {
     height: 40px!important;
     padding-left: 4px!important
@@ -4674,6 +4753,13 @@ body[dir=rtl] .modal-header .close {
 /* dark dashboard css end */
 
 
+/* Order page new order reject order popup css */
+div#addRejectmodal {
+    z-index: 1051;
+    background: #0000003d;
+}
+
+
 /*============================================= dashboard page responsive css start here ======================================= */
 
 @media(max-width:1600px) {
@@ -5000,6 +5086,9 @@ body[dir=rtl] .modal-header .close {
     }
     .received-orders .modal-dialog.modal-dialog-centered {
         max-width: 600px;
+    }
+    .order_received1 .modal-dialog.modal-dialog-centered {
+        max-width: 940px;
     }
     .add_product .modal-dialog {
         max-width: 650px;

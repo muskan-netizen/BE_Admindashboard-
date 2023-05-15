@@ -580,8 +580,7 @@ class PickupDeliveryController extends BaseController{
                         $data = [];
                         $data['status'] = 200;
                         $data['message'] =  __('Order Placed');
-                        $data['data'] =
-                        $order;
+                        $data['data'] = $order;
                         return $data;
         }
     }
@@ -638,36 +637,53 @@ class PickupDeliveryController extends BaseController{
             $wallet = $customer->wallet;
             if ($dispatch_domain && $dispatch_domain != false) {
                 $tasks = array();
-                if ($request->payment_option_id == 1) {
-                    $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order->payable_amount;
-                } else {
-                    if($order->is_postpay==1)
-                    {
-                        $cash_to_be_collected = 'Yes';
-                        $payable_amount = $order->payable_amount;
-                    }else{
-                        $cash_to_be_collected = 'No';
-                        $payable_amount = 0.00;
-                    }
-                }
+                // if ($request->payment_option_id == 1) {
+                //     $cash_to_be_collected = 'Yes';
+                //     $payable_amount = $order->payable_amount;
+                // } else {
+                //     if($order->is_postpay==1)
+                //     {
+                //         $cash_to_be_collected = 'Yes';
+                //         $payable_amount = $order->payable_amount;
+                //     }else{
+                //         $cash_to_be_collected = 'No';
+                //         $payable_amount = 0.00;
+                //     }
+                // }
 
                 $schedule_datetime_del = NULL;
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
                     $schedule_datetime_del = Carbon::parse($request->schedule_time, $customer->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
 
-                $task_type = 'now';
-                if($request->has('task_type')){
-                    $task_type = $request->task_type;
-                }elseif(!empty($order->scheduled_date_time)){
-                    $task_type = 'schedule';
+
+                if(empty($request->task_type) && !empty($request->schedule_time)){
+                    $task_type = 'schedule'; 
+                }else{
+                    $task_type = 'now';  
                 }
+
+
                 $vendor_details = Vendor::where('id', $vendor)->select('order_pre_time')->first();
                 $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
                 $dynamic = (!empty($order_vendor->web_hook_code)) ? $order_vendor->web_hook_code : uniqid($order->id.$vendor);
                 $unique = Auth::user()->code;
                 $client_do = Client::where('code',$unique)->first();
+
+                if ($order->payment_option_id == 1 && ($order->payable_amount >0)) {
+                    $cash_to_be_collected = 'Yes';
+                    $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
+                } else {
+    
+                    if($order->is_postpay==1 && $order->payment_status == 0)
+                    {
+                        $cash_to_be_collected = 'Yes';
+                        $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
+                    }else{
+                        $cash_to_be_collected = 'No';
+                        $payable_amount = 0.00;
+                    }
+                }
 
                 if(!empty($client_do->custom_domain)){
                     $domain = $client_do->custom_domain;
@@ -695,7 +711,7 @@ class PickupDeliveryController extends BaseController{
                     // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                     $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                 }
-                Log::info("order Pre Time is ".$vendor_details->order_pre_time);
+               // Log::info("order Pre Time is ".$vendor_details->order_pre_time);
                 $postdata =  [
                             'order_number' =>  $order->order_number,
                             'customer_name' => $customer->name ?? 'Dummy Customer',

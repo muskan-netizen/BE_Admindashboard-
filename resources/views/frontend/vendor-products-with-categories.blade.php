@@ -1,3 +1,6 @@
+@php
+$checkSlot = findSlot('', $vendor->id, '');
+@endphp
 @extends('layouts.store', ['title' => $vendor->name])
 @section('css')
 <style type="text/css">
@@ -29,9 +32,10 @@ span.alPriceValue, span.alPriceValue i {
 @php
 $add_to_cart =  route('addToCart') ;
 $is_service_product_price_from_dispatch_forOnDemand = 0;
-$additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
+$additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch','is_service_price_selection']);
+$getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'), (@Session::get('onDemandPricingSelected') ?? ''),$additionalPreference);
 $category_type_idForNotShowshPlusMinus = ['12'];
-if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
     $is_service_product_price_from_dispatch_forOnDemand =1;
     array_push($category_type_idForNotShowshPlusMinus,8);
 }
@@ -356,7 +360,7 @@ if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( S
                                                                                 @endif
                                                                         </div>
                                                                     </div>
-                                                                    @if ($prod->averageRating > 0)
+                                                                    @if ($prod->averageRating > 0 && $client_preference_detail->rating_check == 1)
                                                                         <div class="rating-text-box">
                                                                             <span>{{ number_format($prod->averageRating, 1, '.', '') }}
                                                                             </span>
