@@ -543,7 +543,8 @@ trait CartManagerV2{
                     }
                 }
                 $cart_product_ids = [];
-
+                $vendor_discount_amount = 0;
+                
                 $deliver_fee_charges = 0;
                 $total_fixed_fee_tax = 0;
                 // $total_service_fee = 0;
@@ -916,6 +917,82 @@ trait CartManagerV2{
                                 }
                             }
                         }
+                        $doller_compare = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
+                        
+                        if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
+                            if (isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)) {
+                                if($vendorData->coupon->promo->restriction_on == 0 || $vendorData->coupon->promo->restriction_on == 1)
+                                {
+                                    $couponGetAmount = $coupon_product_discount;
+                                }
+                                if($vendorData->coupon->promo->first_order_only==1){
+                                    if(auth()->user()){
+                                        $userOrder = auth()->user()->orders->first();
+                                        if($userOrder){
+                                            $cart->coupon()->delete();
+                                            $vendorData->coupon()->delete();
+                                            unset($vendorData->coupon);
+                                            $PromoDelete =1;
+                                        }
+                                    }
+                                }
+                                if ($PromoDelete !=1) {
+                                    if(!($vendorData->coupon->promo->expiry_date >= $nowdate) ){
+                                        $cart->coupon()->delete();
+                                        $vendorData->coupon()->delete();
+                                        unset($vendorData->coupon);
+                                        $PromoDelete =1;
+                                    }
+                                }
+                                if ( $PromoDelete !=1) {
+                                    
+                                    $minimum_spend = 0;
+                                    if (isset($vendorData->coupon->promo->minimum_spend)) {
+                                        $minimum_spend = $vendorData->coupon->promo->minimum_spend * $doller_compare;
+                                    }
+                                    
+                                    $maximum_spend = 0;
+                                    if (isset($vendorData->coupon->promo->maximum_spend)) {
+                                        $maximum_spend = $vendorData->coupon->promo->maximum_spend * $doller_compare;
+                                    }
+                                    
+                                    if( ($minimum_spend <= $couponGetAmount ) && ($maximum_spend >= $couponGetAmount))
+                                    {
+                                        if ($vendorData->coupon->promo->promo_type_id == 2) {
+                                            $total_discount_percent = $vendorData->coupon->promo->amount;
+                                            $vendor_discount_amount = $total_discount_percent;
+                                            $payable_amount -= $total_discount_percent;
+                                            $coupon_amount_used = $total_discount_percent;
+                                        } else {
+                                            $gross_amount = decimal_format($payable_amount - $taxable_amount-$total_container_charges);
+                                            $percentage_amount = ($gross_amount * $vendorData->coupon->promo->amount / 100);
+                                            $payable_amount -= $percentage_amount;
+                                            $vendor_discount_amount = $percentage_amount;
+                                            $coupon_amount_used = $percentage_amount;
+                                        }
+                                    }
+                                    else{
+                                        
+                                        $cart->coupon()->delete();
+                                        $vendorData->coupon()->delete();
+                                        unset($vendorData->coupon);
+                                        $PromoDelete =1;
+                                    }
+                                }
+                                if ( $PromoDelete !=1) {
+                                    if($vendorData->coupon->promo->allow_free_delivery ==1   ){
+                                        $PromoFreeDeliver = 1;
+                                        // $coupon_amount_used = $coupon_amount_used ;
+                                        $coupon_amount_used = $coupon_amount_used +  $deliveryCharges_real;
+                                        $deliveryfeeOnCoupon = 1;
+                                        $payable_amount = $payable_amount;
+                                        $deliveryfeeOnCoupon = 1;
+                                    }
+                                }
+                            }
+                        }
+                        
+                        
                     //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
                     /* Getting taxes info */
                         $select = '';
@@ -926,9 +1003,9 @@ trait CartManagerV2{
                                 $rate = $tax_value->tax_rate;
                                 $tax_amount = ($price_in_doller_compare * $rate) / 100;
                                 if(!$this->additionalPreferences->is_tax_price_inclusive){
-                                    $product_tax = $quantity_price * $rate / 100;
+                                    $product_tax = ($quantity_price-$vendor_discount_amount )* $rate / 100;
                                 }else{
-                                    $product_tax = ($quantity_price * $rate) / (100 + $rate);
+                                    $product_tax = (($quantity_price-$vendor_discount_amount ) * $rate) / (100 + $rate);
                                 }
                                 // dd($product_tax);
 
@@ -1151,7 +1228,6 @@ trait CartManagerV2{
                         ->where('is_live', 1)
                         ->first();
 
-                    $doller_compare = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
                     $upsell = new FrontController();
                     $up_prods = $upsell->metaProduct($langId, $doller_compare, 'upSell', ($product->upSell ?? ''));
                     if($up_prods){
@@ -1175,78 +1251,6 @@ trait CartManagerV2{
                 }
                 // dd($security_amount);
                 // $couponGetAmount = $payable_amount ;
-
-                if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
-                    if (isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)) {
-                        if($vendorData->coupon->promo->restriction_on == 0 || $vendorData->coupon->promo->restriction_on == 1)
-                        {
-                            $couponGetAmount = $coupon_product_discount;
-                        }
-                        if($vendorData->coupon->promo->first_order_only==1){
-                            if(auth()->user()){
-                                $userOrder = auth()->user()->orders->first();
-                                if($userOrder){
-                                    $cart->coupon()->delete();
-                                    $vendorData->coupon()->delete();
-                                    unset($vendorData->coupon);
-                                    $PromoDelete =1;
-                                }
-                            }
-                        }
-                        if ($PromoDelete !=1) {
-                            if(!($vendorData->coupon->promo->expiry_date >= $nowdate) ){
-                                $cart->coupon()->delete();
-                                $vendorData->coupon()->delete();
-                                unset($vendorData->coupon);
-                                $PromoDelete =1;
-                            }
-                        }
-                        if ( $PromoDelete !=1) {
-
-                            $minimum_spend = 0;
-                            if (isset($vendorData->coupon->promo->minimum_spend)) {
-                                $minimum_spend = $vendorData->coupon->promo->minimum_spend * $doller_compare;
-                            }
-
-                            $maximum_spend = 0;
-                            if (isset($vendorData->coupon->promo->maximum_spend)) {
-                                $maximum_spend = $vendorData->coupon->promo->maximum_spend * $doller_compare;
-                            }
-
-                            if( ($minimum_spend <= $couponGetAmount ) && ($maximum_spend >= $couponGetAmount))
-                            {
-                                if ($vendorData->coupon->promo->promo_type_id == 2) {
-                                    $total_discount_percent = $vendorData->coupon->promo->amount;
-
-                                    $payable_amount -= $total_discount_percent;
-                                    $coupon_amount_used = $total_discount_percent;
-                                } else {
-                                    $gross_amount = decimal_format($payable_amount - $taxable_amount-$total_container_charges);
-                                    $percentage_amount = ($gross_amount * $vendorData->coupon->promo->amount / 100);
-                                    $payable_amount -= $percentage_amount;
-                                    $coupon_amount_used = $percentage_amount;
-                                }
-                            }
-                            else{
-
-                                $cart->coupon()->delete();
-                                $vendorData->coupon()->delete();
-                                unset($vendorData->coupon);
-                                $PromoDelete =1;
-                            }
-                        }
-                        if ( $PromoDelete !=1) {
-                            if($vendorData->coupon->promo->allow_free_delivery ==1   ){
-                                $PromoFreeDeliver = 1;
-                              // $coupon_amount_used = $coupon_amount_used ;
-                                $coupon_amount_used = $coupon_amount_used +  $deliveryCharges_real;
-                                $deliveryfeeOnCoupon = 1;
-                                $payable_amount = $payable_amount;
-                                $deliveryfeeOnCoupon = 1;
-                            }
-                        }
-                    }
-                }
 
                 $promoCodeController = new PromoCodeController();
                 $promoCodeRequest = new Request();
