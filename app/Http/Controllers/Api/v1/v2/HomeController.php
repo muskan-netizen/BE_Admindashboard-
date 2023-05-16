@@ -477,6 +477,7 @@ class HomeController extends BaseController
             $user_vendor_count = UserVendor::where('user_id', $user->id)->count();
             $homeData = ['homePageLabels' => $home_page_labels, 'reqData' => $request->all(), 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude, 'enable_layout' => $enable_layout,'image_prefix' => $image_const_arr];
             $homeData['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
+            $homeData['mobile_banners'] = $mobile_banners??[];
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             pr($e->getCode());
