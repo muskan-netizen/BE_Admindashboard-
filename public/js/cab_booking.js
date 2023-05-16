@@ -98,23 +98,20 @@
             });
         }
         else if(payment_option_id == 58){
-            cno = $('#powertrans-card-element').val();
-            dt = $('#powertrans-date-element').val();
-            cv = $('#powertrans-cvv-element').val();
-            
-            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
-            {
-                success_error_alert('error', 'Please Fill all Details', "#powertrans_card_error");
-                $("#cab_payment_method_form .select_payment_option_done").attr("disabled", false);
-                return false;
+            var expData = $('#date-element-powertrans').val();
+            var [expMonth, expYear] = [expData.slice(2), expData.slice(0, 2)]
+            var newDate = expMonth+'/'+expYear;
+            cardJson = {
+                'cno': $('#card-element-powertrans').val(),
+                'dt': newDate,
+                'cv': $('#cvv-element-powertrans').val(),
+                'name':'powertrans',
             }
-            
-            if (powerTransCardValidation(cno,dt,cv)) {
+            if(cardValidation(cardJson)){
                 console.log('Credit card information is valid.');
-                $("#payment_modal").modal('toggle');
-            } else {
+            }
+            else {
                 success_error_alert('error', 'Invalid credit card information', "#powertrans_card_error");
-                $("#cab_payment_method_form .select_payment_option_done").attr("disabled", false);
                 return false;
             }
         }

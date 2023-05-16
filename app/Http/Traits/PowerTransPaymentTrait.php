@@ -28,7 +28,7 @@ trait PowerTransPaymentTrait
 
     public function powerTransApi(Request $request,$description)
     {
-        $redirct_url = route('payment.powertrans.success');
+        $redirct_url = $request->action ? url('/success/powertrans') : route('payment.powertrans.success');
 
         $url = $this->test_mode ? 'https://staging.ptranz.com/api/auth' : 'https://tbd.ptranz.com/api/auth';
         $name = explode(' ',auth()->user()->name);
@@ -70,6 +70,10 @@ trait PowerTransPaymentTrait
 
     public function powerTransPayment(Request $request)
     {
+        $request->payment_from ?? $request->request->add([
+            'payment_from' => $request->action,
+        ]);
+
         if ($request->payment_from == 'cart') {
             $description = "Oder-".$request->order_number;
           

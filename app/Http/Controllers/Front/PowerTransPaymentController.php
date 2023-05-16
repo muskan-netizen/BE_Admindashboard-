@@ -43,7 +43,11 @@ class PowerTransPaymentController extends Controller
             }         
         }
 
-       $response = $this->powerTransPayment($request);
+        $response = $this->powerTransPayment($request);
+
+        $request->total_amount ?? $request->request->add([
+            'total_amount' => $request->amount,
+        ]);
 
         if($request->payment_from == 'cart')
         {

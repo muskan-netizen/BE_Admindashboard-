@@ -3758,8 +3758,6 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
         someday = new Date();
         someday.setFullYear(exYear, exMonth, 1);
 
-	
-
             if(cardNumber == "" || cvv == "" || expiry == '') {
                 message  += "<div>All Fields are Required.</div>";  
                 
@@ -3841,11 +3839,16 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
                 var today, someday;
                 var exMonth=expiry[0];
                 var exYear=expiry[1];
+                
+                if(exYear.length == 2)
+                {
+                    var exYear="20"+expiry[1];
+                }
+
                 today = new Date();
                 someday = new Date();
                 someday.setFullYear(exYear, exMonth, 1);
 
-            
 
                     if(cardNumber == "" || cvv == "" || expiry == '') {
                         message  += "<div>All Fields are Required.</div>";  
@@ -3880,7 +3883,7 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
             
             
                     if (expiry != "") { 
-                            if (someday < today) {
+                            if (someday < today || exMonth > 12) {
                             message  += "<div>Expiry date is Invalid</div>";    
                             $("#date-element-"+name).css('background-color','#FFFFDF');
                                         valid = false;
@@ -3891,11 +3894,15 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
                             $("#card_error_"+name).show();
                             $("#card_error_"+name).html(message);
                             $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
+                            $(document).find('.topup_wallet_confirm').prop('disabled',true);
+                            $(".subscription_confirm_btn").attr("disabled", false);
+                            $(".select_payment_option_done").attr("disabled", false);
                         }else{
                             $("#card_error_"+name).html('');
                             // $(document).find('.topup_wallet_confirm').prop('disabled',true);
                             $(document).find(".proceed_to_pay").prop('disabled',true);
                             // $(".subscription_confirm_btn").attr("disabled", true);
+                            $("#payment_modal").modal('toggle');
                         }
                         
                 return valid;
@@ -3943,9 +3950,9 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
             data.payment_option_id = payment_option_id;
             data._token = $('input[name=_token]').val();
         
-            data.card_number = $('#powertrans-card-element').val();
-            data.exp_date = $('#powertrans-date-element').val();
-            data.cvv = $('#powertrans-cvv-element').val();
+            data.card_number = $('#card-element-powertrans').val();
+            data.exp_date = $('#date-element-powertrans').val();
+            data.cvv = $('#cvv-element-powertrans').val();
 
             $.ajax({
                 type: "post",
@@ -4023,42 +4030,4 @@ function clickHandle(evt, tabName) {
   
   }
 }
-
-window.powerTransCardValidation = function powerTransCardValidation(cardNumber, expirationDate, cvv) {
-    
-    if (!/^\d{16}$/.test(cardNumber)) {
-      return false;
-    }
-  
-    var card = $('#powertrans-card-element').validateCreditCard();
-    if(!card.valid){
-        return false;
-    }
-    
-    var currentDate = new Date();
-    var currentYear = currentDate.getFullYear() % 100;
-    var currentMonth = currentDate.getMonth() + 1;
-    
-    var [expirationMonth, expirationYear] = [expirationDate.slice(2), expirationDate.slice(0, 2)];
-  
-    expirationMonth = parseInt(expirationMonth, 10);
-    expirationYear = parseInt(expirationYear, 10);
-    
-    if (
-      isNaN(expirationMonth) ||
-      isNaN(expirationYear) ||
-      expirationYear < currentYear ||
-      (expirationYear === currentYear && expirationMonth < currentMonth) ||
-      expirationMonth > 12 ||
-      expirationMonth < 1
-    ) {
-      return false;
-    }
-  
-    if (!/^\d{3,4}$/.test(cvv)) {
-      return false;
-    }
-
-    return true;
-  }
 

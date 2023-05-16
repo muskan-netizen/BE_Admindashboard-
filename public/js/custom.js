@@ -614,23 +614,20 @@ $(document).ready(function () {
         var payment_option_id = selected_option.data("payment_option_id");
 
         if(payment_option_id == 58){
-            cno = $('#powertrans-card-element').val();
-            dt = $('#powertrans-date-element').val();
-            cv = $('#powertrans-cvv-element').val();
-            
-            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
-            {
-                success_error_alert('error', 'Please Fill all Details', "#powertrans_card_error");
-                _this.attr("disabled", false);
-                return false;
+            var expData = $('#date-element-powertrans').val();
+            var [expMonth, expYear] = [expData.slice(2), expData.slice(0, 2)]
+            var newDate = expMonth+'/'+expYear;
+            cardJson = {
+                'cno': $('#card-element-powertrans').val(),
+                'dt': newDate,
+                'cv': $('#cvv-element-powertrans').val(),
+                'name':'powertrans',
             }
-            
-            if (powerTransCardValidation(cno,dt,cv)) {
+            if(cardValidation(cardJson)){
                 console.log('Credit card information is valid.');
-                $("#payment_modal").modal('toggle');
-            } else {
+            }
+            else {
                 success_error_alert('error', 'Invalid credit card information', "#powertrans_card_error");
-                 _this.attr("disabled", false);
                 return false;
             }
         }
@@ -1923,19 +1920,19 @@ $(document).ready(function () {
         }
 
         if(payment_option_id == 58){
-            cno = $('#powertrans-card-element').val();
-            dt = $('#powertrans-date-element').val();
-            cv = $('#powertrans-cvv-element').val();
-            
-            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
-            {
-                success_error_alert('error', 'Please Fill all Details', "#powertrans_card_error");
-                return false;
+            var expData = $('#date-element-powertrans').val();
+            var [expMonth, expYear] = [expData.slice(2), expData.slice(0, 2)]
+            var newDate = expMonth+'/'+expYear;
+            cardJson = {
+                'cno': $('#card-element-powertrans').val(),
+                'dt': newDate,
+                'cv': $('#cvv-element-powertrans').val(),
+                'name':'powertrans',
             }
-
-            if (powerTransCardValidation(cno,dt,cv)) {
+            if(cardValidation(cardJson)){
                 console.log('Credit card information is valid.');
-            } else {
+            }
+            else {
                 success_error_alert('error', 'Invalid credit card information', "#powertrans_card_error");
                 return false;
             }
@@ -2095,22 +2092,24 @@ $(document).ready(function () {
         }
 
         if(payment_option_id == 58){
-            cno = $('#powertrans-card-element').val();
-            dt = $('#powertrans-date-element').val();
-            cv = $('#powertrans-cvv-element').val();
-            
-            if((cno == undefined || dt == undefined || cv == undefined) || (cno == '' || dt == '' || cv == ''))
-            {
-                success_error_alert('error', 'Please Fill all Details', "#powertrans_card_error");
-                return false;
+            var expData = $('#date-element-powertrans').val();
+            var [expMonth, expYear] = [expData.slice(2), expData.slice(0, 2)]
+            var newDate = expMonth+'/'+expYear;
+            console.log({newDate});
+            cardJson = {
+                'cno': $('#card-element-powertrans').val(),
+                'dt': newDate,
+                'cv': $('#cvv-element-powertrans').val(),
+                'name':'powertrans',
             }
-
-            if (powerTransCardValidation(cno,dt,cv)) {
+            if(cardValidation(cardJson)){
                 console.log('Credit card information is valid.');
-            } else {
+            }
+            else {
                 success_error_alert('error', 'Invalid credit card information', "#powertrans_card_error");
                 return false;
             }
+      
         }
 
         if ((payment_option_id == undefined || payment_option_id <= 0) && (payment_method_required_error_msg != undefined)) {
