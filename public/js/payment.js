@@ -3954,9 +3954,12 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
                         window.location.href = response.redirect_url;
                     }
                     else{
-                        console.log({response});
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Something Went Wrong in Payment',
+                        });
                     }
-                    return true;
                 }
             });
         }

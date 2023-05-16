@@ -60,7 +60,9 @@ trait PesapalPaymentTrait
     public function pesaPalTransApi(Request $request,$description)
     {
         $token = $this->token()['token'];
-        $redirct_url = route('payment.pesapal.success');
+
+        $redirct_url = $request->action ? url('/success/pesapal?id='.auth()->id().'&come_from=app&status=200') : route('payment.pesapal.success');
+        $request->action ? $request->request->add(['total_amount' => $request->amount]) : $request->total_amount;
 
         $url = $this->test_mode ? 'https://cybqa.pesapal.com/pesapalv3/api/Transactions/SubmitOrderRequest' : 'https://pay.pesapal.com/v3/api/Transactions/SubmitOrderRequest';
         $name = explode(' ',auth()->user()->name);
@@ -89,7 +91,7 @@ trait PesapalPaymentTrait
                 "postal_code" => "",
                 "zip_code" => ""
             ]
-        ]);
+        ])->json();
     }
 
     public function transactionStatus()
@@ -121,8 +123,8 @@ trait PesapalPaymentTrait
             $request->merge(['order_number' => $request->order_number.'-'.time() ]);
   
         } elseif ($request->payment_from == 'subscription') {
-            $description = "subscription";      
-            $request->merge(['order_number' => $request->order_number.'-'.time() ]);
+            $description = "subscription";    
+            $request->subscription_id ? $request->merge(['order_number' => $request->subscription_id.'-'.time() ]) : $request->merge(['order_number' => $request->order_number.'-'.time() ]);
         }
 
        return $this->pesaPalTransApi($request,$description);

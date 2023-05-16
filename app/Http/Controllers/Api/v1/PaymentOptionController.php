@@ -79,7 +79,7 @@ class PaymentOptionController extends BaseController{
             }else{
                 $domain = $client->sub_domain.env('SUBMAINDOMAIN');
             }
-            //$server_url = "http://192.168.97.160:9091/";
+            // $server_url = "http://192.168.102.171:8001/";
             $server_url = "https://".$domain."/";
             $request->serverUrl = $server_url;
             $request->currencyId = $request->header('currency');
@@ -814,7 +814,10 @@ class PaymentOptionController extends BaseController{
 
     public function postPaymentVia_pesapal(Request $request){
         $gateway = new PesapalPaymentController();
-        return $gateway->PesapalPayment($request);
+        $request->action ? $request->request->add([
+            'payment_from' => $request->action, 
+          ]) : '';
+        return $gateway->payByPesapal($request);
     }
 
 }
