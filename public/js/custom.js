@@ -3088,7 +3088,7 @@ $(document).ready(function () {
             }
         }
 
-
+        
        // Recuring booking code
         if($('#is_recurring_booking').length > 0){
             // var booking_type   = $('input[name="booking_type"]:checked').val();
@@ -3098,6 +3098,8 @@ $(document).ready(function () {
                 sweetAlert.error('',message);
                 return false;
             }
+        }else{
+            var recurringformPost = {};
         }
 
 
@@ -4144,7 +4146,6 @@ $(document).ready(function () {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(output) {
-                console.log(output);
                 // Check if orderCount is greaten equal to orders_per_slot //&& (output.orders_per_slot !=0)
                 if(output.orderCount >= output.orders_per_slot && (output.orders_per_slot !=0)  ){
                     success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
@@ -4938,10 +4939,15 @@ $(document).ready(function () {
                  break;
             case 50:
                 paymentViazulpay('', payment_option_id, '');
-                 break;
+            break;
+
             case 52:
                 paymentViaSkipCash('',payment_option_id,'');
-                break;
+            break;
+
+            case 55:
+                paymentViaDataTrans('', payment_option_id, '');
+            break;
                 
         }
 
@@ -5441,7 +5447,13 @@ $(document).ready(function () {
               } else {
                   return false;
               }
-          break 
+          break ;
+          case '55':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaDataTrans(address_id,payment_option_id,order);
+                }
+          break ;
           case '53':
 
             cardJson = {
@@ -5458,6 +5470,7 @@ $(document).ready(function () {
                 else{
                     return false;
                 }
+            break;
             }else{
                 $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
             }
@@ -5702,8 +5715,11 @@ $(document).ready(function () {
                 if(cardValidation(cardJson)){
                     paymentNmipay('', payment_option_id,'',cardJson);
                 }
-                break; 
+            break; 
 
+            case 55: 
+                paymentViaDataTrans('',payment_option_id,null);
+            break;
         }
     }
 
