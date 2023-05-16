@@ -2124,7 +2124,7 @@ class OrderController extends BaseController
     public function sendSuccessSMS($request, $order, $vendor_id = '')
     {
         try {
-            $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
+            $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','digit_after_decimal')->first();
 
             $user = Auth::user();
             if ($user) {
@@ -2136,6 +2136,8 @@ class OrderController extends BaseController
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
                 $provider = $prefer->sms_provider;
+                $order->payable_amount = number_format((float) $order->payable_amount, $prefer->digit_after_decimal, '.', '');
+
                 $keyData = ['{user_name}'=>$user->name??'','{amount}'=>$currSymbol . $order->payable_amount,'{order_number}'=>$order->order_number??''];
                 $body = sendSmsTemplate('order-place-Successfully',$keyData);
 
