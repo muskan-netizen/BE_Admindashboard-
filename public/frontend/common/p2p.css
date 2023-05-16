@@ -1253,6 +1253,19 @@ body.al_body_template_nine .collection-content .product-wrapper-grid .media-body
     min-height: auto;
 }
 
+body.al_body_template_nine  span#cart_qty_span {
+    position: absolute;
+    top: 8px;
+    right: 0;
+    padding: 0;
+    width: 20px!important;
+    display: block!important;
+    border-radius: 50%;
+    max-width: 20px!important;
+    font-size: 13px;
+    color: #000;
+    height: 20px;
+}
 /*----------media css--------------*/
 @media(max-width:1800px) {
     body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head a.sell-btn span{

@@ -4146,7 +4146,6 @@ $(document).ready(function () {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(output) {
-                console.log(output);
                 // Check if orderCount is greaten equal to orders_per_slot //&& (output.orders_per_slot !=0)
                 if(output.orderCount >= output.orders_per_slot && (output.orders_per_slot !=0)  ){
                     success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
