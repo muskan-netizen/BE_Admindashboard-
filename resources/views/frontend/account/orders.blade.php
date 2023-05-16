@@ -727,6 +727,7 @@ $timezone = Auth::user()->timezone;
     @else
         var post_pay_edit_order = 0;
     @endif
+    var pesapal_payment_url = "{{ route('pesapal.payment') }}";
 
 </script>
 <script type="text/javascript">

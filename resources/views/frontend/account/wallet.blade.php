@@ -530,6 +530,8 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 @endif
 <script type="text/javascript">
     var inline='';
+    var pesapal_payment_url = "{{ route('pesapal.payment') }}";
+
     $('#wallet_amount').keypress(function(event) {
         if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
             event.preventDefault();

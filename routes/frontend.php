@@ -153,6 +153,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('success/skipcash', 'Front\SkipCashController@successPage')->name('payment.skipcash.success');
 	Route::post('/skipcash/webhook', 'Front\SkipCashController@handleWebhook');
 
+	Route::post('pesapal-payment', 'Front\PesapalPaymentController@payByPesapal')->name('pesapal.payment');
+	Route::get('success/pesapal', 'Front\PesapalPaymentController@successPage')->name('payment.pesapal.success');
 
 	// Route::post('payment/skipcashpay', 'Front\SkipCashController@checkPayment')->name('payment.skipcash.pay');
 

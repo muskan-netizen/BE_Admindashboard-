@@ -1653,6 +1653,7 @@ input[type=number]::-webkit-outer-spin-button {
         var apply_cab_booking_promocode_coupon_url = "{{ route('verify.cab.booking.promo-code') }}";
         var no_result_message = "{{ __('No result found. Please try a new search') }}";
 
+        var pesapal_payment_url = "{{ route('pesapal.payment') }}";
         /// ************* product order form **************///////
         $('body').on('click', '.clproduct_order_form', function(event) {
             event.preventDefault();
