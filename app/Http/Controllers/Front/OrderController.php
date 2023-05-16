@@ -1386,7 +1386,6 @@ class OrderController extends FrontController
                 0,
                 1
             ])
-                ->where('cart_id', $cart->id)
                 ->orderBy('created_at', 'asc')
                 ->get();
 
@@ -1969,6 +1968,15 @@ class OrderController extends FrontController
                         $total_service_fee = $total_service_fee + $service_fee_percentage_amount;
                         $vendor_payable_amount += $service_fee_percentage_amount;
                     }
+                    
+                    if ($vendor_cart_product->vendor->fixed_service_charge > 0) {
+                        // $vendor_service_fee_percentage_amount = ($vendor_payable_amount * $vendor_cart_product->vendor->service_fee_percent) / 100; // wrong percentage_amount
+                        $service_fee_percentage_amount        = $vendor_cart_product->vendor->service_charge_amount;
+                        $vendor_service_fee_percentage_amount = $vendor_service_fee_percentage_amount + $service_fee_percentage_amount;
+                        $payable_amount += $service_fee_percentage_amount;
+                        $total_service_fee = $total_service_fee + $service_fee_percentage_amount;
+                        $vendor_payable_amount += $service_fee_percentage_amount;
+                    }
 
                     $cart_addons = CartAddon::where('cart_product_id', $vendor_cart_product->id)->get();
                     if ($cart_addons) {
@@ -2433,11 +2441,17 @@ class OrderController extends FrontController
                         $user_vendors = UserVendor::where([
                             'vendor_id' => $vendor_value->vendor_id
                         ])->pluck('user_id');
-                        $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
+
+                        if ($request->payment_option_id == 1 || $order->is_postpay == 1 || $order->payment_status == 1) {
+                            $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
+                        }
                     }
                     $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
                     $super_admin = User::where('is_superadmin', 1)->pluck('id');
-                    $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+                    
+                    if ($request->payment_option_id == 1 || $order->is_postpay == 1 || $order->payment_status == 1) {
+                        $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+                    }
                 } else {
                     $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
 

@@ -3511,18 +3511,23 @@ body.al_body_template_one .main-fillter .side_fillter .irs{width:90%;}
     display: inline-block;
     float: none
 }
-
+.menu-slider .slick-prev{
+    left: 0;
+}
+.menu-slider .slick-next {
+    right: 0;
+}
 .menu-slider .slick-prev,
 .menu-slider .slick-next {
     height: 30px;
     width: 30px;
-    background: url("../images/slide-next.png") no-repeat;
+    /* background: url("../images/slide-next.png") no-repeat; */
     border-radius: 50%;
     background-size: 30px
 }
 
 .menu-slider .slick-prev {
-    transform: translate(0, -50%) rotate(180deg)
+    transform: translate(0, -50%) rotate(90deg);
 }
 
 .menu-slider .slick-next.slick-disabled,
@@ -4277,13 +4282,13 @@ input.form-control.pac-target-input.gm-err-autocomplete {
 .menu-slider .slick-next {
     height: 30px;
     width: 30px;
-    background: url("../images/slide-next.png") no-repeat;
+    /* background: url("../images/slide-next.png") no-repeat; */
     border-radius: 50%;
     background-size: 30px
 }
 
 .menu-slider .slick-prev {
-    transform: translate(0, -50%) rotate(180deg)
+    transform: translate(0, -50%) rotate(90deg)
 }
 
 .menu-slider .slick-next.slick-disabled,
@@ -4707,7 +4712,14 @@ body.al_body_template_one .top-banner-wrapper {
     .grid-row.grid-4-4 .cards:nth-child(4) {
         display: none;
     }
-  
+    .custom_banner img {
+        border-radius: 50px;
+        min-height: inherit;
+        object-fit: cover;
+        object-position: center;
+        height: auto;
+        padding: 15px 0;
+    }
 }
 
 @media(max-width:767px) {
@@ -5140,6 +5152,7 @@ body.dark.al_body_template_one table.table.wishlist-table.border {
         bottom: -2px;
         left: 0px;
         z-index: 999;
+        content: unset;
     }
     .al_body_template_one .booking-experienceNew .datepicker .input-group-append {
         margin-right: 16px;
@@ -5540,7 +5553,7 @@ body.al_body_template_one .slick-slider .common-product-box, .slick-slider .supp
     }
 
     #content-wrap .site-header .navbar-brand img {
-        height: 20px;
+        height: 100%;
     }
 
     .al_body_template_one .home-slider-wrapper .banner-img-outer img {

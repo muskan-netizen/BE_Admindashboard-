@@ -36,6 +36,8 @@ class CMSPageController extends BaseController
                 'pages.slug',
                 'page_translations.title',
             ]);
+            $pages = $pages->unique('slug')->values()->all();
+
         return $this->successResponse($pages, '', 201);
     }
 
@@ -105,6 +107,7 @@ class CMSPageController extends BaseController
             $data['driver_types'] = $driver_types;
             $data['teams'] = $driverDocs['all_teams'];
             $data['tags'] = $driverDocs['agent_tags'];
+            
         }
 
         return $this->successResponse($data, '', 200);

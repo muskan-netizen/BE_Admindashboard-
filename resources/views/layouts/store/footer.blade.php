@@ -168,7 +168,7 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
     @if(empty(Session::get('current_fcm_token')))
     initFirebaseMessagingRegistration();
     @endif
-    messaging.onMessage(function(payload) {
+    messaging.onMessage(async function(payload) {
         console.log(payload);
         if (!("Notification" in window)) {
             console.log("This browser does not support system notifications.");

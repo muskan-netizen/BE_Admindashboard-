@@ -4753,6 +4753,13 @@ body[dir=rtl] .modal-header .close {
 /* dark dashboard css end */
 
 
+/* Order page new order reject order popup css */
+div#addRejectmodal {
+    z-index: 1051;
+    background: #0000003d;
+}
+
+
 /*============================================= dashboard page responsive css start here ======================================= */
 
 @media(max-width:1600px) {
