@@ -480,7 +480,6 @@ class HomeController extends BaseController
             $homeData = ['homePageLabels' => $home_page_labels, 'reqData' => $request->all(), 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude, 'enable_layout' => $enable_layout,'image_prefix' => $image_const_arr];
             $homeData['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
             $homeData['mobile_banners'] = $mobile_banners??[];
-            $categories = $this->categoryNav($langId,  $venderIds, $type);
             $homeData['vendors'] = $vendorData;
             $homeData['categories'] = $categories;
             return $this->successResponse($homeData);
