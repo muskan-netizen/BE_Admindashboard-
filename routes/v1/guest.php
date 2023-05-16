@@ -22,7 +22,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::post('deleteOrderProductBySku', 'Api\v1\InventoryController@deleteOrderProductBySku');
             Route::post('needSyncWithOrder', 'Api\v1\InventoryController@needSyncWithOrder');
             Route::post('getOrderCategoryById', 'Api\v1\InventoryController@getOrderCategoryById');
-            Route::post('getSyncStoreOrderCatIds', 'Api\v1\InventoryController@getSyncStoreOrderCatIds');
+            Route::post('getSyncStoreOrderProductIds', 'Api\v1\InventoryController@getSyncStoreOrderProductIds');
         });
     });
 

@@ -42,11 +42,11 @@ class InventoryController extends Controller
            
     }
 
-    public function getSyncStoreOrderCatIds(Request $request)
+    public function getSyncStoreOrderProductIds(Request $request)
     {
        try{
             if(isset($request->order_vendor_id) && isset($request->inv_store_id)){
-                $syncCatIds = Product::where('store_id', $request->inv_store_id)->where('vendor_id', $request->order_vendor_id)->distinct('sync_inventory_side_cat')->pluck('sync_inventory_side_cat')->toArray();
+                $syncCatIds = Product::where('store_id', $request->inv_store_id)->where('vendor_id', $request->order_vendor_id)->distinct('sync_inventory_side_product_id')->pluck('sync_inventory_side_product_id')->toArray();
 
                 return response()->json([
                     'status' => 200,

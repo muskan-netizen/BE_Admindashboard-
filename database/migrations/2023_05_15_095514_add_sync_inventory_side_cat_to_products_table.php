@@ -14,7 +14,7 @@ class AddSyncInventorySideCatToProductsTable extends Migration
     public function up()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->tinyInteger('sync_inventory_side_cat')->nullable()->comment('Inventory side category id sync');
+            $table->tinyInteger('sync_inventory_side_product_id')->nullable()->comment('Inventory side product id sync');
         });
     }
 
@@ -26,7 +26,7 @@ class AddSyncInventorySideCatToProductsTable extends Migration
     public function down()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->dropColumn('sync_inventory_side_cat');
+            $table->dropColumn('sync_inventory_side_product_id');
         });
     }
 }
