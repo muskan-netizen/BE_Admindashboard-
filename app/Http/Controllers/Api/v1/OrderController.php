@@ -826,11 +826,14 @@ class OrderController extends BaseController
                             }
                              // add delivery fee in coupon if coupon has free delicery
                             if($vendor_cart_product->coupon->promo->allow_free_delivery == 1){
-
                                 $vendor_discount_amount = $vendor_discount_amount +  $delivery_fee;
                                 $vendor_payable_amount = $vendor_payable_amount - $delivery_fee;
                                 $total_discount += $delivery_fee;
                                 $deliveryfeeOnCoupon = 1;
+                            }
+                            if(isset($rate) && $total_discount > 0 ){
+                               $discount = ($total_discount*$rate) / 100; 
+                               $vendor_taxable_amount -= $discount;
                             }
                             //-------------Coupon Related discount calculations Ends here----------------------
                         }
