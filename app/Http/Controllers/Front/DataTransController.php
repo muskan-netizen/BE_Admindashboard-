@@ -29,14 +29,19 @@ use Illuminate\Support\Facades\Redirect;
 class DataTransController extends Controller
 {
     use DataTransTrait;
+
+    const paymentId = 55;
     public function payByDataTrans(Request $request)
     {
         $data = $request->all();
         $user = auth()->user();
         $data['come_from'] = 'app';
 
+        Log::info([
+            'data' => $data
+        ]);
+
         $amt = $request->amt ?? $request->total_amount;
-        $order = Order::where(['order_number' => $request->order_number])->first();
 
         if ($request->isMethod('post')) {
                 $data['come_from'] = 'web';
@@ -57,7 +62,7 @@ class DataTransController extends Controller
         {
             $data = [
                 'amount' => $amt,
-                'payment_option_id' => 55,
+                'payment_option_id' => $this::paymentId,
                 'transaction_id' => $response['transactionId'],
                 'balance_transaction' => $amt,
                 'order_id' => $order->id ?? '',
@@ -69,7 +74,7 @@ class DataTransController extends Controller
         {
             $data = [
                 'amount' => $amt,
-                'payment_option_id' => 55,
+                'payment_option_id' => $this::paymentId,
                 'transaction_id' => $response['transactionId'],
                 'balance_transaction' => $amt,
                 'viva_order_id' => $request->subscription_id,
@@ -81,7 +86,7 @@ class DataTransController extends Controller
         else{
             $data = [
                 'amount' => $amt,
-                'payment_option_id' => 55,
+                'payment_option_id' => $this::paymentId,
                 'transaction_id' => $response['transactionId'],
                 'balance_transaction' => $amt,
                 'viva_order_id' => $request->order_number ?? '',
@@ -218,7 +223,7 @@ class DataTransController extends Controller
     {
         $data['amount'] =  $payment->amount;
         $data['transaction_id'] =  $payment->transaction_id;
-        $data['payment_option_id'] =  55;
+        $data['payment_option_id'] =  $this::paymentId;
         $request = new \Illuminate\Http\Request($data);
         $this->creditMyWallet($request);
         if(isset($request->come_from) && $request->come_from == 'app')
@@ -283,7 +288,7 @@ class DataTransController extends Controller
     public function completeOrderSubs($request, $payment)
     {
         $data['transaction_id'] = $payment->transaction_id;
-        $data['payment_option_id'] = 55;
+        $data['payment_option_id'] = $this::paymentId;
         $data['subsid'] = $request['subscription_id'];
         $data['subscription_id'] = $request['subscription_id'];
         $data['amount'] = $request['amount'];
@@ -316,7 +321,7 @@ class DataTransController extends Controller
                     $payment->date = date('Y-m-d');
                     $payment->type = 'pickup_delivery';
                     $payment->order_id = $order->id ?? '';
-                    $payment->payment_option_id = 55;
+                    $payment->payment_option_id = $this::paymentId;
                     $payment->user_id = $order->user_id ?? '';
                     $payment->transaction_id = $request->datatransTrxId;
                     $payment->balance_transaction = $order->payable_amount ?? '';

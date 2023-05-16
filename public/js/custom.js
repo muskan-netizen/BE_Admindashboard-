@@ -5482,6 +5482,7 @@ $(document).ready(function () {
 
     function walletPaymentOPtions(payment_option_id)
     {  
+        console.log('walletPaymentOPtions',payment_option_id);
         switch (payment_option_id) {
             case 3:
                     paymentViaPaypal('', payment_option_id);

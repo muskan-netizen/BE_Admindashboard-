@@ -4000,12 +4000,13 @@ window.paymentViaDataTrans = function paymentViaDataTrans(address_id,payment_opt
     data.payment_option_id = payment_option_id;
     data._token = $('input[name=_token]').val();
 
+    console.log({data});
     $.ajax({
         type: "post",
         dataType: "json",
         url: data_trans_url,
         data: data,
-
+        
         success: function (res) {
          
             Datatrans.startPayment({
