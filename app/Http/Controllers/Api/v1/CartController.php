@@ -1303,6 +1303,10 @@ class CartController extends BaseController
                             }
                         }
                     }
+                    if(isset($rate) && $discount_amount > 0 ){
+                        $discount = ($discount_amount*$rate) / 100;
+                        $taxable_amount -= $discount;
+                    }
                 }
 
 
