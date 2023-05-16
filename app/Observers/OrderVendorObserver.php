@@ -72,13 +72,9 @@ class OrderVendorObserver
                                     $product_details[$key]['order_side_vendor_id'] = $inn_val->vendor_id;        
 
                                     if( !empty($inn_val->products) ) {
-                                    // Log::info('@@@ inside the if part @@@');
-                                    // Log::info($inn_val->products);
 
                                         foreach($inn_val->products as $product_key => $product_val) {
                                             if( !empty($product_val->product) && !empty($product_val->product->sku)) {
-                                            // Log::info('### product_val ###');
-                                            // Log::info($product_val);
                                                 // product table data
                                                 $product_details[$key]['products_list'][$product_key]['product_id'] = $product_val->product_id ?? null;
                                                 $product_details[$key]['products_list'][$product_key]['product_quantity'] = $product_val->quantity ?? null;
@@ -108,7 +104,6 @@ class OrderVendorObserver
                             
                         }
                     }
-                   // Log::info('before guzzle called');
                     $client = new \GuzzleHttp\Client(['headers' => ['shortcode' => $client_preferences->inventory_service_key_code,
                         'content-type' => 'application/json']
                     ]);
@@ -123,10 +118,8 @@ class OrderVendorObserver
                     echo $request->getStatusCode(); 
                     // Product decrement successfully
                     if($request->getStatusCode() == 200) {
-                       // Log::info('Product decrement successfully');
                     }
                     else {
-                       // Log::info('Product not decrement successfully');
                     }
                 }
             }
