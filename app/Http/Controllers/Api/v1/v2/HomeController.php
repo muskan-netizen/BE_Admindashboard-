@@ -481,6 +481,7 @@ class HomeController extends BaseController
             $homeData['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
             $homeData['mobile_banners'] = $mobile_banners??[];
             $homeData['banners'] = $banners??[];
+            $homeData['banner_image'] = $banners??[];
             $homeData['categories'] = $categories;
             return $this->successResponse($homeData);
         } catch (Exception $e) {
