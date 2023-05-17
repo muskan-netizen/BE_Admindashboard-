@@ -9,7 +9,6 @@ use Illuminate\Support\Collection;
 use App\Models\ClientPreference;
 use App\Models\Client;
 use App\Models\EmailTemplate;
-use Illuminate\Support\Facades\Log;
 
 
 trait CustomerSignupSuccessEmailTrait{
@@ -33,20 +32,18 @@ trait CustomerSignupSuccessEmailTrait{
               $content = $email_template->content;
               $content = str_ireplace("{name}", $user->name, $content);
               $content = str_ireplace("{client_name}", $client_detail->name, $content);
-          
               $email_data = [
                   'name' => $user->name,
+                  'client_name' => $client_detail->name,
                   'email' => $user->email,
                   'mail_from' => $data->mail_from,
                   'powered_by' => url('/'),
                   'phone_no' => $user->phone_number,
                   'logo' => $client_detail->logo['original'],
                   'email_template_content' => $content,
-                  'subject' => $email_template->subject,
-                  'customer_name' => ucwords($user->name),
-      
+                  'subject' => $email_template->subject      
               ];
-              dispatch(new \App\Jobs\sendCustomerRegistrationEmail($email_data))->onQueue('verify_email');
+              dispatch(new \App\Jobs\sendCustomerRegistrationEmail($email_data))->onQueue('customer_signup_email');
           }
         }
      }
