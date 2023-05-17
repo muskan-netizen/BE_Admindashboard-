@@ -5732,6 +5732,8 @@ $(document).ready(function () {
 
             case 55: 
                 paymentViaDataTrans('',payment_option_id,null);
+            break;
+
             case 57:
                 payWithPesapal(payment_option_id,'');
             break;
