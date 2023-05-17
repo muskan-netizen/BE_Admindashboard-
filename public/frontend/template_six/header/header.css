@@ -17,7 +17,9 @@
         url('../../../assets/fonts/MontserratRegular.ttf') format('truetype'),
         url('../../../assets/fonts/MontserratRegular.svg#MontserratRegular') format('svg');
 }
-
+html{
+    overflow-x: hidden;
+}
 ul {
     padding: 0;
 }
@@ -189,7 +191,7 @@ body.al_body_template_six .menu-slider .slick-track {
     max-width: 100% !important;
     width: 100% !important;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     margin: 0 auto !important
 }
 

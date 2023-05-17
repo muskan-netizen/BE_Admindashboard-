@@ -6,6 +6,7 @@ use Auth;
 use HttpRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use App\Models\ClientPreference;
 use App\Models\Client;
 use App\Models\EmailTemplate;
 use Illuminate\Support\Facades\Log;
@@ -27,6 +28,7 @@ trait CustomerSignupSuccessEmailTrait{
           $content = '';
           $client_detail = Client::first();
           $email_template = EmailTemplate::where('slug', '=', 'newcustomersignup')->first();
+          $data = ClientPreference::select('sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
           if($email_template){
               $content = $email_template->content;
               $content = str_ireplace("{name}", $user->name, $content);
@@ -35,6 +37,7 @@ trait CustomerSignupSuccessEmailTrait{
               $email_data = [
                   'name' => $user->name,
                   'email' => $user->email,
+                  'mail_from' => $data->mail_from,
                   'powered_by' => url('/'),
                   'phone_no' => $user->phone_number,
                   'logo' => $client_detail->logo['original'],

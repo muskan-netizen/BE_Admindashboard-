@@ -18,7 +18,7 @@ $orderTitles = [
 
 $clientData = \App\Models\Client::select('socket_url')->first();
 
-if($additionalPreference['is_service_product_price_from_dispatch'] == 1){
+if($is_service_product_price_from_dispatch_forOnDemand == 1){
     $hidereturn = 1; 
     $orderTitles = [
         'Active' => "Confirmed ",
@@ -257,7 +257,7 @@ $timezone = Auth::user()->timezone;
                                 <div class="row" id="orders_wrapper">
                                     <div class="col-sm-12 col-lg-12 tab-product al_custom_ordertabs mt-md-3 p-0">
                                         <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
-                                            @if($additionalPreference['is_service_product_price_from_dispatch'] == 1)
+                                            @if($is_service_product_price_from_dispatch_forOnDemand == 1)
                                             <li class="nav-item">
                                                 <a class="nav-link {{ Request::query('pageType') == 'pendingOrders' ? 'active show' : '' }} " id="pending-orders-tab" data-toggle="tab" href="#pending-orders" role="tab"
                                                     aria-selected="true"><i
@@ -306,8 +306,8 @@ $timezone = Auth::user()->timezone;
                                             @endif
                                         </ul>
                                         <div class="tab-content nav-material al" id="top-tabContent">
-                                            @if($additionalPreference['is_service_product_price_from_dispatch'] == 1)
-                                             {{-- @include('frontend.account.orders.pending_orders') --}}
+                                            @if($is_service_product_price_from_dispatch_forOnDemand == 1)
+                                                @include('frontend.account.orders.pending_orders')
                                             @endif
                                             @include('frontend.account.orders.active_orders')
                                             @include('frontend.account.orders.past_orders')
@@ -682,6 +682,8 @@ $timezone = Auth::user()->timezone;
     var payment_stripe_url = "{{ route('payment.stripe') }}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
     var create_payphone_url = "{{route('payphone.createHash')}}";
+    var update_qty_url = "{{ url('product/updateCartQuantity') }}";
+
     var create_easypaisa_hash_url = "{{route('easypaisa.createHash')}}";
     var create_dpo_tocken = "{{route('dpo.createTocken')}}";
     var create_windcave_hash_url = "{{route('windcave.createHash')}}";
@@ -721,7 +723,9 @@ $timezone = Auth::user()->timezone;
     var confirm_discard_edit_order_desc = "{{__('You want to discard editing Order.')}}";
     var success_error_container = ".order_response";
     var payment_option_list_url = "{{route('payment.option.list')}}";
-    var user_cards_url = "{{ route('payment.azulpay.getCards') }}";        
+    var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
+    var data_trans_url = "{{route('payment.payByDataTrans')}}";
+
      @if(!empty($client_preference_detail->is_postpay_enable))
         var post_pay_edit_order = "{{$client_preference_detail->is_postpay_enable}}";
     @else
@@ -1152,7 +1156,9 @@ $(document).delegate(".order_placed_btn_pending", "click", function() {
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/additional-methods.min.js"></script>
 <script src="{{asset('front-assets/js/reschedule_order.js')}}"></script>
 <script src="{{asset('front-assets/js/user_edit_order.js')}}"></script>
-
+@if(in_array('data_trans',$client_payment_options))
+    <script src="{{ $data_trans_script_url }}"></script>
+@endif
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="{{asset('assets/js/chat/user_vendor_chat.js')}}"></script>
 @endsection

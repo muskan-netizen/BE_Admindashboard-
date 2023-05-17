@@ -39,6 +39,9 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                </li>
                @endif
                @endif
+               @if( $is_ondemand_multi_pricing ==1 )
+                     @include('layouts.store.onDemandTopBarli')
+               @endif
                @if($client_preference_detail->show_wishlist == 1)
                <li class="onhover-dropdown_al mobile-wishlist_al">
                   <a href="{{route('user.wishlists')}}">
@@ -55,6 +58,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                   <ul class="show-div shopping-cart"></ul>
                </li>
                @endif
+             
                @if($client_preference_detail->header_quick_link == 1)
                @foreach($pages as $page)
                @if(isset($page->primary->type_of_form) && ($page->primary->type_of_form == 2))
@@ -188,6 +192,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                      @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
                         <li class="add_post pr-3"><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span> {{__('Add Post')}}</span></a></li>
                     @endif
+
                      <li class="alUserIcon onhover-dropdown">
                         <a href="#">
                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">

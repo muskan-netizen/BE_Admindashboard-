@@ -607,8 +607,17 @@ class CategoryController extends BaseController
    
 
             // Get popular & top_rated products
-            $popular_products = array_map(function($v){ $v->path = get_file_path($v->path,'FILL_URL','260','260'); return $v;},$this->vendorProducts($v_ids, $langId, '', 'popular_products'));
-            $top_rated_products = array_map(function($v){ $v->path = get_file_path($v->path,'FILL_URL','260','260'); return $v;},$this->vendorProducts($v_ids, $langId, '', 'top_rated_products'));
+            $popularProducts = $this->vendorProducts($v_ids, $langId, '', 'popular_products');
+            $top_ratedProducts = $this->vendorProducts($v_ids, $langId, '', 'top_rated_products');
+
+            $popular_products[] = array_map(function($v){ 
+                $v->path = get_file_path($v->path,'FILL_URL','260','260'); 
+                return $v;
+            }, $popularProducts->toArray());
+            $top_rated_products[] = array_map(function($v){ 
+                $v->path = get_file_path($v->path,'FILL_URL','260','260'); 
+                return $v;
+            }, $top_ratedProducts->toArray());
             
             // Remove duplicate vendore
             foreach($cateVendors as $key => $value) {
