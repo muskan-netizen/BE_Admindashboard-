@@ -32,7 +32,6 @@ trait CustomerSignupSuccessEmailTrait{
               $content = $email_template->content;
               $content = str_ireplace("{name}", $user->name, $content);
               $content = str_ireplace("{client_name}", $client_detail->name, $content);
-          
               $email_data = [
                   'name' => $user->name,
                   'client_name' => $client_detail->name,
