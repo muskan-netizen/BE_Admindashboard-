@@ -51,7 +51,7 @@ class sendCustomerRegistrationEmail implements ShouldQueue
         try{
             Mail::to($this->details['email'])->send($email);
         }catch(Exception $e){
-
+            \Log::info($e->getMessage());
         }
     }
 
