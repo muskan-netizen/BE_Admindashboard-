@@ -72,7 +72,7 @@ trait PesapalPaymentTrait
             'Authorization' => 'Bearer '.$token
         ])->post($url,[
             "id" => $request->order_number,
-            "currency" => "KES",
+            "currency" => "UGX",
             "amount" => number_format($request->total_amount,2),
             "description" => $description,
             "callback_url" => $redirct_url,
@@ -80,7 +80,7 @@ trait PesapalPaymentTrait
             "billing_address" => [
                 "email_address" => auth()->user()->email ?? '',
                 "phone_number" => auth()->user()->phone_number ?? '',
-                "country_code" => "KE",
+                "country_code" => "UG",
                 "first_name" => $name[0] ?? '',
                 "middle_name" => "",
                 "last_name" => $name[1] ?? '',
