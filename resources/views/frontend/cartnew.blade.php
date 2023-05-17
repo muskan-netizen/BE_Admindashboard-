@@ -1182,6 +1182,8 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var success_error_container = ".cart_response";
     var data_trans_url = "{{route('payment.payByDataTrans')}}";
 
+    var pesapal_payment_url = "{{ route('pesapal.payment') }}";
+
     @if(!empty($client_preference_detail->is_postpay_enable))
         var post_pay_edit_order = "{{$client_preference_detail->is_postpay_enable}}";
     @else

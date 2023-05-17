@@ -144,11 +144,13 @@
 				$skip_cash_key_id = (isset($creds->skip_cash_key_id)) ? $creds->skip_cash_key_id : '';
 				$skip_cash_testing_url = (isset($creds->skip_cash_testing_url)) ? $creds->skip_cash_testing_url : '';
 				$skip_cash_live_url = (isset($creds->skip_cash_live_url)) ? $creds->skip_cash_live_url : '';
-
+			
 				//Nmi
 				$nmi_client_id = (isset($creds->nmi_client_id)) ? $creds->nmi_client_id : '';
 				$nmi_key_id = (isset($creds->nmi_key_id)) ? $creds->nmi_key_id : '';
 
+				$pesapal_consumer_key = (isset($creds->pesapal_consumer_key)) ? $creds->pesapal_consumer_key : '';
+				$pesapal_consumer_secret = (isset($creds->pesapal_consumer_secret)) ? $creds->pesapal_consumer_secret : '';
 
                 ?>
 
@@ -1689,6 +1691,27 @@
                                 <div class="form-group mb-2">
                                     <label for="nmi_key_id" class="mr-3">{{ __("NMI CLIENT KEY") }}</label>
                                     <input type="password" name="nmi_key_id" id="nmi_key_id" class="form-control" value="{{$nmi_key_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            
+							 
+                        </div>
+                    </div>
+                    @endif
+
+					@if ( (strtolower($opt->code) == 'pesapal') )
+                    <div class="mt-2" id="pesapal_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="pesapal_consumer_key" class="mr-3">{{ __("PESAPAL CONSUMER KEY") }}</label>
+                                    <input type="password" name="pesapal_consumer_key" id="pesapal_consumer_key" class="form-control" value="{{$pesapal_consumer_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+							 <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="pesapal_consumer_secret" class="mr-3">{{ __("PESAPAL CONSUMER SECRET") }}</label>
+                                    <input type="password" name="pesapal_consumer_secret" id="pesapal_consumer_secret" class="form-control" value="{{$pesapal_consumer_secret}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
                             

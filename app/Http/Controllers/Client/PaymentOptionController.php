@@ -794,6 +794,17 @@ class PaymentOptionController extends BaseController
                                 $json_creds = json_encode($data_trans_arr);
                                 
                             break;
+                        break;
+                        case 'pesapal':
+                            $request->validate([
+                                'pesapal_consumer_key' => 'required',
+                                'pesapal_consumer_secret' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'pesapal_consumer_key' => $request->pesapal_consumer_key,
+                                'pesapal_consumer_secret' => $request->pesapal_consumer_secret,
+                            ));
+                        break;
                     }
                 }
             }
