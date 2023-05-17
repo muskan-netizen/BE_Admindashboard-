@@ -9,7 +9,6 @@ use Illuminate\Support\Collection;
 use App\Models\ClientPreference;
 use App\Models\Client;
 use App\Models\EmailTemplate;
-use Illuminate\Support\Facades\Log;
 
 
 trait CustomerSignupSuccessEmailTrait{
@@ -46,7 +45,7 @@ trait CustomerSignupSuccessEmailTrait{
                   'customer_name' => ucwords($user->name),
       
               ];
-              dispatch(new \App\Jobs\sendCustomerRegistrationEmail($email_data))->onQueue('verify_email');
+              dispatch(new \App\Jobs\sendCustomerRegistrationEmail($email_data))->onQueue('customer_signup_email');
           }
         }
      }

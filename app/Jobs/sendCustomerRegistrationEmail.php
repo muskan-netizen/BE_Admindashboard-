@@ -10,12 +10,10 @@ use App\Models\Client;
 use Illuminate\Bus\Queueable;
 use App\Models\ClientPreference;
 use App\Mail\CustomerRegistrationMail;
-use Exception;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 
 class sendCustomerRegistrationEmail implements ShouldQueue
 {
@@ -48,11 +46,7 @@ class sendCustomerRegistrationEmail implements ShouldQueue
     public function handle()
     {
         $email = new CustomerRegistrationMail($this->details);
-        try{
-            Mail::to($this->details['email'])->send($email);
-        }catch(Exception $e){
-            \Log::info($e->getMessage());
-        }
+        Mail::to($this->details['email'])->send($email);
     }
 
     public function setMailDetail($mail_driver, $mail_host, $mail_port, $mail_username, $mail_password, $mail_encryption){
