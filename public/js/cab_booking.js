@@ -1871,6 +1871,10 @@ $(document).ready(function () {
                 paymentViaKhalti('', order);
                 break;
 
+            case '55':
+                paymentViaDataTrans('',payment_option_id,order);
+            break;
+
         }
 
     }

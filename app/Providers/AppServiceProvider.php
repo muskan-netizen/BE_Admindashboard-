@@ -13,6 +13,7 @@ use App\Models\SocialMedia;
 use Illuminate\Http\Request;
 use App\Models\{ClientPreference, PaymentOption,WebStylingOption};
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\ServiceProvider;
 
@@ -49,9 +50,9 @@ class AppServiceProvider extends ServiceProvider
         }
         $client_head = Client::where(['id' => 1])->first();
 
-        $payment_codes = ['stripe', 'stripe_fpx', 'yoco', 'checkout', 'cashfree','payphone','stripe_oxxo','stripe_ideal','khalti'];
+        $payment_codes = ['stripe', 'stripe_fpx', 'yoco', 'checkout', 'cashfree','payphone','stripe_oxxo','stripe_ideal','khalti','data_trans'];
         $stripe_publishable_key = $yoco_public_key = $checkout_public_key = $stripe_fpx_publishable_key = $cashfree_test_mode = $stripe_oxxo_publishable_key = $stripe_ideal_publishable_key = $khalti_api_key = '';
-        $payment_options = PaymentOption::select('code','credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
+        $payment_options = PaymentOption::select('code','credentials','test_mode')->whereIn('code', $payment_codes)->where('status', 1)->get();
         if($payment_options){
             foreach($payment_options as $option){
           
@@ -83,6 +84,9 @@ class AppServiceProvider extends ServiceProvider
                 }
                 if($option->code == 'khalti'){
                     $khalti_api_key = (isset($creds->api_key) && (!empty($creds->api_key))) ? $creds->api_key : '';
+                }
+                if($option->code == 'data_trans'){
+                    $data_trans_script_url = $option->test_mode ? 'https://pay.sandbox.datatrans.com/upp/payment/js/datatrans-2.0.0.js' : 'https://pay.datatrans.com/upp/payment/js/datatrans-2.0.0.js';
                 }
             }
         }
@@ -122,6 +126,7 @@ class AppServiceProvider extends ServiceProvider
         view()->share('cashfree_test_mode', $cashfree_test_mode);
         view()->share('payphone_id', $payphone_id??'');
         view()->share('payPhoneToken', $payphone_token??'');
+        view()->share('data_trans_script_url', $data_trans_script_url??'');
        
     }
 

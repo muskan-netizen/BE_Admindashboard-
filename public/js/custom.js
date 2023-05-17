@@ -4939,9 +4939,14 @@ $(document).ready(function () {
                  break;
             case 50:
                 paymentViazulpay('', payment_option_id, '');
-                 break;
+            break;
+
             case 52:
                 paymentViaSkipCash('',payment_option_id,'');
+            break;
+
+            case 55:
+                paymentViaDataTrans('', payment_option_id, '');
                 break;
             case 57:
                 payWithPesapal(payment_option_id,'');
@@ -5445,7 +5450,13 @@ $(document).ready(function () {
               } else {
                   return false;
               }
-          break 
+          break ;
+          case '55':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaDataTrans(address_id,payment_option_id,order);
+                }
+          break ;
           case '53':
 
             cardJson = {
@@ -5462,6 +5473,7 @@ $(document).ready(function () {
                 else{
                     return false;
                 }
+            break;
             }else{
                 $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
             }
@@ -5482,6 +5494,7 @@ $(document).ready(function () {
 
     function walletPaymentOPtions(payment_option_id)
     {  
+        console.log('walletPaymentOPtions',payment_option_id);
         switch (payment_option_id) {
             case 3:
                     paymentViaPaypal('', payment_option_id);
@@ -5715,8 +5728,10 @@ $(document).ready(function () {
                 if(cardValidation(cardJson)){
                     paymentNmipay('', payment_option_id,'',cardJson);
                 }
-                break; 
+            break; 
 
+            case 55: 
+                paymentViaDataTrans('',payment_option_id,null);
             case 57:
                 payWithPesapal(payment_option_id,'');
             break;

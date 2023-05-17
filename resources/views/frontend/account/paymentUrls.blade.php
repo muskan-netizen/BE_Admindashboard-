@@ -43,4 +43,5 @@
 	var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
 	var payment_nmi_url = "{{route('nmi.pay')}}";
 	var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
+    var data_trans_url = "{{route('payment.payByDataTrans')}}";
 </script>
