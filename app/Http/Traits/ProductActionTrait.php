@@ -11,13 +11,28 @@ trait ProductActionTrait{
 
     
 
-    public function getRandomVendorIdsForHomePage($preferences, $type, $is_admin_vendor_rating = 0, $latitude, $longitude)
+    public function getRandomVendorIdsForHomePage($preferences, $type, $is_admin_vendor_rating = 0, $latitude, $longitude,$action='2')
     {
         try 
         {
             $vendors = Vendor::select('id')->where('status', 1)->where($type, 1);
             if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
 
+                // if($action == '1'){
+                //     // $vendors = Vendor::select('id')
+                //     //     ->where('status', 1)
+                //     //     ->where($type, 1);
+
+                //     // if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+                //         $vendors = $vendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
+                //             $query->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
+                //         });
+                //     // }
+
+                //     // $vendorIds = $vendors->get()->pluck('id');
+                //     // pr($vendorIds);
+
+                // }
                 $vendors = $vendors->havingRaw(" (SELECT COUNT(`service_areas`.`id`) FROM `service_areas` WHERE `service_areas`.`vendor_id` = `vendors`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)'))) > 0 ");
                 
             }
@@ -27,6 +42,7 @@ trait ProductActionTrait{
             }else{
                 $vendors = $vendors->inRandomOrder();
             }
+            //pr($vendors->pluck('id')->toArray());
             return $vendors->pluck('id')->toArray();
         }
         catch (\Exception $e) {
@@ -527,7 +543,9 @@ trait ProductActionTrait{
         }
     }
     
-    
+    public function getEvenOddTime($time) {
+        return ($time % 5 === 0) ? $time : ($time - ($time % 5));
+    }
     public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude, $vendor_ids = [], $set_template = NULL)
     {
         try 
@@ -608,7 +626,6 @@ trait ProductActionTrait{
             
             $vendors = DB::select( DB::raw($mainQuery));
             $vendor_ids = [];
-
             foreach ($vendors as $key => $value) {
                 $vendor_ids[] = $value->id;
                 // get or update rating
@@ -659,7 +676,7 @@ trait ProductActionTrait{
                     }
                 }
             }
-            
+            //pr($vendors);
             return $vendors;
         }
         catch (\Exception $e) {

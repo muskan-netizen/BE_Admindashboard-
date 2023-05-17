@@ -1535,7 +1535,7 @@ class HomeController extends BaseController
         $trending_vendors_title = $titles['trending_vendors_title'] ?? null;
 
 
-        $vendor_ids = $this->getRandomVendorIdsForHomePage($preferences, $request->type, $preferences['is_admin_vendor_rating'], $latitude, $longitude);
+        $vendor_ids = $this->getRandomVendorIdsForHomePage($preferences, $request->type, $preferences['is_admin_vendor_rating'], $latitude, $longitude,@$request->momo);
         $home_page_labels = HomePageLabel::with('translations')->get();
         if (in_array('brands', $enable_layout)) {     # if enable brands section in
             $brands = $this->getBrandsForHomePage($language_id, $this->field_status);
@@ -1586,6 +1586,7 @@ class HomeController extends BaseController
         
         if (($latitude) && ($longitude)) {
             Session::put('vendors', $vendor_ids);
+            
         }
         
         //get Most Selling Vendors
@@ -1637,7 +1638,7 @@ class HomeController extends BaseController
             $long_term_service_products = $this->longTermServiceProducts($vendor_ids, $additionalPreference, $language_id, $currency_id,'', $request->type,$p_dim);
         }
         //pr($set_template->template_id);
-        if($set_template->template_id ==10){
+        //if($set_template->template_id ==10){
             $recently_viewed = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'recent_viewed', $request->type, $featured_products_title,$p_dim);
             //$spot_light_products = $this->getSpotLight($preferences, $vendor_ids, $language_id, $currency_id, $p_dim); // get spotlight product i.e. max discounted products
             $spot_light_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'spotlight_deals', $request->type, $featured_products_title,$p_dim);
@@ -1657,7 +1658,7 @@ class HomeController extends BaseController
            // $ordered_products = $this->vendorProducts($preferences, $vendor_ids, $language_id, $currency_id, $p_dim, $this->getLastProductOrdered(), 10);
 
             //pr($top_rated_products);
-        }
+        //}
         /**  Recent order */
         $activeOrders = [];
         if (in_array('recent_orders', $enable_layout)) {  # if enable recent_orders section in 
