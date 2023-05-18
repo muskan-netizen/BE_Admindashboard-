@@ -710,6 +710,7 @@ function  layoutMode(){
         }),
         e(".filter-back").on("click", function (s) {
             e(".collection-filter").css("left", "-365px"), e(".sidebar-popup").trigger("click");
+            e("body").removeClass("overflow-hidden");
         }),
         e(".account-sidebar").on("click", function (s) {
             e(".dashboard-left").css("left", "0");
