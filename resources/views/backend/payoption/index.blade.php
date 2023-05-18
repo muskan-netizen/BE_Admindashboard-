@@ -3,7 +3,7 @@
 @section('css')
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
-<style>#payment_48{display:none;}</style>
+<style>#payment_48{display:block;}</style>
 @endsection
 
 @section('content')
@@ -1932,6 +1932,7 @@
 
 
     $( "#mtn_momo_fields_wrapper" ).delegate( "#generate_mtn_momo_api_key", "click", function() {
+    	let sandboxCheckbox = $(this).parents('#mtn_momo_fields_wrapper').siblings('.row').children().eq(1).find('input[type="checkbox"]').is(":checked");
         var subscription_key    = $("#subscription_key").val();
         var reference_id        = $("#reference_id").val();
         if(subscription_key == ''){
@@ -1950,7 +1951,7 @@
             $.ajax({
                type:'POST',
                url:"{{ route('payoption.mtn_momo_api_key') }}",
-               data: {'_token': "{{ csrf_token() }}",'subscription_key':subscription_key,'reference_id':reference_id},
+               data: {'_token': "{{ csrf_token() }}",'subscription_key':subscription_key,'reference_id':reference_id,'sandboxCheckbox':sandboxCheckbox},
                success:function(respones) {
                   var obj = jQuery.parseJSON(respones);
                   //console.log(obj.status);

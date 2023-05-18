@@ -5,7 +5,11 @@ use Session;
 use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Traits\{ToasterResponser,MtnMomoPaymentManager,PaymentTrait};
+use App\Http\Traits\ {
+    ToasterResponser,
+    MtnMomoPaymentManager,
+    PaymentTrait
+};
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
@@ -37,7 +41,6 @@ class PaymentOptionController extends BaseController
      */
     public function index()
     {
-
         $payment_codes = $this->paymentOptionArray('payment_codes');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
 
@@ -306,7 +309,7 @@ class PaymentOptionController extends BaseController
                                 'api_key' => $request->ozow_api_key
                             ));
                             break;
-                            
+
                         case 'azul':
                             $creds = ! empty($json_creds) ? json_decode($json_creds) : '';
                             $validatedData = $request->validate([
@@ -328,7 +331,7 @@ class PaymentOptionController extends BaseController
                             } else {
                                 $azul_ssl_certificate = (! empty($creds) && isset($creds->azul_ssl_certificate)) ? $creds->azul_ssl_certificate : '';
                             }
-                            
+
                             if ($request->hasFile('azul_ssl_key')) {
                                 $file = $request->file('azul_ssl_key');
                                 $file_name = 'Cert/' . uniqid() . '.' . $file->getClientOriginalExtension();
@@ -337,7 +340,7 @@ class PaymentOptionController extends BaseController
                             } else {
                                 $azul_ssl_key = (! empty($creds) && isset($creds->azul_ssl_key)) ? $creds->azul_ssl_key : '';
                             }
-                            
+
                             $json_creds = json_encode(array(
                                 'azul_main_url' => $request->azul_main_url,
                                 'azul_alternate_url' => $request->azul_alternate_url,
@@ -403,13 +406,13 @@ class PaymentOptionController extends BaseController
                                 'ccavenue_enc_key' => 'required',
                                 'ccavenue_access_code' => 'required',
                                 'ccavenue_merchant_id' => 'required',
-                                'custom_url'=>   'required' 
+                                'custom_url' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'enc_key' => $request->ccavenue_enc_key,
                                 'access_code' => $request->ccavenue_access_code,
                                 'merchant_id' => $request->ccavenue_merchant_id,
-                                'custom_url'=>  $request->custom_url
+                                'custom_url' => $request->custom_url
                             ));
                             break;
 
@@ -611,12 +614,12 @@ class PaymentOptionController extends BaseController
                             break;
                         case 'plugnpay':
                             $validatedData = $request->validate([
-                                'plugnpay_publisher_name' => 'required',
+                                'plugnpay_publisher_name' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'plugnpay_publisher_name' => $request->plugnpay_publisher_name
                             ));
-                        break;
+                            break;
 
                         case 'offline_manual':
                             $validatedData = $request->validate([
@@ -757,42 +760,42 @@ class PaymentOptionController extends BaseController
                             ));
                             break;
                         case 'skip_cash':
-                        $validatedData = $request->validate([
-                            'skip_cash_client_id' => 'required',
-                            'skip_cash_key_id' => 'required',
-                            'skip_cash_api_secret' => 'required',
-                        ]);
-                        $json_creds = json_encode(array(
-                            'skip_cash_client_id' => $request->skip_cash_client_id,
-                            'skip_cash_key_id' => $request->skip_cash_key_id,
-                            'skip_cash_api_secret' => $request->skip_cash_api_secret,
-                            'skip_cash_testing_url' => $request->skip_cash_testing_url,
-                            'skip_cash_live_url' => $request->skip_cash_live_url,
-                        ));
-                        break;
+                            $validatedData = $request->validate([
+                                'skip_cash_client_id' => 'required',
+                                'skip_cash_key_id' => 'required',
+                                'skip_cash_api_secret' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'skip_cash_client_id' => $request->skip_cash_client_id,
+                                'skip_cash_key_id' => $request->skip_cash_key_id,
+                                'skip_cash_api_secret' => $request->skip_cash_api_secret,
+                                'skip_cash_testing_url' => $request->skip_cash_testing_url,
+                                'skip_cash_live_url' => $request->skip_cash_live_url
+                            ));
+                            break;
                         case 'nmi':
                             $validatedData = $request->validate([
                                 'nmi_client_id' => 'required',
-                                'nmi_key_id' => 'required',
+                                'nmi_key_id' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'nmi_client_id' => $request->nmi_client_id,
-                                'nmi_key_id' => $request->nmi_key_id,
+                                'nmi_key_id' => $request->nmi_key_id
                             ));
                             break;
 
-                            case 'data_trans':
-                                $validatedData = $request->validate([
-                                    'data_trans_merchant_id' => 'required',
-                                    'data_trans_password' => 'required'
-                                ]);
-    
-                                $data_trans_arr = array(
-                                    'merchant_id' => $request->data_trans_merchant_id,
-                                    'password' => $request->data_trans_password
-                                );
-                                $json_creds = json_encode($data_trans_arr);
-                                
+                        case 'data_trans':
+                            $validatedData = $request->validate([
+                                'data_trans_merchant_id' => 'required',
+                                'data_trans_password' => 'required'
+                            ]);
+
+                            $data_trans_arr = array(
+                                'merchant_id' => $request->data_trans_merchant_id,
+                                'password' => $request->data_trans_password
+                            );
+                            $json_creds = json_encode($data_trans_arr);
+
                             break;
                     }
                 }
@@ -914,12 +917,22 @@ class PaymentOptionController extends BaseController
      */
     public function MtnmomoApiKey(Request $request)
     {
-        $subscription_key = $request->subscription_key;
-        $reference_id = $request->reference_id;
-        $create_user = MtnMomoPaymentManager::createApiUser($subscription_key, $reference_id);
+        if (empty($request)) {
+            return json_encode([
+                'status' => 404,
+                'message' => 'Request is Empty'
+            ]);
+        }
+
+        self::$_subscriptionKey = $request->subscription_key;
+        self::$_referenceId = $request->reference_id;
+        self::$_isSandbox = $request->sandboxCheckbox;
+        self::__init();
+
+        $create_user = self::createApiUser();
         $result = json_decode($create_user, true);
         if ($result['status'] == 201) {
-            $api_data = MtnMomoPaymentManager::createApiKey($subscription_key, $reference_id);
+            $api_data = self::createApiKey();
             return json_encode([
                 'status' => 201,
                 'api_key' => $api_data['apiKey'],

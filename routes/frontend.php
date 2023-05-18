@@ -364,11 +364,10 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/user/wallet/credit', 'Front\WalletController@postPaymentCreditWallet')->name('user.postPaymentCreditWallet');
     // Mtn Momo payment gateway
 
-	Route::post('payment/mtn-momo', 'Front\MtnMomoController@createTocken')->name('mtn.momo.createTocken');
+	Route::post('payment/mtn-momo', 'Front\MtnMomoController@createToken')->name('mtn.momo.createToken');
 
 	// Mtn Momo payment gateway
 
-	Route::post('payment/mtn-momo', 'Front\MtnMomoController@createTocken')->name('mtn.momo.createTocken');
 	// Route::get('payment/dpo/redirect', 'Front\DpoController@successPage')->name('dpo.redirect');
 	// Route::get('payment/dpo/success', 'Front\DpoController@successPage')->name('dpo.success');
 	// Route::get('payment/dpo/fail', 'Front\DpoController@failPage')->name('dpo.fail');
