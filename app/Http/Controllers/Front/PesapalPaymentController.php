@@ -102,8 +102,6 @@ class PesapalPaymentController extends Controller
     {
         $payment = Payment::where('transaction_id', $request->get('OrderTrackingId'))->first();
 
-        Log::info(['all' => $request->all()]);
-        
         if ($payment->type == 'cart') {
             return $this->completeOrderCart($request, $payment);
         } elseif ($payment->type == 'wallet') {
@@ -117,9 +115,18 @@ class PesapalPaymentController extends Controller
         }   
     }
 
-    public function completeOrderCart(Request $request, $pay)
+    public function completeOrderCart(Request $request, $payment)
     {
-        $order = Order::where('id', $pay->order_id)->first();
+        $order = Order::where('id', $payment->order_id)->first();
+        if( (isset($request->id)) && (!empty($request->id)) ){
+            $user = User::find($request->id);
+        }elseif( (isset($request->auth_token)) && (!empty($request->auth_token)) ){
+            $user = User::whereHas('device',function  ($qu) use ($request){
+                $qu->where('access_token', $request->auth_token);
+            })->first();
+        }else{
+            $user = Auth::user();
+        }
 
         if (! empty($order)) {
             $order->payment_status = '1';
@@ -127,7 +134,7 @@ class PesapalPaymentController extends Controller
 
             $orderController = new OrderController();
             $orderController->autoAcceptOrderIfOn($order->id);
-            $cart = Cart::where('user_id', auth()->id())->select('id')->first();
+            $cart = Cart::where('user_id', $user->id)->select('id')->first();
             $cartid = $cart->id;
             Cart::where('id', $cartid)->update([
                 'schedule_type' => null,
@@ -160,17 +167,15 @@ class PesapalPaymentController extends Controller
             $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
             $super_admin = User::where('is_superadmin', 1)->pluck('id');
             $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
-            
-            Log::error(['cart_come_from' => $request->come_from]);
-
 
             if(isset($request->come_from) && $request->come_from == 'app')
             {
                 $response['status']         = 200;
-                $response['msg']            = 'Success Added wallet.';
-                $response['payment_from']   = 'wallet';
+                $response['msg']            = 'Success Order.';
+                $response['payment_from']   = 'cart';
                 $response['order_id']       = $order->id;
-                return response()->json($response);
+                $returnUrl = route('payment.gateway.return.response').'/?gateway=pesapal'.'&status=200&transaction_id='.$payment->transaction_id.'&order_id='.$order->id;
+                return Redirect::to($returnUrl);
             }
             return redirect()->route('order.success',['order_id' => $order->id]);
 
@@ -201,11 +206,10 @@ class PesapalPaymentController extends Controller
         $data['transaction_id'] =  $payment->transaction_id;
         $data['payment_option_id'] =  $this::PaymentId;
         $data['come_from'] = $request['come_from'];
+        $data['user_id'] = $request['id'];
 
         $request = new \Illuminate\Http\Request($data);
         $this->creditMyWallet($request);
-
-        Log::error(['wallet_come_from' => $request->come_from]);
 
         if(isset($request->come_from) && $request->come_from == 'app')
         {
@@ -277,13 +281,13 @@ class PesapalPaymentController extends Controller
         $data['subscription_id'] = $request['subscription_id'];
         $data['amount'] = $request['amount'];
         $data['come_from'] = $request['come_from'];
+        $data['user_id'] = $request['id'];
+
         $request = new \Illuminate\Http\Request($data);
 
         $subscriptionController = new UserSubscriptionController();        
         $subscriptionController->purchaseSubscriptionPlan($request,'', $payment->viva_order_id);
-        Log::info([
-            '$subs->come_from' => $request->come_from
-        ]);
+
         if (isset($request->come_from) && $request->come_from == 'app') {
             $response['status'] = 200;
             $response['msg'] = 'Success Added Subscription.';
@@ -352,6 +356,7 @@ class PesapalPaymentController extends Controller
         $data['tip_amount'] = $payment->amount;
         $data['order_number'] = explode('-', $payment->viva_order_id)[0];
         $data['transaction_id'] = $payment->transaction_id;
+        $data['user_id'] = $request['id'];
 
         $request = new \Illuminate\Http\Request($data);
 
