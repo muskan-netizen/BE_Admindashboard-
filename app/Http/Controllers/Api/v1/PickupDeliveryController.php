@@ -330,6 +330,7 @@ class PickupDeliveryController extends BaseController{
         $total_discount = 0;
         $taxable_amount = 0;
         $payable_amount = 0;
+        $order = '';
         $user = Auth::user();
         $action = 'pick_drop';
         $luxury_option = LuxuryOption::where('title', $action)->first();
@@ -409,7 +410,8 @@ class PickupDeliveryController extends BaseController{
                 $order_location->tasks = json_encode($request->tasks );
                 $order_location->save();
 
-                $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
+                     $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
+                     $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
                 $vendor = Vendor::whereHas('product', function ($q) use ($request) {
                     $q->where('id', $request->product_id);
                 })->select('*','id as vendor_id')->orderBy('created_at', 'asc')->first();
@@ -567,11 +569,16 @@ class PickupDeliveryController extends BaseController{
                 }
 
 
-
                 $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
                 $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
                 if (isset($request->transaction_id) && (!empty($request->transaction_id))) {
                     $order->payment_status = 1;
+                }
+
+                if ((isset($request->tip)) && ($request->tip != '') && ($request->tip > 0)) {
+                    $tip_amount = $request->tip;
+                    $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
+                    $order->tip_amount = decimal_format($tip_amount);
                 }
                 $order->save();
 
@@ -585,7 +592,6 @@ class PickupDeliveryController extends BaseController{
                     $payment->save();
                 }
             }
-
                         $data = [];
                         $data['status'] = 200;
                         $data['message'] =  __('Order Placed');
@@ -672,8 +678,7 @@ class PickupDeliveryController extends BaseController{
                     $task_type = 'now';
                 }
 
-
-                $vendor_details = Vendor::where('id', $vendor)->select('order_pre_time')->first();
+                  $vendor_details = Vendor::where('id', $vendor)->select('order_pre_time')->first();
                 $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
                 $dynamic = (!empty($order_vendor->web_hook_code)) ? $order_vendor->web_hook_code : uniqid($order->id.$vendor);
                 $unique = Auth::user()->code;
