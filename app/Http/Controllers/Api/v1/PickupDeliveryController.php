@@ -93,13 +93,15 @@ class PickupDeliveryController extends BaseController{
                         }
                     }
                     $products = $products->where('products.is_live', 1)->distinct()->paginate($paginate);
-
+                    $total_price = 0 ;
+                    $response['tips'] = [];
             if(!empty($products)){
                 foreach ($products as $key => $product) {
                     $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
                     $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
                     $product->toll_fee   = $tags_price['toll_fee']??0;
                     $product->tags_price = $tags_price['delivery_fee']??0;
+                    $total_price += $total_price + $product->tags_price;
                     $product->distance = decimal_format($tags_price['distance']);
                     $product->duration = decimal_format($tags_price['duration']);
                     $product->min_tags_price = decimal_format($tags_price['min_delivery_fee']);
@@ -126,6 +128,13 @@ class PickupDeliveryController extends BaseController{
                         $product->variant[$k]->toll_fee = $product->toll_fee;
                         $product->variant[$k]->multiplier = $clientCurrency->doller_compare;
                     }
+                }
+                if( $total_price > 0 && $preferences->tip_before_order == 1){
+                    $response['tips'] = array(
+                        ['label' => '5%', 'value' => decimal_format(0.05 * $total_price)],
+                        ['label' => '10%', 'value' => decimal_format(0.1 * $total_price)],
+                        ['label' => '15%', 'value' => decimal_format(0.15 * $total_price)]
+                    );
                 }
             }
 
@@ -658,9 +667,9 @@ class PickupDeliveryController extends BaseController{
 
 
                 if(empty($request->task_type) && !empty($request->schedule_time)){
-                    $task_type = 'schedule'; 
+                    $task_type = 'schedule';
                 }else{
-                    $task_type = 'now';  
+                    $task_type = 'now';
                 }
 
 
@@ -674,7 +683,7 @@ class PickupDeliveryController extends BaseController{
                     $cash_to_be_collected = 'Yes';
                     $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
                 } else {
-    
+
                     if($order->is_postpay==1 && $order->payment_status == 0)
                     {
                         $cash_to_be_collected = 'Yes';
@@ -1445,7 +1454,7 @@ class PickupDeliveryController extends BaseController{
                 $variant                            = $product->variants->where('product_id', $product->id)->first();
                 $variant->price                     = $request->tags_amount;
                 $variant->toll_price                = 0;
-                
+
                 $divider                            = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
                 $divider                            = isset($divider) ? $divider : 1;
                 $price_in_currency                  = $request->tags_amount / $divider;
@@ -1453,7 +1462,7 @@ class PickupDeliveryController extends BaseController{
                 $quantity_price                     = $price_in_dollar_compare * 1;
                 $payable_amount                     = $quantity_price;
                 $vendor_payable_amount              = $quantity_price;
-                
+
                 $total_amount                       = $variant->price;
 
                 $order_product->price               = $variant->price;
@@ -1490,7 +1499,7 @@ class PickupDeliveryController extends BaseController{
 
                 $order->total_amount            = $payable_amount;
                 $order->payable_amount          = $payable_amount;
-                
+
                 $order->loyalty_points_earned   = 0;
                 $order->loyalty_membership_id   = 0;
 
@@ -1533,7 +1542,7 @@ class PickupDeliveryController extends BaseController{
             if ($dispatch_domain && $dispatch_domain != false) {
                 $cash_to_be_collected = 'Yes';
                 $payable_amount = $order->payable_amount;
-                
+
                 $unique = $customer->code;
                 $team_tag = $unique."_".$vendor;
                 $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
@@ -1548,7 +1557,7 @@ class PickupDeliveryController extends BaseController{
                     $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
                 }
                 $call_back_url = "https://".$domain."/dispatch-pickup-delivery/".$dynamic;
-                
+
                 $client = Client::orderBy('id', 'asc')->first();
 
                 $postdata =  [
@@ -1572,7 +1581,7 @@ class PickupDeliveryController extends BaseController{
                 $res = $client->post($url.'/api/task/updateBidRide',['form_params' => ($postdata)]);
                 $response = json_decode($res->getBody(), true);
                 if ($response && isset($response['task_id']) && $response['task_id'] > 0) {
-                    
+
                     if($response['status'] == 'assigned'){
                         $update_vendor = VendorOrderStatus::updateOrCreate([
                             'order_id' =>  $order->id,
@@ -1581,13 +1590,13 @@ class PickupDeliveryController extends BaseController{
                             'order_vendor_id' =>  $order_vendor->id]);
 
                         OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['order_status_option_id' => 2,'dispatcher_status_option_id' => 2]);
-    
+
                         $update = VendorOrderDispatcherStatus::updateOrCreate(['dispatcher_id' => null,
                         'order_id' =>  $order->id,
                         'dispatcher_status_option_id' =>  2,
                         'vendor_id' =>  $vendor]);
                     }
-                    
+
                     return $response;
                 }
                 return $response;
@@ -1624,7 +1633,7 @@ class PickupDeliveryController extends BaseController{
     public function createBidRideRequest(Request $request)
     {
         DB::beginTransaction();
-        try 
+        try
         {
             $vendor = Vendor::where('id', $request->vendor_id)->first();
             $product = Product::where('id', $request->product_id)->first();
@@ -1634,7 +1643,7 @@ class PickupDeliveryController extends BaseController{
 
             $getAdditionalPreference = getAdditionalPreference(['bid_expire_time_limit_seconds']);
             $expiryseconds = ($getAdditionalPreference['bid_expire_time_limit_seconds'] > 0) ? $getAdditionalPreference['bid_expire_time_limit_seconds'] : 30;
-            
+
 
             $UserBidRideRequest                         = new UserBidRideRequest();
             $UserBidRideRequest->user_id                = Auth::user()->id;
@@ -1645,7 +1654,7 @@ class PickupDeliveryController extends BaseController{
             $UserBidRideRequest->web_hook_code          = uniqid(Auth::user()->id.$request->vendor_id);
             $UserBidRideRequest->expired_at             = Carbon::now()->addSeconds($expiryseconds)->format('Y-m-d H:i:s');
             $UserBidRideRequest->save();
-            
+
             $request_to_dispatch = $this->placeRequestForDriverBidsToDispatch($request, $product, $UserBidRideRequest);
             if($UserBidRideRequest){
                 DB::commit();
@@ -1665,14 +1674,14 @@ class PickupDeliveryController extends BaseController{
 
     // place Request To Dispatch
     public function placeRequestForDriverBidsToDispatch($request, $product, $UserBidRideRequest){
-        try 
+        try
         {
             $getAdditionalPreference = getAdditionalPreference(['bid_expire_time_limit_seconds']);
             $expiryseconds = ($getAdditionalPreference['bid_expire_time_limit_seconds'] > 0) ? $getAdditionalPreference['bid_expire_time_limit_seconds'] : 30;
 
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             $customer = Auth::user();
-            if($dispatch_domain && $dispatch_domain != false && !empty($UserBidRideRequest)) 
+            if($dispatch_domain && $dispatch_domain != false && !empty($UserBidRideRequest))
             {
                 $unique = Auth::user()->code;
                 $client_do = Client::orderBy('id', 'asc')->first();
@@ -1682,9 +1691,9 @@ class PickupDeliveryController extends BaseController{
                 }else{
                     $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
                 }
-                
+
                 $call_back_url = "https://".$domain."/dispatch/driver/bids/update/".$UserBidRideRequest->web_hook_code;
-                
+
                 $postdata =  [
                             'tasks'                   => $request->tasks,
                             'call_back_url'           => $call_back_url??null,
