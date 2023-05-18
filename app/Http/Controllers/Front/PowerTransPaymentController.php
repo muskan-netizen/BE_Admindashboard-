@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\Session;
 use App\Http\Traits\PowerTransPaymentTrait;
 use App\Models\CaregoryKycDoc;
 use App\Models\Transaction;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
  
 class PowerTransPaymentController extends Controller
@@ -45,9 +44,16 @@ class PowerTransPaymentController extends Controller
 
         $response = $this->powerTransPayment($request);
 
-        $request->total_amount ?? $request->request->add([
-            'total_amount' => $request->amount,
-        ]);
+        if($response['IsoResponseCode'] != 00){
+            $resError['status'] = 'Fail';
+            $resError['payment_from'] = $request->action;
+            if(isset($response['Errors'])){
+                $resError['msg'] = $response['Errors'][0]['Message'];
+            }else{
+                $resError['msg'] = 'InValid Card Detail';
+            }
+            return response()->json($resError, 400);
+        }
 
         if($request->payment_from == 'cart')
         {
@@ -87,7 +93,7 @@ class PowerTransPaymentController extends Controller
             ];
         }
         Payment::create($data);
-        return $response;
+        return $request->action ? redirect($response['redirect_url']) : $response;
     }
     
     public function cancelPage(Request $request)
@@ -96,13 +102,14 @@ class PowerTransPaymentController extends Controller
         {
             $response['status']         = 'Error';
             $response['msg']            = 'Payment Cancel';
-            return response()->json($response,200);
+            return response()->json($response);
         }
         return redirect()->back();
     }
 
     public function successPage(Request $request)
     {
+        $request->id ? Auth::loginUsingId($request->id) : '';
         $payment = Payment::where('transaction_id', $request->get('TransactionIdentifier'))->first();
 
         if ($payment->type == 'cart') {
@@ -118,9 +125,19 @@ class PowerTransPaymentController extends Controller
         }   
     }
 
-    public function completeOrderCart(Request $request, $pay)
+    public function completeOrderCart(Request $request, $payment)
     {
-        $order = Order::where('id', $pay->order_id)->first();
+        $order = Order::where('id', $payment->order_id)->first();
+
+        if( (isset($request->id)) && (!empty($request->id)) ){
+            $user = User::find($request->id);
+        }elseif( (isset($request->auth_token)) && (!empty($request->auth_token)) ){
+            $user = User::whereHas('device',function  ($qu) use ($request){
+                $qu->where('access_token', $request->auth_token);
+            })->first();
+        }else{
+            $user = Auth::user();
+        }
 
         if (! empty($order)) {
             $order->payment_status = '1';
@@ -128,7 +145,7 @@ class PowerTransPaymentController extends Controller
 
             $orderController = new OrderController();
             $orderController->autoAcceptOrderIfOn($order->id);
-            $cart = Cart::where('user_id', auth()->id())->select('id')->first();
+            $cart = Cart::where('user_id', $user->id)->select('id')->first();
             $cartid = $cart->id;
             Cart::where('id', $cartid)->update([
                 'schedule_type' => null,
@@ -164,11 +181,11 @@ class PowerTransPaymentController extends Controller
             
             if(isset($request->come_from) && $request->come_from == 'app')
             {
-                $response['status']         = 'Success';
+                $response['status']         = 200;
                 $response['msg']            = 'Success Added wallet.';
                 $response['payment_from']   = 'wallet';
                 $response['order_id']       = $order->id;
-                return response()->json($response,200);
+                return response()->json($response);
             }
             return redirect()->route('order.success',['order_id' => $order->id]);
 
@@ -183,10 +200,10 @@ class PowerTransPaymentController extends Controller
 
             if(isset($request->come_from) && $request->come_from == 'app')
             {
-                $response['status']         = 'Success';
+                $response['status']         = 200;
                 $response['msg']            = 'Success Added wallet.';
                 $response['payment_from']   = 'Wallet has been <b>refunded</b> for cancellation of order #' . $order->order_number;
-                return response()->json($response,200);
+                return response()->json($response);
             }
 
             return redirect()->route('user.wallet');
@@ -198,14 +215,17 @@ class PowerTransPaymentController extends Controller
         $data['amount'] =  $payment->amount;
         $data['transaction_id'] =  $payment->transaction_id;
         $data['payment_option_id'] =  $this::PaymentId;
+        $data['come_from'] = $request['come_from'];
+        $data['user_id'] = $request['id'];
+        
         $request = new \Illuminate\Http\Request($data);
         $this->creditMyWallet($request);
         if(isset($request->come_from) && $request->come_from == 'app')
         {
-            $response['status']         = 'Success';
+            $response['status']         = 200;
             $response['msg']            = 'Success Added wallet.';
             $response['payment_from']   = 'wallet';
-            return response()->json($response,200);
+            return response()->json($response);
         }
         return redirect()->route('user.wallet');
 
@@ -266,16 +286,17 @@ class PowerTransPaymentController extends Controller
         $data['subsid'] = $request['subscription_id'];
         $data['subscription_id'] = $request['subscription_id'];
         $data['amount'] = $request['amount'];
-
+        $data['come_from'] = $request['come_from'];
+        $data['user_id'] = $request['id'];
         $request = new \Illuminate\Http\Request($data);
 
         $subscriptionController = new UserSubscriptionController();
         $subscriptionController->purchaseSubscriptionPlan($request,'', $payment->viva_order_id);
         if (isset($request->come_from) && $request->come_from == 'app') {
-            $response['status'] = 'Success';
+            $response['status'] = 200;
             $response['msg'] = 'Success Added Subscription.';
             $response['payment_from'] = 'subscription';
-            return response()->json($response, 200);
+            return response()->json($response);
         }
         return redirect()->route('user.subscription.plans');
         
@@ -302,16 +323,17 @@ class PowerTransPaymentController extends Controller
                     $payment->save();
                 }
                 
-                $request->request->add(['order_number'=> $order->order_number, 'payment_option_id' => 32, 'amount' => $order->payable_amount, 'transaction_id' => $request->TransactionIdentifier]);
+                $request->request->add(['order_number'=> $order->order_number, 'amount' => $order->payable_amount, 'transaction_id' => $request->TransactionIdentifier]);
                 $plaseOrderForPickup = new PickupDeliveryController();
                 $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
                 
                 if (isset($request->come_from) && $request->come_from == 'app') {
-                    $response['status'] = 'Success';
-                    $response['msg'] = 'Success Added Pickup.';
+                    $response['status'] = 200;
+                    $response['msg'] = 'Success Added Pickup Delivery.';
                     $response['payment_from'] = 'pickup_delivery';
-                    $response['order'] = $order;
-                    return response()->json($response, 200);
+                    $response['data'] = $res;
+
+                    return response()->json($response);
                 }
 
                 return Redirect::to(route('front.booking.details',$order->order_number));
@@ -322,10 +344,10 @@ class PowerTransPaymentController extends Controller
             $data->delete();
 
             if (isset($request->come_from) && $request->come_from == 'app') {
-                $response['status'] = 'Success';
+                $response['status'] = 200;
                 $response['msg'] = 'Success Added Pickup.';
                 $response['payment_from'] = 'pickup_delivery';
-                return response()->json($response, 200);
+                return response()->json($response);
             }
 
             return Redirect::to(route('user.wallet'))->with('error',$request->message);
@@ -337,17 +359,18 @@ class PowerTransPaymentController extends Controller
         $data['tip_amount'] = $payment->amount;
         $data['order_number'] = explode('-', $payment->viva_order_id)[0];
         $data['transaction_id'] = $payment->transaction_id;
-
+        $data['come_from'] = $request['come_from'];
+        $data['user_id'] = $request['id'];
         $request = new \Illuminate\Http\Request($data);
 
         $orderController = new OrderController();
         $orderController->tipAfterOrder($request);
 
         if (isset($request->come_from) && $request->come_from == 'app') {
-            $response['status'] = 'Success';
+            $response['status'] = 200;
             $response['msg'] = 'Success Added Tip.';
             $response['payment_from'] = 'tip';
-            return response()->json($response, 200);
+            return response()->json($response);
         }
         return redirect()->route('user.orders');
         

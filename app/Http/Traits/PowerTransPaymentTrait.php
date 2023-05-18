@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Traits;
 
+use App\Http\Controllers\Front\PowerTransPaymentController;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
@@ -24,15 +25,18 @@ trait PowerTransPaymentTrait
         $this->powertrans_password = $this->creds_arr->powertrans_password;
     }
 
-   
-
     public function powerTransApi(Request $request,$description)
     {
-        $redirct_url = $request->action ? url('/success/powertrans') : route('payment.powertrans.success');
-
+        $redirect_url = $request->action ? url('/success/powertrans?id='.auth()->id().'&come_from=app') : route('payment.powertrans.success');
+        $request->action ? $request->request->add([
+            'total_amount' => $request->amount,
+            'card_number' => $request->cno,
+            'cvv' => $request->cv,
+            'exp_date' => $request->dt
+        ]) : '';
+        
         $url = $this->test_mode ? 'https://staging.ptranz.com/api/auth' : 'https://tbd.ptranz.com/api/auth';
         $name = explode(' ',auth()->user()->name);
-
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
@@ -40,7 +44,7 @@ trait PowerTransPaymentTrait
             'PowerTranz-PowerTranzPassword' => $this->powertrans_password
         ])->post($url,[
             "TransactionIdentifier" => Str::uuid(),
-            "TotalAmount" => 1,
+            "TotalAmount" => $request->total_amount,
             "CurrencyCode" => "840",
             "ThreeDSecure" => false,
             "Source" => [
@@ -64,7 +68,8 @@ trait PowerTransPaymentTrait
             ],
             "AddressMatch"=> false
         ])->json();
-        $response['redirect_url'] = $redirct_url;
+        
+        $request->action ? $response['redirect_url'] = $redirect_url.'&TransactionIdentifier='.$response['TransactionIdentifier'] : $response['redirect_url'] = $redirect_url;
         return $response;
     }
 
@@ -89,7 +94,8 @@ trait PowerTransPaymentTrait
             $request->merge(['order_number' => $request->order_number.'-'.time() ]);
   
         } elseif ($request->payment_from == 'subscription') {
-            $description = "subscription";      
+            $description = "subscription";    
+            $request->action ? $request->merge(['order_number' => $request->subscription_id ]) : '';
         }
 
        return $this->powerTransApi($request,$description);

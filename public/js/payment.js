@@ -3897,6 +3897,7 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
                             $(document).find('.topup_wallet_confirm').prop('disabled',true);
                             $(".subscription_confirm_btn").attr("disabled", false);
                             $(".select_payment_option_done").attr("disabled", false);
+                            $(".topup_wallet_confirm").attr("disabled", false);
                         }else{
                             $("#card_error_"+name).html('');
                             // $(document).find('.topup_wallet_confirm').prop('disabled',true);
