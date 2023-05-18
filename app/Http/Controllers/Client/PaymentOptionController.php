@@ -933,11 +933,18 @@ class PaymentOptionController extends BaseController
         $result = json_decode($create_user, true);
         if ($result['status'] == 201) {
             $api_data = self::createApiKey();
-            return json_encode([
-                'status' => 201,
-                'api_key' => $api_data['apiKey'],
-                'message' => 'Api key generate successfully.'
-            ]);
+            if ($api_data['status' == 200]) {
+                return json_encode([
+                    'status' => 201,
+                    'api_key' => $api_data['apiKey'],
+                    'message' => 'Api key generate successfully.'
+                ]);
+            } else {
+                return json_encode([
+                    'status' => $api_data['status'],
+                    'message' => $api_data['message']
+                ]);
+            }
         } else {
             return json_encode([
                 'status' => $result['status'],

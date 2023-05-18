@@ -143,11 +143,11 @@ class MtnMomoController extends FrontController
     public function createToken(Request $request, UrlGenerator $url)
     {
         self::__init(false);
+
         if (! self::$_isConfigurationSet) {
             return self::response(500, 'Sorry for inconvinence. Please try again later');
         }
 
-        
         $data = [];
         if ($request->from == 'cart') {
             $data['amt'] = $request->amt;
@@ -173,7 +173,7 @@ class MtnMomoController extends FrontController
             return self::response(500, 'Sorry for inconvinence. Please try again later');
         }
 
-        // return self::RequestToPay($token, $data);
+        return self::RequestToPay(self::$_accessToken, $data);
 
         // $response = curl_exec($curl);
         // $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
@@ -219,80 +219,18 @@ class MtnMomoController extends FrontController
             $order_number = $data['order_number'];
         }
 
-        $order_number = '77877878';
+        $order_number = 'Transc' . implode('', range(100, 150));
 
-        $payOpt = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'mtn_momo')
-            ->where('status', 1)
-            ->first();
-        // if ($payOpt->test_mode == '1') {
-        // $currency = 'EUR';
-        // $partyId = mt_rand(1000000000,9999999999);
-        // }else{
-        $currency = 'UGX';
+        $currency = 'EUR';
         $partyId = '256761412741';
-        // }
 
-        $subscription_key = '0acdc1084bde4ea0a37599dd2a5ce403';
-        $user_id = 'c9a17b3f-0867-4ebb-8a27-728548379d0b';
-        $api_key = 'c3b82aa660734d8283d5f319429d4f83';
-        // $token = base64_encode($user_id.':'.$api_key);
-        $reference_id = 'c9a17b3f-0867-4ebb-8a27-728548379d0b';
-
-        // $appUrl = 'https://proxy.momoapi.mtn.com/collection/token/';
-        $envirement = 'mtnuganda';
-
-        $this->reference_id = MtnMomoPaymentManager::gen_uuid_4();
-        Log::info($this->reference_id);
-        Log::info($order_number);
-        $curl_1 = curl_init();
-        curl_setopt_array($curl_1, array(
-            CURLOPT_URL => 'https://proxy.momoapi.mtn.com/collection/v1_0/requesttopay',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => '{
-        "amount":' . $amount . ',
-        "currency": ' . $currency . ',
-        "externalId":' . $order_number . ',
-        "payer": {
-            "partyIdType": "MSISDN",
-            "partyId": ' . $partyId . '
-        },
-        "payerMessage": "Paying for Driver tester code",
-        "payeeNote": "Drivers name"
-        }',
-            CURLOPT_HTTPHEADER => array(
-                'X-Reference-Id: ' . $this->reference_id,
-                'X-Target-Environment: ' . $envirement,
-                'Ocp-Apim-Subscription-Key: ' . $subscription_key,
-                'Authorization: Bearer ' . $token,
-                'Content-Type: application/json'
-            )
-        ));
-
-        $response = curl_exec($curl_1);
-        $status = curl_getinfo($curl_1, CURLINFO_HTTP_CODE);
-        Log::info(curl_getinfo($curl_1));
-
-        curl_close($curl_1);
-        // Log::info($curl_1);
-
-        if ($status == '202') {
-            return self::GetpaymentTransaction($token, $this->reference_id, $data);
-        }
+        list ($transactionId, $status) = self::paymentRequest($token, $amount, $currency, $order_number, $partyId);
+        if ($status)
+            self::sucessPayment($data, $transactionId);
     }
 
     public function GetpaymentTransaction($token, $reference_id, $data)
     {
-        $subscription_key = '0acdc1084bde4ea0a37599dd2a5ce403';
-        $user_id = 'c9a17b3f-0867-4ebb-8a27-728548379d0b';
-        $api_key = 'c3b82aa660734d8283d5f319429d4f83';
-        $curl = curl_init();
-        $envirement = 'mtnuganda';
         curl_setopt_array($curl, array(
             CURLOPT_URL => 'https://proxy.momoapi.mtn.com/collection/v1_0/' . $reference_id,
             CURLOPT_RETURNTRANSFER => true,
