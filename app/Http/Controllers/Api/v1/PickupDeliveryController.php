@@ -580,8 +580,7 @@ class PickupDeliveryController extends BaseController{
                         $data = [];
                         $data['status'] = 200;
                         $data['message'] =  __('Order Placed');
-                        $data['data'] =
-                        $order;
+                        $data['data'] = $order;
                         return $data;
         }
     }

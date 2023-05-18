@@ -180,7 +180,12 @@
                                                                                                     @if(@$order->reqCancelOrder->status == 'Pending')
                                                                                                         {{__('Cancel Order Pending')}}
                                                                                                     @else
-                                                                                                        {{__( ucfirst( $vendor->order_status)) }}</label>
+                                                                                                        @if ($luxury_option_name == 'Dine-In' && $vendor->order_status == 'out for delivery')
+                                                                                                        {{__( ucfirst('Ready for Delivery')) }}
+                                                                                                        @else
+                                                                                                        {{__( ucfirst( $vendor->order_status)) }}
+                                                                                                        @endif
+                                                                                                        </label>
                                                                                                     @endif
                                                                                                 </li>
                                                                                             @endif
@@ -305,6 +310,7 @@
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                             @endif
+
                                                                                             @if ($vendor->delivery_fee > 0)
                                                                                                 <li
                                                                                                     class="d-flex align-items-center justify-content-between">
@@ -316,6 +322,7 @@
                                                                                                         *
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
+
                                                                                             @endif
 
                                                                                             @if ($vendor->toll_amount > 0)

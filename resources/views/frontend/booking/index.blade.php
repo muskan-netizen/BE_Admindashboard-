@@ -1552,6 +1552,7 @@ input[type=number]::-webkit-outer-spin-button {
         var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
         var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
         var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
+        var data_trans_url = "{{route('payment.payByDataTrans')}}";
         var create_bid_url = "{{route('createBid')}}";
         var driver_biding_list_url = "{{route('getBidsRelatedToOrderRide')}}";
         var accept_bid_by_customer = "{{route('acceptBidByCustomer')}}";
@@ -1627,7 +1628,9 @@ input[type=number]::-webkit-outer-spin-button {
     @endif
     <script type="text/javascript" src="{{ asset('js/developer.js') }}"></script>
     <script src="{{ asset('js/payment.js') }}"></script>
-
+    @if(in_array('data_trans',$client_payment_options))
+        <script src="{{ $data_trans_script_url }}"></script>
+    @endif
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
         integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -1653,6 +1656,7 @@ input[type=number]::-webkit-outer-spin-button {
         var apply_cab_booking_promocode_coupon_url = "{{ route('verify.cab.booking.promo-code') }}";
         var no_result_message = "{{ __('No result found. Please try a new search') }}";
 
+        var pesapal_payment_url = "{{ route('pesapal.payment') }}";
         /// ************* product order form **************///////
         $('body').on('click', '.clproduct_order_form', function(event) {
             event.preventDefault();
@@ -1671,6 +1675,7 @@ input[type=number]::-webkit-outer-spin-button {
 
     <script type="text/javascript">
         $(document).ready(function(e) {
+        	$("#get-current-location").trigger("click");
             var daterang = $('input[name="schedule_pickup_date"]').daterangepicker({
                 singleDatePicker: true,
                 startDate: moment().add('10', 'minutes'),

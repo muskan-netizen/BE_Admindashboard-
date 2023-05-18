@@ -432,6 +432,9 @@ $(document).ready(function () {
                     else if(payment_option_id == 22){
                         payWithCcAvenue('',response.data);
                     }
+                    else if(payment_option_id == 57){
+                        payWithPesapal(payment_option_id,response.data);
+                    }
                     cabBookingPaymentOptions(payment_option_id, response.data);
                 }else{
                     $('#show_error_of_booking').html(response.message);
@@ -1845,7 +1848,7 @@ $(document).ready(function () {
                     }else {
                     }
                 }else {
-                    $("#address-input").val("Geocoder failed due to: " + status);
+                  //  $("#address-input").val("Geocoder failed due to: " + status);
                 }
             }
         );
@@ -1867,6 +1870,10 @@ $(document).ready(function () {
             case '47':
                 paymentViaKhalti('', order);
                 break;
+
+            case '55':
+                paymentViaDataTrans('',payment_option_id,order);
+            break;
 
         }
 
