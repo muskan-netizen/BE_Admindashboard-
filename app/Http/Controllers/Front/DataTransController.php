@@ -37,10 +37,6 @@ class DataTransController extends Controller
         $user = auth()->user();
         $data['come_from'] = 'app';
 
-        Log::info([
-            'data' => $data
-        ]);
-
         $amt = $request->amt ?? $request->total_amount;
 
         if ($request->isMethod('post')) {
@@ -118,7 +114,6 @@ class DataTransController extends Controller
             if ($payment->type == 'cart') {
                return $this->completeOrderCart($request, $payment);
             } elseif ($payment->type == 'wallet') {
-                \Log::info("Wallet type");
                return $this->completeOrderWallet($request, $payment);
             } elseif ($payment->type == 'tip') {
                 $order = Order::find($payment->order_id);

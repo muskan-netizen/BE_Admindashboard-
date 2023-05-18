@@ -4,6 +4,7 @@ namespace App\Http\Traits;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
+use App\Models\ClientCurrency;
 use App\Models\PaymentOption;
 use Illuminate\Support\Facades\Log;
 
@@ -34,15 +35,15 @@ trait PesapalPaymentTrait
         ]);
     }
 
-    public function pinId()
+    public function pinId($token)
     {
         $url = $this->test_mode ? 'https://cybqa.pesapal.com/pesapalv3/api/URLSetup/RegisterIPN' : 'https://pay.pesapal.com/v3/api/URLSetup/RegisterIPN';
 
         return Http::withHeaders([
             'Content-Type' =>'application/json',
-            'Authorization' => 'Bearer '.$this->token()['token']
+            'Authorization' => 'Bearer '.$token
         ])->post($url,[
-            "url" => "https://www.myapplication.com/ipn",
+            "url" => url(''),
             "ipn_notification_type" => "GET"
         ]);
     }
@@ -61,26 +62,30 @@ trait PesapalPaymentTrait
     {
         $token = $this->token()['token'];
 
-        $redirct_url = $request->action ? url('/success/pesapal?id='.auth()->id().'&come_from=app&status=200') : route('payment.pesapal.success');
+        $redirct_url = $request->action ? url('/success/pesapal/?id='.auth()->id().'&come_from=app&status=200') : route('payment.pesapal.success');
         $request->action ? $request->request->add(['total_amount' => $request->amount]) : $request->total_amount;
 
         $url = $this->test_mode ? 'https://cybqa.pesapal.com/pesapalv3/api/Transactions/SubmitOrderRequest' : 'https://pay.pesapal.com/v3/api/Transactions/SubmitOrderRequest';
         $name = explode(' ',auth()->user()->name);
 
+        $customerCurrency = ClientCurrency::with('currency')->where('is_primary', '1')->first();
+        $currCode = $customerCurrency->currency->iso_code;
+        $notification_id = $this->pinId($token)['ipn_id'];
+        
         return Http::withHeaders([
             'Content-Type' =>'application/json',
             'Authorization' => 'Bearer '.$token
         ])->post($url,[
             "id" => $request->order_number,
-            "currency" => "UGX",
+            "currency" => $currCode,
             "amount" => number_format($request->total_amount,2),
             "description" => $description,
             "callback_url" => $redirct_url,
-            "notification_id" => "ce3d8206-fdff-4ca8-8ebb-decc885104e3",
+            "notification_id" => $notification_id,
             "billing_address" => [
                 "email_address" => auth()->user()->email ?? '',
                 "phone_number" => auth()->user()->phone_number ?? '',
-                "country_code" => "UG",
+                "country_code" => substr($currCode, 0, 2),
                 "first_name" => $name[0] ?? '',
                 "middle_name" => "",
                 "last_name" => $name[1] ?? '',

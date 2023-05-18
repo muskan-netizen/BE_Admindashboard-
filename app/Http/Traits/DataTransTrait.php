@@ -13,7 +13,6 @@ trait DataTransTrait
     public function __construct()
     {
         $this->creds = PaymentOption::where('code', 'data_trans')->where('status', 1)->first();
-        Log::info(['creds' => $this->creds]);
         $this->creds_arr = json_decode($this->creds->credentials);
         $this->merchant_id = $this->creds_arr->merchant_id;
         $this->password = $this->creds_arr->password;
@@ -29,11 +28,6 @@ trait DataTransTrait
     {
         $redirect = route('order.dataTransuccessPage');
         $cancel_redirect = route('order.dataTransCancel');
-
-        Log::error([
-            'redirect' => $redirect,
-            'request' => $request->all()
-        ]);
         
         if ($request->payment_from == 'cart') {
             $refNo = "Oder-".$request->order_number;
@@ -51,13 +45,7 @@ trait DataTransTrait
             $refNo = "subscription";                
         }
 
-        Log::info([
-            'url' => $this->url,
-            'merchant_id' => $this->merchant_id,
-            'password' => $this->password,
-        ]);
-
-       $res = FacadesHttp::withHeaders([
+        return FacadesHttp::withHeaders([
             'Authorization' => 'Basic '. base64_encode($this->merchant_id.':'.$this->password),
             'Content-Type' =>'application/json' 
         ])->post($this->url,[
@@ -74,8 +62,5 @@ trait DataTransTrait
                 "createAlias" => true
             ]
         ]);
-
-        Log::info(['res' => $res]);
-        return $res;
     }
 }
