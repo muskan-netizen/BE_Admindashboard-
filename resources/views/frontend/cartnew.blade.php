@@ -1199,6 +1199,9 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var confirm_discard_edit_order_title = "{{__('Are you sure?')}}";
     var confirm_discard_edit_order_desc = "{{__('You want to discard editing Order.')}}";
     var success_error_container = ".cart_response";
+    var data_trans_url = "{{route('payment.payByDataTrans')}}";
+
+    var pesapal_payment_url = "{{ route('pesapal.payment') }}";
 
     var powertrans_payment_url = "{{ route('powertrans.payment') }}";
 
@@ -1914,7 +1917,9 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 @if(in_array('flutterwave',$client_payment_options))
 <script src="https://checkout.flutterwave.com/v3.js"></script>
 @endif
-
+@if(in_array('data_trans',$client_payment_options))
+    <script src="{{ $data_trans_script_url }}"></script>
+@endif
 @endsection
 @section('script-bottom-js')
 <script defer type="text/javascript"  src="{{ asset('js/giftCard/cartGiftCard.js') }}"></script>

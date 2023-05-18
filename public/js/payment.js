@@ -57,7 +57,6 @@ $(document).ready(function() {
     }
 
 
-
     window.paymentViaPaystack = function paymentViaPaystack(address_id ='',order = '') {
         let total_amount = 0;
         let tip = 0;
@@ -3910,6 +3909,76 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
         }
 
         window.payWithPowerTrans = function payWithPowerTrans(payment_option_id,order) {
+
+            let tip = 0;
+            let tipElement = $("#cart_tip_amount");
+            let cartElement = $("input[name='cart_total_payable_amount']");
+            let walletElement = $("input[name='wallet_amount']");
+            let cabElement = $("#pickup_now");
+            let subscriptionElement = $("input[name='subscription_amount']");
+            let subscription_id = $("input[name='subscription_id']");
+        
+            var data = {};
+            if (path.indexOf("cart") !== -1) {
+                total_amount = cartElement.val();
+                tip = tipElement.val();
+                data.tip = tip;
+                data.payment_from = 'cart';
+                // data.cart_id = cart_id;
+                data.order_number = order.order_number;
+                
+            } else if (path.indexOf("wallet") !== -1) {
+                total_amount = walletElement.val();
+                data.payment_from ='wallet';
+
+            } else if (cabElement.length > 0) {
+                total_amount = cabElement.data('totalamount');
+                data.payment_from = 'pickup_delivery';
+                data.order_number = order.order_number;
+
+            } else if (path.indexOf("subscription") !== -1) {
+                total_amount = subscriptionElement.val();
+                data.order_number = subscription_id.val();
+                data.payment_from ='subscription';
+
+            } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+                total_amount = walletElement.val();
+                data.payment_from ='tip';
+                data.order_number = $("#order_number").val();
+            }
+        
+            data.total_amount = total_amount;
+            data.payment_option_id = payment_option_id;
+            data._token = $('input[name=_token]').val();
+
+            data.card_number = $('#card-element-powertrans').val();
+            data.exp_date = $('#date-element-powertrans').val();
+            data.cvv = $('#cvv-element-powertrans').val();
+
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: powertrans_payment_url,
+                data: data,
+        
+                success: function (response) {
+                    console.log({response});
+                    if (response.IsoResponseCode == 00) {
+                        window.location.href = response.redirect_url+'?TransactionIdentifier='+response.TransactionIdentifier;
+                    }else{
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Something went wrong in Payment!',
+                        });
+                        console.log('Something wrong in payment');
+                    }
+                    return true;
+                }
+            });
+        };
+
+        window.payWithPesapal = function payWithPesapal(payment_option_id,order) {
             let tip = 0;
             let tipElement = $("#cart_tip_amount");
             let cartElement = $("input[name='cart_total_payable_amount']");
@@ -3951,33 +4020,27 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
             data.payment_option_id = payment_option_id;
             data._token = $('input[name=_token]').val();
         
-            data.card_number = $('#card-element-powertrans').val();
-            data.exp_date = $('#date-element-powertrans').val();
-            data.cvv = $('#cvv-element-powertrans').val();
-
+            
             $.ajax({
                 type: "post",
                 dataType: "json",
-                url: powertrans_payment_url,
+                url: pesapal_payment_url,
                 data: data,
         
                 success: function (response) {
-                    console.log({response});
-                    if (response.IsoResponseCode == 00) {
-                        window.location.href = response.redirect_url+'?TransactionIdentifier='+response.TransactionIdentifier;
-                    }else{
+                    if(response.status == 200){
+                        window.location.href = response.redirect_url;
+                    }
+                    else{
                         Swal.fire({
                             icon: 'error',
                             title: 'Oops...',
-                            text: 'Something went wrong in Payment!',
+                            text: 'Something Went Wrong in Payment',
                         });
-                        console.log('Something wrong in payment');
                     }
-                    return true;
                 }
             });
         }
-});
 
 $(document).on("keyup","#azul-card-element",function () {
     if (this.value != this.value.replace(/[^0-9\.]/g, '')) {
@@ -4032,3 +4095,67 @@ function clickHandle(evt, tabName) {
   }
 }
 
+window.paymentViaDataTrans = function paymentViaDataTrans(address_id,payment_option_id,order) {
+    let tip = 0;
+    let tipElement = $("#cart_tip_amount");
+    let cartElement = $("input[name='cart_total_payable_amount']");
+    let walletElement = $("input[name='wallet_amount']");
+    let cabElement = $("#pickup_now");
+    let subscriptionElement = $("input[name='subscription_amount']");
+    let subscription_id = $("input[name='subscription_id']");
+
+    var data = {};
+    if (path.indexOf("cart") !== -1) {
+        total_amount = cartElement.val();
+        tip = tipElement.val();
+        data.tip = tip;
+        data.address_id = address_id;
+        data.payment_from = 'cart';
+        // data.cart_id = cart_id;
+        data.order_number = order.order_number;
+        
+    } else if (path.indexOf("wallet") !== -1) {
+        total_amount = walletElement.val();
+        data.payment_from ='wallet';
+
+    } else if (cabElement.length > 0) {
+        total_amount = cabElement.data('totalamount');
+        data.payment_from = 'pickup_delivery';
+        data.order_number = order.order_number;
+        data.reload_route = order.route;
+    } else if (path.indexOf("subscription") !== -1) {
+        total_amount = subscriptionElement.val();
+        data.subscription_id = subscription_id.val();
+        data.payment_from ='subscription';
+        data.subscription_id = $("#subscription_payment_form #subscription_id").val();
+
+    } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+        total_amount = walletElement.val();
+        data.payment_from ='tip';
+        data.order_number = $("#order_number").val();
+    }
+
+    data.total_amount = total_amount;
+    data.payment_option_id = payment_option_id;
+    data._token = $('input[name=_token]').val();
+
+    $.ajax({
+        type: "post",
+        dataType: "json",
+        url: data_trans_url,
+        data: data,
+        
+        success: function (res) {
+         
+            Datatrans.startPayment({
+                transactionId:  res.transactionId,
+                'opened': function() {console.log('payment-form opened');},
+                'loaded': function() {console.log('payment-form loaded');},
+                'closed': function() {console.log('payment-page closed');},
+                'error': function(err) {console.log({err});}
+            });
+            return true;
+        }
+    });
+}
+});

@@ -16,7 +16,8 @@
               </div>
 
               <div class="form-group">
-
+                
+                  <input class="form-control" name="wallet_amount" id="wallet_amount" type="hidden" placeholder="Enter Amount">
                   <input class="form-control" name="pending_amount" id="pending_amount" type="hidden" placeholder="Enter Amount">
                   <input class="form-control" name="tip_for_past_order" id="tip_for_past_order" type="hidden" value="1">
                   <input class="form-control" name="wallet_amount" id="wallet_amount" type="hidden">

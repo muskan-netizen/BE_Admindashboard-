@@ -779,6 +779,31 @@ class PaymentOptionController extends BaseController
                                 'nmi_client_id' => $request->nmi_client_id,
                                 'nmi_key_id' => $request->nmi_key_id,
                             ));
+                            break;
+
+                            case 'data_trans':
+                                $validatedData = $request->validate([
+                                    'data_trans_merchant_id' => 'required',
+                                    'data_trans_password' => 'required'
+                                ]);
+    
+                                $data_trans_arr = array(
+                                    'merchant_id' => $request->data_trans_merchant_id,
+                                    'password' => $request->data_trans_password
+                                );
+                                $json_creds = json_encode($data_trans_arr);
+                                
+                            break;
+                        break;
+                        case 'pesapal':
+                            $request->validate([
+                                'pesapal_consumer_key' => 'required',
+                                'pesapal_consumer_secret' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'pesapal_consumer_key' => $request->pesapal_consumer_key,
+                                'pesapal_consumer_secret' => $request->pesapal_consumer_secret,
+                            ));
                         break;
                         case 'powertrans':
                             $request->validate([

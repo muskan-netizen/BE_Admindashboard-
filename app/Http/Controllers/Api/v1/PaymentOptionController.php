@@ -19,6 +19,7 @@ use App\Http\Controllers\Front\MvodafoneController;
 use App\Http\Controllers\Front\NmiPaymentController;
 use App\Http\Controllers\Front\PayphoneController;
 use App\Http\Controllers\Front\PowerTransPaymentController;
+use App\Http\Controllers\Front\PesapalPaymentController;
 use App\Http\Controllers\Front\SkipCashController;
 use App\Http\Controllers\Front\ToyyibPayController;
 use App\Http\Controllers\Front\VivawalletController;
@@ -79,7 +80,7 @@ class PaymentOptionController extends BaseController{
             }else{
                 $domain = $client->sub_domain.env('SUBMAINDOMAIN');
             }
-            //$server_url = "http://192.168.97.160:9091/";
+            // $server_url = "http://192.168.102.171:8001/";
             $server_url = "https://".$domain."/";
             $request->serverUrl = $server_url;
             $request->currencyId = $request->header('currency');
@@ -817,6 +818,12 @@ class PaymentOptionController extends BaseController{
 
 
 
-
+    public function postPaymentVia_pesapal(Request $request){
+        $gateway = new PesapalPaymentController();
+        $request->action ? $request->request->add([
+            'payment_from' => $request->action, 
+          ]) : '';
+        return $gateway->payByPesapal($request);
+    }
 
 }

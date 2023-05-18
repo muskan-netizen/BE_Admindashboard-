@@ -169,7 +169,6 @@ class UserSubscriptionController extends FrontController
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
 
         $dollar_compare =  !empty($clientCurrency)?$clientCurrency->doller_compare:1;
-
         if( (isset($request->user_id)) && (!empty($request->user_id)) ){
             $user = User::find($request->user_id);
         }else{

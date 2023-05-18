@@ -455,6 +455,9 @@ $(document).ready(function () {
                     else if(payment_option_id == 22){
                         payWithCcAvenue('',response.data);
                     }
+                    else if(payment_option_id == 57){
+                        payWithPesapal(payment_option_id,response.data);
+                    }
                     else if(payment_option_id == 58){
                         payWithPowerTrans(payment_option_id,response.data);
                     }
@@ -1893,6 +1896,10 @@ $(document).ready(function () {
             case '47':
                 paymentViaKhalti('', order);
                 break;
+
+            case '55':
+                paymentViaDataTrans('',payment_option_id,order);
+            break;
 
         }
 
