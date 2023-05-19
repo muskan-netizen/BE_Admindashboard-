@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Front\FrontController;
@@ -71,7 +72,7 @@ class MtnMomoController extends FrontController
     {
         $time = '';
         $amt = $request->amt ?? $request->amount;
-        if (isset($request->auth_token) && ! empty($request->auth_token)) {
+        if (isset($request->auth_token) && !empty($request->auth_token)) {
             $user = User::where('auth_token', $request->auth_token)->first();
             FacadesAuth::login($user);
         } else {
@@ -124,7 +125,7 @@ class MtnMomoController extends FrontController
 
             $request->amt = $amt;
         } elseif ($request->from == 'subscription') {
-            $time = 'S_' . time() . '_' . (! empty($request->subsid) ? $request->subsid : $request->subscription_id);
+            $time = 'S_' . time() . '_' . (!empty($request->subsid) ? $request->subsid : $request->subscription_id);
             Payment::create([
                 'amount' => 0,
                 'transaction_id' => $time,
@@ -144,7 +145,7 @@ class MtnMomoController extends FrontController
     {
         self::__init(false);
 
-        if (! self::$_isConfigurationSet) {
+        if (!self::$_isConfigurationSet) {
             return self::response(500, 'Sorry for inconvinence. Please try again later');
         }
 
@@ -172,30 +173,27 @@ class MtnMomoController extends FrontController
         if (empty(self::$_accessToken)) {
             return self::response(500, 'Sorry for inconvinence. Please try again later');
         }
+        // request to pay 
+        $response = self::RequestToPay(self::$_accessToken, $data);
 
-        return self::RequestToPay(self::$_accessToken, $data);
-
-        // $response = curl_exec($curl);
-        // $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        // Log::info('access_token' . json_encode($status));
-        // if ($status == 200) {
-        // $result = json_decode($response, true);
-
-        // if ($result['token_type'] == 'access_token') {
-        // $token = $result['access_token'];
-        // return self::RequestToPay($token, $data);
-        // }
-        // } else if ($status == 401) {
-        // return json_encode([
-        // 'status' => 401,
-        // 'message' => 'Unauthorized.'
-        // ]);
-        // } else if ($status == 500) {
-        // return json_encode([
-        // 'status' => 401,
-        // 'message' => 'Internal Server Error'
-        // ]);
-        // }
+        if ($response['status'] == 202) {
+            //check transaction status 
+            $response = self::getTransactionStatus(self::$_referenceId);
+            if (!empty($response))
+                $url =  self::sucessPayment($data, $response['financialTransactionId']);
+            if ($url) {
+                return response()->json([
+                    'status' => 'Success',
+                    'message' => 'Wallet has been credited successfully',
+                    'url' => $url
+                ], 200);
+            }
+        }
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Wallet could not be credited',
+            'response' => $response
+        ], 500);
     }
 
     public function RequestToPay($token, $data)
@@ -219,48 +217,11 @@ class MtnMomoController extends FrontController
             $order_number = $data['order_number'];
         }
 
-        $order_number = 'Transc' . implode('', range(100, 150));
-
-        $currency = 'EUR';
-        $partyId = '256761412741';
-
-        list ($transactionId, $status) = self::paymentRequest($token, $amount, $currency, $order_number, $partyId);
-        if ($status)
-            self::sucessPayment($data, $transactionId);
-    }
-
-    public function GetpaymentTransaction($token, $reference_id, $data)
-    {
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://proxy.momoapi.mtn.com/collection/v1_0/' . $reference_id,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_HTTPHEADER => array(
-                'X-Target-Environment: ' . $envirement,
-                'Ocp-Apim-Subscription-Key: ' . $subscription_key,
-                'Authorization: Bearer ' . $token
-            )
-        ));
-
-        $response = curl_exec($curl);
-        $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
-        if ($status == 200) {
-            $result = json_decode($response, true);
-            $payment_status = $result['status'];
-            if ($payment_status == 'SUCCESSFUL') {
-                $transactionId = $result['financialTransactionId'];
-                Log::info('payment' . json_encode($result));
-                return self::sucessPayment($data, $transactionId);
-            }
+        if (self::$_environment == 'sandbox') {
+            $partyId = '256761412741';
         }
 
-        Log::info('status' . json_encode($status));
+        return json_decode(self::paymentRequest($token, $amount, self::$_currency, $order_number, $partyId), true);
     }
 
     public function sucessPayment($request, $transactionId)
@@ -282,7 +243,7 @@ class MtnMomoController extends FrontController
                 $order->payment_status = 1;
                 $order->save();
                 $payment_exists = Payment::where('transaction_id', $transactionId)->first();
-                if (! $payment_exists) {
+                if (!$payment_exists) {
                     Payment::insert([
                         'date' => date('Y-m-d'),
                         'order_id' => $order->id,
@@ -314,7 +275,7 @@ class MtnMomoController extends FrontController
                     // send success sms
                     $this->sendSuccessSMS($request, $order);
                     // Send Notification
-                    if (! empty($order->vendors)) {
+                    if (!empty($order->vendors)) {
                         foreach ($order->vendors as $vendor_value) {
                             $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
                             $user_vendors = UserVendor::where([
@@ -342,7 +303,7 @@ class MtnMomoController extends FrontController
             $request = new \Illuminate\Http\Request($request);
 
             $walletController = new WalletController();
-            $walletController->creditWallet($request);
+            $walletController->creditWallet($request, '');
             if ($request['from'] == 'app') {
                 $returnUrl = route('payment.gateway.return.response') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId;
             } else {

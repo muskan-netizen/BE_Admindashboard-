@@ -1,9 +1,11 @@
 <?php
+
 namespace App\Http\Traits;
 
 use App\Models\PaymentOption;
 use Auth, Log, Config;
 use GuzzleHttp\Client;
+use App\Models\ClientCurrency;
 
 trait MtnMomoPaymentManager
 {
@@ -32,6 +34,8 @@ trait MtnMomoPaymentManager
 
     private static $_isConfigurationSet = false;
 
+    private static $_currency = 'EUR';
+
     public function __init($creatingApiKey = true)
     {
         if (self::$_paymentOption == null) {
@@ -46,16 +50,18 @@ trait MtnMomoPaymentManager
             self::$_client = new Client();
         }
 
-        if ((! empty(self::$_paymentOption) && self::$_paymentOption->test_mode == '1') || self::$_isSandbox == 'true') {
+        if ((!empty(self::$_paymentOption) && self::$_paymentOption->test_mode == '1') || self::$_isSandbox == 'true') {
             self::$_apiUrl = 'https://sandbox.momodeveloper.mtn.com/v1_0/';
             self::$_environment = 'sandbox';
+            self::$_isSandbox = true;
         } else {
             self::$_apiUrl = 'https://proxy.momoapi.mtn.com/collection/';
             self::$_environment = 'mtnuganda';
+            self::$_isSandbox = false;
         }
 
         $credentials = json_decode(self::$_paymentOption->credentials);
-        if (! empty($credentials) && ! $creatingApiKey) {
+        if (!empty($credentials) && !$creatingApiKey) {
             self::$_subscriptionKey = (isset($credentials->subscription_key)) ? $credentials->subscription_key : '';
             self::$_referenceId = (isset($credentials->reference_id)) ? $credentials->reference_id : '';
             self::$_apiKey = (isset($credentials->api_key)) ? $credentials->api_key : '';
@@ -63,6 +69,10 @@ trait MtnMomoPaymentManager
                 'Authorization' => 'Basic ' . base64_encode(self::$_referenceId . ':' . self::$_apiKey),
                 'Ocp-Apim-Subscription-Key' => self::$_subscriptionKey
             ];
+            if (!self::$_isSandbox) {
+                $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+                self::$_currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'EUR';
+            }
             self::$_isConfigurationSet = true;
         }
 
@@ -71,7 +81,11 @@ trait MtnMomoPaymentManager
         self::$_domain_name = self::getDomainName($site_url);
     }
 
-    public function createApiUser()
+    private function createRequest($url, $headers, $data)
+    {
+    }
+
+    public static function createApiUser()
     {
         /* Check if payment option avaiable for MOMO API */
         if (empty(self::$_paymentOption)) {
@@ -124,7 +138,7 @@ trait MtnMomoPaymentManager
         }
     }
 
-    public function createApiKey()
+    public static function createApiKey()
     {
         try {
             // Create an apiKey
@@ -138,7 +152,7 @@ trait MtnMomoPaymentManager
 
             $response = json_decode($response->getBody()->getContents(), true);
 
-            if (! empty($response['apikey'])) {
+            if (!empty($response['apikey'])) {
                 $apiKey = $response['apikey'];
             }
 
@@ -169,7 +183,7 @@ trait MtnMomoPaymentManager
         }
     }
 
-    public function GenerateAccressToken()
+    public static function GenerateAccressToken()
     {
         try {
             $response = self::$_client->request('POST', 'https://sandbox.momodeveloper.mtn.com/collection/token/', [
@@ -210,7 +224,7 @@ trait MtnMomoPaymentManager
         }
     }
 
-    public function paymentRequest($token, $amount, $currency, $order_number, $partyId)
+    public static function paymentRequest($token, $amount, $currency, $order_number, $partyId)
     {
         try {
 
@@ -221,10 +235,10 @@ trait MtnMomoPaymentManager
                 self::response(404, 'Resouce Not Found');
             }
 
-            $referenceId = $response->getBody()->getContents();
+            self::$_referenceId = $response->getBody()->getContents();
 
             $headers = [
-                'X-Reference-Id' => $referenceId,
+                'X-Reference-Id' => self::$_referenceId,
                 'X-Target-Environment' => self::$_environment,
                 'Ocp-Apim-Subscription-Key' => self::$_subscriptionKey,
                 'Authorization' => 'Bearer ' . self::$_accessToken,
@@ -242,7 +256,7 @@ trait MtnMomoPaymentManager
                 'payeeNote' => "Drivers name"
             ];
 
-            $response = self::$_client->request('post', 'https://sandbox.momodeveloper.mtn.com/collection/v1_0/requesttopay', [
+            $response = self::$_client->request('POST', 'https://sandbox.momodeveloper.mtn.com/collection/v1_0/requesttopay', [
                 'headers' => $headers,
                 'body' => json_encode($params)
             ]);
@@ -251,7 +265,7 @@ trait MtnMomoPaymentManager
 
             switch ($code) {
                 case 202:
-                    self::getTransactionStatus($referenceId);
+                    return self::response($code, 'Request to Pay has successfully generated');
                     break;
                 case 400:
                     return self::response($code, 'There is a Problem with submitted data.');
@@ -266,15 +280,19 @@ trait MtnMomoPaymentManager
                     return self::response($code, 'Unauthorized');
                     break;
                 default:
-                    return self::response($code, json_encode($response->getBody()->getContents()));
+                    return self::response($code, $response->getBody()->getContents());
                     break;
             }
         } catch (\Exception $e) {
+
+            print_r($e->getMessage());
+            die;
+
             return self::response($e->getCode(), $e->getMessage());
         }
     }
 
-    public function getTransactionStatus($referenceId)
+    public static function getTransactionStatus($referenceId)
     {
         $headers = [
             'X-Target-Environment' => self::$_environment,
@@ -288,27 +306,16 @@ trait MtnMomoPaymentManager
         ]);
 
         if (empty($response)) {
-            self::response(404, 'Resouce Not Found');
+            return [
+                null,
+                false
+            ];
         }
 
-        $response = json_decode($response->getBody()->getContents(), true);
-
-        if ($response) {
-            if ($response['status'] == 'SUCCESSFUL') {
-                return [
-                    $response['financialTransactionId'],
-                    true
-                ];
-            } else {
-                return [
-                    $response['financialTransactionId'],
-                    false
-                ];
-            }
-        }
+       return json_decode($response->getBody()->getContents(), true);
     }
 
-    private function getDomainName($url)
+    private static function getDomainName($url)
     {
         $disallowed = array(
             'http://',
@@ -322,7 +329,7 @@ trait MtnMomoPaymentManager
         return $url;
     }
 
-    private function response($code, $message, $apiKey = null)
+    private static function response($code, $message, $apiKey = null, $transactionId = null)
     {
         return json_encode([
             'status' => $code,

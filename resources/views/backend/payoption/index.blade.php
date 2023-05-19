@@ -1997,6 +1997,13 @@ Options']) @section('css')
 
 
     $( "#mtn_momo_fields_wrapper" ).delegate( "#generate_mtn_momo_api_key", "click", function() {
+    
+    	if($("#api_key").val() != ''){
+    		if(!confirm('Are you sure, you want to generate new API key? If yes, you might need to generate reference ID first. It is recommended to do this is in sandbox environment only.')){
+    			return false;
+    		}	
+    	}
+    	
     	let sandboxCheckbox = $(this).parents('#mtn_momo_fields_wrapper').siblings('.row').children().eq(1).find('input[type="checkbox"]').is(":checked");
         var subscription_key    = $("#subscription_key").val();
         var reference_id        = $("#reference_id").val();
@@ -2054,14 +2061,35 @@ Options']) @section('css')
     
     //For MTN Momo
     let checkbox = $('#payment_48').find('.row').children().eq(1).find('input[type="checkbox"]');
-
+	var Mtnkeys = [];
     $(document).on('change', checkbox, function(e){
-    	$("#subscription_key").val('');
-    	$("#reference_id").val('');
-    	$("#api_key").val('');
+    	let subscriptionKey = $("#subscription_key").val(); 
+    	let referenceId = $("#reference_id").val(); 
+    	let apiKey = $("#api_key").val(); 
     	
     	if(!checkbox.is(":checked")){
     		$("#generate_mtn_momo_api_key").addClass('d-none');
+    		
+    		/* store all keys in array */
+    		$('#payment_48').find('input[type="text"]').map(function(idx, elem) {
+    			if(!Mtnkeys.includes($(elem).val()))
+    	 			Mtnkeys.push($(elem).val())
+        	});
+        	
+			//clear the form         	
+        	$('#payment_48').find('input[type="text"]').val('')
+    	}else{
+    		$("#generate_mtn_momo_api_key").removeClass('d-none');
+    		
+    		/* Refill the keys is exists */
+    		if(Mtnkeys.length > 0){
+        		$('#payment_48').find('input[type="text"]').map(function(idx, elem) {
+        	 		$(elem).val(Mtnkeys[idx])
+            	})
+            }else{
+            	/* clear the form */
+            	$('#payment_48').find('input[type="text"]').val('');
+            }
     	}
     });
 

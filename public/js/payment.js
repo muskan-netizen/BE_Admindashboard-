@@ -3397,15 +3397,14 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
              url: create_mtn_momo_token,
              data: rowData,
              success: function(resp) {
-				 console.log(resp)
-                 if(resp != ''){
-                     //window.location.href = resp;
+                 if(resp.hasOwnProperty('url')){
+                    window.location.href = resp.url;
                  }else{
-                     alert('Tray Again');
+                     alert(resp.message);
                  }
            },
            error: function(resp) {
-               //window.location.href = resp.responseText;
+               window.location.href = resp.message;
            }
 
          });
