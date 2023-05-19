@@ -911,6 +911,35 @@ display: inline-block;
     height: 100%;
     overflow: hidden;
 }
+.al_body_template_eight .render_full_selected_products .selected_products-slider .suppliers-img-outer {
+    height: 100%;
+    overflow: hidden;
+    min-height: 320px;
+    max-height: 320px;
+}
+.al_body_template_eight .render_full_new_products .img-outer-box {
+    height: 100%;
+    min-height: 250px;
+    max-height: 250px;
+}
+.al_body_template_eight .render_featured_products .img-outer-box {
+    height: 100%;
+    min-height: 220px !important;
+    max-height: 220px !important;
+}
+.al_body_template_eight  .render_full_on_sale .img-outer-box {
+    height: 100%;
+    min-height: 299px !important;
+    max-height: 299px !important;
+}
+.al_body_template_eight .render_full_featured_products .img-outer-box{
+    min-height: 224px;max-height: 224px;overflow: hidden;
+}
+.al_body_template_eight .single_category_products .suppliers-img-outer{
+    height: 100%;
+    min-height: 330px !important;
+    max-height: 330px !important;
+}
 .al_body_template_eight section#homepage_top_rated .product-m.render_top_rated .row .img-outer-box.position-relative {
     min-height: 220px;
     height: 100%;
@@ -1397,5 +1426,25 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
     }
     .al_body_template_four .suppliers-img-outer {
         height: 130px!important;
+    }
+    .al_body_template_eight .product-card-box.position-relative.al_box_third_template.al{
+        min-height: auto;
+    }
+    .al_body_template_eight .slick-slide .inner_spacing p{
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        width: 100%;
+    }
+    .al_body_template_eight .alNewSliderTopBrand .brand-img{min-height: auto;}
+    .al_body_template_eight .p2p-full-width .alNewSliderTopBrand.render_brands .logo_brand .brand-img img.blur-up.brand-logo.lazyloaded{
+        height: auto;
+    }
+    .al_body_template_eight .single_category_products .suppliers-img-outer{
+        min-height: auto !important;
+        max-height: auto;
+    }
+    .al_body_template_eight .main-product.single_category_products.mb-0.render_full_selected_products.bg-light-gray .suppliers-img-outer{
+        min-height: auto !important;
     }
 }
