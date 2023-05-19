@@ -303,7 +303,7 @@ class MtnMomoController extends FrontController
             $request = new \Illuminate\Http\Request($request);
 
             $walletController = new WalletController();
-            $walletController->creditWallet($request, '');
+            $walletController->creditWallet($request);
             if ($request['from'] == 'app') {
                 $returnUrl = route('payment.gateway.return.response') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId;
             } else {

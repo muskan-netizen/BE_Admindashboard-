@@ -81,10 +81,6 @@ trait MtnMomoPaymentManager
         self::$_domain_name = self::getDomainName($site_url);
     }
 
-    private function createRequest($url, $headers, $data)
-    {
-    }
-
     public static function createApiUser()
     {
         /* Check if payment option avaiable for MOMO API */
