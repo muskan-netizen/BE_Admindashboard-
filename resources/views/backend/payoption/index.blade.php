@@ -2086,9 +2086,6 @@ Options']) @section('css')
         		$('#payment_48').find('input[type="text"]').map(function(idx, elem) {
         	 		$(elem).val(Mtnkeys[idx])
             	})
-            }else{
-            	/* clear the form */
-            	$('#payment_48').find('input[type="text"]').val('');
             }
     	}
     });

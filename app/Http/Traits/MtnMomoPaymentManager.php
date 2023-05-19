@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Traits;
 
 use App\Models\PaymentOption;
@@ -50,7 +49,7 @@ trait MtnMomoPaymentManager
             self::$_client = new Client();
         }
 
-        if ((!empty(self::$_paymentOption) && self::$_paymentOption->test_mode == '1') || self::$_isSandbox == 'true') {
+        if ((! empty(self::$_paymentOption) && self::$_paymentOption->test_mode == '1') || self::$_isSandbox == 'true') {
             self::$_apiUrl = 'https://sandbox.momodeveloper.mtn.com/v1_0/';
             self::$_environment = 'sandbox';
             self::$_isSandbox = true;
@@ -61,7 +60,7 @@ trait MtnMomoPaymentManager
         }
 
         $credentials = json_decode(self::$_paymentOption->credentials);
-        if (!empty($credentials) && !$creatingApiKey) {
+        if (! empty($credentials) && ! $creatingApiKey) {
             self::$_subscriptionKey = (isset($credentials->subscription_key)) ? $credentials->subscription_key : '';
             self::$_referenceId = (isset($credentials->reference_id)) ? $credentials->reference_id : '';
             self::$_apiKey = (isset($credentials->api_key)) ? $credentials->api_key : '';
@@ -69,7 +68,7 @@ trait MtnMomoPaymentManager
                 'Authorization' => 'Basic ' . base64_encode(self::$_referenceId . ':' . self::$_apiKey),
                 'Ocp-Apim-Subscription-Key' => self::$_subscriptionKey
             ];
-            if (!self::$_isSandbox) {
+            if (! self::$_isSandbox) {
                 $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
                 self::$_currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'EUR';
             }
@@ -95,7 +94,7 @@ trait MtnMomoPaymentManager
         ];
 
         $params = [
-            'providerCallbackHost' => self::$_domain_name
+            'providerCallbackHost' => 'https://webhook.site/8e8b0eb4-c068-40b2-a921-dc582f4816e0' // self::$_domain_name
         ];
 
         /* Check if API is on test mode */
@@ -120,7 +119,7 @@ trait MtnMomoPaymentManager
                     return self::response($code, 'Internal Server Error');
                     break;
                 case 409:
-                    return self::response($code, 'Something wrong with the keys');
+                    return self::response($code, 'Either User is exists with this reference ID or invalid subscription key');
                     break;
                 case 401:
                     return self::response($code, 'Unauthorized');
@@ -145,18 +144,17 @@ trait MtnMomoPaymentManager
             if (empty($response)) {
                 self::response(404, 'Resouce Not Found');
             }
-
-            $response = json_decode($response->getBody()->getContents(), true);
-
-            if (!empty($response['apikey'])) {
-                $apiKey = $response['apikey'];
-            }
-
             $code = $response->getStatusCode();
+            $response = json_decode($response->getBody()->getContents(), true);
+            \Log::info($response);
+            $apiKey = '';
+            if (! empty($response['apiKey'])) {
+                $apiKey = $response['apiKey'];
+            }
 
             switch ($code) {
                 case 201:
-                    return self::response($code, 'Api Key generated Successfully', $apiKey);
+                    return self::response($code, 'Api Key generated Successfully', $response['apiKey']);
                     break;
                 case 400:
                     return self::response($code, 'There is a Problem with submitted data.');
@@ -280,10 +278,6 @@ trait MtnMomoPaymentManager
                     break;
             }
         } catch (\Exception $e) {
-
-            print_r($e->getMessage());
-            die;
-
             return self::response($e->getCode(), $e->getMessage());
         }
     }
@@ -308,7 +302,7 @@ trait MtnMomoPaymentManager
             ];
         }
 
-       return json_decode($response->getBody()->getContents(), true);
+        return json_decode($response->getBody()->getContents(), true);
     }
 
     private static function getDomainName($url)

@@ -927,17 +927,17 @@ class PaymentOptionController extends BaseController
         self::$_subscriptionKey = $request->subscription_key;
         self::$_referenceId = $request->reference_id;
         self::$_isSandbox = $request->sandboxCheckbox;
-        self::__init();
+        self::__init(true);
 
         $create_user = self::createApiUser();
         $result = json_decode($create_user, true);
         if ($result['status'] == 201) {
-            $api_data = self::createApiKey();
-            if ($api_data['status' == 200]) {
+            $api_data = json_decode(self::createApiKey(), true);
+            if ($api_data['status'] == 201) {
                 return json_encode([
                     'status' => 201,
                     'api_key' => $api_data['apiKey'],
-                    'message' => 'Api key generate successfully.'
+                    'message' => 'Api key generated successfully.'
                 ]);
             } else {
                 return json_encode([
