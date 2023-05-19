@@ -9,13 +9,13 @@
     <div class="col-12 custom_filtter mt-3 mb-3">
         <select name="order_type" id='order_type' class="form-control sortingFilter p-1 mb-0">
             <option value="">{{__('Sort By')}}</option>
-            <option value="featured">{{_('Featured')}}</option>
-            <option value="a_to_z">{{_('A to Z')}}</option>
-            <option value="z_to_a">{{_('Z to A')}}</option>
-            <option value="low_to_high">{{_('Cost : Low to High')}}</option>
-            <option value="high_to_low">{{_('Cost : High to Low')}}</option>
-            <option value="rating">{{_('Avg. Customer Review')}}</option>
-            <option value="newly_added">{{_('Newest Arrivals')}}</option>
+            <option value="featured">{{__('Featured')}}</option>
+            <option value="a_to_z">{{__('A to Z')}}</option>
+            <option value="z_to_a">{{__('Z to A')}}</option>
+            <option value="low_to_high">{{__('Cost : Low to High')}}</option>
+            <option value="high_to_low">{{__('Cost : High to Low')}}</option>
+            <option value="rating">{{__('Avg. Customer Review')}}</option>
+            <option value="newly_added">{{__('Newest Arrivals')}}</option>
         </select>
     </div>
 @endif   
