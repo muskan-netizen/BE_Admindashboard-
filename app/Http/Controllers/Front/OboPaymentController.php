@@ -37,43 +37,6 @@ class OboPaymentController extends Controller
 
     public function beforePayment(Request $request, $domain='',$app='')
     {
-        /////////// dumy testing ////////////////
-        \Log::info($request->all());
-        $orderNumber = $this->orderNumber($request);
-
-        \Log::info($orderNumber);
-        if ($request->payment_from == 'cart') {
-            // $orderNumber = $request->order_number;
-            $urlParams   = "transactionid=$orderNumber&paymentfrom=cart&success=true";
-        } elseif ($request->payment_from == 'wallet') {
-            // $orderNumber = $number;
-            $urlParams   = "transactionid=$orderNumber&paymentfrom=wallet&success=true";
-        }elseif ($request->payment_from == 'subscription') {
-            // $orderNumber = $number;
-            $subscriptionId = $request->subscriptionId ?? $request->subscription_id;
-            $urlParams   = "transactionid=$orderNumber&subscription_id=$subscriptionId&amount=$request->amount&success=true";
-        }
-        elseif ($request->payment_from == 'pickup_delivery') {
-            // $orderNumber = $request->order_number;
-            $urlParams   = "transactionid=$orderNumber&paymentfrom=pickup_delivery&reload_route=$request->reload_route&amount=$request->amount&success=true";
-        } elseif ($request->payment_from == 'tip') {
-            // $orderNumber = $number;
-            $urlParams   = "transactionid=$orderNumber&order_number=$request->order_number&paymentfrom=tip&amount=$request->amount&success=true";
-        }
-
-        $url = route('webhook.obo.pay',$urlParams);
-            \Log::info(url('webhook/obo'."?$urlParams"));
-        return response()->json([
-            'status' => 'Success',
-            'data'   => 'https://www.obo-pay.co.rw/payment?v=aaf08420-37f0-424b-8f1a-defede7aa38b'
-        ]);
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
         $tokenData =  $this->token();
         if (isset($tokenData['httpStatus']) &&  $tokenData['httpStatus'] == "OK") {
             $token = $tokenData['token'];
@@ -121,11 +84,11 @@ class OboPaymentController extends Controller
                     "first_name"    => $userFirstName,
                     "last_name"     => $userLastName,
                     "merchant"      => $this->obo_business_name,
-                    "cancel_url"    => url($request->cancelUrl),
-                    "return_url"    => route('webhook.obo.pay', $urlParams),
+                    "cancel_url"    => url('webhook/obo'), // url($request->cancelUrl)
+                    "return_url"    => url('webhook/obo'.'?'.$urlParams),  //  route('webhook.obo.pay', $urlParams),
                     "custom_pg_id"  => $this->obo_market_place_id,
                 ], JSON_UNESCAPED_SLASHES);
-                \Log::info($input);
+                \Log::info('input'); \Log::info($input);
                 $responce = Http::withBody($input, 'application/json')->withHeaders($header)->post($apiUrl);
                 $responceData = json_decode($responce->body(), true);
                 if (isset($responceData['status']) && $responceData['status'] ===  "OK") {
@@ -284,7 +247,7 @@ class OboPaymentController extends Controller
         $user_id = auth()->id();
         $amount  = $request->amount;
         if ($request->payment_from == 'cart') {
-            $time = $request->order_number;
+            $time = $request->order_number ;
             Payment::create([
                 'amount' => 0,
                 'transaction_id' => $time,
@@ -343,7 +306,9 @@ class OboPaymentController extends Controller
 
     public function mobilePay(Request $request,$domain='')
    {
+
        $request->request->add(['payment_from' => $request->action,'from'=>$request->action,'amt'=>$request->amount,'subsid'=>$request->subscription_id??'','user_from'=>'app']);
+       \Log::info('rdata'); \Log::info($request->all());
        $data =  $this->beforePayment($request,$domain,'app');
        if(isset($data) && !empty($data))
        {
