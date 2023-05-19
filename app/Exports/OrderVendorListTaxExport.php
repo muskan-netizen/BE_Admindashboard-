@@ -8,6 +8,7 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use App\Models\ClientPreference;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Session;
 
 class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMapping{
@@ -38,10 +39,11 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
         }
         if(isset($this->data->date_range)){
             $date = explode(' to ',$this->data->date_range);
-            $dateF = $date[0];
-            $dateT = $date[1] ?? $date[0];
-            $vendor_orders = $vendor_orders->whereDate('created_at', '>=', $dateF)
-            ->whereDate('created_at', '<=', $dateT);
+            $dateF = $date[0]." 00:00:00";
+            $dateT = !empty($date[1]) ?$date[1]." 23:59:59": $date[0]." 23:59:59";
+            $dateF = Carbon::parse($dateF, $timezone)->setTimezone('UTC');
+            $dateT = Carbon::parse($dateT, $timezone)->setTimezone('UTC')->addDays(1);
+            $vendor_orders = $vendor_orders->whereBetween('created_at',[$dateF, $dateT]);
         }
         if(isset($this->data->vendor)){
             $vendor = $this->data->vendor;
@@ -64,7 +66,7 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
             }
             $vendor_orders = $vendor_orders->where('order_status_option_id',$status);
         }
-        $vendor_orders = $vendor_orders->get();          
+        $vendor_orders = $vendor_orders->get();
         foreach ($vendor_orders as $vendor_order) {
             $adminDiscount = 0.00;
             $vendor_order->created_date = dateTimeInUserTimeZone($vendor_order->created_at, $timezone);
@@ -80,16 +82,16 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 }
             }
             $tip = !empty($vendor_order->orderDetail)?number_format($vendor_order->orderDetail->tip_amount, 2):0.00;
-            if ($vendor_order->coupon_paid_by == 1) {                
-                $adminDiscount = $vendor_order->discount_amount;               
+            if ($vendor_order->coupon_paid_by == 1) {
+                $adminDiscount = $vendor_order->discount_amount;
             }
             $vendor_order->total_amount = $tip+$vendor_order->payable_amount;
             $vendor_order->order_status = $order_status;
-            $revenue = $vendor_order->admin_commission_percentage_amount + $vendor_order->admin_commission_fixed_amount + $vendor_order->total_markup_price;            
+            $revenue = $vendor_order->admin_commission_percentage_amount + $vendor_order->admin_commission_fixed_amount + $vendor_order->total_markup_price;
             if(@$client_preference_detail->is_tax_price_inclusive){
-                $vendor_order->admin_revenue = ($revenue + $vendor_order->total_container_charges + $vendor_order->service_fee_percentage_amount + $vendor_order->delivery_fee) - $adminDiscount - number_format($vendor_order->orderDetail->loyalty_amount_saved??0.00);                
+                $vendor_order->admin_revenue = ($revenue + $vendor_order->total_container_charges + $vendor_order->service_fee_percentage_amount + $vendor_order->delivery_fee) - $adminDiscount - number_format($vendor_order->orderDetail->loyalty_amount_saved??0.00);
             }else{
-                $vendor_order->admin_revenue = ($revenue + $vendor_order->taxable_amount +$vendor_order->total_container_charges+  $vendor_order->service_fee_percentage_amount  + $vendor_order->delivery_fee) - $adminDiscount - decimal_format($vendor_order->orderDetail->loyalty_amount_saved??0.00);               
+                $vendor_order->admin_revenue = ($revenue + $vendor_order->taxable_amount +$vendor_order->total_container_charges+  $vendor_order->service_fee_percentage_amount  + $vendor_order->delivery_fee) - $adminDiscount - decimal_format($vendor_order->orderDetail->loyalty_amount_saved??0.00);
             }
         }
         return $vendor_orders;
