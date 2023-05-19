@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Http\Traits\OrderTrait;
 use App\Models\Cart;
 use App\Models\CartAddon;
 use App\Models\CartCoupon;
@@ -23,7 +24,7 @@ use Illuminate\Support\Facades\Redirect;
  
 class PesapalPaymentController extends Controller
 {
-    use PesapalPaymentTrait;
+    use PesapalPaymentTrait, OrderTrait;
     const PaymentId = 57;
     public function payByPesapal(Request $request)
     {
@@ -132,41 +133,7 @@ class PesapalPaymentController extends Controller
             $order->payment_status = '1';
             $order->save();
 
-            $orderController = new OrderController();
-            $orderController->autoAcceptOrderIfOn($order->id);
-            $cart = Cart::where('user_id', $user->id)->select('id')->first();
-            $cartid = $cart->id;
-            Cart::where('id', $cartid)->update([
-                'schedule_type' => null,
-                'scheduled_date_time' => null,
-                'comment_for_pickup_driver' => null,
-                'comment_for_dropoff_driver' => null,
-                'comment_for_vendor' => null,
-                // 'schedule_porder_numberickup' => null,
-                'schedule_dropoff' => null,
-                'specific_instructions' => null
-            ]);
-            CaregoryKycDoc::where('cart_id', $cartid)->update([
-                'ordre_id' => $order->id,
-                'cart_id' => ''
-            ]);
-            CartAddon::where('cart_id', $cartid)->delete();
-            CartCoupon::where('cart_id', $cartid)->delete();
-            CartProduct::where('cart_id', $cartid)->delete();
-            CartProductPrescription::where('cart_id', $cartid)->delete();
-
-            if (! empty($order->vendors)) {
-                foreach ($order->vendors as $vendor_value) {
-                    $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
-                    $user_vendors = UserVendor::where([
-                        'vendor_id' => $vendor_value->vendor_id
-                    ])->pluck('user_id');
-                    $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
-                }
-            }
-            $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
-            $super_admin = User::where('is_superadmin', 1)->pluck('id');
-            $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+            $this->orderSuccessCartDetail($order);
 
             if(isset($request->come_from) && $request->come_from == 'app')
             {
@@ -321,7 +288,7 @@ class PesapalPaymentController extends Controller
                     $payment->save();
                 }
                 
-                $request->request->add(['order_number'=> $order->order_number, 'payment_option_id' => 32, 'amount' => $order->payable_amount, 'transaction_id' => $request->OrderMerchantReference]);
+                $request->request->add(['order_number'=> $order->order_number, 'amount' => $order->payable_amount, 'transaction_id' => $request->OrderMerchantReference]);
                 $plaseOrderForPickup = new PickupDeliveryController();
                 $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
                 
