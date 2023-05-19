@@ -8,11 +8,7 @@ use App\Models\User;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\Payment;
-use App\Models\CartAddon;
-use App\Models\UserVendor;
-use App\Models\CartCoupon;
-use App\Models\UserAddress;
-use App\Models\CartProduct;
+
 use Illuminate\Http\Request;
 use App\Models\PaymentOption;
 use App\Models\CaregoryKycDoc;
@@ -150,6 +146,7 @@ class MtnMomoController extends FrontController
         }
 
         $data = [];
+        $data['environment'] = 'web';
         if ($request->from == 'cart') {
             $data['amt'] = $request->amt;
             $data['order_number'] = $request->order_number;
@@ -179,170 +176,21 @@ class MtnMomoController extends FrontController
         if ($response['status'] == 202) {
             //check transaction status 
             $response = self::getTransactionStatus(self::$_referenceId);
-            if (!empty($response))
+            if (!empty($response)) {
                 $url =  self::sucessPayment($data, $response['financialTransactionId']);
-            if ($url) {
-                return response()->json([
-                    'status' => 'Success',
-                    'message' => 'Wallet has been credited successfully',
-                    'url' => $url
-                ], 200);
+                if ($url) {
+                    return response()->json([
+                        'status' => 'Success',
+                        'message' => 'Payment Successful',
+                        'url' => $url
+                    ], 200);
+                }
             }
         }
         return response()->json([
             'status' => 'error',
-            'message' => 'Wallet could not be credited',
+            'message' => 'Payment Failed',
             'response' => $response
         ], 500);
-    }
-
-    public function RequestToPay($token, $data)
-    {
-        if ($data['from'] == 'cart') {
-            $amount = $data['amt'];
-            $from = $data['from'];
-            $order_number = $data['order_number'];
-        } elseif ($data['from'] == 'wallet') {
-            $amount = $data['amt'];
-            $from = $data['from'];
-            $order_number = 'wallet';
-        } else if ($data['from'] == 'subscription') {
-            $amount = $data['amt'];
-            $from = $data['from'];
-            $subsid = $data['subsid'];
-            $order_number = 'subscription';
-        } else if ($data['from'] == 'tip') {
-            $amount = $data['amt'];
-            $from = $data['from'];
-            $order_number = $data['order_number'];
-        }
-
-        if (self::$_environment == 'sandbox') {
-            $partyId = '256761412741';
-        }
-
-        return json_decode(self::paymentRequest($token, $amount, self::$_currency, $order_number, $partyId), true);
-    }
-
-    public function sucessPayment($request, $transactionId)
-    {
-        if ($request['from'] == "app") {
-            $user = User::where('auth_token', $request->auth_token)->first();
-            Auth::login($user);
-        }
-        $user = Auth::user();
-        // $transactionId = $pamyent->id;
-        if ($request['from'] == 'cart') {
-            $order_number = $request['order_number'];
-            $order = Order::with([
-                'paymentOption',
-                'user_vendor',
-                'vendors:id,order_id,vendor_id'
-            ])->where('order_number', $order_number)->first();
-            if ($order) {
-                $order->payment_status = 1;
-                $order->save();
-                $payment_exists = Payment::where('transaction_id', $transactionId)->first();
-                if (!$payment_exists) {
-                    Payment::insert([
-                        'date' => date('Y-m-d'),
-                        'order_id' => $order->id,
-                        'transaction_id' => $transactionId,
-                        'balance_transaction' => $request['amt'],
-                        'type' => 'cart'
-                    ]);
-
-                    // Auto accept order
-                    $orderController = new OrderController();
-                    $orderController->autoAcceptOrderIfOn($order->id);
-                    $cart = Cart::select('id')->where('status', '0')
-                        ->where('user_id', $user->id)
-                        ->first();
-
-                    // Remove cart
-                    CaregoryKycDoc::where('cart_id', $cart->id)->update([
-                        'ordre_id' => $order->id,
-                        'cart_id' => ''
-                    ]);
-                    Cart::where('id', $cart->id)->update([
-                        'schedule_type' => null,
-                        'scheduled_date_time' => null
-                    ]);
-                    CartAddon::where('cart_id', $cart->id)->delete();
-                    CartCoupon::where('cart_id', $cart->id)->delete();
-                    CartProduct::where('cart_id', $cart->id)->delete();
-                    CartProductPrescription::where('cart_id', $cart->id)->delete();
-                    // send success sms
-                    $this->sendSuccessSMS($request, $order);
-                    // Send Notification
-                    if (!empty($order->vendors)) {
-                        foreach ($order->vendors as $vendor_value) {
-                            $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
-                            $user_vendors = UserVendor::where([
-                                'vendor_id' => $vendor_value->vendor_id
-                            ])->pluck('user_id');
-                            $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
-                        }
-                    }
-                    $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
-                    $super_admin = User::where('is_superadmin', 1)->pluck('id');
-                    $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
-                }
-                if ($request['from'] == 'app') {
-                    $returnUrl = route('payment.gateway.return.response') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId . '&order=' . $order_number;
-                } else {
-                    $returnUrl = route('order.return.success');
-                }
-
-                return $returnUrl;
-            }
-        } elseif ($request['from'] == 'wallet') {
-            $request['wallet_amount'] = $request['amt'];
-            $request['transaction_id'] = $transactionId;
-
-            $request = new \Illuminate\Http\Request($request);
-
-            $walletController = new WalletController();
-            $walletController->creditWallet($request);
-            if ($request['from'] == 'app') {
-                $returnUrl = route('payment.gateway.return.response') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId;
-            } else {
-                $returnUrl = route('user.wallet');
-            }
-            return $returnUrl;
-        } elseif ($request['from'] == 'tip') {
-
-            $request['tip_amount'] = $request['amt'];
-            $request['order_number'] = $request['order_number'];
-            $request['transaction_id'] = $transactionId;
-            $request = new \Illuminate\Http\Request($request);
-
-            $orderController = new OrderController();
-            $orderController->tipAfterOrder($request);
-            if ($request['from'] == 'app') {
-                $returnUrl = route('payment.gateway.return.response') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId;
-            } else {
-                $returnUrl = route('user.orders');
-            }
-            return $returnUrl;
-        } elseif ($request['from'] == 'subscription') {
-            $request['transaction_id'] = $transactionId;
-            $request['payment_option_id'] = 48;
-            $request['subsid'] = $request['subsid'];
-            $request['subscription_id'] = $request['subsid'];
-            $request['amount'] = $request['amt'];
-
-            $request = new \Illuminate\Http\Request($request);
-
-            $subscriptionController = new UserSubscriptionController();
-            $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
-            if ($request['from'] == 'app') {
-                $returnUrl = route('payment.gateway.return.response') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId;
-            } else {
-                $returnUrl = route('user.subscription.plans');
-            }
-            return $returnUrl;
-        }
-        return route('order.return.success');
     }
 }

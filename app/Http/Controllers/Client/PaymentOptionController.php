@@ -929,8 +929,7 @@ class PaymentOptionController extends BaseController
         self::$_isSandbox = $request->sandboxCheckbox;
         self::__init(true);
 
-        $create_user = self::createApiUser();
-        $result = json_decode($create_user, true);
+        $result = json_decode(self::createApiUser(), true);
         if ($result['status'] == 201) {
             $api_data = json_decode(self::createApiKey(), true);
             if ($api_data['status'] == 201) {
@@ -951,46 +950,5 @@ class PaymentOptionController extends BaseController
                 'message' => $result['message']
             ]);
         }
-    }
-
-    public function GenerateAccressToken()
-    {
-        $payOpt = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'mtn_momo')
-            ->where('status', 1)
-            ->first();
-        $json = json_decode($payOpt->credentials);
-        $subscription_key = $json->subscription_key;
-        $reference_id = $json->reference_id;
-        $api_key = $json->api_key;
-        $token = base64_encode($reference_id . ':' . $api_key);
-        if ($payOpt->test_mode == '1') {
-            $appUrl = 'https://sandbox.momodeveloper.mtn.com/';
-            $envirement = 'sandbox';
-        } else {
-            $appUrl = 'https://payments.stabexinternational.com/api/mtn/Callback/';
-            $envirement = 'live';
-        }
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $appUrl . '/collection/token',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_HTTPHEADER => array(
-                'X-Target-Environment: ' . $envirement,
-                'Ocp-Apim-Subscription-Key: ' . $subscription_key,
-                'Content-Type: application/json',
-                'Authorization: Basic ' . $token
-            )
-        ));
-
-        $response = curl_exec($curl);
-
-        curl_close($curl);
-        return $response;
     }
 }

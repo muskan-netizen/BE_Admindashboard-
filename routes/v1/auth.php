@@ -281,5 +281,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('order-ride-bid-details', 'Api\v1\PickupDeliveryController@getBidsRelatedToOrderRide');
         Route::post('accept-ride-bid-request', 'Api\v1\PickupDeliveryController@acceptBidsRelatedToBidRideOrderRide');
         Route::post('decline-ride-bid', 'Api\v1\PickupDeliveryController@declineBidsRelatedToOrderRide');
+
+        Route::group(['prefix' => 'mtn'], function () {
+            Route::post('create-token', 'Api\v1\MtnMomoController@createToken')->name('mtn.createtoken');
+        });
     });  
 });

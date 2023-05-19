@@ -725,6 +725,7 @@ $timezone = Auth::user()->timezone;
     var payment_option_list_url = "{{route('payment.option.list')}}";
     var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
     var data_trans_url = "{{route('payment.payByDataTrans')}}";
+    var create_mtn_momo_token = "{{route('mtn.momo.createToken')}}";
 
      @if(!empty($client_preference_detail->is_postpay_enable))
         var post_pay_edit_order = "{{$client_preference_detail->is_postpay_enable}}";

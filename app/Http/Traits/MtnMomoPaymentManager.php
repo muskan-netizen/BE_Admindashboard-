@@ -1,10 +1,32 @@
 <?php
+
 namespace App\Http\Traits;
 
+use App\Http\Controllers\Api\v1\UserSubscriptionController;
 use App\Models\PaymentOption;
 use Auth, Log, Config;
 use GuzzleHttp\Client;
 use App\Models\ClientCurrency;
+use App\Models\CartAddon;
+use App\Models\UserVendor;
+use App\Models\CartCoupon;
+use App\Models\UserAddress;
+use App\Models\CartProduct;
+use App\Models\CartProductPrescription;
+use App\Models\Order;
+use App\Models\Payment;
+use Illuminate\Support\Facades\Redirect;
+use App\Models\User;
+use App\Models\CaregoryKycDoc;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use App\Http\Traits\ApiResponser;
+use Illuminate\Contracts\Session\Session;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
+use Illuminate\Routing\UrlGenerator;
+use App\Http\Controllers\Front\OrderController;
+use App\Http\Controllers\Front\WalletController;
+use App\Models\Cart;
 
 trait MtnMomoPaymentManager
 {
@@ -49,7 +71,7 @@ trait MtnMomoPaymentManager
             self::$_client = new Client();
         }
 
-        if ((! empty(self::$_paymentOption) && self::$_paymentOption->test_mode == '1') || self::$_isSandbox == 'true') {
+        if ((!empty(self::$_paymentOption) && self::$_paymentOption->test_mode == '1') || self::$_isSandbox == 'true') {
             self::$_apiUrl = 'https://sandbox.momodeveloper.mtn.com/v1_0/';
             self::$_environment = 'sandbox';
             self::$_isSandbox = true;
@@ -60,7 +82,7 @@ trait MtnMomoPaymentManager
         }
 
         $credentials = json_decode(self::$_paymentOption->credentials);
-        if (! empty($credentials) && ! $creatingApiKey) {
+        if (!empty($credentials) && !$creatingApiKey) {
             self::$_subscriptionKey = (isset($credentials->subscription_key)) ? $credentials->subscription_key : '';
             self::$_referenceId = (isset($credentials->reference_id)) ? $credentials->reference_id : '';
             self::$_apiKey = (isset($credentials->api_key)) ? $credentials->api_key : '';
@@ -68,7 +90,7 @@ trait MtnMomoPaymentManager
                 'Authorization' => 'Basic ' . base64_encode(self::$_referenceId . ':' . self::$_apiKey),
                 'Ocp-Apim-Subscription-Key' => self::$_subscriptionKey
             ];
-            if (! self::$_isSandbox) {
+            if (!self::$_isSandbox) {
                 $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
                 self::$_currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'EUR';
             }
@@ -94,7 +116,7 @@ trait MtnMomoPaymentManager
         ];
 
         $params = [
-            'providerCallbackHost' => 'https://webhook.site/8e8b0eb4-c068-40b2-a921-dc582f4816e0' // self::$_domain_name
+            'providerCallbackHost' => self::$_domain_name
         ];
 
         /* Check if API is on test mode */
@@ -119,7 +141,7 @@ trait MtnMomoPaymentManager
                     return self::response($code, 'Internal Server Error');
                     break;
                 case 409:
-                    return self::response($code, 'Either User is exists with this reference ID or invalid subscription key');
+                    return self::response($code, 'Something wrong with the keys');
                     break;
                 case 401:
                     return self::response($code, 'Unauthorized');
@@ -146,11 +168,6 @@ trait MtnMomoPaymentManager
             }
             $code = $response->getStatusCode();
             $response = json_decode($response->getBody()->getContents(), true);
-            \Log::info($response);
-            $apiKey = '';
-            if (! empty($response['apiKey'])) {
-                $apiKey = $response['apiKey'];
-            }
 
             switch ($code) {
                 case 201:
@@ -218,6 +235,33 @@ trait MtnMomoPaymentManager
         }
     }
 
+    public function RequestToPay($token, $data)
+    {
+        if ($data['from'] == 'cart') {
+            $amount = $data['amt'];
+            $from = $data['from'];
+            $order_number = $data['order_number'];
+        } elseif ($data['from'] == 'wallet') {
+            $amount = $data['amt'];
+            $from = $data['from'];
+            $order_number = 'wallet';
+        } else if ($data['from'] == 'subscription') {
+            $amount = $data['amt'];
+            $from = $data['from'];
+            $subsid = $data['subsid'];
+            $order_number = 'subscription';
+        } else if ($data['from'] == 'tip') {
+            $amount = $data['amt'];
+            $from = $data['from'];
+            $order_number = $data['order_number'];
+        }
+
+        if (self::$_environment == 'sandbox') {
+            $partyId = '256761412741';
+        }
+        return json_decode(self::paymentRequest($token, $amount, self::$_currency, $order_number, $partyId), true);
+    }
+
     public static function paymentRequest($token, $amount, $currency, $order_number, $partyId)
     {
         try {
@@ -238,6 +282,8 @@ trait MtnMomoPaymentManager
                 'Authorization' => 'Bearer ' . self::$_accessToken,
                 'Content-Type' => 'application/json'
             ];
+
+            \Log::info($headers);
             $params = [
                 'amount' => $amount,
                 'currency' => $currency,
@@ -249,6 +295,7 @@ trait MtnMomoPaymentManager
                 'payerMessage' => "Paying for Driver tester code",
                 'payeeNote' => "Drivers name"
             ];
+            \Log::info($params);
 
             $response = self::$_client->request('POST', 'https://sandbox.momodeveloper.mtn.com/collection/v1_0/requesttopay', [
                 'headers' => $headers,
@@ -327,6 +374,129 @@ trait MtnMomoPaymentManager
             'apiKey' => $apiKey
         ]);
     }
+
+    public function sucessPayment($request, $transactionId)
+    {
+        // if ($request['environment'] == "app") {
+        //     $user = User::where('auth_token', $request[])->first();
+        //     Auth::login($user);
+        // }
+            $user = Auth::user();
+        
+
+        if ($request['from'] == 'cart') {
+            $order_number = $request['order_number'];
+            $order = Order::with([
+                'paymentOption',
+                'user_vendor',
+                'vendors:id,order_id,vendor_id'
+            ])->where('order_number', $order_number)->first();
+            if ($order) {
+                $order->payment_status = 1;
+                $order->save();
+                $payment_exists = Payment::where('transaction_id', $transactionId)->first();
+                if (!$payment_exists) {
+                    Payment::insert([
+                        'date' => date('Y-m-d'),
+                        'order_id' => $order->id,
+                        'transaction_id' => $transactionId,
+                        'balance_transaction' => $request['amt'],
+                        'type' => 'cart'
+                    ]);
+
+                    // Auto accept order
+                    $orderController = new OrderController();
+                    $orderController->autoAcceptOrderIfOn($order->id);
+                    $cart = Cart::select('id')->where('status', '0')
+                        ->where('user_id', $user->id)
+                        ->first();
+
+                    // Remove cart
+                    CaregoryKycDoc::where('cart_id', $cart->id)->update([
+                        'ordre_id' => $order->id,
+                        'cart_id' => ''
+                    ]);
+                    Cart::where('id', $cart->id)->update([
+                        'schedule_type' => null,
+                        'scheduled_date_time' => null
+                    ]);
+                    CartAddon::where('cart_id', $cart->id)->delete();
+                    CartCoupon::where('cart_id', $cart->id)->delete();
+                    CartProduct::where('cart_id', $cart->id)->delete();
+                    CartProductPrescription::where('cart_id', $cart->id)->delete();
+                    // send success sms
+                    $this->sendSuccessSMS($request, $order);
+                    // Send Notification
+                    if (!empty($order->vendors)) {
+                        foreach ($order->vendors as $vendor_value) {
+                            $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
+                            $user_vendors = UserVendor::where([
+                                'vendor_id' => $vendor_value->vendor_id
+                            ])->pluck('user_id');
+                            $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
+                        }
+                    }
+                    $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
+                    $super_admin = User::where('is_superadmin', 1)->pluck('id');
+                    $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+                }
+                if ($request['from'] == 'app') {
+                    $returnUrl = route('payment.gateway.return.response') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId . '&order=' . $order_number;
+                } else {
+                    $returnUrl = route('order.return.success');
+                }
+
+                return $returnUrl;
+            }
+        } elseif ($request['from'] == 'wallet') {
+            $request['wallet_amount'] = $request['amt'];
+            $request['transaction_id'] = $transactionId;
+
+            $request = new \Illuminate\Http\Request($request);
+
+            $walletController = new WalletController();
+            $walletController->creditWallet($request);
+            if ($request['environment'] == 'app') {
+                return url('payment.gateway.return.response') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId;
+            } else {
+                return route('user.wallet');
+            }
+        } elseif ($request['from'] == 'tip') {
+
+            $request['tip_amount'] = $request['amt'];
+            $request['order_number'] = $request['order_number'];
+            $request['transaction_id'] = $transactionId;
+            $request = new \Illuminate\Http\Request($request);
+
+            $orderController = new OrderController();
+            $orderController->tipAfterOrder($request);
+            if ($request['from'] == 'app') {
+                $returnUrl = route('payment.gateway.return.response') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId;
+            } else {
+                $returnUrl = route('user.orders');
+            }
+            return $returnUrl;
+        } elseif ($request['from'] == 'subscription') {
+            $request['transaction_id'] = $transactionId;
+            $request['payment_option_id'] = 48;
+            $request['subsid'] = $request['subsid'];
+            $request['subscription_id'] = $request['subsid'];
+            $request['amount'] = $request['amt'];
+
+            $request = new \Illuminate\Http\Request($request);
+
+            $subscriptionController = new UserSubscriptionController();
+            $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
+            if ($request['from'] == 'app') {
+                $returnUrl = route('payment.gateway.return.response') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId;
+            } else {
+                $returnUrl = route('user.subscription.plans');
+            }
+            return $returnUrl;
+        }
+        return route('order.return.success');
+    }
+
     // public function createPaymentpage($data,$user,$address = null)
     // {
     // if(is_null($address))
