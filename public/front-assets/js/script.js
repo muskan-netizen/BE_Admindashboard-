@@ -710,6 +710,7 @@ function  layoutMode(){
         }),
         e(".filter-back").on("click", function (s) {
             e(".collection-filter").css("left", "-365px"), e(".sidebar-popup").trigger("click");
+            e("body").removeClass("overflow-hidden");
         }),
         e(".account-sidebar").on("click", function (s) {
             e(".dashboard-left").css("left", "0");
@@ -898,5 +899,9 @@ body_event.on("click", ".theme-layout-version", function () {
         });
     });
 
-
-      
+// thempalte three vendor page click menu close code 19/05/2023 
+    $(".side-scroll-menu-li").click(function(){
+        $("body").removeClass("overflow-hidden");
+        $(".scrollspy-menu").removeClass("side-menu-open");
+        $(".manu-bars").removeClass("menu-btn");
+      });      
