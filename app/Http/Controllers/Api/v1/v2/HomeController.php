@@ -15,7 +15,6 @@ use Illuminate\Support\Str;
 use DateTimeZone;
 use App\Http\Traits\HomePage\HomePageTrait;
 use Session;
-use Log;
 use App\Http\Traits\{OrderTrait,ProductActionTrait,VendorTrait};
 /**
  * HomeController
