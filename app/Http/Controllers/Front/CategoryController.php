@@ -547,6 +547,7 @@ class CategoryController extends FrontController{
                     // ->where('vendor_id', $vid)
                     ->where('products.category_id', $cid)
                     ->where('products.is_live', 1)
+                    ->distinct('products.id')
                     ->whereHas('vendor',function($q){
                         $q->where('status',1);
                     })
