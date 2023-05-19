@@ -386,7 +386,7 @@ class HomeController extends BaseController{
             $home_page_labels = $home_page_labels->map(function($da) use ($homePageData,$navCategories) {
                 if($da->slug!='pickup_delivery' && $da->slug!='dynamic_page' && $da->slug!='nav_categories' && $da->slug!='banner'){
                    
-                    $da['data'] = @$homePageData[$da->slug];
+                    $da['data'] = $homePageData[$da->slug];
                 }
                 if( $da->slug == 'nav_categories'  ){
                     // dd($da->slug);
