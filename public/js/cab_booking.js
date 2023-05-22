@@ -453,7 +453,7 @@ $(document).ready(function () {
                         paymentViaSkipCash('',response.data);
                     }
                     else if(payment_option_id == 22){
-                        payWithCcAvenue('',response.data);
+                        payWithCcAvenue(response.data);
                     }
                     else if(payment_option_id == 57){
                         payWithPesapal(payment_option_id,response.data);
@@ -1874,7 +1874,7 @@ $(document).ready(function () {
                     }else {
                     }
                 }else {
-                  //  $("#address-input").val("Geocoder failed due to: " + status);
+                   // $("#address-input").val("Geocoder failed due to: " + status);
                 }
             }
         );

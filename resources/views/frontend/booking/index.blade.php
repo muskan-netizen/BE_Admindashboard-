@@ -1717,7 +1717,7 @@ input[type=number]::-webkit-outer-spin-button {
 
     <script type="text/javascript">
         $(document).ready(function(e) {
-        	$("#get-current-location").trigger("click");
+            $("#get-current-location").trigger("click");
             var daterang = $('input[name="schedule_pickup_date"]').daterangepicker({
                 singleDatePicker: true,
                 startDate: moment().add('10', 'minutes'),

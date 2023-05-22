@@ -583,7 +583,7 @@ class HomeController extends BaseController
             $homeData['vendors'] = $vendorData;
             $homeData['categories'] = $categories;
             $homeData['reqData'] = $request->all();
-            //$homeData['mobile_banners'] = $mobile_banners;
+            $homeData['mobile_banners'] = $mobile_banners;
             $homeData['on_sale_products'] = $on_sale_product_details;
             $homeData['new_products'] = $new_product_details;
             $homeData['featured_products'] = $feature_product_details;
