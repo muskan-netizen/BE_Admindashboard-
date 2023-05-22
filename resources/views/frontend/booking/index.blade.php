@@ -365,7 +365,7 @@ input[type=number]::-webkit-outer-spin-button {
                             @endif
 
                             @if($is_particular_driver == 1)
-                                <input type="radio" id="particular_driver_radio"  name="is_cab_pooling_radio" value="0">
+                                <input type="radio" id="particular_driver_radio"  name="is_cab_pooling_radio" value="2">
                                 <label class="mb-0  my-2" >
                                     <h5 class="m-0" id="">Request to Driver</h5>
                                 </label>

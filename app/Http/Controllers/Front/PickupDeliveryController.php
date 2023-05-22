@@ -929,7 +929,7 @@ class PickupDeliveryController extends FrontController{
                     // 'order_friend_name' =>  $order->friend_name,
                     // 'order_number' =>  $order->friend_phone_number,
                     'barcode' => '',
-                    'allocation_type' => 'a',
+                    'allocation_type' => $request->unique_id ? 'notify' : 'a',
                     'task' => $request->tasks,
                     'order_team_tag' => $team_tag,
                     'task_type' => $task_type,
@@ -962,6 +962,7 @@ class PickupDeliveryController extends FrontController{
                     'is_cab_pooling' => isset($request->is_cab_pooling)?$request->is_cab_pooling:0,
                     'available_seats' => $product->seats_for_booking,
                     'driver_id' => $request->driver_id ?? null,
+                    'driver_unique_id' => $request->unique_id ?? null,
                 ];
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
