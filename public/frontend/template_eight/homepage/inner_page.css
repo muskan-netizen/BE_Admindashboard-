@@ -375,7 +375,7 @@ border-right: 1px solid var(--theme-deafult) !important;}
 
 .card-box{background-color: #fff;padding: 1.5rem;box-shadow: 0 0.75rem 6rem rgb(56 65 74 / 3%);margin-bottom: 24px;border-radius: 0.25rem;}
 .class_img{height: 100px;width: 100%;border-radius: 4px;overflow: hidden;max-width: 100%;object-fit: cover;}
-.class_img img{object-fit: cover;height: 100%;width: 100%;}
+.class_img img{object-fit: cover;height: 100%;width: 100%; object-position: top;}
 .classes_wrapper .number{border: 1px solid var(--theme-deafult);border-radius: 4px;}
 .booking-time .radios{width: 95%;text-align: center;}
 .radio-btns input[type="checkbox"]{z-index: -1;position: absolute;display: none;}
