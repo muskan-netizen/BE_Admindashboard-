@@ -1,4 +1,4 @@
-<?php
+        <?php
 
 namespace App\Http\Controllers\Client\Accounting;
 use DataTables;
@@ -16,7 +16,7 @@ use DB;
 class OrderController extends Controller{
     use ApiResponser;
     public function index(Request $request){
-          
+
         $dispatcher_status_options = DispatcherStatusOption::get();
         $order_status_options = OrderStatusOption::where('type', 1)->get();
         // all vendors
@@ -29,8 +29,8 @@ class OrderController extends Controller{
         $vendors = $vendors->get();
         return view('backend.accounting.order', compact('vendors','order_status_options', 'dispatcher_status_options'))->with($this->getOrderVendorCalculations($request,true));
     }
-    
-    
+
+
     public function getOrderVendorCalculations(Request $request,$flag = false){
         $order = $this->getOrdervendors($request);
         $data['total_order_count'] = $order->count();
@@ -38,37 +38,40 @@ class OrderController extends Controller{
         $data['total_cash_to_collected'] = decimal_format($order->whereHas('orderDetail', function ($query) {
             return $query->where('payment_option_id', '=', 1);
         })->sum('payable_amount'));
-            $data['total_earnings_by_vendors'] = decimal_format($order->sum('payable_amount'));    
-        
+            $data['total_earnings_by_vendors'] = decimal_format($order->sum('payable_amount'));
+
         if($flag){
             return $data;
         }
-        return response()->json(['data' => $data]);       
+        return response()->json(['data' => $data]);
     }
-    
-    
+
+
     public function getOrdervendors($request){
         $user = Auth::user();
         $search_value = $request->get('search');
-        
+        $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
+
         $vendor_orders = OrderVendor::with(['orderDetail.paymentOption', 'user','vendor','payment','orderstatus.OrderStatusOption']);
         if (!empty($request->get('date_filter'))) {
             $date_date_filter = explode(' to ', $request->get('date_filter'));
             $to_date = (!empty($date_date_filter[1]))?$date_date_filter[1]:$date_date_filter[0];
             $from_date = $date_date_filter[0];
-            $vendor_orders = $vendor_orders->between($from_date." 00:00:00", $to_date." 23:59:59");
+            $from_date = Carbon::parse($from_date, $timezone)->setTimezone('UTC');
+            $to_date = Carbon::parse($to_date, $timezone)->setTimezone('UTC')->addDays(1);
+            $vendor_orders = $vendor_orders->whereBetween('created_at',[$from_date, $to_date]);
         }
-        
+
         if (!empty($request->get('vendor_id'))) {
             $vendor_id = $request->get('vendor_id');
             $vendor_orders = $vendor_orders->where('vendor_id', $vendor_id);
         }
-        
+
         if (!empty($request->get('status_filter'))) {
             $status_filter = $request->get('status_filter');
             $vendor_orders = $vendor_orders->where('order_status_option_id', $status_filter);
         }
-        
+
         if ($user->is_superadmin == 0) {
             $vendor_orders = $vendor_orders->whereHas('vendor.permissionToUser', function ($query) use($user){
                 $query->where('user_id', $user->id);
@@ -76,12 +79,12 @@ class OrderController extends Controller{
         }
       return $vendor_orders->orderBy('id', 'DESC');
     }
-    
+
     public function filter(Request $request){
         $user = Auth::user();
         $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
         $vendor_orders = $this->getOrdervendors($request);
-        
+
         return Datatables::of($vendor_orders)
             ->addColumn('view_url', function($vendor_orders) {
                 if(!empty($vendor_orders->order_id) && !empty($vendor_orders->vendor_id)){
@@ -100,7 +103,7 @@ class OrderController extends Controller{
                 return number_format($vendor_orders->subtotal_amount - $vendor_orders->total_markup_price??0, 2);
             })
             ->addColumn('vendor_amount', function($vendor_orders) {
-               
+
                 return $vendor_orders->vendor_amount;
             })
             ->addColumn('admin_commission', function($vendor_orders) {
@@ -131,11 +134,11 @@ class OrderController extends Controller{
             ->addColumn('markup_price',function($vendor_orders){
                 return $vendor_orders->vendor ? __($vendor_orders->total_markup_price??0) : '0';
             })
-            ->addColumn('total_price', function($vendor_orders) {                
+            ->addColumn('total_price', function($vendor_orders) {
                 return decimal_format($vendor_orders->total_price );
             })
             ->addColumn('payment_option_title',function($vendor_orders){
-               
+
                 $title = __(@$vendor_orders->orderDetail->paymentOption->title);
                 if(@$vendor_orders->orderDetail->paymentOption->code == 'stripe'){
                     $title = __('Credit/Debit Card (Stripe)');
@@ -187,7 +190,7 @@ class OrderController extends Controller{
 
 
     public function backendOrderRefundFilter(Request $request){
-      
+
         $orderRefund = OrderRefund::whereHas('order')->get();
         $refunds=array();
         $c=1;
