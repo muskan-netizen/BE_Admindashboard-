@@ -341,7 +341,7 @@ input[type=number]::-webkit-outer-spin-button {
                         </div>
                     @endif
                     
-                    @if($is_cab_pooling == 1 || $is_bid_ride_enable == 1)
+                    @if($is_cab_pooling == 1 || $is_bid_ride_enable == 1 || $is_particular_driver == 1)
                         <div class="pool_radio_controls text-center">
                             <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_booking" name="is_cab_pooling_radio"
                                 value="0" checked>
@@ -358,9 +358,16 @@ input[type=number]::-webkit-outer-spin-button {
                             @endif
 
                             @if($is_bid_ride_enable == 1)
-                                <input type="radio" id="bid_radio"  name="is_cab_pooling_radio" value="1">
+                                <input type="radio" id="bid_radio"  name="is_cab_pooling_radio" value="0">
                                 <label class="mb-0  my-2" >
                                     <h5 class="m-0" id="">Bid</h5>
+                                </label>
+                            @endif
+
+                            @if($is_particular_driver == 1)
+                                <input type="radio" id="particular_driver_radio"  name="is_cab_pooling_radio" value="0">
+                                <label class="mb-0  my-2" >
+                                    <h5 class="m-0" id="">Request to Driver</h5>
                                 </label>
                             @endif
                         </div>
@@ -843,6 +850,99 @@ input[type=number]::-webkit-outer-spin-button {
                     </div>
                 </div>
             </div> --}}
+        </script>
+
+        <script type="text/template" id="particular_driver_template">
+            <div class="cab-outer style-4">
+                <div class="bg-white p-2">
+                    <a class="close-cab-detail-box" href="javascript:void()">✕</a>
+                    <div class="cab-image-box w-100 d-flex align-items-center justify-content-center">
+                        <img src="<%= result.image_url %>">
+                    </div>
+                    <div class="cab-location-details">
+                    <div style="height:5px;"><div class="loader cab-detail-main-loader" style="display: none;"></div></div>
+       
+
+                    <h4 class="d-flex align-items-center justify-content-between"><b><%= result.name %></b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.tags_price%></b></label></h4>
+                    <% if(result.toll_fee > 0){ %>
+                        <span class="d-flex align-items-center justify-content-between mt-2"><b>{{ __('Toll Fee') }}</b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_amount_less_toll">{{Session::get('currencySymbol')}}<%= result.toll_fee%></b></label></span>
+                    <% } %>
+
+                    <% if(result.service_charge_amount > 0){ %>
+                        <span class="d-flex align-items-center justify-content-between"><b>{{ __('Service Charge') }}</b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.service_charge_amount%></b></label></span>
+                    <% } %>
+
+                    <% if(result.service_charge_amount > 0 || result.toll_fee > 0){ %>
+                        <h4 class="d-flex align-items-center justify-content-between"><b>{{ __('Total') }}</b> <label><sub class="ling-throgh" id
+                        ="discount_amount" style="display:none;"></sub> <b id="real_total_amount">{{Session::get('currencySymbol')}}<%= (result.total_tags_price)%></b></label></h4>
+                    <% } %>
+
+                    <input type="hidden" id="hddn_amount_toll_fee" value="<%= (result.toll_fee)%>"/>
+                    <input type="hidden" name="cart_product_ids[]" value="<%= result.id %>">
+                    <input type="hidden" id="hddn_real_amount" value="<%= (result.tags_price)%>"/>
+                    <input type="hidden" id="hddn_service_charge_amount" value="<%= (result.service_charge_amount)%>"/>
+                    <input type="hidden" id="hddn_currency_symbol" value="{{Session::get('currencySymbol')}}"/>
+
+                    </div>
+                </div>
+                <div class="cab-amount-details px-2">
+                    <div class="row">
+                        <div class="col-6 mb-2">{{__('Distance')}}</div>
+                        <div class="col-6 mb-2 text-right" id="distance"><%= result.distance %> {{__($client_preference_detail->distance_unit_for_time)}}</div>
+                        <div class="col-6 mb-2">{{__('Duration')}}</div>
+                        <div class="col-6 mb-2 text-right" id="duration"><%= result.duration %> {{__('mins')}}</div>
+                        <% if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){ %>
+                            <div class="col-6 mb-2">{{__('Subscription Discount')}}</div>
+                            <div class="col-6 mb-2 text-right" id="subscription-percent"><%= result.subscription_percent_value+'%' %></div>
+                            <input type="hidden" id="subscription-percent-h" value="<%= result.subscription_percent_value %>">
+                            <div class="col-6 mb-2"><p class="total_amt m-0">{{__('Amount Payable')}}</p></div>
+                            <div class="col-6 mb-2 text-right" id="discount"><p class="total_amt m-0" id="subscription-amout">{{Session::get('currencySymbol')}}<%= result.subscription_discount %></p></div>
+                            <input type="hidden" id="subscription-amout-h" value="<%= result.subscription_discount %>">
+                        <% } %>
+                        <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>
+                            <div class="col-6 mb-2">Loyalty</div>
+                            <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved %></div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <div id="">
+                <div class="col-12 my-2">
+                    <div class="w-100 d-flex justify-content-between align-items-center input-get-value">
+                        <div class="input-group col">
+                            <input type="text" name="driver_unique_id" value="" id="driver_unique_id" class="form-control text-center" placeholder="Enter Driver Unique Id" required>
+                        </div>
+                        <div class="input-group col">
+                            <input type="datetime-local" name="schedule_date_for_driver" value="{{ date("Y-m-d H:i") }}" id="schedule_date_for_driver" class="form-control text-center" min="{{ date("Y-m-d H:i") }}" required>
+                        </div>
+
+                    </div>
+                <span id="driver_request_error" class="text-danger"> </span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 create-bid-btn">
+                        <button class="btn btn-solid w-100" id="request_for_driver" data-payment_method="1" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-task_type="schedule" booking-type='driver_request' data-tags="<%=(result.tags)%>">{{__('Request For Driver')}}</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="payment-promo-container p-2 d-none" id="paymentMethods">
+                <input type="hidden" id="payment-method-for-bid" value="1">
+                <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal_bid" type='bid'>
+                    <span id="payment_type_bid">
+                        <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
+                    </span>
+                    <i class="fa fa-angle-down" aria-hidden="true"></i>
+                </h4>
+            </div>
+            
+            <span id="show_errors" class="text-danger"></span>
+            
         </script>
 
         <script type="text/template" id="driver_biding_list">

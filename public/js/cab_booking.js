@@ -229,17 +229,25 @@ $(document).ready(function () {
     });
     
     
-    
-    
-    
-    
+    $(document).on('keypress','#driver_unique_id', function(e){
+        if(e.which === 32){
+            return false;
+        }
+        $('#driver_request_error').hide();
+    });
 
     // please order dispatcher
-    $(document).on("click", "#pickup_now, #pickup_now_bid, #pickup_later",function() {
+    $(document).on("click", "#pickup_now, #pickup_now_bid, #pickup_later, #request_for_driver",function() {
         var bookingType = $(this).attr('booking-type');
         if(bookingType == 'bid')
         {
             var payid = $('#payment-method-for-bid').val();
+        }else if(bookingType == 'driver_request'){
+            var uniqueId = $('#driver_unique_id').val();
+            if(uniqueId == '' || uniqueId == undefined){
+                $('#driver_request_error').text('Driver Unique id is required');
+                return false;
+            }
         }else{
             var payid = $(this).attr('data-payment_method');
         }
@@ -291,7 +299,12 @@ $(document).ready(function () {
         var tasks = [];
         var tasks2 = [];
 
-        let schedule_datetimeset = $('#schedule_date').val();
+        if(bookingType == 'driver_request'){
+            var schedule_datetimeset = $('#schedule_date_for_driver').val();
+        }else{
+            var schedule_datetimeset = $('#schedule_date').val();
+        }
+
         if(schedule_datetimeset != undefined && schedule_datetimeset != 0){
             schedule_datetime = moment(schedule_datetimeset).format('YYYY-MM-DD HH:mm');
             var task_type = 'schedule';
@@ -1139,9 +1152,13 @@ $(document).ready(function () {
                             // console.log('innset');
                         }
                         var isBid = $('#bid_radio').prop("checked");
+                        var isParticularDriver = $('#particular_driver_radio').prop("checked");
                         if(isBid){
                             let vehicle_bid_template = _.template($('#vehicle_bid_template').html());
                             $("#cab_detail_box").append(vehicle_bid_template(cabData)).show();
+                        }else if(isParticularDriver){
+                            let particular_driver_template = _.template($('#particular_driver_template').html());
+                            $("#cab_detail_box").append(particular_driver_template(cabData)).show();
                         }else{
                             let cab_detail_box_template = _.template($('#cab_detail_box_template').html());
                             $("#cab_detail_box").append(cab_detail_box_template(cabData)).show();
