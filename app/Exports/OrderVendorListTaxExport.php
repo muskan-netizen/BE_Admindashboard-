@@ -39,8 +39,8 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
         }
         if(isset($this->data->date_range)){
             $date = explode(' to ',$this->data->date_range);
-            $dateF = $date[0]." 00:00:00";
-            $dateT = !empty($date[1]) ?$date[1]." 23:59:59": $date[0]." 23:59:59";
+            $dateF = $date[0];
+            $dateT = !empty($date[1]) ?$date[1]: $date[0];  
             $dateF = Carbon::parse($dateF, $timezone)->setTimezone('UTC');
             $dateT = Carbon::parse($dateT, $timezone)->setTimezone('UTC')->addDays(1);
             $vendor_orders = $vendor_orders->whereBetween('created_at',[$dateF, $dateT]);
