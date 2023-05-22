@@ -57,7 +57,6 @@ $(document).ready(function() {
     }
 
 
-
     window.paymentViaPaystack = function paymentViaPaystack(address_id ='',order = '') {
         let total_amount = 0;
         let tip = 0;
@@ -1209,8 +1208,8 @@ $(document).ready(function() {
         } else if (cabElement.length > 0) {
             total_amount = cabElement.data('amount');
             payment_from = 'pickup_delivery';
-            var rowData = 'amt='+total_amount+'&from='+payment_from+'&order_number='+$("#order_number").val();
-        }else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            var rowData = 'amt='+total_amount+'&from='+payment_from+'&order_number='+order.order_number;
+        } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
             total_amount = tipElement.val();
             payment_from = 'tip';
             var rowData = 'amt='+total_amount+'&from='+payment_from+'&order_number='+$("#order_number").val();
@@ -3758,8 +3757,6 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
         someday = new Date();
         someday.setFullYear(exYear, exMonth, 1);
 
-	
-
             if(cardNumber == "" || cvv == "" || expiry == '') {
                 message  += "<div>All Fields are Required.</div>";  
                 
@@ -3841,11 +3838,16 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
                 var today, someday;
                 var exMonth=expiry[0];
                 var exYear=expiry[1];
+                
+                if(exYear.length == 2)
+                {
+                    var exYear="20"+expiry[1];
+                }
+
                 today = new Date();
                 someday = new Date();
                 someday.setFullYear(exYear, exMonth, 1);
 
-            
 
                     if(cardNumber == "" || cvv == "" || expiry == '') {
                         message  += "<div>All Fields are Required.</div>";  
@@ -3880,7 +3882,7 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
             
             
                     if (expiry != "") { 
-                            if (someday < today) {
+                            if (someday < today || exMonth > 12) {
                             message  += "<div>Expiry date is Invalid</div>";    
                             $("#date-element-"+name).css('background-color','#FFFFDF');
                                         valid = false;
@@ -3891,15 +3893,90 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
                             $("#card_error_"+name).show();
                             $("#card_error_"+name).html(message);
                             $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
+                            $(document).find('.topup_wallet_confirm').prop('disabled',true);
+                            $(".subscription_confirm_btn").attr("disabled", false);
+                            $(".select_payment_option_done").attr("disabled", false);
+                            $(".topup_wallet_confirm").attr("disabled", false);
                         }else{
                             $("#card_error_"+name).html('');
                             // $(document).find('.topup_wallet_confirm').prop('disabled',true);
                             $(document).find(".proceed_to_pay").prop('disabled',true);
                             // $(".subscription_confirm_btn").attr("disabled", true);
+                            $("#payment_modal").modal('toggle');
                         }
                         
                 return valid;
         }
+
+        window.payWithPowerTrans = function payWithPowerTrans(payment_option_id,order) {
+
+            let tip = 0;
+            let tipElement = $("#cart_tip_amount");
+            let cartElement = $("input[name='cart_total_payable_amount']");
+            let walletElement = $("input[name='wallet_amount']");
+            let cabElement = $("#pickup_now");
+            let subscriptionElement = $("input[name='subscription_amount']");
+            let subscription_id = $("input[name='subscription_id']");
+        
+            var data = {};
+            if (path.indexOf("cart") !== -1) {
+                total_amount = cartElement.val();
+                tip = tipElement.val();
+                data.tip = tip;
+                data.payment_from = 'cart';
+                // data.cart_id = cart_id;
+                data.order_number = order.order_number;
+                
+            } else if (path.indexOf("wallet") !== -1) {
+                total_amount = walletElement.val();
+                data.payment_from ='wallet';
+
+            } else if (cabElement.length > 0) {
+                total_amount = cabElement.data('totalamount');
+                data.payment_from = 'pickup_delivery';
+                data.order_number = order.order_number;
+
+            } else if (path.indexOf("subscription") !== -1) {
+                total_amount = subscriptionElement.val();
+                data.order_number = subscription_id.val();
+                data.payment_from ='subscription';
+
+            } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+                total_amount = walletElement.val();
+                data.payment_from ='tip';
+                data.order_number = $("#order_number").val();
+            }
+        
+            data.total_amount = total_amount;
+            data.payment_option_id = payment_option_id;
+            data._token = $('input[name=_token]').val();
+
+            data.card_number = $('#card-element-powertrans').val();
+            data.exp_date = $('#date-element-powertrans').val();
+            data.cvv = $('#cvv-element-powertrans').val();
+
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: powertrans_payment_url,
+                data: data,
+        
+                success: function (response) {
+                    console.log({response});
+                    if (response.IsoResponseCode == 00) {
+                        window.location.href = response.redirect_url+'?TransactionIdentifier='+response.TransactionIdentifier;
+                    }else{
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Something went wrong in Payment!',
+                        });
+                        console.log('Something wrong in payment');
+                    }
+                    return true;
+                }
+            });
+        };
 
         window.payWithPesapal = function payWithPesapal(payment_option_id,order) {
             let tip = 0;
@@ -3943,6 +4020,7 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
             data.payment_option_id = payment_option_id;
             data._token = $('input[name=_token]').val();
         
+            
             $.ajax({
                 type: "post",
                 dataType: "json",
@@ -3963,7 +4041,6 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
                 }
             });
         }
-});
 
 $(document).on("keyup","#azul-card-element",function () {
     if (this.value != this.value.replace(/[^0-9\.]/g, '')) {
@@ -4081,3 +4158,4 @@ window.paymentViaDataTrans = function paymentViaDataTrans(address_id,payment_opt
         }
     });
 }
+});

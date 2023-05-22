@@ -1029,7 +1029,25 @@ input[type=number]::-webkit-outer-spin-button {
                         </div>
                     <% } %>
 
-
+                    <% if(payment_option.slug == 'powertrans') { %>
+                        <div class="col-md-12 mt-3 mb-3 powertrans_element_wrapper option-wrapper d-none">
+                            <div class="row no-gutters">
+                                <div class="col-6">
+                                    <input type="number" min="16" maxlength="16" style=" border-right: none;" class="form-control" id="card-element-powertrans" placeholder="Enter card Number" required 
+                                    oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
+                                </div>
+                                <div class="col-3">
+                                    <input type="number" style=" border-left: none; border-right: none;" class="form-control" maxLength="4"  id="date-element-powertrans" placeholder="YYMM" required 
+                                    oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+                                </div>
+                                <div class="col-3">
+                                    <input type="password" maxLength="4" style=" border-left: none;"  class="form-control" id="cvv-element-powertrans" placeholder="CVV" required />
+                                </div>
+                            </div>
+    
+                            <span class="error text-danger" id="card_error_powertrans"></span>
+                        </div>
+                    <% } %>
 
                 </div>
             <% }); %>
@@ -1415,6 +1433,26 @@ input[type=number]::-webkit-outer-spin-button {
                     </div>
                 <% } %>
 
+                <% if(payment_option.slug == 'powertrans') { %>
+                    <div class="col-md-12 mt-3 mb-3 powertrans_element_wrapper option-wrapper d-none">
+                        <div class="row no-gutters">
+                            <div class="col-6">
+                                <input type="number" min="16" maxlength="16" style=" border-right: none;" class="form-control" id="card-element-powertrans" placeholder="Enter card Number" required 
+                                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
+                            </div>
+                            <div class="col-3">
+                                <input type="number" style=" border-left: none; border-right: none;" class="form-control" maxLength="4"  id="date-element-powertrans" placeholder="YYMM" required 
+                                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+                            </div>
+                            <div class="col-3">
+                                <input type="password" maxLength="4" style=" border-left: none;"  class="form-control" id="cvv-element-powertrans" placeholder="CVV" required />
+                            </div>
+                        </div>
+
+                        <span class="error text-danger" id="card_error_powertrans"></span>
+                    </div>
+                <% } %>
+
             <% } %>
         <% }); %>
     <% } %>
@@ -1609,6 +1647,9 @@ input[type=number]::-webkit-outer-spin-button {
             var method = $(this).val();
             if (method == 'stripe') {
                 $("#wallet_payment_methods .stripe_element_wrapper").removeClass('d-none');
+            } else if(method == 'powertrans') {
+                $("#wallet_payment_methods .powertrans_element_wrapper").removeClass('d-none');
+                $("#wallet_payment_methods .stripe_element_wrapper").addClass('d-none');
             } else {
                 $("#wallet_payment_methods .stripe_element_wrapper").addClass('d-none');
             }
@@ -1655,6 +1696,7 @@ input[type=number]::-webkit-outer-spin-button {
         var cab_booking_promo_code_remove_url = "{{ url('looking/promo-code/remove') }}";
         var apply_cab_booking_promocode_coupon_url = "{{ route('verify.cab.booking.promo-code') }}";
         var no_result_message = "{{ __('No result found. Please try a new search') }}";
+        var powertrans_payment_url = "{{ route('powertrans.payment') }}";
 
         var pesapal_payment_url = "{{ route('pesapal.payment') }}";
         /// ************* product order form **************///////
@@ -1675,7 +1717,7 @@ input[type=number]::-webkit-outer-spin-button {
 
     <script type="text/javascript">
         $(document).ready(function(e) {
-        	$("#get-current-location").trigger("click");
+            $("#get-current-location").trigger("click");
             var daterang = $('input[name="schedule_pickup_date"]').daterangepicker({
                 singleDatePicker: true,
                 startDate: moment().add('10', 'minutes'),

@@ -58,7 +58,7 @@
                                     </li>
                                     @if ($vendor->email)
                                         <li class="d-block vendor-email">
-                                            <i class="fa fa-envelope"></i> <p class="vendor_email">{{ $vendor->email }}</p>
+                                            <i class="fa fa-envelope"></i> <span class="vendor_email">{{ $vendor->email }}</span>
                                         </li>
                                     @endif
                                     @if ($vendor->website)

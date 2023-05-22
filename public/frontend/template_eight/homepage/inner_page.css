@@ -78,7 +78,8 @@ body[dir=rtl] .al_count_tabs_new_design li a.nav-link span{margin-left:8px;margi
 .dark.al_body_template_three .address-input-field{ background-color: #2b2b2b;}
 .al_body_template_three .vendors .slick-slide{padding:10px 0 0px;height:auto}
 .alInnerBox .suppliers-img-outer{padding-bottom: 100%;position: relative;border-radius: 12px;}
-.alInnerBox .suppliers-img-outer img{position: absolute;object-fit: cover;height: 100%;border-radius: 12px;}
+.alInnerBox .suppliers-img-outer img{position: absolute;object-fit: inherit;height: 100%;border-radius: 12px;}
+
 .al_body_template_three .img-outer-box.position-relative{border-radius:12px;padding-bottom: 100% !important;background-color:#eee}
 .al_body_template_three .slick-slider .img-outer-box.position-relative{border-radius:12px;position: relative;padding-bottom: 100%;}
 .al_body_template_three .img-outer-box.position-relative img{left:0; position: absolute; width:100%;height:100%;object-fit:cover;border-radius:12px;}

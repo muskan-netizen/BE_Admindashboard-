@@ -16,17 +16,17 @@ use App\Models\UserVendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use App\Http\Traits\PesapalPaymentTrait;
+use App\Http\Traits\PowerTransPaymentTrait;
 use App\Models\CaregoryKycDoc;
 use App\Models\Transaction;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
  
-class PesapalPaymentController extends Controller
+class PowerTransPaymentController extends Controller
 {
-    use PesapalPaymentTrait, OrderTrait;
-    const PaymentId = 57;
-    public function payByPesapal(Request $request)
+    use PowerTransPaymentTrait, OrderTrait;
+
+    const PaymentId = 58;
+    public function payByPowerTrans(Request $request)
     {
         $data = $request->all();
         $user = auth()->user();
@@ -44,14 +44,25 @@ class PesapalPaymentController extends Controller
             }         
         }
 
-        $response = $this->PesapalPayment($request);
+        $response = $this->powerTransPayment($request);
+
+        if($response['IsoResponseCode'] != 00){
+            $resError['status'] = 'Fail';
+            $resError['payment_from'] = $request->action;
+            if(isset($response['Errors'])){
+                $resError['msg'] = $response['Errors'][0]['Message'];
+            }else{
+                $resError['msg'] = 'InValid Card Detail';
+            }
+            return response()->json($resError, 400);
+        }
 
         if($request->payment_from == 'cart')
         {
             $data = [
                 'amount' => $request->total_amount,
                 'payment_option_id' => $this::PaymentId,
-                'transaction_id' => $response['order_tracking_id'],
+                'transaction_id' => $response['TransactionIdentifier'],
                 'balance_transaction' => $request->total_amount,
                 'order_id' => $order->id ?? '',
                 'type' => $request->payment_from,
@@ -60,13 +71,12 @@ class PesapalPaymentController extends Controller
             ];
         }elseif($request->payment_from == 'subscription')
         {
-            $slug = explode('-',$request->order_number);
             $data = [
                 'amount' => $request->total_amount,
                 'payment_option_id' => $this::PaymentId,
-                'transaction_id' => $response['order_tracking_id'],
+                'transaction_id' => $response['TransactionIdentifier'],
                 'balance_transaction' => $request->total_amount,
-                'viva_order_id' => $slug[0] ?? '',
+                'viva_order_id' => $request->order_number ?? '',
                 'type' => $request->payment_from,
                 'date' => date('Y-m-d'),
                 'user_id' => $user->id,
@@ -76,7 +86,7 @@ class PesapalPaymentController extends Controller
             $data = [
                 'amount' => $request->total_amount,
                 'payment_option_id' => $this::PaymentId,
-                'transaction_id' => $response['order_tracking_id'],
+                'transaction_id' => $response['TransactionIdentifier'],
                 'balance_transaction' => $request->total_amount,
                 'viva_order_id' => $request->order_number ?? '',
                 'type' => $request->payment_from,
@@ -85,7 +95,7 @@ class PesapalPaymentController extends Controller
             ];
         }
         Payment::create($data);
-        return $response;
+        return $request->action ? redirect($response['redirect_url']) : $response;
     }
     
     public function cancelPage(Request $request)
@@ -101,7 +111,8 @@ class PesapalPaymentController extends Controller
 
     public function successPage(Request $request)
     {
-        $payment = Payment::where('transaction_id', $request->get('OrderTrackingId'))->first();
+        $request->id ? Auth::loginUsingId($request->id) : '';
+        $payment = Payment::where('transaction_id', $request->get('TransactionIdentifier'))->first();
 
         if ($payment->type == 'cart') {
             return $this->completeOrderCart($request, $payment);
@@ -119,6 +130,7 @@ class PesapalPaymentController extends Controller
     public function completeOrderCart(Request $request, $payment)
     {
         $order = Order::where('id', $payment->order_id)->first();
+
         if( (isset($request->id)) && (!empty($request->id)) ){
             $user = User::find($request->id);
         }elseif( (isset($request->auth_token)) && (!empty($request->auth_token)) ){
@@ -134,15 +146,14 @@ class PesapalPaymentController extends Controller
             $order->save();
 
             $this->orderSuccessCartDetail($order);
-
+            
             if(isset($request->come_from) && $request->come_from == 'app')
             {
                 $response['status']         = 200;
-                $response['msg']            = 'Success Order.';
-                $response['payment_from']   = 'cart';
+                $response['msg']            = 'Success Added wallet.';
+                $response['payment_from']   = 'wallet';
                 $response['order_id']       = $order->id;
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=pesapal'.'&status=200&transaction_id='.$payment->transaction_id.'&order_id='.$order->id;
-                return Redirect::to($returnUrl);
+                return response()->json($response);
             }
             return redirect()->route('order.success',['order_id' => $order->id]);
 
@@ -167,25 +178,21 @@ class PesapalPaymentController extends Controller
         }
     }
 
-    public function completeOrderWallet(Request $request,$payment)
+    public function completeOrderWallet($request,$payment)
     {
         $data['amount'] =  $payment->amount;
         $data['transaction_id'] =  $payment->transaction_id;
         $data['payment_option_id'] =  $this::PaymentId;
         $data['come_from'] = $request['come_from'];
         $data['user_id'] = $request['id'];
-
+        
         $request = new \Illuminate\Http\Request($data);
         $this->creditMyWallet($request);
-
         if(isset($request->come_from) && $request->come_from == 'app')
         {
             $response['status']         = 200;
             $response['msg']            = 'Success Added wallet.';
             $response['payment_from']   = 'wallet';
-            $response['data']   = $data;
-            $returnUrl = route('payment.gateway.return.response').'/?gateway=pesapal'.'&status=200&transaction_id='.$payment->transaction_id;
-            return Redirect::to($returnUrl);
             return response()->json($response);
         }
         return redirect()->route('user.wallet');
@@ -240,7 +247,7 @@ class PesapalPaymentController extends Controller
         }
     }
 
-    public function completeOrderSubs(Request $request, $payment)
+    public function completeOrderSubs($request, $payment)
     {
         $data['transaction_id'] = $payment->transaction_id;
         $data['payment_option_id'] = $this::PaymentId;
@@ -249,19 +256,15 @@ class PesapalPaymentController extends Controller
         $data['amount'] = $request['amount'];
         $data['come_from'] = $request['come_from'];
         $data['user_id'] = $request['id'];
-
         $request = new \Illuminate\Http\Request($data);
 
-        $subscriptionController = new UserSubscriptionController();        
+        $subscriptionController = new UserSubscriptionController();
         $subscriptionController->purchaseSubscriptionPlan($request,'', $payment->viva_order_id);
-
         if (isset($request->come_from) && $request->come_from == 'app') {
             $response['status'] = 200;
             $response['msg'] = 'Success Added Subscription.';
             $response['payment_from'] = 'subscription';
-            $response['transaction_id'] = $payment->transaction_id;
-            $returnUrl = route('payment.gateway.return.response').'/?gateway=pesapal'.'&status=200&transaction_id='.$payment->transaction_id;
-            return Redirect::to($returnUrl);
+            return response()->json($response);
         }
         return redirect()->route('user.subscription.plans');
         
@@ -270,12 +273,12 @@ class PesapalPaymentController extends Controller
     public function completeOrderPickup(Request $request,$payment)
     {
         $order = Order::where('order_number',$payment->viva_order_id)->first();
-        if(isset($request->OrderMerchantReference))
+        if(isset($request->TransactionIdentifier))
         {
             if ($order) {
                 $order->payment_status = 1;
                 $order->save();
-                $payment_exists = Payment::where('transaction_id', $request->OrderMerchantReference)->first();
+                $payment_exists = Payment::where('transaction_id', $request->TransactionIdentifier)->first();
                 if (!$payment_exists) {
                     $payment = new Payment();
                     $payment->date = date('Y-m-d');
@@ -283,20 +286,21 @@ class PesapalPaymentController extends Controller
                     $payment->order_id = $order->id ?? '';
                     $payment->payment_option_id = $this::PaymentId;
                     $payment->user_id = $order->user_id ?? '';
-                    $payment->transaction_id = $request->OrderMerchantReference;
+                    $payment->transaction_id = $request->TransactionIdentifier;
                     $payment->balance_transaction = $order->payable_amount ?? '';
                     $payment->save();
                 }
                 
-                $request->request->add(['order_number'=> $order->order_number, 'amount' => $order->payable_amount, 'transaction_id' => $request->OrderMerchantReference]);
+                $request->request->add(['order_number'=> $order->order_number, 'amount' => $order->payable_amount, 'transaction_id' => $request->TransactionIdentifier]);
                 $plaseOrderForPickup = new PickupDeliveryController();
                 $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
                 
                 if (isset($request->come_from) && $request->come_from == 'app') {
                     $response['status'] = 200;
-                    $response['msg'] = 'Success Added Pickup.';
+                    $response['msg'] = 'Success Added Pickup Delivery.';
                     $response['payment_from'] = 'pickup_delivery';
-                    $response['order'] = $order;
+                    $response['data'] = $res;
+
                     return response()->json($response);
                 }
 
@@ -304,7 +308,7 @@ class PesapalPaymentController extends Controller
             }
         }else{
             //Failed transaction case
-            $data = Payment::where('transaction_id',$request->OrderMerchantReference)->first();
+            $data = Payment::where('transaction_id',$request->TransactionIdentifier)->first();
             $data->delete();
 
             if (isset($request->come_from) && $request->come_from == 'app') {
@@ -323,8 +327,8 @@ class PesapalPaymentController extends Controller
         $data['tip_amount'] = $payment->amount;
         $data['order_number'] = explode('-', $payment->viva_order_id)[0];
         $data['transaction_id'] = $payment->transaction_id;
+        $data['come_from'] = $request['come_from'];
         $data['user_id'] = $request['id'];
-
         $request = new \Illuminate\Http\Request($data);
 
         $orderController = new OrderController();

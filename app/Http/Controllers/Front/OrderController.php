@@ -2062,9 +2062,9 @@ class OrderController extends FrontController
 
                 // check if is_tax_price_inclusive is on than no tax
                 if (! $additionalPreferences->is_tax_price_inclusive) {
-                    $new_vendor_taxable_amount = number_format(($actual_amount * $rate) / 100, 2);
+                    $new_vendor_taxable_amount = number_format((($actual_amount-$total_discount) * $rate) / 100, 2);
                 } else {
-                    $new_vendor_taxable_amount = number_format(($actual_amount * $rate) / (100 + $rate), 2);
+                    $new_vendor_taxable_amount = number_format((($actual_amount-$total_discount) * $rate) / (100 + $rate), 2);
                 }
 
                 $new_vendor_taxable_amount = str_replace(',', '', $new_vendor_taxable_amount);
@@ -2402,14 +2402,12 @@ class OrderController extends FrontController
                         $user_vendors = UserVendor::where([
                             'vendor_id' => $vendor_value->vendor_id
                         ])->pluck('user_id');
-
                         if ($request->payment_option_id == 1 || $order->is_postpay == 1 || $order->payment_status == 1) {
                             $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
                         }
                     }
                     $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
                     $super_admin = User::where('is_superadmin', 1)->pluck('id');
-                    
                     if ($request->payment_option_id == 1 || $order->is_postpay == 1 || $order->payment_status == 1) {
                         $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
                     }
