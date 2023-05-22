@@ -27,8 +27,9 @@ class CategoryController extends FrontController{
      * @return \Illuminate\Http\Response
      */
     public function categoryProduct(Request $request, $domain = '', $slug = 0)
-    {
+    {        
         //$preferences = Session::get('preferences');
+        $vendorType = Session::get('vendorType');
         $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'):  getClientPreferenceDetail();
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
@@ -110,7 +111,9 @@ class CategoryController extends FrontController{
         }else{
             $vendorIds = array();
             $vendorList = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'name')->where('status', '!=', $this->field_status);
-           
+            if(!empty($vendorType)){
+                $vendorList= $vendorList->where($vendorType, 1);
+            }
             $vendorList = $vendorList->get();
             if(!empty($vendorList)){
                 foreach ($vendorList as $key => $value) {
@@ -157,7 +160,6 @@ class CategoryController extends FrontController{
             }
         }
         
-       
         $newProducts = [];
         if($page == 'pickup/delivery'){
             if(!Auth::user()){
@@ -228,10 +230,10 @@ class CategoryController extends FrontController{
 
    
     public function listData($langId, $category_id, $type = '',$vendorIds = array(),$is_max = false){
-        //pr($category_id);
 
         $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
-
+        $vendorType = Session::get('vendorType');
+        
         if(strtolower($type) == 'vendor'){
             //$preferences= ClientPreference::first();
             $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'): ClientPreference::first();;
@@ -254,6 +256,9 @@ class CategoryController extends FrontController{
             $vendorData = $vendorData->whereHas('getAllCategory' , function ($q)use($category_id){
                 $q->where('category_id', $category_id)->where('status', 1);
             });
+            if(!empty($vendorType)){
+                $vendorData= $vendorData->where($vendorType, 1);
+            }
             $vendorData = $vendorData->where('vendors.status', 1)->paginate($pagiNate);
 
             foreach ($vendorData as $key => $value) {
@@ -315,9 +320,7 @@ class CategoryController extends FrontController{
                 if(Session::has('vendors')){
                     $vendors = Session::get('vendors');
                 }
-            }
-            
-            // pr($vendors);
+            }            
             $products = Product::with(['vendor', 'media.image', 'category', 'ProductAttribute',
                         'translation' => function($q) use($langId){
                           $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
@@ -364,7 +367,6 @@ class CategoryController extends FrontController{
      */
     public function categoryVendorProducts(Request $request, $domain = '', $slug1 = 0, $slug2 = 0)
     {
-
         // slug1 => category slug
         // slug2 => vendor slug
         $maxPrice = 0;
