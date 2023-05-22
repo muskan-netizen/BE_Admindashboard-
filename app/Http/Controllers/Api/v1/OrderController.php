@@ -826,11 +826,14 @@ class OrderController extends BaseController
                             }
                              // add delivery fee in coupon if coupon has free delicery
                             if($vendor_cart_product->coupon->promo->allow_free_delivery == 1){
-
                                 $vendor_discount_amount = $vendor_discount_amount +  $delivery_fee;
                                 $vendor_payable_amount = $vendor_payable_amount - $delivery_fee;
                                 $total_discount += $delivery_fee;
                                 $deliveryfeeOnCoupon = 1;
+                            }
+                            if(isset($rate) && $total_discount > 0 ){
+                               $discount = ($total_discount*$rate) / 100;
+                               $vendor_taxable_amount -= $discount;
                             }
                             //-------------Coupon Related discount calculations Ends here----------------------
                         }
@@ -842,7 +845,7 @@ class OrderController extends BaseController
                             $vendor_payable_amount += $service_fee_percentage_amount;
                             $payable_amount += $service_fee_percentage_amount;
                         }
-                        
+
                         if ($vendor_cart_product->vendor->fixed_service_charge > 0) {
                             // $vendor_service_fee_percentage_amount = ($vendor_payable_amount * $vendor_cart_product->vendor->service_fee_percent) / 100; // wrong percentage_amount
                             $service_fee_percentage_amount        = $vendor_cart_product->vendor->service_charge_amount;
@@ -2121,7 +2124,7 @@ class OrderController extends BaseController
     public function sendSuccessSMS($request, $order, $vendor_id = '')
     {
         try {
-            $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
+            $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','digit_after_decimal')->first();
 
             $user = Auth::user();
             if ($user) {
@@ -2133,6 +2136,7 @@ class OrderController extends BaseController
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
                 $provider = $prefer->sms_provider;
+                $order->payable_amount = number_format((float) $order->payable_amount, $prefer->digit_after_decimal, '.', '');
                 $keyData = ['{user_name}'=>$user->name??'','{amount}'=>$currSymbol . $order->payable_amount,'{order_number}'=>$order->order_number??''];
                 $body = sendSmsTemplate('order-place-Successfully',$keyData);
 
@@ -2347,6 +2351,13 @@ class OrderController extends BaseController
             }
             if (!empty($order->orderDetail->scheduled_date_time)) {
                 $order->scheduled_date_time = dateTimeInUserTimeZone($order->orderDetail->scheduled_date_time, $user->timezone);
+            }
+            if(!empty($order->orderDetail->scheduled_date_time) && !empty($order->orderDetail->scheduled_slot) ){
+                $slot_date =  date('Y-m-d',strtotime($order->orderDetail->scheduled_date_time));
+                $slot_time = explode("-",$order->orderDetail->scheduled_slot);
+                $start_time = $slot_time[0];
+                $end_time = !empty($slot_time[1]) ? $slot_time[1]: $slot_time[0];
+                $order->schedule_slot =date('Y-m-d h:i A',strtotime(dateTimeInUserTimeZone($slot_date. " " . $start_time, $user->timezone))) . ' - ' . date('h:i A',strtotime(dateTimeInUserTimeZone($slot_date. " " . $end_time, $user->timezone)));
             }
             $luxury_option_name = '';
             if ($order->orderDetail->luxury_option_id > 0) {

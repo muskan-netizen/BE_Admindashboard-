@@ -819,9 +819,9 @@ class AuthController extends BaseController
                 $user->is_email_verified = 1;
                 $user->email_token_valid_till = NULL;
                 $user->save();
+                $this->sendCustomerSignupSuccessEmail($user);
                 return $this->successResponse(getUserDetailViaApi($user), $message);
             }
-            $this->sendCustomerSignupSuccessEmail($user);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }

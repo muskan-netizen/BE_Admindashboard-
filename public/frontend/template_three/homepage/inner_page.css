@@ -3518,6 +3518,15 @@ footer#footer {
 .alProductCategories .collection-wrapper .container.p-0 {
     padding: 0 10px!important;
 }
+
+@media (min-width: 1300px) {
+    .fillter_product .product-image {
+        min-height: 250px;
+        min-width: 200px;
+        max-height: 250px;
+    }
+}
+
 @media (max-width: 1200px) {
     .al_body_template_three .vendor-design_new{
             margin-top: -21%!important;

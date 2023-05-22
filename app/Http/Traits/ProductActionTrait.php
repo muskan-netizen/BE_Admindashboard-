@@ -9,8 +9,67 @@ use DB;
 
 trait ProductActionTrait{
 
-      
-     /**
+    
+
+    public function getRandomVendorIdsForHomePage($preferences, $type, $is_admin_vendor_rating = 0, $latitude, $longitude,$action='2')
+    {
+        try 
+        {
+            $vendors = Vendor::select('id')->where('status', 1)->where($type, 1);
+            if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+
+                // if($action == '1'){
+                //     // $vendors = Vendor::select('id')
+                //     //     ->where('status', 1)
+                //     //     ->where($type, 1);
+
+                //     // if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+                //         $vendors = $vendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
+                //             $query->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
+                //         });
+                //     // }
+
+                //     // $vendorIds = $vendors->get()->pluck('id');
+                //     // pr($vendorIds);
+
+                // }
+                $vendors = $vendors->havingRaw(" (SELECT COUNT(`service_areas`.`id`) FROM `service_areas` WHERE `service_areas`.`vendor_id` = `vendors`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)'))) > 0 ");
+                
+            }
+
+            if($is_admin_vendor_rating == 1){
+                $vendors = $vendors->orderBy('admin_rating', 'DESC');
+            }else{
+                $vendors = $vendors->inRandomOrder();
+            }
+            //pr($vendors->pluck('id')->toArray());
+            return $vendors->pluck('id')->toArray();
+        }
+        catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    public function getLastProductOrdered()
+    {
+        try 
+        {
+            $user_id = Auth::user()->id;
+            // $user_id = 233;
+            $vendors =  OrderProduct::distinct('product_id')->whereHas('order_vendor', function($q) use ($user_id){
+                $q->where('user_id', $user_id);
+            })->take(10);
+            // ->inRandomOrder();
+            return $vendors->pluck('product_id')->toArray();
+        }
+        catch (\Exception $e) {
+            return [];
+        }
+    }
+
+
+
+         /**
      * getRecentProductIds
      *
      * @param  mixed $user_id
@@ -189,12 +248,9 @@ trait ProductActionTrait{
                         $title = $value->translation->first() ? $value->translation->first()->title : $value->sku;
                         $image_url = $value->media->first() ? $value->media->first()->image->path['proxy_url'] . $p_dim . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                         $productArray[] = array(
-                            'id' => $value->id,
                             'tag_title' => $products_tag_title??0,
                             'image_url' => $image_url,
                             'sku' => $value->sku,
-                            'variant' => $value->variant,
-                            'media' => $value->media,
                             'title' => Str::limit($title, 18, '..'),
                             'url_slug' => $value->url_slug,
                             'averageRating' => number_format($value->averageRating, 1, '.', ''),
@@ -244,7 +300,7 @@ trait ProductActionTrait{
             $products = $products->where($where, 1);
         }
      
-       //$venderIds = ['8'];
+       
         $products = $products->whereHas('vendor', function($q) use ($type,$venderIds){
                     $q->where('status',1);
                     $q->whereIn('id',$venderIds);
@@ -287,38 +343,71 @@ trait ProductActionTrait{
         
     }
 
-    public function getProductsId($type='')
+    public function getProductsId($type='', $vendorWhereIN = '', $whereProductType = '')
     {
-        $product_ids = [];
-        if (checkTableExists('home_products')) {
-            $single_category_products = HomeProduct::whereSlug($type)->first();
-            if (@$single_category_products) {
-                if(@$single_category_products){
-                    if($type == 'single_category_products'){
-                        $product_ids = ProductCategory::select('product_id')->where('category_id', $single_category_products->category_id)->get();
+        try 
+        {
+            $product_ids = [];
+            
+            $single_category_products = [];
 
-                    } elseif($type == 'selected_products'){
-                        $product_ids = json_decode($single_category_products->products);
-                    } elseif($type == 'popular_products'){
-                        $most_sold = OrderVendorProduct::selectRaw('id, product_id, count(product_id) as total')->whereHas('statusDelievered')->groupBy('product_id')->orderBy('total', 'DESC')->take(5)->get()->pluck('product_id');
-                        // dd($most_sold);
-                        $most_viewed = ProductRecentlyViewed::selectRaw('id, product_id, count(product_id) as total')->groupBy('product_id')->orderBy('total', 'DESC')->take(5)->get()->pluck('product_id');
-
-                        $product_ids = $most_sold->merge($most_viewed);
-                    } elseif($type == 'top_rated_products'){
-                        $product_ids = OrderProductRating::selectRaw('id, product_id, count(product_id) as total')->groupBy('product_id')->orderBy('total', 'DESC')->take(5)->get()->pluck('product_id');
-                    } elseif($type == 'recent_viewed'){
-                        $product_ids = $this->getRecentProductIds();
-                    }
-                    
-                }
+            if (($type == 'single_category_products' || $type == 'selected_products')) {
+                $single_category_products = HomeProduct::whereSlug($type)->first();
             }
+
+            if($type == 'single_category_products' && !empty($single_category_products)){
+                $product_ids = ProductCategory::select('product_id')->where('category_id', $single_category_products->category_id)->take(10)->pluck('product_id')->toArray();
+
+            } elseif($type == 'selected_products' && !empty($single_category_products)){
+                $product_ids = json_decode($single_category_products->products);
+            } elseif($type == 'popular_products'){
+                $most_sold = OrderVendorProduct::selectRaw('id, product_id, count(product_id) as total')->whereHas('statusDelievered')->groupBy('product_id')->orderBy('total', 'DESC')->take(5)->get()->pluck('product_id')->toArray();
+                $most_viewed = ProductRecentlyViewed::selectRaw('id, product_id, count(product_id) as total')->groupBy('product_id')->orderBy('total', 'DESC')->take(5)->get()->pluck('product_id')->toArray();
+                //$product_ids = $most_sold->merge($most_viewed);
+                $product_ids = array_merge($most_sold, $most_viewed);
+            } elseif($type == 'top_rated_products'){
+                $product_ids = OrderProductRating::selectRaw('id, product_id, count(product_id) as total')->groupBy('product_id')->orderBy('total', 'DESC')->take(10)->get()->pluck('product_id')->toArray();
+            } elseif($type == 'recent_viewed'){
+                $product_ids = $this->getRecentProductIds();
+            }elseif($type == 'all' || $type == 'is_new' || $type == 'is_featured'){
+                $completeWhere = ' ';
+                if($type != 'all'){
+                    $completeWhere = ' AND `products`.`'.$type.'` = 1';
+                }
+                $raw_query = "SELECT 
+                    `products`.`id`
+                    FROM 
+                        `products` LEFT JOIN   `categories` as `categories` ON `products`.`category_id` = `categories`.`id`  AND `categories`.`type_id` != 7
+                        LEFT JOIN   `vendors` as `vendors` ON `vendors`.`id` = `products`.`vendor_id` AND `vendors`.`status` = 1 
+                    WHERE 
+                        `products`.`deleted_at` IS NULL 
+                            AND `vendors`.`status` = 1 
+                            AND `products`.`is_live` = 1
+
+                            $completeWhere
+                                        
+                            $vendorWhereIN 
+
+                            $whereProductType
+                        
+                            GROUP BY `products`.`id`
+
+                            ORDER BY RAND() LIMIT 6";
+                
+                $products = DB::select( DB::raw($raw_query));
+                
+                $products = collect($products);
+                $product_ids = $products->pluck('id')->toArray();
+            }
+            
+            return $product_ids;
         }
-        
-        return $product_ids;
+        catch (\Exception $e) {
+            return [];
+        }
     }
 
-    public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type = '',$Products_title = '', $p_dim = '')
+    public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type = '',$Products_title = '', $p_dim = '', $preferences = NULL, $categoryTypes = NULL)
     {
         try 
         {
@@ -347,19 +436,31 @@ trait ProductActionTrait{
                     }
             }
             $whereComparePriceNotNull = '';
-            if($where == 'on_sale'){
-                $whereComparePriceNotNull = ' and `product_variant`.`compare_at_price` > 0  ';
-            }
+            // if($where == 'on_sale'){
+            //     $whereComparePriceNotNull = ' and `product_variant`.`compare_at_price` > 0  ';
+            // }
             //Check product of selected category type
             $whereProductType = '';
-            $categoryTypesArray = @getServiceTypesCategory($type);
+            if(!empty($categoryTypes)){
+                $categoryTypesArray = $categoryTypes;
+            }else{
+                $categoryTypesArray = @getServiceTypesCategory($type, $preferences);
+            }
+            
             if(!empty($categoryTypesArray)){
                 $categoryTypesArray = implode(',',$categoryTypesArray);
                 $whereProductType = ' and `categories`.`type_id`  IN ('.$categoryTypesArray.') ';
             }
 
-            $type_id = 7;
-            $status = 1;
+            
+            $single_category_product_ids = $this->getProductsId($where, $vendorWhereIN, $whereProductType);
+            if(!empty($single_category_product_ids)){
+                $single_category_product_ids = @implode(',',$single_category_product_ids);
+                if($single_category_product_ids){
+                    $completeWhere = ' AND  `products`.`id` IN  ('.$single_category_product_ids.')';
+                }
+            }    
+            
 
             $raw_query = "SELECT 
                 `products`.`id`, 
@@ -378,7 +479,6 @@ trait ProductActionTrait{
                 `products`.`is_featured`,
                 `products`.`is_new`,  
                 `products`.`category_id`,  
-                -- `products`.`inwishlist` as `is_inwishlist_btn`,
                 `categories`.`id` as `category_id` ,
                 `categories`.`type_id`,
                 `product_images`.`media_id`,
@@ -407,41 +507,35 @@ trait ProductActionTrait{
 
                 IFNULL(`products`.`is_long_term_service`, 0) AS `is_long_term_service`
                 FROM 
-                    `products` LEFT JOIN   `categories` as `categories` ON `products`.`category_id` = `categories`.`id`  AND `categories`.`type_id` != ?
+                    `products` LEFT JOIN   `categories` as `categories` ON `products`.`category_id` = `categories`.`id`  AND `categories`.`type_id` != 7
                     LEFT JOIN   `product_images` as `product_images` ON `product_images`.`product_id` = `products`.`id` 
-                    LEFT JOIN   `vendors` as `vendors` ON `vendors`.`id` = `products`.`vendor_id` AND `vendors`.`status` = ? 
+                    LEFT JOIN   `vendors` as `vendors` ON `vendors`.`id` = `products`.`vendor_id` AND `vendors`.`status` = 1 
                     LEFT JOIN   `vendor_media` as `vendor_media` ON `vendor_media`.`id` = `product_images`.`media_id`
-                    LEFT JOIN   `product_translations` as `product_translation` ON `product_translation`.`product_id` = `products`.`id` AND `product_translation`.`language_id` = ?
+                    LEFT JOIN   `product_translations` as `product_translation` ON `product_translation`.`product_id` = `products`.`id` AND `product_translation`.`language_id` = $langId
                     LEFT JOIN   `product_variants` as `product_variant` ON `product_variant`.`product_id` = `products`.`id`
-                    LEFT JOIN   `category_translations` as `category_translation` ON `category_translation`.`category_id` = `products`.`category_id` AND `category_translation`.`language_id` = ?
+                    LEFT JOIN   `category_translations` as `category_translation` ON `category_translation`.`category_id` = `products`.`category_id` AND `category_translation`.`language_id` = $langId
                     LEFT JOIN   `product_attributes` as `product_attribute` ON `product_attribute`.`product_id` = `products`.`id` AND `product_attribute`.`key_name` = 'Location'
                     
                 WHERE 
                     `products`.`deleted_at` IS NULL 
-                        AND `vendors`.`status` = ? 
-                        AND `products`.`is_live` = ?
+                        AND `vendors`.`status` = 1 
+                        AND `products`.`is_live` = 1
                         $whereComparePriceNotNull
                         $completeWhere
                                     
                         $vendorWhereIN 
 
-                        $whereProductType
-                    
-                        GROUP BY `products`.`id`
+                        $whereProductType 
+                        ORDER BY RAND() LIMIT 6";
 
-                        ORDER BY 
-                            RAND()
-                
-                        LIMIT 
-                            10";
+            $returnArray           = DB::select( DB::raw($raw_query));
+            // //$collectionproducts = collect($products)->unique('id');
+            // if(empty($single_category_product_ids)){
+            //     //$collectionproducts = $collectionproducts->random(10);
+            // }
 
-            $sqlParams = [$type_id, $status, $langId, $langId, $status, $status];
-            
-            
-            $products = DB::select( DB::raw($raw_query), $sqlParams);
-            
-            $returnArray = $products;
-            // dd($returnArray);
+            // $returnArray = $products;
+            //pr($returnArray);
             return $returnArray;
         }
         catch (\Exception $e) {
@@ -449,67 +543,67 @@ trait ProductActionTrait{
         }
     }
     
-    
-    public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude, $vendor_ids = [])
+    public function getEvenOddTime($time) {
+        return ($time % 5 === 0) ? $time : ($time - ($time % 5));
+    }
+    public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude, $vendor_ids = [], $set_template = NULL)
     {
         try 
         {
             $mytime = Carbon::now()->setTimezone($timezone);
             $current_time = $mytime->toTimeString();
-
+            $current_date = Carbon::now()->format('Y-m-d');
+            $multiply = Session::get('currencyMultiplier') ?? 1;
+            $currencySymbol = Session::get('currencySymbol');
             if( (empty($latitude)) && (empty($longitude)) ){
                 $latitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_latitude) : 0;
                 $longitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_longitude) : 0;
             }
-
             
             $selectQuery = "`vendors`.`id`, 
-                `vendors`.`name`, 
-                `vendors`.`banner`, 
+                `vendors`.`name`,  
                 `vendors`.`address`, 
                 `vendors`.`order_pre_time`, 
-                `vendors`.`order_min_amount`, 
                 `vendors`.`logo`, 
                 `vendors`.`slug`, 
-                `vendors`.`latitude`, 
-                `vendors`.`longitude`, 
                 `vendors`.`show_slot`,
                 `vendors`.`admin_rating`,
                 `vendors`.`rating`,
+                (SELECT (CASE WHEN `promo`.`promo_type_id` = 1 THEN CONCAT(CAST(`promo`.`amount` AS DECIMAL(2,0)), '% OFF | use ', `promo`.`name`) ELSE CONCAT('FLAT ', '$currencySymbol', '', CAST(`promo`.`amount`* $multiply AS DECIMAL(2,0)), ' OFF | use ', `promo`.`name`) END) FROM `promocodes` AS `promo` left join `promocode_details` AS `promo_info` ON `promo_info`.`promocode_id` = `promo`.`id` WHERE `promo`.`restriction_on` = 1 AND ((`promo`.`restriction_type` = 0 AND `promo_info`.`refrence_id` = `vendors`.`id`) OR (`promo`.`restriction_type` = 1 AND `promo_info`.`refrence_id` != `vendors`.`id`)) AND `promo`.`expiry_date` >= $current_date AND `promo`.`amount` > 0 ORDER BY `promo`.`amount` DESC LIMIT 1) as `promo_discount`,
+                (select MIN(`price`) FROM `product_variants` AS `pv` JOIN `products` AS `pr` ON `pr`.`id` = `pv`.`product_id` where `pr`.`vendor_id` = `vendors`.`id`) AS `minimum_price`,
                 GROUP_CONCAT(DISTINCT `category_translations`.`name` SEPARATOR ', ') AS `categoriesList`,
                 (SELECT count(`order_vendors`.`id`) FROM `order_vendors` WHERE `order_vendors`.`vendor_id` = `vendors`.`id`) AS `selling_count`,
                 (SELECT CONCAT(`vendor_slot_dates`.`start_time`, '##', `vendor_slot_dates`.`end_time`) FROM `vendor_slot_dates` WHERE `vendor_slot_dates`.`vendor_id` = `vendors`.`id` LIMIT 0,1) AS `slotdate_start_end_time`,
-                (SELECT CONCAT(`vendor_slots`.`start_time`, '##', `vendor_slots`.`end_time`) FROM `vendor_slots` WHERE `vendor_slots`.`vendor_id` = `vendors`.`id` AND `vendor_slots`.`start_time` < CAST('?' AS time) AND `vendor_slots`.`end_time` > CAST('?' AS time)  LIMIT 0,1) AS `slot_start_end_time`,
-                6371 * acos(cos(radians(?)) 
+                (SELECT CONCAT(`vendor_slots`.`start_time`, '##', `vendor_slots`.`end_time`) FROM `vendor_slots` WHERE `vendor_slots`.`vendor_id` = `vendors`.`id` AND `vendor_slots`.`start_time` < CAST('".$current_time."' AS time) AND `vendor_slots`.`end_time` > CAST('".$current_time."' AS time)  LIMIT 0,1) AS `slot_start_end_time`,
+                6371 * acos(cos(radians(" . $latitude . ")) 
                                             * cos(radians(`vendors`.`latitude`)) 
-                                            * cos(radians(`vendors`.`longitude`) - radians(?)) 
-                                            + sin(radians(?)) 
+                                            * cos(radians(`vendors`.`longitude`) - radians(" . $longitude . ")) 
+                                            + sin(radians(" .$latitude. ")) 
                                             * sin(radians(`vendors`.`latitude`))) AS `lineOfSightDistance`
                 ";
         
                 $joinQuery  = " LEFT JOIN `vendor_categories` ON `vendor_categories`.`vendor_id`= `vendors`.`id` ";
                 $joinQuery .= " LEFT JOIN `categories` ON `categories`.`id`= `vendor_categories`.`category_id` ";
-                $joinQuery .= " LEFT JOIN `category_translations` ON `category_translations`.`category_id`= `categories`.`id` AND `category_translations`.`language_id` = ? ";
+                $joinQuery .= " LEFT JOIN `category_translations` ON `category_translations`.`category_id`= `categories`.`id` AND `category_translations`.`language_id` = $language_id ";
                 $whereQuery  = " where `vendors`.`status` = 1 AND `vendor_categories`.`status` = 1";
 
             $whereInQuery = '';
             
-            $whereInQuery = " AND `vendors`.`id` IN (".implode(',', $vendor_ids).") ";
+            if(!empty($vendor_ids)){
+                $whereInQuery = " AND `vendors`.`id` IN (".implode(',', $vendor_ids).") ";
+            }
             
             $mainQuery = "SELECT $selectQuery FROM `vendors` $joinQuery $whereQuery $whereInQuery";
             
-            $mainQuery .= " GROUP BY `vendors`.`id` ";
 
-            $sqlParams = [$current_time, $current_time, $latitude, $longitude, $latitude, $language_id];
+            
+            $mainQuery .= " GROUP BY `vendors`.`id` ";
 
             //------based on hyper location------------
             if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-
                 $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
                 $unit_abbreviation = ($distance_unit == 'mile') ? 'miles' : 'km';
-                $distance_to_time_multiplier = ($preferences->distance_to_time_multiplier > 0) ? $preferences->distance_to_time_multiplier : 2;
-
-                $mainQuery .= " HAVING (SELECT COUNT(`service_areas`.`id`) FROM `service_areas` WHERE `service_areas`.`vendor_id` = `vendors`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)'))) > 0 ";
+                $distance_to_time_multiplier = ($preferences->distance_to_time_multiplier > 0) ? $preferences->distance_to_time_multiplier : 2;            
             }
 
             if ($vendor_title == "best_sellers") {
@@ -524,19 +618,20 @@ trait ProductActionTrait{
                 }
             }
             
-            $mainQuery .= " LIMIT 10";
-           
-            // dd($sqlParams);
-            $vendors = DB::select( DB::raw($mainQuery), $sqlParams);
+            //if(!empty($set_template) && $set_template->template_id != 3){
+                $mainQuery .= " LIMIT 6";
+            //}
+            
 
+            
+            $vendors = DB::select( DB::raw($mainQuery));
             $vendor_ids = [];
-
             foreach ($vendors as $key => $value) {
                 $vendor_ids[] = $value->id;
-                $value->img_path = get_file_path($value->logo,'FILL_URL','200','200');
                 // get or update rating
-                $value->vendorRating = ($value->rating == null) ? $this->getVendorRating($value->id) : number_format($value->rating, 1);
-
+                $value->vendorRating = number_format($value->rating, 1);
+                
+                
                 if(($preferences) && ($preferences->is_hyperlocal == 1)) 
                 {
                     if($type == 'delivery')
@@ -546,6 +641,8 @@ trait ProductActionTrait{
                         $pretime =  number_format(floatval($value->order_pre_time), 0, '.', '') + 0;
                     }
                     $pretime = $this->getEvenOddTime($pretime);
+                    $value->deliveryTime = $pretime;
+                    
                     if($pretime >= 60){
                         $value->timeofLineOfSightDistance =  '~ '.$this->vendorTime($pretime) .' '. __('hour');
                     }else{
@@ -579,7 +676,7 @@ trait ProductActionTrait{
                     }
                 }
             }
-            
+            //pr($vendors);
             return $vendors;
         }
         catch (\Exception $e) {
@@ -599,12 +696,12 @@ trait ProductActionTrait{
             (CASE WHEN `bt`.`title` IS NULL THEN `br`.`title` ELSE `bt`.`title` END) AS `translation_title`
             FROM `brands` AS `br` 
 
-            LEFT JOIN `brand_translations` AS `bt` ON `bt`.`brand_id` = `br`.`id` AND `bt`.`language_id` = ? 
+            LEFT JOIN `brand_translations` AS `bt` ON `bt`.`brand_id` = `br`.`id` AND `bt`.`language_id` = $language_id 
 
-            WHERE `br`.`status` !=?
+            WHERE `br`.`status` !=$field_status
             GROUP BY `br`.`id`";
         
-            $brands = DB::select( DB::raw($mainQuery), [$language_id, $field_status]);
+            $brands = DB::select( DB::raw($mainQuery));
             return $brands;
         }
         catch (\Exception $e) {
@@ -633,6 +730,7 @@ trait ProductActionTrait{
 
             $mainQuery = "SELECT 
                 `ba`.`image`,
+                `ba`.`name`,
                 `ba`.`link`, 
                 `ba`.`link_url`, 
                 `ct`.`slug` AS `category_slug`, 
@@ -642,17 +740,16 @@ trait ProductActionTrait{
             $joinQuery = "LEFT JOIN `categories` AS `ct` ON `ct`.`id` = `ba`.`redirect_category_id` AND `ct`.`deleted_at` IS NULL ";
             $joinQuery.= "LEFT JOIN `vendors` AS `vn` ON `vn`.`id` = `ba`.`redirect_vendor_id` ";
 
-            $mainQuery.= " $joinQuery WHERE `ba`.`status` =1 AND `ba`.`validity_on` = 1 AND (`ba`.`start_date_time` is null or (date(`ba`.`start_date_time`) <= ? and date(`ba`.`end_date_time`) >= ?))  ";
+            $mainQuery.= " $joinQuery WHERE `ba`.`status` =1 AND `ba`.`validity_on` = 1 AND (`ba`.`start_date_time` is null or (date(`ba`.`start_date_time`) <= '".$carbon_now."' and date(`ba`.`end_date_time`) >= '".$carbon_now."'))  ";
 
             if(isset($client_preferences->is_service_area_for_banners) && ($client_preferences->is_service_area_for_banners == 1) && ($client_preferences->is_hyperlocal == 1) && (!empty($latitude) && !empty($longitude))){
-                $mainQuery .= " HAVING (SELECT `id` FROM `$banner_service_areas_table` AS `bsa` where `ba`.`id` = `bsa`.`banner_id` AND EXISTS (select `id` from `$service_area_for_banners_table` AS `safb` WHERE `bsa`.`service_area_id` = `safb`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(?)')) and `type` = ?) > 0) > 0 ";
+                $mainQuery .= " HAVING (SELECT `id` FROM `$banner_service_areas_table` AS `bsa` where `ba`.`id` = `bsa`.`banner_id` AND EXISTS (select `id` from `$service_area_for_banners_table` AS `safb` WHERE `bsa`.`service_area_id` = `safb`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)')) and `type` = $type) > 0) > 0 ";
             }
             
             $mainQuery.= " ORDER BY `ba`.`sorting` ASC";
             
-            $latLng = $latitude.' '.$longitude;
         
-            $banners = DB::select( DB::raw($mainQuery), [$carbon_now, $carbon_now, $latLng, $type]);
+            $banners = DB::select( DB::raw($mainQuery));
             return $banners;
         }
         catch (\Exception $e) {
@@ -660,40 +757,132 @@ trait ProductActionTrait{
         }
     }
 
-    public function getRandomVendorIdsForHomePage($preferences, $type, $is_admin_vendor_rating = 0, $latitude, $longitude)
+    public function getVendorIds($preferences, $latitude, $longitude, $vendor_ids=[], $enable_vendor_title)
     {
         try 
         {
-            $vendors = Vendor::select('id')->where('status', 1)->where($type, 1);
-            if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-
-                $vendors = $vendors->havingRaw(" (SELECT COUNT(`service_areas`.`id`) FROM `service_areas` WHERE `service_areas`.`vendor_id` = `vendors`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)'))) > 0 ");
-                
-            }
-
-            if($is_admin_vendor_rating == 1){
-                $vendors = $vendors->orderBy('admin_rating', 'DESC');
+            if($enable_vendor_title == "trending_vendors")
+            {
+                $now = Carbon::now()->toDateTimeString();
+                $whereIn = " ";
+                if(!empty($vendor_ids)){
+                    $whereIn = " AND `siv`.`vendor_id` IN (".implode(',', $vendor_ids).") ";
+                }
+                $raw_query = "SELECT `siv`.`vendor_id` FROM `subscription_invoices_vendor` AS `siv`  
+                JOIN `subscription_invoice_features_vendor` AS `sifv` ON `sifv`.`subscription_invoice_id` = `siv`.`id` 
+                WHERE `sifv`.`feature_id` = 1 
+                $whereIn
+                AND `siv`.`end_date` >= $now 
+                GROUP BY `siv`.`vendor_id`";
+                $vendors = DB::select( DB::raw($raw_query));
+                $vendors = collect($vendors);
+                return $vendor_ids->pluck('vendor_id')->toArray();
             }else{
-                $vendors = $vendors->inRandomOrder();
+                return collect($vendor_ids)->toArray();
             }
-            return $vendors->pluck('id')->toArray();
         }
         catch (\Exception $e) {
             return [];
         }
     }
 
-    public function getLastProductOrdered()
+
+    public function vendorProducts_2($enable_layout, $venderIds, $langId, $currency = 'USD', $type = '', $p_dim = '', $preferences = NULL, $categoryTypes = NULL)
     {
         try 
-        {
-            $user_id = Auth::user()->id;
-            // $user_id = 233;
-            $vendors =  OrderProduct::distinct('product_id')->whereHas('order_vendor', function($q) use ($user_id){
-                $q->where('user_id', $user_id);
-            })->take(10);
-            // ->inRandomOrder();
-            return $vendors->pluck('product_id')->toArray();
+        { 
+            $vendorWhereIN = ' ';
+            $whereProductType = ' ';
+            $where = array('on_sale' => 'all', 'new_products' => 'is_new', 'featured_products' => 'is_featured');
+
+            $image_url = get_file_path('', "FILL_URL", $height="250", $width="240");
+            if(!empty($venderIds)){
+                $venid = implode(',',$venderIds);
+                $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
+            }
+
+            //Check product of selected category type
+            $whereProductType = '';
+            if(!empty($categoryTypes)){
+                $categoryTypesArray = $categoryTypes;
+            }else{
+                $categoryTypesArray = @getServiceTypesCategory($type, $preferences);
+            }
+            
+            if(!empty($categoryTypesArray)){
+                $categoryTypesArray = implode(',',$categoryTypesArray);
+                $whereProductType = ' and `categories`.`type_id` IN ('.$categoryTypesArray.')';
+            }
+
+            $raw_query = "";
+
+            foreach($enable_layout as $enable_layout1){
+                $completeWhere = ' ';
+                if($enable_layout1 == "on_sale" || $enable_layout1 == "new_products" || $enable_layout1 == "featured_products"){
+                    $single_category_product_ids = $this->getProductsId($where[$enable_layout1], $vendorWhereIN, $whereProductType);
+                    if(!empty($single_category_product_ids)){
+                        $single_category_product_ids = @implode(',',$single_category_product_ids);
+                        if($single_category_product_ids){
+                            $completeWhere = ' AND  `products`.`id` IN  ('.$single_category_product_ids.')';
+                        }
+                    } 
+                    $raw_query = (($raw_query=="")?'':$raw_query." UNION ALL ")." SELECT 
+                    `products`.`id`, 
+                    `products`.`sku`, 
+                    `products`.`url_slug`, 
+                    `products`.`weight_unit`, 
+                    `products`.`weight`, 
+                    `products`.`vendor_id`, 
+                    `products`.`category_id`,
+                    '".$enable_layout1."' AS `product_type`,
+                    '".$image_url."' AS `d_image_url`,
+                    `categories`.`id` as `category_id`,
+                    (CASE WHEN SUBSTRING_INDEX(`vendor_media`.`path`, '.', -1) = 'svg' THEN REPLACE(REPLACE('".$image_url."', 'default/default_image.png', `vendor_media`.`path`),'@webp','svg') ELSE REPLACE('".$image_url."', 'default/default_image.png', `vendor_media`.`path`) END) AS `media_url`,
+                    `product_translation`.`title`,
+                    `product_variant`.`compare_at_price` as `compare_price_numeric`,
+                    `product_variant`.`price` as `price_numeric`,
+                    `category_translation`.`name` as `category_name` ,
+                    CAST((`products`.`averageRating`) AS DECIMAL(2,1)) AS averageRating,
+                    CASE 
+                        when `product_variant`.`compare_at_price` > 0 then CAST((`product_variant`.`compare_at_price` - `product_variant`.`price`)/`product_variant`.`compare_at_price`*100 as decimal(12,2))
+                        else 0
+                    end as discount_percentage,
+                    `vendors`.`name` as `vendor_name`,
+                    `vendors`.`slug` as `vendor_slug`,
+    
+                    IFNULL(`products`.`is_long_term_service`, 0) AS `is_long_term_service`
+                    FROM 
+                        `products` LEFT JOIN   `categories` as `categories` ON `products`.`category_id` = `categories`.`id`  AND `categories`.`type_id` != 7
+                        LEFT JOIN   `product_images` as `product_images` ON `product_images`.`product_id` = `products`.`id` 
+                        LEFT JOIN   `vendors` as `vendors` ON `vendors`.`id` = `products`.`vendor_id` AND `vendors`.`status` = 1 
+                        LEFT JOIN   `vendor_media` as `vendor_media` ON `vendor_media`.`id` = `product_images`.`media_id`
+                        LEFT JOIN   `product_translations` as `product_translation` ON `product_translation`.`product_id` = `products`.`id` AND `product_translation`.`language_id` = $langId
+                        LEFT JOIN   `product_variants` as `product_variant` ON `product_variant`.`product_id` = `products`.`id`
+                        LEFT JOIN   `category_translations` as `category_translation` ON `category_translation`.`category_id` = `products`.`category_id` AND `category_translation`.`language_id` = $langId
+                        
+                    WHERE 
+                        `products`.`deleted_at` IS NULL 
+                            AND `vendors`.`status` = 1 
+                            AND `products`.`is_live` = 1
+    
+                            $completeWhere
+                                        
+                            $vendorWhereIN 
+    
+                            $whereProductType 
+                            
+                            ";
+                }
+            }
+
+            $products       = DB::select( DB::raw($raw_query));
+            
+            $returnArray    = collect($products)->unique(function ($item)
+                            {
+                                return $item->id . $item->product_type;
+                            });
+            
+            return $returnArray;
         }
         catch (\Exception $e) {
             return [];
