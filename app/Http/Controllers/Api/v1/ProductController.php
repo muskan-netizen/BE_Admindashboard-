@@ -124,7 +124,9 @@ class ProductController extends BaseController
                         //     ->groupBy('product_id'); // return first variant
                         // },
 
-                        'variant.media.pimage.image', 'vendor', 'media.image', 'related', 'upSell', 'crossSell',
+                        'variant.media.pimage.image', 'vendor', 'media.image', 'related', 'upSell', 'crossSell', 'reviews.user' => function($rev) {
+                            $rev->select('users.id', 'users.name', 'users.email', 'users.image');
+                        },
                         'addOn' => function($q1) use($langId){
                             $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
                             $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
@@ -159,7 +161,6 @@ class ProductController extends BaseController
 
                     $product = $product->where('id', $pid)
                         ->first();
-
             if(!$product){
                 return response()->json(['error' => 'No record found.'], 404);
             }
@@ -353,7 +354,7 @@ class ProductController extends BaseController
                 }
             }
 
-        
+            
             $response['suggested_category_products'] =  $suggested_category_products;
             $response['suggested_brand_products'] =  $suggested_brand_products;
             $response['suggested_vendor_products'] =  $suggested_vendor_products;
