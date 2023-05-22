@@ -380,3 +380,11 @@ $add_to_cart =  route('addToCart') ;
                 </div>
             </div>
         </div>
+        <script>
+            $(".side-scroll-menu-li").click(function(){
+                $("body").removeClass("overflow-hidden");
+                $(".scrollspy-menu").removeClass("side-menu-open");
+                $(".manu-bars").removeClass("menu-btn");
+             });              
+        </script>        
+        
