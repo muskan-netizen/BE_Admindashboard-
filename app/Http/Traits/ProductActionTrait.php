@@ -407,17 +407,18 @@ trait ProductActionTrait{
         }
     }
 
-    public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type = '',$Products_title = '', $p_dim = '', $preferences = NULL, $categoryTypes = NULL)
+    public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type = '',$Products_title = '', $p_dim = '',$getSubCatIds='', $preferences = NULL, $categoryTypes = NULL)
     {
         try 
         {
             $vendorWhereIN = ' ';
+            $getSubCatIdsIn = ' ';
             $completeWhere = ' ';
             $whereProductType = ' ';
             if(!empty($venderIds)){
                 $venid = implode(',',$venderIds);
                 $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
-
+                
             }
             if($where!=='all' && $where!=='on_sale'){
                 
@@ -450,6 +451,11 @@ trait ProductActionTrait{
             if(!empty($categoryTypesArray)){
                 $categoryTypesArray = implode(',',$categoryTypesArray);
                 $whereProductType = ' and `categories`.`type_id`  IN ('.$categoryTypesArray.') ';
+            }
+            
+            if (is_array($getSubCatIds) && count($getSubCatIds) > 0) {
+                $subCatIdsArray = implode(',',$getSubCatIds);
+                $getSubCatIdsIn = " AND `products`.`category_id` IN ($subCatIdsArray)";
             }
 
             
@@ -523,7 +529,9 @@ trait ProductActionTrait{
                         $whereComparePriceNotNull
                         $completeWhere
                                     
-                        $vendorWhereIN 
+                        $vendorWhereIN
+
+                        $getSubCatIdsIn 
 
                         $whereProductType 
                         ORDER BY RAND() LIMIT 6";
