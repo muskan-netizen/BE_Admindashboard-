@@ -6,8 +6,10 @@
                                                         @php
 
                                                             $total_other_taxes=0.00;
-                                                            foreach(explode(":",$order->total_other_taxes) as $row){
-                                                                $total_other_taxes+=(float)$row;
+                                                         	if(!empty($order->total_other_taxes)){
+                                                                $total_other_taxes  =   (float) array_sum(explode(":", $order->total_other_taxes));
+                                                            }else{
+                                                                $total_other_taxes = $order->taxable_amount;
                                                             }
 
                                                         @endphp
@@ -178,7 +180,12 @@
                                                                                                     @if(@$order->reqCancelOrder->status == 'Pending')
                                                                                                         {{__('Cancel Order Pending')}}
                                                                                                     @else
-                                                                                                        {{__( ucfirst( $vendor->order_status)) }}</label>
+                                                                                                        @if ($luxury_option_name == 'Dine-In' && $vendor->order_status == 'out for delivery')
+                                                                                                        {{__( ucfirst('Ready for Delivery')) }}
+                                                                                                        @else
+                                                                                                        {{__( ucfirst( $vendor->order_status)) }}
+                                                                                                        @endif
+                                                                                                        </label>
                                                                                                     @endif
                                                                                                 </li>
                                                                                             @endif
@@ -280,6 +287,17 @@
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                             @endif
+                                                                                            @if ($vendor->taxable_amount  > 0)
+                                                                                    <li
+                                                                                        class="d-flex align-items-center justify-content-between">
+                                                                                        <label
+                                                                                            class="m-0">{{ __('Tax') }}</label>
+                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format(($vendor->taxable_amount) * $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format(($vendor->taxable_amount)
+                                                                                            *
+                                                                                            $clientCurrency->doller_compare)}}</span>
+                                                                                    </li>
+                                                                                @endif
+                                                                                            
                                                                                             @if ($order->fixed_fee_amount > 0)
                                                                                                 <li
                                                                                                     class="d-flex align-items-center justify-content-between">
@@ -292,6 +310,7 @@
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
                                                                                             @endif
+
                                                                                             @if ($vendor->delivery_fee > 0)
                                                                                                 <li
                                                                                                     class="d-flex align-items-center justify-content-between">
@@ -303,6 +322,7 @@
                                                                                                         *
                                                                                                         $clientCurrency->doller_compare)}}</span>
                                                                                                 </li>
+
                                                                                             @endif
 
                                                                                             @if ($vendor->toll_amount > 0)
@@ -490,17 +510,17 @@
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
-                                                                                @if ($order->taxable_amount + $total_other_taxes > 0)
+                                                                                @if ($total_other_taxes > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">
                                                                                         <label
                                                                                             class="m-0">{{ __('Tax') }}</label>
-                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format(($order->taxable_amount+$total_other_taxes) * $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format(($order->taxable_amount+$total_other_taxes)
+                                                                                        <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format(($total_other_taxes) * $clientCurrency->doller_compare)) : Session::get('currencySymbol') .decimal_format(($total_other_taxes)
                                                                                             *
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                                     </li>
                                                                                 @endif
-
+															
                                                                                 @if ($order->total_container_charges > 0)
                                                                                     <li
                                                                                         class="d-flex align-items-center justify-content-between">

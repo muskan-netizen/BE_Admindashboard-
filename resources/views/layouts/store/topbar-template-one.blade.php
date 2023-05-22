@@ -62,6 +62,9 @@ $preference = $client_preference_detail;
                 @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
                         <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
                     @endif
+                    @if( $is_ondemand_multi_pricing ==1 )
+                        @include('layouts.store.onDemandTopBarli')
+                    @endif
                     @if($client_preference_detail->header_quick_link == 1)
                     
                     <li class="onhover-dropdown quick-links quick-links">

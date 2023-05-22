@@ -779,7 +779,21 @@ class PaymentOptionController extends BaseController
                                 'nmi_client_id' => $request->nmi_client_id,
                                 'nmi_key_id' => $request->nmi_key_id,
                             ));
-                        break;
+                            break;
+
+                            case 'data_trans':
+                                $validatedData = $request->validate([
+                                    'data_trans_merchant_id' => 'required',
+                                    'data_trans_password' => 'required'
+                                ]);
+    
+                                $data_trans_arr = array(
+                                    'merchant_id' => $request->data_trans_merchant_id,
+                                    'password' => $request->data_trans_password
+                                );
+                                $json_creds = json_encode($data_trans_arr);
+                                
+                            break;
                     }
                 }
             }

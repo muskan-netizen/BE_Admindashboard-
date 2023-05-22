@@ -85,9 +85,10 @@
     display: block;
     border-radius: 20px;
     text-transform: uppercase;
-    width: 60px;
+    width: fit-content;
     font-size: 12px;
-    margin: 0 auto
+    margin: 0 auto;
+    padding: 8px 10px;
 }
 .al_body_template_three .add_vendor_product_btn {
     border: 1px solid var(--theme-deafult);
@@ -3517,6 +3518,15 @@ footer#footer {
 .alProductCategories .collection-wrapper .container.p-0 {
     padding: 0 10px!important;
 }
+
+@media (min-width: 1300px) {
+    .fillter_product .product-image {
+        min-height: 250px;
+        min-width: 200px;
+        max-height: 250px;
+    }
+}
+
 @media (max-width: 1200px) {
     .al_body_template_three .vendor-design_new{
             margin-top: -21%!important;
@@ -3570,6 +3580,16 @@ footer#footer {
     .al_body_template_three .tip_label {
         padding: 5px 8px;
     }
+    .product-image {
+        height: auto !important;
+        min-width: auto !important;
+    }
+    .img-outer-box{
+        min-height: auto !important;
+    }
+    body.al_body_template_three .main-fillter .side_fillter{margin-top:0px !important;}
+    .collection-filter { margin: 0px;padding: 0px 6px;}
+    .al_body_template_three .cab-banner-area .container-fluid{padding:12px 20px !important;}
 }
 
 
