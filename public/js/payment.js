@@ -1210,7 +1210,7 @@ $(document).ready(function() {
             total_amount = cabElement.data('amount');
             payment_from = 'pickup_delivery';
             var rowData = 'amt='+total_amount+'&from='+payment_from+'&order_number='+order.order_number;
-        }else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+        } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
             total_amount = tipElement.val();
             payment_from = 'tip';
             var rowData = 'amt='+total_amount+'&from='+payment_from+'&order_number='+$("#order_number").val();

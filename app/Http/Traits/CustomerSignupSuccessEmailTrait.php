@@ -9,6 +9,8 @@ use Illuminate\Support\Collection;
 use App\Models\ClientPreference;
 use App\Models\Client;
 use App\Models\EmailTemplate;
+use Illuminate\Support\Facades\Log;
+use App\Models\ClientPreference;
 
 
 trait CustomerSignupSuccessEmailTrait{
@@ -41,7 +43,7 @@ trait CustomerSignupSuccessEmailTrait{
                   'phone_no' => $user->phone_number,
                   'logo' => $client_detail->logo['original'],
                   'email_template_content' => $content,
-                  'subject' => $email_template->subject      
+                  'subject' => $email_template->subject,      
               ];
               dispatch(new \App\Jobs\sendCustomerRegistrationEmail($email_data))->onQueue('customer_signup_email');
           }

@@ -130,10 +130,10 @@ class PickupDeliveryController extends BaseController{
                     }
                 }
                 if( $total_price > 0 && $preferences->tip_before_order == 1){
-                    $response['tips'] = array(
-                        ['label' => '5%', 'value' => decimal_format(0.05 * $total_price)],
-                        ['label' => '10%', 'value' => decimal_format(0.1 * $total_price)],
-                        ['label' => '15%', 'value' => decimal_format(0.15 * $total_price)]
+                $response['tips'] = array(
+                    ['label' => '5%', 'value' => decimal_format(0.05 * $total_price)],
+                    ['label' => '10%', 'value' => decimal_format(0.1 * $total_price)],
+                    ['label' => '15%', 'value' => decimal_format(0.15 * $total_price)]
                     );
                 }
             }
@@ -574,7 +574,6 @@ class PickupDeliveryController extends BaseController{
                 if (isset($request->transaction_id) && (!empty($request->transaction_id))) {
                     $order->payment_status = 1;
                 }
-
                 if ((isset($request->tip)) && ($request->tip != '') && ($request->tip > 0)) {
                     $tip_amount = $request->tip;
                     $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;

@@ -33,7 +33,7 @@ class VendorOrderProductDispatcherStatus extends Model
             $productcategorytype =   @$order->vendors[0]->products->first()->LongTermService->product->category->categoryDetail->type->title ;
             $isLongTerm = 1;
            }else{
-               $productcategorytype =  $order->vendors[0]->products[0]->product->category->categoryDetail->type->title ;
+               $productcategorytype =  @$order->vendors[0]->products[0]->product->category->categoryDetail->type->title ;
            }
        }
 
