@@ -1784,6 +1784,7 @@ body.al_body_template_eight.homeHeader .outter-fillter-data .product-wrapper-gri
     width: 100%;
     border-radius: 10px 10px 0 0;
     padding-top: 0;
+    object-position: top;
 }
 
 /* .al_body_template_eight .margin-res .product-image img {
@@ -2444,7 +2445,8 @@ article#page-container #main_image {
     height: unset;
 }
 ul.exzoom_img_ul.img-sidebar img#main_image {
-    height: 100% !important;
+    height: 100% !important;height: 100% !important;
+    object-position: top;
 }
 .modal-content h2 {
     font-size: 20px;

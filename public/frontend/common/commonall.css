@@ -111,14 +111,35 @@ body .pac-container{
     padding-left: 2px;
 }
 .al_body_template_eight .vendor-design_new {
-    margin-top: -21%;
+    margin-top: -16%;
     display: flex;
     align-items: center;
     justify-content: center;
     height: 100%;
     position: relative;
     z-index: 9;
-    margin-left: 4%;
+    margin-left: 1%;
+}
+.dashboard-right .dashboard .page-title h2 {
+    font-size: 16px !important;
+    margin-bottom: 15px;
+}
+label.rating-star.cancel_order, .rating-star.request_cancel_order, .extend-order {
+    top: 0 !important;
+}
+.box-account.box-info.order-address h3 {
+    font-size: 18px;
+}
+.al_body_template_eight  .vendor-description .vendor_icon-design h4 {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.al_body_template_eight  .vendor-description .vendor_icon-design p {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .al_body_template_one .product-banner-img {
