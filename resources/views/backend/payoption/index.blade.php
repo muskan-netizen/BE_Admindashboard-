@@ -149,6 +149,8 @@
 				$nmi_client_id = (isset($creds->nmi_client_id)) ? $creds->nmi_client_id : '';
 				$nmi_key_id = (isset($creds->nmi_key_id)) ? $creds->nmi_key_id : '';
 
+				$powertrans_id = (isset($creds->powertrans_id)) ? $creds->powertrans_id : '';
+				$powertrans_password = (isset($creds->powertrans_password)) ? $creds->powertrans_password : '';
 				$pesapal_consumer_key = (isset($creds->pesapal_consumer_key)) ? $creds->pesapal_consumer_key : '';
 				$pesapal_consumer_secret = (isset($creds->pesapal_consumer_secret)) ? $creds->pesapal_consumer_secret : '';
 
@@ -1699,6 +1701,25 @@
                     </div>
                     @endif
 
+					@if ( (strtolower($opt->code) == 'powertrans') )
+                    <div class="mt-2" id="powertrans_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="powertrans_id" class="mr-3">{{ __("POWERTRANS ID") }}</label>
+                                    <input type="password" name="powertrans_id" id="powertrans_id" class="form-control" value="{{$powertrans_id}}" @if($opt->status == 1) required @endif>
+								</div>
+							</div>
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="powertrans_password" class="mr-3">{{ __("POWERTRANS PASSWORD") }}</label>
+									<input type="password" name="powertrans_password" id="powertrans_password" class="form-control" value="{{$powertrans_password}}" @if($opt->status == 1) required @endif>
+								</div>
+							</div>
+						</div>
+					</div>
+					@endif
+
 					@if ( (strtolower($opt->code) == 'pesapal') )
                     <div class="mt-2" id="pesapal_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
                         <div class="row">
@@ -1714,8 +1735,6 @@
                                     <input type="password" name="pesapal_consumer_secret" id="pesapal_consumer_secret" class="form-control" value="{{$pesapal_consumer_secret}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
-                            
-							 
                         </div>
                     </div>
                     @endif

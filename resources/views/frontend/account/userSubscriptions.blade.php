@@ -392,6 +392,26 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                    </div>
                <% } %>
 
+               <% if(payment_option.slug == 'powertrans') { %>
+                <div class="col-md-12 mt-3 mb-3 powertrans_element_wrapper option-wrapper d-none">
+                    <div class="row no-gutters">
+                        <div class="col-6">
+                            <input type="number" min="16" maxlength="16" style=" border-right: none;" class="form-control" id="card-element-powertrans" placeholder="Enter card Number" required 
+                            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
+                        </div>
+                        <div class="col-3">
+                            <input type="number" style=" border-left: none; border-right: none;" class="form-control" maxLength="4"  id="date-element-powertrans" placeholder="YYMM" required 
+                            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+                        </div>
+                        <div class="col-3">
+                            <input type="password" maxLength="4" style=" border-left: none;"  class="form-control" id="cvv-element-powertrans" placeholder="CVV" required />
+                        </div>
+                    </div>
+
+                    <span class="error text-danger" id="card_error_powertrans"></span>
+                </div>
+            <% } %>
+
             <% } %>
         <% }); %>
     <% } %>
@@ -471,6 +491,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
 	var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
 	var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
+    var powertrans_payment_url = "{{ route('powertrans.payment') }}";
     var data_trans_url = "{{route('payment.payByDataTrans')}}";
     var pesapal_payment_url = "{{ route('pesapal.payment') }}";
 

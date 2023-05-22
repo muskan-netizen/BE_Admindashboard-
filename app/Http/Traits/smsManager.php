@@ -11,12 +11,6 @@ use Log;
 use Unifonic;
 trait smsManager{
 
-  public function __construct()
-  {
-    //
-  }
-
-
     public function mTalkz_sms($to,$message,$crendentials,$templates_id = '')
     {
             $api_url = "http://msg.mtalkz.com/V2/http-api.php";
