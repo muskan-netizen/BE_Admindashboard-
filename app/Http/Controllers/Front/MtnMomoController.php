@@ -175,8 +175,16 @@ class MtnMomoController extends FrontController
 
         if ($response['status'] == 202) {
             //check transaction status 
+            if(!self::$_isSandbox){
+                return response()->json([
+                    'status' => 'Success',
+                    'message' => 'Payment request has been sent successfully'
+                ],200);
+            }
+
+            //For Sandbox only
             $response = self::getTransactionStatus(self::$_referenceId);
-            if (!empty($response)) {
+            if (!empty($response) && !empty($response['status']) && ($response['status'] == 'SUCCESSFUL' || $response['status'] == 'PENDING')) {
                 $url =  self::sucessPayment($data, $response['financialTransactionId']);
                 if ($url) {
                     return response()->json([
@@ -185,12 +193,41 @@ class MtnMomoController extends FrontController
                         'url' => $url
                     ], 200);
                 }
+            } else {
+                $message = 'Payment Failed';
+                if (!empty($response['reason'])) {
+                    if (is_array($response['reason'])) {
+                        $message = $response['reason']['message'];
+                    } else {
+                        $message = $response['reason'];
+                        $currency = self::$_currency;
+                        switch ($message) {
+                            case 'APPROVAL_REJECTED';
+                                $message = "Payment request of $currency $request->amt has been rejected";
+                                break;
+                            case 'INTERNAL_PROCESSING_ERROR':
+                                $message = "Your payment request of $currency $request->amt has been Failed.";
+                                break;
+                            case 'EXPIRED':
+                                $message = "Your payment request of $currency $request->amt has been Expired.";
+                                break;
+                            default:
+                                $message = 'This is default message';
+                                break;
+                        }
+                    }
+                }
+                return response()->json([
+                    'status' => 'PAYMENT FAILED',
+                    'message' => $message,
+                    'response' => $response
+                ], 500);
             }
         }
         return response()->json([
-            'status' => 'error',
+            'status' => 'PAYMENT FAILED',
             'message' => 'Payment Failed',
-            'response' => $response
+            'response' => !empty($response['response']) ? json_decode($response['response']->getBody()->getContents(), true) : ''
         ], 500);
     }
 }

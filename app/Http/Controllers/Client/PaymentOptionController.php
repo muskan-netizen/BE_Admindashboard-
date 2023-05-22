@@ -929,9 +929,9 @@ class PaymentOptionController extends BaseController
         self::$_isSandbox = $request->sandboxCheckbox;
         self::__init(true);
 
-        $result = json_decode(self::createApiUser(), true);
+        $result = self::createApiUser();
         if ($result['status'] == 201) {
-            $api_data = json_decode(self::createApiKey(), true);
+            $api_data = self::createApiKey();
             if ($api_data['status'] == 201) {
                 return json_encode([
                     'status' => 201,

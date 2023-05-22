@@ -27,6 +27,7 @@ use Illuminate\Routing\UrlGenerator;
 use App\Http\Controllers\Front\OrderController;
 use App\Http\Controllers\Front\WalletController;
 use App\Models\Cart;
+use PhpParser\Node\Expr\Cast\Array_;
 
 trait MtnMomoPaymentManager
 {
@@ -102,6 +103,42 @@ trait MtnMomoPaymentManager
         self::$_domain_name = self::getDomainName($site_url);
     }
 
+    private static function createRequest($method, $url, $acceptedStatus, $options)
+    {
+        try {
+            $response = self::$_client->request($method, $url, $options);
+
+            if (empty($response)) {
+                return self::response(404, 'Resouce Not Found');
+            }
+
+            $code = $response->getStatusCode();
+            switch ($code) {
+                case $acceptedStatus:
+                    return self::response($code, 'Success', $response);
+                    break;
+                case 400:
+                    return self::response($code, 'There is a Problem with submitted data.', $response);
+                    break;
+                case 500:
+                    return self::response($code, 'Internal Server Error', $response);
+                    break;
+                case 409:
+                    return self::response($code, 'Something wrong with the keys', $response);
+                    break;
+                case 401:
+                    return self::response($code, 'Unauthorized', $response);
+                    break;
+                default:
+                    return self::response($code, json_decode($response->getBody()->getContents(), true), $response);
+                    break;
+            }
+        } catch (\Exception $e) {
+            return self::response($e->getCode(), $e->getMessage());
+        }
+    }
+
+
     public static function createApiUser()
     {
         /* Check if payment option avaiable for MOMO API */
@@ -116,123 +153,48 @@ trait MtnMomoPaymentManager
         ];
 
         $params = [
-            'providerCallbackHost' => self::$_domain_name
+            'providerCallbackHost' => 'http://webhook.site/8e8b0eb4-c068-40b2-a921-dc582f4816e0' //self::$_domain_name
         ];
 
-        /* Check if API is on test mode */
-        try {
-            $response = self::$_client->request('POST', self::$_apiUrl . 'apiuser', [
-                'headers' => self::$_header,
-                'body' => json_encode($params)
-            ]);
-
-            if (empty($response)) {
-                self::response(404, 'Resouce Not Found');
-            }
-            $code = $response->getStatusCode();
-            switch ($code) {
-                case 201:
-                    return self::response($code, 'API User Added Successfully.');
-                    break;
-                case 400:
-                    return self::response($code, 'There is a Problem with submitted data.');
-                    break;
-                case 500:
-                    return self::response($code, 'Internal Server Error');
-                    break;
-                case 409:
-                    return self::response($code, 'Something wrong with the keys');
-                    break;
-                case 401:
-                    return self::response($code, 'Unauthorized');
-                    break;
-                default:
-                    return self::response($code, json_encode($response->getBody()->getContents()));
-                    break;
-            }
-        } catch (\Exception $e) {
-            return self::response($e->getCode(), $e->getMessage());
-        }
+        $response = self::createRequest('POST', self::$_apiUrl . 'apiuser', 201, [
+            'headers' => self::$_header,
+            'body' => json_encode($params)
+        ]);
+        return $response;
     }
 
     public static function createApiKey()
     {
-        try {
-            // Create an apiKey
-            $response = self::$_client->request('post', self::$_apiUrl . '/apiuser/' . self::$_referenceId . '/apikey', [
-                'headers' => self::$_header
-            ]);
+        $response = self::createRequest('POST', self::$_apiUrl . 'apiuser/' . self::$_referenceId . '/apikey', 201, [
+            'headers' => self::$_header
+        ]);
 
-            if (empty($response)) {
-                self::response(404, 'Resouce Not Found');
-            }
-            $code = $response->getStatusCode();
-            $response = json_decode($response->getBody()->getContents(), true);
-
-            switch ($code) {
-                case 201:
-                    return self::response($code, 'Api Key generated Successfully', $response['apiKey']);
-                    break;
-                case 400:
-                    return self::response($code, 'There is a Problem with submitted data.');
-                    break;
-                case 500:
-                    return self::response($code, 'Internal Server Error');
-                    break;
-                case 409:
-                    return self::response($code, 'Something wrong with the keys');
-                    break;
-                case 401:
-                    return self::response($code, 'Unauthorized');
-                    break;
-                default:
-                    return self::response($code, json_encode($response->getBody()->getContents()));
-                    break;
-            }
-        } catch (\Exception $e) {
-            return self::response($e->getCode(), $e->getMessage());
+        if ($response['status'] == 201) {
+            $response = json_decode($response['response']->getBody()->getContents(), true);
+            return [
+                'status' => 201,
+                'apiKey' => $response['apiKey']
+            ];
+        } else {
+            return $response;
         }
     }
 
     public static function GenerateAccressToken()
     {
-        try {
-            $response = self::$_client->request('POST', 'https://sandbox.momodeveloper.mtn.com/collection/token/', [
-                'headers' => self::$_header
-            ]);
-
-            if (empty($response)) {
-                self::response(404, 'Resouce Not Found');
-            }
-
-            $code = $response->getStatusCode();
-            $response = json_decode($response->getBody()->getContents(), true);
-
-            self::$_accessToken = $response['access_token'];
-
-            switch ($code) {
-                case 200:
-                    return self::response($code, 'Access Token has been generated successfully.');
-                    break;
-                case 400:
-                    return self::response($code, 'There is a Problem with submitted data.');
-                    break;
-                case 500:
-                    return self::response($code, 'Internal Server Error');
-                    break;
-                case 409:
-                    return self::response($code, 'Something wrong with the keys');
-                    break;
-                case 401:
-                    return self::response($code, 'Unauthorized');
-                    break;
-                default:
-                    return self::response($code, json_encode($response->getBody()->getContents()));
-                    break;
-            }
-        } catch (\Exception $e) {
-            return self::response($e->getCode(), $e->getMessage());
+        if (self::$_isSandbox) {
+            $url = 'https://sandbox.momodeveloper.mtn.com/collection/token/';
+        } else {
+            $url = 'https://proxy.momoapi.mtn.com/collection/token/';
         }
+        $response = self::createRequest('POST', $url, 200, [
+            'headers' => self::$_header
+        ]);
+        if ($response['status'] == 200) {
+            $response = json_decode($response['response']->getBody()->getContents(), true);
+            self::$_accessToken = $response['access_token'];
+        }
+        return true;
     }
 
     public function RequestToPay($token, $data)
@@ -258,75 +220,54 @@ trait MtnMomoPaymentManager
 
         if (self::$_environment == 'sandbox') {
             $partyId = '256761412741';
+        } else {
+            $partyId = Auth::user()->phone_number;
         }
-        return json_decode(self::paymentRequest($token, $amount, self::$_currency, $order_number, $partyId), true);
-    }
 
-    public static function paymentRequest($token, $amount, $currency, $order_number, $partyId)
-    {
-        try {
+        /* Generate new reference ID for each new request to pay api call */
+        $response = self::$_client->get('https://www.uuidgenerator.net/api/version4');
 
-            /* Generate new reference ID for each new request to pay api call */
-            $response = self::$_client->get('https://www.uuidgenerator.net/api/version4');
-
-            if (empty($response)) {
-                self::response(404, 'Resouce Not Found');
-            }
-
-            self::$_referenceId = $response->getBody()->getContents();
-
-            $headers = [
-                'X-Reference-Id' => self::$_referenceId,
-                'X-Target-Environment' => self::$_environment,
-                'Ocp-Apim-Subscription-Key' => self::$_subscriptionKey,
-                'Authorization' => 'Bearer ' . self::$_accessToken,
-                'Content-Type' => 'application/json'
-            ];
-
-            \Log::info($headers);
-            $params = [
-                'amount' => $amount,
-                'currency' => $currency,
-                'externalId' => $order_number,
-                'payer' => [
-                    'partyIdType' => 'MSISDN',
-                    'partyId' => $partyId
-                ],
-                'payerMessage' => "Paying for Driver tester code",
-                'payeeNote' => "Drivers name"
-            ];
-            \Log::info($params);
-
-            $response = self::$_client->request('POST', 'https://sandbox.momodeveloper.mtn.com/collection/v1_0/requesttopay', [
-                'headers' => $headers,
-                'body' => json_encode($params)
-            ]);
-
-            $code = $response->getStatusCode();
-
-            switch ($code) {
-                case 202:
-                    return self::response($code, 'Request to Pay has successfully generated');
-                    break;
-                case 400:
-                    return self::response($code, 'There is a Problem with submitted data.');
-                    break;
-                case 500:
-                    return self::response($code, 'Internal Server Error');
-                    break;
-                case 409:
-                    return self::response($code, 'Something wrong with the keys');
-                    break;
-                case 401:
-                    return self::response($code, 'Unauthorized');
-                    break;
-                default:
-                    return self::response($code, $response->getBody()->getContents());
-                    break;
-            }
-        } catch (\Exception $e) {
-            return self::response($e->getCode(), $e->getMessage());
+        if (empty($response)) {
+            self::response(404, 'Resouce Not Found');
         }
+
+        self::$_referenceId = $response->getBody()->getContents();
+
+        if (self::$_isSandbox) {
+            $url = 'https://sandbox.momodeveloper.mtn.com/collection/v1_0/requesttopay';
+        } else {
+            $url = 'https://proxy.momoapi.mtn.com/collection/v1_0/requesttopay';
+        }
+
+        $headers = [
+            'X-Reference-Id' => self::$_referenceId,
+            'X-Target-Environment' => self::$_environment,
+            'Ocp-Apim-Subscription-Key' => self::$_subscriptionKey,
+            'Authorization' => 'Bearer ' . $token,
+            'Content-Type' => 'application/json'
+        ];
+
+        $params = [
+            'amount' => $amount,
+            'currency' => self::$_currency,
+            'externalId' => $order_number,
+            'payer' => [
+                'partyIdType' => 'MSISDN',
+                'partyId' => '46733123454'
+            ],
+            'payerMessage' => "Paying for Driver tester code",
+            'payeeNote' => "Drivers name"
+        ];
+
+        // Request to Pay 
+        $response = self::createRequest('POST', $url, 202, [
+            'headers' => $headers,
+            'body' => json_encode($params)
+        ]);
+
+        \Log::info($response);
+
+        return $response;
     }
 
     public static function getTransactionStatus($referenceId)
@@ -338,18 +279,20 @@ trait MtnMomoPaymentManager
             'Content-Type' => 'application/json'
         ];
 
-        $response = self::$_client->get('https://sandbox.momodeveloper.mtn.com/collection/v1_0/requesttopay/' . $referenceId, [
+        if (self::$_isSandbox) {
+            $url = "https://sandbox.momodeveloper.mtn.com/collection/v1_0/requesttopay/$referenceId";
+        } else {
+            $url = "https://proxy.momoapi.mtn.com/collection/v1_0/requesttopay/$referenceId";
+        }
+
+
+        // Get Transaction Status
+        $response = self::createRequest('GET', $url, 200, [
             'headers' => $headers
         ]);
 
-        if (empty($response)) {
-            return [
-                null,
-                false
-            ];
-        }
-
-        return json_decode($response->getBody()->getContents(), true);
+        $result = json_decode($response['response']->getBody()->getContents(), true);
+        return $result;
     }
 
     private static function getDomainName($url)
@@ -366,23 +309,19 @@ trait MtnMomoPaymentManager
         return $url;
     }
 
-    private static function response($code, $message, $apiKey = null, $transactionId = null)
+    private static function response($code, $message, $response = null)
     {
-        return json_encode([
+        return [
             'status' => $code,
             'message' => $message,
-            'apiKey' => $apiKey
-        ]);
+            'response' => $response
+        ];
     }
 
     public function sucessPayment($request, $transactionId)
     {
-        // if ($request['environment'] == "app") {
-        //     $user = User::where('auth_token', $request[])->first();
-        //     Auth::login($user);
-        // }
-            $user = Auth::user();
-        
+        $user = Auth::user();
+
 
         if ($request['from'] == 'cart') {
             $order_number = $request['order_number'];

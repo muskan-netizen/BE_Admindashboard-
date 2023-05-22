@@ -3401,12 +3401,15 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
                     window.location.href = resp.url;
                  }else{
                      alert(resp.message);
+                     if(resp.hasOwnProperty('response') && resp.response != '' && typeof(resp.response) != 'undefined'){
+                        console.error(resp.response);
+                     }
                  }
            },
            error: function(resp) {
-               window.location.href = resp.message;
+                alert(resp.responseJSON.message);
+                location.reload(true);
            }
-
          });
      }
 
