@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Http\Traits\{ApiResponser, OrderTrait};
-use App\Models\{ClientCurrency, Order, Payment, PaymentOption};
+use App\Models\{ClientCurrency, Order, Payment, PaymentOption, User};
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\{Auth, Http};
 
 class OboPaymentController extends Controller
 {
@@ -18,6 +18,10 @@ class OboPaymentController extends Controller
     private $obo_key_id;
     private $obo_market_place_id;
     private $testMode;
+    const TEST_MODE_TOKEN_API = 'https://www.obo-pay.co.rw/test/payments/v1/token';
+    const TOKEN_API           = "";
+    const TEST_MODE_URL_API   = "https://www.obo-pay.co.rw/test/payments/v1/payment";
+    const URL_API             = "";
 
     public function __construct()
     {
@@ -50,26 +54,21 @@ class OboPaymentController extends Controller
 
                 $orderNumber = $this->orderNumber($request);
                 if ($request->payment_from == 'cart') {
-                    // $orderNumber = $request->order_number;
                     $urlParams   = "transactionid=$orderNumber&paymentfrom=cart&success=true";
                 } elseif ($request->payment_from == 'wallet') {
-                    // $orderNumber = $number;
                     $urlParams   = "transactionid=$orderNumber&paymentfrom=wallet&success=true";
                 }elseif ($request->payment_from == 'subscription') {
-                    // $orderNumber = $number;
-                    $urlParams   = "transactionid=$orderNumber&subscription_id=$request->subscriptionId&amount=$request->amount&success=true";
+                    $urlParams   = "transactionid=$orderNumber&subscription_id=$request->subscription_id&amount=$request->amount&success=true";
                 }
                 elseif ($request->payment_from == 'pickup_delivery') {
-                    // $orderNumber = $request->order_number;
                     $urlParams   = "transactionid=$orderNumber&paymentfrom=pickup_delivery&reload_route=$request->reload_route&amount=$request->amount&success=true";
                 } elseif ($request->payment_from == 'tip') {
-                    // $orderNumber = $number;
                     $urlParams   = "transactionid=$orderNumber&order_number=$request->order_number&paymentfrom=tip&amount=$request->amount&success=true";
                 }
                 if ($this->testMode == 1) {
-                    $apiUrl = "https://www.obo-pay.co.rw/test/payments/v1/payment";
+                    $apiUrl = SELF::TEST_MODE_URL_API;
                 } else {
-                    $apiUrl = "";
+                    $apiUrl = SELF::URL_API;
                 }
                 $header = [
                     'Content-Type' => 'application/json',
@@ -84,11 +83,10 @@ class OboPaymentController extends Controller
                     "first_name"    => $userFirstName,
                     "last_name"     => $userLastName,
                     "merchant"      => $this->obo_business_name,
-                    "cancel_url"    => url('webhook/obo'), // url($request->cancelUrl)
-                    "return_url"    => url('webhook/obo'.'?'.$urlParams),  //  route('webhook.obo.pay', $urlParams),
+                    "cancel_url"    => url( ($request->cancelUrl) ?? ('after-payment/obo'.'?success=false')),
+                    "return_url"    => url('after-payment/obo'.'?'.$urlParams),
                     "custom_pg_id"  => $this->obo_market_place_id,
                 ], JSON_UNESCAPED_SLASHES);
-                \Log::info('input'); \Log::info($input);
                 $responce = Http::withBody($input, 'application/json')->withHeaders($header)->post($apiUrl);
                 $responceData = json_decode($responce->body(), true);
                 if (isset($responceData['status']) && $responceData['status'] ===  "OK") {
@@ -96,22 +94,18 @@ class OboPaymentController extends Controller
                     return response()->json([
                         'status' => 'Success',
                         'data'   => $redirectUrl
-                    ]);
+                    ], 200);
                 } else {
-                    return $this->errorResponse($responceData['message'], 400);
+                    return $this->errorResponse("Url Is Not Generated", 400);
                 }
             }
         } else {
-            return $this->errorResponse('Token api is not working', 400);
+            return $this->errorResponse('Token Error', 400);
         }
     }
 
-    public function webhook(Request $request)
+    public function afterPayment(Request $request)
     {
-        \Log::info("webhook");
-        \Log::info($request->all());
-
-
         if ($request->has('success') && $request->success === "true") {
             $transactionId = $request->transactionid;
             $payment = Payment::where('transaction_id', $transactionId)->first();
@@ -121,9 +115,7 @@ class OboPaymentController extends Controller
                 $payment->save();
             }
             if ($request->paymentfrom == 'cart') {
-                \Log::info($transactionId);
                 $order = Order::where('order_number', $transactionId)->first();
-                \Log::info($order);
                 if ($order) {
                     $order->payment_status = '1';
                     $order->save();
@@ -133,28 +125,22 @@ class OboPaymentController extends Controller
                         }else{
 
                                 $returnUrl = route('payment.gateway.return.response').'/?gateway=obo'.'&status=200&order='.$order->order_number;
-                                return redirect($returnUrl);
-
-                            // $responseArray['status'] = '200';
-                            // $responseArray['msg'] = 'Success Order.';
-                            // return $responseArray;
+                                         return redirect($returnUrl);
                         }
                 }
             } elseif ($request->paymentfrom == 'wallet') {
-                $user    = auth()->user();
+                if($payment->payment_from == 'app'){
+                    $user = User::findOrFail($payment->user_id);
+                    Auth::login($user);
+                    $returnUrl = route('payment.gateway.return.response').'/?gateway=obo'.'&status=200&transaction_id='.$payment->transaction_id.'&action=wallet';
+                }else{
+                    $user      = auth()->user();
+                    $returnUrl = route('user.wallet');
+                }
                 $wallet  = $user->wallet;
                 $wallet->depositFloat($payment->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $payment->transaction_id . '</b>']);
-                if($payment->payment_from == 'web'){
-                    return redirect()->route('user.wallet');
-                }else{
+                return redirect($returnUrl);
 
-                    $returnUrl = route('payment.gateway.return.response').'/?gateway=obo'.'&status=200&transaction_id='.$payment->transaction_id.'&action=wallet';
-                    return redirect($returnUrl);
-
-                    // $responseArray['status'] = '200';
-                    // $responseArray['msg'] = 'Success';
-                    // return $responseArray;
-                }
             }elseif (isset($request->subscription_id)) {
 
                 $data['transaction_id'] = $payment->transaction_id;
@@ -168,13 +154,8 @@ class OboPaymentController extends Controller
                 if($payment->payment_from == 'web'){
                     return redirect()->route('user.subscription.plans');
                 }else{
-
                     $returnUrl = route('payment.gateway.return.response').'/?gateway=obo'.'&status=200&transaction_id='.$payment->transaction_id.'&action=subscription';
                     return redirect($returnUrl);
-
-                    // $responseArray['status'] = '200';
-                    // $responseArray['msg'] = 'Success';
-                    // return $responseArray;
                 }
             } elseif ($request->paymentfrom == 'pickup_delivery') {
 
@@ -189,13 +170,8 @@ class OboPaymentController extends Controller
                 if($payment->payment_from == 'web'){
                     return redirect()->route('front.booking.details',$transactionId);
                 }else{
-
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=obo'.'&status=200&order='.$transactionId;
-                   return redirect($returnUrl);
-
-                    // $responseArray['status'] = '200';
-                    // $responseArray['msg'] = 'Success';
-                    // return $responseArray;
+                        $returnUrl = route('payment.gateway.return.response').'/?gateway=obo'.'&status=200&order='.$transactionId;
+                            return redirect($returnUrl);
                 }
             }elseif ($request->paymentfrom == 'tip') {
 
@@ -208,13 +184,8 @@ class OboPaymentController extends Controller
                 if($payment->payment_from == 'web'){
                     return redirect()->route('user.orders');
                 }else{
-
                     $returnUrl = route('payment.gateway.return.response').'/?gateway=ono'.'&status=200&order='.$transactionId.'&action=tip';
-                    return Redirect::to($returnUrl);
-
-                    // $responseArray['status'] = '200';
-                    // $responseArray['msg'] = 'Success';
-                    // return $responseArray;
+                    return redirect($returnUrl);
                 }
             }
         } else {
@@ -225,9 +196,9 @@ class OboPaymentController extends Controller
     public function token()
     {
         if ($this->testMode == 1) {
-            $apiUrl = 'https://www.obo-pay.co.rw/test/payments/v1/token';
+            $apiUrl = SELF::TEST_MODE_TOKEN_API;
         } else {
-            $apiUrl = "";
+            $apiUrl = SELF::TOKEN_API;
         }
         $input = json_encode([
             "id" => $this->obo_client_id,
@@ -308,7 +279,6 @@ class OboPaymentController extends Controller
    {
 
        $request->request->add(['payment_from' => $request->action,'from'=>$request->action,'amt'=>$request->amount,'subsid'=>$request->subscription_id??'','user_from'=>'app']);
-       \Log::info('rdata'); \Log::info($request->all());
        $data =  $this->beforePayment($request,$domain,'app');
        if(isset($data) && !empty($data))
        {

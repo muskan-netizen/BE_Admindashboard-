@@ -168,8 +168,8 @@ Route::group(['middleware' => ['domain']], function () {
     Route::match(['get','post'],'payment/nmi','Front\NmiPaymentController@beforePayment')->name('nmi.pay');
 
     // obo-pay
-    Route::post('payment/obo','Front\OboPaymentController@beforePayment')->name('obo.pay');
-    Route::get('webhook/obo','Front\OboPaymentController@webhook')->name('webhook.obo.pay');
+    Route::post('before-payment/obo','Front\OboPaymentController@beforePayment')->name('obo.pay');
+    Route::get('after-payment/obo','Front\OboPaymentController@afterPayment')->name('after.obo.payment');
 
 	Route::post('checkVendorPincode','Front\PincodeController@checkVendorPincode')->name('pincode.checkVendorPincode');
 	Route::get('getShippingMethod','Front\PincodeController@getShippingMethod')->name('pincode.getShippingMethod');

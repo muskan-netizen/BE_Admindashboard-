@@ -3173,7 +3173,7 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
         }else if (path.indexOf("subscription") !== -1) {
             total_amount            = subscriptionElement.val();
             payment_from            = 'subscription';
-            ajaxData.subscriptionId = subscription_id.val()
+            ajaxData.subscription_id = subscription_id.val()
         }
         else if (cabElement.length > 0) {
             total_amount = cabElement.data('amount');
