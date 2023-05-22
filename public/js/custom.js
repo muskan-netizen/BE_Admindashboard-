@@ -612,6 +612,26 @@ $(document).ready(function () {
         var selected_option = $("input[name='subscription_payment_method']:checked");
         // var subscription_id = $('#subscription_payment_form #subscription_id').val();
         var payment_option_id = selected_option.data("payment_option_id");
+
+        if(payment_option_id == 58){
+            var expData = $('#date-element-powertrans').val();
+            var [expMonth, expYear] = [expData.slice(2), expData.slice(0, 2)]
+            var newDate = expMonth+'/'+expYear;
+            cardJson = {
+                'cno': $('#card-element-powertrans').val(),
+                'dt': newDate,
+                'cv': $('#cvv-element-powertrans').val(),
+                'name':'powertrans',
+            }
+            if(cardValidation(cardJson)){
+                console.log('Credit card information is valid.');
+            }
+            else {
+                success_error_alert('error', 'Invalid credit card information', "#powertrans_card_error");
+                return false;
+            }
+        }
+
         if ((selected_option.length > 0) && (payment_option_id > 0)) {
             subscriptionPaymentOPtions(payment_option_id);
 
@@ -1899,6 +1919,25 @@ $(document).ready(function () {
 	        }
         }
 
+        if(payment_option_id == 58){
+            var expData = $('#date-element-powertrans').val();
+            var [expMonth, expYear] = [expData.slice(2), expData.slice(0, 2)]
+            var newDate = expMonth+'/'+expYear;
+            cardJson = {
+                'cno': $('#card-element-powertrans').val(),
+                'dt': newDate,
+                'cv': $('#cvv-element-powertrans').val(),
+                'name':'powertrans',
+            }
+            if(cardValidation(cardJson)){
+                console.log('Credit card information is valid.');
+            }
+            else {
+                success_error_alert('error', 'Invalid credit card information', "#powertrans_card_error");
+                return false;
+            }
+        }
+
         $('#proceed_to_pay_loader').show();
         // startLoader('body',"{{getClientPreferenceDetail()->wb_color_rgb}}");
          $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
@@ -2050,6 +2089,27 @@ $(document).ready(function () {
                 success_error_alert('error', 'Please Fill Details', ".payment_response");
                 return false;
             }
+        }
+
+        if(payment_option_id == 58){
+            var expData = $('#date-element-powertrans').val();
+            var [expMonth, expYear] = [expData.slice(2), expData.slice(0, 2)]
+            var newDate = expMonth+'/'+expYear;
+            console.log({newDate});
+            cardJson = {
+                'cno': $('#card-element-powertrans').val(),
+                'dt': newDate,
+                'cv': $('#cvv-element-powertrans').val(),
+                'name':'powertrans',
+            }
+            if(cardValidation(cardJson)){
+                console.log('Credit card information is valid.');
+            }
+            else {
+                success_error_alert('error', 'Invalid credit card information', "#powertrans_card_error");
+                return false;
+            }
+      
         }
 
         if ((payment_option_id == undefined || payment_option_id <= 0) && (payment_method_required_error_msg != undefined)) {
@@ -4947,9 +5007,14 @@ $(document).ready(function () {
 
             case 55:
                 paymentViaDataTrans('', payment_option_id, '');
-                break;
+            break;
+            
             case 57:
                 payWithPesapal(payment_option_id,'');
+            break;
+
+            case 58:
+                payWithPowerTrans(payment_option_id,'');
             break;
                 
         }
@@ -5473,7 +5538,6 @@ $(document).ready(function () {
                 else{
                     return false;
                 }
-            break;
             }else{
                 $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
             }
@@ -5485,6 +5549,13 @@ $(document).ready(function () {
                 payWithPesapal(payment_option_id, order);
               } else {
                   return false;
+              }
+            break;
+
+            case '58':
+              var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+              if (order != '') {
+                payWithPowerTrans(payment_option_id, order);
               }
             break;
         }
@@ -5733,9 +5804,13 @@ $(document).ready(function () {
             case 55: 
                 paymentViaDataTrans('',payment_option_id,null);
             break;
-
+            
             case 57:
                 payWithPesapal(payment_option_id,'');
+            break;
+            
+            case 58:
+                payWithPowerTrans(payment_option_id,'');
             break;
         }
     }
