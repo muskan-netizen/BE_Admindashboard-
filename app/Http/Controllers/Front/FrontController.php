@@ -210,13 +210,10 @@ class FrontController extends Controller
                                 ->select('categories.id', 'categories.icon', 'categories.icon_two' , 'categories.slug', 'categories.parent_id','cts.name','categories.type_id')
                                 ->whereIn('categories.type_id',$categoryTypes )
                                 ->orderBy('position')->distinct('categories.slug');
-        //dd(DB::getQueryLog());
         $status = $this->field_status;
         $include_categories = [4,8]; // type 4 for brands
         $celebrity_check = 0;
         if ($preferences) {
-            if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
-
                 if((isset($preferences->celebrity_check)) && ($preferences->celebrity_check == 1)){
                     $celebrity_check = 1;
                     $include_categories[] = 5; // type 5 for celebrity
@@ -234,7 +231,6 @@ class FrontController extends Controller
                                 $q2->whereIn('categories.type_id', $include_categories);
                             });
                     });
-            }
         }
         $categories = $categories->leftjoin('types', 'types.id', 'categories.type_id')
                                 ->where('categories.id', '>', '1')
