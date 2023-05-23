@@ -10,7 +10,6 @@ use App\Models\ClientPreference;
 use App\Models\Client;
 use App\Models\EmailTemplate;
 use Illuminate\Support\Facades\Log;
-use App\Models\ClientPreference;
 
 
 trait CustomerSignupSuccessEmailTrait{
