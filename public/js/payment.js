@@ -3363,7 +3363,7 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
      /***
      * Mtn Momo payment gateway
      */
-     window.paymentViaMtnMomo = function paymentViaMtnMomo(address_id, order, payment_form)
+     window.paymentViaMtnMomo = function paymentViaMtnMomo(address_id, order, payment_form,reload_route='')
      {
          let cartElement = $("input[name='cart_total_payable_amount']");
          let total_amount = 0;
@@ -3371,6 +3371,7 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
          let subscriptionElement = $("input[name='subscription_amount']");
          let subscriptionId = $("input[name='subscription_id']");
          let tipElement = $("#cart_tip_amount");
+         let cabElement = $("#pickup_now");
          let payment_from = '';
          if (path.indexOf("cart") !== -1) {
              total_amount = cartElement.val();
@@ -3385,7 +3386,11 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
              subsId = subscriptionId.val();
              payment_from = 'subscription';
              var rowData = 'subsid='+subsId+'&from='+payment_from+'&amt='+total_amount;
-         }else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+         }else if (cabElement.length > 0) {
+            total_amount = cabElement.data('amount');
+            payment_from = 'pickup_delivery';
+            var rowData = `amt=${total_amount}&from=${payment_from}&reload_route=${reload_route}&order_number=${order.order_number}`;
+       }else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
              total_amount = tipElement.val();
              payment_from = 'tip';
              var rowData = 'amt='+total_amount+'&from='+payment_from+'&order_number='+$("#order_number").val();

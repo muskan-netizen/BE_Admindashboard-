@@ -64,7 +64,7 @@ class MtnMomoController extends FrontController
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'EUR';
     }
 
-    public function createToken(Request $request, UrlGenerator $url)
+    public function createToken(Request $request, UrlGenerator $url = null)
     {
         self::__init(false);
 
@@ -74,24 +74,35 @@ class MtnMomoController extends FrontController
 
         $data = [];
         $data['environment'] = 'web';
-        if ($request->from == 'cart') {
-            $data['amt'] = $request->amt;
-            $data['order_number'] = $request->order_number;
-            $data['from'] = $request->from;
-        } else if ($request->from == 'wallet') {
-            $data['amt'] = $request->amt;
-            $data['from'] = $request->from;
-        } else if ($request->from == 'subscription') {
-            $data['amt'] = $request->amt;
-            $data['from'] = $request->from;
-            $data['subsid'] = $request->subsid;
-        } else if ($request->from == 'tip') {
-            $data['amt'] = $request->amt;
-            $data['from'] = $request->from;
-            $data['order_number'] = $request->order_number;
+        switch ($request->from) {
+            case 'cart':
+                $data['amt'] = $request->amt;
+                $data['order_number'] = $request->order_number;
+                $data['from'] = $request->from;
+                break;
+            case 'pickup_delivery':
+                $data['amt'] = $request->amt;
+                $data['from'] = $request->from;
+                $data['order_number'] = $request->order_number;
+                $data['reload_route'] = $request->reload_route;
+                break;
+            case 'wallet':
+                $data['amt'] = $request->amt;
+                $data['from'] = $request->from;
+                $data['order_number'] = 'wallet';
+                break;
+            case 'subscription':
+                $data['amt'] = $request->amt;
+                $data['from'] = $request->from;
+                $data['subsid'] = $request->subsid;
+                $data['order_number'] = 'subscription';
+                break;
+            case 'tip':
+                $data['amt'] = $request->amt;
+                $data['from'] = $request->from;
+                $data['order_number'] = $request->order_number;
+                break;
         }
-
-        // generate AccessToken
         self::GenerateAccressToken();
 
         if (empty(self::$_accessToken)) {
@@ -104,52 +115,14 @@ class MtnMomoController extends FrontController
             //check transaction status 
             if (!self::$_isSandbox) {
                 return response()->json([
-                    'status' => 'Success',
+                    'status' => 'SUCCESSFUL',
                     'message' => 'Payment request has been sent successfully'
                 ], 200);
             }
 
             //For Sandbox only
-            $response = self::getTransactionStatus(self::$_referenceId);
-            if (!empty($response) && !empty($response['status']) && ($response['status'] == 'SUCCESSFUL' || $response['status'] == 'PENDING')) {
-                $url =  self::sucessPayment($data, $response['financialTransactionId']);
-                if ($url) {
-                    return response()->json([
-                        'status' => 'Success',
-                        'message' => 'Payment Successful',
-                        'url' => $url
-                    ], 200);
-                }
-            } else {
-                $message = 'Payment Failed';
-                if (!empty($response['reason'])) {
-                    if (is_array($response['reason'])) {
-                        $message = $response['reason']['message'];
-                    } else {
-                        $message = $response['reason'];
-                        $currency = self::$_currency;
-                        switch ($message) {
-                            case 'APPROVAL_REJECTED';
-                                $message = "Payment request of $currency $request->amt has been rejected";
-                                break;
-                            case 'INTERNAL_PROCESSING_ERROR':
-                                $message = "Your payment request of $currency $request->amt has been Failed.";
-                                break;
-                            case 'EXPIRED':
-                                $message = "Your payment request of $currency $request->amt has been Expired.";
-                                break;
-                            default:
-                                $message = 'This is default message';
-                                break;
-                        }
-                    }
-                }
-                return response()->json([
-                    'status' => 'PAYMENT FAILED',
-                    'message' => $message,
-                    'response' => $response
-                ], 500);
-            }
+            $response = self::getSandboxResponse(self::$_referenceId, $request, $data);
+            return $response;
         }
         return response()->json([
             'status' => 'PAYMENT FAILED',

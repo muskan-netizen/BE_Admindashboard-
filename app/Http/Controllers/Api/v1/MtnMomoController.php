@@ -21,22 +21,31 @@ class MtnMomoController extends Controller
 
         $data = [];
         $data['environment'] = 'app';
-        \Log::info($request);
-        if ($request->from == 'cart') {
-            $data['amt'] = $request->amount;
-            $data['order_number'] = $request->order_no;
-            $data['from'] = $request->from;
-        } else if ($request->from == 'wallet') {
-            $data['amt'] = $request->amount;
-            $data['from'] = $request->from;
-        } else if ($request->from == 'subscription') {
-            $data['amt'] = $request->amount;
-            $data['from'] = $request->from;
-            $data['subsid'] = $request->subscription_id;
-        } else if ($request->from == 'tip') {
-            $data['amt'] = $request->amount;
-            $data['from'] = $request->from;
-            $data['order_number'] = $request->order_no;
+        
+        switch ($request->from) {
+            case 'cart':
+                $data['amt'] = $request->amt;
+                $data['order_number'] = $request->order_number;
+                $data['from'] = $request->from;
+                break;
+            case 'pickup_delivery':
+                $data['amt'] = $request->amt;
+                $data['from'] = $request->from;
+                break;
+            case 'wallet':
+                $data['amt'] = $request->amt;
+                $data['from'] = $request->from;
+                break;
+            case 'subscription':
+                $data['amt'] = $request->amt;
+                $data['from'] = $request->from;
+                $data['subsid'] = $request->subsid;
+                break;
+            case 'tip':
+                $data['amt'] = $request->amt;
+                $data['from'] = $request->from;
+                $data['order_number'] = $request->order_number;
+                break;
         }
 
         // generate AccessToken
@@ -52,17 +61,14 @@ class MtnMomoController extends Controller
 
         if ($response['status'] == 202) {
             //check transaction status 
-            $response = self::getTransactionStatus(self::$_referenceId);
-            if (!empty($response)) {
-                $url =  self::sucessPayment($data, $response['financialTransactionId']);
-                if ($url) {
-                    return response()->json([
-                        'status' => 'Success',
-                        'message' => 'Payment Successful',
-                        'url' => $url
-                    ], 200);
-                }
+            if (!self::$_isSandbox) {
+                return response()->json([
+                    'status' => 'Success',
+                    'message' => 'Payment request has been sent successfully'
+                ], 200);
             }
+            //For Sandbox only
+            return self::getSandboxResponse(self::$_referenceId, $request, $data);
         }
         return response()->json([
             'status' => 'error',
@@ -77,10 +83,12 @@ class MtnMomoController extends Controller
         if (empty($payload))
             return false;
         $payload = json_decode($payload, true);
-        if(!empty($payload['payer']['partyId'])){
-            $user = User::where('phone_number',$payload['payer']['partyId'])->first();
-            
-
+        if (!empty($payload['payer']['partyId'])) {
+            $user = User::where('phone_number', $payload['payer']['partyId'])->first();
+            $status = $payload['status'];
+            if(!empty($status) && $status == 'SUCCESSFUL'){
+                
+            }
             $request['amt'] = $payload['amount'];
             $transactionId = $payload['financialTransactionId'];
             return response()->json([

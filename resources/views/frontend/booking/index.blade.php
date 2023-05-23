@@ -1655,6 +1655,7 @@ input[type=number]::-webkit-outer-spin-button {
         var cab_booking_promo_code_remove_url = "{{ url('looking/promo-code/remove') }}";
         var apply_cab_booking_promocode_coupon_url = "{{ route('verify.cab.booking.promo-code') }}";
         var no_result_message = "{{ __('No result found. Please try a new search') }}";
+        var create_mtn_momo_token = "{{route('mtn.momo.createToken')}}";
 
         /// ************* product order form **************///////
         $('body').on('click', '.clproduct_order_form', function(event) {

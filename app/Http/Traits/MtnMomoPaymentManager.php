@@ -25,6 +25,7 @@ use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
 use Illuminate\Routing\UrlGenerator;
 use App\Http\Controllers\Front\OrderController;
+use App\Http\Controllers\Front\PickupDeliveryController;
 use App\Http\Controllers\Front\WalletController;
 use App\Models\Cart;
 use PhpParser\Node\Expr\Cast\Array_;
@@ -199,23 +200,34 @@ trait MtnMomoPaymentManager
 
     public function RequestToPay($token, $data)
     {
-        if ($data['from'] == 'cart') {
-            $amount = $data['amt'];
-            $from = $data['from'];
-            $order_number = $data['order_number'];
-        } elseif ($data['from'] == 'wallet') {
-            $amount = $data['amt'];
-            $from = $data['from'];
-            $order_number = 'wallet';
-        } else if ($data['from'] == 'subscription') {
-            $amount = $data['amt'];
-            $from = $data['from'];
-            $subsid = $data['subsid'];
-            $order_number = 'subscription';
-        } else if ($data['from'] == 'tip') {
-            $amount = $data['amt'];
-            $from = $data['from'];
-            $order_number = $data['order_number'];
+        switch ($data['from']) {
+            case 'cart':
+                $amount = $data['amt'];
+                $from = $data['from'];
+                $order_number = $data['order_number'];
+                break;
+            case 'pickup_delivery':
+                $amount = $data['amt'];
+                $from = $data['from'];
+                $order_number = 'pickup_delivery';
+                $reloadRoute = $data['reload_route'];
+                break;
+            case 'wallet':
+                $amount = $data['amt'];
+                $from = $data['from'];
+                $order_number = 'wallet';
+                break;
+            case 'subscription':
+                $amount = $data['amt'];
+                $from = $data['from'];
+                $subsid = $data['subsid'];
+                $order_number = 'subscription';
+                break;
+            case 'tip':
+                $amount = $data['amt'];
+                $from = $data['from'];
+                $order_number = $data['order_number'];
+                break;
         }
 
         $partyId = Auth::user()->phone_number;
@@ -243,33 +255,29 @@ trait MtnMomoPaymentManager
             'Content-Type' => 'application/json',
             'X-Callback-Url' => 'http://webhook.site/8e8b0eb4-c068-40b2-a921-dc582f4816e0'
         ];
-        
+
         $externalId = json_encode([
             'from' => $from,
             'order_number' => $order_number,
             'sub_id' => $subsid ?? ''
         ]);
 
-        $subID = $subsid ?? '';
         $params = [
             'amount' => $amount,
             'currency' => self::$_currency,
             'externalId' => $order_number,
             'payer' => [
                 'partyIdType' => 'MSISDN',
-                'partyId' => '46733123451' //$partyId
+                'partyId' => $partyId
             ],
             'payerMessage' => "Paying for Driver tester code",
             'payeeNote' => "Drivers name"
         ];
-        \Log::info($params);
         // Request to Pay 
         $response = self::createRequest('POST', $url, 202, [
             'headers' => $headers,
             'body' => json_encode($params)
         ]);
-
-        \Log::info($response);
 
         return $response;
     }
@@ -322,10 +330,9 @@ trait MtnMomoPaymentManager
         ];
     }
 
-    public function sucessPayment($request, $transactionId)
+    public static function sucessPayment($request, $transactionId)
     {
         $user = Auth::user();
-
 
         if ($request['from'] == 'cart') {
             $order_number = $request['order_number'];
@@ -436,6 +443,21 @@ trait MtnMomoPaymentManager
                 $returnUrl = route('user.subscription.plans');
             }
             return $returnUrl;
+        } elseif ($request['from'] == 'pickup_delivery') {
+            $data['payment_option_id'] = 48;
+            $data['transaction_id'] = $transactionId;
+            $data['amount'] = $request['amt'];
+            $data['order_number'] = $request['order_number'];
+            $data['reload_route'] = $request['reload_route'];
+            $request = new \Illuminate\Http\Request($data);
+            $plaseOrderForPickup = new PickupDeliveryController();
+            $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+            if ($request['environment'] == 'app') {
+                $returnUrl = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId;
+            } else {
+                $returnUrl = $request['reload_route'];
+            }
+            return $returnUrl;
         }
         return route('order.return.success');
     }
@@ -511,6 +533,51 @@ trait MtnMomoPaymentManager
             'amt' => number_format($amt, 2)
         ]);
         return $time;
+    }
+
+    private static function getSandboxResponse($referenceId, $request, $data)
+    {
+        $response = self::getTransactionStatus($referenceId);
+        if (!empty($response) && !empty($response['status']) && ($response['status'] == 'SUCCESSFUL')) {
+            $url =  self::sucessPayment($data, $response['financialTransactionId']);
+            if ($url) {
+                return response()->json([
+                    'status' => 'SUCCESSFUL',
+                    'message' => 'Payment Successful',
+                    'url' => $url
+                ], 200);
+            }
+        } else {
+            $message = 'Payment Failed';
+            if (!empty($response['reason'])) {
+                if (is_array($response['reason'])) {
+                    $message = $response['reason']['message'];
+                } else {
+                    $message = $response['reason'];
+                    $currency = self::$_currency;
+                    $amount = $request->amt ?? $request->amount;
+                    switch ($message) {
+                        case 'APPROVAL_REJECTED';
+                            $message = "Payment request of $currency $amount has been Rejected";
+                            break;
+                        case 'INTERNAL_PROCESSING_ERROR':
+                            $message = "Payment request of $currency $amount has been Failed.";
+                            break;
+                        case 'EXPIRED':
+                            $message = "Payment request of $currency $amount has been Expired.";
+                            break;
+                        default:
+                            $message = "Payment Request of $currency $amount has been Failed dd.";
+                            break;
+                    }
+                }
+            }
+            return response()->json([
+                'status' => 'PAYMENT FAILED',
+                'message' => $message,
+                'response' => $response
+            ], 500);
+        }
     }
 
     // public function createPaymentpage($data,$user,$address = null)

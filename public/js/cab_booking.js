@@ -277,6 +277,9 @@ $(document).ready(function () {
 				$("#proceed_to_azulpay_loader").show();
 			}
         }
+        if(payid == 48){
+            
+        }
         
         var time_zone = (Intl.DateTimeFormat().resolvedOptions().timeZone);
         var schedule_datetime = '';
@@ -433,6 +436,8 @@ $(document).ready(function () {
                     }
                     else if(payment_option_id == 22){
                         payWithCcAvenue(response.data);
+                    }else if(payment_option_id == 48){
+                        paymentViaMtnMomo('',response.data,'pickup_delivery',reload_route)
                     }
                     cabBookingPaymentOptions(payment_option_id, response.data);
                 }else{
