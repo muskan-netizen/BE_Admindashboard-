@@ -115,7 +115,7 @@ class OboPaymentController extends Controller
                 $payment = Payment::where('transaction_id', $transactionId)->first();
                 if ($payment) {
                     $payment->viva_order_id = $transactionId;
-                    $payment->payment_option_id = 55;
+                    $payment->payment_option_id = 56;
                     $payment->save();
                 }
                 if ($request->paymentfrom == 'cart') {
@@ -146,7 +146,7 @@ class OboPaymentController extends Controller
                     return redirect($returnUrl);
                 } elseif (isset($request->subscription_id)) {
                     $data['transaction_id'] = $payment->transaction_id;
-                    $data['payment_option_id'] = 55;
+                    $data['payment_option_id'] = 56;
                     $data['subsid'] = $request->subscription_id;
                     $data['subscription_id'] = $request->subscription_id;
                     $data['amount'] = $request->amount;
@@ -160,7 +160,7 @@ class OboPaymentController extends Controller
                         return redirect($returnUrl);
                     }
                 } elseif ($request->paymentfrom == 'pickup_delivery') {
-                    $data['payment_option_id'] = 55;
+                    $data['payment_option_id'] = 56;
                     $data['transaction_id'] = $transactionId;
                     $data['amount'] = $request->amount;
                     $data['order_number'] = $transactionId;

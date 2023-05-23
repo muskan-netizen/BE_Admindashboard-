@@ -399,7 +399,7 @@ $(document).ready(function () {
                     else if(payment_option_id == 52){
                         paymentViaSkipCash('',response.data);
                     }
-                    else if(payment_option_id == 55){
+                    else if(payment_option_id == 56){
                        paymentViaOboPay(reload_route,'',response.data);
                     }
                     cabBookingPaymentOptions(payment_option_id, response.data);

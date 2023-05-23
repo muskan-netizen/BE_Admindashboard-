@@ -4940,7 +4940,7 @@ $(document).ready(function () {
             case 52:
                 paymentViaSkipCash('',payment_option_id,'');
                 break;
-            case 55:
+            case 56:
                 paymentViaOboPay('', payment_option_id);
             break;
 
@@ -5463,7 +5463,7 @@ $(document).ready(function () {
                 $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
             }
             break;
-            case '55':
+            case '56':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
                 if (order != '') {
                     paymentViaOboPay(address_id, payment_option_id, order);
@@ -5710,7 +5710,7 @@ $(document).ready(function () {
                     paymentNmipay('', payment_option_id,'',cardJson);
                 }
                 break;
-                case 55:
+                case 56:
                     paymentViaOboPay('', payment_option_id);
                 break;
         }
