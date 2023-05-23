@@ -820,6 +820,11 @@ body.al_body_template_eight section.suppliers-section.container.vender_slider {
         max-width: 98% !important;
         padding-top: 10px !important;
     }
+    .al_body_template_eight .single_category_products .suppliers-img-outer{
+        min-height: 290px !important;
+        max-height: 290px !important;
+    }
+    
 }
 
 article#page-container {
@@ -1610,6 +1615,7 @@ section.main-product.single_category_products .supplier-rating {
     transform: initial;
     left: 0;
     top: 0;padding-bottom: 10px;
+    min-height: 82px;
 }
 
 section.main-product.single_category_products .supplier-rating h4 {
@@ -1983,7 +1989,7 @@ section.main-product.single_category_products.mb-0.render_full_selected_products
         min-height: 260px;
     }
     section.main-product.single_category_products .suppliers-img-outer.position-relative img {
-        height: 136px;
+        height: auto;
     }
     body.al_body_template_eight .aside_bar {
         position: inherit;
