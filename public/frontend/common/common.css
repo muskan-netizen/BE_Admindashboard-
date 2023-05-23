@@ -2787,7 +2787,9 @@ body.al_body_template_eight .product-right .product-description .qty-box .input-
     border-right: none;
     font-size: 20px;
     color: #000;
-    width: 70px !important;
+    width: auto!important;
+    min-width: 70px !important;
+    border-right: 1px solid #ced4da!important;
 }
 #product_variant_additional_increment_wrapper .input-group input {
     width: 100% !important;
@@ -5860,10 +5862,15 @@ img.update_pic {width: 100%;background-color: #efefef;border-radius: 10px;box-sh
 .size-box ul.productVariants li.row.otherSize label span.color_var {
     position: absolute;
     left: 0px;
-    top: 6px;
-    width: 30px;
-    height: 30px;
+    top: 50%;
+    width: 20px;
+    height: 20px;
     border-radius: 6px;
+    transform: translateY(-50%);
+}
+.al_body_template_eight  .product-right .size-box ul li{
+    margin-right: 0!important;
+    margin-left: 0!important;
 }
 .product-right .size-box ul li label .checkround {
     height: 0;
