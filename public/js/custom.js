@@ -5452,9 +5452,6 @@ $(document).ready(function () {
               } else {
                   return false;
               }
-<<<<<<< HEAD
-          break
-=======
           break ;
           case '55':
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
@@ -5462,7 +5459,6 @@ $(document).ready(function () {
                     paymentViaDataTrans(address_id,payment_option_id,order);
                 }
           break ;
->>>>>>> pre_stage
           case '53':
 
             cardJson = {
@@ -5479,7 +5475,6 @@ $(document).ready(function () {
                 else{
                     return false;
                 }
-            break;
             }else{
                 $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
             }
