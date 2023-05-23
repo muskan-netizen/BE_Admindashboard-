@@ -153,7 +153,7 @@ trait MtnMomoPaymentManager
         ];
 
         $params = [
-            'providerCallbackHost' => 'http://webhook.site/8e8b0eb4-c068-40b2-a921-dc582f4816e0' //self::$_domain_name
+            'providerCallbackHost' => 'webhook.site' //self::$_domain_name
         ];
 
         $response = self::createRequest('POST', self::$_apiUrl . 'apiuser', 201, [
@@ -218,11 +218,7 @@ trait MtnMomoPaymentManager
             $order_number = $data['order_number'];
         }
 
-        if (self::$_environment == 'sandbox') {
-            $partyId = '256761412741';
-        } else {
-            $partyId = Auth::user()->phone_number;
-        }
+        $partyId = Auth::user()->phone_number;
 
         /* Generate new reference ID for each new request to pay api call */
         $response = self::$_client->get('https://www.uuidgenerator.net/api/version4');
@@ -244,21 +240,29 @@ trait MtnMomoPaymentManager
             'X-Target-Environment' => self::$_environment,
             'Ocp-Apim-Subscription-Key' => self::$_subscriptionKey,
             'Authorization' => 'Bearer ' . $token,
-            'Content-Type' => 'application/json'
+            'Content-Type' => 'application/json',
+            'X-Callback-Url' => 'http://webhook.site/8e8b0eb4-c068-40b2-a921-dc582f4816e0'
         ];
+        
+        $externalId = json_encode([
+            'from' => $from,
+            'order_number' => $order_number,
+            'sub_id' => $subsid ?? ''
+        ]);
 
+        $subID = $subsid ?? '';
         $params = [
             'amount' => $amount,
             'currency' => self::$_currency,
             'externalId' => $order_number,
             'payer' => [
                 'partyIdType' => 'MSISDN',
-                'partyId' => '46733123454'
+                'partyId' => '46733123451' //$partyId
             ],
             'payerMessage' => "Paying for Driver tester code",
             'payeeNote' => "Drivers name"
         ];
-
+        \Log::info($params);
         // Request to Pay 
         $response = self::createRequest('POST', $url, 202, [
             'headers' => $headers,
@@ -364,7 +368,7 @@ trait MtnMomoPaymentManager
                     CartProduct::where('cart_id', $cart->id)->delete();
                     CartProductPrescription::where('cart_id', $cart->id)->delete();
                     // send success sms
-                    $this->sendSuccessSMS($request, $order);
+                    $orderController->sendSuccessSMS($request, $order);
                     // Send Notification
                     if (!empty($order->vendors)) {
                         foreach ($order->vendors as $vendor_value) {
@@ -379,8 +383,8 @@ trait MtnMomoPaymentManager
                     $super_admin = User::where('is_superadmin', 1)->pluck('id');
                     $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
                 }
-                if ($request['from'] == 'app') {
-                    $returnUrl = route('payment.gateway.return.response') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId . '&order=' . $order_number;
+                if ($request['environment'] == 'app') {
+                    $returnUrl = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId . '&order=' . $order_number;
                 } else {
                     $returnUrl = route('order.return.success');
                 }
@@ -396,7 +400,7 @@ trait MtnMomoPaymentManager
             $walletController = new WalletController();
             $walletController->creditWallet($request);
             if ($request['environment'] == 'app') {
-                return url('payment.gateway.return.response') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId;
+                return url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId;
             } else {
                 return route('user.wallet');
             }
@@ -409,8 +413,8 @@ trait MtnMomoPaymentManager
 
             $orderController = new OrderController();
             $orderController->tipAfterOrder($request);
-            if ($request['from'] == 'app') {
-                $returnUrl = route('payment.gateway.return.response') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId;
+            if ($request['environment'] == 'app') {
+                $returnUrl = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId;
             } else {
                 $returnUrl = route('user.orders');
             }
@@ -425,15 +429,88 @@ trait MtnMomoPaymentManager
             $request = new \Illuminate\Http\Request($request);
 
             $subscriptionController = new UserSubscriptionController();
-            $subscriptionController->purchaseSubscriptionPlan($request, '', $request->subscription_id);
-            if ($request['from'] == 'app') {
-                $returnUrl = route('payment.gateway.return.response') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId;
+            $subscriptionController->purchaseSubscriptionPlan($request, $request->subscription_id);
+            if ($request['environment'] == 'app') {
+                $returnUrl = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId;
             } else {
                 $returnUrl = route('user.subscription.plans');
             }
             return $returnUrl;
         }
         return route('order.return.success');
+    }
+
+    public static function orderNumber($request)
+    {
+        $time = '';
+        $amt = $request->amt ?? $request->amount;
+        if (isset($request->auth_token) && !empty($request->auth_token)) {
+            $user = User::where('auth_token', $request->auth_token)->first();
+            FacadesAuth::login($user);
+        } else {
+            $user = auth()->user();
+        }
+        $name = explode(' ', $user->name);
+        $returnUrl = '';
+        if ($request->from == 'cart') {
+            $request->amt = $amt;
+            $time = $request->order_number;
+            Payment::create([
+                'amount' => 0,
+                'transaction_id' => $time,
+                'balance_transaction' => $amt,
+                'type' => 'cart',
+                'date' => date('Y-m-d')
+            ]);
+        } elseif ($request->from == 'pickup_delivery') {
+            $request->amt = $amt;
+            $time = $request->order_number;
+            Payment::create([
+                'amount' => 0,
+                'transaction_id' => $time,
+                'balance_transaction' => $amt,
+                'type' => 'pickup_delivery',
+                'date' => date('Y-m-d'),
+                'user_id' => auth()->id(),
+                'payment_from' => $request->device ?? 'web'
+            ]);
+        } elseif ($request->from == 'wallet') {
+            $time = ($request->transaction_id) ?? 'W_' . time();
+            // Save transaction before payment success for get information only
+            Payment::create([
+                'amount' => 0,
+                'transaction_id' => $time,
+                'balance_transaction' => $amt,
+                'type' => 'wallet',
+                'date' => date('Y-m-d')
+            ]);
+            $request->amt = $amt;
+        } elseif ($request->from == 'tip') {
+            $time = 'T_' . time() . '_' . $request->order_number;
+            Payment::create([
+                'amount' => 0,
+                'transaction_id' => $time,
+                'balance_transaction' => $amt,
+                'type' => 'tip',
+                'date' => date('Y-m-d')
+            ]);
+
+            $request->amt = $amt;
+        } elseif ($request->from == 'subscription') {
+            $time = 'S_' . time() . '_' . (!empty($request->subsid) ? $request->subsid : $request->subscription_id);
+            Payment::create([
+                'amount' => 0,
+                'transaction_id' => $time,
+                'balance_transaction' => $amt,
+                'type' => 'subscription',
+                'date' => date('Y-m-d')
+            ]);
+            $request->amt = $amt;
+        }
+        $request->request->add([
+            'amt' => number_format($amt, 2)
+        ]);
+        return $time;
     }
 
     // public function createPaymentpage($data,$user,$address = null)

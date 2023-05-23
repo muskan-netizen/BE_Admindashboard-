@@ -64,79 +64,6 @@ class MtnMomoController extends FrontController
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'EUR';
     }
 
-    public function orderNumber($request)
-    {
-        $time = '';
-        $amt = $request->amt ?? $request->amount;
-        if (isset($request->auth_token) && !empty($request->auth_token)) {
-            $user = User::where('auth_token', $request->auth_token)->first();
-            FacadesAuth::login($user);
-        } else {
-            $user = auth()->user();
-        }
-        $name = explode(' ', $user->name);
-        $returnUrl = '';
-        if ($request->from == 'cart') {
-            $request->amt = $amt;
-            $time = $request->order_number;
-            Payment::create([
-                'amount' => 0,
-                'transaction_id' => $time,
-                'balance_transaction' => $amt,
-                'type' => 'cart',
-                'date' => date('Y-m-d')
-            ]);
-        } elseif ($request->from == 'pickup_delivery') {
-            $request->amt = $amt;
-            $time = $request->order_number;
-            Payment::create([
-                'amount' => 0,
-                'transaction_id' => $time,
-                'balance_transaction' => $amt,
-                'type' => 'pickup_delivery',
-                'date' => date('Y-m-d'),
-                'user_id' => auth()->id(),
-                'payment_from' => $request->device ?? 'web'
-            ]);
-        } elseif ($request->from == 'wallet') {
-            $time = ($request->transaction_id) ?? 'W_' . time();
-            // Save transaction before payment success for get information only
-            Payment::create([
-                'amount' => 0,
-                'transaction_id' => $time,
-                'balance_transaction' => $amt,
-                'type' => 'wallet',
-                'date' => date('Y-m-d')
-            ]);
-            $request->amt = $amt;
-        } elseif ($request->from == 'tip') {
-            $time = 'T_' . time() . '_' . $request->order_number;
-            Payment::create([
-                'amount' => 0,
-                'transaction_id' => $time,
-                'balance_transaction' => $amt,
-                'type' => 'tip',
-                'date' => date('Y-m-d')
-            ]);
-
-            $request->amt = $amt;
-        } elseif ($request->from == 'subscription') {
-            $time = 'S_' . time() . '_' . (!empty($request->subsid) ? $request->subsid : $request->subscription_id);
-            Payment::create([
-                'amount' => 0,
-                'transaction_id' => $time,
-                'balance_transaction' => $amt,
-                'type' => 'subscription',
-                'date' => date('Y-m-d')
-            ]);
-            $request->amt = $amt;
-        }
-        $request->request->add([
-            'amt' => number_format($amt, 2)
-        ]);
-        return $time;
-    }
-
     public function createToken(Request $request, UrlGenerator $url)
     {
         self::__init(false);
@@ -175,11 +102,11 @@ class MtnMomoController extends FrontController
 
         if ($response['status'] == 202) {
             //check transaction status 
-            if(!self::$_isSandbox){
+            if (!self::$_isSandbox) {
                 return response()->json([
                     'status' => 'Success',
                     'message' => 'Payment request has been sent successfully'
-                ],200);
+                ], 200);
             }
 
             //For Sandbox only

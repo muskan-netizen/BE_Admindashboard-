@@ -147,5 +147,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
     });
     Route::group(['middleware' => ['dbCheck']], function () {
         Route::post('header', 'Api\v1\HomeController@headerContent');
+        Route::any('mtn/callback', 'Api\v1\MtnMomoController@mtnCallback');
     });
 });
