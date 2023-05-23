@@ -1,4 +1,4 @@
-@extends('layouts.store', ['title' => {{__('Forgot Password')}}])
+@extends('layouts.store', ['title' => "{{__('Forgot Password')}}"])
 @section('css')
 <style type="text/css">
     .main-menu .brand-logo {
@@ -23,7 +23,7 @@
             <div class="offset-lg-3 col-lg-6">
                 <h3>{{__('Enter Email Address')}}</h3>
                 <div class="card mt-4">
-                <div class="alert alert-success" role="alert" style="display:none;">fdgdfg</div>
+                <div class="alert alert-success" role="alert" style="display:none;"></div>
                     <form name="register" id="register" action="" class="theme-form" method="post">
                         <div class="form-row mb-3">
                             <div class="col-md-12">
