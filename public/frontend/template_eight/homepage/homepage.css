@@ -207,7 +207,9 @@ article#page-container section .vendors section {
     left: 0;
     height: auto;
     object-fit: contain;
+    object-position: top!important;
 }
+
 
 .slick-next:focus:before,
 .slick-next:hover:before,
@@ -258,7 +260,7 @@ article#page-container section .vendors section {
 top: 62% !important;
 }
 .al_body_template_eight span.rating-number {
-    top: 50%;
+    top: 10px;
     position: absolute;
     right: 12px;
     height: 22px;
