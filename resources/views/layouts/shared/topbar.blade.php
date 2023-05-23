@@ -203,7 +203,7 @@ $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'
                 <a class="nav-link dropdown-toggle nav-user mr-0 waves-effect waves-light" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
 
                     <span class="pro-user-name ml-1">
-                        <img src="" alt="">
+                        <img src="{{$urlImg}}" alt="">
                         <!-- <b class="text-capitalize">{{ auth()->user()->name }} <i class="mdi mdi-chevron-down"></i></b> -->
                     </span>
                 </a>
