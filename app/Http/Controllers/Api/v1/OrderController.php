@@ -2116,7 +2116,7 @@ class OrderController extends BaseController
     public function sendSuccessSMS($request, $order, $vendor_id = '')
     {
         try {
-            $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from')->first();
+            $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from','digit_after_decimal')->first();
 
             $user = Auth::user();
             if ($user) {
