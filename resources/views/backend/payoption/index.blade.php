@@ -1661,6 +1661,24 @@
                         </div>
                     </div>
                     @endif
+					@if ( (strtolower($opt->code) == 'data_trans') )
+                    <div class="mt-2" id="data_trans_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="data_trans_merchant_id" class="mr-3">{{ __("Merchant ID") }}</label>
+                                    <input type="text" name="data_trans_merchant_id" id="data_trans_merchant_id" class="form-control" value="{{$merchant_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="data_trans_password" class="mr-3">{{ __("Password") }}</label>
+                                    <input type="password" name="data_trans_password" id="data_trans_password" class="form-control" value="{{$password}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
 
 					@if ( (strtolower($opt->code) == 'nmi') )
                     <div class="mt-2" id="nmi_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>

@@ -332,7 +332,7 @@ trait cartManager{
         $crossSell_products = collect();
         $couponGetAmount=0;
         $loyalty_amount_saved = 0;
-        $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency','is_price_by_role','is_service_product_price_from_dispatch']);
+        $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency','is_price_by_role','is_service_product_price_from_dispatch','is_service_price_selection']);
         $client_timezone = DB::table('clients')->first('timezone');
         $user_timezone = $client_timezone->timezone ?? 'Asia/Kolkata';
         
@@ -343,7 +343,8 @@ trait cartManager{
         $is_recurring_booking = 0;
         $action = (session()->has('vendorType')) ? session()->get('vendorType') : 'delivery';
         $is_service_product_price_from_dispatch = 0;
-        if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( $action == 'on_demand')){
+        $getOnDemandPricingRule = getOnDemandPricingRule($action, (@Session::get('onDemandPricingSelected') ?? ''),$additionalPreference);
+        if($getOnDemandPricingRule['is_price_from_freelancer']==1){
             $is_service_product_price_from_dispatch =1;
         }
 

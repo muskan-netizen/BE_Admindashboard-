@@ -11,6 +11,7 @@ Route::get('auth/xero', 'Front\XeroController@index')->name('xero_auth');
 Route::any('auth/callback/xero', 'Front\XeroController@xero_callback')->name('callback_xero');
 Route::any('payment/paytab/callback', 'Front\PaytabController@callback')->name('payment.paytab.callback');
 Route::match(['get', 'post'], 'payment/paytab/return', 'Front\PaytabController@returnBack')->name('payment.paytab.return');
+Route::match(['get','post'],'payment/payByDataTrans','Front\DataTransController@payByDataTrans')->name('payment.payByDataTrans');
 Route::get('/debug-sentry', function () {
 	echo \Hash::make('dispatcher@765');
 	//throw new Exception('My first Sentry error!');
@@ -96,6 +97,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/stripe', 'Front\StripeGatewayController@postPaymentViaStripe')->name('payment.stripe');
 	Route::post('user/subscription/payment/stripe', 'Front\StripeGatewayController@subscriptionPaymentViaStripe')->name('user.subscription.payment.stripe');
 	Route::get('/check_stripe_return_data', 'Front\StripeGatewayController@checkStripeReturnDataFrom3DAuth')->name('check_stripe_return_data');
+	Route::get('/success-page', 'Front\DataTransController@successPage')->name('order.dataTransuccessPage');
+	Route::get('/cancel-page', 'Front\DataTransController@cancelPage')->name('order.dataTransCancel');
 	Route::post('/payment/payment_init', 'Front\StripeGatewayController@paymentInit')->name('payment_init');
 	Route::post('payment/webhook/stripe', 'Front\StripeGatewayController@stripeWebhook')->name('payment.webhook.stripe');
 
@@ -397,6 +400,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('/setSessionIndex', 'Front\UserhomeController@setSessionIndex')->name('setSessionIndex');
 
 	Route::get('/updateLocation', 'Front\UserhomeController@setHyperlocalAddress')->name('updateLocation');
+	Route::get('/ondemandPricing', 'Front\UserhomeController@setondemandPricingSession')->name('updateLocation');
 	Route::get('/homeTemplateOne', 'Front\UserhomeController@indexTemplateOne')->name('indexTemplateOne');
 	//Route::get('page/driver-registration', 'Front\UserhomeController@driverSignup')->name('page/driver-registration');
 	Route::post('page/driverSignup', 'Front\OrderController@driverSignup')->name('page.driverSignup');
@@ -479,7 +483,6 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('stripe/make', 'Front\PaymentController@makePayment')->name('stripe.makePayment');
 	Route::post('inquiryMode/store', 'Front\ProductInquiryController@store')->name('inquiryMode.store');
 	Route::get('viewcart', 'Front\CartController@showCart')->name('showCart');
-	Route::get('cart', 'Front\CartController@showCartNew')->name('cartNew');
 	Route::get('checkSlotOrders', 'Front\CartController@checkSlotOrders')->name('checkSlotOrders'); //Added by Ovi
 	Route::post('/getTimeSlotsForOndemand', 'Front\CategoryController@getTimeSlotsForOndemand')->name('getTimeSlotsForOndemand');
 	Route::post('checkIsolateSingleVendor', 'Front\CartController@checkIsolateSingleVendor')->name('checkIsolateSingleVendor');
@@ -637,6 +640,13 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 		Route::post('order-tracking-details', 'Front\PickupDeliveryController@getOrderTrackingDetails')->name('bookingIndex');
 		Route::post('promo-code/verify', 'Front\PickupDeliveryController@postVerifyPromoCode')->name('verify.cab.booking.promo-code');
 		Route::get('get-product-order-form', 'Front\PickupDeliveryController@getProductOrderForm')->name('get-product-order-form');
+
+        Route::post('create/user/bid_ride_request', 'Front\PickupDeliveryController@createBidRideRequest')->name('createBid');
+        Route::post('order-ride-bid-details', 'Front\PickupDeliveryController@getBidsRelatedToOrderRide')->name('getBidsRelatedToOrderRide');
+        Route::post('accept-ride-bid', 'Front\PickupDeliveryController@acceptBidsRelatedToBidRideOrderRide')->name('acceptBidByCustomer');
+
+
+
 	});
 	Route::post('upload-file', 'Front\RatingController@uploadFile')->name('uploadfile');
 	//Passbase

@@ -179,7 +179,7 @@ window.easyZoomInitialize = function easyZoomInitialize() {
 
 window.loadMainMenuSlider = function loadMainMenuSlider() {
     $('.menu-slider').css("display", "flex");
-    $(".menu-slider").slick({arrows:!0,dots:!1,infinite:!1,variableWidth:!0,autoplay:!1,speed:300,slidesToShow:13,slidesToScroll:4,responsive:[{breakpoint:1800,settings:{slidesToShow:12,slidesToScroll:2}},{breakpoint:1400,settings:{slidesToShow:10,slidesToScroll:2}},{breakpoint:1367,settings:{slidesToShow:8,slidesToScroll:2}},{breakpoint:991,settings:{slidesToShow:6,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:4,slidesToScroll:2}},{breakpoint:576,settings:{slidesToShow:4,slidesToScroll:2}}]});
+    $(".menu-slider").slick({arrows:!0,dots:!1,infinite:!1,variableWidth:!0,autoplay:!1,speed:300,slidesToShow:9,slidesToScroll:4,responsive:[{breakpoint:1800,settings:{slidesToShow:12,slidesToScroll:2}},{breakpoint:1400,settings:{slidesToShow:10,slidesToScroll:2}},{breakpoint:1367,settings:{slidesToShow:8,slidesToScroll:2}},{breakpoint:991,settings:{slidesToShow:6,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:4,slidesToScroll:2}},{breakpoint:576,settings:{slidesToShow:4,slidesToScroll:2}}]});
 }
 
 loadMainMenuSlider();
@@ -2303,12 +2303,15 @@ $(document).ready(function () {
                     var token_val = response.token_val;
                     // console.log(cart_details);
                     if (cart_details!= undefined) {
+
                         // if((response.is_token_enable == 1) && (response.token_val > 0) ){
                         //     response.token_val;
                         // }
                         OrderStorage.setStorageSingle('cartData',JSON.stringify(cart_details));
                         if (cart_details.products.length > 0) {
-                            $(`input:radio[name=address_id][value=${cart_details.address_id}]`).prop('checked', true)
+							if(cart_details.address_id != ''){
+                            	$(`input:radio[name=address_id][value=${cart_details.address_id}]`).prop('checked', true);
+                        	}
                             OrderStorage.setStorageSingle('cartAddressId',cart_details.address_id);
                             OrderStorage.setStorageSingle('cartProductCount',cart_details.products.length);
                             OrderStorage.setStorageSingle('cartFirstProductId',cart_details.products[0].product_id);
@@ -3096,6 +3099,8 @@ $(document).ready(function () {
                 sweetAlert.error('',message);
                 return false;
             }
+        }else{
+            var recurringformPost = {};
         }
 
 
@@ -4142,7 +4147,6 @@ $(document).ready(function () {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(output) {
-                console.log(output);
                 // Check if orderCount is greaten equal to orders_per_slot //&& (output.orders_per_slot !=0)
                 if(output.orderCount >= output.orders_per_slot && (output.orders_per_slot !=0)  ){
                     success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
@@ -4936,13 +4940,19 @@ $(document).ready(function () {
                  break;
             case 50:
                 paymentViazulpay('', payment_option_id, '');
-                 break;
+            break;
+
             case 52:
                 paymentViaSkipCash('',payment_option_id,'');
-                break;
+            break;
+
+            case 55:
+                paymentViaDataTrans('', payment_option_id, '');
+            break;
             case 56:
                 paymentViaOboPay('', payment_option_id);
             break;
+
 
         }
 
@@ -5442,7 +5452,17 @@ $(document).ready(function () {
               } else {
                   return false;
               }
+<<<<<<< HEAD
           break
+=======
+          break ;
+          case '55':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                    paymentViaDataTrans(address_id,payment_option_id,order);
+                }
+          break ;
+>>>>>>> pre_stage
           case '53':
 
             cardJson = {
@@ -5459,6 +5479,7 @@ $(document).ready(function () {
                 else{
                     return false;
                 }
+            break;
             }else{
                 $("#order_placed_btn, .proceed_to_pay").attr("disabled", false);
             }
@@ -5709,10 +5730,16 @@ $(document).ready(function () {
                 if(cardValidation(cardJson)){
                     paymentNmipay('', payment_option_id,'',cardJson);
                 }
-                break;
-                case 56:
-                    paymentViaOboPay('', payment_option_id);
-                break;
+
+            break;
+
+            case 55:
+                paymentViaDataTrans('',payment_option_id,null);
+            break;
+
+            case 56:
+                paymentViaOboPay('', payment_option_id);
+            break;
         }
     }
 
