@@ -1685,7 +1685,7 @@ input[type=number]::-webkit-outer-spin-button {
                 timePickerIncrement: 1,
                 autoUpdateInput: true,
                 locale: {
-                    format: 'MM-DD-YYYY HH:mm',
+                    format: 'YYYY-MM-DD HH:mm',
                 }
             });
             $('.calendar_icon').click(function() {
