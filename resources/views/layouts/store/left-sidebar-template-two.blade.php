@@ -12,10 +12,10 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
 <header class="site-header">
    @include('layouts.store/topbar-template-two')
    <!-- Start Cab Booking Header From Here -->
-   <div class="cab-booking-header">
+   <div class="cab-booking-header"> 
       <div class="container-fluid">
          <div class="row d-flex justify-content-start align-items-center">
-            <div class="col-6"> <a class="navbar-brand mr-0"  href="{{route('userHome')}}"><img alt="" style="height:60px" class="logo-image" src="{{$urlImg}}"></a> </div>
+            <div class="col-6"> <a class="navbar-brand mr-0"  href="{{route('userHome')}}"><img alt="" style="height:60px;width:auto" class="logo-image" src="{{$urlImg}}"></a> </div>
             <div class="col-6 text-right top-header bg-transparent d-md-block d-none">
                <ul class="header-dropdown ml-auto">
                   @if(count($languageList) > 1)
