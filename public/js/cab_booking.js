@@ -433,6 +433,7 @@ $(document).ready(function () {
                     }
                     else if(payment_option_id == 56){
                        paymentViaOboPay(reload_route,'',response.data);
+                    }
                     else if(payment_option_id == 22){
                         payWithCcAvenue(response.data);
                     }
