@@ -46,6 +46,10 @@ class PesapalPaymentController extends Controller
 
         $response = $this->PesapalPayment($request);
 
+        if($response['status'] == 201){
+            return $response;
+        }
+
         if($request->payment_from == 'cart')
         {
             $data = [

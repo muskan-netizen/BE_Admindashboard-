@@ -4031,6 +4031,13 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
                     if(response.status == 200){
                         window.location.href = response.redirect_url;
                     }
+                    else if(response.status == 201){
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: response.message,
+                        });
+                    }
                     else{
                         Swal.fire({
                             icon: 'error',
