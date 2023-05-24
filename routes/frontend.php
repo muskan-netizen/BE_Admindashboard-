@@ -364,7 +364,12 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/user/wallet/credit', 'Front\WalletController@postPaymentCreditWallet')->name('user.postPaymentCreditWallet');
     // Mtn Momo payment gateway
 
-	Route::post('payment/mtn-momo', 'Front\MtnMomoController@createToken')->name('mtn.momo.createToken');
+	Route::any('payment/webhook/mtn', 'Front\MtnMomoController@mtnCallback')->name('payment.webhook.mtn');
+	
+	Route::group(['prefix' => 'mtn'], function () {
+		Route::post('payment', 'Front\MtnMomoController@createToken')->name('mtn.momo.createToken');
+		Route::get('response/{id?}', 'Front\MtnMomoController@getResponse')->name('payment.response.mtn');
+	});
 
 	// Mtn Momo payment gateway
 

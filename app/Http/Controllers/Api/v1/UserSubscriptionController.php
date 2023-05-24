@@ -224,13 +224,15 @@ class UserSubscriptionController extends BaseController
                 $subscription_invoice->save();
                 $subscription_invoice_id = $subscription_invoice->id;
                 if($subscription_invoice_id){
-                    $payment = new Payment;
-                    $payment->balance_transaction = $subscription_plan->price;
-                    $payment->transaction_id = $request->transaction_id;
-                    $payment->user_subscription_invoice_id = $subscription_invoice_id;
-                    $payment->date = Carbon::now()->format('Y-m-d');
-                    $payment->save();
-
+                    $paymentExists = Payment::where('transaction_id',$request->transaction_id)->first();
+                    if(!$paymentExists){
+                        $payment = new Payment;
+                        $payment->balance_transaction = $subscription_plan->price;
+                        $payment->transaction_id = $request->transaction_id;
+                        $payment->user_subscription_invoice_id = $subscription_invoice_id;
+                        $payment->date = Carbon::now()->format('Y-m-d');
+                        $payment->save();
+                    }
                     $subscription_invoice_features = array();
                     foreach($subscription_plan->features as $feature){
                         $subscription_invoice_features[] = array(

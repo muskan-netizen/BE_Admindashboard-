@@ -284,6 +284,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::group(['prefix' => 'mtn'], function () {
             Route::post('create-token', 'Api\v1\MtnMomoController@createToken')->name('mtn.createtoken');
+            Route::get('payment-response', 'Api\v1\MtnMomoController@paymentResponse')->name('mtn.payment.response');
         });
     });  
 });

@@ -1997,7 +1997,6 @@ Options']) @section('css')
 
 
     $( "#mtn_momo_fields_wrapper" ).delegate( "#generate_mtn_momo_api_key", "click", function() {
-    
     	if($("#api_key").val() != ''){
     		if(!confirm('Are you sure, you want to generate new API key? If yes, you might need to generate reference ID first. It is recommended to do this is in sandbox environment only.')){
     			return false;

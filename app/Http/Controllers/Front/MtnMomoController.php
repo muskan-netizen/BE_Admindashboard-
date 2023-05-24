@@ -66,6 +66,7 @@ class MtnMomoController extends FrontController
 
     public function createToken(Request $request, UrlGenerator $url = null)
     {
+        $transactionId = self::orderNumber($request);
         self::__init(false);
 
         if (!self::$_isConfigurationSet) {
@@ -74,6 +75,7 @@ class MtnMomoController extends FrontController
 
         $data = [];
         $data['environment'] = 'web';
+        $data['transaction_id'] = $transactionId;
         switch ($request->from) {
             case 'cart':
                 $data['amt'] = $request->amt;
@@ -110,13 +112,14 @@ class MtnMomoController extends FrontController
         }
         // request to pay 
         $response = self::RequestToPay(self::$_accessToken, $data);
-
         if ($response['status'] == 202) {
-            //check transaction status 
-            if (!self::$_isSandbox) {
+            if (!self::$_isSandbox || 1) {
                 return response()->json([
-                    'status' => 'SUCCESSFUL',
-                    'message' => 'Payment request has been sent successfully'
+                    'transaction_id' => $transactionId,
+                    'status' => 'Success',
+                    'message' => 'Payment request has been sent successfully',
+                    'responseUrl' => url('mtn/response') . '?transaction_id=' . $transactionId, //route('payment.response.mtn', ['id' => $transactionId], true),
+                    'wait' => true
                 ], 200);
             }
 
@@ -129,5 +132,45 @@ class MtnMomoController extends FrontController
             'message' => 'Payment Failed',
             'response' => !empty($response['response']) ? json_decode($response['response']->getBody()->getContents(), true) : ''
         ], 500);
+    }
+
+    public function mtnCallback()
+    {
+        $request = [];
+        $payload = file_get_contents('php://input');
+        if (empty($payload))
+            return false;
+        $payload = json_decode($payload, true);
+
+        $order = Payment::where('transaction_id', $payload['externalId'])->update(['payment_detail' => json_encode($payload), 'payment_option_id' => 48]);
+
+        if (!empty($payload['status']) && $payload['status'] == 'SUCCESSFUL') {
+            $details = explode(',', $payload['payeeNote']);
+            $env = $details[0] ?? '';
+            $from = $details[1] ?? '';
+            $order_number = $details[2] ?? '';
+            $route = $details[3] ?? '';
+            $subsId = $details[4] ?? '';
+            if (!empty($payload['payer']['partyId'])) {
+                $user = User::where('phone_number', $payload['payer']['partyId'])->first();
+                if ($user) {
+                    Auth::login($user);
+                    $request['amt'] = $payload['amount'];
+                    $request['from'] = $from;
+                    $request['order_number'] = $order_number;
+                    $request['environment'] = $env;
+                    $request['subsid'] = $subsId;
+                    $request['reload_route'] = $route;
+                    $response = self::sucessPayment($request, $payload['externalId']);
+                    return response()->json([
+                        'user' => $response
+                    ], 200);
+                }
+            }
+        }
+    }
+
+    public function getResponse(Request $request){
+        return self::paymentResponse($request);
     }
 }

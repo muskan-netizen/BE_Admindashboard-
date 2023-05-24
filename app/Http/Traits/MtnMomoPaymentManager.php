@@ -2,6 +2,7 @@
 
 namespace App\Http\Traits;
 
+use App\Http\Controllers\Api\v1\PickupDeliveryController as V1PickupDeliveryController;
 use App\Http\Controllers\Api\v1\UserSubscriptionController;
 use App\Models\PaymentOption;
 use Auth, Log, Config;
@@ -100,8 +101,8 @@ trait MtnMomoPaymentManager
         }
 
         /* Set the callback URL */
-        $site_url = url('/');
-        self::$_domain_name = self::getDomainName($site_url);
+        $url = url('/');
+        self::$_domain_name = self::getDomainName($url);
     }
 
     private static function createRequest($method, $url, $acceptedStatus, $options)
@@ -200,33 +201,55 @@ trait MtnMomoPaymentManager
 
     public function RequestToPay($token, $data)
     {
+        $subsid = '';
+        $reloadRoute = '';
         switch ($data['from']) {
             case 'cart':
                 $amount = $data['amt'];
                 $from = $data['from'];
                 $order_number = $data['order_number'];
+                if ($data['environment'] == 'app') {
+                    $reloadRoute = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $data['transaction_id'] . '&order=' . $order_number;
+                } else {
+                    $reloadRoute = route('order.return.success');
+                }
                 break;
             case 'pickup_delivery':
                 $amount = $data['amt'];
                 $from = $data['from'];
-                $order_number = 'pickup_delivery';
+                $order_number = $data['order_number'];
                 $reloadRoute = $data['reload_route'];
                 break;
             case 'wallet':
                 $amount = $data['amt'];
                 $from = $data['from'];
                 $order_number = 'wallet';
+                if ($data['environment'] == 'app') {
+                    $reloadRoute = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $data['transaction_id'];
+                } else {
+                    $reloadRoute = route('user.wallet');
+                }
                 break;
             case 'subscription':
                 $amount = $data['amt'];
                 $from = $data['from'];
                 $subsid = $data['subsid'];
                 $order_number = 'subscription';
+                if ($data['environment'] == 'app') {
+                    $reloadRoute = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $data['transaction_id'];
+                } else {
+                    $reloadRoute =  route('user.subscription.plans');
+                }
                 break;
             case 'tip':
                 $amount = $data['amt'];
                 $from = $data['from'];
                 $order_number = $data['order_number'];
+                if ($data['environment'] == 'app') {
+                    $reloadRoute = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $data['transaction_id'];
+                } else {
+                    $reloadRoute = route('user.orders');
+                }
                 break;
         }
 
@@ -253,26 +276,24 @@ trait MtnMomoPaymentManager
             'Ocp-Apim-Subscription-Key' => self::$_subscriptionKey,
             'Authorization' => 'Bearer ' . $token,
             'Content-Type' => 'application/json',
-            'X-Callback-Url' => 'http://webhook.site/8e8b0eb4-c068-40b2-a921-dc582f4816e0'
+            'X-Callback-Url' => 'http://webhook.site/8e8b0eb4-c068-40b2-a921-dc582f4816e0' //route('payment.webhook.mtn', [], true);
         ];
 
-        $externalId = json_encode([
-            'from' => $from,
-            'order_number' => $order_number,
-            'sub_id' => $subsid ?? ''
-        ]);
 
+        $env = $data['environment'];
         $params = [
             'amount' => $amount,
             'currency' => self::$_currency,
-            'externalId' => $order_number,
+            'externalId' => $data['transaction_id'],
             'payer' => [
                 'partyIdType' => 'MSISDN',
                 'partyId' => $partyId
             ],
             'payerMessage' => "Paying for Driver tester code",
-            'payeeNote' => "Drivers name"
+            'payeeNote' => "$env,$from,$order_number,$reloadRoute,$subsid"
         ];
+
+
         // Request to Pay 
         $response = self::createRequest('POST', $url, 202, [
             'headers' => $headers,
@@ -344,52 +365,51 @@ trait MtnMomoPaymentManager
             if ($order) {
                 $order->payment_status = 1;
                 $order->save();
-                $payment_exists = Payment::where('transaction_id', $transactionId)->first();
-                if (!$payment_exists) {
-                    Payment::insert([
-                        'date' => date('Y-m-d'),
-                        'order_id' => $order->id,
-                        'transaction_id' => $transactionId,
-                        'balance_transaction' => $request['amt'],
-                        'type' => 'cart'
-                    ]);
 
-                    // Auto accept order
-                    $orderController = new OrderController();
-                    $orderController->autoAcceptOrderIfOn($order->id);
-                    $cart = Cart::select('id')->where('status', '0')
-                        ->where('user_id', $user->id)
-                        ->first();
+                Payment::where('transaction_id', $transactionId)->update([
+                    'date' => date('Y-m-d'),
+                    'order_id' => $order->id,
+                    'transaction_id' => $transactionId,
+                    'balance_transaction' => $request['amt'],
+                    'type' => 'cart',
+                ]);
 
-                    // Remove cart
-                    CaregoryKycDoc::where('cart_id', $cart->id)->update([
-                        'ordre_id' => $order->id,
-                        'cart_id' => ''
-                    ]);
-                    Cart::where('id', $cart->id)->update([
-                        'schedule_type' => null,
-                        'scheduled_date_time' => null
-                    ]);
-                    CartAddon::where('cart_id', $cart->id)->delete();
-                    CartCoupon::where('cart_id', $cart->id)->delete();
-                    CartProduct::where('cart_id', $cart->id)->delete();
-                    CartProductPrescription::where('cart_id', $cart->id)->delete();
-                    // send success sms
-                    $orderController->sendSuccessSMS($request, $order);
-                    // Send Notification
-                    if (!empty($order->vendors)) {
-                        foreach ($order->vendors as $vendor_value) {
-                            $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
-                            $user_vendors = UserVendor::where([
-                                'vendor_id' => $vendor_value->vendor_id
-                            ])->pluck('user_id');
-                            $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
-                        }
+                // Auto accept order
+                $orderController = new OrderController();
+                $orderController->autoAcceptOrderIfOn($order->id);
+                $cart = Cart::select('id')->where('status', '0')
+                    ->where('user_id', $user->id)
+                    ->first();
+
+                // Remove cart
+                CaregoryKycDoc::where('cart_id', $cart->id)->update([
+                    'ordre_id' => $order->id,
+                    'cart_id' => ''
+                ]);
+                Cart::where('id', $cart->id)->update([
+                    'schedule_type' => null,
+                    'scheduled_date_time' => null
+                ]);
+                CartAddon::where('cart_id', $cart->id)->delete();
+                CartCoupon::where('cart_id', $cart->id)->delete();
+                CartProduct::where('cart_id', $cart->id)->delete();
+                CartProductPrescription::where('cart_id', $cart->id)->delete();
+                // send success sms
+                $orderController->sendSuccessSMS($request, $order);
+                // Send Notification
+                if (!empty($order->vendors)) {
+                    foreach ($order->vendors as $vendor_value) {
+                        $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
+                        $user_vendors = UserVendor::where([
+                            'vendor_id' => $vendor_value->vendor_id
+                        ])->pluck('user_id');
+                        $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
                     }
-                    $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
-                    $super_admin = User::where('is_superadmin', 1)->pluck('id');
-                    $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
                 }
+                $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
+                $super_admin = User::where('is_superadmin', 1)->pluck('id');
+                $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+
                 if ($request['environment'] == 'app') {
                     $returnUrl = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId . '&order=' . $order_number;
                 } else {
@@ -402,10 +422,10 @@ trait MtnMomoPaymentManager
             $request['wallet_amount'] = $request['amt'];
             $request['transaction_id'] = $transactionId;
 
-            $request = new \Illuminate\Http\Request($request);
+            $newRequest = new \Illuminate\Http\Request($request);
 
             $walletController = new WalletController();
-            $walletController->creditWallet($request);
+            $walletController->creditWallet($newRequest);
             if ($request['environment'] == 'app') {
                 return url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId;
             } else {
@@ -416,10 +436,10 @@ trait MtnMomoPaymentManager
             $request['tip_amount'] = $request['amt'];
             $request['order_number'] = $request['order_number'];
             $request['transaction_id'] = $transactionId;
-            $request = new \Illuminate\Http\Request($request);
+            $newRequest = new \Illuminate\Http\Request($request);
 
             $orderController = new OrderController();
-            $orderController->tipAfterOrder($request);
+            $orderController->tipAfterOrder($newRequest);
             if ($request['environment'] == 'app') {
                 $returnUrl = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId;
             } else {
@@ -433,10 +453,10 @@ trait MtnMomoPaymentManager
             $request['subscription_id'] = $request['subsid'];
             $request['amount'] = $request['amt'];
 
-            $request = new \Illuminate\Http\Request($request);
+            $newRequest = new \Illuminate\Http\Request($request);
 
             $subscriptionController = new UserSubscriptionController();
-            $subscriptionController->purchaseSubscriptionPlan($request, $request->subscription_id);
+            $subscriptionController->purchaseSubscriptionPlan($newRequest, $newRequest->subscription_id);
             if ($request['environment'] == 'app') {
                 $returnUrl = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId;
             } else {
@@ -449,12 +469,15 @@ trait MtnMomoPaymentManager
             $data['amount'] = $request['amt'];
             $data['order_number'] = $request['order_number'];
             $data['reload_route'] = $request['reload_route'];
-            $request = new \Illuminate\Http\Request($data);
-            $plaseOrderForPickup = new PickupDeliveryController();
-            $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+            $newRequest = new \Illuminate\Http\Request($data);
             if ($request['environment'] == 'app') {
-                $returnUrl = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId;
+                $plaseOrderForPickup = new V1PickupDeliveryController();
+                $response = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($newRequest);
+                return $response;
+                // $returnUrl = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $transactionId;
             } else {
+                $plaseOrderForPickup = new PickupDeliveryController();
+                $response = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($newRequest);
                 $returnUrl = $request['reload_route'];
             }
             return $returnUrl;
@@ -476,7 +499,7 @@ trait MtnMomoPaymentManager
         $returnUrl = '';
         if ($request->from == 'cart') {
             $request->amt = $amt;
-            $time = $request->order_number;
+            $time = 'C_' . time() . $request->order_number;
             Payment::create([
                 'amount' => 0,
                 'transaction_id' => $time,
@@ -486,7 +509,7 @@ trait MtnMomoPaymentManager
             ]);
         } elseif ($request->from == 'pickup_delivery') {
             $request->amt = $amt;
-            $time = $request->order_number;
+            $time = 'P_' . time() . $request->order_number;
             Payment::create([
                 'amount' => 0,
                 'transaction_id' => $time,
@@ -539,13 +562,21 @@ trait MtnMomoPaymentManager
     {
         $response = self::getTransactionStatus($referenceId);
         if (!empty($response) && !empty($response['status']) && ($response['status'] == 'SUCCESSFUL')) {
-            $url =  self::sucessPayment($data, $response['financialTransactionId']);
-            if ($url) {
-                return response()->json([
-                    'status' => 'SUCCESSFUL',
-                    'message' => 'Payment Successful',
-                    'url' => $url
-                ], 200);
+            $response =  self::sucessPayment($data, $data['transaction_id']);
+            if ($response) {
+                if ($data['environment'] == 'app' && $data['from'] == 'pickup_delivery') {
+                    return response()->json([
+                        'status' => 'SUCCESSFUL',
+                        'message' => 'Payment Successful',
+                        'data' => $response
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'status' => 'SUCCESSFUL',
+                        'message' => 'Payment Successful',
+                        'url' => $response
+                    ], 200);
+                }
             }
         } else {
             $message = 'Payment Failed';
@@ -567,7 +598,7 @@ trait MtnMomoPaymentManager
                             $message = "Payment request of $currency $amount has been Expired.";
                             break;
                         default:
-                            $message = "Payment Request of $currency $amount has been Failed dd.";
+                            $message = "Payment Request of $currency $amount has been Failed.";
                             break;
                     }
                 }
@@ -577,6 +608,58 @@ trait MtnMomoPaymentManager
                 'message' => $message,
                 'response' => $response
             ], 500);
+        }
+    }
+    //For Production
+    public static function paymentResponse(Request $request)
+    {
+        \Log::info($request);
+        $payment = Payment::where('transaction_id', $request->transaction_id)->first();
+        if ($payment && !empty($payment->payment_detail)) {
+            $response = json_decode($payment->payment_detail, true);
+            $details = explode(',', $response['payeeNote']);
+            $env = $details[0] ?? '';
+            $from = $details[1] ?? '';
+            $order_number = $details[2] ?? '';
+            $route = $details[3] ?? '';
+            $subsId = $details[4] ?? '';
+            if (!empty($response) && !empty($response['status']) && ($response['status'] == 'SUCCESSFUL')) {
+                return response()->json([
+                    'status' => 'SUCCESSFUL',
+                    'message' => 'Payment Successful',
+                    'url' => $route
+                ], 200);
+            } else {
+                $message = 'Payment Failed';
+                if (!empty($response['reason'])) {
+                    if (is_array($response['reason'])) {
+                        $message = $response['reason']['message'];
+                    } else {
+                        $message = $response['reason'];
+                        $currency = self::$_currency;
+                        $amount = $request->amt ?? $request->amount;
+                        switch ($message) {
+                            case 'APPROVAL_REJECTED';
+                                $message = "Payment request of $currency $amount has been Rejected";
+                                break;
+                            case 'INTERNAL_PROCESSING_ERROR':
+                                $message = "Payment request of $currency $amount has been Failed.";
+                                break;
+                            case 'EXPIRED':
+                                $message = "Payment request of $currency $amount has been Expired.";
+                                break;
+                            default:
+                                $message = "Payment Request of $currency $amount has been Failed.";
+                                break;
+                        }
+                    }
+                }
+                return response()->json([
+                    'status' => 'PAYMENT FAILED',
+                    'message' => $message,
+                    'response' => $response
+                ], 500);
+            }
         }
     }
 

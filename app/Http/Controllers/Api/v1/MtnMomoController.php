@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Traits\MtnMomoPaymentManager;
+use App\Models\Order;
+use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Auth;
 
 class MtnMomoController extends Controller
 {
@@ -13,6 +16,7 @@ class MtnMomoController extends Controller
 
     public function createToken(Request $request)
     {
+        $transactionId = self::orderNumber($request);
         self::__init(false);
 
         if (!self::$_isConfigurationSet) {
@@ -21,33 +25,34 @@ class MtnMomoController extends Controller
 
         $data = [];
         $data['environment'] = 'app';
-        
+        $data['transaction_id'] = $transactionId;
         switch ($request->from) {
             case 'cart':
-                $data['amt'] = $request->amt;
-                $data['order_number'] = $request->order_number;
+                $data['amt'] = $request->amount;
+                $data['order_number'] = $request->order_no;
                 $data['from'] = $request->from;
                 break;
             case 'pickup_delivery':
-                $data['amt'] = $request->amt;
+                $data['amt'] = $request->amount;
                 $data['from'] = $request->from;
+                $data['order_number'] = $request->order_no;
+                $data['reload_route'] = $request->reload_route;
                 break;
             case 'wallet':
-                $data['amt'] = $request->amt;
+                $data['amt'] = $request->amount;
                 $data['from'] = $request->from;
                 break;
             case 'subscription':
-                $data['amt'] = $request->amt;
+                $data['amt'] = $request->amount;
                 $data['from'] = $request->from;
                 $data['subsid'] = $request->subsid;
                 break;
             case 'tip':
-                $data['amt'] = $request->amt;
+                $data['amt'] = $request->amount;
                 $data['from'] = $request->from;
-                $data['order_number'] = $request->order_number;
+                $data['order_number'] = $request->order_no;
                 break;
         }
-
         // generate AccessToken
         self::GenerateAccressToken();
 
@@ -61,10 +66,15 @@ class MtnMomoController extends Controller
 
         if ($response['status'] == 202) {
             //check transaction status 
-            if (!self::$_isSandbox) {
+            $response = self::getTransactionStatus(self::$_referenceId);
+
+            if (!self::$_isSandbox || 1) {
                 return response()->json([
+                    'transaction_id' => $transactionId,
                     'status' => 'Success',
-                    'message' => 'Payment request has been sent successfully'
+                    'message' => 'Payment request has been sent successfully',
+                    'responseUrl' => url('mtn/response') . '?transaction_id=' . $transactionId, //route('payment.response.mtn', ['id' => $transactionId], true),
+                    'wait' => true
                 ], 200);
             }
             //For Sandbox only
@@ -75,25 +85,5 @@ class MtnMomoController extends Controller
             'message' => 'Payment Failed',
             'response' => $response
         ], 500);
-    }
-
-    public function mtnCallback()
-    {
-        $payload = file_get_contents('php://input');
-        if (empty($payload))
-            return false;
-        $payload = json_decode($payload, true);
-        if (!empty($payload['payer']['partyId'])) {
-            $user = User::where('phone_number', $payload['payer']['partyId'])->first();
-            $status = $payload['status'];
-            if(!empty($status) && $status == 'SUCCESSFUL'){
-                
-            }
-            $request['amt'] = $payload['amount'];
-            $transactionId = $payload['financialTransactionId'];
-            return response()->json([
-                'user' => $user
-            ], 200);
-        }
     }
 }

@@ -3402,6 +3402,31 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
              url: create_mtn_momo_token,
              data: rowData,
              success: function(resp) {
+                console.log(resp)
+                if(resp.hasOwnProperty('wait')){
+                    var interval = setInterval(function(){
+                        $.ajax({
+                            type: "GET",
+                            dataType: 'json',
+                            url: resp.responseUrl,
+                            success: function(response){
+                                if(response.hasOwnProperty('url')){
+                                    clearInterval(interval);
+                                    window.location.href = response.url;
+                                 }else{
+                                     alert(response.message);
+                                     if(response.hasOwnProperty('response') && response.response != '' && typeof(response.response) != 'undefined'){
+                                        console.error(response.response);
+                                     }
+                                 }
+                            },
+                            error: function(response){
+                                alert(response.responseJSON.message);
+                                location.reload(true);
+                            }
+                        }) 
+                    },5000);
+                }else{
                  if(resp.hasOwnProperty('url')){
                     window.location.href = resp.url;
                  }else{
@@ -3410,6 +3435,7 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
                         console.error(resp.response);
                      }
                  }
+                }
            },
            error: function(resp) {
                 alert(resp.responseJSON.message);
