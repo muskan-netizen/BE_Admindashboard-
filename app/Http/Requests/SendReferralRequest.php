@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class SendReferralRequest extends FormRequest
 {
@@ -25,6 +27,13 @@ class SendReferralRequest extends FormRequest
     {
         return [
             'email' => 'required|email|max:50||unique:users',
+        ];
+    }
+    
+    public function messages()
+    {
+        return [
+            'unique' => 'This email is already registered'
         ];
     }
 }
