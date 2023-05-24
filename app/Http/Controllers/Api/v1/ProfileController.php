@@ -84,7 +84,8 @@ class ProfileController extends BaseController
                                 $message->from($mail_from, $client_name);
                                 $message->to($sendto)->subject('Referral For Registration');
                             });
-                        } catch (\Exception $e) {}
+                        } catch (\Exception $e) {
+                        }
                     }
                     return response()->json(array(
                         'success' => true,
@@ -92,7 +93,8 @@ class ProfileController extends BaseController
                     ));
                 }
             }
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+        }
     }
 
     /**

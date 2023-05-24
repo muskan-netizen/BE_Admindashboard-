@@ -526,6 +526,8 @@ trait ProductActionTrait{
                         $vendorWhereIN 
 
                         $whereProductType 
+                        GROUP BY `products`.`id`
+
                         ORDER BY RAND() LIMIT 6";
 
             $returnArray           = DB::select( DB::raw($raw_query));
@@ -546,7 +548,7 @@ trait ProductActionTrait{
     public function getEvenOddTime($time) {
         return ($time % 5 === 0) ? $time : ($time - ($time % 5));
     }
-    public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude, $vendor_ids = [], $set_template = NULL)
+    public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude, $vendor_ids = [], $set_template = NULL,$venderFilterOpenClose=null,$venderFilterbest=null)
     {
         try 
         {
@@ -569,6 +571,7 @@ trait ProductActionTrait{
                 `vendors`.`show_slot`,
                 `vendors`.`admin_rating`,
                 `vendors`.`rating`,
+                `vendors`.`closed_store_order_scheduled`,
                 (SELECT (CASE WHEN `promo`.`promo_type_id` = 1 THEN CONCAT(CAST(`promo`.`amount` AS DECIMAL(2,0)), '% OFF | use ', `promo`.`name`) ELSE CONCAT('FLAT ', '$currencySymbol', '', CAST(`promo`.`amount`* $multiply AS DECIMAL(2,0)), ' OFF | use ', `promo`.`name`) END) FROM `promocodes` AS `promo` left join `promocode_details` AS `promo_info` ON `promo_info`.`promocode_id` = `promo`.`id` WHERE `promo`.`restriction_on` = 1 AND ((`promo`.`restriction_type` = 0 AND `promo_info`.`refrence_id` = `vendors`.`id`) OR (`promo`.`restriction_type` = 1 AND `promo_info`.`refrence_id` != `vendors`.`id`)) AND `promo`.`expiry_date` >= $current_date AND `promo`.`amount` > 0 ORDER BY `promo`.`amount` DESC LIMIT 1) as `promo_discount`,
                 (select MIN(`price`) FROM `product_variants` AS `pv` JOIN `products` AS `pr` ON `pr`.`id` = `pv`.`product_id` where `pr`.`vendor_id` = `vendors`.`id`) AS `minimum_price`,
                 GROUP_CONCAT(DISTINCT `category_translations`.`name` SEPARATOR ', ') AS `categoriesList`,
@@ -613,13 +616,13 @@ trait ProductActionTrait{
                 $mainQuery.= " ORDER BY `lineOfSightDistance` DESC";
             }else{
                 //-------------if admin rating is on otherwise random---------------
-                if($is_admin_vendor_rating == 1){
+                if($is_admin_vendor_rating == 1 && $venderFilterbest == 1){
                     $mainQuery.= " ORDER BY admin_rating DESC";
                 }
             }
             
             //if(!empty($set_template) && $set_template->template_id != 3){
-                $mainQuery .= " LIMIT 6";
+                $mainQuery .= " LIMIT 10";
             //}
             
 
@@ -675,9 +678,32 @@ trait ProductActionTrait{
                         }
                     }
                 }
+
+                if($value->closed_store_order_scheduled == 1){
+                    $slotsDate = findSlot('',$value->id,$type );
+                    $value->closed_store_order_scheduled = (($slotsDate)?$value->closed_store_order_scheduled:0);
+
+                }else{
+                    $value->closed_store_order_scheduled = 0;
+                }
             }
-            //pr($vendors);
-            return $vendors;
+
+            // $my_array = ['foo' => 1, 'bar' => 'baz', 'hello' => 'wld'];
+            if($venderFilterOpenClose == 1 || $venderFilterOpenClose == 0) {
+                $keyToFilter = 'is_vendor_closed';
+                $valueToFilter = $venderFilterOpenClose;
+
+                $filteredArray = array_filter($vendors, function($item) use ($keyToFilter, $valueToFilter) {
+                    return isset($item->$keyToFilter) && $item->$keyToFilter == $valueToFilter;
+                });
+                
+                $filtered = array_values($filteredArray);
+
+            } else {
+                $filtered = $vendors;
+            }
+           
+            return $filtered;
         }
         catch (\Exception $e) {
             return [];
