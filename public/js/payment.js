@@ -3160,6 +3160,7 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
 
     ///////////////////////////Obo payment Gateway //////////////////////////////
     window.paymentViaOboPay = function paymentViaOboPay(address_id='', payment_option_id='', order='') {
+        alert('pass12');
         let total_amount = 0;
         let orderNumber         = order.order_number ?? "";
         let tipElement          = $("#cart_tip_amount");
@@ -4043,7 +4044,7 @@ window.paymentViaDataTrans = function paymentViaDataTrans(address_id,payment_opt
         data.payment_from = 'cart';
         // data.cart_id = cart_id;
         data.order_number = order.order_number;
-        
+
     } else if (path.indexOf("wallet") !== -1) {
         total_amount = walletElement.val();
         data.payment_from ='wallet';
@@ -4076,7 +4077,7 @@ window.paymentViaDataTrans = function paymentViaDataTrans(address_id,payment_opt
         data: data,
 
         success: function (res) {
-         
+
             Datatrans.startPayment({
                 transactionId:  res.transactionId,
                 'opened': function() {console.log('payment-form opened');},
