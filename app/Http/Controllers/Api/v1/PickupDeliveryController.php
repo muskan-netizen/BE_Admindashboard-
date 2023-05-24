@@ -1028,6 +1028,7 @@ class PickupDeliveryController extends BaseController{
     public function getOrderTrackingDetails(Request $request){
         $user = Auth::user();
         $langId = $user->language ?? 1;
+        $preferences = ClientPreference::where('id', '>', 0)->first();
         $order = OrderVendor::with('orderDetail')->where('order_id',$request->order_id)
         ->with(['products.productRating.reviewFiles', 'products.product.category.categoryDetail.translation' => function($q) use($langId){
             $q->where('category_translations.language_id', $langId);
@@ -1042,7 +1043,15 @@ class PickupDeliveryController extends BaseController{
             $order_driver_rating = OrderDriverRating::where('order_id', $request->order_id)->first();
             $order->dispatcher_status_type=  $type ?  $type->type :1;
            $response = $response->json();
+           $response['tips'] = [];
 
+           if($order->orderDetail->total_amount > 0 && isset($preferences) && $preferences->tip_before_order == 1){
+               $response['tips'] = array(
+                   ['label' => '5%', 'value' => decimal_format(0.05 * $order->orderDetail->total_amount)],
+                   ['label' => '10%', 'value' => decimal_format(0.1 * $order->orderDetail->total_amount)],
+                   ['label' => '15%', 'value' => decimal_format(0.15 * $order->orderDetail->total_amount)]
+               );
+           }
            $response['order_details'] = $order->toArray();
            $response['order_driver_rating'] = $order_driver_rating;
            return $this->successResponse($response);

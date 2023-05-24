@@ -898,10 +898,3 @@ body_event.on("click", ".theme-layout-version", function () {
             }
         });
     });
-
-// thempalte three vendor page click menu close code 19/05/2023 
-    $(".side-scroll-menu-li").click(function(){
-        $("body").removeClass("overflow-hidden");
-        $(".scrollspy-menu").removeClass("side-menu-open");
-        $(".manu-bars").removeClass("menu-btn");
-      });      
