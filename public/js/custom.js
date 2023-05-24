@@ -5480,10 +5480,8 @@ $(document).ready(function () {
             }
             break;
             case '56':
-                alert('pass');
-                console.log('address_id',address_id,'payment_option_id',payment_option_id,'tip',tip);
                 var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                if (order != '') { alert('in obo pay');
+                if (order != '') {
                     paymentViaOboPay(address_id, payment_option_id, order);
                 }else{
                     return false;

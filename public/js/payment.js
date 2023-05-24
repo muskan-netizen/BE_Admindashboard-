@@ -3160,7 +3160,6 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
 
     ///////////////////////////Obo payment Gateway //////////////////////////////
     window.paymentViaOboPay = function paymentViaOboPay(address_id='', payment_option_id='', order='') {
-        alert('pass12');
         let total_amount = 0;
         let orderNumber         = order.order_number ?? "";
         let tipElement          = $("#cart_tip_amount");

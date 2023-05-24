@@ -41,7 +41,7 @@ class OboPaymentController extends Controller
 
     public function beforePayment(Request $request, $domain = '', $app = '')
     {
-        try { \Log::info('req');  \Log::info($request->all());
+        try {
             $tokenData =  $this->token();
             if (isset($tokenData['httpStatus']) &&  $tokenData['httpStatus'] == "OK") {
                 $token = $tokenData['token'];
@@ -86,7 +86,7 @@ class OboPaymentController extends Controller
                         "cancel_url"    => url(($request->cancelUrl) ?? ('after-payment/obo' . '?success=false')),
                         "return_url"    => url('after-payment/obo' . '?' . $urlParams),
                         "custom_pg_id"  => $this->obo_market_place_id,
-                    ], JSON_UNESCAPED_SLASHES); \Log::info($input);
+                    ], JSON_UNESCAPED_SLASHES); 
                     $responce = Http::withBody($input, 'application/json')->withHeaders($header)->post($apiUrl);
                     $responceData = json_decode($responce->body(), true);
                     if (isset($responceData['status']) && $responceData['status'] ===  "OK") {
