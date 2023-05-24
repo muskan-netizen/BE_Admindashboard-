@@ -75,7 +75,11 @@ class Category extends Model
     public function childs()
     {
         return $this->hasMany(Category::class, 'parent_id', 'id')->join('types', 'types.id', 'categories.type_id')
-        ->select('categories.id', 'categories.slug', 'categories.parent_id', 'categories.icon', 'categories.icon_two','categories.image','type_id', 'types.title as redirect_to')->orderBy('position', 'ASC');
+        ->select('categories.id', 'categories.slug', 'categories.parent_id', 'categories.icon', 'categories.icon_two','categories.image','type_id', 'types.title as redirect_to')->whereIn('categories.id', function($query){
+            $query->select('category_id')->from((new Product())->getTable())->where('is_live', 1)->whereNull('deleted_at')
+            ->pluck('category_id')->toArray();
+            
+        })->orderBy('position', 'ASC');
     }
     public function products()
     {

@@ -247,6 +247,10 @@ class FrontController extends Controller
                                 ->where('cts.language_id', $lang_id)
                                 ->where(function ($qrt) use($lang_id,$primary){
                                     $qrt->where('cts.language_id', $lang_id)->orWhere('cts.language_id',$primary->language_id);
+                                })->whereIn('categories.id', function($query){
+                                    $query->select('category_id')->from((new Product())->getTable())->where('is_live', 1)->whereNull('deleted_at')
+                                    ->pluck('category_id')->toArray();
+                                    
                                 })
                                 ->whereNull('categories.vendor_id')
                               //  ->orderBy('categories.position', 'asc')
@@ -361,9 +365,11 @@ class FrontController extends Controller
                 }
             }
         }
-        $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->get();
-
-
+        $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->whereIn('id', function($query){
+            $query->select('vendor_id')->from((new Product())->getTable())->where('is_live', 1)->whereNull('deleted_at')->groupBy('vendor_id')
+            ->pluck('vendor_id')->toArray();
+            
+        })->get();
         if($serviceAreaVendors->isNotEmpty()){
             foreach($serviceAreaVendors as $value){
                 $vendors[] = $value->id;
