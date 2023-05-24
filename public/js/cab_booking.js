@@ -50,6 +50,10 @@
             }else if (payment_method == 49) {
                  $("#cab_payment_method_form .plugnpay_element_wrapper").removeClass('d-none');
             }
+            else if (payment_method == 58) {
+                $("#cab_payment_method_form .powertrans_element_wrapper").removeClass('d-none');
+                $("#cab_payment_method_form .stripe_element_wrapper").addClass('d-none');
+            }
             else {
                 $("#cab_payment_method_form .stripe_element_wrapper").addClass('d-none');
             }
@@ -92,7 +96,26 @@
                     }
                 }
             });
-        }else{
+        }
+        else if(payment_option_id == 58){
+            var expData = $('#date-element-powertrans').val();
+            var [expMonth, expYear] = [expData.slice(2), expData.slice(0, 2)]
+            var newDate = expMonth+'/'+expYear;
+            cardJson = {
+                'cno': $('#card-element-powertrans').val(),
+                'dt': newDate,
+                'cv': $('#cvv-element-powertrans').val(),
+                'name':'powertrans',
+            }
+            if(cardValidation(cardJson)){
+                console.log('Credit card information is valid.');
+            }
+            else {
+                success_error_alert('error', 'Invalid credit card information', "#powertrans_card_error");
+                return false;
+            }
+        }
+        else{
             //hide model
              $('#stripe_card_error').html('');
              if (type == 'bid') {
@@ -436,6 +459,12 @@ $(document).ready(function () {
                     }
                     else if(payment_option_id == 22){
                         payWithCcAvenue(response.data);
+                    }
+                    else if(payment_option_id == 57){
+                        payWithPesapal(payment_option_id,response.data);
+                    }
+                    else if(payment_option_id == 58){
+                        payWithPowerTrans(payment_option_id,response.data);
                     }
                     cabBookingPaymentOptions(payment_option_id, response.data);
                 }else{
