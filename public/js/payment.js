@@ -4032,6 +4032,10 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
                         window.location.href = response.redirect_url;
                     }
                     else if(response.status == 201){
+                        $(".subscription_confirm_btn").attr("disabled", false);
+                        $(".select_payment_option_done").attr("disabled", false);
+                        $(".topup_wallet_confirm").attr("disabled", false);
+
                         Swal.fire({
                             icon: 'error',
                             title: 'Oops...',
