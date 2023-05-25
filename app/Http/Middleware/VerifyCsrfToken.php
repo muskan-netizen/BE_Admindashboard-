@@ -42,6 +42,8 @@ class VerifyCsrfToken extends Middleware
         'dispatch/driver/bids/update/*',
         'dispatch/driver/bids/status/*',
         'square/inventory/event/update',
-        'skipcash/webhook'
+        'skipcash/webhook',
+
+        'success/pesapal'
     ];
 }
