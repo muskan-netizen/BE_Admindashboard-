@@ -28,6 +28,9 @@ class HomeController extends BaseController
     private $field_status = 2;
     public $additionalPreference =[];
     public $client_preferences = [];
+    public $venderFilterOpenClose = null;
+    public $venderFilterbest = null;
+
 
     public function __construct(Request $request)
     {
@@ -71,6 +74,9 @@ class HomeController extends BaseController
                 $type = 'delivery';
 
             $categoryTypes = getServiceTypesCategory($type);
+
+            $this->venderFilterOpenClose   = $request->has('open_close_vendor') && $request->open_close_vendor ? $request->open_close_vendor : null;
+            $this->venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
 
             // $vendorData = Vendor::whereHas('getAllCategory.category', function ($q) use ($categoryTypes) {
             //     $q->whereIn('type_id', $categoryTypes);
@@ -1299,7 +1305,7 @@ class HomeController extends BaseController
 
         
         if(count($vendor_ids) > 0){
-            $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids);
+            $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids,null,$this->venderFilterOpenClose,$this->venderFilterbest);
         }
         
        
