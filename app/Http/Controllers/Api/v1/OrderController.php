@@ -4019,21 +4019,21 @@ class OrderController extends BaseController
         $orderData= $this->minimize_orderDetails_for_notification($request->order_id,$request->vendor_id);
         $header_code=$request->code??'';
 
-        if(@$request->vehicle_name && @$request->number_plate){
-            $user_id = $request->user_id ?? Auth::user()->id;
-            $user_vehicle = UserVehicle::updateOrCreate([
-                'plate' =>  $request->number_plate,
-                'user_id' =>  $user_id
-            ], [
-                'name' => $request->vehicle_name,
-                'description' =>  $request->description ?? null
-            ]);
-            $comment = $request->vehicle_name." - ". $request->number_plate ;
-            if(@$request->description){
-                $comment .=  " - ".$request->description;
-            }
-            Order::where('id', $request->order_id)->update(['comment_for_vendor' => $comment]);
-        }
+        // if(@$request->vehicle_name && @$request->number_plate){
+        //     $user_id = $request->user_id ?? Auth::user()->id;
+        //     $user_vehicle = UserVehicle::updateOrCreate([
+        //         'plate' =>  $request->number_plate,
+        //         'user_id' =>  $user_id
+        //     ], [
+        //         'name' => $request->vehicle_name,
+        //         'description' =>  $request->description ?? null
+        //     ]);
+        //     $comment = $request->vehicle_name." - ". $request->number_plate ;
+        //     if(@$request->description){
+        //         $comment .=  " - ".$request->description;
+        //     }
+        //     Order::where('id', $request->order_id)->update(['comment_for_vendor' => $comment]);
+        // }
 
         $send = $this->sendOrderPushNotificationVendorReached($user_vendors,$orderData, $header_code);
 
@@ -4055,7 +4055,7 @@ class OrderController extends BaseController
 
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon','vendor_fcm_server_key')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
-            $notification_content = NotificationTemplate::where('id', 12)->first();
+            $notification_content = NotificationTemplate::where('slug','reached-vendor-location')->first();
             $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
             if ($notification_content) {
                 if($header_code == ''){
