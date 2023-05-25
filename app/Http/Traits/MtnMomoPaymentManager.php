@@ -268,9 +268,8 @@ trait MtnMomoPaymentManager
             'Ocp-Apim-Subscription-Key' => self::$_subscriptionKey,
             'Authorization' => 'Bearer ' . $token,
             'Content-Type' => 'application/json',
-            'X-Callback-Url' => route('payment.webhook.mtn', [], true)
+            'X-Callback-Url' => (self::$_isSandbox) ? route('payment.webhook.mtn', []) : route('payment.webhook.mtn', [], true)
         ];
-
 
         $env = $data['environment'];
         $params = [

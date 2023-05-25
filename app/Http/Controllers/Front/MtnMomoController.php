@@ -128,7 +128,7 @@ class MtnMomoController extends FrontController
                 $request['reload_route'] = $route;
                 $response = self::sucessPayment($request, $payload['externalId']);
                 return response()->json([
-                    'user' => $response
+                    'response' => $response
                 ], 200);
             }
         }else{
