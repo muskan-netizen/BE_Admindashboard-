@@ -38,6 +38,7 @@ class HomeController extends BaseController
         try {
             $homeData = array();
             $client_language = ClientLanguage::select('language_id')->where(['is_primary' => 1, 'is_active' => 1])->first();
+            $clientPreferences = ClientPreference::first();
 
             $langId = ($request->hasHeader('language') && !empty($request->header('language'))) ? $request->header('language') : (($client_language) ? $client_language->language_id : 1);
             $homeData['profile'] = $preferences = Client::with(['preferences', 'country:id,name,code,phonecode'])->select('id','country_id', 'company_name', 'code', 'sub_domain','database_name', 'logo','dark_logo', 'company_address', 'phone_number', 'email','custom_domain','contact_phone_number','socket_url')->first();
@@ -54,14 +55,17 @@ class HomeController extends BaseController
                 $vendorData = [];
                     if($preferences->preferences->$clientVendorTypes == 1){
                         $vendorData['name'] =  $this->getNomenclatureName($vendor_typ_value, $langId, false);
-                        $vendorData["icon"] = config('constants.VendorTypesIcon.'.$vendor_typ_key);
+                        $iconFiledName = config('constants.VendorTypesIcon.'.$vendor_typ_key);
+                        $vendorData["icon"] = $clientPreferences->$iconFiledName ? $clientPreferences->$iconFiledName : asset('images/al_custom3.png');
+                        //$vendorData["name"] = $clientVendorTypes;
+                        //$client_preference_detail->$iconFiledName['proxy_url'].'36/26'.$client_preference_detail-> $iconFiledName['image_path'] 
                         //$vendorData["name"] = $clientVendorTypes;
                         $vendorData["type"] = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key;
 
                         $vendorMode[] = $vendorData;
                     }
             }
-            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo','is_service_price_selection']);
+            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo','is_service_price_selection','is_enable_curb_side']);
     
             //pr($vendorMode);
             //mohit sir branch code updated by sohail farm meat
@@ -70,6 +74,7 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->is_cab_pooling = (int) $getAdditionalPreference['is_cab_pooling'];
             $homeData['profile']->preferences->chat_button = (int) $getAdditionalPreference['chat_button'];
             $homeData['profile']->preferences->call_button = (int) $getAdditionalPreference['call_button'];
+            $homeData['profile']->preferences->is_enable_curb_side = (int) $getAdditionalPreference['is_enable_curb_side'];
             $homeData['profile']->preferences->is_user_kyc_for_registration = (int) $getAdditionalPreference['is_user_kyc_for_registration'];
             $homeData['profile']->preferences->rating_check = $preferences->preferences->rating_check;
             //dd($homeData['profile']);
