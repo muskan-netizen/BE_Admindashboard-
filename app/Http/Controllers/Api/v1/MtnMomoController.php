@@ -45,7 +45,7 @@ class MtnMomoController extends Controller
             case 'subscription':
                 $data['amt'] = $request->amount;
                 $data['from'] = $request->from;
-                $data['subsid'] = $request->subsid;
+                $data['subsid'] = $request->subscription_id;
                 break;
             case 'tip':
                 $data['amt'] = $request->amount;

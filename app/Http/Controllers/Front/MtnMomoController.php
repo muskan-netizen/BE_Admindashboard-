@@ -137,13 +137,16 @@ class MtnMomoController extends FrontController
     public function mtnCallback()
     {
         $request = [];
-        $payload = file_get_contents('php://input');
-        if (empty($payload))
+        $mtnPayload = file_get_contents('php://input');
+        if (empty($mtnPayload))
             return false;
-        $payload = json_decode($payload, true);
+        $payload = json_decode($mtnPayload, true);
 
-        $order = Payment::where('transaction_id', $payload['externalId'])->update(['payment_detail' => json_encode($payload), 'payment_option_id' => 48]);
-
+        $payment = Payment::where('transaction_id', $payload['externalId']);
+        if (!$payment)
+            return false;
+        $payment->update(['payment_detail' => $mtnPayload, 'payment_option_id' => 48]);
+        $user = $payment->first()->user;
         if (!empty($payload['status']) && $payload['status'] == 'SUCCESSFUL') {
             $details = explode(',', $payload['payeeNote']);
             $env = $details[0] ?? '';
@@ -151,26 +154,28 @@ class MtnMomoController extends FrontController
             $order_number = $details[2] ?? '';
             $route = $details[3] ?? '';
             $subsId = $details[4] ?? '';
-            if (!empty($payload['payer']['partyId'])) {
-                $user = User::where('phone_number', $payload['payer']['partyId'])->first();
-                if ($user) {
-                    Auth::login($user);
-                    $request['amt'] = $payload['amount'];
-                    $request['from'] = $from;
-                    $request['order_number'] = $order_number;
-                    $request['environment'] = $env;
-                    $request['subsid'] = $subsId;
-                    $request['reload_route'] = $route;
-                    $response = self::sucessPayment($request, $payload['externalId']);
-                    return response()->json([
-                        'user' => $response
-                    ], 200);
-                }
+            if (!empty($user)) {
+                Auth::login($user);
+                $request['amt'] = $payload['amount'];
+                $request['from'] = $from;
+                $request['order_number'] = $order_number;
+                $request['environment'] = $env;
+                $request['subsid'] = $subsId;
+                $request['reload_route'] = $route;
+                $response = self::sucessPayment($request, $payload['externalId']);
+                return response()->json([
+                    'user' => $response
+                ], 200);
             }
+        }else{
+            return response()->json([
+                'message' => 'Payment Failed'
+            ], 500);
         }
     }
 
-    public function getResponse(Request $request){
+    public function getResponse(Request $request)
+    {
         return self::paymentResponse($request);
     }
 }

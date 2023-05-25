@@ -251,8 +251,9 @@ trait MtnMomoPaymentManager
                 }
                 break;
         }
+        $user = Auth::user();
 
-        $partyId = Auth::user()->phone_number;
+        $partyId = $user->dial_code . $user->phone_number;
 
         /* Generate new reference ID for each new request to pay api call */
         $response = self::$_client->get('https://www.uuidgenerator.net/api/version4');
@@ -281,8 +282,8 @@ trait MtnMomoPaymentManager
 
         $env = $data['environment'];
         $params = [
-            'amount' => $amount,
-            'currency' => self::$_currency,
+            'amount' => '5', //$amount,
+            'currency' => 'UGX', //self::$_currency,
             'externalId' => $data['transaction_id'],
             'payer' => [
                 'partyIdType' => 'MSISDN',
@@ -447,7 +448,7 @@ trait MtnMomoPaymentManager
         } elseif ($request['from'] == 'subscription') {
             $request['transaction_id'] = $transactionId;
             $request['payment_option_id'] = 48;
-            $request['subsid'] = $request['subsid'];
+            // $request['subsid'] = $request['subsid'];
             $request['subscription_id'] = $request['subsid'];
             $request['amount'] = $request['amt'];
 
@@ -503,6 +504,7 @@ trait MtnMomoPaymentManager
                 'transaction_id' => $time,
                 'balance_transaction' => $amt,
                 'type' => 'cart',
+                'user_id' => auth()->id(),
                 'date' => date('Y-m-d')
             ]);
         } elseif ($request->from == 'pickup_delivery') {
@@ -525,6 +527,7 @@ trait MtnMomoPaymentManager
                 'transaction_id' => $time,
                 'balance_transaction' => $amt,
                 'type' => 'wallet',
+                'user_id' => auth()->id(),
                 'date' => date('Y-m-d')
             ]);
             $request->amt = $amt;
@@ -535,6 +538,7 @@ trait MtnMomoPaymentManager
                 'transaction_id' => $time,
                 'balance_transaction' => $amt,
                 'type' => 'tip',
+                'user_id' => auth()->id(),
                 'date' => date('Y-m-d')
             ]);
 
@@ -546,6 +550,7 @@ trait MtnMomoPaymentManager
                 'transaction_id' => $time,
                 'balance_transaction' => $amt,
                 'type' => 'subscription',
+                'user_id' => auth()->id(),
                 'date' => date('Y-m-d')
             ]);
             $request->amt = $amt;
@@ -621,6 +626,7 @@ trait MtnMomoPaymentManager
             $route = $details[3] ?? '';
             $subsId = $details[4] ?? '';
             if (!empty($response) && !empty($response['status']) && ($response['status'] == 'SUCCESSFUL')) {
+                $order = Order::where('order_number', $order_number)->first();
                 switch ($from) {
                     case 'cart':
                         Session::put('success', 'Order placed successfully');
@@ -641,7 +647,9 @@ trait MtnMomoPaymentManager
                 return response()->json([
                     'status' => 'SUCCESSFUL',
                     'message' => 'Payment Successful',
-                    'url' => $route
+                    'url' => $route,
+                    'order_number' => $order_number,
+                    'order_id' => $order->id ?? ''
                 ], 200);
             } else {
                 $message = 'Payment Failed';
