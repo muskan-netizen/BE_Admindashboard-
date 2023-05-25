@@ -11,7 +11,12 @@
 @endphp
 <div class="row mb-sm-2 mb-1">
     <div class="col-lg-12 d-flex justify-content-between align-items-center" id="add_new_address_btn">
+     
+        @if(session()->get('customerLanguage')==40)
+        <h4 class="page-title m-0">Bezorgadres</h4>
+        @else
         <h4 class="page-title m-0">{{ __($label)  }} {{ __('Address') }}</h4>
+       @endif
         @if(!in_array($action , ['dine_in','takeaway','appointment']))
             <a class="add-address ml-auto" href="#add_new_address_form">
                 <i class="fa fa-plus mr-1" aria-hidden="true"></i>

@@ -48,11 +48,7 @@ class sendCustomerRegistrationEmail implements ShouldQueue
     public function handle()
     {
         $email = new CustomerRegistrationMail($this->details);
-        try{
-            Mail::to($this->details['email'])->send($email);
-        }catch(Exception $e){
-
-        }
+        Mail::to($this->details['email'])->send($email);
     }
 
     public function setMailDetail($mail_driver, $mail_host, $mail_port, $mail_username, $mail_password, $mail_encryption){

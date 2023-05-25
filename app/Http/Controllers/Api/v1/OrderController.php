@@ -167,7 +167,15 @@ class OrderController extends BaseController
                 $client_preference = ClientPreference::first();
 
                 $editlimit_datetime = Carbon::now()->toDateTimeString();
-                $additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive','order_edit_before_hours','is_service_product_price_from_dispatch','is_show_vendor_on_subcription']);
+                $additionalPreferences = getAdditionalPreference(['is_tax_price_inclusive','is_gift_card','is_service_product_price_from_dispatch','order_edit_before_hours','is_show_vendor_on_subcription','is_service_price_selection']);
+                $is_service_product_price_from_dispatch = 0;
+                if(($action == 'on_demand') && ($additionalPreferences['is_service_product_price_from_dispatch'] ==1)){
+                    $on_demand_price_selection_type = ($request->has('on_demand_price_selection_type')) ? $request->on_demand_price_selection_type : 'vendor';
+                    $getOnDemandPricingRule = getOnDemandPricingRule($action, $on_demand_price_selection_type ,$additionalPreferences);
+                    $is_service_product_price_from_dispatch =$getOnDemandPricingRule['is_price_from_freelancer'];
+                }
+                $additionalPreferences = (object) $additionalPreferences ;
+
                 $order_edit_before_hours =  @$additionalPreferences->order_edit_before_hours;
                 $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
                 // if ($client_preference->verify_email == 1) {
@@ -406,7 +414,7 @@ class OrderController extends BaseController
                             $price_in_currency = $variant->price / $divider;
                              // change product price when is_service_product_price_from_dispatch on
 
-                            if(($action == 'on_demand') && $additionalPreferences->is_service_product_price_from_dispatch ==1 ){
+                            if(($action == 'on_demand') && $is_service_product_price_from_dispatch ==1 ){
                                 $price_in_currency =$vendor_cart_product->dispatch_agent_price / $divider;
                             }
                             $container_charges_in_currency = $variant->container_charges / $divider;
@@ -509,7 +517,7 @@ class OrderController extends BaseController
                             $variant_price = $variant->price;
                             // change variant_price price when is_service_product_price_from_dispatch on
                             $is_price_buy_driver = 0;
-                            if(($action == 'on_demand') && ($additionalPreferences->is_service_product_price_from_dispatch ==1)){
+                            if(($action == 'on_demand') && ($is_service_product_price_from_dispatch==1)){
                                 $variant_price =$vendor_cart_product->dispatch_agent_price ;
                                 $is_price_buy_driver = 1;
                             }
@@ -1354,10 +1362,10 @@ class OrderController extends BaseController
     {
 
         $order_dispatchs = 2;
-        $AdditionalPreference = getAdditionalPreference(['is_place_order_delivery_zero','is_service_product_price_from_dispatch']);
+        $AdditionalPreference = getAdditionalPreference(['is_place_order_delivery_zero']);
         $is_place_order_delivery_zero =  $AdditionalPreference['is_place_order_delivery_zero'];
 
-        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption','products')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $luxury_option_id      = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
         $is_restricted         = $checkdeliveryFeeAdded->is_restricted;
 
@@ -1376,7 +1384,7 @@ class OrderController extends BaseController
                         'service_type'     => 'on_demand'
                     ];
 
-                    if(( $AdditionalPreference['is_service_product_price_from_dispatch'] == 1)  && ( $prod->product->category->categoryDetail->type_id == 8)){
+                    if(($prod->is_price_buy_driver ==1)  && ( $prod->product->category->categoryDetail->type_id == 8)){
 
                         $dispatch_domain['rejectable_order'] = 1;
 
@@ -2166,7 +2174,7 @@ class OrderController extends BaseController
         $orders = OrderVendor::where('user_id', $user->id)->with('products')->orderBy('id', 'DESC');
         $additionalPreference =getAdditionalPreference(['is_service_product_price_from_dispatch']);
         switch ($type) {
-            case 'pending': // which order not assign yet indriver
+            case 'pending': // which order not assign yet in driver
 
             $orders->whereHas('products', function ($q1) {
                         $q1->where('dispatcher_status_option_id',1);
@@ -2610,7 +2618,7 @@ class OrderController extends BaseController
                             $product->address = '';
                         }
                         //till here
-
+                        $product->scheduled_date_time = (($product->scheduled_date_time!=null)?dateTimeInUserTimeZone($product->scheduled_date_time, $user->timezone):null);
                         $product_addons = [];
                         $variant_options = [];
                         $vendor_total_container_charges = 0;

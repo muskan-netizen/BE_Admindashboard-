@@ -1,9 +1,10 @@
 @php
 $add_to_cart =  route('addToCart') ;
-    $additionalPreference = getAdditionalPreference(['is_token_currency_enable','is_service_product_price_from_dispatch']);
+    $additionalPreference = getAdditionalPreference(['is_token_currency_enable','is_service_product_price_from_dispatch','is_service_price_selection']);
+    $getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'), (@Session::get('onDemandPricingSelected') ?? ''),$additionalPreference);
     $is_service_product_price_from_dispatch_forOnDemand = 0;
     $category_type_idForNotShowshPlusMinus = ['12'];
-    if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+    if($getOnDemandPricingRule['is_price_from_freelancer'] ==1){
         $is_service_product_price_from_dispatch_forOnDemand =1;
         array_push($category_type_idForNotShowshPlusMinus,8);
     }
@@ -379,3 +380,11 @@ $add_to_cart =  route('addToCart') ;
                 </div>
             </div>
         </div>
+        <script>
+            $(".side-scroll-menu-li").click(function(){
+                $("body").removeClass("overflow-hidden");
+                $(".scrollspy-menu").removeClass("side-menu-open");
+                $(".manu-bars").removeClass("menu-btn");
+             });              
+        </script>        
+        

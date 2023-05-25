@@ -330,6 +330,7 @@ class PickupDeliveryController extends BaseController{
         $total_discount = 0;
         $taxable_amount = 0;
         $payable_amount = 0;
+        $order = '';
         $user = Auth::user();
         $action = 'pick_drop';
         $luxury_option = LuxuryOption::where('title', $action)->first();
@@ -408,8 +409,9 @@ class PickupDeliveryController extends BaseController{
                 $order_location->email = $request->email ?? null;
                 $order_location->tasks = json_encode($request->tasks );
                 $order_location->save();
-                $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
-                $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
+
+                     $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
+                     $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
                 $vendor = Vendor::whereHas('product', function ($q) use ($request) {
                     $q->where('id', $request->product_id);
                 })->select('*','id as vendor_id')->orderBy('created_at', 'asc')->first();
@@ -567,7 +569,6 @@ class PickupDeliveryController extends BaseController{
                 }
 
 
-
                 $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
                 $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
                 if (isset($request->transaction_id) && (!empty($request->transaction_id))) {
@@ -590,12 +591,10 @@ class PickupDeliveryController extends BaseController{
                     $payment->save();
                 }
             }
-
                         $data = [];
                         $data['status'] = 200;
                         $data['message'] =  __('Order Placed');
-                        $data['data'] =
-                        $order;
+                        $data['data'] = $order;
                         return $data;
         }
     }
@@ -671,13 +670,14 @@ class PickupDeliveryController extends BaseController{
                     $schedule_datetime_del = Carbon::parse($request->schedule_time, $customer->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
 
-                $task_type = 'now';
-                if($request->has('task_type')){
-                    $task_type = $request->task_type;
-                }elseif(!empty($order->scheduled_date_time)){
+
+                if(empty($request->task_type) && !empty($request->schedule_time)){
                     $task_type = 'schedule';
+                }else{
+                    $task_type = 'now';
                 }
-                $vendor_details = Vendor::where('id', $vendor)->select('order_pre_time')->first();
+
+                  $vendor_details = Vendor::where('id', $vendor)->select('order_pre_time')->first();
                 $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
                 $dynamic = (!empty($order_vendor->web_hook_code)) ? $order_vendor->web_hook_code : uniqid($order->id.$vendor);
                 $unique = Auth::user()->code;
@@ -992,6 +992,7 @@ class PickupDeliveryController extends BaseController{
     public function getOrderTrackingDetails(Request $request){
         $user = Auth::user();
         $langId = $user->language ?? 1;
+        $preferences = ClientPreference::where('id', '>', 0)->first();
         $order = OrderVendor::with('orderDetail')->where('order_id',$request->order_id)
         ->with(['products.productRating.reviewFiles', 'products.product.category.categoryDetail.translation' => function($q) use($langId){
             $q->where('category_translations.language_id', $langId);
@@ -1006,7 +1007,15 @@ class PickupDeliveryController extends BaseController{
             $order_driver_rating = OrderDriverRating::where('order_id', $request->order_id)->first();
             $order->dispatcher_status_type=  $type ?  $type->type :1;
            $response = $response->json();
+           $response['tips'] = [];
 
+           if($order->orderDetail->total_amount > 0 && isset($preferences) && $preferences->tip_before_order == 1){
+               $response['tips'] = array(
+                   ['label' => '5%', 'value' => decimal_format(0.05 * $order->orderDetail->total_amount)],
+                   ['label' => '10%', 'value' => decimal_format(0.1 * $order->orderDetail->total_amount)],
+                   ['label' => '15%', 'value' => decimal_format(0.15 * $order->orderDetail->total_amount)]
+               );
+           }
            $response['order_details'] = $order->toArray();
            $response['order_driver_rating'] = $order_driver_rating;
            return $this->successResponse($response);

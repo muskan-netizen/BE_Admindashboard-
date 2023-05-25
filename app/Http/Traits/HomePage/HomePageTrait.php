@@ -171,7 +171,7 @@ trait HomePageTrait
         return $selected_products;
     }
 
-    public function getProducts($preferences, $vendor_ids, $language_id, $currency_id = 'USD', $p_dim, $product_ids)
+    public function getProducts($preferences, $vendor_ids, $language_id, $currency_id = 'USD', $p_dim, $product_ids, $take = 8)
     {
         $productFiltered = [];
         if (@$product_ids) {
@@ -196,7 +196,7 @@ trait HomePageTrait
             //     $q->whereIn('vendors.id', $vendor_ids);
             // });
             $products = $products->whereIn('id', $product_ids)
-                ->take(8)->get();
+                ->take($take)->get();
 
             
             if (!empty($products)) {

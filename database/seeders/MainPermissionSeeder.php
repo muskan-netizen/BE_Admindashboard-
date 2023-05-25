@@ -4,6 +4,7 @@ use DB;
 use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Cache;
 
 class MainPermissionSeeder extends Seeder{
     /**
@@ -12,6 +13,9 @@ class MainPermissionSeeder extends Seeder{
      * @return void
      */
     public function run(){
+
+        // Clear cache before seeding
+        Cache::forget('permissions_by_controller');
 
     $permissions = array(
             //Dashboard Page

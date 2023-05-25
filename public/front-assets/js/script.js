@@ -898,6 +898,3 @@ body_event.on("click", ".theme-layout-version", function () {
             }
         });
     });
-
-
-      

@@ -11,6 +11,7 @@ Route::get('auth/xero', 'Front\XeroController@index')->name('xero_auth');
 Route::any('auth/callback/xero', 'Front\XeroController@xero_callback')->name('callback_xero');
 Route::any('payment/paytab/callback', 'Front\PaytabController@callback')->name('payment.paytab.callback');
 Route::match(['get', 'post'], 'payment/paytab/return', 'Front\PaytabController@returnBack')->name('payment.paytab.return');
+Route::match(['get','post'],'payment/payByDataTrans','Front\DataTransController@payByDataTrans')->name('payment.payByDataTrans');
 Route::get('/debug-sentry', function () {
 	echo \Hash::make('dispatcher@765');
 	//throw new Exception('My first Sentry error!');
@@ -40,13 +41,13 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('dispatch-order-service-status-update/{id?}', 'Front\DispatcherController@dispatchOrderServiceProductStatusUpdate')->name('dispatch-order-service-status-update'); // Order Status update Dispatch
 	Route::post('dispatch/driver/bids/update/{id?}', 'Front\DispatcherController@dispatchDriverBidUpdate')->name('dispatch-driver-bids'); // instant booking and Bid and Ride pickup delivery update from dispatch
 	Route::post('dispatch/driver/bids/status/{id?}', 'Front\DispatcherController@dispatchDriverBidStatus')->name('dispatch-driver-bids-status'); // instant booking and Bid and Ride Bid Status pickup delivery update from dispatch
-	
+
 	//------routes for receive bids in bid and ride from agent (dispatcher)
 	Route::post('dispatch/driver/bids/update/{id?}', 'Front\DispatcherController@dispatchDriverBidUpdate')->name('dispatch-driver-bids'); // instant booking / Bid and Ride pickup delivery update from dispatch
 	Route::post('dispatch/driver/bids/status/{id?}', 'Front\DispatcherController@dispatchDriverBidStatus')->name('dispatch-driver-bids-status'); // instant booking / Bid and Ride Bid Status pickup delivery update from dispatch
-	
+
 	Route::match(['get', 'post'], 'square/inventory/event/update', 'Front\SquareInventoryController@squareInventoryEventUpdate')->name('square-inventory-event-update'); // webhook to receive inventory updates from square inventory update events
-	
+
 	Route::get('testsms', 'Front\FrontController@testsms');
 
 	Route::get('demo', 'Front\CustomerAuthController@getTestHtmlPage');
@@ -96,6 +97,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/stripe', 'Front\StripeGatewayController@postPaymentViaStripe')->name('payment.stripe');
 	Route::post('user/subscription/payment/stripe', 'Front\StripeGatewayController@subscriptionPaymentViaStripe')->name('user.subscription.payment.stripe');
 	Route::get('/check_stripe_return_data', 'Front\StripeGatewayController@checkStripeReturnDataFrom3DAuth')->name('check_stripe_return_data');
+	Route::get('/success-page', 'Front\DataTransController@successPage')->name('order.dataTransuccessPage');
+	Route::get('/cancel-page', 'Front\DataTransController@cancelPage')->name('order.dataTransCancel');
 	Route::post('/payment/payment_init', 'Front\StripeGatewayController@paymentInit')->name('payment_init');
 	Route::post('payment/webhook/stripe', 'Front\StripeGatewayController@stripeWebhook')->name('payment.webhook.stripe');
 
@@ -153,9 +156,13 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('success/skipcash', 'Front\SkipCashController@successPage')->name('payment.skipcash.success');
 	Route::post('/skipcash/webhook', 'Front\SkipCashController@handleWebhook');
 
+	Route::post('pesapal-payment', 'Front\PesapalPaymentController@payByPesapal')->name('pesapal.payment');
+	Route::get('success/pesapal', 'Front\PesapalPaymentController@successPage')->name('payment.pesapal.success');
 
 	// Route::post('payment/skipcashpay', 'Front\SkipCashController@checkPayment')->name('payment.skipcash.pay');
 
+	Route::post('powertrans-payment', 'Front\PowerTransPaymentController@payByPowerTrans')->name('powertrans.payment');
+	Route::get('success/powertrans', 'Front\PowerTransPaymentController@successPage')->name('payment.powertrans.success');
 
 	//GCash
 	Route::post('payment/gcash', 'Front\GCashController@beforePayment')->name('payment.gcash.beforePayment');
@@ -163,9 +170,13 @@ Route::group(['middleware' => ['domain']], function () {
 
     //plugnpay
     Route::match(['get','post'],'payment/plugnpay','Front\PlugnpayController@beforePayment')->name('payment.plugnpay.beforePayment');
-    
+
     //azulpay
     Route::match(['get','post'],'payment/nmi','Front\NmiPaymentController@beforePayment')->name('nmi.pay');
+
+    // obo-pay
+    Route::post('before-payment/obo','Front\OboPaymentController@beforePayment')->name('obo.pay');
+    Route::get('after-payment/obo','Front\OboPaymentController@afterPayment')->name('after.obo.payment');
 
 	Route::post('checkVendorPincode','Front\PincodeController@checkVendorPincode')->name('pincode.checkVendorPincode');
 	Route::get('getShippingMethod','Front\PincodeController@getShippingMethod')->name('pincode.getShippingMethod');
@@ -180,7 +191,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('payment/get-user-cards','Front\AzulPaymentController@getCardList')->name('payment.user.cards');
 	Route::get('payment/setDefaultCard/{id}','Front\AzulPaymentController@setDefaultCard')->name('setDefaultCard');
 	Route::get('payment/deleteCard/{id}','Front\AzulPaymentController@deleteCard')->name('delete.azul.card');
-	
+
 	//Square
 	Route::match(['get', 'post'], 'payment/square/page', 'Front\SquareController@beforePayment')->name('payment.square.beforePayment');
 	Route::post('payment/square', 'Front\SquareController@createPayment')->name('payment.square.createPayment');
@@ -393,6 +404,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('/setSessionIndex', 'Front\UserhomeController@setSessionIndex')->name('setSessionIndex');
 
 	Route::get('/updateLocation', 'Front\UserhomeController@setHyperlocalAddress')->name('updateLocation');
+	Route::get('/ondemandPricing', 'Front\UserhomeController@setondemandPricingSession')->name('updateLocation');
 	Route::get('/homeTemplateOne', 'Front\UserhomeController@indexTemplateOne')->name('indexTemplateOne');
 	//Route::get('page/driver-registration', 'Front\UserhomeController@driverSignup')->name('page/driver-registration');
 	Route::post('page/driverSignup', 'Front\OrderController@driverSignup')->name('page.driverSignup');
@@ -475,7 +487,6 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('stripe/make', 'Front\PaymentController@makePayment')->name('stripe.makePayment');
 	Route::post('inquiryMode/store', 'Front\ProductInquiryController@store')->name('inquiryMode.store');
 	Route::get('viewcart', 'Front\CartController@showCart')->name('showCart');
-	Route::get('cart', 'Front\CartController@showCartNew')->name('cartNew');
 	Route::get('checkSlotOrders', 'Front\CartController@checkSlotOrders')->name('checkSlotOrders'); //Added by Ovi
 	Route::post('/getTimeSlotsForOndemand', 'Front\CategoryController@getTimeSlotsForOndemand')->name('getTimeSlotsForOndemand');
 	Route::post('checkIsolateSingleVendor', 'Front\CartController@checkIsolateSingleVendor')->name('checkIsolateSingleVendor');
@@ -633,6 +644,13 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 		Route::post('order-tracking-details', 'Front\PickupDeliveryController@getOrderTrackingDetails')->name('bookingIndex');
 		Route::post('promo-code/verify', 'Front\PickupDeliveryController@postVerifyPromoCode')->name('verify.cab.booking.promo-code');
 		Route::get('get-product-order-form', 'Front\PickupDeliveryController@getProductOrderForm')->name('get-product-order-form');
+
+        Route::post('create/user/bid_ride_request', 'Front\PickupDeliveryController@createBidRideRequest')->name('createBid');
+        Route::post('order-ride-bid-details', 'Front\PickupDeliveryController@getBidsRelatedToOrderRide')->name('getBidsRelatedToOrderRide');
+        Route::post('accept-ride-bid', 'Front\PickupDeliveryController@acceptBidsRelatedToBidRideOrderRide')->name('acceptBidByCustomer');
+
+
+
 	});
 	Route::post('upload-file', 'Front\RatingController@uploadFile')->name('uploadfile');
 	//Passbase

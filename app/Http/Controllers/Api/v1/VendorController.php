@@ -2056,7 +2056,6 @@ class VendorController extends BaseController{
         $vendorData =  $vendorData->with('slot', 'slotDate')->where('status', 1);
         $total = $vendorData->count();
         $vendorData = $vendorData->paginate($limit, $page)->sortBy('vendorToUserDistance')->values();
-
         foreach ($vendorData as $vendor) {
             unset($vendor->products);
 
@@ -2116,7 +2115,7 @@ class VendorController extends BaseController{
         // }
 
         $newCollection = collect([
-            'total' =>$total,
+            'total' => $total,
             'current_page' => $page,
             'per_page' => $limit,
             'data' => $vendorData

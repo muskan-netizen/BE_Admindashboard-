@@ -21,4 +21,11 @@
 <link rel="shortcut icon" href="<?= $favicon ?>">
 <style>
     :root {--theme-deafult: green; }
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0; 
+}
 </style>

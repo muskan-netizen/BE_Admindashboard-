@@ -49,11 +49,11 @@ class OrderController extends Controller{
 
     public function getOrdervendors($request){
         $user = Auth::user();
-        $search_value = $request->get('search');
         $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
-
+        $search_value = $request->get('search');
         $vendor_orders = OrderVendor::with(['orderDetail.paymentOption', 'user','vendor','payment','orderstatus.OrderStatusOption']);
         if (!empty($request->get('date_filter'))) {
+
             $date_date_filter = explode(' to ', $request->get('date_filter'));
             $from_date = $date_date_filter[0];
             $from_date = Carbon::parse($from_date, $timezone)->setTimezone('UTC');
