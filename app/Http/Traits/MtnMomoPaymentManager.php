@@ -33,31 +33,31 @@ use PhpParser\Node\Expr\Cast\Array_;
 trait MtnMomoPaymentManager
 {
 
-    private static $_apiUrl;
+    protected static $_apiUrl;
 
-    private static $_referenceId;
+    protected static $_referenceId;
 
-    private static $_apiKey;
+    protected static $_apiKey;
 
-    private static $_subscriptionKey;
+    protected static $_subscriptionKey;
 
-    private static $_paymentOption;
+    protected static $_paymentOption;
 
-    private static $_client;
+    protected static $_client;
 
-    private static $_environment;
+    protected static $_environment;
 
-    private static $_isSandbox;
+    protected static $_isSandbox;
 
-    private static $_header;
+    protected static $_header;
 
-    private static $_domain_name;
+    protected static $_domain_name;
 
-    private static $_accessToken;
+    protected static $_accessToken;
 
-    private static $_isConfigurationSet = false;
+    protected static $_isConfigurationSet = false;
 
-    private static $_currency = 'EUR';
+    protected static $_currency = 'EUR';
 
     public function __init($creatingApiKey = true)
     {
@@ -154,7 +154,7 @@ trait MtnMomoPaymentManager
         ];
 
         $params = [
-            'providerCallbackHost' => 'webhook.site' //self::$_domain_name
+            'providerCallbackHost' => self::$_domain_name
         ];
 
         $response = self::createRequest('POST', self::$_apiUrl . 'apiuser', 201, [
@@ -207,9 +207,7 @@ trait MtnMomoPaymentManager
                 $amount = $data['amt'];
                 $from = $data['from'];
                 $order_number = $data['order_number'];
-                if ($data['environment'] == 'app') {
-                    // $reloadRoute = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $data['transaction_id'] . '&order=' . $order_number;
-                } else {
+                if ($data['environment'] != 'app') {
                     $reloadRoute = route('order.return.success');
                 }
                 break;
@@ -223,9 +221,7 @@ trait MtnMomoPaymentManager
                 $amount = $data['amt'];
                 $from = $data['from'];
                 $order_number = 'wallet';
-                if ($data['environment'] == 'app') {
-                    // $reloadRoute = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $data['transaction_id'];
-                } else {
+                if ($data['environment'] != 'app') {
                     $reloadRoute = route('user.wallet');
                 }
                 break;
@@ -234,9 +230,7 @@ trait MtnMomoPaymentManager
                 $from = $data['from'];
                 $subsid = $data['subsid'];
                 $order_number = 'subscription';
-                if ($data['environment'] == 'app') {
-                    // $reloadRoute = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $data['transaction_id'];
-                } else {
+                if ($data['environment'] != 'app') {
                     $reloadRoute =  route('user.subscription.plans');
                 }
                 break;
@@ -244,9 +238,7 @@ trait MtnMomoPaymentManager
                 $amount = $data['amt'];
                 $from = $data['from'];
                 $order_number = $data['order_number'];
-                if ($data['environment'] == 'app') {
-                    // $reloadRoute = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $data['transaction_id'];
-                } else {
+                if ($data['environment'] != 'app') {
                     $reloadRoute = route('user.orders');
                 }
                 break;
@@ -276,14 +268,14 @@ trait MtnMomoPaymentManager
             'Ocp-Apim-Subscription-Key' => self::$_subscriptionKey,
             'Authorization' => 'Bearer ' . $token,
             'Content-Type' => 'application/json',
-            'X-Callback-Url' => 'http://webhook.site/8d253f63-1db2-4795-a41c-4dc24902a989' //route('payment.webhook.mtn', [], true);
+            'X-Callback-Url' => route('payment.webhook.mtn', [], true)
         ];
 
 
         $env = $data['environment'];
         $params = [
-            'amount' => '5', //$amount,
-            'currency' => 'UGX', //self::$_currency,
+            'amount' => $amount,
+            'currency' => self::$_currency,
             'externalId' => $data['transaction_id'],
             'payer' => [
                 'partyIdType' => 'MSISDN',

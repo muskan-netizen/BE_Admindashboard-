@@ -28,42 +28,6 @@ class MtnMomoController extends FrontController
     use ApiResponser;
     use MtnMomoPaymentManager;
 
-    private $subscription_key;
-
-    private $appUrl;
-
-    private $reference_id;
-
-    private $token;
-
-    private $environment;
-
-    private $api_key;
-
-    private $currency;
-
-    public function __construct()
-    {
-        $payOpt = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'mtn_momo')
-            ->where('status', 1)
-            ->first();
-        $json = json_decode($payOpt->credentials);
-        $this->subscription_key = $json->subscription_key;
-        $this->reference_id = $json->reference_id;
-        $this->api_key = $json->api_key;
-        $this->token = base64_encode($this->reference_id . ':' . $this->api_key);
-        if ($payOpt->test_mode == '1') {
-            $this->appUrl = 'https://sandbox.momodeveloper.mtn.com/';
-            $this->environment = 'sandbox';
-        } else {
-            $this->appUrl = 'https://payments.stabexinternational.com/api/mtn/Callback';
-            $this->environment = 'live';
-        }
-
-        $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-        $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'EUR';
-    }
-
     public function createToken(Request $request, UrlGenerator $url = null)
     {
         $transactionId = self::orderNumber($request);
