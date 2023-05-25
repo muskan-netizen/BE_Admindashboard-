@@ -2,47 +2,40 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Http\Controllers\Front\WalletController;
 use App\Http\Controllers\Controller;
+use App\Http\Traits\OrderTrait;
 use App\Models\Cart;
 use App\Models\CartAddon;
 use App\Models\CartCoupon;
-use App\Models\CartDeliveryFee;
 use App\Models\CartProduct;
 use App\Models\CartProductPrescription;
 use App\Models\Order;
 use App\Models\Payment;
-use App\Models\PaymentOption;
 use App\Models\User;
-use App\Models\UserAddress;
 use App\Models\UserVendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
-use App\Http\Traits\DataTransTrait;
-use App\Http\Traits\OrderTrait;
+use App\Http\Traits\PowerTransPaymentTrait;
 use App\Models\CaregoryKycDoc;
 use App\Models\Transaction;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
-
-class DataTransController extends Controller
+ 
+class PowerTransPaymentController extends Controller
 {
-    use DataTransTrait, OrderTrait;
+    use PowerTransPaymentTrait, OrderTrait;
 
-    const paymentId = 55;
-    public function payByDataTrans(Request $request)
+    const PaymentId = 58;
+    public function payByPowerTrans(Request $request)
     {
         $data = $request->all();
         $user = auth()->user();
         $data['come_from'] = 'app';
 
-        $amt = $request->amt ?? $request->total_amount;
+        $order = Order::where(['order_number' => $request->order_number])->first();
 
         if ($request->isMethod('post')) {
                 $data['come_from'] = 'web';
-                $time = '';
             if (isset($request->auth_token) && ! empty($request->auth_token)) {
                 $user = User::where('auth_token', $request->auth_token)->first();
                 Auth::login($user);
@@ -51,17 +44,26 @@ class DataTransController extends Controller
             }         
         }
 
-        $order = Order::where('order_number', $request->order_number)->first();
+        $response = $this->powerTransPayment($request);
 
-        $response = $this->dataTransApi($request);
+        if($response['IsoResponseCode'] != 00){
+            $resError['status'] = 'Fail';
+            $resError['payment_from'] = $request->action;
+            if(isset($response['Errors'])){
+                $resError['msg'] = $response['Errors'][0]['Message'];
+            }else{
+                $resError['msg'] = 'InValid Card Detail';
+            }
+            return response()->json($resError, 400);
+        }
 
         if($request->payment_from == 'cart')
         {
             $data = [
-                'amount' => $amt,
-                'payment_option_id' => $this::paymentId,
-                'transaction_id' => $response['transactionId'],
-                'balance_transaction' => $amt,
+                'amount' => $request->total_amount,
+                'payment_option_id' => $this::PaymentId,
+                'transaction_id' => $response['TransactionIdentifier'],
+                'balance_transaction' => $request->total_amount,
                 'order_id' => $order->id ?? '',
                 'type' => $request->payment_from,
                 'date' => date('Y-m-d'),
@@ -70,11 +72,11 @@ class DataTransController extends Controller
         }elseif($request->payment_from == 'subscription')
         {
             $data = [
-                'amount' => $amt,
-                'payment_option_id' => $this::paymentId,
-                'transaction_id' => $response['transactionId'],
-                'balance_transaction' => $amt,
-                'viva_order_id' => $request->subscription_id,
+                'amount' => $request->total_amount,
+                'payment_option_id' => $this::PaymentId,
+                'transaction_id' => $response['TransactionIdentifier'],
+                'balance_transaction' => $request->total_amount,
+                'viva_order_id' => $request->order_number ?? '',
                 'type' => $request->payment_from,
                 'date' => date('Y-m-d'),
                 'user_id' => $user->id,
@@ -82,10 +84,10 @@ class DataTransController extends Controller
         }
         else{
             $data = [
-                'amount' => $amt,
-                'payment_option_id' => $this::paymentId,
-                'transaction_id' => $response['transactionId'],
-                'balance_transaction' => $amt,
+                'amount' => $request->total_amount,
+                'payment_option_id' => $this::PaymentId,
+                'transaction_id' => $response['TransactionIdentifier'],
+                'balance_transaction' => $request->total_amount,
                 'viva_order_id' => $request->order_number ?? '',
                 'type' => $request->payment_from,
                 'date' => date('Y-m-d'),
@@ -93,8 +95,7 @@ class DataTransController extends Controller
             ];
         }
         Payment::create($data);
-
-        return $response;
+        return $request->action ? redirect($response['redirect_url']) : $response;
     }
     
     public function cancelPage(Request $request)
@@ -103,33 +104,42 @@ class DataTransController extends Controller
         {
             $response['status']         = 'Error';
             $response['msg']            = 'Payment Cancel';
-            return response()->json($response,200);
+            return response()->json($response);
         }
-        return redirect()->back();  
-
+        return redirect()->back();
     }
 
     public function successPage(Request $request)
     {
-        $payment = Payment::where('transaction_id', $request->get('datatransTrxId'))->first();
-            if ($payment->type == 'cart') {
-               return $this->completeOrderCart($request, $payment);
-            } elseif ($payment->type == 'wallet') {
-               return $this->completeOrderWallet($request, $payment);
-            } elseif ($payment->type == 'tip') {
-                $order = Order::find($payment->order_id);
-                return $this->completeOrderTip($request, $payment);
-            } elseif ($payment->type == 'subscription') {
-                return $this->completeOrderSubs($request, $payment);
-            } elseif ($payment->type == 'pickup_delivery') {
-                return $this->completeOrderPickup($request, $payment);
-            }   
+        $request->id ? Auth::loginUsingId($request->id) : '';
+        $payment = Payment::where('transaction_id', $request->get('TransactionIdentifier'))->first();
 
+        if ($payment->type == 'cart') {
+            return $this->completeOrderCart($request, $payment);
+        } elseif ($payment->type == 'wallet') {
+            return $this->completeOrderWallet($request, $payment);
+        } elseif ($payment->type == 'tip') {
+            return $this->completeOrderTip($request, $payment);
+        } elseif ($payment->type == 'subscription') {
+            return $this->completeOrderSubs($request, $payment);
+        } elseif ($payment->type == 'pickup_delivery') {
+            return $this->completeOrderPickup($request, $payment);
+        }   
     }
 
-    public function completeOrderCart(Request $request, $pay)
+    public function completeOrderCart(Request $request, $payment)
     {
-        $order = Order::where('id', $pay->order_id)->first();
+        $order = Order::where('id', $payment->order_id)->first();
+
+        if( (isset($request->id)) && (!empty($request->id)) ){
+            $user = User::find($request->id);
+        }elseif( (isset($request->auth_token)) && (!empty($request->auth_token)) ){
+            $user = User::whereHas('device',function  ($qu) use ($request){
+                $qu->where('access_token', $request->auth_token);
+            })->first();
+        }else{
+            $user = Auth::user();
+        }
 
         if (! empty($order)) {
             $order->payment_status = '1';
@@ -139,11 +149,11 @@ class DataTransController extends Controller
             
             if(isset($request->come_from) && $request->come_from == 'app')
             {
-                $response['status']         = 'Success';
+                $response['status']         = 200;
                 $response['msg']            = 'Success Added wallet.';
                 $response['payment_from']   = 'wallet';
                 $response['order_id']       = $order->id;
-                return response()->json($response,200);
+                return response()->json($response);
             }
             return redirect()->route('order.success',['order_id' => $order->id]);
 
@@ -154,15 +164,14 @@ class DataTransController extends Controller
                 $wallet->depositFloat($order->wallet_amount_used, [
                     'Wallet has been <b>refunded</b> for cancellation of order #' . $order->order_number
                 ]);
-                $this->sendWalletNotification($user->id, $order->order_number);     
             }
 
             if(isset($request->come_from) && $request->come_from == 'app')
             {
-                $response['status']         = 'Success';
+                $response['status']         = 200;
                 $response['msg']            = 'Success Added wallet.';
                 $response['payment_from']   = 'Wallet has been <b>refunded</b> for cancellation of order #' . $order->order_number;
-                return response()->json($response,200);
+                return response()->json($response);
             }
 
             return redirect()->route('user.wallet');
@@ -173,15 +182,18 @@ class DataTransController extends Controller
     {
         $data['amount'] =  $payment->amount;
         $data['transaction_id'] =  $payment->transaction_id;
-        $data['payment_option_id'] =  $this::paymentId;
+        $data['payment_option_id'] =  $this::PaymentId;
+        $data['come_from'] = $request['come_from'];
+        $data['user_id'] = $request['id'];
+        
         $request = new \Illuminate\Http\Request($data);
         $this->creditMyWallet($request);
         if(isset($request->come_from) && $request->come_from == 'app')
         {
-            $response['status']         = 'Success';
+            $response['status']         = 200;
             $response['msg']            = 'Success Added wallet.';
             $response['payment_from']   = 'wallet';
-            return response()->json($response,200);
+            return response()->json($response);
         }
         return redirect()->route('user.wallet');
 
@@ -238,20 +250,21 @@ class DataTransController extends Controller
     public function completeOrderSubs($request, $payment)
     {
         $data['transaction_id'] = $payment->transaction_id;
-        $data['payment_option_id'] = $this::paymentId;
+        $data['payment_option_id'] = $this::PaymentId;
         $data['subsid'] = $request['subscription_id'];
         $data['subscription_id'] = $request['subscription_id'];
         $data['amount'] = $request['amount'];
-
+        $data['come_from'] = $request['come_from'];
+        $data['user_id'] = $request['id'];
         $request = new \Illuminate\Http\Request($data);
 
         $subscriptionController = new UserSubscriptionController();
         $subscriptionController->purchaseSubscriptionPlan($request,'', $payment->viva_order_id);
         if (isset($request->come_from) && $request->come_from == 'app') {
-            $response['status'] = 'Success';
+            $response['status'] = 200;
             $response['msg'] = 'Success Added Subscription.';
             $response['payment_from'] = 'subscription';
-            return response()->json($response, 200);
+            return response()->json($response);
         }
         return redirect()->route('user.subscription.plans');
         
@@ -260,47 +273,49 @@ class DataTransController extends Controller
     public function completeOrderPickup(Request $request,$payment)
     {
         $order = Order::where('order_number',$payment->viva_order_id)->first();
-        if(isset($request->datatransTrxId))
+        if(isset($request->TransactionIdentifier))
         {
             if ($order) {
                 $order->payment_status = 1;
                 $order->save();
-                $payment_exists = Payment::where('transaction_id', $request->datatransTrxId)->first();
+                $payment_exists = Payment::where('transaction_id', $request->TransactionIdentifier)->first();
                 if (!$payment_exists) {
                     $payment = new Payment();
                     $payment->date = date('Y-m-d');
                     $payment->type = 'pickup_delivery';
                     $payment->order_id = $order->id ?? '';
-                    $payment->payment_option_id = $this::paymentId;
+                    $payment->payment_option_id = $this::PaymentId;
                     $payment->user_id = $order->user_id ?? '';
-                    $payment->transaction_id = $request->datatransTrxId;
+                    $payment->transaction_id = $request->TransactionIdentifier;
                     $payment->balance_transaction = $order->payable_amount ?? '';
                     $payment->save();
                 }
                 
-                $request->request->add(['order_number'=> $order->order_number, 'amount' => $order->payable_amount, 'transaction_id' => $request->datatransTrxId]);
+                $request->request->add(['order_number'=> $order->order_number, 'amount' => $order->payable_amount, 'transaction_id' => $request->TransactionIdentifier]);
                 $plaseOrderForPickup = new PickupDeliveryController();
                 $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
                 
                 if (isset($request->come_from) && $request->come_from == 'app') {
-                    $response['status'] = 'Success';
-                    $response['msg'] = 'Success Added Pickup.';
+                    $response['status'] = 200;
+                    $response['msg'] = 'Success Added Pickup Delivery.';
                     $response['payment_from'] = 'pickup_delivery';
-                    return response()->json($response, 200);
+                    $response['data'] = $res;
+
+                    return response()->json($response);
                 }
 
                 return Redirect::to(route('front.booking.details',$order->order_number));
             }
         }else{
             //Failed transaction case
-            $data = Payment::where('transaction_id',$request->datatransTrxId)->first();
+            $data = Payment::where('transaction_id',$request->TransactionIdentifier)->first();
             $data->delete();
 
             if (isset($request->come_from) && $request->come_from == 'app') {
-                $response['status'] = 'Success';
+                $response['status'] = 200;
                 $response['msg'] = 'Success Added Pickup.';
                 $response['payment_from'] = 'pickup_delivery';
-                return response()->json($response, 200);
+                return response()->json($response);
             }
 
             return Redirect::to(route('user.wallet'))->with('error',$request->message);
@@ -310,19 +325,20 @@ class DataTransController extends Controller
     public function completeOrderTip($request, $payment)
     {
         $data['tip_amount'] = $payment->amount;
-        $data['order_number'] = $payment->viva_order_id;
+        $data['order_number'] = explode('-', $payment->viva_order_id)[0];
         $data['transaction_id'] = $payment->transaction_id;
-
+        $data['come_from'] = $request['come_from'];
+        $data['user_id'] = $request['id'];
         $request = new \Illuminate\Http\Request($data);
 
         $orderController = new OrderController();
         $orderController->tipAfterOrder($request);
 
         if (isset($request->come_from) && $request->come_from == 'app') {
-            $response['status'] = 'Success';
+            $response['status'] = 200;
             $response['msg'] = 'Success Added Tip.';
             $response['payment_from'] = 'tip';
-            return response()->json($response, 200);
+            return response()->json($response);
         }
         return redirect()->route('user.orders');
         
