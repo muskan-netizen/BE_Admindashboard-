@@ -35,7 +35,7 @@ class CampaignSendNotificationJob implements ShouldQueue
         $this->headers = $headers;
 
     }
-        
+    
     public function handle(){
         $allNotifications = $this->allNotifications;
         $client_preferences = $this->client_preferences;
