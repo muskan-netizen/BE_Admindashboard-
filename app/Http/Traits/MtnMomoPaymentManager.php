@@ -268,8 +268,8 @@ trait MtnMomoPaymentManager
             'Ocp-Apim-Subscription-Key' => self::$_subscriptionKey,
             'Authorization' => 'Bearer ' . $token,
             'Content-Type' => 'application/json',
-            // 'X-Callback-Url' => '(self::$_isSandbox) ? route('payment.webhook.mtn', []) : route('payment.webhook.mtn', [], true)',
-            'X-Callback-Url' => 'https://webhook.site/8d253f63-1db2-4795-a41c-4dc24902a989'
+            'X-Callback-Url' => (self::$_isSandbox) ? route('payment.webhook.mtn', []) : route('payment.webhook.mtn', [], true)
+            // 'X-Callback-Url' => 'https://webhook.site/8d253f63-1db2-4795-a41c-4dc24902a989'
 
         ];
 
