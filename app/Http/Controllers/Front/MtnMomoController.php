@@ -98,7 +98,7 @@ class MtnMomoController extends FrontController
         ], 500);
     }
 
-    public function mtnCallback()
+    public function mtnCallback(Request $request,$domain = '')
     {
         $request = [];
         $mtnPayload = file_get_contents('php://input');
