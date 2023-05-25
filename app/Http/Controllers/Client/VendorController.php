@@ -894,7 +894,7 @@ class VendorController extends BaseController
         $taxRates=TaxRate::all();
         $files = CsvQrcodeImport::latest()->get();
         $facilties = Facilty::with(['primary'])->get();
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role','is_one_push_book_enable']);
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role','is_one_push_book_enable','is_long_term_service']);
         $roles = RoleOld::get();
         if($getAdditionalPreference['is_price_by_role'] == 1){
             if($roles){

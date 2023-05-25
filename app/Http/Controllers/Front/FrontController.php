@@ -210,13 +210,10 @@ class FrontController extends Controller
                                 ->select('categories.id', 'categories.icon', 'categories.icon_two' , 'categories.slug', 'categories.parent_id','cts.name','categories.type_id')
                                 ->whereIn('categories.type_id',$categoryTypes )
                                 ->orderBy('position')->distinct('categories.slug');
-        //dd(DB::getQueryLog());
         $status = $this->field_status;
         $include_categories = [4,8]; // type 4 for brands
         $celebrity_check = 0;
         if ($preferences) {
-            if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
-
                 if((isset($preferences->celebrity_check)) && ($preferences->celebrity_check == 1)){
                     $celebrity_check = 1;
                     $include_categories[] = 5; // type 5 for celebrity
@@ -234,7 +231,6 @@ class FrontController extends Controller
                                 $q2->whereIn('categories.type_id', $include_categories);
                             });
                     });
-            }
         }
         $categories = $categories->leftjoin('types', 'types.id', 'categories.type_id')
                                 ->where('categories.id', '>', '1')
@@ -242,6 +238,20 @@ class FrontController extends Controller
          if($celebrity_check == 0){
             $categories = $categories->where('categories.type_id', '!=', 5);
         }
+     
+        $catIds =   Category::select('id')->whereIn('id',function($query){
+         $query->select('category_id')->from((new Product())->getTable())->where('is_live', 1)->whereNull('deleted_at')->groupBy('category_id')
+         ->pluck('category_id')->toArray();})->pluck('id')->toArray();
+         
+         
+         $parent_ids =  Category::select('parent_id')->whereIn('id',function($query){
+             $query->select('category_id')->from((new Product())->getTable())->where('is_live', 1)->whereNull('deleted_at')->groupBy('category_id')
+             ->pluck('category_id')->toArray();
+         })->groupBy('parent_id')->pluck('parent_id')->toArray();
+         
+         if(!empty($parent_ids)){
+             $catIds = array_merge($catIds,$parent_ids);
+         }
         $categories = $categories->where('categories.id', '>', '1')
                                // ->whereNotNull('categories.type_id')
                                 //->whereNotIn('categories.type_id', [7])
@@ -251,10 +261,10 @@ class FrontController extends Controller
                                 ->where('cts.language_id', $lang_id)
                                 ->where(function ($qrt) use($lang_id,$primary){
                                     $qrt->where('cts.language_id', $lang_id)->orWhere('cts.language_id',$primary->language_id);
-                                })
+                                })->whereIn('categories.id',$catIds)
                                 ->whereNull('categories.vendor_id')
                               //  ->orderBy('categories.position', 'asc')
-                                ->orderBy('categories.parent_id', 'asc')->groupBy('id')->get();
+                                ->orderBy('categories.parent_id', 'asc')->groupBy('categories.id')->get();
 
         if ($categories) {
             $categories = $this->buildTree($categories);
@@ -276,6 +286,7 @@ class FrontController extends Controller
     {
         $branch = array();
         foreach ($elements as $element) {
+            
             if ($element['parent_id'] == $parentId) {
                 $children = $this->buildTree($elements, $element['id']);
                 if ($children) {
@@ -365,9 +376,11 @@ class FrontController extends Controller
                 }
             }
         }
-        $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->get();
-
-
+        $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->whereIn('id', function($query){
+            $query->select('vendor_id')->from((new Product())->getTable())->where('is_live', 1)->whereNull('deleted_at')->groupBy('vendor_id')
+            ->pluck('vendor_id')->toArray();
+            
+        })->get();
         if($serviceAreaVendors->isNotEmpty()){
             foreach($serviceAreaVendors as $value){
                 $vendors[] = $value->id;
