@@ -5,7 +5,7 @@ namespace App\Http\Traits;
 use App\Http\Controllers\Api\v1\PickupDeliveryController as V1PickupDeliveryController;
 use App\Http\Controllers\Api\v1\UserSubscriptionController;
 use App\Models\PaymentOption;
-use Auth, Log, Config;
+use Auth, Log, Config, Session;
 use GuzzleHttp\Client;
 use App\Models\ClientCurrency;
 use App\Models\CartAddon;
@@ -22,7 +22,6 @@ use App\Models\CaregoryKycDoc;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Http\Traits\ApiResponser;
-use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
 use Illuminate\Routing\UrlGenerator;
 use App\Http\Controllers\Front\OrderController;
@@ -209,7 +208,7 @@ trait MtnMomoPaymentManager
                 $from = $data['from'];
                 $order_number = $data['order_number'];
                 if ($data['environment'] == 'app') {
-                    $reloadRoute = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $data['transaction_id'] . '&order=' . $order_number;
+                    // $reloadRoute = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $data['transaction_id'] . '&order=' . $order_number;
                 } else {
                     $reloadRoute = route('order.return.success');
                 }
@@ -225,7 +224,7 @@ trait MtnMomoPaymentManager
                 $from = $data['from'];
                 $order_number = 'wallet';
                 if ($data['environment'] == 'app') {
-                    $reloadRoute = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $data['transaction_id'];
+                    // $reloadRoute = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $data['transaction_id'];
                 } else {
                     $reloadRoute = route('user.wallet');
                 }
@@ -236,7 +235,7 @@ trait MtnMomoPaymentManager
                 $subsid = $data['subsid'];
                 $order_number = 'subscription';
                 if ($data['environment'] == 'app') {
-                    $reloadRoute = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $data['transaction_id'];
+                    // $reloadRoute = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $data['transaction_id'];
                 } else {
                     $reloadRoute =  route('user.subscription.plans');
                 }
@@ -246,7 +245,7 @@ trait MtnMomoPaymentManager
                 $from = $data['from'];
                 $order_number = $data['order_number'];
                 if ($data['environment'] == 'app') {
-                    $reloadRoute = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $data['transaction_id'];
+                    // $reloadRoute = url('payment/gateway/returnResponse') . '/?gateway=mtn_momo' . '&status=200&transaction_id=' . $data['transaction_id'];
                 } else {
                     $reloadRoute = route('user.orders');
                 }
@@ -276,7 +275,7 @@ trait MtnMomoPaymentManager
             'Ocp-Apim-Subscription-Key' => self::$_subscriptionKey,
             'Authorization' => 'Bearer ' . $token,
             'Content-Type' => 'application/json',
-            'X-Callback-Url' => 'http://webhook.site/8e8b0eb4-c068-40b2-a921-dc582f4816e0' //route('payment.webhook.mtn', [], true);
+            'X-Callback-Url' => 'http://webhook.site/8d253f63-1db2-4795-a41c-4dc24902a989' //route('payment.webhook.mtn', [], true);
         ];
 
 
@@ -292,7 +291,6 @@ trait MtnMomoPaymentManager
             'payerMessage' => "Paying for Driver tester code",
             'payeeNote' => "$env,$from,$order_number,$reloadRoute,$subsid"
         ];
-
 
         // Request to Pay 
         $response = self::createRequest('POST', $url, 202, [
@@ -613,7 +611,6 @@ trait MtnMomoPaymentManager
     //For Production
     public static function paymentResponse(Request $request)
     {
-        \Log::info($request);
         $payment = Payment::where('transaction_id', $request->transaction_id)->first();
         if ($payment && !empty($payment->payment_detail)) {
             $response = json_decode($payment->payment_detail, true);
@@ -624,6 +621,23 @@ trait MtnMomoPaymentManager
             $route = $details[3] ?? '';
             $subsId = $details[4] ?? '';
             if (!empty($response) && !empty($response['status']) && ($response['status'] == 'SUCCESSFUL')) {
+                switch ($from) {
+                    case 'cart':
+                        Session::put('success', 'Order placed successfully');
+                        break;
+                    case 'pickup_delivery':
+                        Session::put('success', 'Payment has been processed successfully');
+                        break;
+                    case 'wallet':
+                        Session::put('success', 'Wallet has been credited successfully');
+                        break;
+                    case 'subscription':
+                        Session::put('success', 'Wallet has been buyed successfully');
+                        break;
+                    case 'tip':
+                        Session::put('success', 'Tip has been added successfully');
+                        break;
+                }
                 return response()->json([
                     'status' => 'SUCCESSFUL',
                     'message' => 'Payment Successful',
@@ -660,6 +674,11 @@ trait MtnMomoPaymentManager
                     'response' => $response
                 ], 500);
             }
+        }else{
+            return response()->json([
+                'status' => 'PAYMENT PENDING',
+                'message' => 'Payment is Pending',
+            ], 200);
         }
     }
 

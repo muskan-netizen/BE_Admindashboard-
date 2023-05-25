@@ -188,7 +188,7 @@ Options']) @section('css')
 								<label for="" class="mr-0 d-block">{{ __('Sandbox') }}</label> <input
 									type="checkbox" data-id="{{$opt->id}}"
 									data-title="{{$opt->code}}" data-plugin="switchery"
-									name="sandbox[{{$opt->id}}]" class="chk_box"
+									name="sandbox[{{$opt->id}}]" class="chk_box sandbox-btn-{{$opt->code}}"
 									data-color="#43bee1" @if($opt->test_mode == 1) checked @endif>
 							</div>
 						</div>
@@ -2059,33 +2059,17 @@ Options']) @section('css')
     });
     
     //For MTN Momo
-    let checkbox = $('#payment_48').find('.row').children().eq(1).find('input[type="checkbox"]');
-	var Mtnkeys = [];
-    $(document).on('change', checkbox, function(e){
+    $(document).on('change', '.sandbox-btn-mtn_momo', function(e){
     	let subscriptionKey = $("#subscription_key").val(); 
     	let referenceId = $("#reference_id").val(); 
     	let apiKey = $("#api_key").val(); 
-    	
-    	if(!checkbox.is(":checked")){
-    		$("#generate_mtn_momo_api_key").addClass('d-none');
-    		
-    		/* store all keys in array */
-    		$('#payment_48').find('input[type="text"]').map(function(idx, elem) {
-    			if(!Mtnkeys.includes($(elem).val()))
-    	 			Mtnkeys.push($(elem).val())
-        	});
-        	
-			//clear the form         	
-        	$('#payment_48').find('input[type="text"]').val('')
+		$('#payment_48').find('input[type="text"]').val('')
+		if(!$(this).is(":checked")){
+			$('#payment_48 #api_key').attr('readonly',false)
+			$("#generate_mtn_momo_api_key").parent().removeClass('d-block').addClass('d-none');
     	}else{
-    		$("#generate_mtn_momo_api_key").removeClass('d-none');
-    		
-    		/* Refill the keys is exists */
-    		if(Mtnkeys.length > 0){
-        		$('#payment_48').find('input[type="text"]').map(function(idx, elem) {
-        	 		$(elem).val(Mtnkeys[idx])
-            	})
-            }
+			$('#payment_48 #api_key').attr('readonly',true)
+    		$("#generate_mtn_momo_api_key").parent().removeClass('d-none').addClass('d-block');
     	}
     });
 

@@ -3377,23 +3377,28 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
              total_amount = cartElement.val();
              payment_from = 'cart';
              var rowData = 'amt='+total_amount+'&order_number='+order.order_number+'&from='+payment_from;
+             var overlayElement = '#proceed_to_pay_modal';
          } else if (path.indexOf("wallet") !== -1) {
              total_amount = walletElement.val();
              payment_from = 'wallet';
              var rowData = 'amt='+total_amount+'&from='+payment_from;
+             var overlayElement = '#topup_wallet';
          }else if (path.indexOf("subscription") !== -1) {
              total_amount = subscriptionElement.val();
              subsId = subscriptionId.val();
              payment_from = 'subscription';
              var rowData = 'subsid='+subsId+'&from='+payment_from+'&amt='+total_amount;
+             var overlayElement = '#subscription_payment';
          }else if (cabElement.length > 0) {
             total_amount = cabElement.data('amount');
             payment_from = 'pickup_delivery';
             var rowData = `amt=${total_amount}&from=${payment_from}&reload_route=${reload_route}&order_number=${order.order_number}`;
+            var overlayElement = 'body  ';
        }else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
              total_amount = tipElement.val();
              payment_from = 'tip';
              var rowData = 'amt='+total_amount+'&from='+payment_from+'&order_number='+$("#order_number").val();
+             var overlayElement = '#topup_wallet';
          }
 
          $.ajax({
@@ -3401,6 +3406,9 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
              dataType: 'json',
              url: create_mtn_momo_token,
              data: rowData,
+             beforeSend: function(){
+                add_spinner(overlayElement, 'Sending Payment Request...');
+            },
              success: function(resp) {
                 console.log(resp)
                 if(resp.hasOwnProperty('wait')){
@@ -3409,12 +3417,17 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
                             type: "GET",
                             dataType: 'json',
                             url: resp.responseUrl,
+                            beforeSend: function(){
+                                remove_spinner(overlayElement);
+                                add_spinner(overlayElement, 'Request Sent. Waiting for Response...');
+                            },
                             success: function(response){
                                 if(response.hasOwnProperty('url')){
                                     clearInterval(interval);
+                                    remove_spinner(overlayElement);
                                     window.location.href = response.url;
                                  }else{
-                                     alert(response.message);
+                                    //  alert(response.message);
                                      if(response.hasOwnProperty('response') && response.response != '' && typeof(response.response) != 'undefined'){
                                         console.error(response.response);
                                      }

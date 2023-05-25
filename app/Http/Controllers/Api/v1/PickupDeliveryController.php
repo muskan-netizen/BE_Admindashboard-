@@ -641,16 +641,17 @@ class PickupDeliveryController extends BaseController{
             $order->save();
             \Log::info($request->payment_option_id);
             if ($request->payment_option_id != 1 && $request->payment_option_id != 2 && $request->has('transaction_id') && !empty($request->transaction_id)) {
-                $paymentExists = Payment::where('transaction_id',$request->transaction_id)->first();
-                if(!$paymentExists){
+                $payment = Payment::where('transaction_id',$request->transaction_id)->first();
+                if(!$payment){
                     $payment = new Payment();
-                    $payment->date = date('Y-m-d');
-                    $payment->order_id = $order->id;
-                    $payment->transaction_id = $request->transaction_id;
-                    $payment->balance_transaction = !empty($order->payable_amount)?$order->payable_amount:$request->amount;
-                    $payment->type = 'pickup/delivery';
-                    $payment->save();
                 }
+                $payment->date = date('Y-m-d');
+                $payment->order_id = $order->id;
+                $payment->transaction_id = $request->transaction_id;
+                $payment->balance_transaction = !empty($order->payable_amount)?$order->payable_amount:$request->amount;
+                $payment->type = 'pickup/delivery';
+                $payment->save();
+                
             }
 
             if($request->payment_option_id = 49){

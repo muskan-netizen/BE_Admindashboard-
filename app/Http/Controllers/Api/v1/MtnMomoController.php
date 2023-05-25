@@ -65,15 +65,12 @@ class MtnMomoController extends Controller
         $response = self::RequestToPay(self::$_accessToken, $data);
 
         if ($response['status'] == 202) {
-            //check transaction status 
-            $response = self::getTransactionStatus(self::$_referenceId);
-
             if (!self::$_isSandbox || 1) {
                 return response()->json([
                     'transaction_id' => $transactionId,
                     'status' => 'Success',
                     'message' => 'Payment request has been sent successfully',
-                    'responseUrl' => url('mtn/response') . '?transaction_id=' . $transactionId, //route('payment.response.mtn', ['id' => $transactionId], true),
+                    'responseUrl' => url('api/v1/mtn/response') . '?transaction_id=' . $transactionId, //route('payment.response.mtn', ['id' => $transactionId], true),
                     'wait' => true
                 ], 200);
             }
@@ -85,5 +82,9 @@ class MtnMomoController extends Controller
             'message' => 'Payment Failed',
             'response' => $response
         ], 500);
+    }
+
+    public function getResponse(Request $request){
+        return self::paymentResponse($request);
     }
 }

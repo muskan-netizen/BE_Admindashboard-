@@ -576,18 +576,18 @@ class PickupDeliveryController extends FrontController{
 
             if (($request->payment_option_id != 1) && ($request->payment_option_id != 38) && ($request->payment_option_id != 2) && ($request->has('transaction_id')) && (!empty($request->transaction_id))) {
 
-                $payment_exists = Payment::where('transaction_id', $request->transaction_id)->where('payment_option_id', $request->payment_option_id)->first();
-                if(!$payment_exists){
+                $payment = Payment::where('transaction_id',$request->transaction_id)->first();
+                if(!$payment){
                     $payment = new Payment();
-                    $payment->date = date('Y-m-d');
-                    $payment->order_id = $order->id;
-                    $payment->user_id = $request->user_id;
-                    $payment->transaction_id = $request->transaction_id;
-                    $payment->balance_transaction = $order->payable_amount;
-                    $payment->payment_option_id = $request->payment_option_id;
-                    $payment->type = 'pickup_delivery';
-                    $payment->save();
                 }
+                $payment->date = date('Y-m-d');
+                $payment->order_id = $order->id;
+                $payment->user_id = $request->user_id;
+                $payment->transaction_id = $request->transaction_id;
+                $payment->balance_transaction = $order->payable_amount;
+                $payment->payment_option_id = $request->payment_option_id;
+                $payment->type = 'pickup_delivery';
+                $payment->save();
             }
             $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
             //Log::info("Request To Dispatch");
