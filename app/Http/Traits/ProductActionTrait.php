@@ -16,6 +16,7 @@ trait ProductActionTrait{
         try 
         {
             $vendors = Vendor::select('id')->where('status', 1)->where($type, 1);
+          
             if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
 
                 // if($action == '1'){
