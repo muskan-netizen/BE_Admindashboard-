@@ -1337,12 +1337,12 @@ class HomeController extends BaseController
                 if(count($vendor_ids) > 0){
                     $dataMo = $this->getVendorForHomePage($preferences, "best_sellers", $timezone, 0, $request->type, $language_id, $latitude, $longitude, $vendor_ids);
                     if(sizeof($dataMo)){
-                        $mostSellingVendors[] = $dataMo;
+                        $mostSellingVendors = $dataMo;
                     }
                 }
             }
         }
-       // pr($mostSellingVendors);
+        //pr($mostSellingVendors);
         $on_sale_product_details =$on_sale_products = [];
         if (in_array('on_sale', $enable_layout)) {  # if enable new_products section in 
             $on_sale_products = $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', 'on_sale', $request->type,$on_sale_title, $p_dim);
