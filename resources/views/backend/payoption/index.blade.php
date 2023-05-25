@@ -39,26 +39,6 @@ Options']) @section('css')
 		</div>
 	</div>
 
-<<<<<<< HEAD
-	<form method="POST" id="payment_option_form"
-		action="{{route('payoption.updateAll')}}"
-		enctype="multipart/form-data">
-		@csrf @method('POST')
-		<div class="row align-items-center">
-			<div class="col-sm-12">
-				<div
-					class="page-title-box d-flex align-items-center justify-content-between">
-					<h4 class="page-title">{{ __("Payment Options") }}</h4>
-					<button class="btn btn-info waves-effect waves-light save_btn"
-						type="submit">{{ __("Save") }}</button>
-				</div>
-			</div>
-		</div>
-		<div class="row">
-
-			@foreach($payOption as $key => $opt)
-			<div class="col-6 col-md-3 col-xl-2 mb-3" id="payment_{{$opt->id}}">
-=======
     <form method="POST" id="payment_option_form" action="{{route('payoption.updateAll')}}"  enctype="multipart/form-data">
         @csrf
         @method('POST')
@@ -73,7 +53,6 @@ Options']) @section('css')
         <div class="row">
             @foreach($payOption as $key => $opt)
             <div class="col-6 col-md-3 col-xl-2 mb-3" id="payment_{{$opt->id}}">
->>>>>>> 075ef7c477a24c8561f467623bc2180bb77860dd
 
 				<input type="hidden" name="method_id[]" id="{{$opt->id}}"
 					value="{{$opt->id}}"> <input type="hidden" name="method_name[]"
@@ -160,18 +139,6 @@ Options']) @section('css')
                 $mtn_api_key = (isset($creds->api_key)) ? $creds->api_key : '';
                 $plugnpay_publisher_name = (isset($creds->plugnpay_publisher_name)) ? $creds->plugnpay_publisher_name : '';
 
-<<<<<<< HEAD
-                // skip cash
-                $skip_cash_client_id = (isset($creds->skip_cash_client_id)) ? $creds->skip_cash_client_id : '';
-                $skip_cash_api_secret = (isset($creds->skip_cash_api_secret)) ? $creds->skip_cash_api_secret : '';
-                $skip_cash_key_id = (isset($creds->skip_cash_key_id)) ? $creds->skip_cash_key_id : '';
-                $skip_cash_testing_url = (isset($creds->skip_cash_testing_url)) ? $creds->skip_cash_testing_url : '';
-                $skip_cash_live_url = (isset($creds->skip_cash_live_url)) ? $creds->skip_cash_live_url : '';
-
-                // Nmi
-                $nmi_client_id = (isset($creds->nmi_client_id)) ? $creds->nmi_client_id : '';
-                $nmi_key_id = (isset($creds->nmi_key_id)) ? $creds->nmi_key_id : '';
-=======
 				//skip cash
 				$skip_cash_client_id = (isset($creds->skip_cash_client_id)) ? $creds->skip_cash_client_id : '';
 				$skip_cash_api_secret = (isset($creds->skip_cash_api_secret)) ? $creds->skip_cash_api_secret : '';
@@ -192,7 +159,6 @@ Options']) @section('css')
 				$powertrans_password = (isset($creds->powertrans_password)) ? $creds->powertrans_password : '';
 				$pesapal_consumer_key = (isset($creds->pesapal_consumer_key)) ? $creds->pesapal_consumer_key : '';
 				$pesapal_consumer_secret = (isset($creds->pesapal_consumer_secret)) ? $creds->pesapal_consumer_secret : '';
->>>>>>> 075ef7c477a24c8561f467623bc2180bb77860dd
 
                 ?>
 
@@ -1618,8 +1584,8 @@ Options']) @section('css')
 
 						</div>
 					</div>
-
-					@endif @if ( (strtolower($opt->code) == 'payway') )
+					@endif 
+					@if ( (strtolower($opt->code) == 'payway') )
 					<div class="mt-2" id="payway_fields_wrapper" @if($opt->
 						status != 1) style="display:none" @endif>
 						<div class="row">
@@ -1662,113 +1628,7 @@ Options']) @section('css')
 
 						</div>
 					</div>
-
-<<<<<<< HEAD
-					@endif @if ( (strtolower($opt->code) == 'skip_cash') )
-					<div class="mt-2" id="skip_cash_fields_wrapper" @if($opt->
-						status != 1) style="display:none" @endif>
-						<div class="row">
-							<div class="col-12">
-								<div class="form-group mb-2">
-									<label for="skip_cash_client_id" class="mr-3">{{ __("SKIPCASH
-										CLIENT ID") }}</label> <input type="password"
-										name="skip_cash_client_id" id="skip_cash_client_id"
-										class="form-control" value="{{$skip_cash_client_id}}"
-										@if($opt->status == 1) required @endif>
-								</div>
-							</div>
-							<div class="col-12">
-								<div class="form-group mb-2">
-									<label for="skip_cash_key_id" class="mr-3">{{ __("SKIPCASH KEY
-										ID") }}</label> <input type="password" name="skip_cash_key_id"
-										id="skip_cash_key_id" class="form-control"
-										value="{{$skip_cash_key_id}}" @if($opt->status == 1) required
-									@endif>
-								</div>
-							</div>
-							<div class="col-12">
-								<div class="form-group mb-2">
-									<label for="skip_cash_api_secret" class="mr-3">{{
-										__("SKIPCASH_API_SECRET") }}</label> <input type="password"
-										name="skip_cash_api_secret" id="skip_cash_api_secret"
-										class="form-control" value="{{$skip_cash_api_secret}}"
-										@if($opt->status == 1) required @endif>
-								</div>
-							</div>
-							<div class="col-12">
-								<div class="form-group mb-2">
-									<label for="skip_cash_test_url" class="mr-3">{{ __("Testing
-										URL") }}</label> <input type="text"
-										name="skip_cash_testing_url" id="skip_cash_testing_url"
-										class="form-control" value="{{$skip_cash_testing_url}}"
-										@if($opt->status == 1) required @endif>
-								</div>
-							</div>
-							<div class="col-12">
-								<div class="form-group mb-2">
-									<label for="skip_cash_live_url" class="mr-3">{{ __("SKIPCASH
-										LIVE URL") }}</label> <input type="text"
-										name="skip_cash_live_url" id="skip_cash_live_url"
-										class="form-control" value="{{$skip_cash_live_url}}" @if($opt->status
-									== 1) required @endif>
-								</div>
-							</div>
-						</div>
-					</div>
-					@endif @if ( (strtolower($opt->code) == 'data_trans') )
-					<div class="mt-2" id="data_trans_fields_wrapper" @if($opt->
-						status != 1) style="display:none" @endif>
-						<div class="row">
-							<div class="col-12">
-								<div class="form-group mb-2">
-									<label for="data_trans_merchant_id" class="mr-3">{{
-										__("Merchant ID") }}</label> <input type="text"
-										name="data_trans_merchant_id" id="data_trans_merchant_id"
-										class="form-control" value="{{$merchant_id}}" @if($opt->status
-									== 1) required @endif>
-								</div>
-							</div>
-							<div class="col-12">
-								<div class="form-group mb-2">
-									<label for="data_trans_password" class="mr-3">{{ __("Password")
-										}}</label> <input type="password" name="data_trans_password"
-										id="data_trans_password" class="form-control"
-										value="{{$password}}" @if($opt->status == 1) required @endif>
-								</div>
-							</div>
-						</div>
-					</div>
-					@endif @if ( (strtolower($opt->code) == 'nmi') )
-					<div class="mt-2" id="nmi_fields_wrapper" @if($opt->
-						status != 1) style="display:none" @endif>
-						<div class="row">
-							<div class="col-12">
-								<div class="form-group mb-2">
-									<label for="nmi_client_id" class="mr-3">{{ __("NMI CLIENT ID")
-										}}</label> <input type="password" name="nmi_client_id"
-										id="nmi_client_id" class="form-control"
-										value="{{$nmi_client_id}}" @if($opt->status == 1) required
-									@endif>
-								</div>
-							</div>
-							<div class="col-12">
-								<div class="form-group mb-2">
-									<label for="nmi_key_id" class="mr-3">{{ __("NMI CLIENT KEY") }}</label>
-									<input type="password" name="nmi_key_id" id="nmi_key_id"
-										class="form-control" value="{{$nmi_key_id}}" @if($opt->status
-									== 1) required @endif>
-								</div>
-							</div>
-
-
-						</div>
-					</div>
 					@endif
-
-=======
-					@endif
-
-
 					 @if ( (strtolower($opt->code) == 'skip_cash') )
                     <div class="mt-2" id="skip_cash_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
                         <div class="row">
@@ -1913,7 +1773,6 @@ Options']) @section('css')
                     </div>
                     @endif
 
->>>>>>> 075ef7c477a24c8561f467623bc2180bb77860dd
 				</div>
 			</div>
 			@endforeach
