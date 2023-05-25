@@ -2352,12 +2352,11 @@ class OrderController extends BaseController
             if (!empty($order->orderDetail->scheduled_date_time)) {
                 $order->scheduled_date_time = dateTimeInUserTimeZone($order->orderDetail->scheduled_date_time, $user->timezone);
             }
-            if(!empty($order->orderDetail->scheduled_date_time) && !empty($order->orderDetail->scheduled_slot) ){
-                $slot_date =  date('Y-m-d',strtotime($order->scheduled_date_time));
+            if(!empty($order->orderDetail->scheduled_slot) ){
                 $slot_time = explode("-",$order->orderDetail->scheduled_slot);
                 $start_time = $slot_time[0];
                 $end_time = !empty($slot_time[1]) ? $slot_time[1]: $slot_time[0];
-                $order->schedule_slot = date('Y-m-d h:i A',strtotime($slot_date. " " . $start_time)) . ' - ' . date('h:i A',strtotime($slot_date. " " . $end_time));
+                $order->schedule_slot =date('Y-m-d h:i A',strtotime( date('Y-m-d',strtotime($order->scheduled_date_time)). " " . $start_time)) . ' - ' . date('h:i A',strtotime($end_time));
             }
             $luxury_option_name = '';
             if ($order->orderDetail->luxury_option_id > 0) {
@@ -4086,7 +4085,7 @@ class OrderController extends BaseController
             return sendFcmCurlRequest($data);
             }
         }
-        
+
         // Individual Vendor App User Token
         $vendorAppUserDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
         if(!empty($vendorAppUserDevices) && !empty($client_preferences->vendor_fcm_server_key)) {
