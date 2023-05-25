@@ -5,6 +5,7 @@ use App\Models\PaymentOption;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http as FacadesHttp;
 use App\Http\Traits\ApiResponser;
+use Illuminate\Support\Facades\Log;
 
 trait DataTransTrait
 {
@@ -27,7 +28,7 @@ trait DataTransTrait
     {
         $redirect = route('order.dataTransuccessPage');
         $cancel_redirect = route('order.dataTransCancel');
-
+        
         if ($request->payment_from == 'cart') {
             $refNo = "Oder-".$request->order_number;
           
@@ -44,18 +45,21 @@ trait DataTransTrait
             $refNo = "subscription";                
         }
 
-       return FacadesHttp::withHeaders([
+        return FacadesHttp::withHeaders([
             'Authorization' => 'Basic '. base64_encode($this->merchant_id.':'.$this->password),
             'Content-Type' =>'application/json' 
         ])->post($this->url,[
             "currency" => "CHF",
             "refno" => $refNo,
             "amount" => $request->total_amount * 100,
-            "paymentMethods" => ["ECA","VIS","PAP","AMX","AZP","APL","PAY","DIS"],
             "redirect" => [
                 "successUrl" => $redirect,
                 "cancelUrl" => $cancel_redirect,
                 "errorUrl" => $redirect
+            ],
+            "autoSettle" => true,
+            "option" =>[
+                "createAlias" => true
             ]
         ]);
     }

@@ -306,7 +306,7 @@ class PaymentOptionController extends BaseController
                                 'api_key' => $request->ozow_api_key
                             ));
                             break;
-                            
+
                         case 'azul':
                             $creds = ! empty($json_creds) ? json_decode($json_creds) : '';
                             $validatedData = $request->validate([
@@ -328,7 +328,7 @@ class PaymentOptionController extends BaseController
                             } else {
                                 $azul_ssl_certificate = (! empty($creds) && isset($creds->azul_ssl_certificate)) ? $creds->azul_ssl_certificate : '';
                             }
-                            
+
                             if ($request->hasFile('azul_ssl_key')) {
                                 $file = $request->file('azul_ssl_key');
                                 $file_name = 'Cert/' . uniqid() . '.' . $file->getClientOriginalExtension();
@@ -337,7 +337,7 @@ class PaymentOptionController extends BaseController
                             } else {
                                 $azul_ssl_key = (! empty($creds) && isset($creds->azul_ssl_key)) ? $creds->azul_ssl_key : '';
                             }
-                            
+
                             $json_creds = json_encode(array(
                                 'azul_main_url' => $request->azul_main_url,
                                 'azul_alternate_url' => $request->azul_alternate_url,
@@ -403,7 +403,7 @@ class PaymentOptionController extends BaseController
                                 'ccavenue_enc_key' => 'required',
                                 'ccavenue_access_code' => 'required',
                                 'ccavenue_merchant_id' => 'required',
-                                'custom_url'=>   'required' 
+                                'custom_url'=>   'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'enc_key' => $request->ccavenue_enc_key,
@@ -779,6 +779,22 @@ class PaymentOptionController extends BaseController
                                 'nmi_client_id' => $request->nmi_client_id,
                                 'nmi_key_id' => $request->nmi_key_id,
                             ));
+                        break;
+
+                        case 'obo':
+                            $validatedData = $request->validate([
+                                'obo_business_name' => 'required',
+                                'obo_client_id' => 'required',
+                                'obo_key_id' => 'required',
+                                'obo_market_place_id' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'obo_business_name' => $request->obo_business_name,
+                                'obo_client_id' => $request->obo_client_id,
+                                'obo_key_id' => $request->obo_key_id,
+                                'obo_market_place_id' => $request->obo_market_place_id,
+                            ));
+                        break;
                             break;
 
                             case 'data_trans':
@@ -786,14 +802,35 @@ class PaymentOptionController extends BaseController
                                     'data_trans_merchant_id' => 'required',
                                     'data_trans_password' => 'required'
                                 ]);
-    
+
                                 $data_trans_arr = array(
                                     'merchant_id' => $request->data_trans_merchant_id,
                                     'password' => $request->data_trans_password
                                 );
                                 $json_creds = json_encode($data_trans_arr);
-                                
+
                             break;
+                        break;
+                        case 'pesapal':
+                            $request->validate([
+                                'pesapal_consumer_key' => 'required',
+                                'pesapal_consumer_secret' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'pesapal_consumer_key' => $request->pesapal_consumer_key,
+                                'pesapal_consumer_secret' => $request->pesapal_consumer_secret,
+                            ));
+                        break;
+                        case 'powertrans':
+                            $request->validate([
+                                'powertrans_id' => 'required',
+                                'powertrans_password' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'powertrans_id' => $request->powertrans_id,
+                                'powertrans_password' => $request->powertrans_password,
+                            ));
+                        break;
                     }
                 }
             }
