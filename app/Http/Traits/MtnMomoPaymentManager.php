@@ -670,6 +670,9 @@ trait MtnMomoPaymentManager
                             case 'EXPIRED':
                                 $message = "Payment request of $currency $amount has been Expired.";
                                 break;
+                            case 'COULD_NOT_PERFORM_TRANSACTION':
+                                $message = "Payment request of $currency $amount has been Expired or wasn't performed.";
+                                break;
                             default:
                                 $message = "Payment Request of $currency $amount has been Failed.";
                                 break;
@@ -682,7 +685,7 @@ trait MtnMomoPaymentManager
                     'response' => $response
                 ], 500);
             }
-        }else{
+        } else {
             return response()->json([
                 'status' => 'PAYMENT PENDING',
                 'message' => 'Payment is Pending',
