@@ -6,6 +6,8 @@ use Auth;
 use Session;
 use Carbon\Carbon;
 use DB;
+use Grimzy\LaravelMysqlSpatial\Types\Point;
+
 
 trait ProductActionTrait{
 
@@ -19,22 +21,12 @@ trait ProductActionTrait{
           
             if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
 
-                // if($action == '1'){
-                //     // $vendors = Vendor::select('id')
-                //     //     ->where('status', 1)
-                //     //     ->where($type, 1);
-
-                //     // if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-                //         $vendors = $vendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
-                //             $query->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
-                //         });
-                //     // }
-
-                //     // $vendorIds = $vendors->get()->pluck('id');
-                //     // pr($vendorIds);
-
-                // }
-                $vendors = $vendors->havingRaw(" (SELECT COUNT(`service_areas`.`id`) FROM `service_areas` WHERE `service_areas`.`vendor_id` = `vendors`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)'))) > 0 ");
+             
+                    $point = new Point($longitude, $latitude);
+                    $vendors->whereHas('serviceArea', function ($query) use ($point) {
+                        $query->whereRaw("ST_Contains(service_areas.polygon, ST_GeomFromText(?))", [$point->toWKT()]);
+                    });
+           
                 
             }
 
@@ -43,7 +35,6 @@ trait ProductActionTrait{
             }else{
                 $vendors = $vendors->inRandomOrder();
             }
-            //pr($vendors->pluck('id')->toArray());
             return $vendors->pluck('id')->toArray();
         }
         catch (\Exception $e) {
@@ -410,16 +401,20 @@ trait ProductActionTrait{
 
     public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type = '',$Products_title = '', $p_dim = '', $preferences = NULL, $categoryTypes = NULL)
     {
-        try 
-        {
+        // try 
+        // {
+           // pr($venderIds);
             $vendorWhereIN = ' ';
             $completeWhere = ' ';
             $whereProductType = ' ';
             if(!empty($venderIds)){
                 $venid = implode(',',$venderIds);
-                $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
 
+            } else{
+                $venid = '0';
             }
+           $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
+
             if($where!=='all' && $where!=='on_sale'){
                 
                     if($where =='single_category_products' || $where == 'selected_products' || $where == 'popular_products' || $where == 'top_rated_products' ||  $where == 'recent_viewed'){
@@ -540,10 +535,10 @@ trait ProductActionTrait{
             // $returnArray = $products;
             //pr($returnArray);
             return $returnArray;
-        }
-        catch (\Exception $e) {
-            return [];
-        }
+        // }
+        // catch (\Exception $e) {
+        //     return [];
+        // }
     }
     
     public function getEvenOddTime($time) {
