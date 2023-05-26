@@ -675,7 +675,7 @@ class HomeController extends BaseController
 
             //filter on ratings
             if($venderFilterbest && ($venderFilterbest == 1) ){
-                $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
+                $vendorData = $vendorData->orderBy('product_avg_average_rating', 'desc');
             }
 
             $allVendorData = clone $vendorData;
