@@ -253,7 +253,7 @@ class SkipCashController extends Controller
        } else {
 
                 $this->failedOrderWalletRefund($order);
-
+                $this->sendWalletNotification($order->user_id, $order->order_number);
                 if($payment->payment_from != 'app'){
 
                     return Redirect::to(route('showCart'))->with('error',$request->message);

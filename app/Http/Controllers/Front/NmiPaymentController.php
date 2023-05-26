@@ -227,7 +227,7 @@ class NmiPaymentController extends Controller
       } else {
 
                $this->failedOrderWalletRefund($order);
-
+               $this->sendWalletNotification($order->user_id, $order->order_number);
                if($payment->payment_from == 'web'){
                    $returnUrl = route('showCart');
                    $response['status'] = 'Fail';
