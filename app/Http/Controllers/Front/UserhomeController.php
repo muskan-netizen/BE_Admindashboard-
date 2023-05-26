@@ -477,7 +477,7 @@ class UserhomeController extends FrontController
     public function postHomePageData(Request $request,$set_template,$enable_layout,$additionalPreference)
     {
      
-        //pr($enable_layout);
+        //pr($request->all());
        // $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating','is_show_vendor_on_subcription']);
         $vendor_ids = $vendors = [];
         $new_products = [];
@@ -496,7 +496,13 @@ class UserhomeController extends FrontController
         $latitude = Session::get('latitude');
         $longitude = Session::get('longitude');
         $clientdata = Session::get('clientdata');
+        $preferences = $this->client_preferences;
 
+        if( (empty($latitude)) && (empty($longitude)) ){
+            $latitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_latitude) : 0;
+            $longitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_longitude) : 0;
+        }
+        
         //pr($latitude);
         if($request->has('latitude') ){
             $latitude = $request->latitude;
@@ -506,9 +512,10 @@ class UserhomeController extends FrontController
             $longitude = $request->longitude;
             Session::put('longitude', $longitude);
         }
+       
         $selectedAddress = ($request->has('selectedAddress')) ? Session::put('selectedAddress', $request->selectedAddress) : Session::get('selectedAddress');
         $selectedPlaceId = ($request->has('selectedPlaceId')) ? Session::put('selectedPlaceId', $request->selectedPlaceId) : Session::get('selectedPlaceId');
-        $preferences = $this->client_preferences;
+       
         $currency_id = Session::get('customerCurrency');
         $language_id = Session::get('customerLanguage');
 
