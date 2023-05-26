@@ -2735,12 +2735,12 @@ $(document).ready(function () {
             $(".custom_tip").addClass("d-none");
             $("#custom_tip_amount").val('');
             if(parseFloat(amount_payable)+ wallet_amount_used_fixed>=parseFloat($('#mov').text())){
-                $("#order_placed_btn").removeAttr("disabled");
-                $("#order_placed_btn").removeClass("d-none");
+               // $("#order_placed_btn").removeAttr("disabled");
+              //  $("#order_placed_btn").removeClass("d-none");
                 $("#MOV_Notification").addClass("d-none");
             }else{
-                $("#order_placed_btn").attr("disabled", true);
-                $("#order_placed_btn").addClass("d-none");
+               // $("#order_placed_btn").attr("disabled", true);
+              //  $("#order_placed_btn").addClass("d-none");
                 $("#MOV_Notification").removeClass("d-none");
             }
         } else {
