@@ -253,6 +253,7 @@ class AzulPaymentController extends BaseController
                 $wallet->depositFloat($order->wallet_amount_used, [
                     'Wallet has been <b>refunded</b> for cancellation of order #' . $order->order_number
                 ]);
+                $this->sendWalletNotification($user->id, $order->order_number);
             }
             if (isset($request->auth_token) && ! empty($request->auth_token)) {
                 $response['status'] = 'Fail';

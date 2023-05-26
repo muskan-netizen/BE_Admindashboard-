@@ -69,10 +69,6 @@ class HomeController extends BaseController
             $_REQUEST['request_from'] = 1;
 
             $type = $request->has('type') ? $request->type : 'delivery';
-
-            if (empty($type))
-                $type = 'delivery';
-
             $categoryTypes = getServiceTypesCategory($type);
 
             $this->venderFilterOpenClose   = $request->has('open_close_vendor') && $request->open_close_vendor ? $request->open_close_vendor : null;
@@ -109,7 +105,6 @@ class HomeController extends BaseController
            
 
             $clientPreferences = ClientPreference::first();
-            $vendor_type = $request->has('type') ? $request->type : Session::get('vendorType');
 
 
             $count = 0;
@@ -176,7 +171,7 @@ class HomeController extends BaseController
 
             if (count($home_page_labels) == 0)
                 $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
-            $request->request->add(['type' => Session::get('vendorType') ?? 'delivery', 'noTinJson' => 1]);
+            $request->request->add(['noTinJson' => 1]);
             /***start new  */
 
             $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating', 'is_service_product_price_from_dispatch']);
@@ -1158,6 +1153,7 @@ class HomeController extends BaseController
     public function postHomePageDataV2(Request $request,$set_template,$enable_layout,$additionalPreference,$user)
     {
         $client_timezone = DB::table('clients')->first('timezone');
+
         $timezone        = $user->timezone ? $user->timezone :  ($client_timezone->timezone ?? 'Asia/Kolkata' );
         //pr($enable_layout);
        // $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating','is_show_vendor_on_subcription']);
@@ -1274,7 +1270,6 @@ class HomeController extends BaseController
         $selected_products_title = $titles['selected_products_title'] ?? null;
         $trending_vendors_title = $titles['trending_vendors_title'] ?? null;
 
-
         $vendor_ids = $this->getRandomVendorIdsForHomePage($preferences, $request->type, $preferences['is_admin_vendor_rating'], $latitude, $longitude,@$request->momo);
         $home_page_labels = HomePageLabel::with('translations')->get();
         if (in_array('brands', $enable_layout)) {     # if enable brands section in
@@ -1342,12 +1337,12 @@ class HomeController extends BaseController
                 if(count($vendor_ids) > 0){
                     $dataMo = $this->getVendorForHomePage($preferences, "best_sellers", $timezone, 0, $request->type, $language_id, $latitude, $longitude, $vendor_ids);
                     if(sizeof($dataMo)){
-                        $mostSellingVendors[] = $dataMo;
+                        $mostSellingVendors = $dataMo;
                     }
                 }
             }
         }
-       // pr($mostSellingVendors);
+        //pr($mostSellingVendors);
         $on_sale_product_details =$on_sale_products = [];
         if (in_array('on_sale', $enable_layout)) {  # if enable new_products section in 
             $on_sale_products = $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', 'on_sale', $request->type,$on_sale_title, $p_dim);

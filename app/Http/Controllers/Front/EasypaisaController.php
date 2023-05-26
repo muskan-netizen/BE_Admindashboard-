@@ -231,6 +231,7 @@ class EasypaisaController extends FrontController
             $wallet = $user->wallet;
             if (isset($order->wallet_amount_used)) {
                 $wallet->depositFloat($order->wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #' . $order->order_number]);
+                $this->sendWalletNotification($user->id, $order->order_number);
             }
             if (isset($request->auth) && $request->auth != '') {
                 $returnUrl = route('payment.gateway.return.response') . '/?gateway=easypaisa' . '&status=00&order=' . $order->order_number;

@@ -260,12 +260,12 @@
     font-size: 18px;
 }
 
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    margin: 0; 
+    margin: 0;
 }
 
 .bid-btnleft {
@@ -340,7 +340,7 @@ input[type=number]::-webkit-outer-spin-button {
                             </label>
                         </div>
                     @endif
-                    
+
                     @if($is_cab_pooling == 1 || $is_bid_ride_enable == 1)
                         <div class="pool_radio_controls text-center">
                             <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_booking" name="is_cab_pooling_radio"
@@ -349,7 +349,7 @@ input[type=number]::-webkit-outer-spin-button {
                                 <h5 class="m-0" id="pool_5">{{ __('Booking') }}</h5>
                             </label>
 
-                            @if ($is_cab_pooling == 1 ) 
+                            @if ($is_cab_pooling == 1 )
                                 <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_pooling" name="is_cab_pooling_radio"
                                     value="1">
                                 <label class="pool_label mb-0  my-2" for="cab_pooling" id="label_cab_pooling">
@@ -366,7 +366,7 @@ input[type=number]::-webkit-outer-spin-button {
                         </div>
                     @endif
 
-                    
+
 
                     <div class="location-box check-pick-first">
                         <div class="where-to-go">
@@ -735,7 +735,7 @@ input[type=number]::-webkit-outer-spin-button {
                     </div>
                     <div class="cab-location-details">
                     <div style="height:5px;"><div class="loader cab-detail-main-loader" style="display: none;"></div></div>
-       
+
 
                     <h4 class="d-flex align-items-center justify-content-between"><b><%= result.name %></b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.tags_price%></b></label></h4>
@@ -813,16 +813,16 @@ input[type=number]::-webkit-outer-spin-button {
                     <i class="fa fa-angle-down" aria-hidden="true"></i>
                 </h4>
             </div>
-            
-            <div id="driver_acceptance_list" class="d-none"> 
-                <div class="text-loader"> 
+
+            <div id="driver_acceptance_list" class="d-none">
+                <div class="text-loader">
                     <i class="fa fa-circle-o-notch fa-spin"></i>
-                    Wait for driver acceptance 
+                    Wait for driver acceptance
                 </div>
             </div>
-            
+
             <span id="show_error_of_bid" class="text-danger"></span>
-            
+
             {{-- <div class="payment-promo-container p-2">
                 <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal">
                     <span id="payment_type">
@@ -1190,7 +1190,7 @@ input[type=number]::-webkit-outer-spin-button {
             </div>
             <div class="modal-body booking_mayment_method">
                 <div class="col-md-12 mt-3 mb-3 azulpay_element_wrapper option-wrapper">
-                   
+
                          <div class="tab">
     <a class="tablinks active" onclick="clickHandle(event, 'Add-Card')" href="javascript:void(0);">Add Card</a>
     <a class="tablinks" onclick="clickHandle(event, 'Card-List')" href="javascript:void(0);">Card List</a>
@@ -1590,6 +1590,7 @@ input[type=number]::-webkit-outer-spin-button {
         var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
         var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
         var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
+        var payment_obo_url = "{{route('obo.pay')}}";
         var data_trans_url = "{{route('payment.payByDataTrans')}}";
         var create_bid_url = "{{route('createBid')}}";
         var driver_biding_list_url = "{{route('getBidsRelatedToOrderRide')}}";
@@ -1776,13 +1777,13 @@ input[type=number]::-webkit-outer-spin-button {
             }
 
         });
-        
-    function addSlashes (element) {	
+
+    function addSlashes (element) {
         let ele = document.getElementById(element.id);
         ele = ele.value.split('/').join('');    // Remove slash (/) if mistakenly entered.
         if(ele.length < 4 && ele.length > 0){
             let finalVal = ele.match(/.{1,2}/g).join('/');
-    
+
             document.getElementById(element.id).value = finalVal;
         }
     }

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use App\Models\ClientCurrency;
+use App\Models\Currency;
 use App\Models\PaymentOption;
 use Illuminate\Support\Facades\Log;
 
@@ -68,10 +69,21 @@ trait PesapalPaymentTrait
         $url = $this->test_mode ? 'https://cybqa.pesapal.com/pesapalv3/api/Transactions/SubmitOrderRequest' : 'https://pay.pesapal.com/v3/api/Transactions/SubmitOrderRequest';
         $name = explode(' ',auth()->user()->name);
 
-        $customerCurrency = ClientCurrency::with('currency')->where('is_primary', '1')->first();
-        $currCode = $customerCurrency->currency->iso_code;
+        $currency_id = $request->action ? $request->header('currency') : session()->get('customerCurrency');
+        $customerCurrency = Currency::find($currency_id);
+        $currCode = $customerCurrency->iso_code;
+
+        if(!$customerCurrency){
+            $customerCurrency = ClientCurrency::with('currency')->where('is_primary', '1')->first();
+            $currCode = $customerCurrency->currency->iso_code;
+        }
+        
         $notification_id = $this->pinId($token)['ipn_id'];
         
+        if($currCode == 'UGX' && $request->total_amount < 20){
+            return ['status' => 201, 'message' => 'Amount should not be less than 20'];
+        }
+
         return Http::withHeaders([
             'Content-Type' =>'application/json',
             'Authorization' => 'Bearer '.$token

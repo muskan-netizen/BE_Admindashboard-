@@ -50,7 +50,6 @@
             </div>
         </div>
         <div class="row">
-
             @foreach($payOption as $key => $opt)
             <div class="col-6 col-md-3 col-xl-2 mb-3" id="payment_{{$opt->id}}">
 
@@ -111,7 +110,7 @@
                 $openpay_private_key = (isset($creds->openpay_private_key)) ? $creds->openpay_private_key : '';
                 $openpay_public_key = (isset($creds->openpay_public_key)) ? $creds->openpay_public_key : '';
                 $openpay_verification_key = (isset($creds->openpay_verification_key)) ? $creds->openpay_verification_key : '';
-                
+
                 // azulpay
                 $azul_main_url = (isset($creds->azul_main_url)) ? $creds->azul_main_url : '';
                 $azul_alternate_url = (isset($creds->azul_alternate_url)) ? $creds->azul_alternate_url : '';
@@ -122,7 +121,7 @@
                 $azul_auth_header_two = (isset($creds->azul_auth_header_two)) ? $creds->azul_auth_header_two : '';
                 $azul_ssl_certificate = (isset($creds->azul_ssl_certificate)) ? $creds->azul_ssl_certificate : '';
                 $azul_ssl_key = (isset($creds->azul_ssl_key)) ? $creds->azul_ssl_key : '';
-                
+
                 // payway
                 $payway_main_url = (isset($creds->payway_main_url)) ? $creds->payway_main_url : '';
                 $payway_test_url = (isset($creds->payway_test_url)) ? $creds->payway_test_url : '';
@@ -138,7 +137,7 @@
                 $mtn_api_key = (isset($creds->api_key)) ? $creds->api_key : '';
                 $plugnpay_publisher_name = (isset($creds->plugnpay_publisher_name)) ? $creds->plugnpay_publisher_name : '';
 
-				//skip cash 
+				//skip cash
 				$skip_cash_client_id = (isset($creds->skip_cash_client_id)) ? $creds->skip_cash_client_id : '';
 				$skip_cash_api_secret = (isset($creds->skip_cash_api_secret)) ? $creds->skip_cash_api_secret : '';
 				$skip_cash_key_id = (isset($creds->skip_cash_key_id)) ? $creds->skip_cash_key_id : '';
@@ -149,6 +148,11 @@
 				$nmi_client_id = (isset($creds->nmi_client_id)) ? $creds->nmi_client_id : '';
 				$nmi_key_id = (isset($creds->nmi_key_id)) ? $creds->nmi_key_id : '';
 
+                // OBO Pay
+                $obo_business_name   = (isset($creds->obo_business_name)) ? $creds->obo_business_name : '';
+                $obo_client_id       = (isset($creds->obo_client_id)) ? $creds->obo_client_id : '';
+                $obo_key_id          = (isset($creds->obo_key_id)) ? $creds->obo_key_id : ''  ;
+                $obo_market_place_id = (isset($creds->obo_market_place_id)) ? $creds->obo_market_place_id : '';
 				$powertrans_id = (isset($creds->powertrans_id)) ? $creds->powertrans_id : '';
 				$powertrans_password = (isset($creds->powertrans_password)) ? $creds->powertrans_password : '';
 				$pesapal_consumer_key = (isset($creds->pesapal_consumer_key)) ? $creds->pesapal_consumer_key : '';
@@ -1576,7 +1580,7 @@
 
 						</div>
 					</div>
-					
+
 					@endif @if ( (strtolower($opt->code) == 'payway') )
 					<div class="mt-2" id="payway_fields_wrapper" @if($opt->
 						status != 1) style="display:none" @endif>
@@ -1621,7 +1625,7 @@
 
 						</div>
 					</div>
-					
+
 					@endif
 
 
@@ -1695,8 +1699,38 @@
                                     <input type="password" name="nmi_key_id" id="nmi_key_id" class="form-control" value="{{$nmi_key_id}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
-                            
-							 
+                        </div>
+                    </div>
+                    @endif
+
+
+                    @if ( (strtolower($opt->code) == 'obo') )
+                    <div class="mt-2" id="obo_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="obo_business_name" class="mr-3">{{ __("OBO BUSINESS NAME") }}</label>
+                                    <input type="text" name="obo_business_name" id="obo_business_name" class="form-control" value="{{$obo_business_name}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="obo_client_id" class="mr-3">{{ __("OBO CLIENT ID") }}</label>
+                                    <input type="number" name="obo_client_id" id="obo_client_id" class="form-control" value="{{$obo_client_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+							 <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="obo_key_id" class="mr-3">{{ __("OBO CLIENT KEY") }}</label>
+                                    <input type="text" name="obo_key_id" id="obo_key_id" class="form-control" value="{{$obo_key_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="obo_market_place_id." class="mr-3">{{ __("OBO MARKET PLACE ID") }}</label>
+                                    <input type="text" name="obo_market_place_id" id="obo_market_place_id" class="form-control" value="{{$obo_market_place_id}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     @endif
@@ -1852,7 +1886,7 @@
 
 
                     @if ( (strtolower($opt->code) == 'razorpay') )
-					
+
                     <div class="2" id="razorpay_payout_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
                         <div class="row">
                             <div class="col-12">
