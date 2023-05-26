@@ -401,8 +401,8 @@ trait ProductActionTrait{
 
     public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type = '',$Products_title = '', $p_dim = '', $preferences = NULL, $categoryTypes = NULL)
     {
-        // try 
-        // {
+        try 
+        {
            // pr($venderIds);
             $vendorWhereIN = ' ';
             $completeWhere = ' ';
@@ -535,10 +535,10 @@ trait ProductActionTrait{
             // $returnArray = $products;
             //pr($returnArray);
             return $returnArray;
-        // }
-        // catch (\Exception $e) {
-        //     return [];
-        // }
+        }
+        catch (\Exception $e) {
+            return [];
+        }
     }
     
     public function getEvenOddTime($time) {
