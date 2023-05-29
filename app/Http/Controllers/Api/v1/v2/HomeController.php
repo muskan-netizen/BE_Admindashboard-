@@ -1006,7 +1006,7 @@ class HomeController extends BaseController
     }
     public function searchCategories($langId, $keyword, $limit, $page)
     {
-
+        
         $orderBy = "";
         foreach ($keyword as $key=>$word) {
             $orderBy .= " WHEN cts.name LIKE '$word%' THEN ".$key."  ";

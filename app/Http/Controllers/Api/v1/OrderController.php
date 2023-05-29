@@ -215,8 +215,8 @@ class OrderController extends BaseController
 
                     $cart_products = CartProduct::with(['product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon' => function ($query) use ($cart) {
                         $query->where('cart_id', $cart->id);
-                    },'coupon.promo', 'product.addon','vendorProducts.productVariantByRoles'])->where('cart_id', $cart->id)->whereIn('id', $request->order_product)->where('status', [0, 1])->orderBy('created_at', 'asc')->get();
-
+                    },'coupon.promo', 'product.addon','vendorProducts.productVariantByRoles'])->where('cart_id', $cart->id)->where('is_cart_checked', 1)->where('status', [0, 1])->orderBy('created_at', 'asc')->get();
+                    
                     $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0;
                     $total_subscription_discount = 0;
 
@@ -1070,7 +1070,7 @@ class OrderController extends BaseController
 
                         CartCoupon::where('cart_id', $cart->id)->delete();
                         // CartProduct::where('cart_id', $cart->id)->delete();
-                        CartProduct::whereIn('id', $request->order_product)->delete();
+                        CartProduct::whereIn('id', $cart_products->pluck('id')->toArray())->delete();
                         CartProductPrescription::where('cart_id', $cart->id)->delete();
                         CartDeliveryFee::where('cart_id', $cart->id)->delete();
                     }
