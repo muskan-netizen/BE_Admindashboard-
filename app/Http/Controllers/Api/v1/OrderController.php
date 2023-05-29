@@ -2352,12 +2352,11 @@ class OrderController extends BaseController
             if (!empty($order->orderDetail->scheduled_date_time)) {
                 $order->scheduled_date_time = dateTimeInUserTimeZone($order->orderDetail->scheduled_date_time, $user->timezone);
             }
-            if(!empty($order->orderDetail->scheduled_date_time) && !empty($order->orderDetail->scheduled_slot) ){
-                $slot_date =  date('Y-m-d',strtotime($order->orderDetail->scheduled_date_time));
+            if(!empty($order->orderDetail->scheduled_slot) ){
                 $slot_time = explode("-",$order->orderDetail->scheduled_slot);
                 $start_time = $slot_time[0];
                 $end_time = !empty($slot_time[1]) ? $slot_time[1]: $slot_time[0];
-                $order->schedule_slot =date('Y-m-d h:i A',strtotime(dateTimeInUserTimeZone($slot_date. " " . $start_time, $user->timezone))) . ' - ' . date('h:i A',strtotime(dateTimeInUserTimeZone($slot_date. " " . $end_time, $user->timezone)));
+                $order->schedule_slot =date('Y-m-d h:i A',strtotime( date('Y-m-d',strtotime($order->scheduled_date_time)). " " . $start_time)) . ' - ' . date('h:i A',strtotime($end_time));
             }
             $luxury_option_name = '';
             if ($order->orderDetail->luxury_option_id > 0) {
@@ -4010,5 +4009,91 @@ class OrderController extends BaseController
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }
+
+
+    public function sendVendorReachedLocation($domain = '', Request $request)
+    {
+        try{
+        $user_vendors = UserVendor::where(['vendor_id' => $request->vendor_id])->pluck('user_id');
+        $orderData= $this->minimize_orderDetails_for_notification($request->order_id,$request->vendor_id);
+        $header_code=$request->code??'';
+
+        // if(@$request->vehicle_name && @$request->number_plate){
+        //     $user_id = $request->user_id ?? Auth::user()->id;
+        //     $user_vehicle = UserVehicle::updateOrCreate([
+        //         'plate' =>  $request->number_plate,
+        //         'user_id' =>  $user_id
+        //     ], [
+        //         'name' => $request->vehicle_name,
+        //         'description' =>  $request->description ?? null
+        //     ]);
+        //     $comment = $request->vehicle_name." - ". $request->number_plate ;
+        //     if(@$request->description){
+        //         $comment .=  " - ".$request->description;
+        //     }
+        //     Order::where('id', $request->order_id)->update(['comment_for_vendor' => $comment]);
+        // }
+
+        $send = $this->sendOrderPushNotificationVendorReached($user_vendors,$orderData, $header_code);
+
+        return response()->json(['status'=>1,'message'=>'Notification sent successfully!']);
+        }catch(\Exception $e)
+        {
+            \Log::info($e->getMessage());
+        return response()->json(['status'=>0,'error'=>$e->getMessage()]);
+
+        }
+    }
+
+    public function sendOrderPushNotificationVendorReached($user_ids, $orderData, $header_code='')
+    {
+
+        $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+
+        //$vendorAppDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon','vendor_fcm_server_key')->first();
+        if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
+            $notification_content = NotificationTemplate::where('slug','reached-vendor-location')->first();
+            $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
+            if ($notification_content) {
+                if($header_code == ''){
+                    $header_code = Client::orderBy('id', 'asc')->first()->code;
+                }
+                $code = $header_code;
+                $client = Client::where('code', $code)->first();
+                $redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/client/order";
+
+                $data = [
+                    "registration_ids" => $devices,
+                    "notification" => [
+                        'title' => $notification_content->subject,
+                        'body'  => $body_content,
+                        'sound' => "notification.wav",
+                        "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                        "android_channel_id" => "sound-channel-id"
+                    ],
+                    "data" => [
+                        'title' => $notification_content->subject,
+                        'body'  => $notification_content->content,
+                        'data' => $orderData,
+                        'order_id' => $orderData->id,
+                        'type' => "reached_location"
+                    ],
+                    "priority" => "high"
+                ];
+            return sendFcmCurlRequest($data);
+            }
+        }
+
+        // Individual Vendor App User Token
+        $vendorAppUserDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+        if(!empty($vendorAppUserDevices) && !empty($client_preferences->vendor_fcm_server_key)) {
+            $from = $client_preferences->vendor_fcm_server_key;
+            $data['registration_ids'] = $vendorAppUserDevices;
+            return sendFcmCurlRequest($data,$from);
+        }
+    }
+
 
 }

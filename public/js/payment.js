@@ -3431,7 +3431,7 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
      /***
      * Mtn Momo payment gateway
      */
-     window.paymentViaMtnMomo = function paymentViaMtnMomo(address_id, order, payment_form)
+     window.paymentViaMtnMomo = function paymentViaMtnMomo(address_id, order, payment_form,reload_route='')
      {
          let cartElement = $("input[name='cart_total_payable_amount']");
          let total_amount = 0;
@@ -3439,24 +3439,34 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
          let subscriptionElement = $("input[name='subscription_amount']");
          let subscriptionId = $("input[name='subscription_id']");
          let tipElement = $("#cart_tip_amount");
+         let cabElement = $("#pickup_now");
          let payment_from = '';
          if (path.indexOf("cart") !== -1) {
              total_amount = cartElement.val();
              payment_from = 'cart';
              var rowData = 'amt='+total_amount+'&order_number='+order.order_number+'&from='+payment_from;
+             var overlayElement = '#proceed_to_pay_modal';
          } else if (path.indexOf("wallet") !== -1) {
              total_amount = walletElement.val();
              payment_from = 'wallet';
              var rowData = 'amt='+total_amount+'&from='+payment_from;
+             var overlayElement = '#topup_wallet';
          }else if (path.indexOf("subscription") !== -1) {
              total_amount = subscriptionElement.val();
              subsId = subscriptionId.val();
              payment_from = 'subscription';
              var rowData = 'subsid='+subsId+'&from='+payment_from+'&amt='+total_amount;
-         }else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+             var overlayElement = '#subscription_payment';
+         }else if (cabElement.length > 0) {
+            total_amount = cabElement.data('amount');
+            payment_from = 'pickup_delivery';
+            var rowData = `amt=${total_amount}&from=${payment_from}&reload_route=${reload_route}&order_number=${order.order_number}`;
+            var overlayElement = 'body  ';
+       }else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
              total_amount = tipElement.val();
              payment_from = 'tip';
              var rowData = 'amt='+total_amount+'&from='+payment_from+'&order_number='+$("#order_number").val();
+             var overlayElement = '#topup_wallet';
          }
 
          $.ajax({
@@ -3464,17 +3474,54 @@ window.paymentViaSkipCash = function paymentViaSkipCash(address_id = '',order){
              dataType: 'json',
              url: create_mtn_momo_token,
              data: rowData,
+             beforeSend: function(){
+                add_spinner(overlayElement, 'Sending Payment Request...');
+            },
              success: function(resp) {
-                 if(resp != ''){
-                     window.location.href = resp;
+                console.log(resp)
+                if(resp.hasOwnProperty('wait')){
+                    var interval = setInterval(function(){
+                        $.ajax({
+                            type: "GET",
+                            dataType: 'json',
+                            url: resp.responseUrl,
+                            beforeSend: function(){
+                                remove_spinner(overlayElement);
+                                add_spinner(overlayElement, 'Request Sent. Waiting for Response...');
+                            },
+                            success: function(response){
+                                if(response.hasOwnProperty('url')){
+                                    clearInterval(interval);
+                                    remove_spinner(overlayElement);
+                                    window.location.href = response.url;
+                                 }else{
+                                    //  alert(response.message);
+                                     if(response.hasOwnProperty('response') && response.response != '' && typeof(response.response) != 'undefined'){
+                                        console.error(response.response);
+                                     }
+                                 }
+                            },
+                            error: function(response){
+                                alert(response.responseJSON.message);
+                                location.reload(true);
+                            }
+                        }) 
+                    },5000);
+                }else{
+                 if(resp.hasOwnProperty('url')){
+                    window.location.href = resp.url;
                  }else{
-                     alert('Tray Again');
+                     alert(resp.message);
+                     if(resp.hasOwnProperty('response') && resp.response != '' && typeof(resp.response) != 'undefined'){
+                        console.error(resp.response);
+                     }
                  }
+                }
            },
            error: function(resp) {
-               window.location.href = resp.responseText;
+                alert(resp.responseJSON.message);
+                location.reload(true);
            }
-
          });
      }
 
