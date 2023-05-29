@@ -70,6 +70,11 @@ class BaseController extends Controller{
             $crendentials = json_decode($client_preference->sms_credentials);
             $send = $this->sms_partner_gateway($to,$body,$crendentials);
             }
+            elseif($client_preference->sms_provider == 9) //for ethiopia
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->ethiopia($to,$body,$crendentials);
+            }
             else{
                 $client = new TwilioClient($sms_key, $sms_secret);
                 $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
@@ -126,6 +131,11 @@ class BaseController extends Controller{
             $crendentials = json_decode($client_preference->sms_credentials);
             $send = $this->sms_partner_gateway($to, $body, $crendentials);
             }
+            elseif($client_preference->sms_provider == 9) //for  ethiopia
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->ethiopia($to,$body,$crendentials);
+            }
             else{
                 $client = new TwilioClient($sms_key, $sms_secret);
                 $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
@@ -136,7 +146,7 @@ class BaseController extends Controller{
         }
         return '1';
 	}
-    
+
 
     public function getParentCategories($child, $langId, $parentCategories=[]){
         $category = Category::with(['translation' => function($q) use($langId){
@@ -144,7 +154,7 @@ class BaseController extends Controller{
         }])->where('id', $child)->where('status', 1)->select('id', 'slug', 'parent_id')->first();
         if($category){
             $parentCategories[] = $category->translation->first() ? $category->translation->first()->name : $category->slug;
-            if($category->parent_id != 1){                
+            if($category->parent_id != 1){
                 $parentCategories = $this->getParentCategories($category->parent_id, $langId, $parentCategories);
             }
         }
@@ -159,7 +169,7 @@ class BaseController extends Controller{
 
                 // type_id 1 means product in type table
                 if (isset($node['children']) && count($node['children']) > 0) {
-                    
+
                     // start including parent category
                     $category = (isset($node['translation'][0]['name'])) ? $node['translation'][0]['name'] : $node['slug'];
 
@@ -176,7 +186,7 @@ class BaseController extends Controller{
                         $category = (isset($node['translation'][0]['name'])) ? $node['translation'][0]['name'] : $node['slug'];
                         $parentCategories = array_reverse($this->getParentCategories($node['id'], $langId));
                         $hierarchyName = implode(' > ', $parentCategories);
-                        
+
                         $this->categoryOptionData[] = array('id'=>$node['id'], 'type_id'=>$node['type_id'], 'hierarchy'=>$hierarchyName, 'name'=>$category, 'can_add_products'=>$node['can_add_products'], 'cat_image'=>$node['image']);
                     // }
                 }
@@ -922,13 +932,13 @@ class BaseController extends Controller{
 
     /******************    ---- check Keys from order Panel keys -----   ******************/
     public function checkOrderPanelKeys(Request $request){
-    
-        
+
+
         $user =  User::where('is_panel_auth_user', 1)->first();
         if(!$user){
             $user =  User::first();
         }
-        
+
         $token1 = new Token;
         $token = $token1->make([
             'key' => 'royoorders-jwt',
@@ -984,7 +994,7 @@ class BaseController extends Controller{
                         'data' => $data,
                         'message' => 'success']);
                 }
-        
+
                 return response()->json([
                         'status' => 400,
                         'message' => 'Order Panel Not found']);
@@ -995,7 +1005,7 @@ class BaseController extends Controller{
         }catch(\Exception $e){
             return response()->json(['data' => $e->getMessage()]);
         }
-        
+
     }
     # get prefereance if appointment on in config
     public function getDispatchAppointmentDomain()
@@ -1006,6 +1016,39 @@ class BaseController extends Controller{
         } else {
             return false;
         }
+    }
+    
+    
+    public function sendWalletNotification($user_id,$order_number)
+    {
+        $firebaseToken = UserDevice::select('device_token')->whereNotNull('device_token')->where('user_id',$user_id)->orderBy('id','desc')->limit(1)->pluck('device_token')->toArray();
+        if(!empty($firebaseToken)){
+            $preference = ClientPreference::select('fcm_server_key')->first();
+            $fcm_server_key = !empty($preference->fcm_server_key)? $preference->fcm_server_key : 'null';
+            
+            $data = [
+                "registration_ids" => $firebaseToken,
+                "notification" => [
+                    "title" => "Refund Added in Wallet",
+                    "body" => 'Wallet has been <b>refunded</b> for cancellation or failed payment of order #' .$order_number
+                ]
+            ];
+            $dataString = json_encode($data);
+            $headers = [
+                'Authorization: key=' . $fcm_server_key,
+                'Content-Type: application/json',
+            ];
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
+            $response = curl_exec($ch);
+            curl_close($ch);
+        }
+        return true;
     }
 
 

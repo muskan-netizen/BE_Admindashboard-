@@ -90,6 +90,10 @@
             $("#subscription_payment_methods .plugnpay_element_wrapper").removeClass('d-none');
             $("#subscription_payment_methods .stripe_element_wrapper").addClass('d-none');
         }
+        else if(method == 58){
+            $("#subscription_payment_methods .powertrans_element_wrapper").removeClass('d-none');
+            $("#subscription_payment_methods .stripe_element_wrapper").addClass('d-none');
+        }
         else {
             $("#subscription_payment_methods .stripe_element_wrapper").addClass('d-none');
             $("#subscription_payment_methods .plugnpay_element_wrapper").addClass('d-none');

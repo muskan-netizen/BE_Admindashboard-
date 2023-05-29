@@ -27,8 +27,9 @@ class CategoryController extends FrontController{
      * @return \Illuminate\Http\Response
      */
     public function categoryProduct(Request $request, $domain = '', $slug = 0)
-    {
+    {        
         //$preferences = Session::get('preferences');
+        $vendorType = Session::get('vendorType');
         $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'):  getClientPreferenceDetail();
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
@@ -49,6 +50,7 @@ class CategoryController extends FrontController{
         'allParentsAccount'])
         ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products', 'parent_id', 'sub_cat_banners')
         ->where('slug', $slug)->firstOrFail();
+       
         $category->translation_name = ($category->translation->first()) ? $category->translation->first()->name : $category->slug;
         foreach($category->childs as $key => $child){
             $child->translation_name = ($child->translation->first()) ? $child->translation->first()->name : $child->slug;
@@ -109,7 +111,9 @@ class CategoryController extends FrontController{
         }else{
             $vendorIds = array();
             $vendorList = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'name')->where('status', '!=', $this->field_status);
-           
+            if(!empty($vendorType)){
+                $vendorList= $vendorList->where($vendorType, 1);
+            }
             $vendorList = $vendorList->get();
             if(!empty($vendorList)){
                 foreach ($vendorList as $key => $value) {
@@ -137,11 +141,11 @@ class CategoryController extends FrontController{
         $redirect_to = $category->type->redirect_to;
         
         $listData = $this->listData($langId, $category->id, $redirect_to,$vendorIds,false);
-        $maxPrice = $this->listData($langId, $category->id, $redirect_to,$vendorIds,true);
+        $maxPrice = DB::select("SELECT MAX(product_variants.price) as max_price FROM product_variants INNER JOIN products ON products.id = product_variants.product_id WHERE product_variants.status = 1 AND products.is_live = 1 AND products.category_id = ?", [$category->id])[0]->max_price;
         $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';
         // $newProducts =  $this->getNewProducts($vendorIds, $langId, $curId);
         $productAttributes = '';        
-        $getAdditionalPreference = getAdditionalPreference(['is_attribute','is_postpay_enable','is_cab_pooling']);
+        $getAdditionalPreference = getAdditionalPreference(['is_attribute','is_postpay_enable','is_cab_pooling','is_bid_ride_enable']);
         if( checkTableExists('product_attributes') ) {
           
             
@@ -155,7 +159,7 @@ class CategoryController extends FrontController{
                     ->orderBy('position', 'asc')->get();
             }
         }
-       
+        
         $newProducts = [];
         if($page == 'pickup/delivery'){
             if(!Auth::user()){
@@ -166,10 +170,10 @@ class CategoryController extends FrontController{
                 $wallet_balance = Auth::user()->balanceFloat * ($clientCurrency->doller_compare ?? 1);
                 $riders = Rider::where('user_id',Auth::user()->id)->orderBy('id','DESC')->get();
 
-                return view('frontend.booking.index')->with(['maxPrice'=>$maxPrice,'clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders, 'is_cab_pooling' => $getAdditionalPreference['is_cab_pooling'], 'is_postpay_enable' => $getAdditionalPreference['is_postpay_enable']]);
+                return view('frontend.booking.index')->with(['maxPrice'=>$maxPrice,'clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders, 'is_cab_pooling' => $getAdditionalPreference['is_cab_pooling'], 'is_bid_ride_enable' => $getAdditionalPreference['is_bid_ride_enable'],'is_postpay_enable' => $getAdditionalPreference['is_postpay_enable']]);
             }
         }elseif($page == 'on demand service' || $page == 'appointment'){
-
+         
             $cartDataGet = $this->getCartOnDemand($request);
             if($request->step == 2 && empty($request->addons) && empty($request->dataset)){
                 $addos = 0;
@@ -226,10 +230,10 @@ class CategoryController extends FrontController{
 
    
     public function listData($langId, $category_id, $type = '',$vendorIds = array(),$is_max = false){
-        //pr($category_id);
 
         $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
-
+        $vendorType = Session::get('vendorType');
+        
         if(strtolower($type) == 'vendor'){
             //$preferences= ClientPreference::first();
             $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'): ClientPreference::first();;
@@ -252,6 +256,9 @@ class CategoryController extends FrontController{
             $vendorData = $vendorData->whereHas('getAllCategory' , function ($q)use($category_id){
                 $q->where('category_id', $category_id)->where('status', 1);
             });
+            if(!empty($vendorType)){
+                $vendorData= $vendorData->where($vendorType, 1);
+            }
             $vendorData = $vendorData->where('vendors.status', 1)->paginate($pagiNate);
 
             foreach ($vendorData as $key => $value) {
@@ -313,9 +320,7 @@ class CategoryController extends FrontController{
                 if(Session::has('vendors')){
                     $vendors = Session::get('vendors');
                 }
-            }
-            
-            // pr($vendors);
+            }            
             $products = Product::with(['vendor', 'media.image', 'category', 'ProductAttribute',
                         'translation' => function($q) use($langId){
                           $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
@@ -340,7 +345,7 @@ class CategoryController extends FrontController{
                     $value->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
                     $value->variant_price = (!empty($value->variant->first())) ? $value->variant->first()->price : 0;
                     $value->variant_compare_at_price = (!empty($value->variant->first())) ? $value->variant->first()->compare_at_price : 0;
-                    $value->image_url = $value->media->first() ? $value->media->first()->image->path['proxy_url'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
+                    $value->image_url = $value->media->first() ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
                    
 //                     if($value->variant_price > $maxPrice){
 //                         $maxPrice = $value->variant_price;
@@ -350,11 +355,7 @@ class CategoryController extends FrontController{
                     // }
                 }
             }
-            $maxPrice =  DB::select("SELECT MAX(product_variants.price) as max_price FROM product_variants INNER JOIN products ON products.id = product_variants.product_id WHERE product_variants.status = 1 AND products.is_live = 1 AND products.category_id = ?", [$category_id])[0]->max_price;
             $listData = $products;
-            if($is_max){
-                $listData = $maxPrice;
-            }
             return $listData;
         }
     }
@@ -366,7 +367,6 @@ class CategoryController extends FrontController{
      */
     public function categoryVendorProducts(Request $request, $domain = '', $slug1 = 0, $slug2 = 0)
     {
-
         // slug1 => category slug
         // slug2 => vendor slug
         $maxPrice = 0;
@@ -541,7 +541,8 @@ class CategoryController extends FrontController{
                             }
                             $q->groupBy('product_id');
                         },
-                    ])->select('products.id', 'products.sku', 'products.brand_id', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count', 'products.is_featured','products.batch_count', 'products.updated_at')
+                    ])
+                    ->select('products.id', 'products.sku', 'products.brand_id', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count', 'products.is_featured','products.batch_count', 'products.updated_at')
                             ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
                             ->join('product_translations', 'product_translations.product_id', '=', 'products.id') // Or whatever the join logic is
                     // ->where('vendor_id', $vid)
@@ -556,7 +557,8 @@ class CategoryController extends FrontController{
                             ->where('price', '>=', $startRange)
                             ->where('price', '<=', $endRange);
                     });
-            
+
+           
             $getAdditionalPreference = getAdditionalPreference(['is_attribute']);
             
             $calc_value = 30; //kilometer
@@ -624,9 +626,10 @@ class CategoryController extends FrontController{
             }else{
                 //
             }
+           
             // $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
-
             $products = $products->paginate($limit, $page);
+            
         if(!empty($products)){
             foreach ($products as $key => $value) {
                 $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
@@ -642,7 +645,7 @@ class CategoryController extends FrontController{
             }
         }
         $listData = $products;
-
+         
         $returnHTML = view('frontend.ajax.productList')->with(['data'=>$request->all(),'listData' => $listData,'category'=>$category])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML));
     }

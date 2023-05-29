@@ -6,11 +6,10 @@ use Auth;
 use HttpRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use App\Models\ClientPreference;
 use App\Models\Client;
 use App\Models\EmailTemplate;
 use Illuminate\Support\Facades\Log;
-use App\Models\ClientPreference;
-
 
 trait CustomerSignupSuccessEmailTrait{
 
@@ -33,7 +32,6 @@ trait CustomerSignupSuccessEmailTrait{
               $content = $email_template->content;
               $content = str_ireplace("{name}", $user->name, $content);
               $content = str_ireplace("{client_name}", $client_detail->name, $content);
-          
               $email_data = [
                   'name' => $user->name,
                   'client_name' => $client_detail->name,
