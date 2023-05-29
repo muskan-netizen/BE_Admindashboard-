@@ -69,8 +69,10 @@ class WalletController extends FrontController
                 }
 
                 $wallet->depositFloat($credit_amount, [__("Wallet has been").' <b>Credited</b> by transaction reference <b>'.$request->transaction_id.'</b>']);
-
-                $payment = new Payment();
+                $payment = Payment::where('transaction_id',$request->transaction_id)->first();
+                if(!$payment){
+                    $payment = new Payment();
+                }
                 $payment->date = date('Y-m-d');
                 $payment->user_id = $user->id;
                 $payment->transaction_id = $request->transaction_id;
