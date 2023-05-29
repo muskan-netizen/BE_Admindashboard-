@@ -119,6 +119,7 @@ body .pac-container{
     position: relative;
     z-index: 9;
     margin-left: 1%;
+    width: 100%;
 }
 .dashboard-right .dashboard .page-title h2 {
     font-size: 16px !important;
@@ -934,9 +935,10 @@ display: inline-block;
 }.supplier-rating p{height: unset;font-size: 12px;font-weight: 400;color: #535766;}
 .cart-main-box{z-index: 1;}
 .al_body_template_eight .product-card-box .img-outer-box.position-relative{
-    min-height:220px;
+    min-height:260px;
     height: 100%;
     overflow: hidden;
+    max-height: 260px;
 }
 .al_body_template_eight .render_full_selected_products .selected_products-slider .suppliers-img-outer {
     height: 100%;
@@ -1257,7 +1259,11 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
 .save-card-custom label {
     padding-left: 25px;
 }
-
+.product-order .product-order-detail img{
+    width: 100px;
+    max-width: 100px;
+    object-fit: contain;
+}
 
 @media (max-width:1440px){
     .al_body_template_four  .brand-ing {
@@ -1344,6 +1350,17 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
     .al_body_template_four ul.exzoom_img_ul{
         min-height: inherit!important;
         height: 100%!important;
+    }
+    .al_body_template_eight .vendor-design_new{
+        margin-top: 30px;
+    }
+    .al_body_template_eight .vendor-description .profile_address h3,
+    .al_body_template_eight .vendor-description .vendor_icon-design h4, .vendor-info li {
+        color: #000!important;
+    }
+    .vendor-info li svg g {
+        fill: #000;
+        stroke: #000;
     }
 }
 @media (max-width:767px){
@@ -1474,4 +1491,5 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
     .al_body_template_eight .main-product.single_category_products.mb-0.render_full_selected_products.bg-light-gray .suppliers-img-outer{
         min-height: auto !important;
     }
+
 }

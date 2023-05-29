@@ -300,7 +300,6 @@ $(document).ready(function () {
 				$("#proceed_to_azulpay_loader").show();
 			}
         }
-
         var time_zone = (Intl.DateTimeFormat().resolvedOptions().timeZone);
         var schedule_datetime = '';
         if($(this).data('rel') =='pickup_later'){
@@ -459,6 +458,8 @@ $(document).ready(function () {
                     }
                     else if(payment_option_id == 22){
                         payWithCcAvenue(response.data);
+                    }else if(payment_option_id == 48){
+                        paymentViaMtnMomo('',response.data,'pickup_delivery',reload_route)
                     }
                     else if(payment_option_id == 57){
                         payWithPesapal(payment_option_id,response.data);

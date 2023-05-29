@@ -597,6 +597,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         $('#wallet_payment_methods_error').html('');
         var method = $(this).val();
         var code = method.replace('radio-', '');
+    	console.log(code)
         if (code != '') {
             $("#wallet_payment_methods .option-wrapper").addClass('d-none');
             $("#wallet_payment_methods ."+code+"_element_wrapper").removeClass('d-none');
