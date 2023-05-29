@@ -763,7 +763,8 @@ class PickupDeliveryController extends BaseController{
                             'is_one_push_booking' => isset($request->is_one_push_booking)?$request->is_one_push_booking:0,
                             'available_seats' => isset($request->seats_for_booking)?$request->seats_for_booking:0,
                             'agent' => $request->agent_id ?? null,
-                            'order_pre_time'=>$vendor_details->order_pre_time
+                            'order_pre_time'=>$vendor_details->order_pre_time,
+                            'driver_unique_id' => $request->unique_id ?? null,
                         ];
                 if($request->has('bid_task_type')){
                     $postdata['bid_task_type']    = $request->bid_task_type;

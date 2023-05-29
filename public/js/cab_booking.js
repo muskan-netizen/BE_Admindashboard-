@@ -237,7 +237,7 @@ $(document).ready(function () {
     });
 
     // please order dispatcher
-    $(document).on("click", "#pickup_now, #pickup_now_bid, #pickup_later, #request_for_driver",function() {
+    $(document).on("click", "#pickup_now, #pickup_now_bid, #pickup_later",function() {
         var bookingType = $(this).attr('booking-type');
         if(bookingType == 'bid')
         {
@@ -248,6 +248,15 @@ $(document).ready(function () {
                 $('#driver_request_error').text('Driver Unique id is required');
                 return false;
             }
+            var isBase64 = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/;
+            var decode = isBase64.test(unique_id);
+
+            if(!decode){
+                $('#driver_request_error').text('Invalid Unique Id');
+                $('#driver_request_error').show();
+                return false;
+            }
+            
         }else{
             var payid = $(this).attr('data-payment_method');
         }
@@ -446,7 +455,13 @@ $(document).ready(function () {
                         payWithCcAvenue(response.data);
                     }
                     cabBookingPaymentOptions(payment_option_id, response.data);
-                }else{
+                }
+                else if(response.status == 201){
+                    $('#driver_request_error').text(response.message);
+                    $('#driver_request_error').show();
+                    return false;
+                }
+                else{
                     $('#show_error_of_booking').html(response.message);
                 }
             }

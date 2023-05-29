@@ -84,8 +84,8 @@ class NotifyUsersBeforePickup extends Command
         if(isset($client_preferences_addional['pickup_notification_before']) && $client_preferences_addional['pickup_notification_before'] == 1)
         {
             $hour = $client_preferences_addional['pickup_notification_before_hours'];
-            $user_ids = Order::on($database_name)->where('type',2)->where('scheduled_date_time',Carbon::now()->subHours($hour)->format("Y-m-d H:i:s"))->pluck('user_id');
-            Order::on($database_name)->where('type',2)->where('scheduled_date_time',Carbon::now()->subHours($hour)->format("Y-m-d H:i:s"))->chunk(100,function($orders) use ($database_name,$user_ids){
+            $user_ids = Order::on($database_name)->where('type',2)->where('scheduled_date_time',Carbon::now()->addHours($hour)->format("Y-m-d H:i"))->pluck('user_id');
+            Order::on($database_name)->where('type',2)->where('scheduled_date_time',Carbon::now()->addHours($hour)->format("Y-m-d H:i"))->chunk(100,function($orders) use ($database_name,$user_ids){
                 NotifyUsersPickupJob::dispatch($database_name,$orders,$user_ids);
             });
         }

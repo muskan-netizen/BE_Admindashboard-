@@ -924,21 +924,21 @@ input[type=number]::-webkit-outer-spin-button {
                 <span id="driver_request_error" class="text-danger"> </span>
                 </div>
 
+                <div class="payment-promo-container p-2" id="paymentMethods">
+                    <input type="hidden" id="payment-method-for-bid" value="1">
+                    <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal_bid" type='bid'>
+                        <span id="payment_type_bid">
+                            <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
+                        </span>
+                        <i class="fa fa-angle-down" aria-hidden="true"></i>
+                    </h4>
+                </div>
+                
                 <div class="row">
                     <div class="col-md-12 create-bid-btn">
-                        <button class="btn btn-solid w-100" id="request_for_driver" data-payment_method="1" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-task_type="schedule" booking-type='driver_request' data-tags="<%=(result.tags)%>">{{__('Request For Driver')}}</button>
+                        <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-task_type="schedule" booking-type='driver_request' data-tags="<%=(result.tags)%>">{{__('Request For Driver')}}</button>
                     </div>
                 </div>
-            </div>
-
-            <div class="payment-promo-container p-2 d-none" id="paymentMethods">
-                <input type="hidden" id="payment-method-for-bid" value="1">
-                <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal_bid" type='bid'>
-                    <span id="payment_type_bid">
-                        <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
-                    </span>
-                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-                </h4>
             </div>
             
             <span id="show_errors" class="text-danger"></span>
