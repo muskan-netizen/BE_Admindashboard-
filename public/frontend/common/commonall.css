@@ -1264,6 +1264,11 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
     max-width: 100px;
     object-fit: contain;
 }
+.al_body_template_eight .home-serivces .card-box .product-order span:last-child{
+    min-width: 85px;
+    text-align: right;
+    display: inline-block;
+}
 
 @media (max-width:1440px){
     .al_body_template_four  .brand-ing {
