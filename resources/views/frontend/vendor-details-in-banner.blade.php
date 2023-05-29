@@ -3,7 +3,7 @@
 <div class="row align-items-center">
         <div class="col-12 product-bottom-bar vendor-description pb-2">
             <div class="row vendor-details-left align-items-center">
-                <div class="col-md-1 vender-icon">
+                <div class="col-sm-2 col-md-1 vender-icon">
                     <div class="vendor-stories">
                         <div class="circle-wrapper"></div>
                         <a href="" data-toggle="modal" data-target="#vendorStories_">
@@ -13,7 +13,7 @@
                    
                     <!-- <img src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-lg" alt="profile-image"> -->
                 </div>
-                <div class="col-md-11 position-relative profile_address vendor_icon-design">
+                <div class="col-sm-10 col-lg-11 position-relative profile_address vendor_icon-design">
                             <h3>{{ $vendor->name }}</h3>
                             <div class="vendor-reviwes">
                         @if ($vendor->vendorRating > 0 && $client_preference_detail->rating_check == 1) 

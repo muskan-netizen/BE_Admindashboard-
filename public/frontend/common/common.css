@@ -2790,6 +2790,7 @@ body.al_body_template_eight .product-right .product-description .qty-box .input-
     width: auto!important;
     min-width: 70px !important;
     border-right: 1px solid #ced4da!important;
+    width:70px!important;
 }
 #product_variant_additional_increment_wrapper .input-group input {
     width: 100% !important;
@@ -3861,6 +3862,9 @@ body.al_body_template_one .footer-theme .sub-title li {
     text-align: left !important;
     left: 300px;
     position: absolute !important;
+}
+#add_new_address_form_modal{
+    overflow-y: scroll!important;
 }
 /*----------laptop view----------*/
 @media(max-width:1440px){

@@ -1518,6 +1518,7 @@ class StripeGatewayController extends FrontController
                         if($wallet_amount_used > 0){
                             $wallet = $user->wallet;
                             $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
+                            $this->sendWalletNotification($order->user_id, $order->order_number);
                         }
 
                         // $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
@@ -1714,6 +1715,7 @@ class StripeGatewayController extends FrontController
                         if($wallet_amount_used > 0){
                             $wallet = $user->wallet;
                             $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
+                            $this->sendWalletNotification($order->user_id, $order->order_number);
                         }
 
                         // $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
@@ -1873,6 +1875,7 @@ class StripeGatewayController extends FrontController
                         if($wallet_amount_used > 0){
                             $wallet = $user->wallet;
                             $wallet->depositFloat($wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
+                            $this->sendWalletNotification($order->user_id, $order->order_number);
                         }
 
                         // $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
