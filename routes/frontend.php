@@ -372,11 +372,15 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/user/wallet/credit', 'Front\WalletController@postPaymentCreditWallet')->name('user.postPaymentCreditWallet');
     // Mtn Momo payment gateway
 
-	Route::post('payment/mtn-momo', 'Front\MtnMomoController@createTocken')->name('mtn.momo.createTocken');
+	Route::any('payment/webhook/mtn', 'Front\MtnMomoController@mtnCallback')->name('payment.webhook.mtn');
+	
+	Route::group(['prefix' => 'mtn'], function () {
+		Route::post('payment', 'Front\MtnMomoController@createToken')->name('mtn.momo.createToken');
+		Route::get('response/{id?}', 'Front\MtnMomoController@getResponse')->name('payment.response.mtn');
+	});
 
 	// Mtn Momo payment gateway
 
-	Route::post('payment/mtn-momo', 'Front\MtnMomoController@createTocken')->name('mtn.momo.createTocken');
 	// Route::get('payment/dpo/redirect', 'Front\DpoController@successPage')->name('dpo.redirect');
 	// Route::get('payment/dpo/success', 'Front\DpoController@successPage')->name('dpo.success');
 	// Route::get('payment/dpo/fail', 'Front\DpoController@failPage')->name('dpo.fail');

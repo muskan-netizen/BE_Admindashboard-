@@ -5,7 +5,11 @@ use Session;
 use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Traits\{ToasterResponser,MtnMomoPaymentManager,PaymentTrait};
+use App\Http\Traits\ {
+    ToasterResponser,
+    MtnMomoPaymentManager,
+    PaymentTrait
+};
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
@@ -37,7 +41,6 @@ class PaymentOptionController extends BaseController
      */
     public function index()
     {
-
         $payment_codes = $this->paymentOptionArray('payment_codes');
         $payOption = PaymentOption::whereIn('code', $payment_codes)->get();
 
@@ -403,13 +406,13 @@ class PaymentOptionController extends BaseController
                                 'ccavenue_enc_key' => 'required',
                                 'ccavenue_access_code' => 'required',
                                 'ccavenue_merchant_id' => 'required',
-                                'custom_url'=>   'required'
+                                'custom_url' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'enc_key' => $request->ccavenue_enc_key,
                                 'access_code' => $request->ccavenue_access_code,
                                 'merchant_id' => $request->ccavenue_merchant_id,
-                                'custom_url'=>  $request->custom_url
+                                'custom_url' => $request->custom_url
                             ));
                             break;
 
@@ -611,12 +614,12 @@ class PaymentOptionController extends BaseController
                             break;
                         case 'plugnpay':
                             $validatedData = $request->validate([
-                                'plugnpay_publisher_name' => 'required',
+                                'plugnpay_publisher_name' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'plugnpay_publisher_name' => $request->plugnpay_publisher_name
                             ));
-                        break;
+                            break;
 
                         case 'offline_manual':
                             $validatedData = $request->validate([
@@ -757,27 +760,27 @@ class PaymentOptionController extends BaseController
                             ));
                             break;
                         case 'skip_cash':
-                        $validatedData = $request->validate([
-                            'skip_cash_client_id' => 'required',
-                            'skip_cash_key_id' => 'required',
-                            'skip_cash_api_secret' => 'required',
-                        ]);
-                        $json_creds = json_encode(array(
-                            'skip_cash_client_id' => $request->skip_cash_client_id,
-                            'skip_cash_key_id' => $request->skip_cash_key_id,
-                            'skip_cash_api_secret' => $request->skip_cash_api_secret,
-                            'skip_cash_testing_url' => $request->skip_cash_testing_url,
-                            'skip_cash_live_url' => $request->skip_cash_live_url,
-                        ));
-                        break;
+                            $validatedData = $request->validate([
+                                'skip_cash_client_id' => 'required',
+                                'skip_cash_key_id' => 'required',
+                                'skip_cash_api_secret' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'skip_cash_client_id' => $request->skip_cash_client_id,
+                                'skip_cash_key_id' => $request->skip_cash_key_id,
+                                'skip_cash_api_secret' => $request->skip_cash_api_secret,
+                                'skip_cash_testing_url' => $request->skip_cash_testing_url,
+                                'skip_cash_live_url' => $request->skip_cash_live_url
+                            ));
+                            break;
                         case 'nmi':
                             $validatedData = $request->validate([
                                 'nmi_client_id' => 'required',
-                                'nmi_key_id' => 'required',
+                                'nmi_key_id' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'nmi_client_id' => $request->nmi_client_id,
-                                'nmi_key_id' => $request->nmi_key_id,
+                                'nmi_key_id' => $request->nmi_key_id
                             ));
                         break;
 
@@ -797,17 +800,17 @@ class PaymentOptionController extends BaseController
                         break;
                             break;
 
-                            case 'data_trans':
-                                $validatedData = $request->validate([
-                                    'data_trans_merchant_id' => 'required',
-                                    'data_trans_password' => 'required'
-                                ]);
+                        case 'data_trans':
+                            $validatedData = $request->validate([
+                                'data_trans_merchant_id' => 'required',
+                                'data_trans_password' => 'required'
+                            ]);
 
-                                $data_trans_arr = array(
-                                    'merchant_id' => $request->data_trans_merchant_id,
-                                    'password' => $request->data_trans_password
-                                );
-                                $json_creds = json_encode($data_trans_arr);
+                            $data_trans_arr = array(
+                                'merchant_id' => $request->data_trans_merchant_id,
+                                'password' => $request->data_trans_password
+                            );
+                            $json_creds = json_encode($data_trans_arr);
 
                             break;
                         break;
@@ -951,63 +954,38 @@ class PaymentOptionController extends BaseController
      */
     public function MtnmomoApiKey(Request $request)
     {
-        $subscription_key = $request->subscription_key;
-        $reference_id = $request->reference_id;
-        $create_user = MtnMomoPaymentManager::createApiUser($subscription_key, $reference_id);
-        $result = json_decode($create_user, true);
-        if ($result['status'] == 201) {
-            $api_data = MtnMomoPaymentManager::createApiKey($subscription_key, $reference_id);
+        if (empty($request)) {
             return json_encode([
-                'status' => 201,
-                'api_key' => $api_data['apiKey'],
-                'message' => 'Api key generate successfully.'
+                'status' => 404,
+                'message' => 'Request is Empty'
             ]);
+        }
+
+        self::$_subscriptionKey = $request->subscription_key;
+        self::$_referenceId = $request->reference_id;
+        self::$_isSandbox = $request->sandboxCheckbox;
+        self::__init(true);
+
+        $result = self::createApiUser();
+        if ($result['status'] == 201) {
+            $api_data = self::createApiKey();
+            if ($api_data['status'] == 201) {
+                return json_encode([
+                    'status' => 201,
+                    'api_key' => $api_data['apiKey'],
+                    'message' => 'Api key generated successfully.'
+                ]);
+            } else {
+                return json_encode([
+                    'status' => $api_data['status'],
+                    'message' => $api_data['message']
+                ]);
+            }
         } else {
             return json_encode([
                 'status' => $result['status'],
                 'message' => $result['message']
             ]);
         }
-    }
-
-    public function GenerateAccressToken()
-    {
-        $payOpt = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'mtn_momo')
-            ->where('status', 1)
-            ->first();
-        $json = json_decode($payOpt->credentials);
-        $subscription_key = $json->subscription_key;
-        $reference_id = $json->reference_id;
-        $api_key = $json->api_key;
-        $token = base64_encode($reference_id . ':' . $api_key);
-        if ($payOpt->test_mode == '1') {
-            $appUrl = 'https://sandbox.momodeveloper.mtn.com/';
-            $envirement = 'sandbox';
-        } else {
-            $appUrl = 'https://payments.stabexinternational.com/api/mtn/Callback/';
-            $envirement = 'live';
-        }
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $appUrl . '/collection/token',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_HTTPHEADER => array(
-                'X-Target-Environment: ' . $envirement,
-                'Ocp-Apim-Subscription-Key: ' . $subscription_key,
-                'Content-Type: application/json',
-                'Authorization: Basic ' . $token
-            )
-        ));
-
-        $response = curl_exec($curl);
-
-        curl_close($curl);
-        return $response;
     }
 }

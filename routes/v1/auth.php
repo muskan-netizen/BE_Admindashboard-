@@ -162,6 +162,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('cart/checkSlotOrders', 'Api\v1\CartController@checkSlotOrders'); //Added by Surendra
         Route::post('user/editorder', 'Api\v1\OrderController@editOrderByUser');
 	    Route::post('user/discardeditorder', 'Api\v1\OrderController@discardEditOrderByUser');
+        Route::post('order/vendorReached', 'Api\v1\OrderController@sendVendorReachedLocation');
 
         // Rating & review
         Route::group(['prefix' => 'rating'], function () {
@@ -281,5 +282,10 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('order-ride-bid-details', 'Api\v1\PickupDeliveryController@getBidsRelatedToOrderRide');
         Route::post('accept-ride-bid-request', 'Api\v1\PickupDeliveryController@acceptBidsRelatedToBidRideOrderRide');
         Route::post('decline-ride-bid', 'Api\v1\PickupDeliveryController@declineBidsRelatedToOrderRide');
+
+        Route::group(['prefix' => 'mtn'], function () {
+            Route::post('create-token', 'Api\v1\MtnMomoController@createToken')->name('mtn.createtoken');
+            Route::get('response/{id?}', 'Api\v1\MtnMomoController@getResponse')->name('mtn.response');
+        });
     });  
 });
