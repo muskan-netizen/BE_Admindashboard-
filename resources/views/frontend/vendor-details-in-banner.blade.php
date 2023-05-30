@@ -3,7 +3,7 @@
 <div class="row align-items-center">
         <div class="col-12 product-bottom-bar vendor-description pb-2">
             <div class="row vendor-details-left align-items-center">
-                <div class="col-sm-2 col-md-1 vender-icon">
+                <div class="col-sm-2 col-lg-1 vender-icon">
                     <div class="vendor-stories">
                         <div class="circle-wrapper"></div>
                         <a href="" data-toggle="modal" data-target="#vendorStories_">
