@@ -152,9 +152,8 @@ class CartController extends BaseController
             $user = Auth::user();
             $langId = $user->language;
             $user_id = $user->id;
-            $client_timezone = Client::select('timezone')->first();
-            $timezone        = $user->timezone ? $user->timezone :  ($client_timezone->timezone ?? 'Asia/Kolkata' );
-            
+            $client_timezone = DB::table('clients')->first('timezone');
+            $timezone = $user->timezone ? $user->timezone :  ($client_timezone->timezone ?? 'Asia/Kolkata' );           
             $unique_identifier = '';
             if (!$user_id) {
                 if (empty($user->system_user)) {
