@@ -1234,9 +1234,12 @@ class OrderController extends BaseController
                     'message' => __('Order Status Updated Successfully.' . (($orderPlacedNo) ? ' Order No : ' . $orderPlacedNo : ''))
                 ]);
             }
+            DB::commit();
+            $currentOrderStatus->order_status_option_id = $vendor_order_status_check->order_status_option_id;
+            $currentOrderStatus->save();
             return response()->json([
                 'status' => 'error',
-                'message' =>__('Order has already updated!!!')
+                'message' =>__('Order has already updated !!')
             ]);
         } catch (\Exception $e) {
             DB::rollback();
@@ -2059,7 +2062,7 @@ class OrderController extends BaseController
                 'allocation_type' => 'a',
                 'task_type' => $task_type,
                 'schedule_time' => $schedule_time ?? null,
-                'cash_to_be_collected' => !empty($orderVendorDetails) ? ($orderVendorDetails->payable_amount + $orderVendorDetails->service_fee_percentage_amount) : 0.00,
+                'cash_to_be_collected' => $payable_amount ?? 0.00,
                 'order_number' => $order->order_number,
                 'barcode' => '',
                 'order_team_tag' => $team_tag,
