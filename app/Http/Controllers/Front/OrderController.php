@@ -1382,13 +1382,14 @@ class OrderController extends FrontController
                 'LongTermProducts.addons'
             ])
                 ->where('cart_id', $cart->id)
+                ->where('is_cart_checked', 1)
                 ->where('status', [
                 0,
                 1
             ])
                 ->orderBy('created_at', 'asc')
                 ->get();
-
+            
             /* Initialize empty data */
             $total_amount = 0;
             $total_discount = 0;
@@ -2348,7 +2349,11 @@ class OrderController extends FrontController
 
                 CartAddon::where('cart_id', $cart->id)->delete();
                 CartCoupon::where('cart_id', $cart->id)->delete();
-                CartProduct::where('cart_id', $cart->id)->delete();
+                // CartProduct::where('cart_id', $cart->id)->delete();
+                $cart_product_ids = $cart_products->pluck('id');
+                $cart_product_ids->chunk(200)->each(function ($ids) {
+                    CartProduct::query()->whereIn('id', $ids)->delete();
+                });                
                 CartProductPrescription::where('cart_id', $cart->id)->delete();
                 CartDeliveryFee::where('cart_id', $cart->id)->delete();
                 // send sms

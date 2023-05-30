@@ -149,11 +149,11 @@
                     </div>
 
                     <div class="row border-bottom product_title_add py-1 no-gutters">
-                        {{-- <div class="col-md-1 col">
-                            <span><input type="checkbox" name="check_all" id="check_all"></span>
-                        </div> --}}
+                        <div class="col-md-1 col">
+                            
+                        </div>
 
-                        <div class="col-md-4 col">
+                        <div class="col-md-3 col">
                             <span>{{ __('Product Details') }}</span>
                         </div>
 
@@ -265,15 +265,14 @@
                         <div id="tbody_{{ $product->vendor->id }}">
 
                             @foreach ($product->vendor_products as $vendor_product)
-                                {{-- @php
-                                pr($vendor_product->schedule_slot_name);
-                                @endphp --}}
+                                {{-- @dd($vendor_product) --}}
                                 <div class="row al align-items-md-center vendor_products_tr alFourTemplateCartPage"
                                     id="tr_vendor_products_{{ $vendor_product->id }}">
-                                    {{-- <div class="product-img col-1 col-md-1">
-                                        <input type="checkbox" name="checked_cart_product" id="checked_cart_product" value="" />
-                                    </div> --}}
-                                    <div class="product-img col-3 col-md-1">
+                                    <div class="product-img col-1 col-md-1">
+                                        <input type="checkbox" name="checked_cart_product" class="checked-cart-product" id="checked_cart_product" value="{{$vendor_product->id}}" {{ $vendor_product->is_cart_checked ? 'checked' : '' }} >
+                                        <i class="fa fa-spinner fa-pulse d-none" id="fa_spinner_{{$vendor_product->id}}" aria-hidden="true" style="color: var(--theme-deafult)"></i>
+                                    </div>
+                                    <div class="product-img col-2 col-md-1">
                                         @if (!empty($vendor_product->pvariant->media_one))
                                             <img class='blur-up lazyload w-100'
                                                 data-src="{{ $vendor_product->pvariant->media_one->pimage->image->path->proxy_url . '200/200' . $vendor_product->pvariant->media_one->pimage->image->path->image_path }}">

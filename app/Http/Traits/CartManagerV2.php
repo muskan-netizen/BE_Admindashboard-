@@ -383,7 +383,7 @@ trait CartManagerV2{
 
 
 
-        $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','cart_id','recurring_booking_type','recurring_week_day','recurring_week_type','recurring_day_data','recurring_booking_time','delivery_date', 'slot_price', 'slot_id','dispatch_agent_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','cart_id','recurring_booking_type','recurring_week_day','recurring_week_type','recurring_day_data','recurring_booking_time','delivery_date', 'slot_price', 'slot_id','dispatch_agent_id', 'is_cart_checked')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
         
 
 
@@ -725,8 +725,10 @@ trait CartManagerV2{
                     $total_container_charges = $container_charges_in_currency * $prod->quantity;
                     $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
 
-                    $sub_total+=$quantity_price+$quantity_container_charges;
-
+                    if($prod->is_cart_checked == 1){
+                        $sub_total+=$quantity_price+$quantity_container_charges;
+                    }
+                    
                     $prod->pvariant->price_in_cart = $prod->pvariant->price??0;
                    
                     $total_quantity += $prod->quantity;
@@ -747,9 +749,10 @@ trait CartManagerV2{
                     $prod->quantity_container_charges = decimal_format($quantity_container_charges);
                     //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
                     $prod->quantity_role_price = $quantity_role_price;
-
-                    $payable_amount = $payable_amount + $prod->additional_price + $quantity_price + $quantity_container_charges;
-
+                    
+                    if($prod->is_cart_checked == 1){
+                        $payable_amount = $payable_amount + $prod->additional_price + $quantity_price + $quantity_container_charges;
+                    }
 
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                     $total_container_charges = $total_container_charges + $quantity_container_charges;
