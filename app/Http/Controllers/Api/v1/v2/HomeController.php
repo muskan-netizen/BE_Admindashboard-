@@ -1021,9 +1021,9 @@ class HomeController extends BaseController
             ->where('cts.language_id', $langId)
             ->where(function ($q) use ($keyword) {
                 foreach ($keyword as $word) {
-                    $q->orwhere('cts.name', 'LIKE', '%' . $word . '%')
-                        ->orWhere('categories.slug', 'LIKE', '%' . $word . '%')
-                        ->orWhere('cts.trans-slug', 'LIKE', '%' . $word . '%');
+                    $q->orwhere('cts.name', 'LIKE', $word . '%')
+                        ->orWhere('categories.slug', 'LIKE', $word . '%')
+                        ->orWhere('cts.trans-slug', 'LIKE', $word . '%');
                 }
             });
             if(@$orderBy){
@@ -1097,7 +1097,7 @@ class HomeController extends BaseController
 
         $vendors = $vendors->where(function ($q) use ($keyword) {
             foreach ($keyword as $word) {
-                $q->orwhere('name', 'LIKE', '%' . $word . '%')->orWhere('address', 'LIKE', '%' . $word . '%');
+                $q->orwhere('name', 'LIKE', $word . '%')->orWhere('address', 'LIKE', $word . '%');
             }
         })->where('status', 1);
         if(@$orderBy){
@@ -1133,7 +1133,7 @@ class HomeController extends BaseController
             ->select('brands.id', 'bt.title  as dataname', 'image')
             ->where(function ($q) use ($keyword) {
                 foreach ($keyword as $word) {
-                    $q->orWhere('bt.title', 'LIKE', '%' . $word . '%');
+                    $q->orWhere('bt.title', 'LIKE', $word . '%');
                 }
             })
 
@@ -1181,7 +1181,7 @@ class HomeController extends BaseController
 
             ->where(function ($q) use ($keyword) {
                 foreach ($keyword as $word) {
-                    $q->orwhere('products.sku', ' LIKE', '%' . $word . '%')->orWhere('products.url_slug', 'LIKE', '%' . $word . '%')->orWhere('pt.title', 'LIKE', '%' . $word . '%');
+                    $q->orwhere('products.sku', ' LIKE', $word . '%')->orWhere('products.url_slug', 'LIKE', $word . '%')->orWhere('pt.title', 'LIKE', $word . '%');
                 }
             })->where('products.is_live', 1)->whereNull('deleted_at')->groupBy('products.id')
             ->whereIn('vendor_id', $allowed_vendors);
@@ -1314,9 +1314,9 @@ class HomeController extends BaseController
                     })
                     ->where(function ($q) use ($keyword) {
                         foreach ($keyword as $word) {
-                            $q->orwhere('products.sku', ' LIKE', '%' . $word . '%')
-                                ->orWhere('products.url_slug', 'LIKE', '%' . $word . '%')
-                                ->orWhere('pt.title', 'LIKE', '%' . $word . '%');
+                            $q->orwhere('products.sku', ' LIKE', $word . '%')
+                                ->orWhere('products.url_slug', 'LIKE', $word . '%')
+                                ->orWhere('pt.title', 'LIKE', $word . '%');
                         }
 
                         // ->orWhere('pt.body_html', 'LIKE', '%' . $keyword . '%')
