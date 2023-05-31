@@ -1234,9 +1234,12 @@ class OrderController extends BaseController
                     'message' => __('Order Status Updated Successfully.' . (($orderPlacedNo) ? ' Order No : ' . $orderPlacedNo : ''))
                 ]);
             }
+            DB::commit();
+            $currentOrderStatus->order_status_option_id = $vendor_order_status_check->order_status_option_id;
+            $currentOrderStatus->save();
             return response()->json([
                 'status' => 'error',
-                'message' =>__('Order has already updated!!!')
+                'message' =>__('Order has already updated !!')
             ]);
         } catch (\Exception $e) {
             DB::rollback();
