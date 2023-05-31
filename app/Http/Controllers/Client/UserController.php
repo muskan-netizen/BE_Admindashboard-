@@ -807,7 +807,7 @@ class UserController extends BaseController
                         return $this->errorResponse(__('Amount is greater than customer available funds'), 422);
                     }
                     $wallet->withdrawFloat($amount, [
-                        'description' => 'Wallet has been <b>Dedited</b>',
+                        'description' => 'Wallet has been <b>Debited</b>',
                         'remarks' => $request->remarks,
                         'created_by' => Auth::id()
                     ]);

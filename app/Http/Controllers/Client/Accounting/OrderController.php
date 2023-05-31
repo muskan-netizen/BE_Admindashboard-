@@ -51,27 +51,19 @@ class OrderController extends Controller{
         $user = Auth::user();
         $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
         $search_value = $request->get('search');
-<<<<<<< HEAD
 
-=======
         $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
->>>>>>> 13d9b8a0a85b83c868b84b6cc7dce55e4b4202af
+
         $vendor_orders = OrderVendor::with(['orderDetail.paymentOption', 'user','vendor','payment','orderstatus.OrderStatusOption']);
         if (!empty($request->get('date_filter'))) {
 
             $date_date_filter = explode(' to ', $request->get('date_filter'));
-
-            $to_date = (!empty($date_date_filter[1])) ? $date_date_filter[1]:$date_date_filter[0];
             $from_date = $date_date_filter[0];
-<<<<<<< HEAD
 
             $from_date = Carbon::parse($from_date, $timezone)->setTimezone('UTC');
+            $to_date = (!empty($date_date_filter[1]))?$date_date_filter[1]:$date_date_filter[0];
             $to_date = Carbon::parse($to_date, $timezone)->setTimezone('UTC')->addDays(1);
 
-=======
-            $from_date = Carbon::parse($from_date, $timezone)->setTimezone('UTC');
-            $to_date = Carbon::parse($to_date, $timezone)->setTimezone('UTC')->addDays(1);
->>>>>>> 13d9b8a0a85b83c868b84b6cc7dce55e4b4202af
             $vendor_orders = $vendor_orders->whereBetween('created_at',[$from_date, $to_date]);
         }
 

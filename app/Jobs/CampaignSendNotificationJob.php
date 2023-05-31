@@ -33,16 +33,10 @@ class CampaignSendNotificationJob implements ShouldQueue
         $this->allNotifications = $allNotifications;
         $this->client_preferences = $client_preferences;
         $this->headers = $headers;
+
     }
-
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
-
-    public function handle()
-    {
+    
+    public function handle(){
         $allNotifications = $this->allNotifications;
         $client_preferences = $this->client_preferences;
         $headers = $this->headers;
@@ -120,13 +114,30 @@ class CampaignSendNotificationJob implements ShouldQueue
                     //send push
                     //$redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/viewcart";
                     $redirect_URL = $notifications[0]->campaign->push_url_option_value;
+                    $url_option =  $notifications[0]->campaign->push_url_option;
+                    $content = [];
+                    if($url_option == 1){
+                        $content['title'] = 'Url';
+                    }elseif($url_option == 2){
+                        $content['title'] = 'Category';
+                    }else{
+                        $content['title'] = 'Vendor';
+                    }
+                    $content['type'] = $url_option;
+                    $content['redirect'] = $redirect_URL;
+                    $content['type_value'] = $content['title'];
+                    if($url_option != 1){
+                        $url = explode('/', $redirect_URL);
+                        $content['redirect']= isset($url[2])?$url[2]:0;
+                        $content['type_value']= isset($url[0])?$url[0]:0;
+                    }
                     $title =  $notifications[0]->campaign->push_title;
                     $body = $notifications[0]->campaign->push_message_body;
                     $bulkNotifications = $notifications->chunk(500);
                     foreach ($bulkNotifications as $bulkNotification) {
                         $tokens = $bulkNotification->pluck('device_token');
                         $roster_ids = $bulkNotification->pluck('id');
-                        $this->sendPushBulKNotication($tokens->toArray(), $title, $redirect_URL, $body, $roster_ids, $client_preferences, $headers);
+                        $this->sendPushBulKNotication($tokens->toArray(), $title, $content, $body, $roster_ids, $client_preferences, $headers);
                     }
                     break;
             }
@@ -143,14 +154,17 @@ class CampaignSendNotificationJob implements ShouldQueue
                     'body'  => $body,
                     'sound' => "default",
                     "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
-                    'click_action' => $redirect_URL,
+                    'click_action' => '',
                     "android_channel_id" => "default-channel-id"
                 ],
                 "data" => [
                     'title' => $title,
                     'body'  => $body,
                     'type' => "reminder_notification",
-                    'click_action' => $redirect_URL,
+                    'redirect_title' => $redirect_URL['title'],
+                    'redirect_type' => $redirect_URL['type'],
+                    'redirect_type_value' => $redirect_URL['type_value'],
+                    'redirect_data' => $redirect_URL['redirect']
                 ],
                 "priority" => "high"
             ];

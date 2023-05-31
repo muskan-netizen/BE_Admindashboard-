@@ -62,7 +62,7 @@
                  </tr>
               </thead>
               {!! (isset($mailData['email_template_content'])) ?  $mailData['email_template_content'] : $email_template_content !!}
-            </table>
+             </table>
          </div>
       </section>
    </body>

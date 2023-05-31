@@ -32,6 +32,7 @@
         "fruitcake/laravel-cors": "^2.0",
         "genealabs/laravel-sign-in-with-apple": "^0.5.0",
         "genealabs/laravel-socialiter": "^0.3.3",
+        "grimzy/laravel-mysql-spatial": "^5.0",
         "guzzlehttp/guzzle": "^6.3.1|^7.0.1",
         "hubspot/hubspot-php": "*",
         "intervention/image": "^2.5",

@@ -207,7 +207,9 @@ article#page-container section .vendors section {
     left: 0;
     height: auto;
     object-fit: contain;
+    object-position: top!important;
 }
+
 
 .slick-next:focus:before,
 .slick-next:hover:before,
@@ -258,7 +260,7 @@ article#page-container section .vendors section {
 top: 62% !important;
 }
 .al_body_template_eight span.rating-number {
-    top: 50%;
+    top: 10px;
     position: absolute;
     right: 12px;
     height: 22px;
@@ -818,6 +820,11 @@ body.al_body_template_eight section.suppliers-section.container.vender_slider {
         max-width: 98% !important;
         padding-top: 10px !important;
     }
+    .al_body_template_eight .single_category_products .suppliers-img-outer{
+        min-height: 290px !important;
+        max-height: 290px !important;
+    }
+    
 }
 
 article#page-container {
@@ -988,7 +995,8 @@ body.al_body_template_eight section.container.popular-brands.left-shape_.positio
 }
 .al_body_template_eight .alNewSliderTopBrand .brand-img{
     height: 100%;
-    min-height:273px;
+    min-height:260px;
+    max-height:260px;
 }
 .al_body_template_eight .alNewSliderTopBrand .brand-img img{
     width: 100%;height: 100%;
@@ -1507,6 +1515,7 @@ section.suppliers-section.container.vender_slider .supplier-rating h5 {
     border-radius: 10px 10px 0 0;
     min-height: 360px;
     height: 100%;
+    max-height: 360px;
 }
 
 /* .render_full_spotlight_deals .supplier-rating {
@@ -1608,6 +1617,7 @@ section.main-product.single_category_products .supplier-rating {
     transform: initial;
     left: 0;
     top: 0;padding-bottom: 10px;
+    min-height: 82px;
 }
 
 section.main-product.single_category_products .supplier-rating h4 {
@@ -1981,7 +1991,7 @@ section.main-product.single_category_products.mb-0.render_full_selected_products
         min-height: 260px;
     }
     section.main-product.single_category_products .suppliers-img-outer.position-relative img {
-        height: 136px;
+        height: auto;
     }
     body.al_body_template_eight .aside_bar {
         position: inherit;
