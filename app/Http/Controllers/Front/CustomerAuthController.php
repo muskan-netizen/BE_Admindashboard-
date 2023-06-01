@@ -136,6 +136,7 @@ class CustomerAuthController extends FrontController
         }else{
             $register_page = "account.registernew";
         }
+        
         if (!Session::get('referrer')) {
             return view('frontend.'.$register_page)->with(['navCategories' => $navCategories,'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents]);
         } else {

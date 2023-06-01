@@ -11,7 +11,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Pagination\Paginator;
-use App\Models\{User, Vendor, Order,UserVendor, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption,ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, Category, OrderQrcodeLinks, ProductVariantImage, RescheduleOrder, UserWishlist, ProductAttribute, Attribute, Client};
+use App\Models\{User, Vendor, Order,UserVendor, ProductAvailability,PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption,ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, Category, OrderQrcodeLinks, ProductVariantImage, RescheduleOrder, UserWishlist, ProductAttribute, Attribute, Client};
 use Log;
 
 
@@ -2087,7 +2087,9 @@ class StoreController extends BaseController{
 				$sku_url =  ($client->sub_domain.env('SUBMAINDOMAIN'));
 			}
 
-			$slug = generateSlug($request->product_name);
+			$slug = str_replace(' ', '-',$request->product_name);
+			$generated_slug = $sku_url.'.'.$slug;
+			$slug = generateSlug($generated_slug);
 			$slug = str_replace(' ', '-',$slug);
 			$generated_slug = $sku_url.'.'.$slug;
 
@@ -2099,10 +2101,25 @@ class StoreController extends BaseController{
 				$product->url_slug = $generated_slug;
 				$product->title = $request->product_name;        
 				$product->category_id = $request->category_id;
+				$product->description = $request->description ?? '';
 				$product->type_id = 1;
 				$product->is_live = 1;
 				$product->publish_at = date('Y-m-d H:i:s');
 				$product->vendor_id = $user_vendor->vendor_id;
+				if(@$request->address){
+					$product->address = $request->address;
+				}
+				if(@$request->latitude){
+					$product->latitude = $request->latitude;
+				}
+
+				if(@$request->longitude){
+					$product->latitude = $request->longitude;
+				}
+				$client_lang = ClientLanguage::where('is_primary', 1)->first();
+				if (!$client_lang) {
+					$client_lang = ClientLanguage::where('is_active', 1)->first();
+				}
 				$client_lang = ClientLanguage::where('is_primary', 1)->first();
 				if (!$client_lang) {
 					$client_lang = ClientLanguage::where('is_active', 1)->first();
@@ -2124,6 +2141,22 @@ class StoreController extends BaseController{
 					$product_category->save();
 					$proVariant = new ProductVariant();
 					$proVariant->price = $request->price ?? 0;
+					if(@$request->week_price){
+						$proVariant->week_price = $request->week_price ?? 0;
+					}
+					if(@$request->month_price){
+						$proVariant->month_price = $request->month_price ?? 0;
+					}
+					if(@$request->emirate){
+						$proVariant->emirate = $request->emirate;
+					}
+					if(@$request->compare_at_price){
+						$proVariant->compare_at_price = $request->compare_at_price;
+					}
+
+					if(@$request->minimum_duration){
+						$proVariant->minimum_duration = $request->minimum_duration * 24;
+					}
 					$proVariant->sku = $slug;
 					$proVariant->title =$slug . '-' .  empty($request->product_name) ?$slug : $request->product_name;
 					$proVariant->product_id = $product->id;
@@ -2329,7 +2362,22 @@ class StoreController extends BaseController{
 							}
 						}
 					}
-
+					if( @$request->date_availability && is_array($request->date_availability)) {
+						$date_availability_data = [];
+						foreach($request->date_availability as $date_availability){
+							$date_availability_data[] = [
+								'product_id' => $product->id,
+								'date_time' => $date_availability['date_time'],
+								'not_available' => $date_availability['not_available'],
+								'created_at' => Carbon::now(),
+								'updated_at' => Carbon::now()
+							];
+						}
+						if(@$date_availability_data){
+							ProductAvailability::insert($date_availability_data);
+						}
+						
+					}
 				return $this->successResponse($data, 'Product added successfully!', 200);
 			}else{
 				return $this->errorResponse('Sorry, You are not a vendor.', 500);

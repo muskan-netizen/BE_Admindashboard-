@@ -63,6 +63,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('get/agents', 'Api\v1\PickupDeliveryController@getAgents');
         Route::get('account', 'Api\v1\ProfileController@account');
         Route::get('orders', 'Api\v1\OrderController@getOrdersList');
+        Route::get('orders-all', 'Api\v1\OrderController@getOrdersListLenderBorrower');
+        Route::get('orders_upcoming_ongoing', 'Api\v1\OrderController@getOrdersLenderBorrower');
         Route::get('RejectedOrderProduct', 'Api\v1\OrderController@getRejectedOrdersList');
         Route::post('orders/tip-after-order', 'Api\v1\OrderController@tipAfterOrder');
         Route::get('wishlists', 'Api\v1\ProfileController@wishlists');
@@ -73,6 +75,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('update/image', 'Api\v1\ProfileController@updateAvatar');
         Route::post('user/getAddress', 'Api\v1\ProfileController@getAddress');
         Route::post('order-detail', 'Api\v1\OrderController@postOrderDetail');
+        Route::post('order-detail_p2p', 'Api\v1\OrderController@postOrderDetailP2p');
         Route::post('order-update', 'Api\v1\OrderController@orderUpdate');
 
         Route::post('order-ride-bid-details', 'Api\v1\PickupDeliveryController@getBidsRelatedToOrderRide');
@@ -162,6 +165,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('cart/checkSlotOrders', 'Api\v1\CartController@checkSlotOrders'); //Added by Surendra
         Route::post('user/editorder', 'Api\v1\OrderController@editOrderByUser');
 	    Route::post('user/discardeditorder', 'Api\v1\OrderController@discardEditOrderByUser');
+        Route::post('user/orderVenderStatusUpdate', 'Api\v1\OrderController@orderVenderStatusUpdate');
         Route::post('order/vendorReached', 'Api\v1\OrderController@sendVendorReachedLocation');
 
         // Rating & review

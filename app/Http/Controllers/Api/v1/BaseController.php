@@ -315,15 +315,24 @@ class BaseController extends Controller{
     public function categoryNav($lang_id, $vends=[],$type = 'delivery') {
 
         $categoryTypes = getServiceTypesCategory($type);
-
+        $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
         $preferences = ClientPreference::select('is_hyperlocal', 'client_code', 'language_id', 'celebrity_check')->first();
         $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
-                    ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to')
-                    ->whereIn('categories.type_id',$categoryTypes )
-                    ->distinct('categories.slug');
+                    ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to');
+                   
+                    if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                        $categories->whereIn('categories.type_id',[10] );
+                    }else{
+                        $categories->whereIn('categories.type_id',$categoryTypes );
+                    }
+                    
+                $categories =  $categories->distinct('categories.slug');
 
         $status = $this->field_status;
         $include_categories = [4,8]; // type 4 for brands
+        if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+            $include_categories[] = 10;
+        }
         $celebrity_check = 0;
         if ($preferences) {
             if((isset($preferences->celebrity_check)) && ($preferences->celebrity_check == 1)){
