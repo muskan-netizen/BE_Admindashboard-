@@ -347,9 +347,24 @@ class BaseController extends Controller{
         if($celebrity_check == 0){
             $categories = $categories->where('categories.type_id', '!=', 5);
         }
+        
+        $catIds =   Category::select('id')->whereIn('id',function($query){
+            $query->select('category_id')->from((new Product())->getTable())->where('is_live', 1)->whereNull('deleted_at')->groupBy('category_id')
+            ->pluck('category_id')->toArray();})->pluck('id')->toArray();
+            
+        $parent_ids =  Category::select('parent_id')->whereIn('id',function($query){
+            $query->select('category_id')->from((new Product())->getTable())->where('is_live', 1)->whereNull('deleted_at')->groupBy('category_id')
+            ->pluck('category_id')->toArray();
+        })->groupBy('parent_id')->pluck('parent_id')->toArray();
+        
+        if(!empty($parent_ids)){
+            $catIds = array_merge($catIds,$parent_ids);
+        }
+        
         $categories = $categories->where('categories.is_visible', 1)
                         ->where('categories.status', '!=', $status)
                         ->where('categories.is_core', 1)
+                        ->whereIn('categories.id',$catIds)
                         ->where('categories.is_visible', 1)
                         ->where('cts.language_id', $lang_id)
                         ->orderBy('categories.parent_id', 'asc')
@@ -524,7 +539,10 @@ class BaseController extends Controller{
                 }
             }
         }
-        $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->get();
+        $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->whereIn('id', function($query){
+            $query->select('vendor_id')->from((new Product())->getTable())->where('is_live', 1)->whereNull('deleted_at')->groupBy('vendor_id')
+            ->pluck('vendor_id')->toArray();
+        })->get();
 
         if($serviceAreaVendors->isNotEmpty()){
             foreach($serviceAreaVendors as $value){
