@@ -106,6 +106,13 @@ class NotificationTemplateSeeder extends Seeder
                 "tags" => "{order_id}",
                 "content" => "Your order ({order_id}) has been Delayed",
                 "slug" => "order-delayed-customer"
+            ],
+            [
+                "label" => "Reached Vendor Location",
+                "subject" => "Reached Vendor Location",
+                "tags" => "{order_id}",
+                "content" => "Location reached",
+                "slug" => "reached-vendor-location"
             ]
         ];
         NotificationTemplate::truncate();
