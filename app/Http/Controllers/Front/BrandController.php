@@ -165,34 +165,60 @@ class BrandController extends FrontController
                 $productIds = $new_pIds;
             }
         }
-
+        $order_type = $request->has('order_type') ? $request->order_type : '';
         $products = Product::with(['media.image', 'translation' => function($q) use($langId){
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                         },
-                        'variant' => function($q) use($langId, $variantIds){
+                        'variant' => function($q) use($langId, $variantIds,$order_type){
                             $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
                             if(!empty($variantIds)){
                                 $q->whereIn('id', $variantIds);
                             }
                             $q->groupBy('product_id');
                         },
-                    ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count')
-                    ->where('brand_id', $brandId)
-                    ->where('is_live', 1)
-                    ->whereIn('id', function($qr) use($startRange, $endRange){ 
+                    ])->select('products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.is_featured','products.batch_count')
+                    ->join('product_translations', 'product_translations.product_id', '=', 'products.id') // Or whatever the join logic is
+                    ->join('product_variants', 'product_variants.product_id', '=', 'products.id') 
+                    ->where('products.brand_id', $brandId)
+                    ->where('products.is_live', 1)
+                    ->distinct('products.id')
+                    ->whereIn('products.id', function($qr) use($startRange, $endRange){ 
                         $qr->select('product_id')->from('product_variants')
                             ->where('price',  '>=', $startRange)
                             ->where('price',  '<=', $endRange);
                         });
+                        //added for custom filter of brand
+                        if (!empty($order_type) && $order_type == 'featured') {
+                            $products = $products->where('products.is_featured', 1);
+                        }
+                        if (!empty($order_type) && $order_type == 'a_to_z') {
+                            $products = $products->orderBy('product_translations.title', 'asc');
+                        }
+                        if (!empty($order_type) && $order_type == 'z_to_a') {
+                            $products = $products->orderBy('product_translations.title', 'desc');
+                        }
+                        if (!empty($order_type) && $order_type == 'low_to_high') {
+                            $products = $products->orderBy('product_variants.price', 'asc');
+                        }
+                        if (!empty($order_type) && $order_type == 'high_to_low') {
+                            $products = $products->orderBy('product_variants.price', 'desc');
+                        }
+                        if (!empty($order_type) && $request->order_type == 'rating') {
+                            $products = $products->orderBy('products.averageRating', 'desc');
+                        }
+                        if (!empty($order_type) && $order_type == 'newly_added') {
+                            $products = $products->orderBy('products.id', 'desc');
+                        }
+                       
+
+
 
         if(!empty($productIds)){
-            $products = $products->whereIn('id', $productIds);
+            $products = $products->whereIn('products.id', $productIds);
         }
-
         $pagiNate = (Session::has('cus_paginate')) ? Session::get('cus_paginate') : 12;
-        
         $products = $products->paginate($pagiNate);
-
+       
         if(!empty($products)){
             foreach ($products as $key => $value) {
                 foreach ($value->variant as $k => $v) {
