@@ -379,9 +379,9 @@ class UserController extends BaseController
     public function newEdit($domain = '', $id)
     {
         $subadmin = User::find($id);
-        $geoIds = explode(',',$subadmin->geo_ids);
-        // dd($geoIds);
         $userRole = @$subadmin->roles[0]->id;
+        $geoIds = explode(',',$subadmin->geo_ids);
+
         $permissions = PermissionsOld::where('status', 1)->whereNotin('id', [4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 22, 23, 24, 25])->get();
         $user_permissions = UserPermissions::where('user_id', $id)->get();
         $vendor_permissions = UserVendor::where('user_id', $id)->pluck('vendor_id')->toArray();
@@ -432,6 +432,14 @@ class UserController extends BaseController
     public function newUpdate(Request $request, $domain = '', $id)
     {
         $user = User::where('id', $id)->first();
+
+        
+        $vendorRole = @$user->roles[0]->id;
+        if(@$vendorRole && $vendorRole == 4){
+         //Need to remove vendor permissons from user table 
+         $this->removeVendorPermissionAndRole($id);
+        }
+
         $data = [
             'status'        => $request->status,
             'role_id'       => $request->has('role_id') ? $request->get('role_id') : $user->role_id,
@@ -494,8 +502,7 @@ class UserController extends BaseController
                 }
             }
         }
-        //Need to remove vendor permissons from user table 
-        $this->removeVendorPermissionAndRole($id);
+       
         return redirect()->back()->with('success','Customer Updated successfully!');
     }
 
