@@ -350,12 +350,12 @@ class BaseController extends Controller{
         
         $catIds =   Category::select('id')->whereIn('id',function($query){
             $query->select('category_id')->from((new Product())->getTable())->where('is_live', 1)->whereNull('deleted_at')->groupBy('category_id')
-            ->pluck('category_id')->toArray();})->pluck('id')->toArray();
+            ->pluck('category_id');})->pluck('id');
             
         $parent_ids =  Category::select('parent_id')->whereIn('id',function($query){
             $query->select('category_id')->from((new Product())->getTable())->where('is_live', 1)->whereNull('deleted_at')->groupBy('category_id')
-            ->pluck('category_id')->toArray();
-        })->groupBy('parent_id')->pluck('parent_id')->toArray();
+            ->pluck('category_id');
+        })->groupBy('parent_id')->pluck('parent_id');
         
         if(!empty($parent_ids)){
             $catIds = array_merge($catIds,$parent_ids);
@@ -541,7 +541,7 @@ class BaseController extends Controller{
         }
         $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->whereIn('id', function($query){
             $query->select('vendor_id')->from((new Product())->getTable())->where('is_live', 1)->whereNull('deleted_at')->groupBy('vendor_id')
-            ->pluck('vendor_id')->toArray();
+            ->pluck('vendor_id');
         })->get();
 
         if($serviceAreaVendors->isNotEmpty()){

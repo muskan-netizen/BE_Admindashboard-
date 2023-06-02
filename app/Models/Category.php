@@ -77,7 +77,7 @@ class Category extends Model
         return $this->hasMany(Category::class, 'parent_id', 'id')->join('types', 'types.id', 'categories.type_id')
         ->select('categories.id', 'categories.slug', 'categories.parent_id', 'categories.icon', 'categories.icon_two','categories.image','type_id', 'types.title as redirect_to')->whereIn('categories.id', function($query){
             $query->select('category_id')->from((new Product())->getTable())->where('is_live', 1)->whereNull('deleted_at')
-            ->groupBy('category_id')->pluck('category_id')->toArray();
+            ->groupBy('category_id')->pluck('category_id');
             
         })->orderBy('position', 'ASC');
     }
