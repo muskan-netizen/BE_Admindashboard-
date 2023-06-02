@@ -2724,6 +2724,12 @@ class OrderController extends BaseController
                 if (!empty($order->scheduled_date_time)) {
                     $order->scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);
                 }
+                if(!empty($order->scheduled_slot) ){
+                    $slot_time = explode("-",$order->scheduled_slot);
+                    $start_time = $slot_time[0];
+                    $end_time = !empty($slot_time[1]) ? $slot_time[1]: $slot_time[0];
+                    $order->schedule_slot =date('d-m-Y h:i A',strtotime( date('Y-m-d',strtotime($order->scheduled_date_time)). " " . $start_time)) . ' - ' . date('h:i A',strtotime($end_time));
+                }
                 $luxury_option_name = '';
                 $order->luxury_option = [];
                 if ($order->luxury_option_id > 0) {
