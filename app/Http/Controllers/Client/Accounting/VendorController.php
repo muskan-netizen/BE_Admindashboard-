@@ -40,9 +40,9 @@ class VendorController extends Controller{
                 $query->between($from_date." 00:00:00", $to_date." 23:59:59");
             }
         });
-        $data['total_order_value'] = decimal_format($vendors->sum('payable_amount'));
-        $data['total_delivery_fees'] = decimal_format($vendors->sum('delivery_fee'));
-        $data['total_admin_commissions'] = decimal_format($vendors->sum(DB::raw('admin_commission_percentage_amount + admin_commission_fixed_amount')));           
+            $data['total_order_value'] = decimal_format($vendors->where('order_status_option_id', '!=', 3)->sum('payable_amount'));
+            $data['total_delivery_fees'] = decimal_format($vendors->where('order_status_option_id', '!=', 3)->sum('delivery_fee'));
+            $data['total_admin_commissions'] = decimal_format($vendors->where('order_status_option_id', '!=', 3)->sum(DB::raw('admin_commission_percentage_amount + admin_commission_fixed_amount')));           
         if($flag){
             return $data;
         }

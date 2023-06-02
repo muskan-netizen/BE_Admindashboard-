@@ -174,7 +174,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                                                                                         $cart_id = 0;
                                                                                         $vendor_id = 0;
                                                                                         $product_id = $data->id;
-                                                                                        $variant_id = $data->variant[0] ? $data->variant[0]->id : 0;
+                                                                                        $variant_id = ((isset($data->variant[0]))?$data->variant[0]->id : 0);
                                                                                         $variant_price = 0;
                                                                                         $variant_quantity = $prod->variant_quantity;
                                                                                         $isAddonExist = 0;
