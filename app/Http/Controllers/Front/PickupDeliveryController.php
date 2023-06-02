@@ -44,6 +44,8 @@ class PickupDeliveryController extends FrontController{
             elseif($option->code == 'offline_manual'){
                 $json = json_decode($option->credentials);
                 $option->title = $json->manule_payment_title;
+            }elseif($option->code == 'obo'){
+                $option->title = __("O'Pay");
             }
 
             $option->title = __($option->title);

@@ -169,7 +169,9 @@ $is_service_product_price_from_dispatch_forOnDemand =$getOnDemandPricingRule['is
     $('.productFilter').click(function(){
         filterProducts();
     });
-
+    $(document).on('change','.sortingFilter',function(){
+        filterProducts();
+    });
     function filterProducts(){
         var brands = [];
         var variants = [];
@@ -187,7 +189,7 @@ $is_service_product_price_from_dispatch_forOnDemand =$getOnDemandPricingRule['is
             }
         });
         var range = $('.rangeSliderPrice').val();
-
+        var order_type = $('.sortingFilter').val();
         ajaxCall = $.ajax({
             type: "post",
             dataType: "json",
@@ -197,7 +199,8 @@ $is_service_product_price_from_dispatch_forOnDemand =$getOnDemandPricingRule['is
                 "brands": brands,
                 "variants": variants,
                 "options": options,
-                "range": range
+                "range": range,
+                "order_type" : order_type,
             },
             beforeSend : function() {
                 if(ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {

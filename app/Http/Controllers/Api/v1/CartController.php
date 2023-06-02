@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\v1;
 
 use DB;
-use Client;
 use Carbon\Carbon;
 use App\Models\Order;
 use App\Models\Country;
@@ -29,6 +28,7 @@ use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, 
 
 use GuzzleHttp\Client as GCLIENT;
 use Log;
+use App\Models\Client;
 //use App\Http\Traits\MpesaStkpush;
 
 class CartController extends BaseController
@@ -148,22 +148,21 @@ class CartController extends BaseController
 
         try {
             $preference = ClientPreference::first();
-            $luxury_option = LuxuryOption::where('title', $request->type)->first();
+            $luxury_option = LuxuryOption::where('title', $request->type)->first();            
             $user = Auth::user();
             $langId = $user->language;
             $user_id = $user->id;
             $client_timezone = DB::table('clients')->first('timezone');
-            $timezone        = $user->timezone ? $user->timezone :  ($client_timezone->timezone ?? 'Asia/Kolkata' );
+            $timezone = $user->timezone ? $user->timezone :  ($client_timezone->timezone ?? 'Asia/Kolkata' );           
             $unique_identifier = '';
-            if (@$user_id) {
+            if (!$user_id) {
                 if (empty($user->system_user)) {
                     return $this->errorResponse(__('System id should not be empty.'), 404);
                 }
+                $unique_identifier = $user->system_user;
             }
-            $unique_identifier = $user->system_user;
-
             $product = Product::where('sku', $request->sku)->first();
-
+            
             if (!$product) {
                 return $this->errorResponse(__('Invalid product.'), 404);
             }
@@ -173,7 +172,7 @@ class CartController extends BaseController
                 return $this->errorResponse(__('Invalid product variant.'), 404);
             }
 
-
+            
             $client_currency = ClientCurrency::where('is_primary', '=', 1)->first();
             $cart_detail = [
                 'is_gift' => 0,
@@ -398,7 +397,6 @@ class CartController extends BaseController
                 $cartProduct = CartProduct::where('cart_id', $cart_detail->id)
                     ->where('product_id', $product->id)
                     ->where('variant_id', $productVariant->id)->first();
-
                 if (!$cartProduct) {
                     $isnew = 1;
                 } else {
@@ -442,7 +440,6 @@ class CartController extends BaseController
                 $cartData->cart_product_id = $cartProduct->id;
                 $product_total_quantity_in_cart = CartProduct::where(['cart_id'=>$cartProduct->cart_id,'product_id'=> $product->id])->sum('quantity');
                 $cartData->product_total_qty_in_cart = intval($product_total_quantity_in_cart);
-                // dd($cartData-);
                 return $this->successResponse($cartData);
             } else {
                 return $this->successResponse($cartData);
@@ -2107,11 +2104,11 @@ class CartController extends BaseController
         }
 
         foreach($getallproduct as $data){
-            $request->vendor_id = $data->vendor_id;
-            $request->sku = $data->product->sku;
-            $request->quantity = $data->quantity;
-            $request->product_variant_id = $data->variant_id;
-
+            $request->request->add(['vendor_id' => $data->vendor_id,
+                'sku' => $data->product->sku,
+                'quantity' => $data->quantity,
+                'product_variant_id' => $data->variant_id
+            ]);
             if(isset($getallproduct->order) && !empty($getallproduct->order))
             $type = LuxuryOption::where('id',$getallproduct->order->luxury_option_id)->value('title');
 
@@ -2131,7 +2128,7 @@ class CartController extends BaseController
 
         }
 
-        return response()->json(['status' => 'success', 'message' => 'Order added to cart.']);
+       return response()->json(['status' => 'success', 'message' => 'Order added to cart.']);
 
 
     }

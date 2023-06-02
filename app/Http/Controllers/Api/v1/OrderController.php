@@ -2358,7 +2358,7 @@ class OrderController extends BaseController
                 $slot_time = explode("-",$order->orderDetail->scheduled_slot);
                 $start_time = $slot_time[0];
                 $end_time = !empty($slot_time[1]) ? $slot_time[1]: $slot_time[0];
-                $order->schedule_slot =date('Y-m-d h:i A',strtotime( date('Y-m-d',strtotime($order->scheduled_date_time)). " " . $start_time)) . ' - ' . date('h:i A',strtotime($end_time));
+                $order->schedule_slot =date('d-m-Y h:i A',strtotime( date('Y-m-d',strtotime($order->scheduled_date_time)). " " . $start_time)) . ' - ' . date('h:i A',strtotime($end_time));
             }
             $luxury_option_name = '';
             if ($order->orderDetail->luxury_option_id > 0) {
@@ -3786,7 +3786,15 @@ class OrderController extends BaseController
             } elseif ($order_status_id == 4) {
                 $notification_content = NotificationTemplate::where('id', 7)->first();
             } elseif ($order_status_id == 5) {
-                $notification_content = NotificationTemplate::where('id', 8)->first();
+
+                //Check for order is takeaway
+                if(@$orderData->luxury_option_id == 3)
+                {
+                    $notification_content = NotificationTemplate::where('slug', 'order-out-for-takeaway-delivery')->first();
+                }else{
+                    $notification_content = NotificationTemplate::where('id', 8)->first();
+                }
+               
             } elseif ($order_status_id == 6) {
                 $notification_content = NotificationTemplate::where('id', 9)->first();
             }
