@@ -684,54 +684,13 @@ class HomeController extends BaseController
             }
 
             $allVendorData = clone $vendorData;
-            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->limit(100)->get();
+            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->get(); //->limit(100)
             $venderIds  = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
 
             $timezone = $user->timezone ?? 'Asia/Kolkata';
             $start_date = new DateTime("now", new  DateTimeZone($timezone) );
             $start_date =  $start_date->format('Y-m-d');
             $end_date = Date('Y-m-d', strtotime('+13 days'));
-
-            // $vendor_ids = [];
-            // $vendor_categories = VendorCategory::where('category_id', $cid)->where('status', 1)->get();
-            // foreach ($vendor_categories as $vendor_category) {
-            //     if (!in_array($vendor_category->vendor_id, $vendor_ids)) {
-            //         $vendor_ids[] = $vendor_category->vendor_id;
-            //     }
-            // }
-
-            // $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
-
-            // $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
-            // $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
-            
-            // if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-            //     $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
-            //     //3961 for miles and 6371 for kilometers
-            //     $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
-            //     $vendorData = $vendorData->select('*', DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
-            //             cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
-            //             sin( radians(' . $latitude . ') ) *
-            //             sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->withAvg('product', 'averageRating');
-            //     $vendorData = $vendorData->whereIn('id', $vendor_ids);
-            //     //if($venderFilternear && ($venderFilternear == 1) ){
-            //         //->orderBy('vendorToUserDistance', 'ASC')
-            //         $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
-            //     //}
-            // }
-
-            //filter on ratings
-            // if($venderFilterbest && ($venderFilterbest == 1) ){
-            //     $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
-            // }
-            // $allVendorData = clone $vendorData;
-            // $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->take(5)->get();
-            // $venderIds = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
-            
-            // $timezone = $user->timezone ?? 'Asia/Kolkata';
-            // $start_date = new DateTime("now", new  DateTimeZone($timezone) );
-            // $start_date =  $start_date->format('Y-m-d');
-            // $end_date = Date('Y-m-d', strtotime('+13 days'));
 
 
             foreach ($vendorData as $vendor) {

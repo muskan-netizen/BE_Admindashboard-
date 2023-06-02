@@ -144,9 +144,11 @@ class ProductController extends BaseController
                         },
                         'variantSet.options' => function($zx) use($langId, $pvIds, $pid){
                             $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id')
-                            ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id')
+                            ->join('product_variants','pvs.product_variant_id','product_variants.id')
+                            ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id', 'product_variants.quantity', 'product_variants.price')
                             ->where('pvs.product_id', $pid)
-                            ->where('vt.language_id', $langId);
+                            ->where('vt.language_id', $langId)
+                            ->addSelect(DB::raw('(CASE WHEN product_variants.quantity = 0 THEN 1 ELSE 0 END) as is_disabled'));
                         },
                         'translation' => function($q) use($langId){
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
@@ -359,7 +361,6 @@ class ProductController extends BaseController
                 }
             }
 
-            
             $response['suggested_category_products'] =  $suggested_category_products;
             $response['suggested_brand_products'] =  $suggested_brand_products;
             $response['suggested_vendor_products'] =  $suggested_vendor_products;

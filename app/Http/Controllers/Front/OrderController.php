@@ -2390,9 +2390,7 @@ class OrderController extends FrontController
                 CartCoupon::where('cart_id', $cart->id)->delete();
                 // CartProduct::where('cart_id', $cart->id)->delete();
                 $cart_product_ids = $cart_products->pluck('id');
-                $cart_product_ids->chunk(200)->each(function ($ids) {
-                    CartProduct::query()->whereIn('id', $ids)->delete();
-                });                
+                CartProduct::query()->whereIn('id', $cart_product_ids)->delete();
                 CartProductPrescription::where('cart_id', $cart->id)->delete();
                 CartDeliveryFee::where('cart_id', $cart->id)->delete();
                 // send sms
