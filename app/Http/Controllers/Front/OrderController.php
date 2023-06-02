@@ -1650,6 +1650,12 @@ class OrderController extends FrontController
                         $total_amount += $vendor_cart_product->quantity * $quantity_role_price['amount'];
                         $variant_price = $quantity_role_price['amount'];
                     }
+                    $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
+                    if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                        $quantity_price = $request->total_amount;
+                        $total_amount = $request->total_amount;
+                        $variant_price = $request->total_amount;
+                    }
                     $order_product = new OrderProduct;
                     $order_product->order_id = $order->id;
                     $order_product->price = $variant_price;
@@ -1977,11 +1983,11 @@ class OrderController extends FrontController
                         $vendor_payable_amount += $service_fee_percentage_amount;
                     }
 
-                    $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
+                   
                     if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
                         $service_fee_percentage_amount        = 0;
                         $vendor_service_fee_percentage_amount = 0;
-                        $payable_amount = $request->total_amount;
+                        $total_amount = $payable_amount = $request->total_amount;
                         $total_service_fee = 0;
                         $vendor_payable_amount = 0;
                     }
@@ -2155,8 +2161,12 @@ class OrderController extends FrontController
             $total_discount = $total_discount + $total_subscription_discount;
 
             $order->total_amount = $total_amount - $Order_bid_discount??0;
-
-
+            if(!empty($vendor_cart_product->recurring_booking_time)){
+                $order->total_amount =  $request->total_amount;
+            }
+            if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                $order->total_amount = $request->total_amount;
+            }
             if($vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
                 $date       = explode(",",$vendor_cart_product->recurring_day_data);
                 if($vendor_cart_product->recurring_booking_type == 1 ||$vendor_cart_product->recurring_booking_type == 2 || $vendor_cart_product->recurring_booking_type == 3 || $vendor_cart_product->recurring_booking_type == 4){
@@ -2180,6 +2190,10 @@ class OrderController extends FrontController
                     $loyalty_amount_saved = $payable_amount;
                     $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
                 }
+            }
+
+            if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                $loyalty_points_used = $loyalty_amount_saved = 0;
             }
             // ------------ move up
             $tip_amount = 0;
@@ -2280,6 +2294,9 @@ class OrderController extends FrontController
                     $giftCardUsedAmount = @$calCulateGiftCard['used_GiftCardAmount'];
                 }
                 $order->payable_amount = $orderTotalPay;
+            }
+            if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                $order->payable_amount = $request->total_amount;
             }
 
             if (getAdditionalPreference([
