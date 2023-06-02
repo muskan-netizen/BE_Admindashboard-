@@ -16,7 +16,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                     <img src="{{asset('images/template-8/login-img.png')}}" class="img-fluid">
                 </div>
             </div>
-            <div class="col-lg-6 pl-3 mb-lg-0 mb-3 text-center pb-sm-0 {{(@$getAdditionalPreference['is_phone_signup'] == 1) ? 'offset-lg-3' : 'border-right' }}">
+            <div class="col-lg-6 pl-3 mb-lg-0 mb-3 text-center pb-sm-0 border-right">
                 <h3 class="mb-2">{{ __('Login To Your Account') }}</h3>
 
                 <div class="row mt-3 arabic-language">
