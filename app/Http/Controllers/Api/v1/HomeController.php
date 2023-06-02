@@ -684,8 +684,7 @@ class HomeController extends BaseController
             }
 
             $allVendorData = clone $vendorData;
-            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->get(); //->limit(100)
-            $venderIds  = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
+            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1);
 
             $timezone = $user->timezone ?? 'Asia/Kolkata';
             $start_date = new DateTime("now", new  DateTimeZone($timezone) );
@@ -786,10 +785,9 @@ class HomeController extends BaseController
                 }
             ])
             ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products','sub_cat_banners')
-            ->where('id', $cid)->first();//->toArray();
+            ->where('id', $cid)->first();
 
-            $childCatIds = $categories->childs->pluck('id')->toArray();
-            // dd($catIds);
+            $childCatIds = $categories->childs->pluck('id');
             $brands = Brand::with(['bc.categoryDetail', 'bc.categoryDetail.translation' =>  function ($q) use ($langId) {
                 $q->select('category_translations.name', 'category_translations.category_id', 'category_translations.language_id')->where('category_translations.language_id', $langId);
             }, 'translation' => function ($q) use ($langId) {
@@ -856,11 +854,8 @@ class HomeController extends BaseController
                     unset($value->redirect_vendor_id);
                 }
             }
-            // dd('asdsa');
-            // dd($mobile_banners);
 
             $homeData['brands'] = $brands;
-            // print_r($categories);die;
             $homeData['vendors'] = $vendorData;
 
             $homeData['on_sale_products'] = $on_sale_product_details;
