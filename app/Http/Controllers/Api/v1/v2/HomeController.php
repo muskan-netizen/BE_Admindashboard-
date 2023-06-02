@@ -262,8 +262,7 @@ class HomeController extends BaseController
             //$homeData['categories'] = $categories;
             return $this->successResponse($homeData);
         } catch (Exception $e) {
-            pr($e->getCode());
-            die;
+            return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
 
@@ -403,8 +402,7 @@ class HomeController extends BaseController
             //$homeData['categories'] = $categories;
             return $this->successResponse($homeData);
         } catch (Exception $e) {
-            pr($e->getCode());
-            die;
+            return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
 
