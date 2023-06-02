@@ -293,7 +293,6 @@ $order_is_long_term = $order->is_long_term;
                                     @endif
                                 </ul>
                                 <ul class="order-detail row">
-                                    <li class="col-12 col-md-4"><span>{{__('Order Total')}}:</span><span> {{Session::get('currencySymbol')}}{{decimal_format($total_amount)}}
                                     <li class="col-12 col-md-4"><span>{{__('Order Total')}}:</span><span>@if( $additionalPreference["is_token_currency_enable"])
                                         {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(decimal_format($total_amount))}}@else{{Session::get('currencySymbol').decimal_format($total_amount)}}@endif                                      
 

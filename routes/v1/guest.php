@@ -3,7 +3,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
     Route::post('dispatcher/check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromDispatcher');
 
-    Route::get('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
+    Route::any('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
 
     Route::post('check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromInventory');
 
@@ -22,6 +22,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::post('deleteOrderProductBySku', 'Api\v1\InventoryController@deleteOrderProductBySku');
             Route::post('needSyncWithOrder', 'Api\v1\InventoryController@needSyncWithOrder');
             Route::post('getOrderCategoryById', 'Api\v1\InventoryController@getOrderCategoryById');
+            Route::post('getSyncStoreOrderProductIds', 'Api\v1\InventoryController@getSyncStoreOrderProductIds');
         });
     });
 

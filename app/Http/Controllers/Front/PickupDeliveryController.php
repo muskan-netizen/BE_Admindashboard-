@@ -44,6 +44,8 @@ class PickupDeliveryController extends FrontController{
             elseif($option->code == 'offline_manual'){
                 $json = json_decode($option->credentials);
                 $option->title = $json->manule_payment_title;
+            }elseif($option->code == 'obo'){
+                $option->title = __("O'Pay");
             }
 
             $option->title = __($option->title);
@@ -511,11 +513,36 @@ class PickupDeliveryController extends FrontController{
                     }
 
                     return  $order_place;
-                }else{
+                }
+                else{
                     DB::rollback();
                     return $request_to_dispatch;
                 }
-            }else{
+            }else if($order_place && $order_place['status'] == 200 &&$request->payment_option_id == 48){
+                $data = [];
+                $order = $order_place['data'];
+                $request_to_dispatch = $this->placeRequestToDispatch($request, $order, $request->vendor_id);
+                if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
+                    DB::commit();
+                    $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
+                    $order_place['data']['user_name'] = $user->email;
+                    $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
+
+                     //Send message if ride is booked for friend
+                    if($request->type == 1 && isset($request->friendPhoneNumber))
+                    {
+                        $msg = "Hi ".($request->friendName??'User').", ".$user->name." has booked a ride for you.";
+                        $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
+                    }
+                    \Log::info($order_place);
+                    return  $order_place;
+                }
+                else{
+                    DB::rollback();
+                    return $request_to_dispatch;
+                }
+            }
+            else{
                 DB::commit();
                 //DB::rollback();
                 return $order_place;
@@ -552,18 +579,18 @@ class PickupDeliveryController extends FrontController{
 
             if (($request->payment_option_id != 1) && ($request->payment_option_id != 38) && ($request->payment_option_id != 2) && ($request->has('transaction_id')) && (!empty($request->transaction_id))) {
 
-                $payment_exists = Payment::where('transaction_id', $request->transaction_id)->where('payment_option_id', $request->payment_option_id)->first();
-                if(!$payment_exists){
+                $payment = Payment::where('transaction_id',$request->transaction_id)->first();
+                if(!$payment){
                     $payment = new Payment();
-                    $payment->date = date('Y-m-d');
-                    $payment->order_id = $order->id;
-                    $payment->user_id = $request->user_id;
-                    $payment->transaction_id = $request->transaction_id;
-                    $payment->balance_transaction = $order->payable_amount;
-                    $payment->payment_option_id = $request->payment_option_id;
-                    $payment->type = 'pickup_delivery';
-                    $payment->save();
                 }
+                $payment->date = date('Y-m-d');
+                $payment->order_id = $order->id;
+                $payment->user_id = $request->user_id;
+                $payment->transaction_id = $request->transaction_id;
+                $payment->balance_transaction = $order->payable_amount;
+                $payment->payment_option_id = $request->payment_option_id;
+                $payment->type = 'pickup_delivery';
+                $payment->save();
             }
             $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
             //Log::info("Request To Dispatch");

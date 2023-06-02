@@ -50,6 +50,10 @@
             }else if (payment_method == 49) {
                  $("#cab_payment_method_form .plugnpay_element_wrapper").removeClass('d-none');
             }
+            else if (payment_method == 58) {
+                $("#cab_payment_method_form .powertrans_element_wrapper").removeClass('d-none');
+                $("#cab_payment_method_form .stripe_element_wrapper").addClass('d-none');
+            }
             else {
                 $("#cab_payment_method_form .stripe_element_wrapper").addClass('d-none');
             }
@@ -92,7 +96,26 @@
                     }
                 }
             });
-        }else{
+        }
+        else if(payment_option_id == 58){
+            var expData = $('#date-element-powertrans').val();
+            var [expMonth, expYear] = [expData.slice(2), expData.slice(0, 2)]
+            var newDate = expMonth+'/'+expYear;
+            cardJson = {
+                'cno': $('#card-element-powertrans').val(),
+                'dt': newDate,
+                'cv': $('#cvv-element-powertrans').val(),
+                'name':'powertrans',
+            }
+            if(cardValidation(cardJson)){
+                console.log('Credit card information is valid.');
+            }
+            else {
+                success_error_alert('error', 'Invalid credit card information', "#powertrans_card_error");
+                return false;
+            }
+        }
+        else{
             //hide model
              $('#stripe_card_error').html('');
              if (type == 'bid') {
@@ -187,7 +210,7 @@ $(document).ready(function () {
         }
 
     });
-    
+
      // PlugPay payment
 
     $(document).on("click", "#paywithazulpay",function() {
@@ -206,7 +229,7 @@ $(document).ready(function () {
         }
 
     });
-    
+
     $(document).on("click", ".right-top",function() {
         var payment_option_id = $(".select_cab_payment_method:checked").val();
         if(payment_option_id == 49){
@@ -217,7 +240,7 @@ $(document).ready(function () {
            $('#plugnpay-date-element').val('');
            $('#plugnpay-cvv-element').val('');
         }
-        
+
          if(payment_option_id == 50){
            $("#azul_card_error").empty();
            $("#proceed_to_azulpay_loader").hide();
@@ -294,7 +317,6 @@ $(document).ready(function () {
 				$("#proceed_to_azulpay_loader").show();
 			}
         }
-        
         var time_zone = (Intl.DateTimeFormat().resolvedOptions().timeZone);
         var schedule_datetime = '';
         if($(this).data('rel') =='pickup_later'){
@@ -371,7 +393,7 @@ $(document).ready(function () {
         let payment_option_id           = $(this).attr('data-payment_method');
         let type                        = parseFloat($('input[name=is_for_friend]:checked').val());
         let driver_id                   = $(this).attr('data-driver_id');
- 
+
         // return false;
         let friendName=$('input[name=friendName]').val();
         let friendPhoneNumber= $('input[name=friendPhoneNumber]').val();
@@ -434,6 +456,8 @@ $(document).ready(function () {
                     }
                     else if(payment_option_id == 10){
                         paymentViaRazorpay('', response.data, 'pickup_delivery');
+                    }else if(payment_option_id == 22){
+                        payWithCcAvenue(response.data);
                     }else if(payment_option_id == 32){
                         payphoneButton(response.data);
                     }else if(payment_option_id == 42){
@@ -441,18 +465,29 @@ $(document).ready(function () {
                     }else if(payment_option_id == 30){
                         payWithFlutterWave(response.data);
                     }else if(payment_option_id == 49){
-                        
+
                         paymentViaplugnpay(reload_route,'',response.data);
                     }
                     else if(payment_option_id == 50){
-                        
+
                         paymentViazulpay(reload_route,'',response.data);
                     }
                     else if(payment_option_id == 52){
                         paymentViaSkipCash('',response.data);
                     }
+                    else if(payment_option_id == 56){
+                       paymentViaOboPay(reload_route,'',response.data);
+                    }
                     else if(payment_option_id == 22){
                         payWithCcAvenue(response.data);
+                    }else if(payment_option_id == 48){
+                        paymentViaMtnMomo('',response.data,'pickup_delivery',reload_route)
+                    }
+                    else if(payment_option_id == 57){
+                        payWithPesapal(payment_option_id,response.data);
+                    }
+                    else if(payment_option_id == 58){
+                        payWithPowerTrans(payment_option_id,response.data);
                     }
                     cabBookingPaymentOptions(payment_option_id, response.data);
                 }
@@ -968,13 +1003,13 @@ $(document).ready(function () {
                     $('#search_product_rider_main_div').html('');
                     if(response.data.length != 0){
                         var productData = _.extend({ Helper: NumberFormatHelper }, {results: response.data.products});
-                        
+
                         let products_template = _.template($('#products_template').html());
 
                         let products_rider_template = _.template($('#products_rider_template').html());
                         $("#search_product_main_div").append(products_template(productData));
                         $("#search_product_rider_main_div").append(products_rider_template(productData));
-                        
+
                         if($('input[name="is_cab_pooling_radio"]:checked').val() == 0 || $('input[name="is_cab_pooling_radio"]:checked').val() === undefined)
                         {
                             $("#search_product_main_div .double_price_p").hide();
@@ -2179,3 +2214,33 @@ function setLocationCoordinates(key, lat, lng) {
     longitudeField.value = lng;
 }
 google.maps.event.addDomListener(window, 'load', initMap);
+
+
+$(document).on("click",".btn-price-up-down",function(){
+    var product_id = $("#bid_ride_now").attr('data-product_id');
+    type      = $(this).attr('data-type');
+    var input = $("input[name='cab_bid_price']");
+    var currentVal = parseInt(input.val());
+    if (!isNaN(currentVal)) {
+        if(type == 'minus') {
+
+            if(currentVal > input.attr('min')) {
+                input.val(currentVal - 10).trigger('change');
+            }
+            if(parseInt(input.val()) == input.attr('min')) {
+            }
+
+        } else if(type == 'plus') {
+
+            if(currentVal < input.attr('max')) {
+                input.val(currentVal + 10).trigger('change');
+            }
+            if(parseInt(input.val()) == input.attr('max')) {
+            }
+        }
+    } else {
+        input.val(input.attr('min'));
+    }
+});
+
+

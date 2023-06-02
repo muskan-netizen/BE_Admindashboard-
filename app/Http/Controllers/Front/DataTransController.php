@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 use App\Http\Traits\DataTransTrait;
+use App\Http\Traits\OrderTrait;
 use App\Models\CaregoryKycDoc;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Log;
@@ -28,7 +29,9 @@ use Illuminate\Support\Facades\Redirect;
 
 class DataTransController extends Controller
 {
-    use DataTransTrait;
+    use DataTransTrait, OrderTrait;
+
+    const paymentId = 55;
     public function payByDataTrans(Request $request)
     {
         $data = $request->all();
@@ -36,7 +39,6 @@ class DataTransController extends Controller
         $data['come_from'] = 'app';
 
         $amt = $request->amt ?? $request->total_amount;
-        $order = Order::where(['order_number' => $request->order_number])->first();
 
         if ($request->isMethod('post')) {
                 $data['come_from'] = 'web';
@@ -57,7 +59,7 @@ class DataTransController extends Controller
         {
             $data = [
                 'amount' => $amt,
-                'payment_option_id' => 55,
+                'payment_option_id' => $this::paymentId,
                 'transaction_id' => $response['transactionId'],
                 'balance_transaction' => $amt,
                 'order_id' => $order->id ?? '',
@@ -69,7 +71,7 @@ class DataTransController extends Controller
         {
             $data = [
                 'amount' => $amt,
-                'payment_option_id' => 55,
+                'payment_option_id' => $this::paymentId,
                 'transaction_id' => $response['transactionId'],
                 'balance_transaction' => $amt,
                 'viva_order_id' => $request->subscription_id,
@@ -81,7 +83,7 @@ class DataTransController extends Controller
         else{
             $data = [
                 'amount' => $amt,
-                'payment_option_id' => 55,
+                'payment_option_id' => $this::paymentId,
                 'transaction_id' => $response['transactionId'],
                 'balance_transaction' => $amt,
                 'viva_order_id' => $request->order_number ?? '',
@@ -113,7 +115,6 @@ class DataTransController extends Controller
             if ($payment->type == 'cart') {
                return $this->completeOrderCart($request, $payment);
             } elseif ($payment->type == 'wallet') {
-                \Log::info("Wallet type");
                return $this->completeOrderWallet($request, $payment);
             } elseif ($payment->type == 'tip') {
                 $order = Order::find($payment->order_id);
@@ -134,54 +135,7 @@ class DataTransController extends Controller
             $order->payment_status = '1';
             $order->save();
 
-            $orderController = new OrderController();
-            $orderController->autoAcceptOrderIfOn($order->id);
-
-            $cart = Cart::where('user_id', auth()->id())->select('id')->first();
-            $cartid = $cart->id;
-            Cart::where('id', $cartid)->update([
-                'schedule_type' => null,
-                'scheduled_date_time' => null,
-                'comment_for_pickup_driver' => null,
-                'comment_for_dropoff_driver' => null,
-                'comment_for_vendor' => null,
-                // 'schedule_porder_numberickup' => null,
-                'schedule_dropoff' => null,
-                'specific_instructions' => null
-            ]);
-            CaregoryKycDoc::where('cart_id', $cartid)->update([
-                'ordre_id' => $order->id,
-                'cart_id' => ''
-            ]);
-            CartAddon::where('cart_id', $cartid)->delete();
-            CartCoupon::where('cart_id', $cartid)->delete();
-            CartProduct::where('cart_id', $cartid)->delete();
-            CartProductPrescription::where('cart_id', $cartid)->delete();
-
-            // $this->sendSuccessSMS($request, $order);
-            Payment::create([
-                'amount' => 0,
-                'transaction_id' => $pay->transaction_id,
-                'balance_transaction' => $order->payable_amount,
-                'type' => 'cart',
-                'user_id' => $pay->user_id,
-                'payment_option_id' => $pay->payment_option_id,
-                'date' => date('Y-m-d'),
-                'order_id' => $order->id
-            ]);
-
-            if (! empty($order->vendors)) {
-                foreach ($order->vendors as $vendor_value) {
-                    $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
-                    $user_vendors = UserVendor::where([
-                        'vendor_id' => $vendor_value->vendor_id
-                    ])->pluck('user_id');
-                    $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
-                }
-            }
-            $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
-            $super_admin = User::where('is_superadmin', 1)->pluck('id');
-            $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+            $this->orderSuccessCartDetail($order);
             
             if(isset($request->come_from) && $request->come_from == 'app')
             {
@@ -200,6 +154,7 @@ class DataTransController extends Controller
                 $wallet->depositFloat($order->wallet_amount_used, [
                     'Wallet has been <b>refunded</b> for cancellation of order #' . $order->order_number
                 ]);
+                $this->sendWalletNotification($user->id, $order->order_number);     
             }
 
             if(isset($request->come_from) && $request->come_from == 'app')
@@ -218,7 +173,7 @@ class DataTransController extends Controller
     {
         $data['amount'] =  $payment->amount;
         $data['transaction_id'] =  $payment->transaction_id;
-        $data['payment_option_id'] =  55;
+        $data['payment_option_id'] =  $this::paymentId;
         $request = new \Illuminate\Http\Request($data);
         $this->creditMyWallet($request);
         if(isset($request->come_from) && $request->come_from == 'app')
@@ -283,7 +238,7 @@ class DataTransController extends Controller
     public function completeOrderSubs($request, $payment)
     {
         $data['transaction_id'] = $payment->transaction_id;
-        $data['payment_option_id'] = 55;
+        $data['payment_option_id'] = $this::paymentId;
         $data['subsid'] = $request['subscription_id'];
         $data['subscription_id'] = $request['subscription_id'];
         $data['amount'] = $request['amount'];
@@ -316,14 +271,14 @@ class DataTransController extends Controller
                     $payment->date = date('Y-m-d');
                     $payment->type = 'pickup_delivery';
                     $payment->order_id = $order->id ?? '';
-                    $payment->payment_option_id = 55;
+                    $payment->payment_option_id = $this::paymentId;
                     $payment->user_id = $order->user_id ?? '';
                     $payment->transaction_id = $request->datatransTrxId;
                     $payment->balance_transaction = $order->payable_amount ?? '';
                     $payment->save();
                 }
                 
-                $request->request->add(['order_number'=> $order->order_number, 'payment_option_id' => 32, 'amount' => $order->payable_amount, 'transaction_id' => $request->datatransTrxId]);
+                $request->request->add(['order_number'=> $order->order_number, 'amount' => $order->payable_amount, 'transaction_id' => $request->datatransTrxId]);
                 $plaseOrderForPickup = new PickupDeliveryController();
                 $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
                 

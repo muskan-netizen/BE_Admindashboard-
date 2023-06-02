@@ -4787,6 +4787,29 @@ div#addRejectmodal {
 }
 
 
+/*================== Order page pending order list Style 15/05/2023 ===================== */
+#pending_orders_row .order-hover-btn .order_detail .col-4 {
+    width: 100%!important;
+    max-width: 100%!important;
+    text-align: left!important;
+    display: flex;
+    flex-wrap: wrap;
+        flex: unset;
+    align-items: center;
+}
+#pending_orders_row .order-hover-btn .order_detail .col-4 .list-img {
+    width: 25%;
+    margin: 0;
+}
+#pending_orders_row .order-hover-btn .order_detail .col-4 label.items_price {
+    width: 75%;
+    padding-left: 10px;
+}
+#pending_orders_row .order-hover-btn .order_detail .col-4 .list-img img {
+    width: 50px;
+}
+
+
 /*============================================= dashboard page responsive css start here ======================================= */
 
 @media(max-width:1600px) {

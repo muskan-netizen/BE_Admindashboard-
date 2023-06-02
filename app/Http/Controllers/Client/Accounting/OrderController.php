@@ -34,12 +34,12 @@ class OrderController extends Controller{
     public function getOrderVendorCalculations(Request $request,$flag = false){
         $order = $this->getOrdervendors($request);
         $data['total_order_count'] = $order->count();
-        $data['total_delivery_fees'] = decimal_format($order->sum('delivery_fee'));
+        $data['total_earnings_by_vendors'] = decimal_format($order->where('order_status_option_id', '!=', 3)->sum('payable_amount'));
+        $data['total_delivery_fees'] = decimal_format($order->where('order_status_option_id', '!=', 3)->sum('delivery_fee'));
         $data['total_cash_to_collected'] = decimal_format($order->whereHas('orderDetail', function ($query) {
-            return $query->where('payment_option_id', '=', 1);
-        })->sum('payable_amount'));
-            $data['total_earnings_by_vendors'] = decimal_format($order->sum('payable_amount'));
-
+            return $query->where('payment_option_id', 1);
+        })->where('order_status_option_id', '!=', 3)->sum('payable_amount'));
+        
         if($flag){
             return $data;
         }
@@ -49,15 +49,15 @@ class OrderController extends Controller{
 
     public function getOrdervendors($request){
         $user = Auth::user();
-        $search_value = $request->get('search');
         $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
+        $search_value = $request->get('search');
         $vendor_orders = OrderVendor::with(['orderDetail.paymentOption', 'user','vendor','payment','orderstatus.OrderStatusOption']);
         if (!empty($request->get('date_filter'))) {
 
             $date_date_filter = explode(' to ', $request->get('date_filter'));
-            $to_date = (!empty($date_date_filter[1]))?$date_date_filter[1]:$date_date_filter[0];
             $from_date = $date_date_filter[0];
             $from_date = Carbon::parse($from_date, $timezone)->setTimezone('UTC');
+            $to_date = (!empty($date_date_filter[1]))?$date_date_filter[1]:$date_date_filter[0];
             $to_date = Carbon::parse($to_date, $timezone)->setTimezone('UTC')->addDays(1);
             $vendor_orders = $vendor_orders->whereBetween('created_at',[$from_date, $to_date]);
         }

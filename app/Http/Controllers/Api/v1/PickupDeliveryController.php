@@ -131,10 +131,10 @@ class PickupDeliveryController extends BaseController{
                     }
                 }
                 if( $total_price > 0 && $preferences->tip_before_order == 1){
-                    $response['tips'] = array(
-                        ['label' => '5%', 'value' => decimal_format(0.05 * $total_price)],
-                        ['label' => '10%', 'value' => decimal_format(0.1 * $total_price)],
-                        ['label' => '15%', 'value' => decimal_format(0.15 * $total_price)]
+                $response['tips'] = array(
+                    ['label' => '5%', 'value' => decimal_format(0.05 * $total_price)],
+                    ['label' => '10%', 'value' => decimal_format(0.1 * $total_price)],
+                    ['label' => '15%', 'value' => decimal_format(0.15 * $total_price)]
                     );
                 }
             }
@@ -285,6 +285,7 @@ class PickupDeliveryController extends BaseController{
 
         DB::beginTransaction();
         try {
+            $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
             if($order_place && $order_place['status'] == 200){
                 if (($request->payment_option_id == 1) || ($request->payment_option_id == 42) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) || (( $request->has('is_postpay')) && ($request->is_postpay==1))){
@@ -292,6 +293,7 @@ class PickupDeliveryController extends BaseController{
                     $order = $order_place['data'];
                     $request_to_dispatch = $this->placeRequestToDispatch($request, $order, $request->vendor_id);
                     if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
+                        DB::commit();
                         $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
 
                         //Send message if ride is booked for friend
@@ -300,13 +302,37 @@ class PickupDeliveryController extends BaseController{
                             $msg = "Hi ".$request->friendName??'User'.", ".$user->name." has booked a ride for you.";
                             $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
                         }
+                        return $order_place;
                     }else{
                         DB::rollback();
                         return $request_to_dispatch;
                     }
+                }else if($request->payment_option_id == 48){
+                    $order = $order_place['data'];
+                    $request_to_dispatch = $this->placeRequestToDispatch($request, $order, $request->vendor_id);
+                    if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
+                        DB::commit();
+                        $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
+                        $order_place['data']['user_name'] = $user->email;
+                        $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
+    
+                         //Send message if ride is booked for friend
+                        if($request->type == 1 && isset($request->friendPhoneNumber))
+                        {
+                            $msg = "Hi ".($request->friendName??'User').", ".$user->name." has booked a ride for you.";
+                            $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
+                        }
+                        return  $order_place;
+                    }
+                    else{
+                        DB::rollback();
+                        return $request_to_dispatch;
+                    }
+                }else{
+                    DB::commit();
+                    //DB::rollback();
+                    return $order_place;
                 }
-                DB::commit();
-                return $order_place;
             }
             else{
                 DB::rollback();
@@ -575,7 +601,6 @@ class PickupDeliveryController extends BaseController{
                 if (isset($request->transaction_id) && (!empty($request->transaction_id))) {
                     $order->payment_status = 1;
                 }
-
                 if ((isset($request->tip)) && ($request->tip != '') && ($request->tip > 0)) {
                     $tip_amount = $request->tip;
                     $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
@@ -615,17 +640,27 @@ class PickupDeliveryController extends BaseController{
                 $order->payment_status = 1;
             }
             $order->save();
-            if (($request->payment_option_id != 1) && ($request->payment_option_id != 2) && ($request->transaction_id) && (!empty($request->transaction_id))) {
-                $payment = new Payment();
+            \Log::info($request->payment_option_id);
+            if ($request->payment_option_id != 1 && $request->payment_option_id != 2 && $request->has('transaction_id') && !empty($request->transaction_id)) {
+                $payment = Payment::where('transaction_id',$request->transaction_id)->first();
+                if(!$payment){
+                    $payment = new Payment();
+                }
                 $payment->date = date('Y-m-d');
                 $payment->order_id = $order->id;
                 $payment->transaction_id = $request->transaction_id;
                 $payment->balance_transaction = !empty($order->payable_amount)?$order->payable_amount:$request->amount;
                 $payment->type = 'pickup/delivery';
                 $payment->save();
+                
             }
 
             if($request->payment_option_id = 49){
+                $data['product_id']         =   $productId->product_id;
+                $data['tasks']              =   json_decode($tasks->tasks);
+                $request                    =   new \Illuminate\Http\Request($data);
+            }
+            if($request->payment_option_id = 48){
                 $data['product_id']         =   $productId->product_id;
                 $data['tasks']              =   json_decode($tasks->tasks);
                 $request                    =   new \Illuminate\Http\Request($data);
@@ -636,6 +671,7 @@ class PickupDeliveryController extends BaseController{
                 $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
                 $order_place['data']['user_name'] = $user->email;
                 $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
+                \Log::info($order_place);
                 return  $order_place;
             }else{
                 return $request_to_dispatch;
@@ -669,7 +705,7 @@ class PickupDeliveryController extends BaseController{
 
                 $schedule_datetime_del = NULL;
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
-                    $schedule_datetime_del = Carbon::parse($request->schedule_time, $customer->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                    $schedule_datetime_del = $request->schedule_time;
                 }
 
 
@@ -827,7 +863,7 @@ class PickupDeliveryController extends BaseController{
                     }
                 }
                 return $response;
-                }
+            }
             }catch(\Exception $e)
                     {
                         $data = [];
@@ -1008,6 +1044,7 @@ class PickupDeliveryController extends BaseController{
     public function getOrderTrackingDetails(Request $request){
         $user = Auth::user();
         $langId = $user->language ?? 1;
+        $preferences = ClientPreference::where('id', '>', 0)->first();
         $order = OrderVendor::with('orderDetail')->where('order_id',$request->order_id)
         ->with(['products.productRating.reviewFiles', 'products.product.category.categoryDetail.translation' => function($q) use($langId){
             $q->where('category_translations.language_id', $langId);
@@ -1022,7 +1059,15 @@ class PickupDeliveryController extends BaseController{
             $order_driver_rating = OrderDriverRating::where('order_id', $request->order_id)->first();
             $order->dispatcher_status_type=  $type ?  $type->type :1;
            $response = $response->json();
+           $response['tips'] = [];
 
+           if($order->orderDetail->total_amount > 0 && isset($preferences) && $preferences->tip_before_order == 1){
+               $response['tips'] = array(
+                   ['label' => '5%', 'value' => decimal_format(0.05 * $order->orderDetail->total_amount)],
+                   ['label' => '10%', 'value' => decimal_format(0.1 * $order->orderDetail->total_amount)],
+                   ['label' => '15%', 'value' => decimal_format(0.15 * $order->orderDetail->total_amount)]
+               );
+           }
            $response['order_details'] = $order->toArray();
            $response['order_driver_rating'] = $order_driver_rating;
            return $this->successResponse($response);

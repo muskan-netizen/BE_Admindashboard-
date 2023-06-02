@@ -6,6 +6,8 @@ use Auth;
 use Session;
 use Carbon\Carbon;
 use DB;
+use Grimzy\LaravelMysqlSpatial\Types\Point;
+
 
 trait ProductActionTrait{
 
@@ -16,24 +18,15 @@ trait ProductActionTrait{
         try 
         {
             $vendors = Vendor::select('id')->where('status', 1)->where($type, 1);
+          
             if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
 
-                // if($action == '1'){
-                //     // $vendors = Vendor::select('id')
-                //     //     ->where('status', 1)
-                //     //     ->where($type, 1);
-
-                //     // if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-                //         $vendors = $vendors->whereHas('serviceArea', function ($query) use ($latitude, $longitude) {
-                //             $query->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
-                //         });
-                //     // }
-
-                //     // $vendorIds = $vendors->get()->pluck('id');
-                //     // pr($vendorIds);
-
-                // }
-                $vendors = $vendors->havingRaw(" (SELECT COUNT(`service_areas`.`id`) FROM `service_areas` WHERE `service_areas`.`vendor_id` = `vendors`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)'))) > 0 ");
+             
+                    $point = new Point($longitude, $latitude);
+                    $vendors->whereHas('serviceArea', function ($query) use ($point) {
+                        $query->whereRaw("ST_Contains(service_areas.polygon, ST_GeomFromText(?))", [$point->toWKT()]);
+                    });
+           
                 
             }
 
@@ -42,7 +35,6 @@ trait ProductActionTrait{
             }else{
                 $vendors = $vendors->inRandomOrder();
             }
-            //pr($vendors->pluck('id')->toArray());
             return $vendors->pluck('id')->toArray();
         }
         catch (\Exception $e) {
@@ -411,14 +403,18 @@ trait ProductActionTrait{
     {
         try 
         {
+           // pr($venderIds);
             $vendorWhereIN = ' ';
             $completeWhere = ' ';
             $whereProductType = ' ';
             if(!empty($venderIds)){
                 $venid = implode(',',$venderIds);
-                $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
 
+            } else{
+                $venid = '0';
             }
+           $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
+
             if($where!=='all' && $where!=='on_sale'){
                 
                     if($where =='single_category_products' || $where == 'selected_products' || $where == 'popular_products' || $where == 'top_rated_products' ||  $where == 'recent_viewed'){
@@ -526,6 +522,8 @@ trait ProductActionTrait{
                         $vendorWhereIN 
 
                         $whereProductType 
+                        GROUP BY `products`.`id`
+
                         ORDER BY RAND() LIMIT 6";
 
             $returnArray           = DB::select( DB::raw($raw_query));
@@ -546,7 +544,7 @@ trait ProductActionTrait{
     public function getEvenOddTime($time) {
         return ($time % 5 === 0) ? $time : ($time - ($time % 5));
     }
-    public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude, $vendor_ids = [], $set_template = NULL)
+    public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude, $vendor_ids = [], $set_template = NULL,$venderFilterOpenClose=null,$venderFilterbest=null)
     {
         try 
         {
@@ -569,6 +567,7 @@ trait ProductActionTrait{
                 `vendors`.`show_slot`,
                 `vendors`.`admin_rating`,
                 `vendors`.`rating`,
+                `vendors`.`closed_store_order_scheduled`,
                 (SELECT (CASE WHEN `promo`.`promo_type_id` = 1 THEN CONCAT(CAST(`promo`.`amount` AS DECIMAL(2,0)), '% OFF | use ', `promo`.`name`) ELSE CONCAT('FLAT ', '$currencySymbol', '', CAST(`promo`.`amount`* $multiply AS DECIMAL(2,0)), ' OFF | use ', `promo`.`name`) END) FROM `promocodes` AS `promo` left join `promocode_details` AS `promo_info` ON `promo_info`.`promocode_id` = `promo`.`id` WHERE `promo`.`restriction_on` = 1 AND ((`promo`.`restriction_type` = 0 AND `promo_info`.`refrence_id` = `vendors`.`id`) OR (`promo`.`restriction_type` = 1 AND `promo_info`.`refrence_id` != `vendors`.`id`)) AND `promo`.`expiry_date` >= $current_date AND `promo`.`amount` > 0 ORDER BY `promo`.`amount` DESC LIMIT 1) as `promo_discount`,
                 (select MIN(`price`) FROM `product_variants` AS `pv` JOIN `products` AS `pr` ON `pr`.`id` = `pv`.`product_id` where `pr`.`vendor_id` = `vendors`.`id`) AS `minimum_price`,
                 GROUP_CONCAT(DISTINCT `category_translations`.`name` SEPARATOR ', ') AS `categoriesList`,
@@ -613,13 +612,13 @@ trait ProductActionTrait{
                 $mainQuery.= " ORDER BY `lineOfSightDistance` DESC";
             }else{
                 //-------------if admin rating is on otherwise random---------------
-                if($is_admin_vendor_rating == 1){
+                if($is_admin_vendor_rating == 1 && $venderFilterbest == 1){
                     $mainQuery.= " ORDER BY admin_rating DESC";
                 }
             }
             
             //if(!empty($set_template) && $set_template->template_id != 3){
-                $mainQuery .= " LIMIT 6";
+                $mainQuery .= " LIMIT 10";
             //}
             
 
@@ -675,9 +674,32 @@ trait ProductActionTrait{
                         }
                     }
                 }
+
+                if($value->closed_store_order_scheduled == 1){
+                    $slotsDate = findSlot('',$value->id,$type );
+                    $value->closed_store_order_scheduled = (($slotsDate)?$value->closed_store_order_scheduled:0);
+
+                }else{
+                    $value->closed_store_order_scheduled = 0;
+                }
             }
-            //pr($vendors);
-            return $vendors;
+
+            // $my_array = ['foo' => 1, 'bar' => 'baz', 'hello' => 'wld'];
+            if($venderFilterOpenClose == 1 || $venderFilterOpenClose == 0) {
+                $keyToFilter = 'is_vendor_closed';
+                $valueToFilter = $venderFilterOpenClose;
+
+                $filteredArray = array_filter($vendors, function($item) use ($keyToFilter, $valueToFilter) {
+                    return isset($item->$keyToFilter) && $item->$keyToFilter == $valueToFilter;
+                });
+                
+                $filtered = array_values($filteredArray);
+
+            } else {
+                $filtered = $vendors;
+            }
+           
+            return $filtered;
         }
         catch (\Exception $e) {
             return [];
@@ -743,7 +765,10 @@ trait ProductActionTrait{
             $mainQuery.= " $joinQuery WHERE `ba`.`status` =1 AND `ba`.`validity_on` = 1 AND (`ba`.`start_date_time` is null or (date(`ba`.`start_date_time`) <= '".$carbon_now."' and date(`ba`.`end_date_time`) >= '".$carbon_now."'))  ";
 
             if(isset($client_preferences->is_service_area_for_banners) && ($client_preferences->is_service_area_for_banners == 1) && ($client_preferences->is_hyperlocal == 1) && (!empty($latitude) && !empty($longitude))){
-                $mainQuery .= " HAVING (SELECT `id` FROM `$banner_service_areas_table` AS `bsa` where `ba`.`id` = `bsa`.`banner_id` AND EXISTS (select `id` from `$service_area_for_banners_table` AS `safb` WHERE `bsa`.`service_area_id` = `safb`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)')) and `type` = $type) > 0) > 0 ";
+
+                $point = new Point($longitude, $latitude);
+                //$mainQuery .= " HAVING (SELECT `id` FROM `$banner_service_areas_table` AS `bsa` where `ba`.`id` = `bsa`.`banner_id` AND EXISTS (select `id` from `$service_area_for_banners_table` AS `safb` WHERE `bsa`.`service_area_id` = `safb`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)')) and `type` = $type) > 0) > 0 ";
+                $mainQuery .= " HAVING (SELECT `id` FROM `$banner_service_areas_table` AS `bsa` where `ba`.`id` = `bsa`.`banner_id` AND EXISTS (select `id` from `$service_area_for_banners_table` AS `safb` WHERE `bsa`.`service_area_id` = `safb`.`id` AND ST_Contains(service_areas.polygon, ST_GeomFromText($point->toWKT())) and `type` = $type) > 0) > 0 ";
             }
             
             $mainQuery.= " ORDER BY `ba`.`sorting` ASC";

@@ -41,13 +41,13 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('dispatch-order-service-status-update/{id?}', 'Front\DispatcherController@dispatchOrderServiceProductStatusUpdate')->name('dispatch-order-service-status-update'); // Order Status update Dispatch
 	Route::post('dispatch/driver/bids/update/{id?}', 'Front\DispatcherController@dispatchDriverBidUpdate')->name('dispatch-driver-bids'); // instant booking and Bid and Ride pickup delivery update from dispatch
 	Route::post('dispatch/driver/bids/status/{id?}', 'Front\DispatcherController@dispatchDriverBidStatus')->name('dispatch-driver-bids-status'); // instant booking and Bid and Ride Bid Status pickup delivery update from dispatch
-	
+
 	//------routes for receive bids in bid and ride from agent (dispatcher)
 	Route::post('dispatch/driver/bids/update/{id?}', 'Front\DispatcherController@dispatchDriverBidUpdate')->name('dispatch-driver-bids'); // instant booking / Bid and Ride pickup delivery update from dispatch
 	Route::post('dispatch/driver/bids/status/{id?}', 'Front\DispatcherController@dispatchDriverBidStatus')->name('dispatch-driver-bids-status'); // instant booking / Bid and Ride Bid Status pickup delivery update from dispatch
-	
+
 	Route::match(['get', 'post'], 'square/inventory/event/update', 'Front\SquareInventoryController@squareInventoryEventUpdate')->name('square-inventory-event-update'); // webhook to receive inventory updates from square inventory update events
-	
+
 	Route::get('testsms', 'Front\FrontController@testsms');
 
 	Route::get('demo', 'Front\CustomerAuthController@getTestHtmlPage');
@@ -156,9 +156,13 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('success/skipcash', 'Front\SkipCashController@successPage')->name('payment.skipcash.success');
 	Route::post('/skipcash/webhook', 'Front\SkipCashController@handleWebhook');
 
+	Route::post('pesapal-payment', 'Front\PesapalPaymentController@payByPesapal')->name('pesapal.payment');
+	Route::get('success/pesapal', 'Front\PesapalPaymentController@successPage')->name('payment.pesapal.success');
 
 	// Route::post('payment/skipcashpay', 'Front\SkipCashController@checkPayment')->name('payment.skipcash.pay');
 
+	Route::post('powertrans-payment', 'Front\PowerTransPaymentController@payByPowerTrans')->name('powertrans.payment');
+	Route::get('success/powertrans', 'Front\PowerTransPaymentController@successPage')->name('payment.powertrans.success');
 
 	//GCash
 	Route::post('payment/gcash', 'Front\GCashController@beforePayment')->name('payment.gcash.beforePayment');
@@ -166,9 +170,13 @@ Route::group(['middleware' => ['domain']], function () {
 
     //plugnpay
     Route::match(['get','post'],'payment/plugnpay','Front\PlugnpayController@beforePayment')->name('payment.plugnpay.beforePayment');
-    
+
     //azulpay
     Route::match(['get','post'],'payment/nmi','Front\NmiPaymentController@beforePayment')->name('nmi.pay');
+
+    // obo-pay
+    Route::post('before-payment/obo','Front\OboPaymentController@beforePayment')->name('obo.pay');
+    Route::get('after-payment/obo','Front\OboPaymentController@afterPayment')->name('after.obo.payment');
 
 	Route::post('checkVendorPincode','Front\PincodeController@checkVendorPincode')->name('pincode.checkVendorPincode');
 	Route::get('getShippingMethod','Front\PincodeController@getShippingMethod')->name('pincode.getShippingMethod');
@@ -183,7 +191,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('payment/get-user-cards','Front\AzulPaymentController@getCardList')->name('payment.user.cards');
 	Route::get('payment/setDefaultCard/{id}','Front\AzulPaymentController@setDefaultCard')->name('setDefaultCard');
 	Route::get('payment/deleteCard/{id}','Front\AzulPaymentController@deleteCard')->name('delete.azul.card');
-	
+
 	//Square
 	Route::match(['get', 'post'], 'payment/square/page', 'Front\SquareController@beforePayment')->name('payment.square.beforePayment');
 	Route::post('payment/square', 'Front\SquareController@createPayment')->name('payment.square.createPayment');
@@ -364,11 +372,15 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('payment/user/wallet/credit', 'Front\WalletController@postPaymentCreditWallet')->name('user.postPaymentCreditWallet');
     // Mtn Momo payment gateway
 
-	Route::post('payment/mtn-momo', 'Front\MtnMomoController@createTocken')->name('mtn.momo.createTocken');
+	Route::any('payment/webhook/mtn', 'Front\MtnMomoController@mtnCallback')->name('payment.webhook.mtn');
+	
+	Route::group(['prefix' => 'mtn'], function () {
+		Route::post('payment', 'Front\MtnMomoController@createToken')->name('mtn.momo.createToken');
+		Route::get('response/{id?}', 'Front\MtnMomoController@getResponse')->name('payment.response.mtn');
+	});
 
 	// Mtn Momo payment gateway
 
-	Route::post('payment/mtn-momo', 'Front\MtnMomoController@createTocken')->name('mtn.momo.createTocken');
 	// Route::get('payment/dpo/redirect', 'Front\DpoController@successPage')->name('dpo.redirect');
 	// Route::get('payment/dpo/success', 'Front\DpoController@successPage')->name('dpo.success');
 	// Route::get('payment/dpo/fail', 'Front\DpoController@failPage')->name('dpo.fail');
@@ -479,7 +491,6 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('stripe/make', 'Front\PaymentController@makePayment')->name('stripe.makePayment');
 	Route::post('inquiryMode/store', 'Front\ProductInquiryController@store')->name('inquiryMode.store');
 	Route::get('viewcart', 'Front\CartController@showCart')->name('showCart');
-	Route::get('cart', 'Front\CartController@showCartNew')->name('cartNew');
 	Route::get('checkSlotOrders', 'Front\CartController@checkSlotOrders')->name('checkSlotOrders'); //Added by Ovi
 	Route::post('/getTimeSlotsForOndemand', 'Front\CategoryController@getTimeSlotsForOndemand')->name('getTimeSlotsForOndemand');
 	Route::post('checkIsolateSingleVendor', 'Front\CartController@checkIsolateSingleVendor')->name('checkIsolateSingleVendor');

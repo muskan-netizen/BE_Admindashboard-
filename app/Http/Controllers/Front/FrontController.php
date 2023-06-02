@@ -210,13 +210,10 @@ class FrontController extends Controller
                                 ->select('categories.id', 'categories.icon', 'categories.icon_two' , 'categories.slug', 'categories.parent_id','cts.name','categories.type_id')
                                 ->whereIn('categories.type_id',$categoryTypes )
                                 ->orderBy('position')->distinct('categories.slug');
-        //dd(DB::getQueryLog());
         $status = $this->field_status;
         $include_categories = [4,8]; // type 4 for brands
         $celebrity_check = 0;
         if ($preferences) {
-            if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
-
                 if((isset($preferences->celebrity_check)) && ($preferences->celebrity_check == 1)){
                     $celebrity_check = 1;
                     $include_categories[] = 5; // type 5 for celebrity
@@ -234,7 +231,6 @@ class FrontController extends Controller
                                 $q2->whereIn('categories.type_id', $include_categories);
                             });
                     });
-            }
         }
         $categories = $categories->leftjoin('types', 'types.id', 'categories.type_id')
                                 ->where('categories.id', '>', '1')
@@ -242,6 +238,7 @@ class FrontController extends Controller
          if($celebrity_check == 0){
             $categories = $categories->where('categories.type_id', '!=', 5);
         }
+        
         $categories = $categories->where('categories.id', '>', '1')
                                // ->whereNotNull('categories.type_id')
                                 //->whereNotIn('categories.type_id', [7])
@@ -251,10 +248,9 @@ class FrontController extends Controller
                                 ->where('cts.language_id', $lang_id)
                                 ->where(function ($qrt) use($lang_id,$primary){
                                     $qrt->where('cts.language_id', $lang_id)->orWhere('cts.language_id',$primary->language_id);
-                                })
-                                ->whereNull('categories.vendor_id')
+                                })->whereNull('categories.vendor_id')
                               //  ->orderBy('categories.position', 'asc')
-                                ->orderBy('categories.parent_id', 'asc')->groupBy('id')->get();
+                                ->orderBy('categories.parent_id', 'asc')->groupBy('categories.id')->get();
 
         if ($categories) {
             $categories = $this->buildTree($categories);
@@ -276,6 +272,7 @@ class FrontController extends Controller
     {
         $branch = array();
         foreach ($elements as $element) {
+            
             if ($element['parent_id'] == $parentId) {
                 $children = $this->buildTree($elements, $element['id']);
                 if ($children) {
@@ -366,8 +363,6 @@ class FrontController extends Controller
             }
         }
         $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->get();
-
-
         if($serviceAreaVendors->isNotEmpty()){
             foreach($serviceAreaVendors as $value){
                 $vendors[] = $value->id;
@@ -1299,6 +1294,38 @@ class FrontController extends Controller
         curl_close($ch);
         return $result;
 
+    }
+    
+    public function sendWalletNotification($user_id,$order_number)
+    {
+        $firebaseToken = UserDevice::select('device_token')->whereNotNull('device_token')->where('user_id',$user_id)->orderBy('id','desc')->limit(1)->pluck('device_token')->toArray();
+        if(!empty($firebaseToken)){
+            $preference = ClientPreference::select('fcm_server_key')->first();
+            $fcm_server_key = !empty($preference->fcm_server_key)? $preference->fcm_server_key : 'null';
+            
+            $data = [
+                "registration_ids" => $firebaseToken,
+                "notification" => [
+                    "title" => "Refund Added in Wallet",
+                    "body" => 'Wallet has been <b>refunded</b> for cancellation or failed payment of order #' .$order_number
+                ]
+            ];
+            $dataString = json_encode($data);
+            $headers = [
+                'Authorization: key=' . $fcm_server_key,
+                'Content-Type: application/json',
+            ];
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
+            $response = curl_exec($ch);
+            curl_close($ch);
+        }
+        return true;
     }
 
 }

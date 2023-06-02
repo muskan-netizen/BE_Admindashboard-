@@ -1,8 +1,9 @@
-function add_spinner(id){
+function add_spinner(id,text = null){
     remove_spinner(id);
     var html = `<div id="overlay">
             <div class="cv-spinner">
-            <span class="spinner"></span>
+            <span class="spinner d-block"></span>
+            <span>${text}</span>
             </div>
         </div>`;
     $(id).prepend(html);

@@ -432,6 +432,13 @@ class UserController extends BaseController
     public function newUpdate(Request $request, $domain = '', $id)
     {
         $user = User::where('id', $id)->first();
+
+        $vendorRole = @$user->roles[0]->id;
+        if(@$vendorRole && $vendorRole == 4){
+         //Need to remove vendor permissons from user table 
+         $this->removeVendorPermissionAndRole($id);
+        }
+
         $data = [
             'status'        => $request->status,
             'role_id'       => $request->has('role_id') ? $request->get('role_id') : $user->role_id,
@@ -494,8 +501,8 @@ class UserController extends BaseController
                 }
             }
         }
-        //Need to remove vendor permissons from user table 
-        $this->removeVendorPermissionAndRole($id);
+        // //Need to remove vendor permissons from user table 
+        // $this->removeVendorPermissionAndRole($id);
         return redirect()->back()->with('success','Customer Updated successfully!');
     }
 
@@ -807,7 +814,7 @@ class UserController extends BaseController
                         return $this->errorResponse(__('Amount is greater than customer available funds'), 422);
                     }
                     $wallet->withdrawFloat($amount, [
-                        'description' => 'Wallet has been <b>Dedited</b>',
+                        'description' => 'Wallet has been <b>Debited</b>',
                         'remarks' => $request->remarks,
                         'created_by' => Auth::id()
                     ]);
