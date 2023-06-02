@@ -57,14 +57,14 @@
     <div class="product-description border-product pb-0">
         {{-- <h6 class="product-title mt-0">{{__('Extended duration By('.@$product->additional_increments.'hr:'.@$product->additional_increments_min.'min/'.Session::get('currencySymbol').number_format(@$product->variant[0]->incremental_price * @$product->variant[0]->multiplier,2,".",",").')')}}:
       </h6> --}}
-      <div class="mt-0">{{__('Duration') }}:
+      {{-- <div class="mt-0">{{__('Duration') }}:
       
         <div class="qty-box mb-3">
             <div class="input-group">
                   {{-- <span class="input-group-prepend">
                       <button type="button" class="btn incremental-left-minus" data-type="minus" data-field="" data-batch_count={{$product->batch_count}} data-minimum_order_count={{$product->minimum_order_count}}><i class="ti-angle-left"></i>
                       </button>
-                  </span> --}}
+                  </span> - -}}
                   <input style="display: none" readonly  step="{{$product->additional_increments*60+$product->additional_increments_min}}" type="number" min="0" name="incremental_hrs"  onkeypress="return event.charCode > 47 && event.charCode < 58;" pattern="[0-9]{5}" id="incremental_hrs" class="form-control input-qty-number incremental_hrs"  value="{{$product->additional_increments*60+$product->additional_increments_min}}">
   
                   <input  type="hidden" min="0" name="total_hrs" id="total_hrs" value="{{getMinutes($product->minimum_duration,$product->minimum_duration_min)}}" >
@@ -75,7 +75,7 @@
                       <button type="button" class="btn incremental-right-plus" data-type="plus" data-field="">
                           <i class="ti-angle-right"></i>
                       </button>
-                  </span> --}}
+                  </span> -- }}
               </div>
           </div>
 
@@ -103,7 +103,7 @@
 
           </span>
         </div>
-      </div>
+      </div> --}}
     </div>
   </div>
 </div>
@@ -139,7 +139,8 @@
        actual_price = '{{@$product->variant[0]->actual_price}}';
        default_currency = "{{Session::get('currencySymbol')}}";
        default_step = timeConvertCal('{{$product->additional_increments}}','{{$product->additional_increments_min}}');
-
+        product_availability = JSON.parse(<?php echo json_encode($product_availability); ?>);
+        console.log(product_availability[0]);
        min_dur_hrs = '{{ $product->minimum_duration }}';
        min_dur_min = '{{ $product->minimum_duration_min }}';
        additional_base_hr = '{{$product->additional_increments}}';
@@ -238,23 +239,30 @@
 
               $('#incremental_hrs_hidden').val(timeToHrMinConvertCal(total_min));
         });
-
-
+        var restrictedDates = [];
+        @if(@$product_notavailability)
+          restrictedDates = JSON.parse(<?php echo json_encode($product_notavailability); ?>);
+        @endif
         $('#blocktime, #blocktime2').daterangepicker({
             locale: {
                   format: 'M/DD/YY hh:mm A'
             },
-            timePicker: true,
-            startDate: moment(),
+            timePicker: false,
+            startDate: moment(product_availability[0]),
             endDate: moment().add(min_dur_hrs,'hours').add(min_dur_min,'minutes'),
-            minDate:new Date(),
+            //minDate:new Date(),
             //"alwaysShowCalendars": true,
-            // "minDate": currentDate,
-            // "maxDate": moment().add('months', 1),
+            "minDate": moment(product_availability[0]),
+            "maxDate": moment(product_availability[product_availability.length-1]),
             autoApply: true,
-            autoUpdateInput: false
+            autoUpdateInput: false,
+            isInvalidDate: function(date) {
+            // Check if the date is in the array of restricted dates
+            return restrictedDates.includes(date.format('YYYY-MM-DD'));
+            }
+            //isCustomDate: product_availability
         }, async function(start, end, label) {
-           selectedStartDate = start.format('M/DD/YY hh:mm A'); // selected start
+            selectedStartDate = start.format('M/DD/YY hh:mm A'); // selected start
            selectedEndDate = end.format('M/DD/YY hh:mm A'); // selected end
 
           // Updating Fields with selected dates
@@ -279,14 +287,19 @@
             selectedStartDate:selectedStartDate,
             selectedEndDate:selectedEndDate
           }
-          //await calculateExtraTimeforproduct(selectedStartDate,selectedEndDate);
+          await calculateExtraTimeforproduct(selectedStartDate,selectedEndDate);
 
-           check_product_availibility(formData);
+           check_product_availibility(formData); 
 
 
         });
 
         async function check_product_availibility(formData){
+          console.log(formData);
+          $("a#add_to_cart_btn").addClass("addToCart");
+           $('#start_time').val(moment(formData.selectedStartDate).format("YYYY-MM-DD hh:mm:ss"));
+            $('#end_time').val(moment(formData.selectedEndDate).format("YYYY-MM-DD hh:mm:ss"));
+          return;
           if(formData.variant_option_id == undefined){
             formData.variant_option_id = '';
           }
@@ -405,7 +418,7 @@
         }
         function calculateExtraTimeforproduct(selectedStartDate,selectedEndDate){
           var total_sel_min = diff_minutes(selectedStartDate,selectedEndDate);
-          console.log("asdfasdfasdf", default_minutes);
+          console.log("asdfasdfasdf");
           // console.log(parseInt(default_minutes));
           //console.log(parseFloat(total_sel_min) - Number(default_minutes));
           var remaining = parseFloat(total_sel_min) - Number(default_minutes);
@@ -417,10 +430,9 @@
             divide = parseInt(divide) + 1;
           }
           var extra_t_min = parseInt(default_step)*parseInt(divide);
- console.log("extra_t_min"), extra_t_min;
+
           $('#incremental_hrs').val(extra_t_min);
           var t_min_hr_min = parseInt(extra_t_min)+parseInt(default_minutes);
-           console.log("t_min_hr_min"), t_min_hr_min;
           if(t_min_hr_min< default_minutes){
             t_min_hr_min = default_minutes;
             // $checkoutInput = $('#blocktime2');

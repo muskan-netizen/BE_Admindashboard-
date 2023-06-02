@@ -261,6 +261,29 @@
                         <div id="tbody_{{ $product->vendor->id }}">
 
                             @foreach ($product->vendor_products as $vendor_product)
+                            @php
+                             $rental_price = 0;
+                            if(@$vendor_product->start_date_time && @$vendor_product->end_date_time){
+                                
+                                $start_date_time  = new \Carbon\Carbon($vendor_product->start_date_time);
+                                $end_date_time  = new \Carbon\Carbon($vendor_product->end_date_time);
+                                $vendor_product->days = $start_date_time->diff($end_date_time)->days + 1;
+                               
+                                $rental_price = $vendor_product->pvariant ? $vendor_product->pvariant->price : 0;
+                                if(@$vendor_product->pvariant->month_price && @$vendor_product->pvariant->week_price){
+                                    
+                                    if($vendor_product->days >= 7 && $vendor_product->days < 30){
+                                        $rental_price = $vendor_product->pvariant->week_price;
+                                    }elseif($vendor_product->days >= 30){
+                                        $rental_price = $vendor_product->pvariant->month_price;
+                                    }
+                                }
+                                $vendor_product->price = $rental_price;
+                                $cart_details->loyalty_amount = $cart_details->tip_5_percent = 0;
+                               $vendor_product->quantity_price = $product->product_total_amount = $cart_details->total_payable_amount =  $cart_details->sub_total = $cart_details->gross_amount = $vendor_product->pvariant->actual_price = $vendor_product->pvariant->price =  $rental_price = $rental_price *$vendor_product->days;
+                            }
+
+                    @endphp
                                 {{-- @php
                                 pr($vendor_product->schedule_slot_name);
                                 @endphp --}}

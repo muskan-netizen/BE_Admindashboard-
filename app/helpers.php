@@ -1927,4 +1927,15 @@ if (!function_exists('getOnDemandPricingRule')) {
             }
             return $return;
     }
+
+}
+if (!function_exists('getDatesBetweenTwoDates')) { 
+    function getDatesBetweenTwoDates($start_date, $end_date)
+    {
+        $period = CarbonPeriod::create($start_date, $end_date);
+
+        // Convert the period to an array of dates
+        $dates = $period->toArray();
+        return $dates;
+    }
 }

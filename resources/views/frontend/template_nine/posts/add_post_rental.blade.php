@@ -224,7 +224,7 @@ body.al_body_template_nine .alPostBoxOuter ul li a.active h3 {
             <div class=" row">
                 <div class="alPostBoxOuter offset-md-2 col-md-8 mt-2 border border-rounded px-0 mb-4">
                     <div class="p-3">
-                    <form action="{{route('posts.store')}}" enctype="multipart/form-data" method="post" class="product_form">
+                    <form action="{{route('posts.addProductWithAttribute')}}" enctype="multipart/form-data" method="post" class="product_form">
                         @csrf
                         <h6 class="pb-0">SELECTED CATEGORY</h6>
                         <input type="hidden" name="category_id" id="category_id" required />
@@ -269,15 +269,15 @@ body.al_body_template_nine .alPostBoxOuter ul li a.active h3 {
                                                 <div class="row">
                                                     <div class="col input-group-prepend">
                                                         <div class="input-group-text">{{getPrimaryCurrencySymbol()}}</div>
-                                                        <input type="text" class="form-control" required name="price" id="" placeholder="Day">
+                                                        <input type="text" class="form-control" required name="price" id="day_price" placeholder="Day">
                                                     </div>
                                                     <div class="col input-group-prepend">
                                                         <div class="input-group-text">{{getPrimaryCurrencySymbol()}}</div>
-                                                        <input type="text" class="form-control" required name="price" id="" placeholder="Week">
+                                                        <input type="text" class="form-control" required name="week_price" id="week_price" placeholder="Week" readonly>
                                                     </div>
                                                     <div class="col input-group-prepend">
                                                         <div class="input-group-text">{{getPrimaryCurrencySymbol()}}</div>
-                                                        <input type="text" class="form-control" required name="price" id="" placeholder="Month">
+                                                        <input type="text" class="form-control" required name="month_price" id="month_price" placeholder="Month" readonly>
                                                     </div>
                                                 </div>
                                                     
@@ -296,7 +296,7 @@ body.al_body_template_nine .alPostBoxOuter ul li a.active h3 {
                                     </div>
 
                                     <div class="form-group">
-                                        <input type="text" name="daterange" value="01/01/2018 - 01/15/2018" />
+                                        <input type="text" name="date_availability" value="" />
                                     </div>
                                 </div>
                                 <div class="alPostItemsData" id="productAttributes">
@@ -376,6 +376,7 @@ body.al_body_template_nine .alPostBoxOuter ul li a.active h3 {
     
     @endsection
     @section('script')
+
     <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
     <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
     <script src="{{ asset('assets/libs/dropzone/dropzone.min.js') }}"></script>
@@ -384,7 +385,6 @@ body.al_body_template_nine .alPostBoxOuter ul li a.active h3 {
     <script src="{{asset('assets/libs/jquery-toast-plugin/jquery-toast-plugin.min.js')}}"></script>
 <script src="{{asset('assets/js/pages/toastr.init.js')}}"></script>
 
-<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <script>
@@ -442,12 +442,32 @@ $(document).on('click', '.select-category', function() {
         }
     }
 
+
+
+    //calender and day_price
+
+    $(document).on('keyup', '#day_price', function() {
+        var dayPrice = $('#day_price').val();
+        var weekPrice = (dayPrice * 4) /7;
+        var monthPrice = (dayPrice * 4 * 3) /30;
+        $('#week_price').val(weekPrice.toFixed(2));
+        $('#month_price').val(monthPrice.toFixed(2));
+    });
+
    $(function() {
-  $('input[name="daterange"]').daterangepicker({
-    opens: 'left'
-  }, function(start, end, label) {
-    console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
-  });
+    var date = new Date();
+    var currentMonth = date.getMonth();
+    var currentDate = date.getDate();
+    var currentYear = date.getFullYear();
+    $('input[name="date_availability"]').daterangepicker({ 
+        minDate: new Date(currentYear, currentMonth, currentDate),
+        dateFormat: 'yy-mm-dd',
+        //startDate: moment(date).add(1,'days'),
+       // endDate: moment(date).add(2,'days'),
+        locale: {
+            format: 'DD.MM.YYYY'
+        }
+    });
 });
 </script>
 

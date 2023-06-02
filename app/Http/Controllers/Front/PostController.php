@@ -243,12 +243,14 @@ class PostController extends FrontController
 					$product_category->save();
 					$proVariant = new ProductVariant();
 					$proVariant->price = $request->price ?? 0;
-					if(@$request->week_price){
-						$proVariant->week_price = $request->week_price ?? 0;
-					}
-					if(@$request->month_price){
-						$proVariant->month_price = $request->month_price ?? 0;
-					}
+					
+                    $week_price = ($request->price *4 / 7);
+                    $month_price = ($request->price *4 * 3 / 30);
+
+                    $proVariant->week_price = round($week_price) ?? 0;
+                
+                    $proVariant->month_price = round($month_price) ?? 0;
+					
 					if(@$request->emirate){
 						$proVariant->emirate = $request->emirate;
 					}
@@ -353,13 +355,18 @@ class PostController extends FrontController
      }
 
      function addProductAvailability($request, $product){
-        if( @$request->date_availability && is_array($request->date_availability)) {
+        if( @$request->date_availability) {
+            // dd("dgf");
+            $dates = explode(' - ',$request->date_availability);
+            $start_date = $dates[0];
+            $end_date = $dates[1];
+            $date_availability = getDatesBetweenTwoDates($start_date, $end_date);
             $date_availability_data = [];
-            foreach($request->date_availability as $date_availability){
+            foreach($date_availability as $date_availability){
                 $date_availability_data[] = [
                     'product_id' => $product->id,
-                    'date_time' => $date_availability['date_time'],
-                    'not_available' => $date_availability['not_available'],
+                    'date_time' => $date_availability,
+                    'not_available' => 0,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now()
                 ];

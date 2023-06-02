@@ -1977,6 +1977,15 @@ class OrderController extends FrontController
                         $vendor_payable_amount += $service_fee_percentage_amount;
                     }
 
+                    $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
+                    if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                        $service_fee_percentage_amount        = 0;
+                        $vendor_service_fee_percentage_amount = 0;
+                        $payable_amount = $request->total_amount;
+                        $total_service_fee = 0;
+                        $vendor_payable_amount = 0;
+                    }
+
                     $cart_addons = CartAddon::where('cart_product_id', $vendor_cart_product->id)->get();
                     if ($cart_addons) {
                         foreach ($cart_addons as $cart_addon) {
@@ -1999,6 +2008,9 @@ class OrderController extends FrontController
                 } //End products loop
 
                 $payable_amount += $vendor_total_container_charges;
+                if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                    $payable_amount = $request->total_amount;
+                }
                 // dump("+Container_charges ".$vendor_total_container_charges."/- ---".$payable_amount);
 
                 // echo "vendor_total_container_charges: ".$vendor_total_container_charges."payable_amount: ".$payable_amount."<br>";
@@ -2047,7 +2059,14 @@ class OrderController extends FrontController
                 $vendor_payable_amount += $delivery_fee;
                 $vendor_payable_amount += $vendor_taxable_amount;
 
+
+
                 $payable_amount += $additionalPrice;
+                $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
+                if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                    $payable_amount = $request->total_amount;
+                    $vendor_payable_amount = $request->total_amount;
+                }
                 // dump("+AdditionalPrice ".$additionalPrice."/- ----".$payable_amount);
                 $totalAdditionalPrice += $additionalPrice;
 
@@ -2058,7 +2077,7 @@ class OrderController extends FrontController
                 $OrderVendor->delivery_fee = $delivery_fee;
                 $OrderVendor->subtotal_amount = $actual_amount;
                 $OrderVendor->discount_amount = $vendor_discount_amount;
-
+                
                 // check if is_tax_price_inclusive is on than no tax
                 if (! $additionalPreferences->is_tax_price_inclusive) {
                     $new_vendor_taxable_amount = number_format((($actual_amount-$total_discount) * $rate) / 100, 2);
@@ -2080,7 +2099,13 @@ class OrderController extends FrontController
                 $OrderVendor->taxable_amount =$new_vendor_taxable_amount;
                 $OrderVendor->payment_option_id = $request->payment_option_id;
                 $OrderVendor->subtotal_amount = $OrderVendor->subtotal_amount - $bid_vendor_discount??0;
+          
+               
+                
                 $OrderVendor->payable_amount = $vendor_payable_amount +$fixedFeeAmount+$new_vendor_taxable_amount;
+                if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                    $OrderVendor->subtotal_amount = $OrderVendor->payable_amount = $request->total_amount;
+                }
                 $OrderVendor->total_markup_price = $vendor_markup_amount;
                 $OrderVendor->total_container_charges = $vendor_total_container_charges;
 
