@@ -54,6 +54,7 @@ class SyncToDispatcher implements ShouldQueue
         ];
 
         $response = Http::withHeaders($headers)->post($url, $postData);
+      
         $statusCode = $response->getStatusCode();
         if($statusCode == 200) {
             return true;
