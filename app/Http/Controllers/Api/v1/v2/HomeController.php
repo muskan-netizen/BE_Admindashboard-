@@ -294,36 +294,6 @@ class HomeController extends BaseController
 
             $categoryTypes = getServiceTypesCategory($type);
 
-            // $vendorData = Vendor::whereHas('getAllCategory.category', function ($q) use ($categoryTypes) {
-            //     $q->whereIn('type_id', $categoryTypes);
-            // })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'id as is_vendor_closed', 'closed_store_order_scheduled')->withAvg('product', 'averageRating', 'closed_store_order_scheduled')->where($type, 1);
-
-
-
-
-            // if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-            //     $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
-            //     $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
-            //     $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
-            //     //3961 for miles and 6371 for kilometers
-            //     $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
-            //     $vendorData = $vendorData->select('*', DB::raw(' ( ' . $calc_value . ' * acos( cos( radians(' . $latitude . ') ) *
-            //             cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
-            //             sin( radians(' . $latitude . ') ) *
-            //             sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->withAvg('product', 'averageRating');
-            //     $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
-            //     $vendorData = $vendorData->whereIn('id', $ses_vendors);
-            //     //if($venderFilternear && ($venderFilternear == 1) ){
-            //     //->orderBy('vendorToUserDistance', 'ASC')
-            //     $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
-            //     //}
-            // }
-
-
-            //$venderIds  = $vendorData->where('status', 1)->pluck('id');
-
-           
-
             $clientPreferences = ClientPreference::first();
             $vendor_type = $request->has('type') ? $request->type : Session::get('vendorType');
 
@@ -342,23 +312,6 @@ class HomeController extends BaseController
                     $longitude = $clientPreferences->Default_longitude;
                 }
             }
-
-
-            // $banners = Banner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
-            //     ->where(function ($q) {
-            //         $q->whereNull('start_date_time')->orWhere(function ($q2) {
-            //             $q2->whereDate('start_date_time', '<=', Carbon::now())
-            //                 ->whereDate('end_date_time', '>=', Carbon::now());
-            //         });
-            //     });
-            // if (isset($clientPreferences->is_service_area_for_banners) && ($clientPreferences->is_service_area_for_banners == 1) && ($clientPreferences->is_hyperlocal == 1)) {
-            //     if (!empty($latitude) && !empty($longitude)) {
-            //         $banners = $banners->whereHas('geos.serviceArea', function ($query) use ($latitude, $longitude) {
-            //             $query->select('id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
-            //         });
-            //     }
-            // }
-            // $banners = $banners->orderBy('sorting', 'asc')->get();
 
             $cid = $request->category_id;
             $getSubCatIds = Category::where('parent_id', $cid)->pluck('id')->toArray();
@@ -424,44 +377,10 @@ class HomeController extends BaseController
                     $da['data'] = $navCategories;
                     // dd($da[$da->slug]);
                 }
-                // if ($da->slug == 'single_category_products') {
-                //     $da['data'] = $this->getSingleCategoryWithProducts($da->slug);
-                // }
-                // if ($da->slug == 'spotlight_deals') {
-                //     $da['data'] = $this->getSpotlightProducts($da->id);
-                // }
-                // if ($da->slug == 'selected_products') {
-                //     $da['data'] = $this->getSelectedProduct($da->id);
-                // }
+               
                 return $da;
             });
 
-
-            // dd($home_page_labels[10]->nav_categories);
-            // $only_cab_booking = OnboardSetting::where('key_value', 'home_page_cab_booking')->count();
-
-
-            // $home_page_pickup_labels = CabBookingLayout::with('translations')->where('is_active', 1)->app()->where('for_no_product_found_html', 0)->orderBy('order_by')->get();
-
-            // //$set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
-
-            // $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->app()->where('for_no_product_found_html', 1)->orderBy('order_by')->get();
-           
-
-            // $categories = [];
-            // if (isset($set_template)  && $set_template->template_id == 8) {
-            //     $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
-            //         ->where('id', '>', '1')
-            //         // ->where('is_core', 1)
-            //         ->whereNotIn('type_id', [4, 5])
-            //         ->where(function ($q) {
-            //             $q->whereNull('vendor_id');
-            //         })->orderBy('position', 'asc')
-            //         ->orderBy('id', 'asc')
-            //         ->where('status', 1)
-            //         ->orderBy('parent_id', 'asc')->get();
-            // }
-            // dd($categories);
             $user = Auth::user();
             $s3_url = '';
             if(\Config::get('filesystems.disks.s3.driver') == 's3') {
@@ -1320,10 +1239,6 @@ class HomeController extends BaseController
                                 ->orWhere('pt.title', 'LIKE', $word . '%');
                         }
 
-                        // ->orWhere('pt.body_html', 'LIKE', '%' . $keyword . '%')
-                        // ->orWhere('pt.meta_title', 'LIKE', '%' . $keyword . '%')
-                        // ->orWhere('pt.meta_keyword', 'LIKE', '%' . $keyword . '%')
-                        // ->orWhere('pt.meta_description', 'LIKE', '%' . $keyword . '%');
                     });
                 if ($for == 'category') {
                     $prodIds = array();
