@@ -1869,7 +1869,7 @@
                         <div class="col-12">
 
                             <div class="form-group mb-0 d-flex switchery-demo">
-                                <label for="" class="mr-3">{{ __('Edit Order Enable') }}</label>
+                                <label for="" class="mr-3">{{ __('Cron Notification Enable') }}</label>
                                 <input type="checkbox" data-plugin="switchery" name="pickup_notification_switch"
                                     id="pickup_notification_switch" class="form-control checkbox_change"
                                     data-className="pickup_notification_before" data-color="#43bee1"
@@ -1881,7 +1881,7 @@
 
                             <div class="row mt-2" id="pickup_notification_div" style="display:@if (@$getAdditionalPreference['pickup_notification_before'] == 1) @else none @endif;">
                                 <div class="col-8">
-                                    <label for="" class="mr-3">{{ __('Notification before (Hours)') }}</label>
+                                    <label for="" class="mr-3">{{ __('Accept Reject Notification (Hours)') }}</label>
                                 </div>
                                 <div class="col-4">
                                     <input type="number" name="pickup_notification_before_hours" id="pickup_notification_before_hours"
@@ -1889,6 +1889,16 @@
                                         value="{{ old('pickup_notification_before_hours', @$getAdditionalPreference['pickup_notification_before_hours'] ?? '') }}">
                                 </div>
                                 <hr/>
+
+                                <div class="col-8">
+                                    <label for="" class="mr-3">{{ __('Reminder Notification (min)') }}</label>
+                                </div>
+                                <div class="col-4">
+                                    <input type="number" name="pickup_notification_before2_hours" id="pickup_notification_before2_hours"
+                                        placeholder="" class="form-control"
+                                        value="{{ old('pickup_notification_before2_hours', @$getAdditionalPreference['pickup_notification_before2_hours'] ?? '') }}">
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -1896,7 +1906,7 @@
 
             </form>
         </div>
-        
+                
     </div>
 
 
@@ -2824,6 +2834,13 @@
             }
         }
 
+        $('#pickup_notification_switch2')[0].onchange = function() {
+            if ($('#pickup_notification_switch2:checked').length != 1) {
+                $('#pickup_notification_div2').hide();
+            } else {
+                $('#pickup_notification_div2').show();
+            }
+        }
         var dinein_option = $('#dinein_check');
         if (dinein_option.length > 0) {
             dinein_option[0].onchange = function() {

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, PaymentOption, PickDropDriverBid, UserBidRideRequest};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, ClientPreferenceAdditional, PaymentOption, PickDropDriverBid, UserBidRideRequest};
 use App\Http\Traits\{ApiResponser,PaymentTrait};
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
@@ -924,6 +924,14 @@ class PickupDeliveryController extends FrontController{
                     $schedule_datetime_del = $request->schedule_time;//Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
 
+                $client_preferences_addional = ClientPreferenceAdditional::pluck('key_value','key_name');
+
+                if(isset($client_preferences_addional['pickup_notification_before']) && $client_preferences_addional['pickup_notification_before'] == 1)
+                {
+                    $notify_hour = $client_preferences_addional['pickup_notification_before_hours'] ?? 1;
+                    $reminder_hour = $client_preferences_addional['pickup_notification_before2_hours'] ?? 1;
+                }
+
                 $postdata =  [
                     'order_number' =>  $order->order_number,
                     //'order_type' =>  $order->type,
@@ -964,6 +972,8 @@ class PickupDeliveryController extends FrontController{
                     'available_seats' => $product->seats_for_booking,
                     'driver_id' => $request->driver_id ?? null,
                     'driver_unique_id' => $request->unique_id ?? null,
+                    'notify_hour' => $notify_hour ?? 0,
+                    'reminder_hour' => $reminder_hour ?? 0,
                 ];
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
