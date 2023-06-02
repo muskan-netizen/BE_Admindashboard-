@@ -5707,7 +5707,7 @@ var render = function() {
       _vm._v(" "),
       _c("div", { staticClass: "container" }, [
         _c("div", { staticClass: "row" }, [
-          _c("div", { staticClass: "col-lg-6 offset-lg-2" }, [
+          _c("div", { staticClass: "col-lg-6 offset-lg-3" }, [
             _c("div", { staticClass: "product-para" }, [
               _c("p", { staticClass: "text-center" }, [
                 _vm._v(_vm._s(_vm.description))

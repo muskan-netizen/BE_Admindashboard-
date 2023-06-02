@@ -11,7 +11,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
 <section class="wrapper-main py-lg-5 py-3 d-flex align-items-center main-login-page">
     <div class="container">
         <div class="row align-items-center h-100" id="login-section">  
-            <div class="col-md-6 p-0">
+            <div class="col-md-6 p-0"> 
                 <div class="login_img">
                     <img src="{{asset('images/template-8/login-img.png')}}" class="img-fluid">
                 </div>  
