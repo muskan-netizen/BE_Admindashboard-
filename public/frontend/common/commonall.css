@@ -1389,7 +1389,9 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
 /*recent order font size decrease css*/
 .recent-orders .price_box_bottom li{font-size: 14px;}
 
-
+.new_cart table td{
+    word-break: break-all;
+}
 
 
 /*======== first template css gagandeep 29-03-2023 end ========*/
