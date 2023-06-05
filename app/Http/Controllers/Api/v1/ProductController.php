@@ -136,12 +136,12 @@ class ProductController extends BaseController
                             $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
                             $q1->where('set.status', 1)->where('ast.language_id', $langId);
                         },
-                        'variantSetNew' => function($z) use($langId){
-                            $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
-                            $z->join('variant_translations as vt','vt.variant_id','vr.id');
-                            $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
-                            $z->where('vt.language_id', $langId);
-                        },
+                        // 'variantSetNew' => function($z) use($langId){
+                        //     $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
+                        //     $z->join('variant_translations as vt','vt.variant_id','vr.id');
+                        //     $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
+                        //     $z->where('vt.language_id', $langId);
+                        // },
                         'variantSetNew.options' => function($zx) use($langId, $pvIds, $pid){
                             $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id')
                             ->join('product_variants','pvs.product_variant_id','product_variants.id')
