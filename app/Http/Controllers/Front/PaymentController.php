@@ -109,6 +109,8 @@ class PaymentController extends FrontController{
                     $payment_option->title = __('iDEAL');
                 }elseif($payment_option->code == 'authorize_net'){
                     $payment_option->title = __('Credit/Debit Card');
+                }elseif($payment_option->code == 'obo'){
+                    $payment_option->title = __("O'Pay");
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);

@@ -2352,12 +2352,11 @@ class OrderController extends BaseController
             if (!empty($order->orderDetail->scheduled_date_time)) {
                 $order->scheduled_date_time = dateTimeInUserTimeZone($order->orderDetail->scheduled_date_time, $user->timezone);
             }
-            if(!empty($order->orderDetail->scheduled_date_time) && !empty($order->orderDetail->scheduled_slot) ){
-                $slot_date =  date('Y-m-d',strtotime($order->orderDetail->scheduled_date_time));
+            if(!empty($order->orderDetail->scheduled_slot) ){
                 $slot_time = explode("-",$order->orderDetail->scheduled_slot);
                 $start_time = $slot_time[0];
                 $end_time = !empty($slot_time[1]) ? $slot_time[1]: $slot_time[0];
-                $order->schedule_slot =date('Y-m-d h:i A',strtotime(dateTimeInUserTimeZone($slot_date. " " . $start_time, $user->timezone))) . ' - ' . date('h:i A',strtotime(dateTimeInUserTimeZone($slot_date. " " . $end_time, $user->timezone)));
+                $order->schedule_slot =date('d-m-Y h:i A',strtotime( date('Y-m-d',strtotime($order->scheduled_date_time)). " " . $start_time)) . ' - ' . date('h:i A',strtotime($end_time));
             }
             $luxury_option_name = '';
             if ($order->orderDetail->luxury_option_id > 0) {
