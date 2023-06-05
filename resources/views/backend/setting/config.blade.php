@@ -1907,7 +1907,7 @@
 
                             <div class="row mt-2" id="pickup_notification_div" style="display:@if (@$getAdditionalPreference['pickup_notification_before'] == 1) @else none @endif;">
                                 <div class="col-8">
-                                    <label for="" class="mr-3">{{ __('Accept Reject Notification (Hours)') }}</label>
+                                    <label for="" class="mr-3">{{ __('Accept Reject Notification (Minutes)') }}</label>
                                 </div>
                                 <div class="col-4">
                                     <input type="number" name="pickup_notification_before_hours" id="pickup_notification_before_hours"
@@ -1917,7 +1917,7 @@
                                 <hr/>
 
                                 <div class="col-8">
-                                    <label for="" class="mr-3">{{ __('Reminder Notification (min)') }}</label>
+                                    <label for="" class="mr-3">{{ __('Reminder Notification (Minutes)') }}</label>
                                 </div>
                                 <div class="col-4">
                                     <input type="number" name="pickup_notification_before2_hours" id="pickup_notification_before2_hours"
