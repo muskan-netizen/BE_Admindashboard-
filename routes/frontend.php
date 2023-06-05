@@ -465,6 +465,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('cartDelete', 'Front\CartController@emptyCartData')->name('emptyCartData');
 	Route::post('repeatOrder', 'Front\CartController@repeatOrder')->name('web.repeatOrder');
 	Route::post('/product/updateCartQuantity', 'Front\CartController@updateQuantity')->name('updateQuantity');
+	Route::post('/product/updateCartProductStatus', 'Front\CartController@updateCartProductStatus')->name('updateCartProductStatus');
 	Route::post('/product/deletecartproduct', 'Front\CartController@deleteCartProduct')->name('deleteCartProduct');
 	Route::get('userAddress', 'Front\UserController@getUserAddress')->name('getUserAddress');
 	Route::get('category/{slug?}', 'Front\CategoryController@categoryProduct')->name('categoryDetail');

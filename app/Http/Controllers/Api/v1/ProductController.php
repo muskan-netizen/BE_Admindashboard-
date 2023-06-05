@@ -31,6 +31,7 @@ class ProductController extends BaseController
                 $pvIds[] = $value->id;
             }
         }
+
         $products = Product::with(['inwishlist' => function($qry) use($userid){
                         $qry->where('user_id', $userid);
                     },
@@ -112,6 +113,8 @@ class ProductController extends BaseController
             $user = Auth::user();
             $langId = $user->language;
             $userid = $user->id;
+            $limit = 6; // Number of frequently bought products to retrieve
+
             $product = Product::with(['inwishlist' => function($qry) use($userid){
                             $qry->where('user_id', $userid);
                         },
@@ -124,7 +127,9 @@ class ProductController extends BaseController
                         //     ->groupBy('product_id'); // return first variant
                         // },
 
-                        'variant.media.pimage.image', 'vendor', 'media.image', 'related', 'upSell', 'crossSell',
+                        'variant.media.pimage.image', 'vendor', 'media.image', 'related', 'upSell', 'crossSell', 'reviews.user' => function($rev) {
+                            $rev->select('users.id', 'users.name', 'users.email', 'users.image');
+                        }, 'reviews.reviewFiles',
                         'addOn' => function($q1) use($langId){
                             $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
                             $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
@@ -139,9 +144,11 @@ class ProductController extends BaseController
                         },
                         'variantSet.options' => function($zx) use($langId, $pvIds, $pid){
                             $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id')
-                            ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id')
+                            ->join('product_variants','pvs.product_variant_id','product_variants.id')
+                            ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id', 'product_variants.quantity', 'product_variants.price')
                             ->where('pvs.product_id', $pid)
-                            ->where('vt.language_id', $langId);
+                            ->where('vt.language_id', $langId)
+                            ->addSelect(DB::raw('(CASE WHEN product_variants.quantity = 0 THEN 1 ELSE 0 END) as is_disabled'));
                         },
                         'translation' => function($q) use($langId){
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
@@ -159,7 +166,6 @@ class ProductController extends BaseController
 
                     $product = $product->where('id', $pid)
                         ->first();
-
             if(!$product){
                 return response()->json(['error' => 'No record found.'], 404);
             }
@@ -309,13 +315,15 @@ class ProductController extends BaseController
                 }
             }
 
-            $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = [];
+            $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = $frequentlyBoughtProducts = [];
 
             $suggested_product = Product::with(['media.image','vendor', 'translation', 'variant', 'productVariantByRoles']);
             if( !empty($product->category->category_id) ) {
                 $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)->groupBy('id')->orderby('id', 'desc')->limit(20)->get();
             }
-
+            
+            $frequentlyBoughtProducts = Product::with(['media.image', 'vendor', 'translation', 'variant', 'productVariantByRoles'])->join('order_vendor_products', 'products.id', '=', 'order_vendor_products.product_id')->join('orders', 'order_vendor_products.order_id', '=', 'orders.id')->where('products.vendor_id', $product->vendor->id)->select('products.*')
+            ->groupBy('products.id')->orderByRaw('COUNT(products.id) DESC')->limit($limit)->get();
 
             foreach($suggested_category_products as $r_product){
                 foreach ($r_product->variant as $key => $value) {
@@ -353,11 +361,11 @@ class ProductController extends BaseController
                 }
             }
 
-        
             $response['suggested_category_products'] =  $suggested_category_products;
             $response['suggested_brand_products'] =  $suggested_brand_products;
             $response['suggested_vendor_products'] =  $suggested_vendor_products;
             $response['products'] = $product;
+            $response['frequently_bought'] = $frequentlyBoughtProducts;
             $response['relatedProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'relate', $product->related);
             $response['upSellProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'upSell', $product->upSell);
             $response['crossProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'cross', $product->crossSell);
