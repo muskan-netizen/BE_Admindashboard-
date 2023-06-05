@@ -765,14 +765,14 @@ class PickupDeliveryController extends BaseController{
                // Log::info("order Pre Time is ".$vendor_details->order_pre_time);
 
                 $client_preferences_addional = ClientPreferenceAdditional::pluck('key_value','key_name');
-                FacadesLog::warning(['postdata' => $client_preferences_addional]);
+                // FacadesLog::warning(['postdata' => $client_preferences_addional]);
                 if(isset($client_preferences_addional['pickup_notification_before']) && $client_preferences_addional['pickup_notification_before'] == 1)
                 {
                     $notify_hour = $client_preferences_addional['pickup_notification_before_hours'] ?? 1;
                     $reminder_hour = $client_preferences_addional['pickup_notification_before2_hours'] ?? 1;
                 }
-                FacadesLog::warning(['postdata' => $notify_hour
-                ,$reminder_hour]);
+                // FacadesLog::warning(['postdata' => $notify_hour
+                // ,$reminder_hour]);
                 
                 $postdata =  [
                             'order_number' =>  $order->order_number,
