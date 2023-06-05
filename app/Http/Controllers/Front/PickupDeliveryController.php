@@ -998,7 +998,7 @@ class PickupDeliveryController extends FrontController{
                     'is_cab_pooling' => isset($request->is_cab_pooling)?$request->is_cab_pooling:0,
                     'available_seats' => $product->seats_for_booking,
                     'driver_id' => $request->driver_id ?? null,
-                    'driver_unique_id' => $request->unique_id ?? null,
+                    'driver_unique_id' => $request->driver_unique_id ?? null,
                     'notify_hour' => $notify_hour ?? 0,
                     'reminder_hour' => $reminder_hour ?? 0,
                 ];
