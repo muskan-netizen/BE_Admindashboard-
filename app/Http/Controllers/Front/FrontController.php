@@ -238,20 +238,7 @@ class FrontController extends Controller
          if($celebrity_check == 0){
             $categories = $categories->where('categories.type_id', '!=', 5);
         }
-     
-        $catIds =   Category::select('id')->whereIn('id',function($query){
-         $query->select('category_id')->from((new Product())->getTable())->where('is_live', 1)->whereNull('deleted_at')->groupBy('category_id')
-         ->pluck('category_id')->toArray();})->pluck('id')->toArray();
-         
-         
-         $parent_ids =  Category::select('parent_id')->whereIn('id',function($query){
-             $query->select('category_id')->from((new Product())->getTable())->where('is_live', 1)->whereNull('deleted_at')->groupBy('category_id')
-             ->pluck('category_id')->toArray();
-         })->groupBy('parent_id')->pluck('parent_id')->toArray();
-         
-         if(!empty($parent_ids)){
-             $catIds = array_merge($catIds,$parent_ids);
-         }
+
         $categories = $categories->where('categories.id', '>', '1')
                                // ->whereNotNull('categories.type_id')
                                 //->whereNotIn('categories.type_id', [7])
@@ -261,7 +248,7 @@ class FrontController extends Controller
                                 ->where('cts.language_id', $lang_id)
                                 ->where(function ($qrt) use($lang_id,$primary){
                                     $qrt->where('cts.language_id', $lang_id)->orWhere('cts.language_id',$primary->language_id);
-                                })->whereIn('categories.id',$catIds)
+                                })
                                 ->whereNull('categories.vendor_id')
                               //  ->orderBy('categories.position', 'asc')
                                 ->orderBy('categories.parent_id', 'asc')->groupBy('categories.id')->get();
@@ -376,11 +363,7 @@ class FrontController extends Controller
                 }
             }
         }
-        $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->whereIn('id', function($query){
-            $query->select('vendor_id')->from((new Product())->getTable())->where('is_live', 1)->whereNull('deleted_at')->groupBy('vendor_id')
-            ->pluck('vendor_id')->toArray();
-            
-        })->get();
+        $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->get();
         if($serviceAreaVendors->isNotEmpty()){
             foreach($serviceAreaVendors as $value){
                 $vendors[] = $value->id;
