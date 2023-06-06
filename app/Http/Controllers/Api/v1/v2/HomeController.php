@@ -3,19 +3,20 @@
 namespace App\Http\Controllers\Api\v1\v2;
 
 use DB;
+use Session;
+use DateTime;
+use DateTimeZone;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use App\Models\{ServiceArea, Language, Currency};
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{Banner, Brand, CabBookingLayout, CabBookingLayoutTranslation, Category, Client, ClientPreference, Vendor, VendorCategory, Product, ClientCurrency, HomePageLabel, HomeProduct, MobileBanner, OnboardSetting, Order, ProductCategory, SubscriptionInvoicesVendor, UserVendor, VendorCities, VendorOrderStatus, WebStylingOption};
-use DateTime;
-use Illuminate\Support\Str;
-use DateTimeZone;
 use App\Http\Traits\HomePage\HomePageTrait;
-use Session;
+use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Traits\{OrderTrait, ProductActionTrait, VendorTrait};
+use App\Models\{Banner, Brand, CabBookingLayout, CabBookingLayoutTranslation, Category, Client, ClientPreference, Vendor, VendorCategory, Product, ClientCurrency, HomePageLabel, HomeProduct, MobileBanner, OnboardSetting, Order, ProductCategory, SubscriptionInvoicesVendor, UserVendor, VendorCities, VendorOrderStatus, WebStylingOption};
 
 /**
  * HomeController
@@ -52,6 +53,25 @@ class HomeController extends BaseController
     {
         
         try {
+            $service_area = ServiceArea::select('service_areas.primary_language', 'service_areas.primary_currency','languages.name','currencies.name as currency_name','currencies.symbol','currencies.iso_code')
+            ->join('languages', 'service_areas.primary_language', '=', 'languages.id')
+            ->join('currencies', 'service_areas.primary_currency', '=', 'currencies.id')
+            ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $request->latitude . " " . $request->longitude . ")'))")
+            ->first();
+            $language = new \stdClass();
+            $language->language_id = $service_area->primary_language;
+            $language->is_primary = 0;
+            $language->language = Language::where('id',  $service_area->primary_language)->select('id', 'name', 'sort_code','nativeName')->first();
+           
+            // dd($homeData['languages']);
+           
+            $currencies = new \stdClass();
+            $currencies->currency_id = $service_area->primary_currency;
+            $currencies->is_primary = 0;
+            $currencies->currency = Currency::where('id',  $service_area->primary_currency)->select( 'id', 'name', 'iso_code', 'symbol')->first();
+           
+
+
             $home = array();
             $vendor_ids = array();
             if ($request->has('ref')) {
@@ -257,6 +277,8 @@ class HomeController extends BaseController
             $homeData = ['homePageLabels' => $home_page_labels, 'reqData' => $request->all(), 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude, 'enable_layout' => $enable_layout,'image_prefix' => $image_const_arr];
             $homeData['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
             $homeData['mobile_banners'] = $mobile_banners??[];
+            $homeData['languages'] = $language;
+            $homeData['currencies'] = $currencies;
             //$homeData['banners'] = $banners??[];
             $homeData['banner_image'] = $banners??[];
             //$homeData['categories'] = $categories;

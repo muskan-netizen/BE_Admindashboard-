@@ -19,6 +19,10 @@ class ProductVariantSet extends Model
 	    		->groupBy('pvs.variant_option_id')->orderBy('pvs.product_variant_id');
 	}
 
+	public function options101() {
+	    return $this->hasOne('App\Models\ProductVariantSet', 'product_variant_id', 'product_variant_id');
+
+	}
 	public function options100() {
 	    return $this->hasOne('App\Models\ProductVariantSet', 'product_variant_id', 'product_variant_id')
     		->join('variant_options as pvs', 'product_variant_sets.variant_option_id', 'pvs.id')

@@ -26,12 +26,10 @@ class AdminServiceAreaController extends BaseController{
         $languages = Language::where('id', '>', '0')->get();
         $currencies = Currency::where('id', '>', '0')->get();
         $co_ordinates = $all_coordinates = array();
-        $areas = ServiceArea::join('currencies', 'service_areas.primary_currency', '=', 'currencies.id')
-        ->join('languages', 'service_areas.primary_language', '=', 'languages.id')
-        ->where('service_areas.area_type', 0)
+        $areas = ServiceArea::where('service_areas.area_type', 0)
         ->orderBy('service_areas.created_at', 'DESC')
         ->get();
-        // dd($areas);
+        
         foreach ($areas as $k => $v) {
             $all_coordinates[] = [
                 'name' => $k . '-a',

@@ -461,12 +461,12 @@
                 });
             }
         }
-        if ((is_hyperlocal) || (pickup_delivery_service_area == 1)) {
-            google.maps.event.addDomListener(window, 'load', initialize);
-            google.maps.event.addDomListener(window, 'load', initialize_show);
-            google.maps.event.addDomListener(window, 'load', initialize_edit);
-            google.maps.event.addDomListener(document.getElementById('refresh'), 'click', deleteSelectedShape);
-        }
+        
+        google.maps.event.addDomListener(window, 'load', initialize);
+        google.maps.event.addDomListener(window, 'load', initialize_show);
+        google.maps.event.addDomListener(window, 'load', initialize_edit);
+        google.maps.event.addDomListener(document.getElementById('refresh'), 'click', deleteSelectedShape);
+        
     </script>
     <script type="text/javascript">
         $('.openServiceModal').click(function() {

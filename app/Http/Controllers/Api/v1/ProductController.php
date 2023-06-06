@@ -192,7 +192,10 @@ class ProductController extends BaseController
                                 ->where('product_id', $product->variantSetNew->product_id)
                                 ->where('variant_option_id', $set_value->id)
                                 ->get()->pluck('product_variant_id');
-                                $set_value->option3 =  ProductVariantSet::with('options100')
+                                $set_value->option3 =  ProductVariantSet::with(['options100' => function($qz) use($set_value){
+                                    $qz->where('variant_type_id', '<>', $set_value->variant_type_id);
+                                }
+                                ])
                                 ->whereIn('product_variant_id', $option3)
                                 ->where('variant_type_id', '<>', $set_value->variant_type_id)
                                 ->where('product_id', $product->variantSetNew->product_id)
@@ -201,7 +204,7 @@ class ProductController extends BaseController
                                 // dd( $set_value->option3 );
                             }
                         }
-            pr($product->variantSetNew->toArray());
+            // pr($product->variantSetNew->toArray());
             if(!$product){
                 return response()->json(['error' => 'No record found.'], 404);
             }
