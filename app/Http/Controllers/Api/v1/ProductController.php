@@ -148,15 +148,16 @@ class ProductController extends BaseController
                             ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id', 'product_variants.quantity', 'product_variants.price')
                             ->where('pvs.product_id', $pid)
                             ->where('vt.language_id', $langId)
+                            ->orderBy('position', 'Asc')
                             ->addSelect(DB::raw('(CASE WHEN product_variants.quantity = 0 THEN 1 ELSE 0 END) as is_disabled'));
-                            $zx->with(['variant.options'=> function($zxz) use($langId, $pvIds, $pid){
-                                $zxz->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id')
-                                ->join('product_variants','pvs.product_variant_id','product_variants.id')
-                                ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id', 'product_variants.quantity', 'product_variants.price')
-                                ->where('pvs.product_id', $pid)
-                                ->where('vt.language_id', $langId)
-                                ->addSelect(DB::raw('(CASE WHEN product_variants.quantity = 0 THEN 1 ELSE 0 END) as is_disabled'));
-                            }]);
+                            // $zx->with(['variant.options'=> function($zxz) use($langId, $pvIds, $pid){
+                            //     $zxz->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id')
+                            //     ->join('product_variants','pvs.product_variant_id','product_variants.id')
+                            //     ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id', 'product_variants.quantity', 'product_variants.price')
+                            //     ->where('pvs.product_id', $pid)
+                            //     ->where('vt.language_id', $langId)
+                            //     ->addSelect(DB::raw('(CASE WHEN product_variants.quantity = 0 THEN 1 ELSE 0 END) as is_disabled'));
+                            // }]);
                         },
                         'translation' => function($q) use($langId){
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
@@ -175,6 +176,24 @@ class ProductController extends BaseController
                     $product = $product->where('id', $pid)
                         ->first();
 
+                        if($product->variantSetNew){
+                            foreach ($product->variantSetNew->options as $set_key => $set_value) {
+                                // dd($product->variantSetNew->variant_option_id);
+                                $option3 =  ProductVariantSet::
+                                // ->where('product_variant_id', $set_value->product_variant_id)
+                                where('variant_type_id', '=', $set_value->variant_type_id)
+                                ->where('product_id', $product->variantSetNew->product_id)
+                                ->where('variant_option_id', $set_value->id)
+                                ->get()->pluck('product_variant_id');
+                                $set_value->option3 =  ProductVariantSet::with('options100')
+                                ->whereIn('product_variant_id', $option3)
+                                ->where('variant_type_id', '<>', $set_value->variant_type_id)
+                                ->where('product_id', $product->variantSetNew->product_id)
+                                // ->where('variant_option_id', $set_value->id)
+                                ->get()->toArray();
+                                // dd( $set_value->option3 );
+                            }
+                        }
             pr($product->variantSetNew->toArray());
             if(!$product){
                 return response()->json(['error' => 'No record found.'], 404);
@@ -253,6 +272,9 @@ class ProductController extends BaseController
                     }
                 }
             }
+           
+
+
             if($product->variantSet){
                 foreach ($product->variantSet as $set_key => $set_value) {
                     foreach ($set_value->options as $opt_key => $opt_value) {
