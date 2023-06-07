@@ -113,6 +113,7 @@
                     <div class="modal-body mt-0" id="editCardBox">
                         <input type="hidden" name="latlongs" value="" id="latlongs" />
                         <input type="hidden" name="zoom_level" value="13" id="zoom_level" />
+                        <input type="hidden" name="country_code" value="" id="country_code" />
                         <div class="row">
                             <div class="col-lg-12 mb-2">
                                 {!! Form::label('title', __('Area Name'), ['class' => 'control-label']) !!}
@@ -344,6 +345,12 @@
                             position: place.geometry.location,
                         })
                     );
+
+                    // Retrieve ISO 2 country code
+                    const countryCode = place.address_components.find((component) =>
+                    component.types.includes("country")
+                    )?.short_name;
+                    $('#country_code').val(countryCode);
 
                     if (place.geometry.viewport) {
                         // Only geocodes have viewport.

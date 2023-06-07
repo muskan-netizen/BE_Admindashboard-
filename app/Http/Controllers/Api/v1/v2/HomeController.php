@@ -51,39 +51,7 @@ class HomeController extends BaseController
 
     public function homepage(Request $request, $domain = '')
     {
-        try {
-            $currencies = [];
-            $language = [];
-            if ($request->has('latitude') && $request->has('longitude')) {
-                $service_area = ServiceArea::select('service_areas.primary_language','service_areas.primary_currency','languages.name as language_name','languages.sort_code','languages.nativeName','currencies.name as currency_name','currencies.symbol','currencies.iso_code')
-                ->join('languages', 'service_areas.primary_language', '=', 'languages.id')
-                ->join('currencies', 'service_areas.primary_currency', '=', 'currencies.id')
-                ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $request->latitude . " " . $request->longitude . ")'))")
-                ->first();
-
-                $language = (object) [
-                    'language_id' => $service_area->primary_language,
-                    'is_primary' => 0,
-                    'language' => (object) [
-                        'id' => $service_area->primary_language,
-                        'name' => $service_area->language_name,
-                        'sort_code' => $service_area->sort_code,
-                        'nativeName' => $service_area->nativeName,
-                    ],
-                ];
-            
-                $currencies = (object) [
-                    'currency_id' => $service_area->primary_currency,
-                    'is_primary' => 0,
-                    'currency' => (object) [
-                        'id' => $service_area->primary_currency,
-                        'name' => $service_area->currency_name,
-                        'iso_code' => $service_area->iso_code,
-                        'symbol' => $service_area->symbol,
-                    ],
-                ];
-            }
-           
+        try {           
             $home = array();
             $vendor_ids = array();
             if ($request->has('ref')) {
@@ -289,8 +257,6 @@ class HomeController extends BaseController
             $homeData = ['homePageLabels' => $home_page_labels, 'reqData' => $request->all(), 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude, 'enable_layout' => $enable_layout,'image_prefix' => $image_const_arr];
             $homeData['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
             $homeData['mobile_banners'] = $mobile_banners??[];
-            $homeData['languages'] = $language;
-            $homeData['currencies'] = $currencies;
             //$homeData['banners'] = $banners??[];
             $homeData['banner_image'] = $banners??[];
             //$homeData['categories'] = $categories;

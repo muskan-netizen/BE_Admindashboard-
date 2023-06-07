@@ -99,6 +99,7 @@ class AdminServiceAreaController extends BaseController{
         $area->area_type        = 0;
         $area->primary_language = $request->primary_language;
         $area->primary_currency = $request->primary_currency;
+        $area->country_code = $request->country_code;
         $area->save();
 
         return redirect()->back()->with('success', 'Service area saved successfully!');
