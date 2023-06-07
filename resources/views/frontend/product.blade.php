@@ -801,8 +801,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 </div> --}}
                                                 <div class="tab-pane show {{(count($rating_details)>0)?'active':''}}" id="top-review" role="tabpanel" aria-labelledby="review-top-tab">
                                                     @forelse ($rating_details as $rating)
-                                                    {{-- @dd($rating->user->image) --}}
-                                                    <div v-for="item in list" class="w-100 d-flex justify-content-between mb-3">
+                                                    <div v-for="item in list" class="w-100 d-flex justify-content-between mb-2">
                                                         <div class="review-box customer_review">
                                                             <div class="">
                                                                 <div class="customer_review_item_row">
@@ -853,11 +852,10 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                             </div>
                         </div>
                     </div>
-
                     {{-- Related Products --}}
                     @if(!empty($set_template) && !empty($set_template->template_id) && ($set_template->template_id == '8' || $set_template->template_id == '9'))
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-12 mt-3">
                             @php
                                 $similar_title = getNomenclatureName('Similar Product', true);
                                 $similar_title_label = ($similar_title=="Similar Product")?__('Similar Product'):__($similar_title);
