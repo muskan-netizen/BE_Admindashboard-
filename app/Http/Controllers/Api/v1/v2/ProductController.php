@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\v1;
+namespace App\Http\Controllers\Api\v1\v2;
 
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Front\PromoCodeController;
@@ -34,11 +34,6 @@ class ProductController extends BaseController
                             $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
                             ->where('category_translations.language_id', $langId);
                         },
-                        // 'variant' => function($v){
-                        //     $v->select('id', 'sku', 'product_id', 'title', 'quantity','price','markup_price','cost_price','barcode','tax_category_id')
-                        //     ->groupBy('product_id'); // return first variant
-                        // },
-
                         'variant.media.pimage.image', 'vendor', 'media.image', 'related', 'upSell', 'crossSell', 'reviews.user' => function($rev) {
                             $rev->select('users.id', 'users.name', 'users.email', 'users.image');
                         }, 'reviews.reviewFiles',
@@ -48,12 +43,6 @@ class ProductController extends BaseController
                             $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
                             $q1->where('set.status', 1)->where('ast.language_id', $langId);
                         },
-                        // 'variantSetNew' => function($z) use($langId){
-                        //     $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
-                        //     $z->join('variant_translations as vt','vt.variant_id','vr.id');
-                        //     $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
-                        //     $z->where('vt.language_id', $langId);
-                        // },
                         'variantSetNew' => function($z) use($langId,$pvIds, $pid){
                             $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
                             $z->join('variant_translations as vt','vt.variant_id','vr.id');
@@ -67,14 +56,6 @@ class ProductController extends BaseController
                                 ->where('vt.language_id', $langId)
                                 ->orderBy('position', 'Asc')
                                 ->addSelect(DB::raw('(CASE WHEN product_variants.quantity = 0 THEN 1 ELSE 0 END) as is_disabled'));
-                                // $zx->with(['variant.options'=> function($zxz) use($langId, $pvIds, $pid){
-                                //     $zxz->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id')
-                                //     ->join('product_variants','pvs.product_variant_id','product_variants.id')
-                                //     ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id', 'product_variants.quantity', 'product_variants.price')
-                                //     ->where('pvs.product_id', $pid)
-                                //     ->where('vt.language_id', $langId)
-                                //     ->addSelect(DB::raw('(CASE WHEN product_variants.quantity = 0 THEN 1 ELSE 0 END) as is_disabled'));
-                                // }]);
                             },]);
                         },
                         
@@ -95,26 +76,22 @@ class ProductController extends BaseController
                     
                     if($product->variantSetNew){
                         foreach ($product->variantSetNew->options as $set_key => $set_value) {
-                            // dd($product->variantSetNew->variant_option_id);
                             $option3 =  ProductVariantSet::
-                            // ->where('product_variant_id', $set_value->product_variant_id)
                             where('variant_type_id', '=', $set_value->variant_type_id)
                             ->where('product_id', $product->variantSetNew->product_id)
                             ->where('variant_option_id', $set_value->id)
                             ->get()->pluck('product_variant_id');
-                            $set_value->option3 =  ProductVariantSet::with(['options100' => function($qz) use($set_value){
+                            $set_value->option3 =  ProductVariantSet::with(['options1' => function($qz) use($set_value){
                                 $qz->where('variant_type_id', '<>', $set_value->variant_type_id);
                             }
                             ])
                             ->whereIn('product_variant_id', $option3)
                             ->where('variant_type_id', '<>', $set_value->variant_type_id)
                             ->where('product_id', $product->variantSetNew->product_id)
-                            // ->where('variant_option_id', $set_value->id)
                             ->get()->toArray();
-                            // dd( $set_value->option3 );
                         }
                     }
-            // pr($product->variantSetNew->toArray());
+            
             if(!$product){
                 return response()->json(['error' => 'No record found.'], 404);
             }
