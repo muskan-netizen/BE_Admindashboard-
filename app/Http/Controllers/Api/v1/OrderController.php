@@ -2075,9 +2075,9 @@ class OrderController extends BaseController
                     $email_template_content = $email_template->content;
                     if ($vendor_id == "") {
 
-                        $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
+                        $returnHTML = view('email.newOrderProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     } else {
-                        $returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
+                        $returnHTML = view('email.newOrderVendorProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     }
                     $email_template_content = str_ireplace("{description}",'', $email_template_content);
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
@@ -2253,7 +2253,7 @@ class OrderController extends BaseController
             $order->scheduled_slot  = $order->orderDetail->scheduled_slot;
             $order->schedule_dropoff = date('d/m/Y',strtotime($order->orderDetail->schedule_dropoff));
             $order->dropoff_scheduled_slot  = $order->orderDetail->dropoff_scheduled_slot;
-            $order->payable_amount = $order->total_price;
+            $order->payable_amount = decimal_format($order->orderDetail->payable_amount);
             if(checkColumnExists('orders', 'is_postpay')){
                 $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
             }
@@ -2723,6 +2723,12 @@ class OrderController extends BaseController
                 }
                 if (!empty($order->scheduled_date_time)) {
                     $order->scheduled_date_time = dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone);
+                }
+                if(!empty($order->scheduled_slot) ){
+                    $slot_time = explode("-",$order->scheduled_slot);
+                    $start_time = $slot_time[0];
+                    $end_time = !empty($slot_time[1]) ? $slot_time[1]: $slot_time[0];
+                    $order->schedule_slot =date('d-m-Y h:i A',strtotime( date('Y-m-d',strtotime($order->scheduled_date_time)). " " . $start_time)) . ' - ' . date('h:i A',strtotime($end_time));
                 }
                 $luxury_option_name = '';
                 $order->luxury_option = [];
