@@ -53,25 +53,34 @@ class HomeController extends BaseController
     {
         
         try {
-            $service_area = ServiceArea::select('service_areas.primary_language', 'service_areas.primary_currency','languages.name','currencies.name as currency_name','currencies.symbol','currencies.iso_code')
+            $service_area = ServiceArea::select('service_areas.primary_language','service_areas.primary_currency','languages.name as language_name','languages.sort_code','languages.nativeName','currencies.name as currency_name','currencies.symbol','currencies.iso_code')
             ->join('languages', 'service_areas.primary_language', '=', 'languages.id')
             ->join('currencies', 'service_areas.primary_currency', '=', 'currencies.id')
             ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $request->latitude . " " . $request->longitude . ")'))")
             ->first();
-            $language = new \stdClass();
-            $language->language_id = $service_area->primary_language;
-            $language->is_primary = 0;
-            $language->language = Language::where('id',  $service_area->primary_language)->select('id', 'name', 'sort_code','nativeName')->first();
-           
-            // dd($homeData['languages']);
-           
-            $currencies = new \stdClass();
-            $currencies->currency_id = $service_area->primary_currency;
-            $currencies->is_primary = 0;
-            $currencies->currency = Currency::where('id',  $service_area->primary_currency)->select( 'id', 'name', 'iso_code', 'symbol')->first();
-           
 
-
+            $language = (object) [
+                'language_id' => $service_area->primary_language,
+                'is_primary' => 0,
+                'language' => (object) [
+                    'id' => $service_area->primary_language,
+                    'name' => $service_area->language_name,
+                    'sort_code' => $service_area->sort_code,
+                    'nativeName' => $service_area->nativeName,
+                ],
+            ];
+        
+            $currencies = (object) [
+                'currency_id' => $service_area->primary_currency,
+                'is_primary' => 0,
+                'currency' => (object) [
+                    'id' => $service_area->primary_currency,
+                    'name' => $service_area->currency_name,
+                    'iso_code' => $service_area->iso_code,
+                    'symbol' => $service_area->symbol,
+                ],
+            ];
+           
             $home = array();
             $vendor_ids = array();
             if ($request->has('ref')) {
