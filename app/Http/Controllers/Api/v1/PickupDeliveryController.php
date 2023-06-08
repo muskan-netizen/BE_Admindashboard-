@@ -815,6 +815,7 @@ class PickupDeliveryController extends BaseController{
                             'driver_unique_id' => $request->unique_id ?? null,
                             'notify_hour' => $notify_hour ?? 0,
                             'reminder_hour' => $reminder_hour ?? 0,
+                            'app_call' => 1,
                         ];
                 if($request->has('bid_task_type')){
                     $postdata['bid_task_type']    = $request->bid_task_type;
