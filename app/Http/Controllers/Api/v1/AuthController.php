@@ -503,6 +503,31 @@ class AuthController extends BaseController
         if ($user->id > 0) {
             if ($signReq->refferal_code) {
                 $refferal_amounts = ClientPreference::first();
+
+                $dispatch_domain = $this->checkIfLastMileOn();
+                $postdata = [
+                    'refferal_code' => $signReq->refferal_code,
+                    'user_name' => $user->name ?? ''
+                ];
+                if ($dispatch_domain && $dispatch_domain != false)
+                {
+                    $client = new GCLIENT(['headers' => [
+                        'personaltoken' => $dispatch_domain->pickup_delivery_service_key,
+                        'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
+                        'content-type' => 'application/json']
+                    ]);
+                    $url = $dispatch_domain->pickup_delivery_service_key_url;
+                    $res = $client->post($url.'/api/auth/get-driver-refferal',
+                        ['form_params' => ($postdata)]
+                    );
+                    $response = json_decode($res->getBody(), true);
+                    if($response && $response['message'] == 'success'){
+                        $refferal_amount = $response['refferal_amount'];
+                        $wallet->deposit($refferal_amount, ['You used referal code of <b>' . $response['refer_by_name'] . '</b>']);
+                        $wallet->balance;
+                    }
+                }
+
                 if ($refferal_amounts) {
                     if ($refferal_amounts->reffered_by_amount != null && $refferal_amounts->reffered_to_amount != null) {
                         $reffered_by = UserRefferal::where('refferal_code', $signReq->refferal_code)->first();
@@ -516,31 +541,6 @@ class AuthController extends BaseController
                             //user reffered to amount
                             $wallet->deposit($refferal_amounts->reffered_to_amount, ['You used referal code of <b>' . $user_refferd_by->name . '</b>']);
                             $wallet->balance;
-                        }
-                        else{           
-                            $dispatch_domain = $this->checkIfLastMileOn();
-                            $postdata = [
-                                'refferal_code' => $signReq->refferal_code,
-                                'user_name' => $user->name ?? ''
-                            ];
-                            if ($dispatch_domain && $dispatch_domain != false)
-                            {
-                                $client = new GCLIENT(['headers' => [
-                                    'personaltoken' => $dispatch_domain->pickup_delivery_service_key,
-                                    'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
-                                    'content-type' => 'application/json']
-                                ]);
-                                $url = $dispatch_domain->pickup_delivery_service_key_url;
-                                $res = $client->post($url.'/api/auth/get-driver-refferal',
-                                    ['form_params' => ($postdata)]
-                                );
-                                $response = json_decode($res->getBody(), true);
-                                if($response && $response['message'] == 'success'){
-                                    $refferal_amount = $response['refferal_amount'];
-                                    $wallet->deposit($refferal_amount, ['You used referal code of <b>' . $response['refer_by_name'] . '</b>']);
-                                    $wallet->balance;
-                                }
-                            }
                         }
                     }
                 }
