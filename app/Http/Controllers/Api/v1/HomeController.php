@@ -1178,4 +1178,102 @@ class HomeController extends BaseController
 
         // return '2';
     }
+
+    public function homeRestaurents(Request $request)
+    {
+        $user = Auth::user();
+        $langId = $user->language;
+
+        $preferences = ClientPreference::first();;
+        $vendorData = Vendor::byVendorSubscriptionRule($preferences)->with('products')->select('vendors.id', 'name', 'banner','is_show_vendor_details' ,'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude', 'vendor_templete_id');
+
+        $category = Category::with(['tags', 'brands.translation' => function($q) use($langId){
+            $q->where('brand_translations.language_id', $langId);
+        },
+        'type'  => function($q){
+            $q->select('id', 'title as redirect_to' ,'service_type' );
+        },
+        'childs.translation'  => function($q) use($langId){
+            $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+            ->where('category_translations.language_id', $langId);
+        },
+        'translation' => function($q) use($langId){
+            $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+            ->where('category_translations.language_id', $langId);
+        },
+        'allParentsAccount'])
+        ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products', 'parent_id', 'sub_cat_banners')
+        ->where('slug', 'Restaurant')->firstOrFail();
+
+        if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+            $latitude = $preferences->Default_latitude;
+            $longitude = $preferences->Default_longitude;
+            $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
+            //3961 for miles and 6371 for kilometers
+            $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
+            $vendorData = $vendorData->select('*', \DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
+                cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
+                sin( radians(' . $latitude . ') ) *
+                sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->orderBy('vendorToUserDistance', 'ASC');
+
+            $vendors= $this->getServiceAreaVendors();
+            $vendorData= $vendorData->whereIn('vendors.id', $vendors);
+        }
+        $vendorData = $vendorData->whereHas('getAllCategory' , function ($q) use($category){
+            $q->where('status', 1) 
+            ->where('category_id', $category->id)
+            ;
+        });
+        if(!empty($vendorType)){
+            $vendorData= $vendorData->where($vendorType, 1);
+        }
+        $vendorData = $vendorData->where('vendors.status', 1)->paginate(12);
+
+        foreach ($vendorData as $key => $value) {
+            $value = $this->getLineOfSightDistanceAndTime($value, $preferences);
+            $value->vendorRating = $this->vendorRating($value->products);
+            $vendorCategories = VendorCategory::with(['category.translation' => function($q) use($langId){
+                $q->where('category_translations.language_id', $langId);
+            }])->where('vendor_id', $value->id)->where('status', 1)->get();
+            $categoriesList = '';
+            foreach ($vendorCategories as $key => $category) {
+                if ($category->category) {
+                    $categoryName = $category->category->translation->first() ? $category->category->translation->first()->name : '';
+                    $categoriesList = $categoriesList . $categoryName;
+                    if ($key !=  $vendorCategories->count() - 1) {
+                        $categoriesList = $categoriesList . ', ';
+                    }
+                }
+            }
+            $value->categoriesList = $categoriesList;
+        }
+
+        $homeData['restaurants'] = $vendorData;
+                
+        return response()->json([
+            'status' => 200,
+            'message' => 'Restaurent List',
+            'data' => $homeData
+        ]);
+    }
+
+    public function vendorRating($vendorProducts)
+    {
+        $vendor_rating = 0;
+        if($vendorProducts->isNotEmpty()){
+            $product_rating = 0;
+            $product_count = 0;
+            foreach($vendorProducts as $product){
+                if($product->averageRating > 0){
+                    $product_rating = $product_rating + $product->averageRating;
+                    $product_count++;
+                }
+            }
+            if($product_count > 0){
+                $vendor_rating = $product_rating / $product_count;
+            }
+        }
+        return number_format($vendor_rating, 1, '.', '');
+    }
+
 }
