@@ -36,6 +36,9 @@ function initialize() {
         marker.setVisible(isEdit);
 
         const autocomplete = new google.maps.places.Autocomplete(input);
+        if(is_map_search_perticular_country){
+            autocomplete.setComponentRestrictions({'country': [is_map_search_perticular_country]});
+        }
         autocomplete.key = fieldKey;
         autocompletes.push({input: input, map: map, marker: marker, autocomplete: autocomplete});
     }
