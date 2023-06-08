@@ -45,6 +45,7 @@ class SyncToDispatcher implements ShouldQueue
      */
     public function handle()
     {
+        \Log::info('test');
         $url = $this->dispatcher_service_key_url.'/api/sync-category-product';
         $postData = ['databaseName'=> $this->RoyoDatabaseName,'data' => $this->categories, 'order_panel_id' => $this->order_panel_id,'dispatcher_service_key_url'=>$this->dispatcher_service_key_url,'dispatcher_service_code'=>$this->dispatcher_service_code]; 
     
@@ -53,6 +54,7 @@ class SyncToDispatcher implements ShouldQueue
         ];
 
         $response = Http::withHeaders($headers)->post($url, $postData);
+      
         $statusCode = $response->getStatusCode();
         if($statusCode == 200) {
             return true;
