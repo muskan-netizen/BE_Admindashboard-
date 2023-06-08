@@ -101,7 +101,7 @@ class ToolsController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store($copy_to,$copy_from)
     {
         try {                
             $from_vendor = $this->vendorObj->getById($copy_from);
