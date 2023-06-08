@@ -53,16 +53,19 @@
     <!-- spinner End -->
 @php
 $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
+$is_map_search_perticular_country = getMapConfigrationPreference();
 @endphp
 <script>
     var setShowSubscriptionPlan = '';
     var showOndemandPricing = '';
+    let is_map_search_perticular_country = '';
+
     @if($showSubscriptionPlanPopUp == 1)
         setShowSubscriptionPlan = "showed";
     @endif
     var is_ondemand_multi_pricing = '{{ $is_ondemand_multi_pricing }}';
+     is_map_search_perticular_country = '{{ $is_map_search_perticular_country }}';
     var ondemand_selected_price = "{{ Session::get('onDemandPricingSelected')?? 'vendor' }}";
-
 </script>
 @yield('pre-custom-script')
 <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />

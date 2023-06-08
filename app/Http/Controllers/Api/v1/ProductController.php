@@ -246,7 +246,7 @@ class ProductController extends BaseController
             if($product->variantSet){
                 foreach ($product->variantSet as $set_key => $set_value) {
                     foreach ($set_value->options as $opt_key => $opt_value) {
-                        $opt_value->value = $opt_value->product_variant_id == $variant_id ? true : false;
+                        $opt_value->value = ($opt_key == 0 )? true : false;
                     }
                 }
             }
