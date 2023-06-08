@@ -1962,6 +1962,19 @@ class CartController extends FrontController
     }
 
     /**
+     * Update Cart Product Checked Status
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function updateCartProductStatus($domain = '', Request $request)
+    {
+        $cartProduct = CartProduct::find($request->cartproduct_id);
+        $cartProduct->is_cart_checked = $request->is_cart_checked;
+        $cartProduct->save();
+        return response()->json("Successfully Updated");
+    }
+
+    /**
      * Delete Cart Product
      *
      * @return \Illuminate\Http\Response

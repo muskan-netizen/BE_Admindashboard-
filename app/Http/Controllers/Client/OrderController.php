@@ -1974,8 +1974,8 @@ class OrderController extends BaseController
                             'vendor_name' => $vendor_details->name ?? null,
                             'tip_amount' => $order->tip_amount,
                             'payment_method' => $order->payment_method,
-                            'order_pre_time'=>$vendor_details->order_pre_time
-
+                            'order_pre_time'=>$vendor_details->order_pre_time,
+                            'app_call' => 0,
                         ];
                         //pr($postdata);
                         if ($orderVendorDetails->is_restricted == 1) {
@@ -2906,7 +2906,13 @@ class OrderController extends BaseController
             } elseif ($order_status_id == 4) {
                 $notification_content = NotificationTemplate::where('id', 7)->first();
             } elseif ($order_status_id == 5) {
-                $notification_content = NotificationTemplate::where('id', 8)->first();
+                //Check for order is takeaway
+                if(@$orderData->luxury_option_id == 3)
+                {
+                    $notification_content = NotificationTemplate::where('slug', 'order-out-for-takeaway-delivery')->first();
+                }else{
+                    $notification_content = NotificationTemplate::where('id', 8)->first();
+                }
             } elseif ($order_status_id == 6) {
                 $notification_content = NotificationTemplate::where('id', 9)->first();
             }

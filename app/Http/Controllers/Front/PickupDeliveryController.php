@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, PaymentOption, PickDropDriverBid, UserBidRideRequest};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, ClientPreferenceAdditional, PaymentOption, PickDropDriverBid, UserBidRideRequest};
 use App\Http\Traits\{ApiResponser,PaymentTrait};
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
@@ -501,6 +501,7 @@ class PickupDeliveryController extends FrontController{
                 if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                     DB::commit();
                     $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
+                    $order_place['data']['invalid_agent'] = $request_to_dispatch['invalid_agent'];
                     $order_place['data']['user_name'] = $user->email;
                     $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
 
@@ -950,13 +951,21 @@ class PickupDeliveryController extends FrontController{
                     $schedule_datetime_del = $request->schedule_time;//Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
 
+                $client_preferences_addional = ClientPreferenceAdditional::pluck('key_value','key_name');
+
+                if(isset($client_preferences_addional['pickup_notification_before']) && $client_preferences_addional['pickup_notification_before'] == 1)
+                {
+                    $notify_hour = $client_preferences_addional['pickup_notification_before_hours'] ?? 1;
+                    $reminder_hour = $client_preferences_addional['pickup_notification_before2_hours'] ?? 1;
+                }
+
                 $postdata =  [
                     'order_number' =>  $order->order_number,
                     //'order_type' =>  $order->type,
                     // 'order_friend_name' =>  $order->friend_name,
                     // 'order_number' =>  $order->friend_phone_number,
                     'barcode' => '',
-                    'allocation_type' => 'a',
+                    'allocation_type' => $request->unique_id ? 'notify' : 'a',
                     'task' => $request->tasks,
                     'order_team_tag' => $team_tag,
                     'task_type' => $task_type,
@@ -989,6 +998,10 @@ class PickupDeliveryController extends FrontController{
                     'is_cab_pooling' => isset($request->is_cab_pooling)?$request->is_cab_pooling:0,
                     'available_seats' => $product->seats_for_booking,
                     'driver_id' => $request->driver_id ?? null,
+                    'driver_unique_id' => $request->unique_id ?? null,
+                    'notify_hour' => $notify_hour ?? 0,
+                    'reminder_hour' => $reminder_hour ?? 0,
+                    'app_call' => 0,
                 ];
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
