@@ -67,6 +67,34 @@ class ToolsController extends BaseController
         //
     }
 
+
+    public function storeData(Request $request)
+    {
+        try {            
+            $rule = array(
+                'copy_to' => 'required',
+                'copy_from' => 'required'
+            );
+            $validation  = Validator::make($request->all(), $rule);
+            if ($validation->fails()) {
+                return redirect()->back()->withInput()->withErrors($validation);
+            }
+            
+            $toolExist = CopyTool::where(['copy_to' => $request->copy_to,'copy_from' => $request->copy_from])->first();
+            if(!empty($toolExist)){
+                return redirect()->back()->with('error', 'Request for copy this catalog is already exists');
+            }
+            $tool = new CopyTool();
+            $tool->copy_to = $request->copy_to;
+            $tool->copy_from = $request->copy_from;
+            $tool->save();
+            return redirect()->back()->with('success', 'Catalog data saved successfully!');
+            
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -75,82 +103,54 @@ class ToolsController extends BaseController
      */
     public function store(Request $request)
     {
-        try {
-            $from_vendor = $this->vendorObj->getById($request->copy_from);
-            $from_products = $this->productObj->getByVendorId($request->copy_from);
+        try {                
+            $from_vendor = $this->vendorObj->getById($copy_from);
+            $from_products = $this->productObj->getByVendorId($copy_from);
             $client = $this->clientObj->getClient();
 
-            if (count($request->copy_to) > 0) {
+            if (!empty($copy_to) ) {
                 /*Products replicate */
-                foreach ($request->copy_to as $copy_to) {
                     /* Block existing products */
-                    $this->productObj->where('vendor_id',$copy_to)->update(['is_live'=>2]);
-                    $update_vendor = $this->updateVendorData($from_vendor, $copy_to);
-                    if (isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain)
-                        $sku_url =  ($client->custom_domain);
-                    else
-                        $sku_url =  ($client->sub_domain . env('SUBMAINDOMAIN'));
+                $this->productObj->where('vendor_id',$copy_to)->update(['is_live'=>2]);
+                $update_vendor = $this->updateVendorData($from_vendor, $copy_to);
+                if (isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain)
+                    $sku_url =  ($client->custom_domain);
+                else
+                    $sku_url =  ($client->sub_domain . env('SUBMAINDOMAIN'));
 
-                    $sku_url = array_reverse(explode('.', $sku_url));
-                    $sku_url = implode(".", $sku_url);
+                $sku_url = array_reverse(explode('.', $sku_url));
+                $sku_url = implode(".", $sku_url);
 
-                    $to_vendor = $this->vendorObj->getById($copy_to);
-                    $vendor_name = $to_vendor->name;
-                    $vendor_name = preg_replace('/\s+/', '', $vendor_name);
-                    if (isset($vendor_name) && !empty($vendor_name))
-                        $sku_url = $sku_url . "." . $vendor_name;
+                $to_vendor = $this->vendorObj->getById($copy_to);
+                $vendor_name = $to_vendor->name;
+                $vendor_name = preg_replace('/\s+/', '', $vendor_name);
+                if (isset($vendor_name) && !empty($vendor_name))
+                    $sku_url = $sku_url . "." . $vendor_name;
 
-                    /*unique Addons replicate */
-                    $addon_sets = AddonSet::with(['option.translation_many', 'translation_many'])->select('id', 'title', 'min_select', 'max_select', 'position')
-                        ->where('status', 1)
-                        ->where('vendor_id', $request->copy_from)
-                        ->orderBy('position', 'asc')->get();
-                    foreach ($addon_sets as $set) {
-                        $check_addon = $this->addOnSetObj->checkAddon($set, $copy_to);
-                        if ($check_addon) {
-                            $this->deleteAddonSet($check_addon->id);
-                        }
-                        $add_addOn = $this->addCompleteAddOn($set, $copy_to);
+                /*unique Addons replicate */
+                $addon_sets = AddonSet::with(['option.translation_many', 'translation_many'])->select('id', 'title', 'min_select', 'max_select', 'position')
+                    ->where('status', 1)
+                    ->where('vendor_id', $copy_from)
+                    ->orderBy('position', 'asc')->get();
+                foreach ($addon_sets as $set) {
+                    $check_addon = $this->addOnSetObj->checkAddon($set, $copy_to);
+                    if ($check_addon) {
+                        $this->deleteAddonSet($check_addon->id);
                     }
-
-                    foreach ($from_products as $from_product) {
-                        // $product_slug = createSlug(!is_null($from_product->title) ? $from_product->title : $from_product->url_slug);
-                        // $product_sku = $sku_url . '.' . $product_slug;
-                        $product_slug = !is_null($from_product->title) ? $from_product->title : $from_product->url_slug;
-                        $product_sku = $sku_url . '.' . remove_special_chars($product_slug);
-                        $check_product = $this->productObj->getProductBySku($product_sku);
-                        if ($check_product) {
-                            $this->deleteProduct($check_product->id);
-                        }
-                        $this->addProduct($from_product, $copy_to, $request->copy_from, $product_sku);
-                    }
+                    $add_addOn = $this->addCompleteAddOn($set, $copy_to);
+                }
+                // ------------------------- jobs ------------------
+                foreach ($from_products->chunk(1000) as $products) {
+                   \Log::info("products");
+                    CopyData::dispatch($products, $copy_to, $copy_from, $sku_url, $from_vendor,$this->vendorObj,  $this->productObj, $this->clientObj, $this->addOnSetObj, $this->categoryObj, $this->vendorCategoryObj, $this->vendorSlotObj, $this->vendorSlotDateObj, $this->vendorDineinCategoryObj, $this->vendorDineinTableObj)->onQueue('Copy_Tool');
                 }
 
-
-                /*unique Categories replicate */
-                $v_c_categories = $this->vendorCategoryObj->select('categories.id as category_id', 'vendor_categories.vendor_id as vendor_id', 'vendor_categories.status as status')
-                    ->join('categories', 'categories.id', '=', 'vendor_categories.category_id')
-                    ->where('categories.vendor_id', "!=", null)
-                    ->where('vendor_categories.vendor_id', $from_vendor->id)
-                    ->get();
-
-                foreach ($v_c_categories as $row) {
-                    $category = Category::find($row->category_id);
-                    $new_category_result = $this->addCompleteCategory($category, $copy_to);
-                    if (VendorCategory::where(['category_id' => $new_category_result->id, 'vendor_id' => $new_category_result->vendor_id])->exists()) {
-                        $status = VendorCategory::where(['category_id' => $category->id, 'vendor_id' => $category->vendor_id])->first()->status;
-                        VendorCategory::where(['category_id' => $new_category_result->id, 'vendor_id' => $new_category_result->vendor_id])->update(['status' => $status]);
-                    } else {
-                        $status = VendorCategory::where(['category_id' => $category->id, 'vendor_id' => $category->vendor_id])->first()->status;
-                        VendorCategory::create(['category_id' => $new_category_result->id, 'vendor_id' => $new_category_result->vendor_id, 'status' => $status]);
-                    }
-                }
-
-                return redirect()->back()->with('success', 'Catalogs copied successfully!');
+                return true;
             }
-            return redirect()->back()->with('error', 'Please select atleast one store');
-        } catch (Exception $e) {
-            return redirect()->back()->with('error', 'Something went wrong!');
+            return false;
+        } catch (\Exception $e) {
+            \Log::info("error ".$e->getMessage());
+            return false;
         }
     }
 
