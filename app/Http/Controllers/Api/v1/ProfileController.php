@@ -30,7 +30,8 @@ use App\Models\ {
     EmailTemplate,
     UserRegistrationDocuments,
     Product,
-    UserDocs
+    UserDocs,
+    UserVendorWishlist
 };
 use App\Models\UserDataVault;
 use App\Http\Controllers\Front\AzulPaymentController;
@@ -494,5 +495,51 @@ class ProfileController extends BaseController
             'message' => __('Card does\'nt exist')
         ]);
         
+    }
+
+    public function updateWishlistVendor(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'vendor_id' => 'required|exists:vendors,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => 201, 'message' => $validator->errors()->first()], 201);
+        }
+
+        $vendor = UserVendorWishlist::where(['user_id' => Auth::id(), 'vendor_id' => $request->vendor_id])->first();
+        if($vendor){
+            $vendor->delete();
+            return response()->json([
+                'success' => 200,
+                'message' => __('Vendor has been removed from wishlist.')
+            ]);
+        }
+
+        UserVendorWishlist::create([
+            'user_id' => Auth::id(),
+            'vendor_id' => $request->vendor_id
+        ]);
+
+        return response()->json([
+            'success' => 200,
+            'message' => __('Vendor has been added in wishlist.')
+        ]);
+    }
+
+    public function wishlistVendors()
+    {
+        $wishlist = UserVendorWishlist::where('user_id', Auth::id())->get();
+        if(count($wishlist)){
+            return response()->json([
+                'success' => 200,
+                'message' => __('List for all wishlist vendors.'),
+                'data' => $wishlist
+            ]);
+        }
+        return response()->json([
+            'success' => 200,
+            'message' => __('No Record Found.'),
+        ]);
     }
 }

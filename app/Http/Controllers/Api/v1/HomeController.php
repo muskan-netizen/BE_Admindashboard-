@@ -1270,4 +1270,24 @@ class HomeController extends BaseController
         return number_format($vendor_rating, 1, '.', '');
     }
 
+    public function categoryRestaurents(Request $request,$category_id)
+    {
+        $vendors = Vendor::whereHas('myCategories', function($q) use ($category_id){
+            $q->where('id', $category_id);
+        })->where(function($q){
+            if(isset($request->keyword)){
+                $q->where('name', $request->keyword);
+            }
+        })->orWhereHas('products',function($q){
+            if(isset($request->keyword)){
+                $q->where('title', $request->keyword);
+            }
+        })->get(); 
+
+        return response()->json([
+            'status' => 200,
+            'message' => __('Restaurents by category'),
+            'data' => $vendors
+        ])
+    }
 }

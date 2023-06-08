@@ -220,4 +220,9 @@ class Vendor extends Model implements Auditable{
     {
       return $this->belongsToMany(Product::class,'order_vendor_products','vendor_id','product_id');
     }
+
+    public function myCategories()
+    {
+      return $this->belongsToMany(Category::class,'vendor_categories','category_id','vendor_id');
+    }
 }

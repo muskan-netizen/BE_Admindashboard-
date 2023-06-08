@@ -131,6 +131,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('getDispatcherGerenalSlot', 'Api\v1\DispatcherController@getDispatcherGerenalSlot');
 
         Route::get('home-restaurents', 'Api\v1\HomeController@homeRestaurents');
+        Route::get('category-restaurents/{category_id}', 'Api\v1\HomeController@categoryRestaurents');
     });
 
     Route::group(['middleware' => ['dbCheck', 'systemAuth']], function () { //apilogger
