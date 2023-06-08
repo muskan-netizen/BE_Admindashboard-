@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Client;
-
+use App\Jobs\CopyData;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use OwenIt\Auditing\Models\Audit;
@@ -9,7 +9,8 @@ use Yadahan\AuthenticationLog\AuthenticationLog;
 use App\Http\Controllers\Client\BaseController;
 use App\Models\{Vendor, Product, Client, AddonSet, Category, ProductVariant, CartProduct, UserWishlist, TaxCategory, VendorCategory, VendorSlot, VendorSlotDate, VendorDineinCategory, VendorDineinTable};
 use Auth, Carbon, DB, Storage, Session;
-
+use Illuminate\Support\Facades\Validator;
+use App\Models\CopyTool;
 
 class ToolsController extends BaseController
 {
