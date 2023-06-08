@@ -216,4 +216,8 @@ class Vendor extends Model implements Auditable{
       return $query;
     }
 
+    public function orderProducts()
+    {
+      return $this->belongsToMany(Product::class,'order_vendor_products','vendor_id','product_id');
+    }
 }

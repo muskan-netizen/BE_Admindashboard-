@@ -1183,6 +1183,8 @@ class HomeController extends BaseController
     {
         $user = Auth::user();
         $langId = $user->language;
+        $limit = $request->has('limit') ? $request->limit : 10;
+        $page = $request->has('page') ? $request->page : 1;
 
         $preferences = ClientPreference::first();;
         $vendorData = Vendor::byVendorSubscriptionRule($preferences)->with('products')->select('vendors.id', 'name', 'banner','is_show_vendor_details' ,'address', 'order_pre_time', 'order_min_amount', 'logo', 'slug', 'latitude', 'longitude', 'vendor_templete_id');
@@ -1205,29 +1207,19 @@ class HomeController extends BaseController
         ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products', 'parent_id', 'sub_cat_banners')
         ->where('slug', 'Restaurant')->firstOrFail();
 
-        if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-            $latitude = $preferences->Default_latitude;
-            $longitude = $preferences->Default_longitude;
-            $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
-            //3961 for miles and 6371 for kilometers
-            $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
-            $vendorData = $vendorData->select('*', \DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
-                cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
-                sin( radians(' . $latitude . ') ) *
-                sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->orderBy('vendorToUserDistance', 'ASC');
+        $vendorData = $vendorData->withCount('orderProducts')->orderBy('order_products_count');
 
-            $vendors= $this->getServiceAreaVendors();
-            $vendorData= $vendorData->whereIn('vendors.id', $vendors);
-        }
+        $vendors= $this->getServiceAreaVendors();
+        $vendorData= $vendorData->whereIn('vendors.id', $vendors);
+        
         $vendorData = $vendorData->whereHas('getAllCategory' , function ($q) use($category){
             $q->where('status', 1) 
-            ->where('category_id', $category->id)
-            ;
+            ->where('category_id', $category->id);
         });
         if(!empty($vendorType)){
             $vendorData= $vendorData->where($vendorType, 1);
         }
-        $vendorData = $vendorData->where('vendors.status', 1)->paginate(12);
+        $vendorData = $vendorData->where('vendors.status', 1)->paginate($limit,$page);
 
         foreach ($vendorData as $key => $value) {
             $value = $this->getLineOfSightDistanceAndTime($value, $preferences);
@@ -1248,7 +1240,9 @@ class HomeController extends BaseController
             $value->categoriesList = $categoriesList;
         }
 
-        $homeData['restaurants'] = $vendorData;
+        $homeData['popular_restaurants'] = $vendorData;
+        $homeData['all_vendors'] = Vendor::get();
+        $homeData['featured_restaurants'] = Vendor::where('is_featured',1)->get();
                 
         return response()->json([
             'status' => 200,
