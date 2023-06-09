@@ -388,6 +388,7 @@ class ClientPreferenceController extends BaseController{
             elseif($request->sms_provider == 10) // Sms Country
             {
                 $sms_credentials = [
+                    'sms_sender_id' => $request->sms_sender_id,
                     'sms_auth_key' => $request->sms_auth_key,
                     'sms_auth_token' => $request->sms_auth_token,
                 ];
