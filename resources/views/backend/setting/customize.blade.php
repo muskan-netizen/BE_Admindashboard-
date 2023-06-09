@@ -168,13 +168,14 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                     <p class="sub-header">
                         {{ __("Define and update the languages and currencies") }}
                     </p>
+                    {{-- @dd($preference->primary_country->country_id) --}}
+                    @php
+                        $primary_country_id =  $preference->primary_country ? $preference->primary_country->country_id : '';
+                    @endphp
                     <div class="row col-spacing">
                         <div class="col-xl-4 mb-2">
                             <label for="country">{{ __("Primary Country") }}</label>
                             <select class="form-control al_box_height" id="primary_country" name="primary_country">
-                                @php
-                                   $primary_country_id =  $preference->primary_country ? $preference->primary_country->country_id : '';
-                                @endphp
                                 @foreach($countries as $country)
                                     <option {{(isset($preference) && ($country->id == $primary_country_id))? "selected" : "" }} value="{{$country->id}}"> {{$country->name}} </option>
                                 @endforeach
