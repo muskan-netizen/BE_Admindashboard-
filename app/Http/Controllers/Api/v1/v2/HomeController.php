@@ -3,19 +3,20 @@
 namespace App\Http\Controllers\Api\v1\v2;
 
 use DB;
+use Session;
+use DateTime;
+use DateTimeZone;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use App\Models\{ServiceArea, Language, Currency};
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{Banner, Brand, CabBookingLayout, CabBookingLayoutTranslation, Category, Client, ClientPreference, Vendor, VendorCategory, Product, ClientCurrency, HomePageLabel, HomeProduct, MobileBanner, OnboardSetting, Order, ProductCategory, SubscriptionInvoicesVendor, UserVendor, VendorCities, VendorOrderStatus, WebStylingOption};
-use DateTime;
-use Illuminate\Support\Str;
-use DateTimeZone;
 use App\Http\Traits\HomePage\HomePageTrait;
-use Session;
+use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Traits\{OrderTrait, ProductActionTrait, VendorTrait};
+use App\Models\{Banner, Brand, CabBookingLayout, CabBookingLayoutTranslation, Category, Client, ClientPreference, Vendor, VendorCategory, Product, ClientCurrency, HomePageLabel, HomeProduct, MobileBanner, OnboardSetting, Order, ProductCategory, SubscriptionInvoicesVendor, UserVendor, VendorCities, VendorOrderStatus, WebStylingOption};
 
 /**
  * HomeController
@@ -50,8 +51,7 @@ class HomeController extends BaseController
 
     public function homepage(Request $request, $domain = '')
     {
-        
-        try {
+        try {           
             $home = array();
             $vendor_ids = array();
             if ($request->has('ref')) {

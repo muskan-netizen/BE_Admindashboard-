@@ -65,6 +65,7 @@ class HomeController extends BaseController
                         $vendorMode[] = $vendorData;
                     }
             }
+
             $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo','is_service_price_selection','is_particular_driver','is_enable_curb_side']);
     
             //pr($vendorMode);
@@ -76,6 +77,7 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->call_button = (int) $getAdditionalPreference['call_button'];
             $homeData['profile']->preferences->is_enable_curb_side = (int) $getAdditionalPreference['is_enable_curb_side'];
             $homeData['profile']->preferences->is_user_kyc_for_registration = (int) $getAdditionalPreference['is_user_kyc_for_registration'];
+            $homeData['profile']->preferences->is_enable_variant_set_v2 = (int) $getAdditionalPreference['is_enable_variant_set_v2'];
             $homeData['profile']->preferences->rating_check = $preferences->preferences->rating_check;
             //dd($homeData['profile']);
 
@@ -290,6 +292,44 @@ class HomeController extends BaseController
                     $homeData['profile']->preferences->concise_signup = ClientPreference::first()->concise_signup;
                 }
             }
+
+            // Send Primary Language And Primary Currency By Lattitude and Longitude
+            $primary_currencies = new \stdClass();
+            $primary_language = new \stdClass();
+            if ($request->has('latitude') && $request->has('longitude')) {
+                $service_area = ServiceArea::select('service_areas.primary_language','service_areas.country_code','service_areas.primary_currency','languages.name as language_name','languages.sort_code','languages.nativeName','currencies.name as currency_name','currencies.symbol','currencies.iso_code')
+                ->join('languages', 'service_areas.primary_language', '=', 'languages.id')
+                ->join('currencies', 'service_areas.primary_currency', '=', 'currencies.id')
+                ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $request->latitude . " " . $request->longitude . ")'))")
+                ->first();
+                if (isset($service_area) && !empty($service_area)) {
+                    $primary_language = (object) [
+                        'language_id' => $service_area->primary_language,
+                        'is_primary' => 0,
+                        'language' => (object) [
+                            'id' => $service_area->primary_language,
+                            'name' => $service_area->language_name,
+                            'sort_code' => $service_area->sort_code,
+                            'nativeName' => $service_area->nativeName,
+                            'country_code' => $service_area->country_code
+                        ],
+                    ];
+                
+                    $primary_currencies = (object) [
+                        'currency_id' => $service_area->primary_currency,
+                        'is_primary' => 0,
+                        'currency' => (object) [
+                            'id' => $service_area->primary_currency,
+                            'name' => $service_area->currency_name,
+                            'iso_code' => $service_area->iso_code,
+                            'symbol' => $service_area->symbol
+                        ],
+                    ];
+                }
+            }
+
+            $homeData['primary_currencies'] = $primary_currencies;
+            $homeData['primary_language'] = $primary_language;
 
             if (isset($homeData['profile']->custom_domain) && !empty($homeData['profile']->custom_domain) && $homeData['profile']->custom_domain != $homeData['profile']->sub_domain)
                 $domain_link = "https://" . $homeData['profile']->custom_domain;

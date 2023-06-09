@@ -678,6 +678,7 @@
             name="is_enable_curb_side" id="is_enable_curb_side" />
     </div>
 </div>
+
 <div class="col-md-4 ">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="is_service_price_selection_switch" class="mr-2 mb-0">{{ __('Map Configuration') }}<small
