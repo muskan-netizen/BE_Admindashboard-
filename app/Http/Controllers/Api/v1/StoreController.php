@@ -568,7 +568,7 @@ class StoreController extends BaseController{
 		try {
     		$user = Auth::user();
             $paginate = $request->has('limit') ? $request->limit : 12;
-			$order_list = Order::with(['orderStatusVendor','vendors.products','vendors.status'])->select('id','order_number','payable_amount','payment_option_id','user_id');
+			$order_list = Order::with(['orderStatusVendor','vendors.products','vendors.status'])->select('id','order_number','payable_amount','payment_option_id','user_id','created_at','scheduled_date_time');
 			if($user->is_superadmin == 1){
 				$order_list = $order_list->whereHas('vendors', function($query){
 					$query->where('order_status_option_id', 1);

@@ -639,6 +639,18 @@
 </div>
 @endif
 
+<div class="col-md-4">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_particular_driver_switch" class="mr-2 mb-0">{{ __('Request for Particular Driver') }}<small
+                class="d-block pr-5">{{ __('Enable to allow customers to book particular driver.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_particular_driver_switch"
+                id="is_particular_driver_switch" class="form-control checkbox_change" data-className="is_particular_driver"
+                data-color="#43bee1" @if ($getAdditionalPreference['is_particular_driver'] == 1) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if ($getAdditionalPreference['is_particular_driver'] == 1) value="1" @else value="0" @endif
+            name="is_particular_driver" id="is_particular_driver" />
+    </div>
+</div>
 <div class="col-md-4 ">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="is_recurring_booking" class="mr-2 mb-0">{{ __('Recurring Booking') }}<small
@@ -669,14 +681,14 @@
 
 <div class="col-md-4 ">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-        <label for="is_enable_variant_set_v2" class="mr-2 mb-0">{{ __('Product Variant Set V2') }}<small
-                class="d-block pr-5">{{ __('Enable Product Variant Set V2 To Product Detail Page.') }}</small></label>
-        <span> <input type="checkbox" data-plugin="switchery" name="is_enable_variant_set_v2"
-                id="is_enable_variant_set_v2_switch" class="form-control checkbox_change"
-                data-className="is_enable_variant_set_v2" data-color="#43bee1"
-                @if (@$getAdditionalPreference['is_enable_variant_set_v2'] == 1) checked='checked' @endif>
+        <label for="is_service_price_selection_switch" class="mr-2 mb-0">{{ __('Map Configuration') }}<small
+                class="d-block pr-5">{{ __('Enable this if you want to search address within your country') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_map_search_perticular_country_switch"
+                id="is_map_search_perticular_country_switch" class="form-control checkbox_change"
+                data-className="is_map_search_perticular_country" data-color="#43bee1"
+                @if ($getAdditionalPreference['is_map_search_perticular_country'] == 1) checked='checked' @endif>
         </span>
-        <input type="hidden" @if (@$getAdditionalPreference['is_enable_variant_set_v2'] == 1) value="1" @else value="0" @endif
-            name="is_enable_variant_set_v2" id="is_enable_variant_set_v2" />
+        <input type="hidden" @if ($getAdditionalPreference['is_map_search_perticular_country'] == 1) value="1" @else value="0" @endif
+            name="is_map_search_perticular_country" id="is_map_search_perticular_country" />
     </div>
 </div>

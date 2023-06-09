@@ -1624,7 +1624,9 @@ class OrderController extends BaseController
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
                 'user_icon' => $customer->image,
-                'order_pre_time'=>$vendor_details->order_pre_time
+                'order_pre_time'=>$vendor_details->order_pre_time,
+                'app_call' => 1,
+
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -2077,9 +2079,9 @@ class OrderController extends BaseController
                     $email_template_content = $email_template->content;
                     if ($vendor_id == "") {
 
-                        $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
+                        $returnHTML = view('email.newOrderProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     } else {
-                        $returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
+                        $returnHTML = view('email.newOrderVendorProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     }
                     $email_template_content = str_ireplace("{description}",'', $email_template_content);
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
@@ -2174,6 +2176,7 @@ class OrderController extends BaseController
         $paginate = $request->has('limit') ? $request->limit : 12;
         $type = $request->has('type') ? $request->type : 'active';
         $orders = OrderVendor::where('user_id', $user->id)->with('products')->orderBy('id', 'DESC');
+
         $additionalPreference =getAdditionalPreference(['is_service_product_price_from_dispatch']);
         switch ($type) {
             case 'pending': // which order not assign yet in driver
@@ -2181,22 +2184,24 @@ class OrderController extends BaseController
             $orders->whereHas('products', function ($q1) {
                         $q1->where('dispatcher_status_option_id',1);
                     });
+
                 break;
             case 'active':
                 $orders->whereNotIn('order_status_option_id', [6, 3, 9]);
-                    $orders->whereHas('products', function ($q) use ($additionalPreference) {
-                         if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
-                            $q->whereNotIn('dispatcher_status_option_id',[1,5,6]); //1=pending,5= complete,6 reject
-                         }
-                    });
+                    // $orders->whereHas('products', function ($q) use ($additionalPreference) {
+                    //      if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+                    //         $q->whereNotIn('dispatcher_status_option_id',[1,5,6]); //1=pending,5= complete,6 reject
+                    //      }
+                    // });
+                   
                 break;
             case 'past':
                 $orders->whereIn('order_status_option_id', [6, 3, 9]);
-                if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
-                    $orders->whereHas('products', function ($q) {
-                        $q->where('dispatcher_status_option_id',5); //1=pending,5= complete,6 reject
-                    });
-                }
+                // if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+                //     $orders->whereHas('products', function ($q) {
+                //         $q->where('dispatcher_status_option_id',5); //1=pending,5= complete,6 reject
+                //     });
+                // }
                 break;
             case 'schedule':
                 $order_status_options = [10];
@@ -2220,8 +2225,10 @@ class OrderController extends BaseController
                     });
 
                 });
-            })
-            ->paginate($paginate);
+            });
+
+            $orders = $orders->paginate($paginate);
+
         $orders =    $this->orderlistLoop($orders, $user ,$request);
         return $this->successResponse($orders, '', 201);
     }
@@ -2255,7 +2262,7 @@ class OrderController extends BaseController
             $order->scheduled_slot  = $order->orderDetail->scheduled_slot;
             $order->schedule_dropoff = date('d/m/Y',strtotime($order->orderDetail->schedule_dropoff));
             $order->dropoff_scheduled_slot  = $order->orderDetail->dropoff_scheduled_slot;
-            $order->payable_amount = $order->total_price;
+            $order->payable_amount = decimal_format($order->orderDetail->payable_amount);
             if(checkColumnExists('orders', 'is_postpay')){
                 $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
             }

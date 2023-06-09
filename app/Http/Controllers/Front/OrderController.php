@@ -3108,7 +3108,8 @@ class OrderController extends FrontController
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
                 'user_icon' => $customer->image,
-                'order_pre_time'=>$vendor_details->order_pre_time
+                'order_pre_time'=>$vendor_details->order_pre_time,
+                'app_call' => 0,
             ];
             if ($order_vendor->is_restricted == 1) {
                 $postdata['user_verification_type'] = isset($customer->passbase_verification) && ! is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
