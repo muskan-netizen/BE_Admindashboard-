@@ -169,6 +169,29 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                         {{ __("Define and update the languages and currencies") }}
                     </p>
                     <div class="row col-spacing">
+
+                        <div class="col-xl-4 mb-2">
+                            <label for="country">{{ __("Primary Country") }}</label>
+                            <select class="form-control al_box_height" id="primary_country" name="primary_country">
+                                {{-- @php
+                                   $primary_country_id =  $preference->primarylang ? $preference->primarylang->language_id : '';
+                                @endphp
+                                @foreach($languages as $lang)
+                                    <option {{(isset($preference) && ($lang->id == $primary_language_id))? "selected" : "" }} value="{{$lang->id}}"> {{$lang->name}} </option>
+                                @endforeach --}}
+                            </select>
+                        </div>
+                        <div class="col-xl-8 mb-2">
+                            <label for="languages">{{ __("Additional Countries") }}</label>
+                            <select class="form-control al_box_height select2-multiple" id="countries" name="countries[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ...">
+                                {{-- @foreach($languages as $lang)
+                                @if($lang->id != $primary_language_id)
+                                    <option value="{{$lang->id}}" {{ (isset($preference) && in_array($lang->id, $cli_langs))? "selected" : "" }}>{{$lang->name ??''}} ({{$lang->nativeName??''}})</option>
+                                @endif
+                                @endforeach --}}
+                            </select>
+                        </div>
+
                         <div class="col-xl-4 mb-2">
                             <label for="languages">{{ __("Primary Language") }}</label>
                             <select class="form-control al_box_height" id="primary_language" name="primary_language">
