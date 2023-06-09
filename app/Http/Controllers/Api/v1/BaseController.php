@@ -347,6 +347,7 @@ class BaseController extends Controller{
         if($celebrity_check == 0){
             $categories = $categories->where('categories.type_id', '!=', 5);
         }
+        
         $categories = $categories->where('categories.is_visible', 1)
                         ->where('categories.status', '!=', $status)
                         ->where('categories.is_core', 1)
