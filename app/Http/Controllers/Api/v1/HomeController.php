@@ -77,7 +77,7 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->call_button = (int) $getAdditionalPreference['call_button'];
             $homeData['profile']->preferences->is_enable_curb_side = (int) $getAdditionalPreference['is_enable_curb_side'];
             $homeData['profile']->preferences->is_user_kyc_for_registration = (int) $getAdditionalPreference['is_user_kyc_for_registration'];
-            $homeData['profile']->preferences->is_enable_variant_set_v2 = (int) $getAdditionalPreference['is_enable_variant_set_v2'];
+            $homeData['profile']->preferences->is_enable_variant_set_v2 = (int) @$getAdditionalPreference['is_enable_variant_set_v2'];
             $homeData['profile']->preferences->rating_check = $preferences->preferences->rating_check;
             //dd($homeData['profile']);
 
