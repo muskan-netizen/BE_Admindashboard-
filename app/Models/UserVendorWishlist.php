@@ -10,4 +10,9 @@ class UserVendorWishlist extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
+
+    public function vendor()
+    {
+        return $this->belongsTo(Vendor::class);
+    }
 }
