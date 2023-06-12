@@ -24,7 +24,6 @@ Route::group(['prefix' => 'v1/v2', 'middleware' => ['ApiLocalization']], functio
         Route::post('homePageDataV2', 'Api\v1\v2\HomeController@postHomePageDataV2');
         Route::post('get/subcategory/vendor', 'Api\v1\v2\HomeController@getSubcategoryVendor');
 
-
         // new cart route
         Route::get('cart/list', 'Api\v1\v2\CartController@index');
 

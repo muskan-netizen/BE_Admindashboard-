@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\UserRegistrationDocuments;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart, VerificationOption, ShowSubscriptionPlanOnSignup};
+use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart, VerificationOption, ShowSubscriptionPlanOnSignup, ClientCountries};
 use DateTime;
 use DateInterval;
 use DateTimeZone;
@@ -65,7 +65,8 @@ class HomeController extends BaseController
                         $vendorMode[] = $vendorData;
                     }
             }
-            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo','is_service_price_selection','is_particular_driver','is_enable_curb_side']);
+
+            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo','is_service_price_selection','is_particular_driver','is_enable_curb_side','is_enable_variant_set_v2']);
     
             //pr($vendorMode);
             //mohit sir branch code updated by sohail farm meat
@@ -160,6 +161,15 @@ class HomeController extends BaseController
             }
 
             $homeData['parent_category'] = Category::with('translation_one','type')->where('id', '>', '1')->where('is_core', 1)->where('parent_id', 1)->where('is_visible', 1)->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1)->pluck('id', 'slug')->toArray();
+
+            $homeData['countries'] = ClientCountries::with('country')->where('is_active', 1)->orderBy('is_primary', 'desc')->get()->map(function ($item) {
+                return [
+                    'country_id' => $item->country_id,
+                    'is_primary' => $item->is_primary,
+                    'country' => $item->country->only(['id', 'code', 'nicename', 'iso3'])
+                    + ['flag' => 'https://flagcdn.com/56x42/' . strtolower($item->country->code) . '.png'],
+                ];
+            });
 
             $homeData['languages'] = ClientLanguage::with('language')->select('language_id', 'is_primary')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
             $banners = Banner::select("id", "name", "description", "image", "image_mobile", "link", 'redirect_category_id', 'redirect_vendor_id')
@@ -291,6 +301,60 @@ class HomeController extends BaseController
                 }
             }
 
+            // Send Primary Language And Primary Currency By Lattitude and Longitude
+            $primary_currencies = new \stdClass();
+            $primary_language = new \stdClass();
+            $primary_country = new \stdClass();
+            if ($request->has(['latitude', 'longitude'])) {
+                $service_area = ServiceArea::select('service_areas.primary_language', 'service_areas.country_code', 'service_areas.primary_currency', 'languages.name as language_name', 'languages.sort_code', 'languages.nativeName', 'currencies.name as currency_name', 'currencies.id as country_id', 'currencies.symbol', 'currencies.iso_code', 'countries.name', 'countries.nicename', 'countries.iso3')
+                ->join('languages', 'service_areas.primary_language', '=', 'languages.id')
+                ->join('currencies', 'service_areas.primary_currency', '=', 'currencies.id')
+                ->join('countries', 'service_areas.country_code', '=', 'countries.code')
+                ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $request->latitude . " " . $request->longitude . ")'))")
+                ->first();
+            
+                if ($service_area) {
+                    $primary_language = (object) [
+                        'language_id' => $service_area->primary_language,
+                        'is_primary' => 0,
+                        'language' => (object) [
+                            'id' => $service_area->primary_language,
+                            'name' => $service_area->language_name,
+                            'sort_code' => $service_area->sort_code,
+                            'nativeName' => $service_area->nativeName,
+                            'country_code' => $service_area->country_code,
+                        ],
+                    ];
+            
+                    $primary_currencies = (object) [
+                        'currency_id' => $service_area->primary_currency,
+                        'is_primary' => 0,
+                        'currency' => (object) [
+                            'id' => $service_area->primary_currency,
+                            'name' => $service_area->currency_name,
+                            'iso_code' => $service_area->iso_code,
+                            'symbol' => $service_area->symbol,
+                        ],
+                    ];
+            
+                    $primary_country = (object) [
+                        'country_id' => $service_area->country_id,
+                        'is_primary' => 0,
+                        'country' => (object) [
+                            'id' => $service_area->country_id,
+                            'name' => $service_area->nicename,
+                            'iso3' => $service_area->iso3,
+                            'symbol' => $service_area->country_code,
+                            'flag' => 'https://flagcdn.com/56x42/' . strtolower($service_area->country_code) . '.png',
+                        ],
+                    ];
+                }
+            }
+
+            $homeData['primary_currencies'] = $primary_currencies;
+            $homeData['primary_language'] = $primary_language;
+            $homeData['primary_country'] = $primary_country;
+            
             if (isset($homeData['profile']->custom_domain) && !empty($homeData['profile']->custom_domain) && $homeData['profile']->custom_domain != $homeData['profile']->sub_domain)
                 $domain_link = "https://" . $homeData['profile']->custom_domain;
             else

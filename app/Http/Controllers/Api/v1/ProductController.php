@@ -114,7 +114,6 @@ class ProductController extends BaseController
             $langId = $user->language;
             $userid = $user->id;
             $limit = 6; // Number of frequently bought products to retrieve
-
             $product = Product::with(['inwishlist' => function($qry) use($userid){
                             $qry->where('user_id', $userid);
                         },
@@ -144,11 +143,9 @@ class ProductController extends BaseController
                         },
                         'variantSet.options' => function($zx) use($langId, $pvIds, $pid){
                             $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id')
-                            ->join('product_variants','pvs.product_variant_id','product_variants.id')
-                            ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id', 'product_variants.quantity', 'product_variants.price')
+                            ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id')
                             ->where('pvs.product_id', $pid)
-                            ->where('vt.language_id', $langId)
-                            ->addSelect(DB::raw('(CASE WHEN product_variants.quantity = 0 THEN 1 ELSE 0 END) as is_disabled'));
+                            ->where('vt.language_id', $langId);
                         },
                         'translation' => function($q) use($langId){
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
@@ -166,6 +163,7 @@ class ProductController extends BaseController
 
                     $product = $product->where('id', $pid)
                         ->first();
+
             if(!$product){
                 return response()->json(['error' => 'No record found.'], 404);
             }
@@ -246,7 +244,7 @@ class ProductController extends BaseController
             if($product->variantSet){
                 foreach ($product->variantSet as $set_key => $set_value) {
                     foreach ($set_value->options as $opt_key => $opt_value) {
-                        $opt_value->value = $opt_value->product_variant_id == $variant_id ? true : false;
+                        $opt_value->value = ($opt_key == 0 )? true : false;
                     }
                 }
             }
@@ -315,15 +313,16 @@ class ProductController extends BaseController
                 }
             }
 
-            $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = $frequentlyBoughtProducts = [];
+            $frequentlyBoughtProducts = Product::with(['media.image', 'vendor', 'translation', 'variant', 'productVariantByRoles'])->join('order_vendor_products', 'products.id', '=', 'order_vendor_products.product_id')->join('orders', 'order_vendor_products.order_id', '=', 'orders.id')->where('products.vendor_id', $product->vendor->id)->select('products.*')
+            ->groupBy('products.id')->orderByRaw('COUNT(products.id) DESC')->limit($limit)->get();
+
+            $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = [];
 
             $suggested_product = Product::with(['media.image','vendor', 'translation', 'variant', 'productVariantByRoles']);
             if( !empty($product->category->category_id) ) {
                 $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)->groupBy('id')->orderby('id', 'desc')->limit(20)->get();
             }
-            
-            $frequentlyBoughtProducts = Product::with(['media.image', 'vendor', 'translation', 'variant', 'productVariantByRoles'])->join('order_vendor_products', 'products.id', '=', 'order_vendor_products.product_id')->join('orders', 'order_vendor_products.order_id', '=', 'orders.id')->where('products.vendor_id', $product->vendor->id)->select('products.*')
-            ->groupBy('products.id')->orderByRaw('COUNT(products.id) DESC')->limit($limit)->get();
+
 
             foreach($suggested_category_products as $r_product){
                 foreach ($r_product->variant as $key => $value) {
@@ -361,6 +360,7 @@ class ProductController extends BaseController
                 }
             }
 
+        
             $response['suggested_category_products'] =  $suggested_category_products;
             $response['suggested_brand_products'] =  $suggested_brand_products;
             $response['suggested_vendor_products'] =  $suggested_vendor_products;

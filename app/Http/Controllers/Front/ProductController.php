@@ -486,7 +486,7 @@ class ProductController extends FrontController{
     }
 
       # get product faq
-      public function getProductCompare(Request $request){
+    public function getProductCompare(Request $request){
         $comIds = [];
         $idsUnque = $request->compareItems;
         $productId[] = $request->productId;
@@ -506,7 +506,7 @@ class ProductController extends FrontController{
             $html = view('frontend.compare-product-table')->with(['compareProducts'=>$compareProducts,'ajax'=>1])->render();
         }     
         return response()->json(['ids'=>$idsmerge??$request->compareItems,'html'=>$html]);
-}
+    }
 
     # get product faq
     public function getProductFaq(Request $request,$domain = '',$product_id){

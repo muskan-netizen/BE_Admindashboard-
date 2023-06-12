@@ -1624,7 +1624,9 @@ class OrderController extends BaseController
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
                 'user_icon' => $customer->image,
-                'order_pre_time'=>$vendor_details->order_pre_time
+                'order_pre_time'=>$vendor_details->order_pre_time,
+                'app_call' => 1,
+
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -2077,9 +2079,9 @@ class OrderController extends BaseController
                     $email_template_content = $email_template->content;
                     if ($vendor_id == "") {
 
-                        $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
+                        $returnHTML = view('email.newOrderProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     } else {
-                        $returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
+                        $returnHTML = view('email.newOrderVendorProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     }
                     $email_template_content = str_ireplace("{description}",'', $email_template_content);
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
@@ -2260,7 +2262,7 @@ class OrderController extends BaseController
             $order->scheduled_slot  = $order->orderDetail->scheduled_slot;
             $order->schedule_dropoff = date('d/m/Y',strtotime($order->orderDetail->schedule_dropoff));
             $order->dropoff_scheduled_slot  = $order->orderDetail->dropoff_scheduled_slot;
-            $order->payable_amount = $order->total_price;
+            $order->payable_amount = decimal_format($order->orderDetail->payable_amount);
             if(checkColumnExists('orders', 'is_postpay')){
                 $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
             }

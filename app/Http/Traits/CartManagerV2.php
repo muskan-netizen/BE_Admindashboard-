@@ -1333,7 +1333,7 @@ trait CartManagerV2{
                 // $vendorData->delaySlot = (($slotsDate)?$slotsDate:'');
                 $vendorData->closed_store_order_scheduled = (($slotsDate)?$product->vendor->closed_store_order_scheduled:0);
 
-                $vendorData->delOptions = $select;
+                $vendorData->delOptions = $select??'';
 
                 //mohit sir branch code added by sohail
                 $processorProduct = [];
