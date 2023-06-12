@@ -128,7 +128,7 @@ class ClientPreferenceController extends BaseController{
         }
 
         $preference = $ClientPreference ? $ClientPreference : new ClientPreference();
-
+        
         $nomenclature_value = $nomenclatureAllToGet->first();
         foreach ($preference->currency as $value) {
             $cli_currs[] = $value->currency_id;
@@ -283,7 +283,6 @@ class ClientPreferenceController extends BaseController{
         return true;
     }
     public function update(Request $request, $code){
-        // dd($request->all());
         $cp = new ClientPreference();
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
         if(!$preference){
@@ -580,38 +579,37 @@ class ClientPreferenceController extends BaseController{
             $delete = ClientCurrency::where('client_code',Auth::user()->code)->where('is_primary', 0)->delete();
         }
         // Create Or Update Primary Country And Additional Country 
-        if($request->has('primary_country')){
-            $oldAdditional = ClientCountries::where('country_id', $request->primary_country)
-                        ->where('is_primary', 0)->delete();
-            $primaryCountry = ClientCountries::where('is_primary', 1)->update(['country_id' => $request->primary_country, 'is_active' => 1, 'is_primary' => 1]);
-            if(!$primaryCountry){
-                ClientCountries::insert([
-                    'is_active'=> 1,
-                    'is_primary'=> 1,
-                    'client_code'=> Auth::user()->code,
-                    'country_id'=> $request->primary_country,
-                ]);
-            }
+        if ($request->filled('primary_country')) {
+            $primaryCountryData = [
+                'is_active' => 1,
+                'is_primary' => 1,
+                'client_code' => Auth::user()->code,
+                'country_id' => $request->primary_country,
+            ];
+        
+            ClientCountries::where('client_code', Auth::user()->code)->where('is_primary', 0)->delete();
+        
+            ClientCountries::updateOrCreate(['is_primary' => 1], $primaryCountryData);
         }
-        if($request->has('countries')){
-            $delete = ClientCountries::where('client_code',Auth::user()->code)->where('is_primary', 0)->delete();
-            if($request->has('countries')){
-                foreach ($request->countries as $country) {
-                    if ($country != $request->primary_country) {
-                        $client_country = ClientCountries::where('client_code', Auth::user()->code)->where('country_id', $country)->first();
-                        if (!$client_country) {
-                            $client_country = new ClientCountries();
-                            $client_country->client_code = Auth::user()->code;
-                        }
-                        $client_country->is_primary = 0;
-                        $client_country->country_id = $country;
-                        $client_country->is_active = 1;
-                        $client_country->save();
-                        $exist_country_id[] = $client_country->language_id;
-                    }
+        
+        if ($request->filled('countries')) {
+            $existingCountryIds = [];
+            foreach ($request->countries as $country) {
+                if ($country != $request->primary_country) {
+                    $existingCountryIds[] = $country;
                 }
             }
-            $deactivateCountries = ClientLanguage::where('client_code',Auth::user()->code)->whereNotIn('language_id', $exist_country_id)->where('is_primary', 0)->update(['is_active' => 0]);
+            ClientCountries::where('client_code', Auth::user()->code)->where('is_primary', 0)->delete();
+            $clientCountriesData = [];
+            foreach ($existingCountryIds as $country) {
+                $clientCountriesData[] = [
+                    'is_primary' => 0,
+                    'is_active' => 1,
+                    'client_code' => Auth::user()->code,
+                    'country_id' => $country,
+                ];
+            }
+            ClientCountries::insert($clientCountriesData);
         }
         //  End
 
