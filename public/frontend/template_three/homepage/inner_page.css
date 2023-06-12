@@ -46,9 +46,10 @@
 .al_body_template_three .product-banner-img {
     overflow: hidden;
     border-radius: 50px;
-    height: 380px;
+    min-height: 300px;
     background-color: #eee;
     box-shadow: 0 0 10px rgb(0 0 0 / 10%);
+    height: 100%;
 }
 
 .al_body_template_three .common-banner.text-center img,
@@ -2596,6 +2597,15 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
     background-color: #f5f5f5;
 }
 
+.common-banner.my-banner{
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+
+}
+.vendor_image_div .top-banner-wrapper {
+    height: 100%!important;
+}
 @media (min-width: 1024px) {
     .ds {
         position: absolute;
@@ -3531,6 +3541,10 @@ footer#footer {
     .al_body_template_three .vendor-design_new{
             margin-top: -21%!important;
     }
+    .vender-icon img.rounded-circle.avatar-lg{
+        width: 75px!important;
+        height: 75px!important;
+    }
 }
 @media (max-width: 991px) {
     .al_body_template_three .vendor-design_new {
@@ -3559,6 +3573,15 @@ footer#footer {
     }
     .al_body_template_three .vendor-design_new .col-12 .row {
         margin: 0;
+    }
+    body .vendor_image_div{
+        position: relative!important;
+    }
+    .al_body_template_three .vendor-design_new{
+        min-height: inherit!important;
+        padding: 10px 0!important;
+        margin-top: 30px!important;
+        margin-left: 0!important;
     }
 }
 @media (max-width:767px) {
@@ -3590,8 +3613,17 @@ footer#footer {
     body.al_body_template_three .main-fillter .side_fillter{margin-top:0px !important;}
     .collection-filter { margin: 0px;padding: 0px 6px;}
     .al_body_template_three .cab-banner-area .container-fluid{padding:12px 20px !important;}
+    .vendor-stories{
+        height: 100%!important;
+        width: 100%!important;
+    }
 }
 
+@media (max-width:576px) {
+    .vendor-description .profile_address h4, .vendor-description .profile_address p, .vendor-info li{
+        font-size: 14px!important;
+    }    
+}
 
 /*customer css start here*/
 
@@ -3843,7 +3875,7 @@ a.morelink.less {
     font-size: 20px;
 }
 .al_body_template_three .vendor-design_new {
-    margin-top: -16%;
+    margin-top: 0%!important;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3851,6 +3883,21 @@ a.morelink.less {
     position: relative;
     z-index: 9;
     margin-left: 4%;
+    width: 100%;
+    min-height: 300px;
+    padding: 30px 0;
+}
+.vendor_row{
+    position: relative;
+}
+.vendor_image_div {
+    position: absolute!important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
 }
 .al_body_template_three .ratio_asos .collection-wrapper .my-banner img {
     width: 100% !important;
