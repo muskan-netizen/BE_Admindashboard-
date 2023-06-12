@@ -27,8 +27,8 @@
                        
 
                         <div class="top-banner-content small-section">
-                            <h4>{{ $category->translation_one->name }}</h4>
-<!-- deleted code -->
+                            <h4>{{ isset($category->translation_one)?$category->translation_one->name:$category->slug }}</h4>
+                            <!-- deleted code -->
                         </div>
                     </div>
                 </div>

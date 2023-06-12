@@ -136,14 +136,17 @@ class CategoryController extends BaseController
         $save = $this->save($request, $cate, 'false');
         if ($save > 0) {
             $languageId = $request->cat_lang['lang_id'];
-            $trans = new Category_translation();
-            $trans->category_id = $save;
-            $trans->language_id = $languageId;
-            $trans->name = $request->cat_lang['name'];
-            $trans->meta_title = $request->cat_lang['meta_title'];
-            $trans->meta_description = $request->cat_lang['meta_description'];
-            $trans->meta_keywords = $request->cat_lang['meta_keywords'];
-            $trans->save();
+            Category_translation::updateOrCreate(
+                ['category_id' => $save,
+                'language_id' => $languageId],
+                ['category_id' => $save,
+                    'language_id' => $languageId,
+                    'name' => $request->cat_lang['name'],
+                    'meta_title' => $request->cat_lang['meta_title'],
+                    'meta_description' => $request->cat_lang['meta_description'],
+                    'meta_keywords' => $request->cat_lang['meta_keywords']
+                ]
+            );
 
             $hs = new CategoryHistory();
             $hs->category_id = $save;
