@@ -1102,7 +1102,7 @@ class DispatcherController extends FrontController
     /******************    ---- pickup delivery Driver Bid/pricing update -----   ******************/
     public function dispatchDriverBidUpdate(Request $request, $domain = '', $web_hook_code)
     {
-        // try {
+        try {
             $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
             DB::beginTransaction();
             $order_bid_id = 0;
@@ -1171,11 +1171,11 @@ class DispatcherController extends FrontController
                 return $this->errorResponse($message, 400);
                }
 
-        // } catch (Exception $e) {
-        //     DB::rollback();
-        //     return $this->errorResponse($e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            DB::rollback();
+            return $this->errorResponse($e->getMessage(), $e->getCode());
 
-        // }
+        }
     }
 
     /******************    ---- pickup delivery Driver Bid/pricing status -----   ******************/
