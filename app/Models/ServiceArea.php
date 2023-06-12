@@ -8,7 +8,7 @@ class ServiceArea extends Model
 {
     protected $appends = ['geo_coordinates'];
 
-    protected $fillable = ['name','description','geo_array','zoom_level','polygon','vendor_id', 'is_active_for_vendor_slot'];
+    protected $fillable = ['name','description','geo_array','zoom_level','polygon','vendor_id', 'is_active_for_vendor_slot', 'area_type', 'primary_language', 'primary_currency'];
 
     public function getGeoCoordinatesAttribute(){
         $data = [];  

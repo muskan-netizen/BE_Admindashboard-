@@ -66,7 +66,7 @@ class PaymentOptionController extends BaseController{
                 }elseif($option->code == 'authorize_net'){
                     $option->title = __('Credit/Debit Card');
                 }elseif($option->code == 'obo'){
-                    $option->title = __("O'Pay");
+                    $option->title = __("MoMo, Airtel Money, Credit/Debit Cards by O'Pay");
                 }
                 $option->title = __($option->title);
             }

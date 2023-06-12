@@ -84,7 +84,6 @@ class OrderController extends BaseController
     }
     public function postPlaceOrder(Request $request)
     {
-
        try {
             $action = ($request->has('type')) ? $request->type : 'delivery';
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
@@ -199,7 +198,6 @@ class OrderController extends BaseController
                 }
                 $luxury_option = LuxuryOption::where('title', $action)->first();
                 $cart = Cart::where('user_id', $user->id)->with(['editingOrder.orderStatusVendor', 'cartvendor'])->first();
-
                 if ($cart) {
 
                     // $loyalty_points_used=0;
@@ -217,7 +215,8 @@ class OrderController extends BaseController
 
                     $cart_products = CartProduct::with(['product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon' => function ($query) use ($cart) {
                         $query->where('cart_id', $cart->id);
-                    },'coupon.promo', 'product.addon','vendorProducts.productVariantByRoles'])->where('cart_id', $cart->id)->where('status', [0, 1])->orderBy('created_at', 'asc')->get();
+                    },'coupon.promo', 'product.addon','vendorProducts.productVariantByRoles'])->where('cart_id', $cart->id)->where('is_cart_checked', 1)->where('status', [0, 1])->orderBy('created_at', 'asc')->get();
+                    
                     $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0;
                     $total_subscription_discount = 0;
 
@@ -1070,7 +1069,9 @@ class OrderController extends BaseController
                         Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL, 'order_id' => NULL]);
 
                         CartCoupon::where('cart_id', $cart->id)->delete();
-                        CartProduct::where('cart_id', $cart->id)->delete();
+                        // CartProduct::where('cart_id', $cart->id)->delete();
+                        $cart_product_ids = $cart_products->pluck('id');
+                        CartProduct::query()->whereIn('id', $cart_product_ids)->delete(); 
                         CartProductPrescription::where('cart_id', $cart->id)->delete();
                         CartDeliveryFee::where('cart_id', $cart->id)->delete();
                     }
@@ -1231,6 +1232,7 @@ class OrderController extends BaseController
         $ship = new ShippoController();
         $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Shiprocket
+        
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
             if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)){
@@ -1622,7 +1624,9 @@ class OrderController extends BaseController
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
                 'user_icon' => $customer->image,
-                'order_pre_time'=>$vendor_details->order_pre_time
+                'order_pre_time'=>$vendor_details->order_pre_time,
+                'app_call' => 1,
+
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -2075,9 +2079,9 @@ class OrderController extends BaseController
                     $email_template_content = $email_template->content;
                     if ($vendor_id == "") {
 
-                        $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
+                        $returnHTML = view('email.newOrderProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     } else {
-                        $returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
+                        $returnHTML = view('email.newOrderVendorProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     }
                     $email_template_content = str_ireplace("{description}",'', $email_template_content);
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
@@ -2172,6 +2176,7 @@ class OrderController extends BaseController
         $paginate = $request->has('limit') ? $request->limit : 12;
         $type = $request->has('type') ? $request->type : 'active';
         $orders = OrderVendor::where('user_id', $user->id)->with('products')->orderBy('id', 'DESC');
+
         $additionalPreference =getAdditionalPreference(['is_service_product_price_from_dispatch']);
         switch ($type) {
             case 'pending': // which order not assign yet in driver
@@ -2179,22 +2184,24 @@ class OrderController extends BaseController
             $orders->whereHas('products', function ($q1) {
                         $q1->where('dispatcher_status_option_id',1);
                     });
+
                 break;
             case 'active':
                 $orders->whereNotIn('order_status_option_id', [6, 3, 9]);
-                    $orders->whereHas('products', function ($q) use ($additionalPreference) {
-                         if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
-                            $q->whereNotIn('dispatcher_status_option_id',[1,5,6]); //1=pending,5= complete,6 reject
-                         }
-                    });
+                    // $orders->whereHas('products', function ($q) use ($additionalPreference) {
+                    //      if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+                    //         $q->whereNotIn('dispatcher_status_option_id',[1,5,6]); //1=pending,5= complete,6 reject
+                    //      }
+                    // });
+                   
                 break;
             case 'past':
                 $orders->whereIn('order_status_option_id', [6, 3, 9]);
-                if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
-                    $orders->whereHas('products', function ($q) {
-                        $q->where('dispatcher_status_option_id',5); //1=pending,5= complete,6 reject
-                    });
-                }
+                // if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+                //     $orders->whereHas('products', function ($q) {
+                //         $q->where('dispatcher_status_option_id',5); //1=pending,5= complete,6 reject
+                //     });
+                // }
                 break;
             case 'schedule':
                 $order_status_options = [10];
@@ -2218,8 +2225,10 @@ class OrderController extends BaseController
                     });
 
                 });
-            })
-            ->paginate($paginate);
+            });
+
+            $orders = $orders->paginate($paginate);
+
         $orders =    $this->orderlistLoop($orders, $user ,$request);
         return $this->successResponse($orders, '', 201);
     }
@@ -2253,7 +2262,7 @@ class OrderController extends BaseController
             $order->scheduled_slot  = $order->orderDetail->scheduled_slot;
             $order->schedule_dropoff = date('d/m/Y',strtotime($order->orderDetail->schedule_dropoff));
             $order->dropoff_scheduled_slot  = $order->orderDetail->dropoff_scheduled_slot;
-            $order->payable_amount = $order->total_price;
+            $order->payable_amount = decimal_format($order->orderDetail->payable_amount);
             if(checkColumnExists('orders', 'is_postpay')){
                 $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
             }

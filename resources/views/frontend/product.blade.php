@@ -60,13 +60,21 @@ $clientData = \App\Models\Client::select('socket_url')->first();
         z-index: 10;
         display: none;
     }
-   
-    .select2-results__option{
-    width:100%;
-   }
-   .select2-container{
-    width:100%!important;
-   }
+    .review-date.mt-2 { margin-left: 10px; }
+    .review-images img { min-height: 60px;border-radius: 8px;}
+    .review-images a {display: inline-block;width: auto;padding: 0;}
+    .review-images a:first-child img{margin-left: 10px;}
+    .select2-results__option{width:100%;}
+    .select2-container{width:100%!important;}
+    .customer_review .item{padding:10px;border:1px solid #ccc;}
+    .review_header{display:flex;padding-bottom:5px;}
+    .review_header p{font-size:14px;margin-bottom:0px;padding-left:10px;}
+    .customer_review .heading{border-bottom:1px solid #ccc;}
+    .customer_review .heading h2{font-size:30px;line-height:1.3;font-weight:700;}
+    .customer_review_item_row{display:flex;align-items:center;padding:10px 0;}
+    .customer_review_item_row  img{width:50px;height: 50px;border-radius:50%;}
+    .customer_review_item_row h4{margin-bottom:0;font-size:18px;font-weight:600;padding-left:15px;margin-top:0;}
+    .review-images img {width: 100%;max-width: 100px;margin: 10px 10px 10px 0px;}
     </style>
 
 @endsection
@@ -793,31 +801,41 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 </div> --}}
                                                 <div class="tab-pane show {{(count($rating_details)>0)?'active':''}}" id="top-review" role="tabpanel" aria-labelledby="review-top-tab">
                                                     @forelse ($rating_details as $rating)
-                                                    <div v-for="item in list" class="w-100 d-flex justify-content-between mb-3">
-                                                        <div class="review-box">
-
-                                                            <div class="review-author mb-1">
-                                                                <p><strong>{{$rating->user->name??'NA'}}</strong> - <i class="fa fa-star{{ $rating->rating >= 1 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                                    <i class="fa fa-star{{ $rating->rating >= 2 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                                    <i class="fa fa-star{{ $rating->rating >= 3 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                                    <i class="fa fa-star{{ $rating->rating >= 4 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                                    <i class="fa fa-star{{ $rating->rating >= 5 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                                </p>
+                                                    <div v-for="item in list" class="w-100 d-flex justify-content-between mb-2">
+                                                        <div class="review-box customer_review">
+                                                            <div class="">
+                                                                <div class="customer_review_item_row">
+                                                                    <div class="image">
+                                                                        <img src="{{$rating->user->image['proxy_url'].'400/160'.$rating->user->image['image_path']}}" alt="{{$rating->user->name??'NA'}}">
+                                                                    </div>
+                                                                    <div class="">
+                                                                        <h4>{{$rating->user->name??'NA'}}</h4>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="star review-author">
+                                                                    <p> 
+                                                                        <i class="fa fa-star{{ $rating->rating >= 1 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                        <i class="fa fa-star{{ $rating->rating >= 2 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                        <i class="fa fa-star{{ $rating->rating >= 3 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                        <i class="fa fa-star{{ $rating->rating >= 4 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                        <i class="fa fa-star{{ $rating->rating >= 5 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                    </p>
+                                                                </div>
+                                                                <div class="review-date mt-2">
+                                                                    <time> {{ $rating->time_zone_created_at->diffForHumans();}} </time>
+                                                                </div>
+                                                                <div class="review-images">
+                                                                    @if(isset($rating->reviewFiles))
+                                                                        @foreach ($rating->reviewFiles as $files)
+                                                                            <a target="_blank" href="{{$files->file['image_fit'].'900/900'.$files->file['image_path']}}" class="col review-photo mt-2 lightBoxGallery" data-gallery="">
+                                                                                <img class="blur-up lazyload" data-src="{{$files->file['image_fit'].'300/300'.$files->file['image_path']}}">
+                                                                            </a>
+                                                                        @endforeach
+                                                                    @endif
+                                                                </div>
                                                             </div>
-                                                            <div class="review-comment">
+                                                            <div class="review_dis">
                                                                 <p>{{$rating->review??''}}</p>
-                                                            </div>
-                                                            <div class="row review-wrapper">
-                                                                @if(isset($rating->reviewFiles))
-                                                                @foreach ($rating->reviewFiles as $files)
-                                                                <a target="_blank" href="{{$files->file['image_fit'].'900/900'.$files->file['image_path']}}" class="col review-photo mt-2 lightBoxGallery" data-gallery="">
-                                                                    <img class="blur-up lazyload" data-src="{{$files->file['image_fit'].'300/300'.$files->file['image_path']}}">
-                                                                </a>
-                                                                @endforeach
-                                                                @endif
-                                                            </div>
-                                                            <div class="review-date mt-2">
-                                                                <time> {{ $rating->time_zone_created_at->diffForHumans();}} </time>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -825,24 +843,19 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                     <p>{{__('No Reviews Yet')}}</p>
                                                     @endforelse
                                                 </div>
-                                                    @include('frontend.compare-product-table')
-                                                
+                                                @include('frontend.compare-product-table')
                                             </div>
                                         </div>
                                     </div>
                                 </section>
                                 @endif
                             </div>
-
-
-
-                            </div>
+                        </div>
                     </div>
-
                     {{-- Related Products --}}
                     @if(!empty($set_template) && !empty($set_template->template_id) && ($set_template->template_id == '8' || $set_template->template_id == '9'))
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-12 mt-3">
                             @php
                                 $similar_title = getNomenclatureName('Similar Product', true);
                                 $similar_title_label = ($similar_title=="Similar Product")?__('Similar Product'):__($similar_title);

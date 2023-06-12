@@ -1381,13 +1381,14 @@ class OrderController extends FrontController
                 'LongTermProducts.addons'
             ])
                 ->where('cart_id', $cart->id)
+                ->where('is_cart_checked', 1)
                 ->where('status', [
                 0,
                 1
             ])
                 ->orderBy('created_at', 'asc')
                 ->get();
-
+            
             /* Initialize empty data */
             $total_amount = 0;
             $total_discount = 0;
@@ -2132,7 +2133,7 @@ class OrderController extends FrontController
             $order->total_amount = $total_amount - $Order_bid_discount??0;
 
 
-            if($vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
+            if(@$vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
                 $date       = explode(",",$vendor_cart_product->recurring_day_data);
                 if($vendor_cart_product->recurring_booking_type == 1 ||$vendor_cart_product->recurring_booking_type == 2 || $vendor_cart_product->recurring_booking_type == 3 || $vendor_cart_product->recurring_booking_type == 4){
                     $days_count                         =  count($date);
@@ -2387,7 +2388,9 @@ class OrderController extends FrontController
 
                 CartAddon::where('cart_id', $cart->id)->delete();
                 CartCoupon::where('cart_id', $cart->id)->delete();
-                CartProduct::where('cart_id', $cart->id)->delete();
+                // CartProduct::where('cart_id', $cart->id)->delete();
+                $cart_product_ids = $cart_products->pluck('id');
+                CartProduct::query()->whereIn('id', $cart_product_ids)->delete();
                 CartProductPrescription::where('cart_id', $cart->id)->delete();
                 CartDeliveryFee::where('cart_id', $cart->id)->delete();
                 // send sms
@@ -3105,7 +3108,8 @@ class OrderController extends FrontController
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
                 'user_icon' => $customer->image,
-                'order_pre_time'=>$vendor_details->order_pre_time
+                'order_pre_time'=>$vendor_details->order_pre_time,
+                'app_call' => 0,
             ];
             if ($order_vendor->is_restricted == 1) {
                 $postdata['user_verification_type'] = isset($customer->passbase_verification) && ! is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
