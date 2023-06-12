@@ -11,11 +11,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, OrderVendorProduct, ProductFaq, ProductFaqSelectOption, UserBidRideRequest, PickDropDriverBid};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client, ClientPreferenceAdditional, Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, OrderVendorProduct, ProductFaq, ProductFaqSelectOption, UserBidRideRequest, PickDropDriverBid};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log as FacadesLog;
 
 class PickupDeliveryController extends BaseController{
 
@@ -762,6 +763,17 @@ class PickupDeliveryController extends BaseController{
                     $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                 }
                // Log::info("order Pre Time is ".$vendor_details->order_pre_time);
+
+                $client_preferences_addional = ClientPreferenceAdditional::pluck('key_value','key_name');
+                // FacadesLog::warning(['postdata' => $client_preferences_addional]);
+                if(isset($client_preferences_addional['pickup_notification_before']) && $client_preferences_addional['pickup_notification_before'] == 1)
+                {
+                    $notify_hour = $client_preferences_addional['pickup_notification_before_hours'] ?? 1;
+                    $reminder_hour = $client_preferences_addional['pickup_notification_before2_hours'] ?? 1;
+                }
+                // FacadesLog::warning(['postdata' => $notify_hour
+                // ,$reminder_hour]);
+                
                 $postdata =  [
                             'order_number' =>  $order->order_number,
                             'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -799,7 +811,10 @@ class PickupDeliveryController extends BaseController{
                             'is_one_push_booking' => isset($request->is_one_push_booking)?$request->is_one_push_booking:0,
                             'available_seats' => isset($request->seats_for_booking)?$request->seats_for_booking:0,
                             'agent' => $request->agent_id ?? null,
-                            'order_pre_time'=>$vendor_details->order_pre_time
+                            'order_pre_time'=>$vendor_details->order_pre_time,
+                            'driver_unique_id' => $request->unique_id ?? null,
+                            'notify_hour' => $notify_hour ?? 0,
+                            'reminder_hour' => $reminder_hour ?? 0,
                         ];
                 if($request->has('bid_task_type')){
                     $postdata['bid_task_type']    = $request->bid_task_type;

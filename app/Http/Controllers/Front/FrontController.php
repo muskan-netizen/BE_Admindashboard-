@@ -459,7 +459,7 @@ class FrontController extends Controller
         return $products;
     }
 
-    public function metaProduct($langId, $multiplier, $for = 'related', $productArray = []){
+    public function metaProduct($langId, $multiplier = 1, $for = 'related', $productArray = []){
         if(empty($productArray)){
             return $productArray;
         }

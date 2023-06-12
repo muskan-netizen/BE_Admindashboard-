@@ -108,6 +108,13 @@ class NotificationTemplateSeeder extends Seeder
                 "slug" => "order-delayed-customer"
             ],
             [
+                "label" => "Pickup Delivery Reminder",
+                "subject" => "Pickup Delivery",
+                "tags" => "{order_id}",
+                "content" => "Your order ({order_id}) has been reached to you soon",
+                "slug" => "pickup-delivery-customer"
+            ],
+            [
                 "label" => "Reached Vendor Location",
                 "subject" => "Reached Vendor Location",
                 "tags" => "{order_id}",
