@@ -8,7 +8,12 @@ if($clientData){
 $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'];
 }
 
+$is_map_search_perticular_country = getMapConfigrationPreference();
 @endphp
+<script>
+    let is_map_search_perticular_country = '';
+     is_map_search_perticular_country = '{{ $is_map_search_perticular_country }}';
+</script>
 <!-- Topbar Start -->
 <audio id="orderAudio">
     <source src="{{ asset('assets/sounds/notification.ogg')}}" type="audio/ogg">

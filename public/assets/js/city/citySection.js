@@ -256,7 +256,9 @@ $(function(){
         var input = document.getElementById('city-address');
         var autocomplete = new google.maps.places.Autocomplete(input);
         // autocomplete.bindTo('bounds', bindMap);
-
+        if(is_map_search_perticular_country){
+            autocomplete.setComponentRestrictions({'country': [is_map_search_perticular_country]});
+        }
         google.maps.event.addListener(autocomplete, 'place_changed', function () {
             var place = autocomplete.getPlace();
             
