@@ -283,7 +283,6 @@ class ClientPreferenceController extends BaseController{
         return true;
     }
     public function update(Request $request, $code){
-        // dd($request->all());
         $cp = new ClientPreference();
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
         if(!$preference){
@@ -589,12 +588,8 @@ class ClientPreferenceController extends BaseController{
             ];
         
             ClientCountries::where('client_code', Auth::user()->code)->where('is_primary', 0)->delete();
-            if (!ClientCountries::where('is_primary', 1)->exists()) {
-                ClientCountries::create($primaryCountryData);
-            } else {
-                ClientCountries::where('is_primary', 1)
-                    ->update($primaryCountryData);
-            }
+        
+            ClientCountries::updateOrCreate(['is_primary' => 1], $primaryCountryData);
         }
         
         if ($request->filled('countries')) {
@@ -615,7 +610,6 @@ class ClientPreferenceController extends BaseController{
                 ];
             }
             ClientCountries::insert($clientCountriesData);
-            ClientLanguage::where('client_code', Auth::user()->code)->where('is_primary', 0)->whereNotIn('language_id', $existingCountryIds)->update(['is_active' => 0]);
         }
         //  End
 
