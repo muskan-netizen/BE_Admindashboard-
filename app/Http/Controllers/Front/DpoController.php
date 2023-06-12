@@ -39,18 +39,20 @@ class DpoController extends FrontController
     public function __construct()
     {
         $payOpt = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'dpo')->where('status', 1)->first();
-        $json = json_decode($payOpt->credentials);
-        $this->companyToken = $json->company_token;
-        $this->serviceType = $json->service_type;
-        $this->token = base64_encode($this->companyToken.':'.$this->serviceType);
-        // if ($payOpt->test_mode == '1') {
-            $this->appUrl = 'https://secure.3gdirectpay.com/';
-        // } else {
-        //     // $this->appUrl = 'https://sec.windcave.com/api/v1/sessions';
-        // }
-
-        $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-        $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'FJD';
+        if(@$payOpt->status){
+            $json = json_decode($payOpt->credentials);
+            $this->companyToken = $json->company_token;
+            $this->serviceType = $json->service_type;
+            $this->token = base64_encode($this->companyToken.':'.$this->serviceType);
+            // if ($payOpt->test_mode == '1') {
+                $this->appUrl = 'https://secure.3gdirectpay.com/';
+            // } else {
+            //     // $this->appUrl = 'https://sec.windcave.com/api/v1/sessions';
+            // }
+    
+            $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+            $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'FJD';
+        }
     }
 
     public function orderNumber($request)

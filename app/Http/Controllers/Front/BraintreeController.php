@@ -18,11 +18,13 @@ class BraintreeController extends FrontController
 	protected $private_key;
 	public function __construct()
   	{
-		$this->braintree_creds = PaymentOption::select('credentials')->where('code', 'braintree')->where('status', 1)->first();
-	    $this->creds_arr = json_decode($this->braintree_creds->credentials);
-	    $this->merchant_id = $this->creds_arr->merchant_id ?? '';
-	    $this->public_key = $this->creds_arr->public_key ?? '';
-	    $this->private_key = $this->creds_arr->private_key ?? '';
+		$this->braintree_creds = PaymentOption::select('credentials','status')->where('code', 'braintree')->where('status', 1)->first();
+		if(@$this->braintree_creds->status){
+    	    $this->creds_arr = json_decode($this->braintree_creds->credentials);
+    	    $this->merchant_id = $this->creds_arr->merchant_id ?? '';
+    	    $this->public_key = $this->creds_arr->public_key ?? '';
+    	    $this->private_key = $this->creds_arr->private_key ?? '';
+		}
 	}
 	public function beforePayment(Request $request)
     {

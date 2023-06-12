@@ -39,11 +39,11 @@ class CategoryController extends FrontController{
         'type'  => function($q){
             $q->select('id', 'title as redirect_to' ,'service_type' );
         },
-        'childs.translation'  => function($q) use($langId){
+        'childs.translationLatest'  => function($q) use($langId){
             $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
             ->where('category_translations.language_id', $langId);
         },
-        'translation' => function($q) use($langId){
+        'translationLatest' => function($q) use($langId){
             $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
             ->where('category_translations.language_id', $langId);
         },
@@ -51,9 +51,9 @@ class CategoryController extends FrontController{
         ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products', 'parent_id', 'sub_cat_banners')
         ->where('slug', $slug)->firstOrFail();
        
-        $category->translation_name = ($category->translation->first()) ? $category->translation->first()->name : $category->slug;
-        foreach($category->childs as $key => $child){
-            $child->translation_name = ($child->translation->first()) ? $child->translation->first()->name : $child->slug;
+        $category->translation_name = ($category->translationLatest) ? $category->translationLatest->name : $category->slug;
+        foreach($category->childs as $key => $child){   
+            $child->translation_name = ($child->translationLatest) ? $child->translationLatest->name : $child->slug;
         }
         $service_type = $category->type->service_type;
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && (isset($category->type_id)) && !in_array($category->type_id,[4,5]) ){

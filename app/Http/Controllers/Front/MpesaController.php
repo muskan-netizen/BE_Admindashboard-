@@ -39,12 +39,14 @@ class MpesaController extends Controller
    public function credentials()
     {
          $viva = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'viva_wallet')->where('status', 1)->first();
-         $json = json_decode($viva->credentials);
-         $this->client_key = $json->client_key;
-         $this->client_id = $json->client_id;
-         $this->merchant_key = $json->merchant_key;
-         $this->merchant_id = $json->merchant_id;
-         $this->test_mode = $viva->test_mode;
+         if(@$viva->status){
+             $json = json_decode($viva->credentials);
+             $this->client_key = $json->client_key;
+             $this->client_id = $json->client_id;
+             $this->merchant_key = $json->merchant_key;
+             $this->merchant_id = $json->merchant_id;
+             $this->test_mode = $viva->test_mode;
+         }
     }
 
     //Initiate STK Push
