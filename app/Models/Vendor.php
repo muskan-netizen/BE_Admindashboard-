@@ -237,4 +237,9 @@ class Vendor extends Model implements Auditable{
     {
       return $this->wishlistByUsers()->where('user_id', Auth::id())->first() ? 1 : 0;
     }
+
+    public function minimumPromo()
+    {
+      return $this->vendor_promo->min('amount');
+    }
 }

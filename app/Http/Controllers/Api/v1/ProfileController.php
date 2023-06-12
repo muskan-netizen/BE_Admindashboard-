@@ -539,7 +539,7 @@ class ProfileController extends BaseController
         // $wishlist = UserVendorWishlist::with('vendor')->where('user_id', Auth::id())->get();
         $vendors = Vendor::wherehas('wishlistByUsers', function($q){
             $q->where('user_id', Auth::id());
-        })->withAvg('product', 'averageRating','closed_store_order_scheduled')->get();
+        })->withAvg('product', 'averageRating','closed_store_order_scheduled')->with(['minimumPromo'])->get();
 
         $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
         $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
@@ -547,7 +547,7 @@ class ProfileController extends BaseController
         foreach($vendors as $vendor){
             $vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor, $preferences, $type);
         }
-        
+
         if(count($vendors)){
             return response()->json([
                 'success' => 200,
