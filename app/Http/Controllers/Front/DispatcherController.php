@@ -446,8 +446,6 @@ class DispatcherController extends FrontController
     public function dispatchPickupDeliveryUpdate(Request $request, $domain = '', $web_hook_code)
     {
         try {
-            \Log::info('in call pickup status');
-
             DB::beginTransaction();
             $checkiftokenExist = OrderVendor::where('web_hook_code',$web_hook_code)->first();
             $type = $request->task_type??1;
@@ -884,7 +882,6 @@ class DispatcherController extends FrontController
     /******************    ---- send notification to user -----   ******************/
     public function sendOrderNotification( $vendor_order_status_id )
     {
-         Log::info('sendOrderNotification');
 
         $OrderStatus = VendorOrderDispatcherStatus::select('*','dispatcher_status_option_id as status_data')->find($vendor_order_status_id);
 
@@ -923,7 +920,6 @@ class DispatcherController extends FrontController
                     ];
                     // Log::info(json_encode($data));
                 $result = sendFcmCurlRequest($data);
-                Log::info($result);
             }
         }
 
