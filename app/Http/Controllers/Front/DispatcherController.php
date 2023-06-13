@@ -11,6 +11,7 @@ use Session;
 use DB;
 use App\Http\Traits\{ApiResponser,OrderTrait};
 use App\Models\{Order, OrderProduct, OrderTax, OrderCancelRequest, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, OrderQrcodeLinks, ProductVariantSet, QrcodeImport,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus,OrderLongTermServiceSchedule,PickDropDriverBid,VendorOrderProductStatus,UserBidRideRequest};
+use Illuminate\Support\Facades\Log;
 
 class DispatcherController extends FrontController
 {
@@ -445,7 +446,7 @@ class DispatcherController extends FrontController
     public function dispatchPickupDeliveryUpdate(Request $request, $domain = '', $web_hook_code)
     {
         try {
-            //\Log::info('in call pickup status'.$request->waiting_price);
+            \Log::info('in call pickup status');
 
             DB::beginTransaction();
             $checkiftokenExist = OrderVendor::where('web_hook_code',$web_hook_code)->first();
@@ -497,6 +498,7 @@ class DispatcherController extends FrontController
                     'dispatcher_status_option_id' =>  $request->dispatcher_status_option_id,
                     'vendor_id' =>  $checkiftokenExist->vendor_id,
                     'type' =>  $request->task_type??1]);
+                  
                 $this->sendOrderNotification($update->id);
 
             if(isset($request->dispatch_traking_url) && !empty($request->dispatch_traking_url))
@@ -882,7 +884,7 @@ class DispatcherController extends FrontController
     /******************    ---- send notification to user -----   ******************/
     public function sendOrderNotification( $vendor_order_status_id )
     {
-         //pr($vendor_order_status_id);
+         Log::info('sendOrderNotification');
 
         $OrderStatus = VendorOrderDispatcherStatus::select('*','dispatcher_status_option_id as status_data')->find($vendor_order_status_id);
 
@@ -895,7 +897,6 @@ class DispatcherController extends FrontController
             $devices = UserDevice::whereNotNull('device_token')->where('user_id', $user_id)->pluck('device_token');
 
             $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
-
             if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
                     $title = __('Order Status : #').($orderNumber ?  $orderNumber->order_number : '');
                     $body =  $OrderStatus ? ($OrderStatus->status_data ? $OrderStatus->status_data['driver_status'] : '') : '';
@@ -920,8 +921,9 @@ class DispatcherController extends FrontController
                         ],
                         "priority" => "high"
                     ];
-                    //   // Log::info(json_encode($data));
-                    sendFcmCurlRequest($data);
+                    // Log::info(json_encode($data));
+                $result = sendFcmCurlRequest($data);
+                Log::info($result);
             }
         }
 
