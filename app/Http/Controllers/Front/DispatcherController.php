@@ -923,8 +923,7 @@ class DispatcherController extends FrontController
                     ];
                     // Log::info(json_encode($data));
                 $result = sendFcmCurlRequest($data);
-                Log::info(json_encode($result));
-
+                Log::info($result);
             }
         }
 
