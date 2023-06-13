@@ -298,6 +298,12 @@ body .rating-form .btn-reset {
                         </div>
                     </div>
                     @endif
+
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Featured'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="is_featured" class="form-control" data-color="#43bee1" @if($vendor->is_featured == 1) checked @endif>
+                    </div>
+
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('24*7 Availability'),['class' => 'control-label']) !!}
