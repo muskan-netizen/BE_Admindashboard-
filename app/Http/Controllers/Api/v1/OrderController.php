@@ -515,7 +515,20 @@ class OrderController extends BaseController
                             $vendor_taxable_amount +=  decimal_format($taxable_amount);
                             //$total_amount += ($vendor_cart_product->quantity * $variant->price) + ($vendor_cart_product->quantity * $variant->container_charges);
                             $variant_price = $variant->price;
-                            // change variant_price price when is_service_product_price_from_dispatch on
+
+                            if($luxury_option->id == 9 && @$variant->month_price){
+                                $schedule_days = $prod->additional_increments_hrs_min / 24;
+                                    if($schedule_days >= 7 && $schedule_days < 30){
+                                       
+                                        $variant_price = $variant->week_price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
+                                    }elseif($schedule_days >= 30){
+                                        $variant_price = $variant->month_price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
+                                    }else{
+                                        $variant_price = $variant->price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
+                                    }
+                               
+                            }
+
                             $is_price_buy_driver = 0;
                             if(($action == 'on_demand') && ($is_service_product_price_from_dispatch==1)){
                                 $variant_price =$vendor_cart_product->dispatch_agent_price ;

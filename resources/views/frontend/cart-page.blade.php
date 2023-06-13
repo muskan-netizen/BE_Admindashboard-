@@ -156,7 +156,7 @@
                         <div class="col-md-2 col text-center">
                             <span>{{ __('Price') }}</span>
                         </div>
-                        @if ($serviceType == 'rental')
+                        @if ($serviceType == 'rental' || $serviceType == 'p2p')
                             <div class="col-md-2 col text-center">
                                 <span>Duration By(min)</span>
                             </div>
@@ -340,7 +340,22 @@
                                             @endif
                                             @if (!empty(@$vendor_product->quantity_price))
                                                 <div class="col-6 col-md-2 text-left order-md-4">
-                                                    @if ($serviceType == 'rental')
+                                                    @if ($serviceType == 'p2p')
+                                                        @php
+                                                            $additionalPrice = 0;
+                                                            if ($vendor_product->pvariant->incremental_price_per_min > 0) {
+                                                                $additionalPrice = ($vendor_product->additional_increments_hrs_min/(60*24)) * $vendor_product->quantity_price;
+                                                            }
+                                                            
+                                                        @endphp
+                                                        <div class="items-price">
+                                                            @if ($additionalPreference['is_token_currency_enable'])
+                                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($additionalPrice)) }}
+                                                            @else
+                                                                {{ Session::get('currencySymbol') . decimal_format($additionalPrice) }}
+                                                            @endif
+                                                        </div>
+                                                    @elseif ($serviceType == 'rental')
                                                         @php
                                                             $additionalPrice = 0;
                                                             if ($vendor_product->pvariant->incremental_price_per_min > 0) {
@@ -367,7 +382,7 @@
                                             @endif
 
 
-                                            @if ($serviceType == 'rental')
+                                            @if ($serviceType == 'rental' || $serviceType == 'p2p')
                                                 <div class="col-10 col-md-4 text-md-center order-md-3">
                                                     <div class="number d-flex justify-content-md-center border-0">
                                                         <div style="display: none !important;"
@@ -485,7 +500,7 @@
 
                                         </div>
                                         
-                                        @if($serviceType == 'rental')
+                                        @if($serviceType == 'rental' || $serviceType == 'p2p')
                                             <hr class="my-2">
                                             <div class="row align-items-md-center alRentalStartDate">
                                                 <div class="col-3">
@@ -1170,7 +1185,7 @@
                                 </div>
                                 <hr class="my-2">
                             @endif
-                            @if ($serviceType == 'rental')
+                            @if ($serviceType == 'rental' || $serviceType == 'p2p')
                                 <div class="row">
                                     <div class="col-6">{{ __('Security Amount') }}</div>
                                     <div class="col-6 text-right">
@@ -1234,7 +1249,7 @@
                                 }
                             @endphp
                             <input type="hidden" id="other_taxes_string" value="{{ $other_taxes_string }}">
-                            @if ($serviceType == 'rental')
+                            @if ($serviceType == 'rental' || $serviceType == 'p2p')
                                 {{-- <div class="row">
                     <div class="col-6">{{__('Extended Duration')}}</div>
                     <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($vendor_product->pvariant->incremental_price * $vendor_product->additional_increments_hrs_min)}}</b></span>
@@ -1628,14 +1643,14 @@
                                     <input type="hidden" id="edit_order_schedule_slot"
                                         value="{{ $schedule_slots_edit }}">
                                 @endif
-                                @if ($serviceType == 'rental')
+                                @if ($serviceType == 'rental' || $serviceType == 'p2p')
                                     <div class="text-sm-left mb-2">
                                         <input type="checkbox" name="agree_term_check" id="agree_term_check" value="" disabled> <a href="javascript:void(0);" class="agree_term_btn">Agree Term</a>
                                     </div>
                                 @endif
                                 @php
                                     $disablePlaceBtn = '';
-                                    if(count($cart_details->user_allAddresses) == 0 || $serviceType == 'rental'){
+                                    if(count($cart_details->user_allAddresses) == 0 || $serviceType == 'rental' || $serviceType == 'p2p'){
                                         $disablePlaceBtn = 'disabled';
                                     }
                                 @endphp
@@ -1767,7 +1782,7 @@
     </div>
 
 @endif
-@if ($serviceType == "rental")
+@if ($serviceType == "rental" || $serviceType == 'p2p')
     @include('frontend.cart.rentalConsentFormModal')
 @endif
 
@@ -1826,7 +1841,7 @@
             }]
         });
         var serviceType = "{{$serviceType}}";
-        if(serviceType == "rental"){
+        if(serviceType == "rental" || $serviceType == 'p2p'){
             $("#order_placed_btn").attr('disabled', true);
         }
     });

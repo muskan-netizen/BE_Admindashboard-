@@ -2108,6 +2108,8 @@ class StoreController extends BaseController{
 				$product->vendor_id = $user_vendor->vendor_id;
 				if(@$request->address){
 					$product->address = $request->address;
+				if(@$request->longitude){
+					$product->longitude = $request->longitude;
 				}
 				if(@$request->latitude){
 					$product->latitude = $request->latitude;
@@ -2120,6 +2122,7 @@ class StoreController extends BaseController{
 				if (!$client_lang) {
 					$client_lang = ClientLanguage::where('is_active', 1)->first();
 				}
+
 				$client_lang = ClientLanguage::where('is_primary', 1)->first();
 				if (!$client_lang) {
 					$client_lang = ClientLanguage::where('is_active', 1)->first();
@@ -2157,6 +2160,7 @@ class StoreController extends BaseController{
 					if(@$request->minimum_duration){
 						$proVariant->minimum_duration = $request->minimum_duration * 24;
 					}
+
 					$proVariant->sku = $slug;
 					$proVariant->title =$slug . '-' .  empty($request->product_name) ?$slug : $request->product_name;
 					$proVariant->product_id = $product->id;

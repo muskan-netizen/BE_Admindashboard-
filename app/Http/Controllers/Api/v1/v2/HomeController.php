@@ -47,6 +47,7 @@ class HomeController extends BaseController
         
     }
 
+
     public function categoriesAll(Request $request, $domain='')
     {
 
@@ -100,10 +101,9 @@ class HomeController extends BaseController
         }
 
     }
-
-    public function homepage(Request $request, $domain = '')
+    public function homepage(Request $request, $domain='')
     {
-
+          
         try {
             $home = array();
             $vendor_ids = array();
@@ -112,213 +112,51 @@ class HomeController extends BaseController
             }
             $latitude = Session::get('latitude') ?? null;
             $longitude = Session::get('longitude') ?? null;
-            $curId = Session::get('customerCurrency');
-            $preferences = Session::get('preferences');
-            $user = Auth::user();
-            $langId = $user->language;
-            $currency_id = $user->currency;
-            $client_config = Session::get('client_config');
-            $selectedAddress = Session::get('selectedAddress');
-            $_REQUEST['request_from'] = 1;
-
             $type = $request->has('type') ? $request->type : 'delivery';
+
+            if (empty($type))
+            $type = 'delivery';
+
             $categoryTypes = getServiceTypesCategory($type);
-
-            $this->venderFilterOpenClose   = $request->has('open_close_vendor') && $request->open_close_vendor ? $request->open_close_vendor : null;
-            $this->venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
-
-            // $vendorData = Vendor::whereHas('getAllCategory.category', function ($q) use ($categoryTypes) {
-            //     $q->whereIn('type_id', $categoryTypes);
-            // })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'id as is_vendor_closed', 'closed_store_order_scheduled')->withAvg('product', 'averageRating', 'closed_store_order_scheduled')->where($type, 1);
+            $preferences = Session::get('preferences');
+            $vendorData = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+                $q->whereIn('type_id',$categoryTypes);
+            })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','id as is_vendor_closed' ,'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
 
 
+        
 
-
-            // if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-            //     $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
-            //     $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
-            //     $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
-            //     //3961 for miles and 6371 for kilometers
-            //     $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
-            //     $vendorData = $vendorData->select('*', DB::raw(' ( ' . $calc_value . ' * acos( cos( radians(' . $latitude . ') ) *
-            //             cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
-            //             sin( radians(' . $latitude . ') ) *
-            //             sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->withAvg('product', 'averageRating');
-            //     $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
-            //     $vendorData = $vendorData->whereIn('id', $ses_vendors);
-            //     //if($venderFilternear && ($venderFilternear == 1) ){
-            //     //->orderBy('vendorToUserDistance', 'ASC')
-            //     $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
-            //     //}
-            // }
-
-
-            //$venderIds  = $vendorData->where('status', 1)->pluck('id');
-
-           
-
-            $clientPreferences = ClientPreference::first();
-
-
-            $count = 0;
-            if ($clientPreferences) {
-                foreach (config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value) {
-                    $clientVendorTypes = $vendor_typ_key . '_check';
-                    if ($clientPreferences->$clientVendorTypes == 1) {
-                        $count++;
-                    }
-                }
-
-                if (empty($latitude) && empty($longitude)) {
-                    $latitude = $clientPreferences->Default_latitude;
-                    $longitude = $clientPreferences->Default_longitude;
-                }
+            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
+                $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+                $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
+                //3961 for miles and 6371 for kilometers
+                $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
+                $vendorData = $vendorData->select('*', DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
+                        cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
+                        sin( radians(' . $latitude . ') ) *
+                        sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->withAvg('product', 'averageRating');
+                $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
+                $vendorData = $vendorData->whereIn('id', $ses_vendors);
+                //if($venderFilternear && ($venderFilternear == 1) ){
+                    //->orderBy('vendorToUserDistance', 'ASC')
+                    $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
+                //}
             }
-
-
-            // $banners = Banner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
-            //     ->where(function ($q) {
-            //         $q->whereNull('start_date_time')->orWhere(function ($q2) {
-            //             $q2->whereDate('start_date_time', '<=', Carbon::now())
-            //                 ->whereDate('end_date_time', '>=', Carbon::now());
-            //         });
-            //     });
-            // if (isset($clientPreferences->is_service_area_for_banners) && ($clientPreferences->is_service_area_for_banners == 1) && ($clientPreferences->is_hyperlocal == 1)) {
-            //     if (!empty($latitude) && !empty($longitude)) {
-            //         $banners = $banners->whereHas('geos.serviceArea', function ($query) use ($latitude, $longitude) {
-            //             $query->select('id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
-            //         });
-            //     }
-            // }
-            // $banners = $banners->orderBy('sorting', 'asc')->get();
-
-            $mobile_banners = MobileBanner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
-                ->where(function ($q) {
-                    $q->whereNull('start_date_time')->orWhere(function ($q2) {
-                        $q2->whereDate('start_date_time', '<=', Carbon::now())
-                            ->whereDate('end_date_time', '>=', Carbon::now());
-                    });
-                });
-            if (isset($clientPreferences->is_service_area_for_banners) && ($clientPreferences->is_service_area_for_banners == 1) && ($clientPreferences->is_hyperlocal == 1)) {
-                if (!empty($latitude) && !empty($longitude)) {
-                    $mobile_banners = $mobile_banners->whereHas('geos.serviceArea', function ($query) use ($latitude, $longitude) {
-                        $query->select('id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
-                    });
-                }
-            }
-            $mobile_banners = $mobile_banners->orderBy('sorting', 'asc')->get();
-
-
-            $home_page_labels = CabBookingLayout::where('is_active', 1)->app()->where('for_no_product_found_html', 0)->orderBy('order_by');
-
-
-
-            if (isset($langId) && !empty($langId))
-                $home_page_labels = $home_page_labels->with(['banner_image', 'translations' => function ($q) use ($langId) {
-                    $q->where('language_id', $langId);
-                }]);
-
-
-            $home_page_labels = $home_page_labels->get();
+        
             
-
-            if (count($home_page_labels) == 0)
-                $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
-            $request->request->add(['noTinJson' => 1]);
-            /***start new  */
-
-            $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating', 'is_service_product_price_from_dispatch']);
-
-            $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
-            $enable_layout = CabBookingLayout::where('is_active', 1)->app();
-
-            $enable_layout = $enable_layout->orderBy('order_by', 'asc')->pluck('slug')->toArray();
-            //$homePageData = $this->postHomePageData($request);
-            if($request->action=='2'){
-                $homePageData = $this->postHomePageDataV2($request, $set_template, $enable_layout, $additionalPreference,$user);
-            } else {
-                $homePageData = $this->postHomePageData($request);
-            }
-            $navCategories = $this->categoryNav($langId, @$homePageData['vendor_ids'], $type);
-            Session::put('navCategories', $navCategories);
-
-            /***end new  */
-
-            // dd($navCategories);
-            $home_page_labels = $home_page_labels->map(function ($da) use ($homePageData, $navCategories) {
-                if ($da->slug != 'pickup_delivery' && $da->slug != 'dynamic_page' && $da->slug != 'nav_categories' && $da->slug != 'banner') {
-
-                    $da['data'] = @$homePageData[@$da->slug];
-                }
-                if ($da->slug == 'nav_categories') {
-                    // dd($da->slug);
-                    $da['data'] = $navCategories;
-                    // dd($da[$da->slug]);
-                }
-                // if ($da->slug == 'single_category_products') {
-                //     $da['data'] = $this->getSingleCategoryWithProducts($da->slug);
-                // }
-                // if ($da->slug == 'spotlight_deals') {
-                //     $da['data'] = $this->getSpotlightProducts($da->id);
-                // }
-                // if ($da->slug == 'selected_products') {
-                //     $da['data'] = $this->getSelectedProduct($da->id);
-                // }
-                return $da;
-            });
+            $venderIds  = $vendorData->where('status', 1)->pluck('id');
 
 
-            // dd($home_page_labels[10]->nav_categories);
-            // $only_cab_booking = OnboardSetting::where('key_value', 'home_page_cab_booking')->count();
-
-
-            // $home_page_pickup_labels = CabBookingLayout::with('translations')->where('is_active', 1)->app()->where('for_no_product_found_html', 0)->orderBy('order_by')->get();
-
-            // //$set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
-
-            // $for_no_product_found_html = CabBookingLayout::with('translations')->where('is_active', 1)->app()->where('for_no_product_found_html', 1)->orderBy('order_by')->get();
-           
-
-            // $categories = [];
-            // if (isset($set_template)  && $set_template->template_id == 8) {
-            //     $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
-            //         ->where('id', '>', '1')
-            //         // ->where('is_core', 1)
-            //         ->whereNotIn('type_id', [4, 5])
-            //         ->where(function ($q) {
-            //             $q->whereNull('vendor_id');
-            //         })->orderBy('position', 'asc')
-            //         ->orderBy('id', 'asc')
-            //         ->where('status', 1)
-            //         ->orderBy('parent_id', 'asc')->get();
-            // }
-            // dd($categories);
-            $user = Auth::user();
-            $s3_url = '';
-            if(\Config::get('filesystems.disks.s3.driver') == 's3') {
-                $s3_url = 'https://'.\Config::get('filesystems.disks.s3.driver').'.'.\Config::get('filesystems.disks.s3.region').'.amazonaws.com'.'/'.\Config::get('filesystems.disks.s3.bucket').'/';
-            }
-            $image_const_arr = [
-                'image_fit' => \Config::get('app.FIT_URL'),
-                'image_fill' => \Config::get('app.FILL_URL'),
-                's3_url' => $s3_url,
-                'proxy_url'=> \Config::get('app.IMG_URL2')
-            ];
-
-
-            $user_vendor_count = UserVendor::where('user_id', $user->id)->count();
-            $homeData = ['homePageLabels' => $home_page_labels, 'reqData' => $request->all(), 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude, 'enable_layout' => $enable_layout,'image_prefix' => $image_const_arr];
-            $homeData['is_admin'] = $user_vendor_count > 0 ? 1 : 0;
-            $homeData['mobile_banners'] = $mobile_banners??[];
-            //$homeData['banners'] = $banners??[];
-            $homeData['banner_image'] = $banners??[];
-            //$homeData['categories'] = $categories;
+            $navCategories = $this->categoryNav($langId, $venderIds, $type , $request);
+            $homeData['navCategories'] = $navCategories;
             return $this->successResponse($homeData);
         } catch (Exception $e) {
-            pr($e->getCode());
-            die;
+            return $this->errorResponse($e->getMessage(), $e->getCode());
         }
+
     }
+
 
 
 

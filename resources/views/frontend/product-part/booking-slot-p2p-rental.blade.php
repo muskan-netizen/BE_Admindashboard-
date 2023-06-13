@@ -241,7 +241,8 @@
         });
         var restrictedDates = [];
         @if(@$product_notavailability)
-          restrictedDates = JSON.parse(<?php echo json_encode($product_notavailability); ?>);
+            // restrictedDates = JSON.parse('<?php echo json_encode($product_notavailability); ?>');
+            restrictedDates = '<?php echo json_encode($product_notavailability); ?>';
         @endif
         $('#blocktime, #blocktime2').daterangepicker({
             locale: {

@@ -23,7 +23,9 @@ Route::group(['prefix' => 'v1/v2', 'middleware' => ['ApiLocalization']], functio
         
         Route::get('getP2pCategories', 'Api\v1\v2\P2PController@getP2pCategories');
         Route::get('getRentalCategories', 'Api\v1\v2\P2PController@getRentalCategories');
+
         Route::post('homePageDataV2', 'Api\v1\v2\HomeController@postHomePageDataV2');
+
 
 
         // new cart route

@@ -5,6 +5,7 @@
 .select2-multiple {visibility: hidden !important;}
 </style>
 @endsection
+
 @section('content')
 <div class="container-fluid" id="alCustomizePage">
     {{--<div class="row">
@@ -43,7 +44,8 @@
 
 <!-- New Customize Page -->
 @php
-$getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id','fpixel_id','is_token_currency_enable', 'token_currency','is_price_by_role','advance_booking_amount', 'advance_booking_amount_percentage',]); //,'seller_sold_title','saller_platform_logo'
+$getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id','fpixel_id','is_token_currency_enable', 'token_currency','is_price_by_role','advance_booking_amount', 'advance_booking_amount_percentage','is_user_pre_signup']); //,'seller_sold_title','saller_platform_logo'
+
 @endphp
    <!--Localization start -->
     <div class="row">
@@ -1770,6 +1772,13 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                 <label for="Phone_signup" class="mr-3 mb-0">{{ __("Phone SignUp") }}</label>
                                 <input type="checkbox" data-plugin="switchery" name="is_phone_signup_switch" id="is_phone_signup_switch" class="form-control checkbox_change" data-className="is_phone_signup"  data-color="#43bee1" @if( @$getAdditionalPreference['is_phone_signup'] == '1') checked='checked' @endif>
                                 <input type="hidden"  @if(@$getAdditionalPreference['is_phone_signup'] == 1) value="1" @else value="0" @endif  name="is_phone_signup"  id="is_phone_signup"/>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group d-flex justify-content-between">
+                                <label for="is_pre_signup" class="mr-3 mb-0">{{ __("User Pre SignUp") }}</label>
+                                <input type="checkbox" data-plugin="switchery" name="is_user_pre_signup" id="is_phone_signup_switch" class="form-control checkbox_change" data-className="is_phone_signup"  data-color="#43bee1" @if( @$getAdditionalPreference['is_user_pre_signup'] == '1') checked='checked' @endif>
+                                <input type="hidden"  @if(@$getAdditionalPreference['is_user_pre_signup'] == 1) value="1" @else value="0" @endif  name="is_phone_signup"  id="is_pre_signup"/>
                             </div>
                         </div>
                         @foreach($verify_options as $key => $opt)
