@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BidController;
 use App\Http\Controllers\Front\CartController;
+use App\Http\Controllers\MargController;
 
 Route::post('ajaxGetScheduleDateDetails', 'Front\CartController@ajaxGetScheduleDateDetails')->name('ajaxGetScheduleDateDetails');
 Route::get('confirmation', 'Front\UserhomeController@confirmation')->name('confirmation');
@@ -11,6 +12,8 @@ Route::get('auth/xero', 'Front\XeroController@index')->name('xero_auth');
 Route::any('auth/callback/xero', 'Front\XeroController@xero_callback')->name('callback_xero');
 Route::any('payment/paytab/callback', 'Front\PaytabController@callback')->name('payment.paytab.callback');
 Route::match(['get', 'post'], 'payment/paytab/return', 'Front\PaytabController@returnBack')->name('payment.paytab.return');
+Route::get('/sync-marg', [MargController::class, 'syncmarg'])->name('sync.marg');
+// Route::get('/margcmd', [MargController::class, 'margcmd'])->name('sync.marg');
 Route::get('/debug-sentry', function () {
 	echo \Hash::make('dispatcher@765');
 	//throw new Exception('My first Sentry error!');
