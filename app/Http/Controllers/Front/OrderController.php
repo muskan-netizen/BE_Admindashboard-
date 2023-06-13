@@ -1522,7 +1522,7 @@ class OrderController extends FrontController
                         }
                     }
 
-                    if($luxury_option->id == 4){
+                    if(@$luxury_option->id == 4){
                         $security_amount += $vendor_cart_product->product->security_amount;
                     }
 
@@ -1763,7 +1763,7 @@ class OrderController extends FrontController
                     $order_product->end_date_time = $vendor_cart_product->end_date_time;
                     $order_product->additional_increments_hrs_min = $vendor_cart_product->additional_increments_hrs_min;
 
-                    if ($luxury_option->id == 4) {
+                    if (@$luxury_option->id == 4) {
                         $order_product->security_amount = $vendor_cart_product->product->security_amount;
                     }
 
@@ -1930,7 +1930,7 @@ class OrderController extends FrontController
 
 
                     // book for rental
-                    if ($luxury_option->id == 4) {
+                    if (@$luxury_option->id == 4) {
 
                         $data = [
                             'memo' => __('Booked for order #') . $order->order_number,
@@ -2270,7 +2270,7 @@ class OrderController extends FrontController
             $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
             $order->scheduled_slot = (($cart->scheduled_slot) ? $cart->scheduled_slot : null);
             $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot) ? $cart->dropoff_scheduled_slot : null);
-            $order->luxury_option_id = $luxury_option->id;
+            $order->luxury_option_id = $luxury_option->id??'';
             $payable_amount = $payable_amount - $Order_bid_discount ?? 0;
             if (! $additionalPreferences->is_tax_price_inclusive) {
 
