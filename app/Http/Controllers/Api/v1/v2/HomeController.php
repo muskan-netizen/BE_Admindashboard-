@@ -105,6 +105,9 @@ class HomeController extends BaseController
     {
           
         try {
+            $user = Auth::user();
+            $langId = $user->language;
+            
             $home = array();
             $vendor_ids = array();
             if ($request->has('ref')) {

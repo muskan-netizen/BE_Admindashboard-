@@ -296,7 +296,6 @@
         });
 
         async function check_product_availibility(formData){
-          console.log(formData);
           $("a#add_to_cart_btn").addClass("addToCart");
            $('#start_time').val(moment(formData.selectedStartDate).format("YYYY-MM-DD hh:mm:ss"));
             $('#end_time').val(moment(formData.selectedEndDate).format("YYYY-MM-DD hh:mm:ss"));
