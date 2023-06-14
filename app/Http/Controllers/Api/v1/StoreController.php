@@ -617,6 +617,7 @@ class StoreController extends BaseController{
 				foreach ($order->products as $product) {
 					$order_item_count += $product->quantity;
 					$product_details[] = array(
+						'name' => $product->product_name,
 						'image_path' => $product->media->first() ? $product->media->first()->image->path : $product->image,
 						'price' => $product->price,
 						'qty' => $product->quantity,
