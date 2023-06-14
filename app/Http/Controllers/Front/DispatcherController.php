@@ -60,7 +60,6 @@ class DispatcherController extends FrontController
                     $this->sendOrderNotification($update->id);
                     $type = $request->task_type??1;
                    $dispatch_status = $request->dispatcher_status_option_id;
-                   \Log::info("dispatch status ".$dispatch_status);
                     switch ($dispatch_status) {
                         case 2:
                             $request->status_option_id = 2;
@@ -459,9 +458,7 @@ class DispatcherController extends FrontController
 
             if($checkiftokenExist){
 
-                $dispatch_status = $request->dispatcher_status_option_id;
-                \Log::info("dispatch status ".$dispatch_status);
-                
+                $dispatch_status = $request->dispatcher_status_option_id;                
                 switch ($dispatch_status) {
                   case 2:
                         // $request->status_option_id = 2;
@@ -485,7 +482,6 @@ class DispatcherController extends FrontController
                   default:
                    $request->status_option_id = null;
                 }
-                \Log::info("status ".$request->status_option_id);
                 if(isset($request->status_option_id) && !empty($request->status_option_id) && (in_array($request->status_option_id ,[6,3]))  && $type == 2){
                     $checkif= VendorOrderStatus::where(['order_id' =>  $checkiftokenExist->order_id,
                     'order_status_option_id' =>  $request->status_option_id,
