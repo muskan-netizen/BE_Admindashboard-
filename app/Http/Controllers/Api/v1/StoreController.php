@@ -568,7 +568,7 @@ class StoreController extends BaseController{
 		try {
     		$user = Auth::user();
             $paginate = $request->has('limit') ? $request->limit : 12;
-			$order_list = Order::with(['orderStatusVendor','vendors.products','vendors.status'])->select('id','order_number','payable_amount','payment_option_id','user_id','created_at','scheduled_date_time');
+			$order_list = Order::with(['orderStatusVendor','vendors.products','vendors.status'])->select('id','order_number','payable_amount','payment_option_id','user_id','created_at','scheduled_date_time','scheduled_slot');
 			if($user->is_superadmin == 1){
 				$order_list = $order_list->whereHas('vendors', function($query){
 					$query->where('order_status_option_id', 1);
@@ -593,6 +593,15 @@ class StoreController extends BaseController{
 				$order->user_image = $order->user->image;
 				$order->date_time = dateTimeInUserTimeZone($order->created_at, $user->timezone);
 				$order->payment_option_title = $order->paymentOption->title;
+				if (!empty($order->scheduled_date_time)) {
+					$order->scheduled_date_time = date('d-m-Y h:i A',strtotime(dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone)));
+				}
+				if(!empty($order->scheduled_slot) ){
+					$slot_time = explode("-",$order->scheduled_slot);
+					$start_time = $slot_time[0];
+					$end_time = !empty($slot_time[1]) ? $slot_time[1]: $slot_time[0];
+					$order->schedule_slot =date('d-m-Y h:i A',strtotime( date('Y-m-d',strtotime($order->scheduled_date_time)). " " . $start_time)) . ' - ' . date('h:i A',strtotime($end_time));
+				}
 				foreach ($order->vendors as $vendor) {
 					$vendor_order_status = VendorOrderStatus::where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
 					if($vendor_order_status){
