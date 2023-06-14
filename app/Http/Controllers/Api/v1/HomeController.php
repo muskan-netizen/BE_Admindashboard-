@@ -1093,7 +1093,7 @@ class HomeController extends BaseController
             $curId = Auth::user()->language;
             $limit = $request->has('limit') ? $request->limit : 10;
             $page = $request->has('page') ? $request->page : 1;
-            $action = $request->has('type') && $request->type ? $request->type : null;
+            $action = $request->has('type') && $request->type ? $request->type : 'delivery';
            // $types = ['delivery', "dine_in", "takeaway"];
             $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'slots_with_service_area','subscription_mode')->first();
             $latitude = $request->latitude;
