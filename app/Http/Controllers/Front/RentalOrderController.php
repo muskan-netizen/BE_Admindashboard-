@@ -22,80 +22,85 @@ class RentalOrderController extends Controller
         $user = Auth::user();
         $order_status_options = [];
         $paginate = $request->has('limit') ? $request->limit : 12;
-        $type = $request->has('type') ? $request->type : 'all';
+        $type = $request->has('type') ? $request->type : 'upcoming';
+        // dd($type);
         $user_type = $request->has('user_type') ? $request->user_type : '';
         $orders = OrderVendor::with('products')->orderBy('id', 'DESC');
         $additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
         $vendorUser = UserVendor::select('vendor_id')->where('user_id', $user->id)->first();
-        if ($user_type == 'borrower') {
-            $orders->where('user_id', $user->id);
-        } elseif ($user_type == 'lender') {
-            $orders->where('vendor_id', $vendorUser->vendor_id);
-        } else {
-            $orders->where(function ($q) use ($vendorUser, $user) {
-                $q->where('vendor_id', $vendorUser->vendor_id)->orWhere('user_id', $user->id);
-            });
-        }
-        switch ($type) {
-            case 'all': // which order not assign yet indriver
-
-                $orders->whereHas('products');
-                break;
-            case 'upcoming': // which order not assign yet indriver
-
-                $orders->whereHas('products');
-                $orders->whereIn('order_status_option_id', [1, 2]);
-                break;
-            case 'ongoing': // which order not assign yet indriver
-
-                $orders->whereHas('products');
-                $orders->whereIn('order_status_option_id', [4]);
-                break;
-            case 'pending': // which order not assign yet indriver
-
-                $orders->whereHas('products', function ($q1) {
-                    $q1->where('dispatcher_status_option_id', 1);
+        if(@$vendorUser){
+            if ($user_type == 'borrower') {
+                $orders->where('user_id', $user->id);
+            } elseif ($user_type == 'lender') {
+                $orders->where('vendor_id', $vendorUser->vendor_id);
+            } else {
+                $orders->where(function ($q) use ($vendorUser, $user) {
+                    $q->where('vendor_id', $vendorUser->vendor_id)->orWhere('user_id', $user->id);
                 });
-                break;
-            case 'active':
-                $orders->whereNotIn('order_status_option_id', [6, 3, 9]);
-                $orders->whereHas('products', function ($q) use ($additionalPreference) {
-                    if ($additionalPreference['is_service_product_price_from_dispatch'] == 1) {
-                        $q->whereNotIn('dispatcher_status_option_id', [1, 5, 6]); //1=pending,5= complete,6 reject
-                    }
-                });
-                break;
-            case 'past':
-                $orders->whereIn('order_status_option_id', [6, 3, 9]);
-                if ($additionalPreference['is_service_product_price_from_dispatch'] == 1) {
-                    $orders->whereHas('products', function ($q) {
-                        $q->where('dispatcher_status_option_id', 5); //1=pending,5= complete,6 reject
+            }
+            switch ($type) {
+                case 'all': // which order not assign yet indriver
+
+                    $orders->whereHas('products');
+                    break;
+                case 'upcoming': // which order not assign yet indriver
+
+                    $orders->whereHas('products');
+                    $orders->whereIn('order_status_option_id', [1, 2]);
+                    break;
+                case 'ongoing': // which order not assign yet indriver
+
+                    $orders->whereHas('products');
+                    $orders->whereIn('order_status_option_id', [4]);
+                    break;
+                case 'pending': // which order not assign yet indriver
+
+                    $orders->whereHas('products', function ($q1) {
+                        $q1->where('dispatcher_status_option_id', 1);
                     });
-                }
-                break;
-            case 'schedule':
-                $order_status_options = [10];
-                $orders->whereHas('status', function ($query) use ($order_status_options) {
-                    $query->whereIn('order_status_option_id', $order_status_options);
-                });
-                break;
+                    break;
+                case 'active':
+                    $orders->whereNotIn('order_status_option_id', [6, 3, 9]);
+                    $orders->whereHas('products', function ($q) use ($additionalPreference) {
+                        if ($additionalPreference['is_service_product_price_from_dispatch'] == 1) {
+                            $q->whereNotIn('dispatcher_status_option_id', [1, 5, 6]); //1=pending,5= complete,6 reject
+                        }
+                    });
+                    break;
+                case 'past':
+                    $orders->whereIn('order_status_option_id', [6, 3, 9]);
+                    if ($additionalPreference['is_service_product_price_from_dispatch'] == 1) {
+                        $orders->whereHas('products', function ($q) {
+                            $q->where('dispatcher_status_option_id', 5); //1=pending,5= complete,6 reject
+                        });
+                    }
+                    break;
+                case 'schedule':
+                    $order_status_options = [10];
+                    $orders->whereHas('status', function ($query) use ($order_status_options) {
+                        $query->whereIn('order_status_option_id', $order_status_options);
+                    });
+                    break;
+            }
+            $orders = $orders->with([
+                'orderDetail.editingInCart',
+                'vendor:id,name,logo,banner,return_request,cancel_order_in_processing',
+                'products.productReturn',
+                'exchanged_of_order.orderDetail',
+                'exchanged_to_order.orderDetail',
+                'cancel_request',
+                'products.Routes',
+                'products.order_product_status',
+                'products.product.category.categoryDetail' => function ($q) {
+                    $q->select('id', 'type_id');
+                },
+                'products.product.translation'
+            ])->paginate($paginate);
+            $orders = $this->orderlistLoop($orders, $user, $request);
+        }else{
+            $orders = [];
         }
-        $orders = $orders->with([
-            'orderDetail.editingInCart',
-            'vendor:id,name,logo,banner,return_request,cancel_order_in_processing',
-            'products.productReturn',
-            'exchanged_of_order.orderDetail',
-            'exchanged_to_order.orderDetail',
-            'cancel_request',
-            'products.Routes',
-            'products.order_product_status',
-            'products.product.category.categoryDetail' => function ($q) {
-                $q->select('id', 'type_id');
-            },
-            'products.product.translation'
-        ])->paginate($paginate);
-        $orders = $this->orderlistLoop($orders, $user, $request);
-        pr($orders);
+        // pr($orders);
         return view('frontend.account.rental-orders')->with([]);
     }
 
