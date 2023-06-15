@@ -243,7 +243,7 @@ class CategoryController extends BaseController
     public function getCategoryTranslation(Request $request){
         $trans = [];
         if(!empty($request->categoryId) && !empty($request->languageId)){
-            $trans = Category_translation::where('category_id', $request->categoryId)->where('language_id', $request->languageId)->first();
+            $trans = Category_translation::where('category_id', $request->categoryId)->where('language_id', $request->languageId)->latest()->first();
             if(!$trans){
                 $trans = new Category_translation();
                 $trans->category_id = $request->categoryId;
@@ -281,7 +281,7 @@ class CategoryController extends BaseController
         if ($save > 0) {
             if (!empty($languageId)) {
                 // $languageId = $request->cat_lang['language_id'];
-                $trans = Category_translation::where('category_id', $save)->where('language_id', $languageId)->first();
+                $trans = Category_translation::where('category_id', $save)->where('language_id', $languageId)->latest()->first();
                
                 if (!$trans) {
                     $trans = new Category_translation();
