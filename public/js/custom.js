@@ -2110,7 +2110,7 @@ $(document).ready(function () {
                 success_error_alert('error', 'Invalid credit card information', "#powertrans_card_error");
                 return false;
             }
-      
+
         }
 
         if ((payment_option_id == undefined || payment_option_id <= 0) && (payment_method_required_error_msg != undefined)) {
@@ -3161,7 +3161,7 @@ $(document).ready(function () {
 
 
        // Recuring booking code
-        
+
 
 
         // if($('#is_recurring_bookingss').val() > 0){
@@ -5011,7 +5011,7 @@ $(document).ready(function () {
             case 56:
                 paymentViaOboPay('', payment_option_id);
             break;
-            
+
             case 57:
                 payWithPesapal(payment_option_id,'');
             break;
@@ -5019,7 +5019,7 @@ $(document).ready(function () {
             case 58:
                 payWithPowerTrans(payment_option_id,'');
             break;
-                
+
         }
 
     }
@@ -5555,7 +5555,7 @@ $(document).ready(function () {
                 }else{
                     return false;
                 }
-            break; 
+            break;
 
             case '57':
               var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
@@ -5570,6 +5570,13 @@ $(document).ready(function () {
               var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
               if (order != '') {
                 payWithPowerTrans(payment_option_id, order);
+              }
+            break;
+
+            case '59':
+              var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+              if (order != '') {
+                payWithLivee(payment_option_id, order);
               }
             break;
         }
@@ -5821,13 +5828,17 @@ $(document).ready(function () {
 
             case 56:
                 paymentViaOboPay('', payment_option_id);
-            
+
             case 57:
                 payWithPesapal(payment_option_id,'');
             break;
-            
+
             case 58:
                 payWithPowerTrans(payment_option_id,'');
+            break;
+
+             case 59:
+                payWithLivee(payment_option_id,'');
             break;
         }
     }

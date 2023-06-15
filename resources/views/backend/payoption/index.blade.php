@@ -145,7 +145,7 @@ Options']) @section('css')
 				$skip_cash_key_id = (isset($creds->skip_cash_key_id)) ? $creds->skip_cash_key_id : '';
 				$skip_cash_testing_url = (isset($creds->skip_cash_testing_url)) ? $creds->skip_cash_testing_url : '';
 				$skip_cash_live_url = (isset($creds->skip_cash_live_url)) ? $creds->skip_cash_live_url : '';
-			
+
 				//Nmi
 				$nmi_client_id = (isset($creds->nmi_client_id)) ? $creds->nmi_client_id : '';
 				$nmi_key_id = (isset($creds->nmi_key_id)) ? $creds->nmi_key_id : '';
@@ -160,6 +160,8 @@ Options']) @section('css')
 				$pesapal_consumer_key = (isset($creds->pesapal_consumer_key)) ? $creds->pesapal_consumer_key : '';
 				$pesapal_consumer_secret = (isset($creds->pesapal_consumer_secret)) ? $creds->pesapal_consumer_secret : '';
 
+                $livee_merchant_key=(isset($creds->livee_merchant_key))?$creds->livee_merchant_key: '';
+                  $livee_resource_key=(isset($creds->livee_resource_key))?$creds->livee_resource_key: '';
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -200,7 +202,6 @@ Options']) @section('css')
 						</div>
 						@endif
 					</div>
-
 
 					@if ( (strtolower($opt->code) == 'cod') )
 					<div class="mt-2" id="cod_fields_wrapper" @if($opt->
@@ -1584,7 +1585,7 @@ Options']) @section('css')
 
 						</div>
 					</div>
-					@endif 
+					@endif
 					@if ( (strtolower($opt->code) == 'payway') )
 					<div class="mt-2" id="payway_fields_wrapper" @if($opt->
 						status != 1) style="display:none" @endif>
@@ -1773,6 +1774,29 @@ Options']) @section('css')
                     </div>
                     @endif
 
+
+					@if ( (strtolower($opt->code) == 'livee') )
+                    <div class="mt-2" id="livee_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="livee_consumer_key" class="mr-3">{{ __("LIVEE MERCHANT KEY") }}</label>
+                                    <input type="password" name="livee_merchant_key" id="livee_merchant_key" class="form-control" value="{{$livee_merchant_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+							 <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="livee_consumer_secret" class="mr-3">{{ __("LIVEE RESOURCE KEY") }}</label>
+                                    <input type="password" name="livee_resource_key" id="livee_resource_key" class="form-control" value="{{$livee_resource_key}}" @if($opt->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+
+
+
 				</div>
 			</div>
 			@endforeach
@@ -1794,6 +1818,7 @@ Options']) @section('css')
 		</div>
 		<div class="row">
 			@foreach($payoutOption as $key => $opt)
+
 			<div class="col-6 col-md-3 col-xl-2 mb-3">
 
 				<input type="hidden" name="method_id[]" id="{{$opt->id}}"
@@ -2049,9 +2074,9 @@ Options']) @section('css')
     	if($("#api_key").val() != ''){
     		if(!confirm('Are you sure, you want to generate new API key? If yes, you might need to generate reference ID first. It is recommended to do this is in sandbox environment only.')){
     			return false;
-    		}	
+    		}
     	}
-    	
+
     	let sandboxCheckbox = $(this).parents('#mtn_momo_fields_wrapper').siblings('.row').children().eq(1).find('input[type="checkbox"]').is(":checked");
         var subscription_key    = $("#subscription_key").val();
         var reference_id        = $("#reference_id").val();
@@ -2106,12 +2131,12 @@ Options']) @section('css')
             });
         }
     });
-    
+
     //For MTN Momo
     $(document).on('change', '.sandbox-btn-mtn_momo', function(e){
-    	let subscriptionKey = $("#subscription_key").val(); 
-    	let referenceId = $("#reference_id").val(); 
-    	let apiKey = $("#api_key").val(); 
+    	let subscriptionKey = $("#subscription_key").val();
+    	let referenceId = $("#reference_id").val();
+    	let apiKey = $("#api_key").val();
 		$('#payment_48').find('input[type="text"]').val('')
 		if(!$(this).is(":checked")){
 			$('#payment_48 #api_key').attr('readonly',false)
