@@ -829,7 +829,7 @@ body.al_body_template_nine div#step-1-ondemand .service-data {
 }
 
 body.al_body_template_nine.p2p-module .cart-design div#mycart {
-    padding: 90px;
+    padding: 0;
 }
 
 body.al_body_template_nine.p2p-module div#category_products_filter .product-image img {
@@ -1148,8 +1148,8 @@ body.al_body_template_nine.p2p-module .header-dropdown .onhover-dropdown a {
 
 /*======================  15-02-2023  css changes nine themplate   ===========================*/
 .al_body_template_nine .alSingleProducts .buy_details  .value-badge {
-    max-width: 90px;
-    width: 90px; 
+    max-width: 140px;
+    width: 140px; 
 }
 .al_body_template_nine .alSingleProducts .buy_details   .container-badge-value span {
     font-size: 14px;
@@ -1812,3 +1812,32 @@ body .dashboard-left .block-content ul li:hover .collapse li:hover a{
 /* for nine template */
 
 /*======================= new css add for p2p template on 1/12/2023===================== */
+
+
+.al_body_template_nine .alSingleProducts .single_cart-temp_label {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 80%!important;
+}
+.al_body_template_nine .alSingleProducts   .alRentalSinglePageView .single_cart-temp_label label{
+    width: 100%!important;
+}
+.al_body_template_nine .alSingleProducts  .alRentalSinglePageView .single_product-input {
+    border: 1px solid#cfc9c9!important;
+    width: 80%!important;
+    border-radius: 5px!important;
+    position: relative!important;
+    display: grid!important;
+    grid-template-columns: 1fr 1fr!important;
+}
+.al_body_template_nine .alSingleProducts  .alRentalSinglePageView .single_product-input input{
+    width: 100%!important;
+}
+.al_body_template_nine .alSingleProducts  .alRentalSinglePageView .single_cart-temp_label{
+    position: unset!important;
+margin-bottom: 5px;
+
+}
+.al_body_template_nine .alSingleProducts  .alRentalSinglePageView .single_product-input input{
+    padding: 10px!important;
+}

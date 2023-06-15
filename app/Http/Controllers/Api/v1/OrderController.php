@@ -516,17 +516,15 @@ class OrderController extends BaseController
                             //$total_amount += ($vendor_cart_product->quantity * $variant->price) + ($vendor_cart_product->quantity * $variant->container_charges);
                             $variant_price = $variant->price;
 
-                            if($luxury_option->id == 9 && @$variant->month_price){
+                            if(@$luxury_option->id == 9 && @$variant->month_price){
                                 $schedule_days = $prod->additional_increments_hrs_min / 24;
-                                    if($schedule_days >= 7 && $schedule_days < 30){
-                                       
-                                        $variant_price = $variant->week_price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
-                                    }elseif($schedule_days >= 30){
-                                        $variant_price = $variant->month_price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
-                                    }else{
-                                        $variant_price = $variant->price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
-                                    }
-                               
+                                if($schedule_days >= 7 && $schedule_days < 30){
+                                    $variant_price = $variant->week_price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
+                                }elseif($schedule_days >= 30){
+                                    $variant_price = $variant->month_price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
+                                }else{
+                                    $variant_price = $variant->price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
+                                }
                             }
 
                             $is_price_buy_driver = 0;
@@ -1032,7 +1030,7 @@ class OrderController extends BaseController
                     $order->scheduled_slot = $cart->scheduled_slot ?? null;
                     $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot)?$cart->dropoff_scheduled_slot:null);
                     $order->subscription_discount = $total_subscription_discount;
-                    $order->luxury_option_id = $luxury_option->id;
+                    $order->luxury_option_id = $luxury_option->id??'';
                     $payable_amount = $payable_amount - $Order_bid_discount??0;
 
                     if (!$additionalPreferences->is_tax_price_inclusive) {

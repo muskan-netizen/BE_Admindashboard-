@@ -206,16 +206,15 @@ class CartController extends BaseController
                 }
             }
 
-            if($luxury_option->id == 4) {
-           
-              if($already_added_product_variant_in_cart)
-            {
-                return response()->json([
-                    "status" => "Error",
-                    'message' => 'Product already exists in the cart',
-                ], 404);
+            if(@$luxury_option->id == 4) {
+                if($already_added_product_variant_in_cart)
+                {
+                    return response()->json([
+                        "status" => "Error",
+                        'message' => 'Product already exists in the cart',
+                    ], 404);
                 }
-             }
+            }
             
             $order_edit_qty = (!empty($already_added_product_in_cart) && !empty($already_added_product_in_cart->order_quantity))?$already_added_product_in_cart->order_quantity:0;
             if($product->is_long_term_service !=1){
