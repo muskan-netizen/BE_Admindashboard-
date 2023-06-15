@@ -66,7 +66,8 @@ $getAdditionalPreference = getAdditionalPreference(['is_gift_card','is_token_cur
             <li class="{{ (request()->is('user/orders*')) ? 'active' : '' }}"><a href="{{route('user.orders')}}">{{ __('My '.getNomenclatureName($ordertitle, true) )}}</a></li>
 
             @if(@$getAdditionalPreference['is_rental_weekly_monthly_price'] == 1)
-                <li class="{{ (request()->is('user/rental-orders*')) ? 'active' : '' }}"><a href="{{route('user.rental-orders')}}">{{ __('My Rental '.getNomenclatureName($ordertitle, true) )}}</a></li>
+                <li class="{{ (request()->is('user/lander-orders*')) ? 'active' : '' }}"><a href="{{route('user.lander-orders')}}">{{ __('My Order As Lender')}}</a></li>
+                <li class="{{ (request()->is('user/borrower-orders*')) ? 'active' : '' }}"><a href="{{route('user.borrower-orders')}}">{{ __('My Order As Borrower')}}</a></li>
             @endif
 
             <li class="{{ (request()->is('user/wishlists')) ? 'active' : '' }}"><a href="{{route('user.wishlists')}}">{{ __(getNomenclatureName('Wishlist', true) )}}</a></li>

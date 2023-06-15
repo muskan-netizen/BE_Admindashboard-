@@ -22,9 +22,8 @@ class RentalOrderController extends Controller
         $user = Auth::user();
         $order_status_options = [];
         $paginate = $request->has('limit') ? $request->limit : 12;
-        $type = $request->has('type') ? $request->type : 'upcoming';
-        // dd($type);
-        $user_type = $request->has('user_type') ? $request->user_type : '';
+        $type = $request->has('type') ? $request->type : 'all';
+        $user_type = $request->has('user_type') ? $request->user_type : 'lender';
         $orders = OrderVendor::with('products')->orderBy('id', 'DESC');
         $additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
         $vendorUser = UserVendor::select('vendor_id')->where('user_id', $user->id)->first();
@@ -100,8 +99,8 @@ class RentalOrderController extends Controller
         }else{
             $orders = [];
         }
-        // pr($orders);
-        return view('frontend.account.rental-orders')->with([]);
+        // dd($orders);
+        return view('frontend.account.rental-orders')->with(['orders' => $orders]);
     }
 
     public function orderlistLoop($orders,   $user ,$request){

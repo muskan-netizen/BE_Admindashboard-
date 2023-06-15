@@ -526,6 +526,10 @@ Route::group(['middleware' => ['domain']], function () {
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
 
 	Route::get('user/orders', 'Front\OrderController@orders')->name('user.orders');
+	Route::get('user/lander-orders', 'Front\OrderController@lenderOrders')->name('user.lander-orders');
+	Route::get('user/borrower-orders', 'Front\OrderController@borrowerOrders')->name('user.borrower-orders');
+	Route::post('user/orderVenderStatusUpdate', 'Front\OrderController@orderVenderStatusUpdate')->name('user.orderVenderStatusUpdate');
+
 	Route::get('user/rental-orders', 'Front\RentalOrderController@rentalOrders')->name('user.rental-orders');
 	Route::post('user/orders/tip-after-order', 'Front\OrderController@tipAfterOrder')->name('user.tip_after_order');
 	Route::post('user/store', 'Front\AddressController@store')->name('address.store');
