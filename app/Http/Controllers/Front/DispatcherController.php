@@ -1281,6 +1281,7 @@ class DispatcherController extends FrontController
                 $wallet = $user->wallet;
                 $credit_amount = $return_response['vendor_return_amount'];//$currentOrderStatus->payable_amount;
                 $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #' . $order_vendor->orderDetail->order_number . ' (' . $order_vendor->vendor->name . ')']);
+                $this->sendWalletNotification($user->id,  $order_vendor->orderDetail->order_number);                
             }
         }   
     }
