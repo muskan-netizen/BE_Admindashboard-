@@ -121,226 +121,228 @@ class OrderController extends FrontController
             $iconsArray[] = $imgUrl;
         }
         $vendorUser =  UserVendor::select('vendor_id')->where('user_id', $user->id)->first();
-        
-        //Past Orders Start Query
-        $allOrders = Order::with([
-            'vendors',
-            'vendors.vendor',
-            'vendors.dineInTable.translations' => function ($qry) use ($langId) {
-                $qry->where('language_id', $langId);
-            },
-            'vendors.dineInTable.category',
-            'vendors.products',
-            'vendors.products.product',
-            'vendors.products.media.image',
-            'vendors.products.pvariant.media.pimage.image',
-            'vendors.products.Routes',
-            'vendors.products.order_product_status',
-            'products.productRating',
-            'user',
-            'address',
-            'driver_rating',
-            'reports'
-        ]);
-        $allOrders = $allOrders->with('vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail');
-           
-        $allOrders = $allOrders->whereHas('vendors', function ($q) use($vendorUser) {
-            $q->whereHas('products');
-            //lender
-            $q->where('vendor_id',  $vendorUser->vendor_id);
-        });
-        $allOrders = $allOrders->where(function ($q1) {
-            $q1->where('payment_status', 1)
-                ->whereNotIn('payment_option_id', [
-                1
+        $allOrders = $upcomingOrders = $ongoingOrders = [];
+        if($vendorUser){
+            //Past Orders Start Query
+            $allOrders = Order::with([
+                'vendors',
+                'vendors.vendor',
+                'vendors.dineInTable.translations' => function ($qry) use ($langId) {
+                    $qry->where('language_id', $langId);
+                },
+                'vendors.dineInTable.category',
+                'vendors.products',
+                'vendors.products.product',
+                'vendors.products.media.image',
+                'vendors.products.pvariant.media.pimage.image',
+                'vendors.products.Routes',
+                'vendors.products.order_product_status',
+                'products.productRating',
+                'user',
+                'address',
+                'driver_rating',
+                'reports'
             ]);
-            $q1->orWhere(function ($q2) {
-                $q2->where('payment_option_id', 1);
+            $allOrders = $allOrders->with('vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail');
+            
+            $allOrders = $allOrders->whereHas('vendors', function ($q) use($vendorUser) {
+                $q->whereHas('products');
+                //lender
+                $q->where('vendor_id',  $vendorUser->vendor_id);
             });
-        });
-        $allOrders->where('orders.is_long_term', 0);
-        $allOrders = $allOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
+            $allOrders = $allOrders->where(function ($q1) {
+                $q1->where('payment_status', 1)
+                    ->whereNotIn('payment_option_id', [
+                    1
+                ]);
+                $q1->orWhere(function ($q2) {
+                    $q2->where('payment_option_id', 1);
+                });
+            });
+            $allOrders->where('orders.is_long_term', 0);
+            $allOrders = $allOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
 
-        foreach ($allOrders as $order) {
-            $is_order_days_for_return = 0;
-            $replaceable = 0;
-            foreach ($order->vendors as $vendor) {
-                $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
-                $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
-                foreach ($vendor->products as $product) {
-                    $product = $this->gettimeSlotName($product);
-                    // dd($product->product->return_days);
-                    // $vendor->is_order_days_for_return = 1;
-                    if ((@$product->product->return_days && $this->checkOrderDaysForReturn($vendor, $product->product->return_days)) && $is_order_days_for_return == 0) {
-                        $this->checkOrderDaysForReturn($vendor, $product->product->return_days);
-                        $vendor->is_order_days_for_return = 1;
-                    }
+            foreach ($allOrders as $order) {
+                $is_order_days_for_return = 0;
+                $replaceable = 0;
+                foreach ($order->vendors as $vendor) {
+                    $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
+                    $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+                    foreach ($vendor->products as $product) {
+                        $product = $this->gettimeSlotName($product);
+                        // dd($product->product->return_days);
+                        // $vendor->is_order_days_for_return = 1;
+                        if ((@$product->product->return_days && $this->checkOrderDaysForReturn($vendor, $product->product->return_days)) && $is_order_days_for_return == 0) {
+                            $this->checkOrderDaysForReturn($vendor, $product->product->return_days);
+                            $vendor->is_order_days_for_return = 1;
+                        }
 
-                    if (isset($product->pvariant) && isset($product->pvariant->media) && $product->pvariant->media->isNotEmpty()) {
-                        $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
-                    } elseif ($product->media->isNotEmpty()) {
-                        $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
-                    } else {
-                        $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
+                        if (isset($product->pvariant) && isset($product->pvariant->media) && $product->pvariant->media->isNotEmpty()) {
+                            $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
+                        } elseif ($product->media->isNotEmpty()) {
+                            $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
+                        } else {
+                            $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
+                        }
                     }
-                }
-                if ($vendor->dineInTable) {
-                    $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
-                    $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
-                    $vendor->dineInTableCategory = $vendor->dineInTable->category ? $vendor->dineInTable->category->title : '';
+                    if ($vendor->dineInTable) {
+                        $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
+                        $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
+                        $vendor->dineInTableCategory = $vendor->dineInTable->category ? $vendor->dineInTable->category->title : '';
+                    }
                 }
             }
-        }
 
 
-        //Upcoming Lender Orders Start Query
-        $upcomingOrders = Order::with([
-            'vendors',
-            'vendors.vendor',
-            'vendors.dineInTable.translations' => function ($qry) use ($langId) {
-                $qry->where('language_id', $langId);
-            },
-            'vendors.dineInTable.category',
-            'vendors.products',
-            'vendors.products.product',
-            'vendors.products.media.image',
-            'vendors.products.pvariant.media.pimage.image',
-            'vendors.products.Routes',
-            'vendors.products.order_product_status',
-            'products.productRating',
-            'user',
-            'address',
-            'driver_rating',
-            'reports'
-        ]);
-        $upcomingOrders = $upcomingOrders->with('vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail');
-        $upcomingOrders = $upcomingOrders->whereHas('vendors', function ($q) use($vendorUser) {
-            $q->whereHas('products');
-            //lender
-            $q->where('vendor_id',  $vendorUser->vendor_id);
-            // upcoming
-            $q->whereIn('order_status_option_id', [1,2]);
-        });
-        $upcomingOrders = $upcomingOrders->where(function ($q1) {
-            $q1->where('payment_status', 1)
-                ->whereNotIn('payment_option_id', [
-                1
+            //Upcoming Lender Orders Start Query
+            $upcomingOrders = Order::with([
+                'vendors',
+                'vendors.vendor',
+                'vendors.dineInTable.translations' => function ($qry) use ($langId) {
+                    $qry->where('language_id', $langId);
+                },
+                'vendors.dineInTable.category',
+                'vendors.products',
+                'vendors.products.product',
+                'vendors.products.media.image',
+                'vendors.products.pvariant.media.pimage.image',
+                'vendors.products.Routes',
+                'vendors.products.order_product_status',
+                'products.productRating',
+                'user',
+                'address',
+                'driver_rating',
+                'reports'
             ]);
-            $q1->orWhere(function ($q2) {
-                $q2->where('payment_option_id', 1);
+            $upcomingOrders = $upcomingOrders->with('vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail');
+            $upcomingOrders = $upcomingOrders->whereHas('vendors', function ($q) use($vendorUser) {
+                $q->whereHas('products');
+                //lender
+                $q->where('vendor_id',  $vendorUser->vendor_id);
+                // upcoming
+                $q->whereIn('order_status_option_id', [1,2]);
             });
-        });
+            $upcomingOrders = $upcomingOrders->where(function ($q1) {
+                $q1->where('payment_status', 1)
+                    ->whereNotIn('payment_option_id', [
+                    1
+                ]);
+                $q1->orWhere(function ($q2) {
+                    $q2->where('payment_option_id', 1);
+                });
+            });
 
-        $upcomingOrders->where('orders.is_long_term', 0);
+            $upcomingOrders->where('orders.is_long_term', 0);
 
-        $upcomingOrders = $upcomingOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
+            $upcomingOrders = $upcomingOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
 
-        foreach ($upcomingOrders as $order) {
-            $is_order_days_for_return = 0;
-            $replaceable = 0;
-            foreach ($order->vendors as $vendor) {
-                $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
-                $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
-                foreach ($vendor->products as $product) {
-                    $product = $this->gettimeSlotName($product);
-                    // dd($product->product->return_days);
-                    // $vendor->is_order_days_for_return = 1;
-                    if ((@$product->product->return_days && $this->checkOrderDaysForReturn($vendor, $product->product->return_days)) && $is_order_days_for_return == 0) {
-                        $this->checkOrderDaysForReturn($vendor, $product->product->return_days);
-                        $vendor->is_order_days_for_return = 1;
+            foreach ($upcomingOrders as $order) {
+                $is_order_days_for_return = 0;
+                $replaceable = 0;
+                foreach ($order->vendors as $vendor) {
+                    $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
+                    $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+                    foreach ($vendor->products as $product) {
+                        $product = $this->gettimeSlotName($product);
+                        // dd($product->product->return_days);
+                        // $vendor->is_order_days_for_return = 1;
+                        if ((@$product->product->return_days && $this->checkOrderDaysForReturn($vendor, $product->product->return_days)) && $is_order_days_for_return == 0) {
+                            $this->checkOrderDaysForReturn($vendor, $product->product->return_days);
+                            $vendor->is_order_days_for_return = 1;
+                        }
+
+                        if (isset($product->pvariant) && isset($product->pvariant->media) && $product->pvariant->media->isNotEmpty()) {
+                            $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
+                        } elseif ($product->media->isNotEmpty()) {
+                            $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
+                        } else {
+                            $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
+                        }
                     }
-
-                    if (isset($product->pvariant) && isset($product->pvariant->media) && $product->pvariant->media->isNotEmpty()) {
-                        $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
-                    } elseif ($product->media->isNotEmpty()) {
-                        $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
-                    } else {
-                        $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
+                    if ($vendor->dineInTable) {
+                        $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
+                        $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
+                        $vendor->dineInTableCategory = $vendor->dineInTable->category ? $vendor->dineInTable->category->title : '';
                     }
-                }
-                if ($vendor->dineInTable) {
-                    $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
-                    $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
-                    $vendor->dineInTableCategory = $vendor->dineInTable->category ? $vendor->dineInTable->category->title : '';
                 }
             }
-        }
 
 
-        //Ongoing Lender Orders Start Query
-        $ongoingOrders = Order::with([
-            'vendors',
-            'vendors.vendor',
-            'vendors.dineInTable.translations' => function ($qry) use ($langId) {
-                $qry->where('language_id', $langId);
-            },
-            'vendors.dineInTable.category',
-            'vendors.products',
-            'vendors.products.product',
-            'vendors.products.media.image',
-            'vendors.products.pvariant.media.pimage.image',
-            'vendors.products.Routes',
-            'vendors.products.order_product_status',
-            'products.productRating',
-            'user',
-            'address',
-            'driver_rating',
-            'reports'
-        ]);
-        $ongoingOrders = $ongoingOrders->with('vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail');
-        $ongoingOrders = $ongoingOrders->whereHas('vendors', function ($q) use($vendorUser) {
-            $q->whereHas('products');
-            //lender
-            $q->where('vendor_id',  $vendorUser->vendor_id);
-            //ongoing
-            $q->whereIn('order_status_option_id', [4]);
-        });
-        $ongoingOrders = $ongoingOrders->where(function ($q1) {
-            $q1->where('payment_status', 1)
-                ->whereNotIn('payment_option_id', [
-                1
+            //Ongoing Lender Orders Start Query
+            $ongoingOrders = Order::with([
+                'vendors',
+                'vendors.vendor',
+                'vendors.dineInTable.translations' => function ($qry) use ($langId) {
+                    $qry->where('language_id', $langId);
+                },
+                'vendors.dineInTable.category',
+                'vendors.products',
+                'vendors.products.product',
+                'vendors.products.media.image',
+                'vendors.products.pvariant.media.pimage.image',
+                'vendors.products.Routes',
+                'vendors.products.order_product_status',
+                'products.productRating',
+                'user',
+                'address',
+                'driver_rating',
+                'reports'
             ]);
-            $q1->orWhere(function ($q2) {
-                $q2->where('payment_option_id', 1);
+            $ongoingOrders = $ongoingOrders->with('vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail');
+            $ongoingOrders = $ongoingOrders->whereHas('vendors', function ($q) use($vendorUser) {
+                $q->whereHas('products');
+                //lender
+                $q->where('vendor_id',  $vendorUser->vendor_id);
+                //ongoing
+                $q->whereIn('order_status_option_id', [4]);
             });
-        });
+            $ongoingOrders = $ongoingOrders->where(function ($q1) {
+                $q1->where('payment_status', 1)
+                    ->whereNotIn('payment_option_id', [
+                    1
+                ]);
+                $q1->orWhere(function ($q2) {
+                    $q2->where('payment_option_id', 1);
+                });
+            });
 
-        $ongoingOrders->where('orders.is_long_term', 0);
+            $ongoingOrders->where('orders.is_long_term', 0);
 
-        $ongoingOrders = $ongoingOrders->orderBy('orders.id', 'DESC')
-            ->select('*', 'id as total_discount_calculate')
-            ->paginate(10);
+            $ongoingOrders = $ongoingOrders->orderBy('orders.id', 'DESC')
+                ->select('*', 'id as total_discount_calculate')
+                ->paginate(10);
 
-        foreach ($ongoingOrders as $order) {
-            $is_order_days_for_return = 0;
-            $replaceable = 0;
-            foreach ($order->vendors as $vendor) {
-                $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)
-                    ->where('vendor_id', $vendor->vendor_id)
-                    ->orderBy('id', 'DESC')
-                    ->first();
-                $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
-                foreach ($vendor->products as $product) {
-                    $product = $this->gettimeSlotName($product);
-                    // dd($product->product->return_days);
-                    // $vendor->is_order_days_for_return = 1;
-                    if ((@$product->product->return_days && $this->checkOrderDaysForReturn($vendor, $product->product->return_days)) && $is_order_days_for_return == 0) {
-                        $this->checkOrderDaysForReturn($vendor, $product->product->return_days);
-                        $vendor->is_order_days_for_return = 1;
+            foreach ($ongoingOrders as $order) {
+                $is_order_days_for_return = 0;
+                $replaceable = 0;
+                foreach ($order->vendors as $vendor) {
+                    $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)
+                        ->where('vendor_id', $vendor->vendor_id)
+                        ->orderBy('id', 'DESC')
+                        ->first();
+                    $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+                    foreach ($vendor->products as $product) {
+                        $product = $this->gettimeSlotName($product);
+                        // dd($product->product->return_days);
+                        // $vendor->is_order_days_for_return = 1;
+                        if ((@$product->product->return_days && $this->checkOrderDaysForReturn($vendor, $product->product->return_days)) && $is_order_days_for_return == 0) {
+                            $this->checkOrderDaysForReturn($vendor, $product->product->return_days);
+                            $vendor->is_order_days_for_return = 1;
+                        }
+
+                        if (isset($product->pvariant) && isset($product->pvariant->media) && $product->pvariant->media->isNotEmpty()) {
+                            $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
+                        } elseif ($product->media->isNotEmpty()) {
+                            $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
+                        } else {
+                            $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
+                        }
                     }
-
-                    if (isset($product->pvariant) && isset($product->pvariant->media) && $product->pvariant->media->isNotEmpty()) {
-                        $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
-                    } elseif ($product->media->isNotEmpty()) {
-                        $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
-                    } else {
-                        $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
+                    if ($vendor->dineInTable) {
+                        $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
+                        $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
+                        $vendor->dineInTableCategory = $vendor->dineInTable->category ? $vendor->dineInTable->category->title : '';
                     }
-                }
-                if ($vendor->dineInTable) {
-                    $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
-                    $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
-                    $vendor->dineInTableCategory = $vendor->dineInTable->category ? $vendor->dineInTable->category->title : '';
                 }
             }
         }

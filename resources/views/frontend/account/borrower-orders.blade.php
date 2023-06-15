@@ -883,7 +883,6 @@
                                                                 @endif
 
                                                                 </ul>
-                                                                @dd($vendor->order_status_option_id)
                                                                 @if (in_array($vendor->order_status_option_id, [1, 2]))
                                                                     <button type="button" name="pickup_complete_btn" class="btn btn-info btn-sm pickup_complete_btn" data-order_vendor_status="4" data-order_vendor_id="{{$vendor->id}}">Pickup Complete</button>
                                                                 @endif
