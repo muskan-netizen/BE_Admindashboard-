@@ -720,7 +720,8 @@ class PickupDeliveryController extends BaseController{
                 $dynamic = (!empty($order_vendor->web_hook_code)) ? $order_vendor->web_hook_code : uniqid($order->id.$vendor);
                 $unique = Auth::user()->code;
                 $client_do = Client::where('code',$unique)->first();
-
+                $product = Product::find($request->product_id);
+                
                 if ($order->payment_option_id == 1 && ($order->payable_amount >0)) {
                     $cash_to_be_collected = 'Yes';
                     $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
@@ -809,7 +810,7 @@ class PickupDeliveryController extends BaseController{
                             'no_seats_for_pooling' =>(isset($request->is_cab_pooling) && $request->is_cab_pooling== 1 && isset($request->no_seats_for_pooling))?$request->no_seats_for_pooling:0,
                             'is_cab_pooling' => isset($request->is_cab_pooling)?$request->is_cab_pooling:0,
                             'is_one_push_booking' => isset($request->is_one_push_booking)?$request->is_one_push_booking:0,
-                            'available_seats' => isset($request->seats_for_booking)?$request->seats_for_booking:0,
+                            'available_seats' =>isset($product)?$product->seats_for_booking:0,
                             'agent' => $request->agent_id ?? null,
                             'order_pre_time'=>$vendor_details->order_pre_time,
                             'driver_unique_id' => $request->unique_id ?? null,
