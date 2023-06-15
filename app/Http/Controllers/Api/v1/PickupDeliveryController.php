@@ -797,7 +797,7 @@ class PickupDeliveryController extends BaseController{
                             'no_seats_for_pooling' =>(isset($request->is_cab_pooling) && $request->is_cab_pooling== 1 && isset($request->no_seats_for_pooling))?$request->no_seats_for_pooling:0,
                             'is_cab_pooling' => isset($request->is_cab_pooling)?$request->is_cab_pooling:0,
                             'is_one_push_booking' => isset($request->is_one_push_booking)?$request->is_one_push_booking:0,
-                            'available_seats' => $product->seats_for_booking,
+                            'available_seats' =>isset($product)?$product->seats_for_booking:0,
                             'agent' => $request->agent_id ?? null,
                             'order_pre_time'=>$vendor_details->order_pre_time
                         ];
