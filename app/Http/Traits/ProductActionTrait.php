@@ -620,9 +620,7 @@ trait ProductActionTrait{
             //if(!empty($set_template) && $set_template->template_id != 3){
                 $mainQuery .= " LIMIT 10";
             //}
-            
-             //   pr($mainQuery);
-            
+                        
             $vendors = DB::select( DB::raw($mainQuery));
             
             $vendor_ids = [];
