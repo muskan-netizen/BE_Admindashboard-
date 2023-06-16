@@ -383,6 +383,7 @@
                                         </li>
                                     @endif
                                 </ul>
+                                <label class="cat-error text-danger mt-2 pl-1 d-none">Please select category.</label>
                             </div>
                         </div>
                     </div>
@@ -393,7 +394,7 @@
                         <div class="alPostBoxOuter  col-md-11 mx-auto   mb-4">
                             <div class="p-3">
                                 <form action="{{ route('posts.addProductWithAttribute') }}" enctype="multipart/form-data"
-                                    method="post" class="product_form">
+                                    method="post" id="product_form">
                                     @csrf
                                     <h6 class="pb-0">SELECTED CATEGORY</h6>
                                     <input type="hidden" name="category_id" id="category_id" required />
@@ -420,11 +421,11 @@
                                                     <label>Description *</label>
                                                     <textarea class="form-control" id="" name="product_description" required rows="3"></textarea>
                                                 </div>
-                                                <div class="form-group">
+                                                {{-- <div class="form-group">
                                                     <label>Emirate *</label>
                                                     <input type="text" class="form-control" name="emirate" required
                                                         id="" aria-describedby="">
-                                                </div>
+                                                </div> --}}
                                                 <div class="form-group">
                                                     <label for="inputAddress">Location Avialability *</label>
                                                     <input type="hidden" name="lat" id="latitude" value="">
@@ -536,8 +537,7 @@
                                     </div> --}}
                                         <div class="row alPostItemsDataOuter">
                                             <div class="alPostItemsData mt-4">
-                                                <button type="submit" class="btn btn-outline-secondary btn-lg">Post
-                                                    Now</button>
+                                                <button type="submit" class="btn btn-outline-secondary btn-lg" id="save-post">Post Now</button>
                                             </div>
                                         </div>
                                     </div>
@@ -634,6 +634,19 @@
                     format: 'DD.MM.YYYY'
                 }
             });
+        });
+
+        var form = document.getElementById("product_form");
+        document.getElementById("save-post").addEventListener("click", function (e) {
+            e.preventDefault();
+            const elements = document.querySelectorAll('.select-category.active');
+            const hasElements = elements.length > 0;
+            if (hasElements) {
+                $('.cat-error').addClass('d-none');
+                form.submit();
+            } else {
+                $('.cat-error').removeClass('d-none');
+            }
         });
     </script>
 
