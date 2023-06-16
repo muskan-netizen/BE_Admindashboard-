@@ -2830,6 +2830,8 @@ $(document).ready(function () {
 
     });
     $(document).on('click', '.qty-minus', function () {
+        $('.qty-minus').prop('disabled', true);
+        $('.qty-plus').prop('disabled', true);
         let base_price = $(this).data('base_price');
         let cartproduct_id = $(this).attr("data-id");
         let minimum_order_count = $(this).attr("data-minimum_order_count");
@@ -2860,6 +2862,8 @@ $(document).ready(function () {
         }
     });
     $(document).on('click', '.qty-plus', function () {
+        $('.qty-plus').prop('disabled', true);
+        $('.qty-minus').prop('disabled', true);
         let base_price = $(this).data('base_price');
         let cartproduct_id = $(this).attr("data-id");
         let qty = $('#quantity_' + cartproduct_id).val();
