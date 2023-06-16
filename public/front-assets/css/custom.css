@@ -7267,7 +7267,7 @@ body .popular-brands .h2-heading {
 .suppliers-box {
     border-bottom: 0 !important;
     position: relative;
-    border-radius: 12px;
+    border-radius: 0;
     overflow: hidden;
     background: #fff;
     box-shadow: 0 0 0 1px rgb(67 41 163 / 8%), 0 1px 5px 0 rgb(67 41 163 / 8%)

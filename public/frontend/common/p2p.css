@@ -565,7 +565,7 @@ body.dark.al_body_template_one.p2p-module .collection-product-wrapper .product-t
 /*----------------p2p design css------------*/
 
 body.al_body_template_nine.p2p-module .img-outer-box.position-relative {
-    border-radius: 12px 12px 0px 0px;
+    border-radius:0px;
     overflow: hidden;
     height: 200px;
 }
@@ -1131,6 +1131,7 @@ body.al_body_template_nine.p2p-module .top-header .header-dropdown li.onhover-dr
 
 body.al_body_template_nine.p2p-module .header-dropdown .onhover-dropdown a {
     margin-right: 5px!important;
+    width:100%;
     }
     body.al_body_template_nine.p2p-module .header-dropdown li {
     padding-right: 5px!important;
