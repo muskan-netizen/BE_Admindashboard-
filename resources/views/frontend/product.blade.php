@@ -306,8 +306,8 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             <h6 class="product-title">{{__('Product Details')}}</h6>
                                             <p></p>
                                             @if((!empty($product->translation) && isset($product->translation[0])))
-                                            <div  id="show_product_text_more" >{!!  \Illuminate\Support\Str::words($product->translation[0]->body_html, 17,  '<button onclick="showMoreTextFunction()">Read more</button>') !!}</div>
-                                             <div id="show_product_text_less" style="display: none;">{!!   $product->translation[0]->body_html !!} <button onclick="showLessTextFunction()">Read less</button></div>
+                                            <div  id="show_product_text_more" >{!!  \Illuminate\Support\Str::words($product->translation[0]->body_html, 20,  '<br><h5 onclick="showMoreTextFunction()">Read more..</h5>') !!}</div>
+                                             <div id="show_product_text_less" style="display: none;">{!!   $product->translation[0]->body_html !!} <h5 onclick="showLessTextFunction()">Read less..</h5></div>
                                              @endif
                                         </div>
 
