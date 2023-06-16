@@ -342,15 +342,11 @@
                                                 <div class="col-6 col-md-2 text-left order-md-4">
                                                     @if ($serviceType == 'p2p')
                                                         @php
-                                                            $additionalPrice = 0;
-                                                            if ($vendor_product->pvariant->incremental_price_per_min > 0) {
-                                                                $additionalPrice = ($vendor_product->additional_increments_hrs_min/(60*24)) * $vendor_product->quantity_price;
-                                                            }
-                                                            
+                                                            $additionalPrice = $vendor_product->quantity_price;
                                                         @endphp
                                                         <div class="items-price">
                                                             @if ($additionalPreference['is_token_currency_enable'])
-                                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($additionalPrice)) }}
+                                                                SADS{!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($additionalPrice)) }}
                                                             @else
                                                                 {{ Session::get('currencySymbol') . decimal_format($additionalPrice) }}
                                                             @endif
