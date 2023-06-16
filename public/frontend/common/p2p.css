@@ -1764,8 +1764,8 @@ padding-top: 10px;
 padding-bottom: 10px;
 }
 body.al_body_template_nine.p2p-module .home-slider-wrapper .banner-img-outer img {
-max-height: 500px !important;
-height: 500px;
+max-height: 450px !important;
+height: 450px;
 object-fit: cover;
 }
 body .alPostBoxOuter .breadcrumb-item:empty::before{display: none;}
