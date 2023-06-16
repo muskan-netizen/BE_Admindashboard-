@@ -1538,6 +1538,9 @@ class VendorController extends BaseController
             $vendor->is_vendor_instant_booking = ($request->is_vendor_instant_booking == 'on') ? 1 : 0;
         }
 
+        if($request->has('is_featured')){
+            $vendor->is_featured   = $request->is_featured == 'on' ? 1 : 0;
+        }
 
         $vendor->save();
 

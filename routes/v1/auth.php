@@ -168,6 +168,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('user/orderVenderStatusUpdate', 'Api\v1\OrderController@orderVenderStatusUpdate');
         Route::post('order/vendorReached', 'Api\v1\OrderController@sendVendorReachedLocation');
 
+        Route::post('update-wishlist-vendor', 'Api\v1\ProfileController@updateWishlistVendor');
+        Route::get('wishlist-vendors', 'Api\v1\ProfileController@wishlistVendors');
         // Rating & review
         Route::group(['prefix' => 'rating'], function () {
             Route::post('update-product-rating', 'Api\v1\RatingController@updateProductRating');
