@@ -621,9 +621,10 @@ trait ProductActionTrait{
                 $mainQuery .= " LIMIT 10";
             //}
             
-
+             //   pr($mainQuery);
             
             $vendors = DB::select( DB::raw($mainQuery));
+            
             $vendor_ids = [];
             foreach ($vendors as $key => $value) {
                 $vendor_ids[] = $value->id;
@@ -683,22 +684,17 @@ trait ProductActionTrait{
                     $value->closed_store_order_scheduled = 0;
                 }
             }
-
+            $keyToFilter = 'is_vendor_closed';
+            $valueToFilter = $venderFilterOpenClose;
             // $my_array = ['foo' => 1, 'bar' => 'baz', 'hello' => 'wld'];
-            if($venderFilterOpenClose == 1 || $venderFilterOpenClose == 0) {
-                $keyToFilter = 'is_vendor_closed';
-                $valueToFilter = $venderFilterOpenClose;
-
+            if($venderFilterOpenClose === 1 || $venderFilterOpenClose === 0){
                 $filteredArray = array_filter($vendors, function($item) use ($keyToFilter, $valueToFilter) {
                     return isset($item->$keyToFilter) && $item->$keyToFilter == $valueToFilter;
-                });
-                
-                $filtered = array_values($filteredArray);
-
-            } else {
+                });  
+                $filtered = array_values($filteredArray);                    
+            }else {
                 $filtered = $vendors;
             }
-           
             return $filtered;
         }
         catch (\Exception $e) {
