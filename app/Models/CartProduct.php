@@ -28,6 +28,13 @@ class CartProduct extends Model{
       return $this->belongsTo('App\Models\Product')->select($selectColuman);
   }
 
+
+  public function cartProduct(){
+    $selectColuman = ['id','title', 'sku', 'url_slug','description', 'is_live', 'weight', 'weight_unit', 'averageRating', 'brand_id', 'tax_category_id','Requires_last_mile','pharmacy_check','tags','mode_of_service','delay_order_hrs','delay_order_min','delay_order_hrs_for_dine_in','delay_order_min_for_dine_in','delay_order_hrs_for_takeway','delay_order_min_for_takeway','pickup_delay_order_hrs','pickup_delay_order_min','dropoff_delay_order_hrs','dropoff_delay_order_min','id as delay_hrs_min','id as pickup_delay_hrs_min','id as dropoff_delay_hrs_min','id as delay_order_time','sell_when_out_of_stock','minimum_order_count','batch_count','has_inventory','category_id','service_charges_tax','delivery_charges_tax','container_charges_tax','fixed_fee_tax','service_charges_tax_id','delivery_charges_tax_id','container_charges_tax_id','fixed_fee_tax_id','age_restriction','markup_price','additional_increments','additional_increments_min','minimum_duration_min','minimum_duration','is_slot_from_dispatch','is_show_dispatcher_agent','individual_delivery_fee','is_long_term_service','service_duration','same_day_delivery','next_day_delivery','hyper_local_delivery','is_recurring_booking', 'security_amount', 'validate_pharmacy_check'];
+    
+      return $this->belongsTo('App\Models\Product','product_id')->select($selectColuman);
+  }
+
     public function vendor(){
         return $this->belongsTo('App\Models\Vendor', 'vendor_id', 'id')->select('id', 'name', 'desc', 'logo', 'banner', 'latitude', 'longitude', 'order_pre_time', 'auto_reject_time', 'order_min_amount', 'show_slot', 'dine_in', 'delivery', 'takeaway', 'service_fee_percent','address','order_amount_for_delivery_fee','delivery_fee_minimum','delivery_fee_maximum','closed_store_order_scheduled','shiprocket_pickup_name','ahoy_location','fixed_fee','fixed_fee_amount','price_bifurcation','service_charges_tax','delivery_charges_tax','container_charges_tax','service_charges_tax_id'	,'delivery_charges_tax_id'	,'container_charges_tax_id'	, 'fixed_fee_tax','fixed_fee_tax_id','pincode','rental','pick_drop','on_demand','laundry','appointment','markup_price_tax_id','add_markup_price','slug', 'subscription_discount_percent', 'fixed_service_charge', 'service_charge_amount');
     }

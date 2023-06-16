@@ -27,6 +27,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
         }
     */
     .border-product.al_disc ol,.border-product.al_disc ul{padding-left:30px}.border-product.al_disc ol li,.border-product.al_disc ul li{display:list-item;padding-left:0;padding-top:8px;list-style-type:disc;font-size:14px}.border-product.al_disc ol li{list-style-type:decimal}.productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit}
+    #more  {display:  none;}
 
     .img-zoom-lens {
       position: absolute;
@@ -304,8 +305,10 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                         <div class="border-product al_disc">
                                             <h6 class="product-title">{{__('Product Details')}}</h6>
                                             <p></p>
-                                            {!!(!empty($product->translation) && isset($product->translation[0])) ?
-                                                $product->translation[0]->body_html : ''!!}
+                                            @if((!empty($product->translation) && isset($product->translation[0])))
+                                            <div  id="show_product_text_more" >{!!  \Illuminate\Support\Str::words($product->translation[0]->body_html, 17,  '<button onclick="showMoreTextFunction()">Read more</button>') !!}</div>
+                                             <div id="show_product_text_less" style="display: none;">{!!   $product->translation[0]->body_html !!} <button onclick="showLessTextFunction()">Read less</button></div>
+                                             @endif
                                         </div>
 
                                         <!--- Processor Details Farmmeat by Sohail -->
@@ -1652,6 +1655,17 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
         		$(this).addClass("ellipsis");
         	}
         });
+
+        function showLessTextFunction() {
+            $("#show_product_text_less").attr("style", "display:none");
+            $("#show_product_text_more").attr("style", "display:block");
+        }
+
+        function showMoreTextFunction() {
+            $("#show_product_text_less").attr("style", "display:block");
+            $("#show_product_text_more").attr("style", "display:none");
+        }
+
 
         </script>
 
