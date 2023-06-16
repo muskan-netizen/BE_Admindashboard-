@@ -22,6 +22,7 @@ $(function () {
     var header_height = jQuery('.site-header').height();
     var window_height = jQuery(window).height();
     var header_content_width = jQuery('#content-wrap').height();
+    var total_products = [];
 
     // console.log('header_height',header_height,'footer_height',footer_height);
     jQuery(".al_offset-top-home, .inner-pages-offset").css('margin-top', header_height+'px');
@@ -2299,12 +2300,19 @@ $(document).ready(function () {
     // google.maps.event.addDomListener(window, 'load', initialize);
     function cartTotalProductCount() {
         let cart_qty_total = 0;
-        $(".shopping-cart li").each(function (index) {
-            if ($(this).data('qty')) {
-                cart_qty_total += $(this).data('qty');
+        // $(".shopping-cart li").each(function (index) {
+        //     if ($(this).data('qty')) {
+        //         cart_qty_total += $(this).data('qty');
 
-            }
-        });
+        //     }
+        // });
+        $(total_products).each(function (products) {
+            var  products = total_products[products];
+              $(products.vendor_products).each(function (product) {
+                var  cart_qty = products.vendor_products[product]['quantity'];
+                cart_qty_total += cart_qty; 
+              });
+          });
         if (cart_qty_total > 0) {
             $("#cart_qty_span").addClass("bg-cart-header");
             $('#cart_qty_span, .cart_qty_cls').html(cart_qty_total).show();
@@ -2379,7 +2387,7 @@ $(document).ready(function () {
                     var token_val = response.token_val;
                     // console.log(cart_details);
                     if (cart_details!= undefined) {
-
+                        total_products =    response.cart_details.products;
                         // if((response.is_token_enable == 1) && (response.token_val > 0) ){
                         //     response.token_val;
                         // }

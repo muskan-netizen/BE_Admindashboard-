@@ -12,10 +12,10 @@ use App\Http\Controllers\Front\FrontController;
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption,ProductRecentlyViewed, Attribute, ProductAttribute,DeliverySlotProduct, UserVendor, DeliverySlot,UserAddress,ProcessorProduct};
 
 use Carbon\Carbon;
-use App\Http\Traits\{ProductActionTrait, ProductTrait};
+use App\Http\Traits\{ProductActionTrait, ProductTrait,ProductVariantActionTrait};
 class ProductController extends FrontController{
     private $field_status = 2;
-    use ProductActionTrait,ProductTrait;
+    use ProductActionTrait,ProductTrait,ProductVariantActionTrait;
 
     public function __construct()
     {
@@ -76,6 +76,7 @@ class ProductController extends FrontController{
 
         $p_id = $product->id;
         $product =  $this->getProduct($p_id,$vendor,$url_slug,$user,$langId);
+
 
         if($this->checkTemplateForAction(8)){
             $this->RecentView($p_id);
@@ -396,12 +397,15 @@ class ProductController extends FrontController{
                             ->where('product_variant_id', $variant->product_variant_id)
                             ->whereHas('productVariants', function($q){
                                 $q->where('status', '=', 1);
+                                $q->where('quantity', '>', 0);
+
                             })->get();
-                            if(count($variantSet) == count($request->variants)){
+                           // pr($variantSet->toArray());
+                           // if(count($variantSet) == count($request->variants)){
                                 // if(!in_array($variantSet->product_variant_id, $pv_ids)){
                                     $pv_ids[] = $variant->product_variant_id;
                                 // }
-                            }
+                            //}
                         }
                     }
                 }
@@ -420,9 +424,10 @@ class ProductController extends FrontController{
             }
         }
         $sets = array();
+        //pr($pv_ids);
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
         $availableSets = Product::with(['variantSet.variantDetail','variantSet.option2'=>function($q)use($product, $pv_ids){
-            $q->where('product_variant_sets.product_id', $product->id); //->whereIn('product_variant_id', $pv_ids);
+            $q->where('product_variant_sets.product_id', $product->id)->whereIn('product_variant_id', $pv_ids);
         }])
         //return $product;
         ->select('id')
@@ -473,6 +478,7 @@ class ProductController extends FrontController{
                 if($is_token_enable){
                     $tokenAmount = getJsToken();
                 }
+                
 
                 $data['variant'] = $variantData;
                 $data['tokenAmount'] = $tokenAmount;
@@ -482,6 +488,7 @@ class ProductController extends FrontController{
             }
 
         }
+        //pr($data['availableSets']->toArray());
         return response()->json(array('status' => 'Error', 'message' => 'This option is currenty not available', 'data' => $data));
     }
 
