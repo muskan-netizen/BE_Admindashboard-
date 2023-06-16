@@ -648,7 +648,12 @@
                                             </div>
                                         </div>
                                         @empty
-                                            No order found.
+                                            <div class="col-12">
+                                                <div class="no-gutters order_head">
+                                                    <h4 class="text-center">{{ __('No Order Found') }}
+                                                    </h4>
+                                                </div>
+                                            </div>
                                         @endforelse
                                     </div>
                                 </div>
@@ -1196,7 +1201,12 @@
                                             </div>
                                         </div>
                                         @empty
-                                            No order found.
+                                            <div class="col-12">
+                                                <div class="no-gutters order_head">
+                                                    <h4 class="text-center">{{ __('No Upcoming Order Found') }}
+                                                    </h4>
+                                                </div>
+                                            </div>
                                         @endforelse
                                         </div>
                                     </div>
@@ -1818,7 +1828,12 @@
                                             </div>
                                         </div>
                                         @empty
-                                            No order found.
+                                            <div class="col-12">
+                                                <div class="no-gutters order_head">
+                                                    <h4 class="text-center">{{ __('No Ongoing Order Found') }}
+                                                    </h4>
+                                                </div>
+                                            </div>
                                         @endforelse
                                         </div>
                                     </div>
