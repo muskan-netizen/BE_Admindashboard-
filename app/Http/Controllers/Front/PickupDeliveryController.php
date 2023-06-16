@@ -182,7 +182,10 @@ class PickupDeliveryController extends FrontController{
         $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
         $product->image_url = $image_url;
         $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
+       
+
         $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
+
         $product->original_tags_price = decimal_format($tags_price['delivery_fee']);
         $product->tags_price = decimal_format($tags_price['delivery_fee']);
         $product->toll_fee = decimal_format($tags_price['toll_fee']);
@@ -201,6 +204,19 @@ class PickupDeliveryController extends FrontController{
             $product->tags_price = decimal_format(($product->tags_price/$product->seats_for_booking)*$no_seats_for_pooling);
             $product->toll_fee = decimal_format(($product->toll_fee/$product->seats_for_booking)*$no_seats_for_pooling);
         }//------
+
+        $product->service_charge_amount  = 0.00;
+        if($product->vendor->fixed_service_charge)
+        {
+            $product->service_charge_amount  =  $product->vendor->service_charge_amount??0.00;
+        }else{
+
+            if($product->vendor->service_fee_percent>0){
+
+                $product->service_charge_amount  = $product->tags_price * $product->vendor->service_fee_percent/100;
+            }
+        }
+
         $product->total_tags_price = decimal_format($product->tags_price + $product->toll_fee + $product->service_charge_amount);
         $product->name = $product->translation->first() ? $product->translation->first()->title :'';
         $product->description = $product->translation->first() ? $product->translation->first()->body_html :'';
