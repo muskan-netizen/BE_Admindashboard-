@@ -59,9 +59,7 @@ $preference = $client_preference_detail;
                 }
                 @endphp
                 <ul class="header-dropdown d-none d-sm-inline">
-                @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
-                        <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
-                    @endif
+                
                     @if( $is_ondemand_multi_pricing ==1 )
                         @include('layouts.store.onDemandTopBarli')
                     @endif
@@ -134,6 +132,7 @@ $preference = $client_preference_detail;
                         </ul>
                     </li>
                     @endif
+                    @if( !p2p_module_status() )
                     <li class="onhover-dropdown mobile-account"> <i class="fa fa-user" aria-hidden="true"></i>
                         {{__('My Account')}}
                         <ul class="onhover-show-div">
@@ -170,6 +169,7 @@ $preference = $client_preference_detail;
                         @endif
                         </ul>
                     </li>
+                    @endif
                 </ul>
             </div>
 

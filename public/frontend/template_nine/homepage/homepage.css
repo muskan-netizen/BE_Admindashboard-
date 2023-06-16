@@ -1475,7 +1475,7 @@ body.al_body_template_nine.p2p-module section.p2p-categories h2 {
 }
 
 body.al_body_template_nine.p2p-module section.p2p-categories .cate-item a {
-    background: linear-gradient(180deg, #e1dfdf 0%, #efe7e7 100%);
+    /* background: linear-gradient(180deg, #e1dfdf 0%, #efe7e7 100%); */
     border-radius: 9px;
     padding: 20px 10px;
     margin-bottom: 25px;
@@ -1622,6 +1622,19 @@ body.al_body_template_nine.p2p-module .main-product  .al_clock{
 body.al_body_template_nine .product-m .item .media-body{
     min-height: 184px;
 }
+
+body.al_body_template_nine .menu-navigation.al{
+    display: none;
+}
+body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect  a span {
+    font-size: 14px;
+    padding-top: 5px;
+    display: block;
+    color: #777;
+    font-weight: 400!important;
+    text-transform: capitalize;
+    line-height: 1;
+}               
 
 
 
