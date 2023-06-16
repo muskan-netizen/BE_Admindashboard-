@@ -99,7 +99,21 @@ class PickupDeliveryController extends BaseController{
             if(!empty($products)){
                 foreach ($products as $key => $product) {
                     $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
-                    $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
+
+                   // $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
+
+                    $product->service_charge_amount  = 0.00;
+                    if($product->vendor->fixed_service_charge)
+                    {
+                        $product->service_charge_amount  =  $product->vendor->service_charge_amount??0.00;
+                    }else{
+            
+                        if($product->vendor->service_fee_percent>0){
+            
+                            $product->service_charge_amount  = $product->tags_price * $product->vendor->service_fee_percent/100;
+                        }
+                    }
+
                     $product->toll_fee   = $tags_price['toll_fee']??0;
                     $product->tags_price = $tags_price['delivery_fee']??0;
                     $total_price += $total_price + $product->tags_price;
