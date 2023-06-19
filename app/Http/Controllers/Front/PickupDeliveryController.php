@@ -507,7 +507,7 @@ class PickupDeliveryController extends FrontController{
                      //Send message if ride is booked for friend
                     if($request->type == 1 && isset($request->friendPhoneNumber))
                     {
-                        $msg = "Hi ".($request->friendName??'User').", ".$user->name." has booked a ride for you.";
+                        $msg = "Hi ".($request->friendName??'User').", ".$user->name." has booked a ride for you. Tracking url is ".$request_to_dispatch['dispatch_traking_url'];
                         $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
                     }
 
@@ -530,7 +530,7 @@ class PickupDeliveryController extends FrontController{
                      //Send message if ride is booked for friend
                     if($request->type == 1 && isset($request->friendPhoneNumber))
                     {
-                        $msg = "Hi ".($request->friendName??'User').", ".$user->name." has booked a ride for you.";
+                        $msg = "Hi ".($request->friendName??'User').", ".$user->name." has booked a ride for you. Tracking url is ".$request_to_dispatch['dispatch_traking_url'];
                         $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
                     }
                     \Log::info($order_place);
