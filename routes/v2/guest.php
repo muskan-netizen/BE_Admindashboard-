@@ -21,6 +21,8 @@ Route::group(['prefix' => 'v1/v2', 'middleware' => ['ApiLocalization']], functio
         Route::post('search/{type}/{id?}', 'Api\v1\v2\HomeController@globalSearch');
         
         Route::get('getP2pCategories', 'Api\v1\v2\P2PController@getP2pCategories');
+        Route::post('homePageDataV2', 'Api\v1\v2\HomeController@postHomePageDataV2');
+
 
         // new cart route
         Route::get('cart/list', 'Api\v1\v2\CartController@index');

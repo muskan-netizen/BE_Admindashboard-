@@ -65,13 +65,13 @@ class ClientPreferenceController extends BaseController{
                 $nomenclatureProductOrderForm = $nomenclatureTranslation->name ?? null;
             }
         }
-     
+
 
         $accounting     = ThirdPartyAccounting::where('code','xero')->first();
 
         $productDeliveryFeeByRole = ProductDeliveryFeeByRole::groupBy('role_id')->get()->pluck('role_id')->toArray();
 
-        $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds','is_service_product_price_from_dispatch','is_file_cart_instructions','is_user_kyc_for_registration','add_to_cart_btn','chat_button','call_button','is_tracking_url','is_tracking_sms_url','is_place_order_delivery_zero','is_cust_success_signup_email','is_admin_vendor_rating','square_enable_status', 'square_credentials','is_long_term_service','is_influencer_refer_and_earn','is_show_vendor_on_subcription','is_postpay_enable','is_order_edit_enable','order_edit_before_hours','is_enable_compare_product','is_bid_enable','update_order_product_price','is_influencer_refer_and_earn', 'marg_access_token', 'is_marg_enable', 'marg_company_code', 'marg_decrypt_key']);
+        $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds','is_service_product_price_from_dispatch','is_file_cart_instructions','is_user_kyc_for_registration','add_to_cart_btn','chat_button','call_button','is_tracking_url','is_tracking_sms_url','is_place_order_delivery_zero','is_cust_success_signup_email','is_admin_vendor_rating','square_enable_status', 'square_credentials','is_long_term_service','is_influencer_refer_and_earn','is_show_vendor_on_subcription','is_postpay_enable','is_order_edit_enable','order_edit_before_hours','is_enable_compare_product','is_bid_enable','update_order_product_price','is_service_price_selection','is_enable_curb_side','is_recurring_booking','marg_access_token', 'is_marg_enable', 'marg_company_code', 'marg_decrypt_key']);
 
         return view('backend/setting/config')->with([
                                                 'tags' => $tags,
@@ -91,7 +91,7 @@ class ClientPreferenceController extends BaseController{
                                                 'productDeliveryFeeByRole'=> $productDeliveryFeeByRole,
                                                 'accounting'=> $accounting,
                                                 'getAdditionalPreference'=> $getAdditionalPreference,
-                                                
+
                                             ]);
     }
 
@@ -114,7 +114,7 @@ class ClientPreferenceController extends BaseController{
         $nomenclatureAllToGet=Nomenclature::get();
         $want_to_tip_nomenclature=$nomenclatureAllToGet->where('label','Want To Tip')->first();
         $fixed_fee=$nomenclatureAllToGet->where('label','Fixed Fee')->first();
-        
+
         // $want_to_tip_nomenclature=Nomenclature::where('label','Want To Tip')->first();
         // $fixed_fee=Nomenclature::where('label','Fixed Fee')->first();
         $ClientPreference = ClientPreference::where('client_code', $client->code)
@@ -154,7 +154,7 @@ class ClientPreferenceController extends BaseController{
         $accounting     = ThirdPartyAccounting::where('code','xero')->first();
         $staticDropoff  = StaticDropoffLocation::get();
 
-        
+
         $client_languages = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
                     ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
                     ->where('client_languages.client_code', Auth::user()->code)
@@ -277,24 +277,23 @@ class ClientPreferenceController extends BaseController{
         return true;
     }
     public function update(Request $request, $code){
-        
         $cp = new ClientPreference();
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
         if(!$preference){
             $preference = new ClientPreference();
             $preference->client_code = $code;
         }
-        
+
         $keyShould = array( 'show_dark_mode', 'show_payment_icons', 'loyalty_check',   'theme_admin', 'distance_unit',   'date_format', 'time_format',  'fb_client_id', 'fb_client_secret', 'fb_client_url', 'twitter_client_id', 'twitter_client_secret', 'twitter_client_url', 'google_client_id', 'google_client_secret', 'google_client_url',  'apple_client_id', 'apple_client_secret', 'apple_client_url',    'map_provider', 'map_key', 'map_secret', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'verify_email', 'verify_phone', 'web_template_id', 'app_template_id', 'personal_access_token_v1', 'personal_access_token_v2', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption', 'mail_from',   'primary_color', 'secondary_color',  'dispatcher_key', 'web_color',   'fcm_server_key', 'fcm_api_key', 'fcm_auth_domain', 'fcm_project_id', 'fcm_storage_bucket', 'fcm_messaging_sender_id', 'fcm_app_id', 'fcm_measurement_id',  'android_app_link', 'ios_link', 'single_vendor', 'stripe_connect',   'customer_support', 'customer_support_key', 'customer_support_application_id', 'shipping_mode',  'tools_mode',  'digit_after_decimal', 'need_xero',  'db_audit_logs',  'map_key_for_app',    'user_order_history', 'order_cancellation_time', 'cancellation_percentage',  'vendor_fcm_server_key', 'estimation_matching_logic',   'signup_image',  'is_tax_price_inclusive');
         foreach ($request->all() as $key => $value) {
-            if(in_array($key, $keyShould)){ 
+            if(in_array($key, $keyShould)){
                $preference->{$key} = $value;
             }
         }
 
         // square pos integration configurations
         if($request->has('square_pos_integration') && $request->square_pos_integration == '1'){
-            
+
             $square_enable_status = ($request->has('square_enable_status')) ? $request->square_enable_status : 0;
             $square_sandbox_enable_status = ($request->has('square_sandbox_enable_status')) ? $request->square_sandbox_enable_status : 0;
 
@@ -379,11 +378,18 @@ class ClientPreferenceController extends BaseController{
                     'sender_id' => $request->sms_partner_sender_id,
                 ];
             }
+            elseif($request->sms_provider == 9) // for ethiopia
+            {
+                $sms_credentials = [
+                    'sms_username' => $request->sms_username,
+                    'sms_password' => $request->sms_password,
+                ];
+            }
             //for static otp
             $sms_credentials['static_otp'] = ($request->has('static_otp') && $request->static_otp == 'on') ? 1 : 0;
             $preference->sms_credentials = json_encode($sms_credentials);
-        }            
-        
+        }
+
 
         /* SOS update */
         if($request->has('sos_enable') && $request->sos_enable == '1'){
@@ -440,7 +446,7 @@ class ClientPreferenceController extends BaseController{
                     $this->updatePreferenceAdditional($request);
                     $request->request->remove('is_attribute');
                 }
-               
+
             }
             // if((!$request->has('dinein_check') && !$request->dinein_check == 'on') && (!$request->has('takeaway_check') && !$request->dinein_check == 'on') && (!$request->has('delivery_check') && !$request->dinein_check == 'on')){
             //     return redirect()->route('configure.customize')->with('error', 'One Option must be acitve');
@@ -453,7 +459,7 @@ class ClientPreferenceController extends BaseController{
         if($request->has('custom_mods_config') && $request->custom_mods_config == '1'){
             $preference->enquire_mode = ($request->has('enquire_mode') && $request->enquire_mode == 'on') ? 1 : 0;
             $preference->pharmacy_check = ($request->has('pharmacy_check') && $request->pharmacy_check == 'on') ? 1 : 0;
-           
+
             $preference->subscription_mode = ($request->has('subscription_mode') && $request->subscription_mode == 'on') ? 1 : 0;
             $preference->tip_before_order = ($request->has('tip_before_order') && $request->tip_before_order == 'on') ? 1 : 0;
             $preference->tip_after_order = ($request->has('tip_after_order') && $request->tip_after_order == 'on') ? 1 : 0;
@@ -497,7 +503,7 @@ class ClientPreferenceController extends BaseController{
 
         // third party accounting and xero configurations
         if($request->has('third_party_accounting_config') && $request->third_party_accounting_config == '1'){
-            
+
             $preference->third_party_accounting = ($request->has('third_party_accounting') && $request->third_party_accounting == 'on') ? 1 : 0;
 
             if($request->has('xero_status') && $request->xero_status == 'on')

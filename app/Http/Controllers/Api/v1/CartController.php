@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\v1;
 
 use DB;
-use Client;
 use Carbon\Carbon;
 use App\Models\Order;
 use App\Models\Country;
@@ -29,6 +28,7 @@ use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, 
 
 use GuzzleHttp\Client as GCLIENT;
 use Log;
+use App\Models\Client;
 //use App\Http\Traits\MpesaStkpush;
 
 class CartController extends BaseController
@@ -148,22 +148,21 @@ class CartController extends BaseController
 
         try {
             $preference = ClientPreference::first();
-            $luxury_option = LuxuryOption::where('title', $request->type)->first();
+            $luxury_option = LuxuryOption::where('title', $request->type)->first();            
             $user = Auth::user();
             $langId = $user->language;
             $user_id = $user->id;
             $client_timezone = DB::table('clients')->first('timezone');
-            $timezone        = $user->timezone ? $user->timezone :  ($client_timezone->timezone ?? 'Asia/Kolkata' );
+            $timezone = $user->timezone ? $user->timezone :  ($client_timezone->timezone ?? 'Asia/Kolkata' );           
             $unique_identifier = '';
-            if (@$user_id) {
+            if (!$user_id) {
                 if (empty($user->system_user)) {
                     return $this->errorResponse(__('System id should not be empty.'), 404);
                 }
+                $unique_identifier = $user->system_user;
             }
-            $unique_identifier = $user->system_user;
-
             $product = Product::where('sku', $request->sku)->first();
-
+            
             if (!$product) {
                 return $this->errorResponse(__('Invalid product.'), 404);
             }
@@ -173,7 +172,7 @@ class CartController extends BaseController
                 return $this->errorResponse(__('Invalid product variant.'), 404);
             }
 
-
+            
             $client_currency = ClientCurrency::where('is_primary', '=', 1)->first();
             $cart_detail = [
                 'is_gift' => 0,
@@ -186,11 +185,16 @@ class CartController extends BaseController
             ];
             if (!empty($user_id)) {
                 $cart_detail = Cart::updateOrCreate(['user_id' => $user->id], $cart_detail);
-                $already_added_product_in_cart = CartProduct::where(["product_id" => $request->product_id, 'cart_id' => $cart_detail->id])->first();
+               
             } else {
                 $cart_detail = Cart::updateOrCreate(['unique_identifier' => $unique_identifier], $cart_detail);
-                $already_added_product_in_cart = CartProduct::where(["product_id" => $request->product_id, 'cart_id' => $cart_detail->id])->first();
+                
+
             }
+            $already_added_product_in_cart = CartProduct::where(["product_id" => $request->product_id, 'cart_id' => $cart_detail->id])->first();
+            $already_added_product_variant_in_cart = CartProduct::where(["variant_id" => $request->product_variant_id, 'cart_id' => $cart_detail->id])->first();
+
+
             $additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
             if( (@$luxury_option->id == 6) && ($additionalPreference['is_service_product_price_from_dispatch'] ==1) ){
                 $CartProduct = CartProduct::where(['cart_id' => $cart_detail->id])->select('id','dispatch_agent_id')->first();
@@ -202,6 +206,17 @@ class CartController extends BaseController
                 }
             }
 
+            if($luxury_option->id == 4) {
+           
+              if($already_added_product_variant_in_cart)
+            {
+                return response()->json([
+                    "status" => "Error",
+                    'message' => 'Product already exists in the cart',
+                ], 404);
+                }
+             }
+            
             $order_edit_qty = (!empty($already_added_product_in_cart) && !empty($already_added_product_in_cart->order_quantity))?$already_added_product_in_cart->order_quantity:0;
             if($product->is_long_term_service !=1){
                 if ($product->category->categoryDetail->type_id == 8) {
@@ -382,7 +397,6 @@ class CartController extends BaseController
                 $cartProduct = CartProduct::where('cart_id', $cart_detail->id)
                     ->where('product_id', $product->id)
                     ->where('variant_id', $productVariant->id)->first();
-
                 if (!$cartProduct) {
                     $isnew = 1;
                 } else {
@@ -426,7 +440,6 @@ class CartController extends BaseController
                 $cartData->cart_product_id = $cartProduct->id;
                 $product_total_quantity_in_cart = CartProduct::where(['cart_id'=>$cartProduct->cart_id,'product_id'=> $product->id])->sum('quantity');
                 $cartData->product_total_qty_in_cart = intval($product_total_quantity_in_cart);
-                // dd($cartData-);
                 return $this->successResponse($cartData);
             } else {
                 return $this->successResponse($cartData);
@@ -724,6 +737,9 @@ class CartController extends BaseController
             $taxRates[$tax->id]=['tax_rate'=>$tax->tax_rate,'tax_amount'=>$tax->tax_amount];
         }
 
+        $client_timezone = DB::table('clients')->first('timezone');
+        $user_timezone = $client_timezone->timezone ?? 'Asia/Kolkata';
+
         $loyalty_amount_saved = 0;
         $subscription_features = array();
         $user_subscription = null;
@@ -740,6 +756,8 @@ class CartController extends BaseController
             //     }
             // }
             $user = User::find($cart->user_id);
+            $user_timezone =  $user->timezone ?? $user_timezone;
+
             $cart->scheduled_date_time = !empty($cart->scheduled_date_time) ? convertDateTimeInTimeZone($cart->scheduled_date_time, $user->timezone, 'Y-m-d\TH:i') : NULL;
             $cart->schedule_pickup = !empty($cart->schedule_pickup) ? convertDateTimeInTimeZone($cart->schedule_pickup, $user->timezone, 'Y-m-d\TH:i') : NULL;
             $cart->schedule_dropoff = !empty($cart->schedule_dropoff) ? convertDateTimeInTimeZone($cart->schedule_dropoff, $user->timezone, 'Y-m-d\TH:i') : NULL;
@@ -789,6 +807,22 @@ class CartController extends BaseController
 
             $delivery_slot_amount = 0;
             foreach ($cartData as $ven_key => $vendorData) {
+
+            $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user_timezone);
+            $vendorData->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime));
+            $slotsRes = getShowSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery');
+
+            $slots = (array)$slotsRes['slots'];
+            // this variable for get slot from dispatc
+            $slotsdate = $slotsRes['date'];
+            $slotcount =count((array)$slots);
+            
+            $vendorData->slotsdate = $slotsdate;
+            $vendorData->slots = $slots;
+            $vendorData->slotsCnt =  $slotcount;
+            // $vendorData->delay_date = date('Y-m-d');
+
+
                 $opt_quantity_price_new = 0.00;
                 $deliver_fee_charges = 0;
                 $total_fixed_fee_tax = 0;
@@ -963,6 +997,8 @@ class CartController extends BaseController
                             }
                         }
                         $prod->product_out_of_stock =  $product_out_of_stock;
+                        $prod->scheduled_date_time =  (($prod->scheduled_date_time !=null)?date('Y-m-d',strtotime(dateTimeInUserTimeZone($prod->scheduled_date_time,$user_timezone))):null);
+
 
                         $price_in_currency = $price_in_doller_compare = $pro_disc = $quantity_price = 0;
 
@@ -1302,6 +1338,10 @@ class CartController extends BaseController
                                 $discount_amount = $discount_amount +  $vendorTotalDeliveryFee;
                             }
                         }
+                    }
+                    if(isset($rate) && $discount_amount > 0 ){
+                        $discount = ($discount_amount*$rate) / 100;
+                        $taxable_amount -= $discount;
                     }
                 }
 
@@ -1762,15 +1802,17 @@ class CartController extends BaseController
         $delivery = $request->delivery??'delivery';
         //type must be a : delivery , takeaway,dine_in
         $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
-       // $duration = $duration->slot_minutes??'';
-        $slots = showSlot($request->date,$vendorId,$delivery,$duration->slot_minutes, 1, 'pickup'); // Added 1 for pickup
+        $duration = $duration->slot_minutes??'';
+        $slots = showSlot($request->date,$vendorId,$delivery,$duration, 1, 'pickup'); // Added 1 for pickup
         if(count($slots)<=0){
             $slot = [];
         }else{
             $slot = $slots;
         }
 
-        return response()->json($slot);
+        $data = ['data'=>$slots];
+
+        return response()->json($data);
     }
 
     /**
@@ -2004,7 +2046,7 @@ class CartController extends BaseController
                 }else{
                     $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
-                CartProduct::where('id', $request->cart_product_id)->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt]);
+                CartProduct::where('id', $request->cart_product_id)->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt,'schedule_slot' => $request->schedule_time]);
                 DB::commit();
                 return response()->json(['status'=>'Success', 'message'=>'Cart has been scheduled']);
             }
@@ -2033,11 +2075,11 @@ class CartController extends BaseController
         }
 
         foreach($getallproduct as $data){
-            $request->vendor_id = $data->vendor_id;
-            $request->sku = $data->product->sku;
-            $request->quantity = $data->quantity;
-            $request->product_variant_id = $data->variant_id;
-
+            $request->request->add(['vendor_id' => $data->vendor_id,
+                'sku' => $data->product->sku,
+                'quantity' => $data->quantity,
+                'product_variant_id' => $data->variant_id
+            ]);
             if(isset($getallproduct->order) && !empty($getallproduct->order))
             $type = LuxuryOption::where('id',$getallproduct->order->luxury_option_id)->value('title');
 
@@ -2057,7 +2099,7 @@ class CartController extends BaseController
 
         }
 
-        return response()->json(['status' => 'success', 'message' => 'Order added to cart.']);
+       return response()->json(['status' => 'success', 'message' => 'Order added to cart.']);
 
 
     }

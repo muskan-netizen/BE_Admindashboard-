@@ -27,4 +27,11 @@ class SendReferralRequest extends FormRequest
             'email' => 'required|email|max:50||unique:users',
         ];
     }
+    
+    public function messages()
+    {
+        return [
+            'unique' => 'This email is already registered'
+        ];
+    }
 }

@@ -69,8 +69,10 @@ class WalletController extends FrontController
                 }
 
                 $wallet->depositFloat($credit_amount, [__("Wallet has been").' <b>Credited</b> by transaction reference <b>'.$request->transaction_id.'</b>']);
-
-                $payment = new Payment();
+                $payment = Payment::where('transaction_id',$request->transaction_id)->first();
+                if(!$payment){
+                    $payment = new Payment();
+                }
                 $payment->date = date('Y-m-d');
                 $payment->user_id = $user->id;
                 $payment->transaction_id = $request->transaction_id;
@@ -142,6 +144,8 @@ class WalletController extends FrontController
                     $payment_option->title = __('iDEAL');
                 }elseif($payment_option->code == 'authorize_net'){
                     $payment_option->title = __('Credit/Debit Card');
+                }elseif($payment_option->code == 'obo'){
+                    $payment_option->title = __("O'Pay");
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);

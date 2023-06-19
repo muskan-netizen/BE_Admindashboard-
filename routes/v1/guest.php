@@ -3,7 +3,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
     Route::post('dispatcher/check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromDispatcher');
 
-    Route::get('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
+    Route::any('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
 
     Route::post('check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromInventory');
 
@@ -22,6 +22,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::post('deleteOrderProductBySku', 'Api\v1\InventoryController@deleteOrderProductBySku');
             Route::post('needSyncWithOrder', 'Api\v1\InventoryController@needSyncWithOrder');
             Route::post('getOrderCategoryById', 'Api\v1\InventoryController@getOrderCategoryById');
+            Route::post('getSyncStoreOrderProductIds', 'Api\v1\InventoryController@getSyncStoreOrderProductIds');
         });
     });
 
@@ -59,7 +60,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('upload/prescriptions', 'Api\v1\CartController@uploadPrescriptions');
         Route::post('delete/prescriptions', 'Api\v1\CartController@deleteProductPrescription');
         Route::post('mfc/stk/push', 'Api\v1\CartController@stkPushRequest');
-        Route::get('vendor/slots', 'Api\v1\CartController@checkScheduleSlots');
+        Route::post('vendor/slots', 'Api\v1\CartController@checkScheduleSlots');
         Route::get('vendor/dropoffslots', 'Api\v1\CartController@checkScheduleDropoffSlots'); // Added By Ovi  // To Get Drop Off Slots
         Route::post('homepage', 'Api\v1\HomeController@homepage');
         Route::post('get/subcategory/vendor', 'Api\v1\HomeController@getSubcategoryVendor');
@@ -128,6 +129,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('getslotsFormDispatcher', 'Api\v1\AppointmentController@getSlotFromDispatchDemand');
         // get GerenalSlot slot from dispatcher
         Route::get('getDispatcherGerenalSlot', 'Api\v1\DispatcherController@getDispatcherGerenalSlot');
+
+        Route::get('home-restaurents', 'Api\v1\HomeController@homeRestaurents');
+        Route::get('category-restaurents/{category_id}', 'Api\v1\HomeController@categoryRestaurents');
     });
 
     Route::group(['middleware' => ['dbCheck', 'systemAuth']], function () { //apilogger

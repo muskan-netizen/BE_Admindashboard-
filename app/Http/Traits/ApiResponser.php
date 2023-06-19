@@ -459,12 +459,18 @@ trait ApiResponser
             } elseif ($order_status_id == 4) {
                 $notification_content = NotificationTemplate::where('id', 7)->first();
             } elseif ($order_status_id == 5) {
-                $notification_content = NotificationTemplate::where('id', 8)->first();
+                //Check for order is takeaway
+                if(@$orderData->luxury_option_id == 3)
+                {
+                    $notification_content = NotificationTemplate::where('slug', 'order-out-for-takeaway-delivery')->first();
+                }else{
+                    $notification_content = NotificationTemplate::where('id', 8)->first();
+                }
             } elseif ($order_status_id == 6) {
                 $notification_content = NotificationTemplate::where('id', 9)->first();
             }
             if ($notification_content) {
-                
+
                 $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
                 $data = [
                     "registration_ids" => $devices,
@@ -524,6 +530,11 @@ trait ApiResponser
             $crendentials = json_decode($client_preference->sms_credentials);
             $send = $this->africasTalking_sms($to,$body,$crendentials);
             }
+            elseif($client_preference->sms_provider == 9) //for Ethiopia
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->ethiopia($to,$body,$crendentials);
+            }
 			else{
                 $client = new TwilioClient($sms_key, $sms_secret);
                 $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
@@ -535,8 +546,8 @@ trait ApiResponser
         return '1';
 	}
 
-	
-	
+
+
 
 
 }

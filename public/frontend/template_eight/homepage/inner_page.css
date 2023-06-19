@@ -78,7 +78,8 @@ body[dir=rtl] .al_count_tabs_new_design li a.nav-link span{margin-left:8px;margi
 .dark.al_body_template_three .address-input-field{ background-color: #2b2b2b;}
 .al_body_template_three .vendors .slick-slide{padding:10px 0 0px;height:auto}
 .alInnerBox .suppliers-img-outer{padding-bottom: 100%;position: relative;border-radius: 12px;}
-.alInnerBox .suppliers-img-outer img{position: absolute;object-fit: cover;height: 100%;border-radius: 12px;}
+.alInnerBox .suppliers-img-outer img{position: absolute;object-fit: inherit;height: 100%;border-radius: 12px;}
+
 .al_body_template_three .img-outer-box.position-relative{border-radius:12px;padding-bottom: 100% !important;background-color:#eee}
 .al_body_template_three .slick-slider .img-outer-box.position-relative{border-radius:12px;position: relative;padding-bottom: 100%;}
 .al_body_template_three .img-outer-box.position-relative img{left:0; position: absolute; width:100%;height:100%;object-fit:cover;border-radius:12px;}
@@ -374,7 +375,7 @@ border-right: 1px solid var(--theme-deafult) !important;}
 
 .card-box{background-color: #fff;padding: 1.5rem;box-shadow: 0 0.75rem 6rem rgb(56 65 74 / 3%);margin-bottom: 24px;border-radius: 0.25rem;}
 .class_img{height: 100px;width: 100%;border-radius: 4px;overflow: hidden;max-width: 100%;object-fit: cover;}
-.class_img img{object-fit: cover;height: 100%;width: 100%;}
+.class_img img{object-fit: cover;height: 100%;width: 100%; object-position: top;}
 .classes_wrapper .number{border: 1px solid var(--theme-deafult);border-radius: 4px;}
 .booking-time .radios{width: 95%;text-align: center;}
 .radio-btns input[type="checkbox"]{z-index: -1;position: absolute;display: none;}
@@ -443,6 +444,13 @@ border-right: 1px solid var(--theme-deafult) !important;}
 footer#footer{position: absolute;bottom: 0;width: 100%;}
 
 
+@media (max-width: 1100px){
+    .vender-icon img.rounded-circle.avatar-lg{
+        width: 75px!important;
+        height: 75px!important;
+    }
+}
+
 @media (max-width:767px){
 body.al_body_template_three.dark .sm-horizontal{background-color: transparent;}
 body[dir=rtl] .al_footer_template_three ul{text-align: right;}
@@ -450,6 +458,37 @@ body[dir=rtl] .al_footer_template_three ul li{padding-right: 0px !important;}
 .al_body_template_three h2.category-head{top: 140px;}
 }
 
+@media (max-width:576px){
+    .al_body_template_eight .vendor-design_new{
+        margin-top: 30px!important;
+        margin-left:0 !important;
+    }
+    .vendor-description .profile_address p{
+        color: #000!important;
+    }
+    .al_body_template_eight .vendor-description .profile_address h3{
+        color: #000!important;
+    }
+    .al_body_template_eight .vendor-design_new .vendor-info li{
+        display: block!important;
+        color: #000!important;
+        width: 100%!important;
+    }   
+    .al_body_template_eight .vendor-design_new .col-sm-2.col-md-1.vender-icon {
+        display: inline-block;
+        width: unset;
+    }
+    .al_body_template_eight .vendor-design_new .col-sm-10.col-lg-11.position-relative.profile_address.vendor_icon-design {
+        display: inline-block;
+        width: 70%;
+        max-width: inherit;
+        min-width: inherit;
+    }
+    .al_body_template_eight .vendor-design_new  .vendor-info li svg g {
+        stroke: #000;
+        fill: #000;
+    }
+}
 
 /*customer css start here*/
 .al_body_template_three .iti--separate-dial-code .iti__selected-flag{height: auto;padding: 6px 5px;}

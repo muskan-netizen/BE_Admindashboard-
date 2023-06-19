@@ -46,8 +46,8 @@ trait VendorTrait{
     public function getSubscriptionVendorId(){
         $now = date('Y-m-d') ;
        
-        $query = "SELECT subscription_invoices_vendor.* FROM `subscription_invoices_vendor`  where (`subscription_invoices_vendor`.order_count > (select count(id) from order_vendors where order_vendors.vendor_id = subscription_invoices_vendor.vendor_id and order_vendors.subscription_invoices_vendor_id = `subscription_invoices_vendor`.id)) and date(subscription_invoices_vendor.end_date) >= '".$now."'";
-        $order_count = DB::select( DB::raw($query));
+        $query = "SELECT subscription_invoices_vendor.* FROM `subscription_invoices_vendor`  where (`subscription_invoices_vendor`.order_count > (select count(id) from order_vendors where order_vendors.vendor_id = subscription_invoices_vendor.vendor_id and order_vendors.subscription_invoices_vendor_id = `subscription_invoices_vendor`.id)) and date(subscription_invoices_vendor.end_date) >= ?";
+        $order_count = DB::select( DB::raw($query), [$now]);
         $vendor_id = array_column( $order_count,'vendor_id');
        return  $vendor_id;
     }

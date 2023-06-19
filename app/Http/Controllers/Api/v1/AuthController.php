@@ -503,6 +503,31 @@ class AuthController extends BaseController
         if ($user->id > 0) {
             if ($signReq->refferal_code) {
                 $refferal_amounts = ClientPreference::first();
+
+                $dispatch_domain = $this->checkIfLastMileOn();
+                $postdata = [
+                    'refferal_code' => $signReq->refferal_code,
+                    'user_name' => $user->name ?? ''
+                ];
+                if ($dispatch_domain && $dispatch_domain != false)
+                {
+                    $client = new GCLIENT(['headers' => [
+                        'personaltoken' => $dispatch_domain->pickup_delivery_service_key,
+                        'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
+                        'content-type' => 'application/json']
+                    ]);
+                    $url = $dispatch_domain->pickup_delivery_service_key_url;
+                    $res = $client->post($url.'/api/auth/get-driver-refferal',
+                        ['form_params' => ($postdata)]
+                    );
+                    $response = json_decode($res->getBody(), true);
+                    if($response && $response['message'] == 'success'){
+                        $refferal_amount = $response['refferal_amount'];
+                        $wallet->deposit($refferal_amount, ['You used referal code of <b>' . $response['refer_by_name'] . '</b>']);
+                        $wallet->balance;
+                    }
+                }
+
                 if ($refferal_amounts) {
                     if ($refferal_amounts->reffered_by_amount != null && $refferal_amounts->reffered_to_amount != null) {
                         $reffered_by = UserRefferal::where('refferal_code', $signReq->refferal_code)->first();
@@ -819,9 +844,9 @@ class AuthController extends BaseController
                 $user->is_email_verified = 1;
                 $user->email_token_valid_till = NULL;
                 $user->save();
+                $this->sendCustomerSignupSuccessEmail($user);
                 return $this->successResponse(getUserDetailViaApi($user), $message);
             }
-            $this->sendCustomerSignupSuccessEmail($user);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -1779,4 +1804,14 @@ class AuthController extends BaseController
         ]);
         // pr($VendorConfigrespons);
     }
+
+    public function checkIfLastMileOn()
+    {
+        $preference = ClientPreference::first();
+        if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+            return $preference;
+        else
+            return false;
+    }
+
 }

@@ -192,10 +192,8 @@ $order_is_long_term = $order->is_long_term;
 
                             <div class="total-sec row">
                                 <ul class="col-sm-6 offset-sm-6">
-                                    @if($order->total_service_fee > 0)
                                         <li>{{__('Sub Total')}} <span>@if( $additionalPreference["is_token_currency_enable"])
                                             {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format(($order->total_amount+$order->total_container_charges) * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format(($order->total_amount+$order->total_container_charges) * @$clientCurrency->doller_compare)}}@endif</span></li>
-                                    @endif
                                     @if($order->total_service_fee > 0)
                                         <li>{{__('Service Fee')}} <span>@if( $additionalPreference["is_token_currency_enable"])
                                             {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->total_service_fee * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->total_service_fee * @$clientCurrency->doller_compare)}}@endif</span></li>
@@ -212,21 +210,21 @@ $order_is_long_term = $order->is_long_term;
                                             {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->total_delivery_fee * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->total_delivery_fee * @$clientCurrency->doller_compare)}}@endif</span></li>
                                     @endif
                                     @if($order->total_discount > 0)
-                                        <li>{{__('Total Discount')}} <span>@if( $additionalPreference["is_token_currency_enable"])
+                                    	@php 
+                                    		$total -= (decimal_format($order->total_discount * @$clientCurrency->doller_compare));
+                                    	
+                                    	@endphp
+                                        <li>{{__('Total Discount')}} <span> - @if( $additionalPreference["is_token_currency_enable"])
                                             {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->total_discount * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->total_discount * @$clientCurrency->doller_compare)}}@endif</span></li>
                                     @endif
 
                                     @if($order->taxable_amount > 0 || $order->total_other_taxes_amount> 0 )
-
-                                    <li>{{__('Total')}}<span>@if( $additionalPreference["is_token_currency_enable"])
-                                        {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(decimal_format(($total) * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format(($total) * @$clientCurrency->doller_compare)}}@endif</span></li>
-                                    {{--<li>{{__('Tax')}} <span>{{$additionalPreference ['is_token_currency_enable'] ? getInToken() }}@else{{Session::get('currencySymbol').decimal_format($order->taxable_amount + $order->total_other_taxes_amount * @$clientCurrency->doller_compare)}}</span></li>--}}
-                                    <li>{{__('Tax')}} <span>@if( $additionalPreference["is_token_currency_enable"])
+                                    @php 
+                                    $total += decimal_format($order->total_other_taxes_amount * @$clientCurrency->doller_compare);
+                                    @endphp
+				                         <li>{{__('Tax')}} <span>@if( $additionalPreference["is_token_currency_enable"])
                                         {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->total_other_taxes_amount * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->total_other_taxes_amount * @$clientCurrency->doller_compare)}}@endif</span></li>
-                                    @else
-                                    <li>{{__('Total')}}<span>@if( $additionalPreference["is_token_currency_enable"])
-                                        {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format(($total+$additional_price) * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format(($total+$additional_price) * @$clientCurrency->doller_compare)}}@endif</span></li>
-                                    @endif
+                                   @endif
 
                                     @if($order->luxury_option_id == 4)
                                         <li>{{__('Security Amount')}}<span>{{Session::get('currencySymbol').decimal_format($security_amount)}}</span></li>
@@ -257,6 +255,9 @@ $order_is_long_term = $order->is_long_term;
                                         <li>{{__('Tip Amount')}} <span>@if( $additionalPreference["is_token_currency_enable"])
                                             {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->tip_amount * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->tip_amount * @$clientCurrency->doller_compare)}}@endif</span></li>
                                     @endif
+                                     <li>{{__('Total')}}<span>@if( $additionalPreference["is_token_currency_enable"])
+                                        {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format(($total+$additional_price) * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format(($total+$additional_price) * @$clientCurrency->doller_compare)}}@endif</span></li>
+      
 
                         </ul>
                     </div>
@@ -292,7 +293,6 @@ $order_is_long_term = $order->is_long_term;
                                     @endif
                                 </ul>
                                 <ul class="order-detail row">
-                                    <li class="col-12 col-md-4"><span>{{__('Order Total')}}:</span><span> {{Session::get('currencySymbol')}}{{decimal_format($total_amount)}}
                                     <li class="col-12 col-md-4"><span>{{__('Order Total')}}:</span><span>@if( $additionalPreference["is_token_currency_enable"])
                                         {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{getInToken(decimal_format($total_amount))}}@else{{Session::get('currencySymbol').decimal_format($total_amount)}}@endif                                      
 
