@@ -116,7 +116,7 @@ class OrderController extends BaseController
                     return response()->json($errors, 422);
                 }
             }
-
+            $rate = 0;
             $total_amount = 0;
             $total_discount = 0;
             $taxable_amount = 0;
