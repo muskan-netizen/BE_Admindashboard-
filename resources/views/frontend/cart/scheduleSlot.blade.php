@@ -48,7 +48,7 @@
 
                             @if ($cart_details->slotsCnt == 0)
                             
-                                    <input type="datetime-local" id="schedule_datetime"
+                                    <input type="datetime-local" min="<?=date('Y-m-d H:i')?>" id="schedule_datetime"
                                         class="form-control" placeholder="Inline calendar"
                                         value="{{ $cart_details->schedule_type == 'schedule' ? $cart_details->scheduled_date_time : '' }}"
                                         min="{{ $cart_details->delay_date != '0' ? $cart_details->delay_date : '' }}">
