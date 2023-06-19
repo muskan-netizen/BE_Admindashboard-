@@ -2361,7 +2361,7 @@ class OrderController extends FrontController
                 // Send Email to customer
                 //Send Email to customer
                 $request->request->add(['type' => $action]);
-                $this->sendSuccessEmail($request, $order);
+                // $this->sendSuccessEmail($request, $order);
                 // Send Email to Vendor
                 foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                     $this->sendSuccessEmail($request, $order, $vendor_id);
