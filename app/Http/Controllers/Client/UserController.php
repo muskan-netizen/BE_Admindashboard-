@@ -433,7 +433,6 @@ class UserController extends BaseController
     {
         $user = User::where('id', $id)->first();
 
-        
         $vendorRole = @$user->roles[0]->id;
         if(@$vendorRole && $vendorRole == 4){
          //Need to remove vendor permissons from user table 
@@ -502,7 +501,8 @@ class UserController extends BaseController
                 }
             }
         }
-       
+        // //Need to remove vendor permissons from user table 
+        // $this->removeVendorPermissionAndRole($id);
         return redirect()->back()->with('success','Customer Updated successfully!');
     }
 

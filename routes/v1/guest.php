@@ -3,7 +3,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
     Route::post('dispatcher/check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromDispatcher');
 
-    Route::get('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
+    Route::any('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
 
     Route::post('check-order-keys', 'Api\v1\BaseController@checkOrderPanelKeys')->middleware('ConnectDbFromInventory');
 
@@ -129,6 +129,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('getslotsFormDispatcher', 'Api\v1\AppointmentController@getSlotFromDispatchDemand');
         // get GerenalSlot slot from dispatcher
         Route::get('getDispatcherGerenalSlot', 'Api\v1\DispatcherController@getDispatcherGerenalSlot');
+
+        Route::get('home-restaurents', 'Api\v1\HomeController@homeRestaurents');
+        Route::get('category-restaurents/{category_id}', 'Api\v1\HomeController@categoryRestaurents');
     });
 
     Route::group(['middleware' => ['dbCheck', 'systemAuth']], function () { //apilogger

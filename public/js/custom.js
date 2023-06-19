@@ -3081,7 +3081,17 @@ $(document).ready(function () {
         var addLongTerm = 0;
         var addRecurringBooking = 0;
         vendor_id = (vendor_id == undefined || vendor_id =='') ?  document.querySelector('input[name=vendor_id]').value : vendor_id;
-
+        if($('#is_recurring_booking').length > 0){
+            // var booking_type   = $('input[name="booking_type"]:checked').val();
+            // recurringformPost
+            if(product_id == OrderStorage.getStorage('cartFirstProductId')){
+                var message  = _language.getLanString('Product Already added in cart');
+                sweetAlert.error('',message);
+                return false;
+            }
+        }else{
+            recurringformPost = {};
+        }
         if (Product_quantity <= 0) {
             Swal.fire({
                 // title: "Warning!",
@@ -3151,17 +3161,7 @@ $(document).ready(function () {
 
 
        // Recuring booking code
-        if($('#is_recurring_booking').length > 0){
-            // var booking_type   = $('input[name="booking_type"]:checked').val();
-            // recurringformPost
-            if(product_id == OrderStorage.getStorage('cartFirstProductId')){
-                var message  = _language.getLanString('Product Already added in cart');
-                sweetAlert.error('',message);
-                return false;
-            }
-        }else{
-            var recurringformPost = {};
-        }
+        
 
 
         // if($('#is_recurring_bookingss').val() > 0){
@@ -3260,7 +3260,6 @@ $(document).ready(function () {
                     var sele_slot_id = $("#sele_slot_id").val();
                     var sele_slot_price = $("#sele_slot_price").val();
                     var delivery_date = $("#date_input").val();
-
                     submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date, sele_slot_id, sele_slot_price, delivery_date,recurringformPost);
                 }
             }
