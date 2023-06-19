@@ -121,6 +121,7 @@ class OrderController extends BaseController
             $total_discount = 0;
             $taxable_amount = 0;
             $payable_amount = 0;
+            $new_vendor_taxable_amount = 0;
             $additional_price=0;
             $tax_category_ids = [];
             $user = Auth::user();
@@ -863,6 +864,17 @@ class OrderController extends BaseController
                         $vendor_payable_amount += $delivery_fee;
                         $vendor_payable_amount += $vendor_taxable_amount;
 
+                        
+                        // check if is_tax_price_inclusive is on than no tax
+                        if (! $additionalPreferences->is_tax_price_inclusive) {
+                            $new_vendor_taxable_amount = number_format((($actual_amount-$total_discount) * $rate) / 100, 2);
+                        } else {
+                            $new_vendor_taxable_amount = number_format((($actual_amount-$total_discount) * $rate) / (100 + $rate), 2);
+                        }
+                        
+                        $new_vendor_taxable_amount = str_replace(',', '', $new_vendor_taxable_amount);
+                        $new_vendor_taxable_amount = floatval($new_vendor_taxable_amount);
+                        
                         $order_vendor->coupon_id = $coupon_id;
                         $order_vendor->coupon_paid_by = $coupon_paid_by??1;
                         $order_vendor->coupon_code = $coupon_name;
@@ -871,7 +883,7 @@ class OrderController extends BaseController
                         $order_vendor->subtotal_amount = $actual_amount;
                         $order_vendor->payable_amount = $vendor_payable_amount+$total_fixed_fee_amount;
                         $order_vendor->total_markup_price = $vendor_markup_amount;
-                        $order_vendor->taxable_amount = $vendor_taxable_amount;
+                        $order_vendor->taxable_amount = $new_vendor_taxable_amount;
                         $order_vendor->discount_amount = $vendor_discount_amount;
                         $order_vendor->payment_option_id = $request->payment_option_id;
                         $order_vendor->total_container_charges = $vendor_total_container_charges;
