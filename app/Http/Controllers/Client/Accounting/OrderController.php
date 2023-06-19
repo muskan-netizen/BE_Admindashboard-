@@ -71,6 +71,12 @@ class OrderController extends Controller{
             $status_filter = $request->get('status_filter');
             $vendor_orders = $vendor_orders->where('order_status_option_id', $status_filter);
         }
+        $vendor_orders = $vendor_orders->whereHas('orderDetail',function ($query){
+            $query->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
+            $query->orWhere(function ($q2) {
+                $q2->whereIn('payment_option_id', [1,38]);
+            });
+        }); 
 
         if ($user->is_superadmin == 0) {
             $vendor_orders = $vendor_orders->whereHas('vendor.permissionToUser', function ($query) use($user){
