@@ -1163,8 +1163,7 @@ $(document).ready(function () {
                 url: update_cart_schedule,
                 data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, dropoff_scheduled_slot : slot_dropoff, address: address,payable_amount : cartAmount },
                 success: function (response) {
-
-
+                    $(".error_prescription").attr("style", "display:none");
                     if(response.status == "passbase_submitted"){
                         Swal.fire({
                             text: response.message,
@@ -1182,6 +1181,12 @@ $(document).ready(function () {
                                     window.location.replace(passbase_page);
                                 }
                             });
+                        return false;
+                    }else if (response.status == "error_prescription") {
+                        $.each(response.presciptionProducts, function (key, product_id) {
+                            $("#error_prescription_"+product_id).attr("style", "display:block");
+                        });
+
                         return false;
                     }else if (response.status == "Pending") {
                         window.location.replace(verifyaccounturl);
@@ -1224,6 +1229,7 @@ $(document).ready(function () {
                             },
                             error: function (error) {
                                 var response = $.parseJSON(error.responseText);
+                                
                                 let error_messages = response.message;
                                 $.each(error_messages, function (key, error_message) {
                                     $('#min_order_validation_error_' + error_message.vendor_id).html(error_message.message).show();
