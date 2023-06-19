@@ -938,9 +938,12 @@ class VendorController extends BaseController
 
         $vendor_category = VendorCategory::where('vendor_id',$id);   
         $vcompare = clone $vendor_category;
-        $vendor_for_pickup_delivery = $vendor_category->whereHas('category',function($q){$q->where('type_id',7);})->count();
-        $vendor_for_ondemand = $vendor_category->whereHas('category',function($q){$q->where('type_id',8);})->count();
-        $vendor_for_appointment_delivery = $vendor_category->whereHas('category',function($q){$q->where('type_id',12);})->count();
+        $vendor_for_pickup_delivery = clone $vendor_category;
+        $vendor_for_appointment_delivery = clone $vendor_category;
+        $vendor_for_ondemand = clone $vendor_category;
+        $vendor_for_pickup_delivery = $vendor_for_pickup_delivery->whereHas('category',function($q){$q->where('type_id',7);})->count();
+        $vendor_for_ondemand = $vendor_for_ondemand->whereHas('category',function($q){$q->where('type_id',8);})->count();
+        $vendor_for_appointment_delivery = $vendor_for_appointment_delivery->whereHas('category',function($q){$q->where('type_id',12);})->count();
         
         $vendorCompare = $vcompare->whereHas('categoryDetail')->select('vendor_id','category_id')->get();
         
@@ -1185,7 +1188,7 @@ class VendorController extends BaseController
             $sku_url = $sku_url.".".$vendor_name;
         }
 
-        $total_delivery_fees = OrderVendor::where('vendor_id', $id)->orderBy('id','desc');
+        $total_delivery_fees = OrderVendor::where('vendor_id', $id)->orderBy('id','desc')->where('order_status_option_id','!=',3);
         if ($user->is_superadmin == 0) {
             $total_delivery_fees = $total_delivery_fees->whereHas('vendor.permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
@@ -1193,7 +1196,7 @@ class VendorController extends BaseController
         }
         $total_delivery_fees = $total_delivery_fees->sum('delivery_fee');
 
-        $total_promo_amount = OrderVendor::where('vendor_id', $id)->orderBy('id','desc');
+        $total_promo_amount = OrderVendor::where('vendor_id', $id)->orderBy('id','desc')->where('order_status_option_id','!=',3);
         if ($user->is_superadmin == 0) {
             $total_promo_amount = $total_promo_amount->whereHas('vendor.permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
@@ -1201,7 +1204,7 @@ class VendorController extends BaseController
         }
         $total_promo_amount = $total_promo_amount->where('coupon_paid_by', 0)->sum('discount_amount');
 
-        $total_admin_commissions = OrderVendor::where('vendor_id', $id)->orderBy('id','desc');
+        $total_admin_commissions = OrderVendor::where('vendor_id', $id)->orderBy('id','desc')->where('order_status_option_id','!=',3);
         if ($user->is_superadmin == 0) {
             $total_admin_commissions = $total_admin_commissions->whereHas('vendor.permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
@@ -1209,7 +1212,7 @@ class VendorController extends BaseController
         }
         $total_admin_commissions = $total_admin_commissions->sum(DB::raw('admin_commission_percentage_amount + admin_commission_fixed_amount'));
 
-        $total_order_value = OrderVendor::where('vendor_id', $id)->orderBy('id','desc');
+        $total_order_value = OrderVendor::where('vendor_id', $id)->orderBy('id','desc')->where('order_status_option_id','!=',3);
         if ($user->is_superadmin == 0) {
             $total_order_value = $total_order_value->whereHas('vendor.permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);

@@ -752,7 +752,6 @@ class PickupDeliveryController extends BaseController{
                 $unique = Auth::user()->code;
                 $client_do = Client::where('code',$unique)->first();
                 $product = Product::find($request->product_id);
-                
                 if ($order->payment_option_id == 1 && ($order->payable_amount >0)) {
                     $cash_to_be_collected = 'Yes';
                     $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;

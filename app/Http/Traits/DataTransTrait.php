@@ -13,14 +13,16 @@ trait DataTransTrait
     public function __construct()
     {
         $this->creds = PaymentOption::where('code', 'data_trans')->where('status', 1)->first();
-        $this->creds_arr = json_decode($this->creds->credentials);
-        $this->merchant_id = $this->creds_arr->merchant_id;
-        $this->password = $this->creds_arr->password;
-        if($this->creds->test_mode)
-        {
-            $this->url = 'https://api.sandbox.datatrans.com/v1/transactions';
-        }else{
-            $this->url = 'https://api.datatrans.com/v1/transactions';
+        if(@$this->creds->status){
+            $this->creds_arr = json_decode($this->creds->credentials);
+            $this->merchant_id = $this->creds_arr->merchant_id;
+            $this->password = $this->creds_arr->password;
+            if($this->creds->test_mode)
+            {
+                $this->url = 'https://api.sandbox.datatrans.com/v1/transactions';
+            }else{
+                $this->url = 'https://api.datatrans.com/v1/transactions';
+            }
         }
     }
 

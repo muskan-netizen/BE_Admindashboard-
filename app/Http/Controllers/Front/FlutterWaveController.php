@@ -32,10 +32,12 @@ class FlutterWaveController extends FrontController
    public function __construct()
    {
       $konga = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'flutterwave')->where('status', 1)->first();
-      $json = json_decode($konga->credentials);
-      $this->secret_key = $json->secret_key;
-      $this->public_key = $json->client_id;
-      $this->enc_key = $json->enc_key;
+      if(@$konga->status){
+          $json = json_decode($konga->credentials);
+          $this->secret_key = $json->secret_key;
+          $this->public_key = $json->client_id;
+          $this->enc_key = $json->enc_key;
+      }
    }
 
    public function createHash(Request $request)
