@@ -74,7 +74,8 @@ class DispatcherController extends FrontController
                         $request->status_option_id = 6;
                         break;
                       case 6: //order rejected by driver
-                          $request->status_option_id = 3; 
+                          $request->status_option_id = 3;
+                          break;
                       default:
                        $request->status_option_id = null;
                     }
@@ -100,7 +101,6 @@ class DispatcherController extends FrontController
                                 if($request->status_option_id == 3 ){
                                     $this->cancelOrderByDriver($checkiftokenExist);
                                 }
-                        
                         }
 
 
@@ -457,7 +457,6 @@ class DispatcherController extends FrontController
             $type = $request->task_type??1;
 
             if($checkiftokenExist){
-
                 $dispatch_status = $request->dispatcher_status_option_id;                
                 switch ($dispatch_status) {
                   case 2:
@@ -482,7 +481,8 @@ class DispatcherController extends FrontController
                   default:
                    $request->status_option_id = null;
                 }
-                if(isset($request->status_option_id) && !empty($request->status_option_id) && (in_array($request->status_option_id ,[6,3]))  && $type == 2){
+
+                if(isset($request->status_option_id) && !empty($request->status_option_id) &&  (in_array($request->status_option_id ,[6,3])) && $type == 2){
                     $checkif= VendorOrderStatus::where(['order_id' =>  $checkiftokenExist->order_id,
                     'order_status_option_id' =>  $request->status_option_id,
                     'vendor_id' =>  $checkiftokenExist->vendor_id,
@@ -495,7 +495,6 @@ class DispatcherController extends FrontController
                             'order_vendor_id' =>  $checkiftokenExist->id ]);
 
                             OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['order_status_option_id' => $request->status_option_id]);
-
                             // if driver is reject order
                             if($request->status_option_id == 3 ){
                                 $this->cancelOrderByDriver($checkiftokenExist);
@@ -1266,24 +1265,23 @@ class DispatcherController extends FrontController
     }
     
     /******************    ---- cancel order vendor product  -----   ******************/
-    public function cancelOrderByDriver($order_vendor){        
+    public function cancelOrderByDriver($order_vendor){
         if($order_vendor ){
             $order = Order::with(array(
                 'vendors' => function ($query) use ($order_vendor) {
                 $query->where('vendor_id', $order_vendor->vendor_id);
                 }
                 ))->find($order_vendor->order_id);
-                
-            $return_response =  $this->GetVendorReturnAmount([], $order);
-            //return amount to user wallet
-            if ($return_response['vendor_return_amount'] > 0) {
-                $user = User::find($order_vendor->user_id);
-                $wallet = $user->wallet;
-                $credit_amount = $return_response['vendor_return_amount'];//$currentOrderStatus->payable_amount;
-                $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #' . $order_vendor->orderDetail->order_number . ' (' . $order_vendor->vendor->name . ')']);
-                $this->sendWalletNotification($user->id,  $order_vendor->orderDetail->order_number);                
-            }
-        }   
+                $return_response =  $this->GetVendorReturnAmount([], $order);
+                //return amount to user wallet
+                if ($return_response['vendor_return_amount'] > 0) {
+                    $user = User::find($order_vendor->user_id);
+                    $wallet = $user->wallet;
+                    $credit_amount = $return_response['vendor_return_amount'];//$currentOrderStatus->payable_amount;
+                    $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #' . $order_vendor->orderDetail->order_number . ' (' . $order_vendor->vendor->name . ')']);
+                    $this->sendWalletNotification($user->id,  $order_vendor->orderDetail->order_number);
+                }
+        }
     }
 
 }
