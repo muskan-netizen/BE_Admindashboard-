@@ -455,7 +455,6 @@ class DashBoardController extends BaseController
             $total_revenue = $total_revenue->whereBetween('created_at', [$from_date, $end_date]);
 
             $total_revenue = $total_revenue->sum('payable_amount');
-//pr($total_revenue);
             # Customers count
             $users = new User;
             $total_customers = $users->where(['status' => 1, 'is_superadmin' => 0]);
