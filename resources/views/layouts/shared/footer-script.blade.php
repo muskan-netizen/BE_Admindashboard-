@@ -359,7 +359,7 @@ if (Session::has('toaster')) {
 
     });
     @endif
-    $(document).on("click", ".update_order_status", function() {
+    $(document).on("click", ".update-status", function() {
         Swal.fire({
             title: "{{__('Are you Sure?')}}",
             // icon: 'info',
