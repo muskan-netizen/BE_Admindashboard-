@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, ClientPreferenceAdditional, PaymentOption, PickDropDriverBid, UserBidRideRequest};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, ClientPreferenceAdditional, PaymentOption, PickDropDriverBid, UserBidRideRequest, UserDevice};
 use App\Http\Traits\{ApiResponser,PaymentTrait};
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
@@ -45,7 +45,7 @@ class PickupDeliveryController extends FrontController{
                 $json = json_decode($option->credentials);
                 $option->title = $json->manule_payment_title;
             }elseif($option->code == 'obo'){
-                $option->title = __("O'Pay");
+                $option->title = __("MoMo, Airtel Money, Credit/Debit Cards by O'Pay");
             }
 
             $option->title = __($option->title);
@@ -182,7 +182,10 @@ class PickupDeliveryController extends FrontController{
         $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
         $product->image_url = $image_url;
         $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
+       
+
         $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
+
         $product->original_tags_price = decimal_format($tags_price['delivery_fee']);
         $product->tags_price = decimal_format($tags_price['delivery_fee']);
         $product->toll_fee = decimal_format($tags_price['toll_fee']);
@@ -201,6 +204,19 @@ class PickupDeliveryController extends FrontController{
             $product->tags_price = decimal_format(($product->tags_price/$product->seats_for_booking)*$no_seats_for_pooling);
             $product->toll_fee = decimal_format(($product->toll_fee/$product->seats_for_booking)*$no_seats_for_pooling);
         }//------
+
+        $product->service_charge_amount  = 0.00;
+        if($product->vendor->fixed_service_charge)
+        {
+            $product->service_charge_amount  =  $product->vendor->service_charge_amount??0.00;
+        }else{
+
+            if($product->vendor->service_fee_percent>0){
+
+                $product->service_charge_amount  = $product->tags_price * $product->vendor->service_fee_percent/100;
+            }
+        }
+
         $product->total_tags_price = decimal_format($product->tags_price + $product->toll_fee + $product->service_charge_amount);
         $product->name = $product->translation->first() ? $product->translation->first()->title :'';
         $product->description = $product->translation->first() ? $product->translation->first()->body_html :'';
@@ -505,6 +521,15 @@ class PickupDeliveryController extends FrontController{
                     $order_place['data']['user_name'] = $user->email;
                     $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
 
+
+                    //Send sendNotificationToCustomer
+                    if (isset($request->schedule_time) && !empty($request->schedule_time))
+                    {
+                        $order_number = $order_place['data']->order_number??$order_place['data']['order_number'];
+                        $device_token = UserDevice::whereUserId($user->id)->orderBy('id','desc')->value('device_token');
+                        sendNotificationToCustomer($device_token,$order_number);
+                    }
+                    
                      //Send message if ride is booked for friend
                     if($request->type == 1 && isset($request->friendPhoneNumber))
                     {
@@ -528,13 +553,21 @@ class PickupDeliveryController extends FrontController{
                     $order_place['data']['user_name'] = $user->email;
                     $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
 
+                     //Send sendNotificationToCustomer
+                     if (isset($request->schedule_time) && !empty($request->schedule_time))
+                     {
+                         $order_number = $order_place['data']->order_number??$order_place['data']['order_number'];
+                         $device_token = UserDevice::whereUserId($user->id)->orderBy('id','desc')->value('device_token');
+                         sendNotificationToCustomer($device_token,$order_number);
+                     }
+
+
                      //Send message if ride is booked for friend
                     if($request->type == 1 && isset($request->friendPhoneNumber))
                     {
                         $msg = "Hi ".($request->friendName??'User').", ".$user->name." has booked a ride for you.";
                         $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
                     }
-                    \Log::info($order_place);
                     return  $order_place;
                 }
                 else{

@@ -17,7 +17,9 @@ class Category extends Model
       return $this->hasMany('App\Models\Category_translation')->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')->join('languages', 'category_translations.language_id', 'languages.id')->select('category_translations.*', 'languages.id as langId', 'languages.name as langName', 'cl.is_primary')->where('cl.is_active', 1)->orderBy('cl.is_primary', 'desc');
     }
     
-
+    public function translationLatest(){
+        return $this->hasOne('App\Models\Category_translation')->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')->join('languages', 'category_translations.language_id', 'languages.id')->select('category_translations.*', 'languages.id as langId', 'languages.name as langName', 'cl.is_primary')->where('cl.is_active', 1)->orderBy('cl.is_primary', 'desc');       
+    }
   
     public function translation_one(){
 
@@ -31,7 +33,7 @@ class Category extends Model
           $langset = 1;
         }
       }
-      return $this->hasOne('App\Models\Category_translation')->select('category_id', 'name')->where('language_id', $langset);
+      return $this->hasOne('App\Models\Category_translation')->select('category_id', 'name')->where('language_id', $langset)->latest();
     }
 
     public function english(){
@@ -47,7 +49,7 @@ class Category extends Model
 
     public function primary(){
 
-      $langData = $this->hasOne('App\Models\Category_translation')->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')->select('category_translations.category_id', 'category_translations.name', 'category_translations.language_id', 'category_translations.meta_description', 'category_translations.language_id as langId', 'category_translations.meta_title','category_translations.meta_keywords')->where('cl.is_primary', 1);
+      $langData = $this->hasOne('App\Models\Category_translation')->latest()->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id')->select('category_translations.created_at','category_translations.category_id', 'category_translations.name', 'category_translations.language_id', 'category_translations.meta_description', 'category_translations.language_id as langId', 'category_translations.meta_title','category_translations.meta_keywords')->where('cl.is_primary', 1);
 
       if(!$langData){
         $langData = $this->hasOne('App\Models\Category_translation')->join('client_languages as cl', 'cl.language_id', 'category_translations.language_id', 'category_translations.language_id as langId')->select('category_translations.category_id', 'category_translations.name', 'category_translations.language_id', 'category_translations.meta_title','category_translations.meta_keywords')->limit(1);

@@ -3027,11 +3027,11 @@ class OrderController extends FrontController
 
             if ($order->payment_option_id == 1) {
                 $cash_to_be_collected = 'Yes';
-                $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
+                $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
             } else {
                 if ($order->is_postpay == 1 && $order->payment_status == 0) {
                     $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
+                    $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
                 } else {
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -3160,11 +3160,11 @@ class OrderController extends FrontController
             $tasks = array();
             if ($order->payment_option_id == 1) {
                 $cash_to_be_collected = 'Yes';
-                $payable_amount = $order->payable_amount;
+                $payable_amount = $order->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
             } else {
                 if ($order->is_postpay == 1 && $order->payment_status == 0) {
                     $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order->payable_amount;
+                    $payable_amount = $order->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
                 } else {
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -3291,11 +3291,11 @@ class OrderController extends FrontController
             $tasks = array();
             if ($order->payment_option_id == 1) {
                 $cash_to_be_collected = 'Yes';
-                $payable_amount = $order->payable_amount;
+                $payable_amount = $order->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
             } else {
                 if ($order->is_postpay == 1 && $order->payment_status == 0) {
                     $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order->payable_amount;
+                    $payable_amount = $order->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
                 } else {
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;

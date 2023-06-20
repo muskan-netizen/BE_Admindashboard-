@@ -143,7 +143,8 @@ class ProductController extends BaseController
                         },
                         'variantSet.options' => function($zx) use($langId, $pvIds, $pid){
                             $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id')
-                            ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id')
+                            ->join('product_variants','pvs.product_variant_id','product_variants.id')
+                            ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id','product_variants.quantity')
                             ->where('pvs.product_id', $pid)
                             ->where('vt.language_id', $langId);
                         },

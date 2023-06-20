@@ -23,11 +23,13 @@ class EasebuzzController  extends FrontController
     // serverurl + payment/easebuzz/notify;
     public function __construct() {
         $payOpt = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'easebuzz')->where('status', 1)->first();
-        $json = json_decode($payOpt->credentials);
-        $this->MERCHANT_KEY =  $json->easebuzz_merchant_key;
-        $this->SALT =  $json->easebuzz_salt;
-        $this->ENV = ($payOpt->test_mode == 1) ?  "test" : 'prod' ; 
-        $this->Sub_merchant = $json->easebuzz_Sub_merchant ;
+        if(@$payOpt->status){
+            $json = json_decode($payOpt->credentials);
+            $this->MERCHANT_KEY =  $json->easebuzz_merchant_key;
+            $this->SALT =  $json->easebuzz_salt;
+            $this->ENV = ($payOpt->test_mode == 1) ?  "test" : 'prod' ; 
+            $this->Sub_merchant = $json->easebuzz_Sub_merchant ;
+        }
     }
 
     function easebuzz_gateway (){

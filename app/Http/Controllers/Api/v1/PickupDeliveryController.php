@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client, ClientPreferenceAdditional, Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, OrderVendorProduct, ProductFaq, ProductFaqSelectOption, UserBidRideRequest, PickDropDriverBid};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client, ClientPreferenceAdditional, Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, OrderVendorProduct, ProductFaq, ProductFaqSelectOption, UserBidRideRequest, PickDropDriverBid, UserDevice};
 use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Validator;
@@ -99,7 +99,21 @@ class PickupDeliveryController extends BaseController{
             if(!empty($products)){
                 foreach ($products as $key => $product) {
                     $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
-                    $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
+
+                   // $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
+
+                    $product->service_charge_amount  = 0.00;
+                    if($product->vendor->fixed_service_charge)
+                    {
+                        $product->service_charge_amount  =  $product->vendor->service_charge_amount??0.00;
+                    }else{
+            
+                        if($product->vendor->service_fee_percent>0){
+            
+                            $product->service_charge_amount  = $product->tags_price * $product->vendor->service_fee_percent/100;
+                        }
+                    }
+
                     $product->toll_fee   = $tags_price['toll_fee']??0;
                     $product->tags_price = $tags_price['delivery_fee']??0;
                     $total_price += $total_price + $product->tags_price;
@@ -296,6 +310,14 @@ class PickupDeliveryController extends BaseController{
                         DB::commit();
                         $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
 
+                        //Send sendNotificationToCustomer
+                        if (isset($request->schedule_time) && !empty($request->schedule_time))
+                        {
+                            $order_number = $order_place['data']->order_number??$order_place['data']['order_number'];
+                            $device_token = UserDevice::whereUserId($user->id)->orderBy('id','desc')->value('device_token');
+                            sendNotificationToCustomer($device_token,$order_number);
+                        }
+
                         //Send message if ride is booked for friend
                         if($request->bookingType == 1 && isset($request->friendPhoneNumber))
                         {
@@ -315,6 +337,15 @@ class PickupDeliveryController extends BaseController{
                         $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
                         $order_place['data']['user_name'] = $user->email;
                         $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
+
+
+                        //Send sendNotificationToCustomer
+                        if (isset($request->schedule_time) && !empty($request->schedule_time))
+                        {
+                            $order_number = $order_place['data']->order_number??$order_place['data']['order_number'];
+                            $device_token = UserDevice::whereUserId($user->id)->orderBy('id','desc')->value('device_token');
+                            sendNotificationToCustomer($device_token,$order_number);
+                        }
     
                          //Send message if ride is booked for friend
                         if($request->type == 1 && isset($request->friendPhoneNumber))
@@ -721,7 +752,6 @@ class PickupDeliveryController extends BaseController{
                 $unique = Auth::user()->code;
                 $client_do = Client::where('code',$unique)->first();
                 $product = Product::find($request->product_id);
-                
                 if ($order->payment_option_id == 1 && ($order->payable_amount >0)) {
                     $cash_to_be_collected = 'Yes';
                     $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
