@@ -89,7 +89,7 @@ $timezone = @$user->timezone;
                   @endif
                   {{-- <p style="font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0 0 3px;color: #777777;">$90.00</p>
                   <p style="font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0 0 3px;color: #777777;">$90.00</p> --}}
-                  <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;margin: 5px 0 0;padding: 5px 0 0;color: #000000;display: inline-block;border-top: 1px solid #ddd;min-width: 80px;">{{ $currencySymbol . decimal_format(($vendor_product['pvariant']['price']*$vendor_product['quantity']))}}</h3>
+                  <!-- <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;margin: 5px 0 0;padding: 5px 0 0;color: #000000;display: inline-block;border-top: 1px solid #ddd;min-width: 80px;">{{ $currencySymbol . decimal_format(($vendor_product['pvariant']['price']*$vendor_product['quantity']))}}</h3> -->
                </td>
             </tr>
 
