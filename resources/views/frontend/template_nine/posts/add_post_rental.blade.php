@@ -367,6 +367,7 @@
                                                     data-name="{{ $category['translation_one']['name'] }}"
                                                     data-id="{{ $category['id'] }}" href="#">
                                                     <div class="alCategoryItems">
+                                                        <span class="category-type-badge">Sell</span>
                                                         <img class="w-25" src="{{ $icon }}">
                                                         <h3>{{ $category['translation_one']['name'] }}</h3>
                                                     </div>
@@ -388,10 +389,8 @@
                         </div>
                     </div>
 
-
-
-                    <div class=" row">
-                        <div class="alPostBoxOuter  col-md-11 mx-auto   mb-4">
+                    <div class="row">
+                        <div class="alPostBoxOuter col-md-11 mx-auto mb-4">
                             <div class="p-3">
                                 <form action="{{ route('posts.addProductWithAttribute') }}" enctype="multipart/form-data"
                                     method="post" id="product_form">
