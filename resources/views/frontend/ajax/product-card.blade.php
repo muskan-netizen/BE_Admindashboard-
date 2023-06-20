@@ -71,7 +71,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                 @if($data->inquiry_only == 0)
                                     <h4 class="mt-1">{{Session::get('currencySymbol').' '.(decimal_format($data->variant_price * $data->variant_multiplier))}}</h4>
                                 @endif
-                               
+                            </div>
                            @else
                            		@if(($data->inquiry_only == 0) && ($is_service_product_price_from_dispatch_forOnDemand !=1) )
                                     @if (@$additionalPreference['is_token_currency_enable'] )
@@ -85,7 +85,6 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                 </div>
             </a>
         </div>
-    </div>
         @endforeach
         @else
         <div class="col-xl-12 col-12 mt-4"><h5 class="text-center">{{ __('No Product Found') }}</h5></div>
