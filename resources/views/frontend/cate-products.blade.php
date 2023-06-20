@@ -153,9 +153,9 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
         type: 'double',
         grid: false,
         min: 0,
-        max: {{ $maxPrice??50000 }},
+        max: {{ $maxPrice??0 }},
         from: 0,
-        to: {{ $maxPrice??50000 }},
+        to: {{ $maxPrice??0 }},
         prefix: " "
     });
     var ajaxCall = 'ToCancelPrevReq';

@@ -352,17 +352,13 @@
                             <div class="px-3">
                                 <div class="d-flex mb-2 align-items-center justify-content-between alCategoryItemsHead">
                                     <h6 class="m-0">CHOOSE A CATEGORY </h6>
-                                    @if (@$categories && count($categories) > 4)
-                                        <a href="javascript:;" id="view-all_cats">View All</a>
-                                    @endif
                                 </div>
                                 <ul class="row p-0 m-0 no-gutters">
                                     @if (@$categories)
                                         @foreach ($categories as $key => $category)
                                             @php  $icon = $category['icon']['proxy_url'] . '200/200' . $category['icon']['image_path'];  @endphp
-                                            <li class="col-3 px-1 category-list @if ($key > 3) view-all_cats @endif"
-                                                id="category_{{ $category->id }}"
-                                                @if ($key > 3) style="display:none;" @endif>
+                                            <li class="col-3 px-1 category-list view-all_cats"
+                                                id="category_{{ $category->id }}">
                                                 <a class="cate-item text-center w-100 py-3 mb-0 rounded select-category"
                                                     data-name="{{ $category['translation_one']['name'] }}"
                                                     data-id="{{ $category['id'] }}" data-type-id="{{$category->type_id}}" href="#">
