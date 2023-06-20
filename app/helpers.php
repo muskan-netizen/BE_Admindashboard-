@@ -1254,6 +1254,10 @@ if (!function_exists('getServiceTypesCategory')) {
                 'p2p'          => ['p2p'],
                 'home_service' => ['on_demand_service', 'appointment_service'],
             ];
+            $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
+            if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                $alltypes['p2p'] = ['p2p', 'rental_service'];
+            }
             
             if ($vendorType == 'delivery' || $vendorType == 'dine_in' || $vendorType == 'takeaway' || $vendorType == 'rental' || $vendorType == 'pick_drop' || $vendorType == 'on_demand' || $vendorType == 'laundry' || $vendorType == 'appointment' || $vendorType == 'p2p') {
                 $service_types = $alltypes[$vendorType];
@@ -1261,6 +1265,10 @@ if (!function_exists('getServiceTypesCategory')) {
 
             if ($client_preference->business_type == 'taxi' || $client_preference->business_type == 'laundry' || $client_preference->business_type == 'home_service' || $client_preference->business_type == 'p2p') {
                 $service_types = $alltypes[$client_preference->business_type];
+            }
+            $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
+            if($client_preference->business_type == 'p2p' && @$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                $service_types = $alltypes['p2p'];
             }
             /* if ($vendorType == "delivery" || $vendorType == "dine_in" || $vendorType == "takeaway") {
                 $service_types = ['products_service'];
@@ -1918,5 +1926,16 @@ if (!function_exists('getOnDemandPricingRule')) {
                 }
             }
             return $return;
+    }
+
+}
+if (!function_exists('getDatesBetweenTwoDates')) { 
+    function getDatesBetweenTwoDates($start_date, $end_date)
+    {
+        $period = CarbonPeriod::create($start_date, $end_date);
+
+        // Convert the period to an array of dates
+        $dates = $period->toArray();
+        return $dates;
     }
 }

@@ -526,6 +526,11 @@ Route::group(['middleware' => ['domain']], function () {
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
 
 	Route::get('user/orders', 'Front\OrderController@orders')->name('user.orders');
+	Route::get('user/lander-orders', 'Front\OrderController@lenderOrders')->name('user.lander-orders');
+	Route::get('user/borrower-orders', 'Front\OrderController@borrowerOrders')->name('user.borrower-orders');
+	Route::post('user/orderVenderStatusUpdate', 'Front\OrderController@orderVenderStatusUpdate')->name('user.orderVenderStatusUpdate');
+
+	Route::get('user/rental-orders', 'Front\RentalOrderController@rentalOrders')->name('user.rental-orders');
 	Route::post('user/orders/tip-after-order', 'Front\OrderController@tipAfterOrder')->name('user.tip_after_order');
 	Route::post('user/store', 'Front\AddressController@store')->name('address.store');
 	Route::get('user/addAddress', 'Front\AddressController@add')->name('addNewAddress');
@@ -694,9 +699,10 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('remove/giftCard', 'Front\giftCard\GiftcardController@RemoveGiftCardCode')->name('remove.giftCard');
 	Route::get('user/giftCard/mailTest', 'Front\giftCard\GiftcardController@textGiftMail')->name('giftCard.mail');
 
-
+	
 	Route::resource('posts', 'Front\PostController');
 	Route::get('get-attributes', 'Front\PostController@getCategoryAttributes')->name("category.attributes");
+	Route::post('addProductWithAttribute', 'Front\PostController@addProductWithAttribute')->name("posts.addProductWithAttribute");
 	/**
 	 * booking routes
 	 */

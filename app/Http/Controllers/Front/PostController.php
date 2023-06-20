@@ -17,13 +17,14 @@ use App\Models\Client;
 use App\Models\ProductAttribute;
 use App\Models\ProductImage;
 use App\Models\UserVendor;
-use App\Models\Vendor;
+use App\Models\{Vendor, ProductAvailability};
 use App\Models\VendorMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Session;
+use Carbon\Carbon;
 
 class PostController extends FrontController
 {
@@ -38,22 +39,33 @@ class PostController extends FrontController
      */
     public function index()
     {
+        $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
         $navCategories = $this->categoryNav($langId);
         $celebrity_check = ClientPreference::first()->value('celebrity_check');
-        $categories = Category::with('translation_one','type')->where('id', '>', '1')
-        ->whereHas('type', function($q){
-            $q->where('service_type', 'p2p');
-        })
-        ->where('is_core', 1)->orderBy('parent_id', 'asc')->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1);
+
+        $categories = Category::with('translation_one','type')->where('id', '>', '1');
+        if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+            $categories->whereHas('type', function($q){
+                $q->where('service_type', 'rental_service');
+                $q->orWhere('service_type', 'p2p');
+            });
+        }else{
+            $categories->whereHas('type', function($q){
+                $q->where('service_type', 'p2p');
+            });
+        }
+        
+        $categories = $categories->where('is_core', 1)->orderBy('parent_id', 'asc')->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1);
 
         if ($celebrity_check == 0)
             $categories = $categories->where('type_id', '!=', 5);   # if celebrity mod off .
 
         $categories = $categories->get();
+    
         // dd($categories);
-        return view('frontend.template_nine.posts.index')->with(['categories' => $categories, 'navCategories' => $navCategories]);
+        return view('frontend.template_nine.posts.add_post_rental')->with(['categories' => $categories, 'navCategories' => $navCategories]);
     }
 
 
@@ -123,71 +135,11 @@ class PostController extends FrontController
             $product = $this->saveProduct($request);
             $fileIds = $this->uploadProductImages($product, $request);
 
-            // $productImageSave = array();
-            // if (@$fileIds) {
-            //     foreach ($fileIds as $key => $value) {
-            //         $productImageSave[] = [
-            //             'product_id' => $product->id,
-            //             'media_id' => $value,
-            //             'is_default' => 1
-            //         ];
-            //     }
-            // }
-            // ProductImage::insert($productImageSave);
+            
 
             if( clientPrefrenceModuleStatus('p2p_check') ) {
-                if( !empty($request->attribute) ) {
-                    if( checkTableExists('product_attributes') ) {
-                        $insert_arr = [];
-                        $insert_count = 0;
-                        foreach($request->attribute as $key => $value) {
-                            if( !empty($value) && !empty($value['option'] && is_array($value) )) {
-                                
-                                if(!empty($value['type']) && $value['type'] == 1 ) { // dropdown
-                                    $value_arr = @$value['value'];
-                                    
-                                    foreach( $value['option'] as $key1 => $val1 ) {
-                                        if( @in_array($val1['option_id'], $value_arr) ) {
-
-                                            $insert_arr[$insert_count]['product_id'] = $product->id;
-                                            $insert_arr[$insert_count]['attribute_id'] = $value['id'];
-                                            $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
-                                            $insert_arr[$insert_count]['attribute_option_id'] = $val1['option_id'];
-                                            $insert_arr[$insert_count]['key_value'] = $val1['option_id'];
-                                            $insert_arr[$insert_count]['latitude'] = null;
-                                            $insert_arr[$insert_count]['longitude'] = null;
-                                            $insert_arr[$insert_count]['is_active'] = 1;
-                                        }
-                                        $insert_count++;
-                                    }
-                                }
-                                else {
-                                    foreach($value['option'] as $option_key => $option) {
-                                        if(@$option['value']){
-                                            $insert_arr[$insert_count]['product_id'] = $product->id;
-                                            $insert_arr[$insert_count]['attribute_id'] = $value['id'];
-                                            $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
-                                            $insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
-                                            $insert_arr[$insert_count]['key_value'] = $option['value'] ?? $option['option_title'];
-                                            $insert_arr[$insert_count]['latitude'] = $option['latitude'] ?? null;
-                                            $insert_arr[$insert_count]['longitude'] = $option['longitude'] ?? null;
-                                            $insert_arr[$insert_count]['is_active'] = 1;
-
-                                        }
-                                        $insert_count++;
-                                    }
-                                }
-                            }
-
-                        
-                        }
-                        if( !empty($insert_arr) ) {
-                            ProductAttribute::where('product_id',$product->id)->delete();
-                            ProductAttribute::insert($insert_arr);
-                        }
-                    }
-                }
-                
+                    // Add Attributes
+                    $this->addProductAttribute($request, $product);
             }
 
             $vendor = Vendor::where('id', $product->vendor_id)->first();
@@ -211,6 +163,305 @@ class PostController extends FrontController
 
         }
     }
+
+
+    function addProductWithAttribute(Request $request) {
+		try {
+			$validator = Validator::make($request->all(), [
+				// 'sku' => 'required|unique:products',
+				// 'url_slug' => 'required|unique:products',
+				'category_id' => 'required',
+				'product_name' => 'required',
+				// 'vendor_id'	=>	'required'
+			]);
+
+			if ($validator->fails()) {
+			
+				return $this->errorResponse($validator->errors()->first(), 422);
+			}
+			
+			$client = Client::orderBy('id','asc')->first();
+			if(isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain) {
+				$sku_url =  ($client->custom_domain);
+			} else {
+				$sku_url =  ($client->sub_domain.env('SUBMAINDOMAIN'));
+			}
+
+			$slug = str_replace(' ', '-',$request->product_name);
+			$generated_slug = $sku_url.'.'.$slug;
+			$slug = generateSlug($generated_slug);
+			$slug = str_replace(' ', '-',$slug);
+			$generated_slug = $sku_url.'.'.$slug;
+
+			$user = Auth::user();		
+			$user_vendor = UserVendor::where('user_id', $user->id)->first();
+			if(@$user_vendor->vendor_id){
+				$product = new Product();
+				$product->sku = $slug;
+				$product->url_slug = $generated_slug;
+				$product->title = $request->product_name;        
+				$product->category_id = $request->category_id;
+				$product->description = $request->description ?? '';
+				$product->type_id = 1;
+				$product->is_live = 1;
+				$product->publish_at = date('Y-m-d H:i:s');
+				$product->vendor_id = $user_vendor->vendor_id;
+				if(@$request->address){
+					$product->address = $request->address;
+				}
+				if(@$request->latitude){
+					$product->latitude = $request->latitude;
+				}
+                if(@$request->longitude){
+					$product->latitude = $request->longitude;
+				}
+				$client_lang = ClientLanguage::where('is_primary', 1)->first();
+				if (!$client_lang) {
+					$client_lang = ClientLanguage::where('is_active', 1)->first();
+				}
+				$client_lang = ClientLanguage::where('is_primary', 1)->first();
+				if (!$client_lang) {
+					$client_lang = ClientLanguage::where('is_active', 1)->first();
+				}
+				$product->save();
+				if ($product->id > 0) {
+					$datatrans[] = [
+						'title' => $request->product_name??null,
+						'body_html' => $request->body_html??null,
+						'meta_title' => '',
+						'meta_keyword' => '',
+						'meta_description' => '',
+						'product_id' => $product->id,
+						'language_id' => $client_lang->language_id
+					];
+					$product_category = new ProductCategory();
+					$product_category->product_id = $product->id;
+					$product_category->category_id = $request->category_id;
+					$product_category->save();
+					$proVariant = new ProductVariant();
+					$proVariant->price = $request->price ?? 0;
+					
+                    $week_price = ($request->price *4 / 7);
+                    $month_price = ($request->price *4 * 3 / 30);
+
+                    $proVariant->week_price = round($week_price) ?? 0;
+                
+                    $proVariant->month_price = round($month_price) ?? 0;
+					
+					if(@$request->emirate){
+						$proVariant->emirate = $request->emirate;
+					}
+					if(@$request->compare_at_price){
+						$proVariant->compare_at_price = $request->compare_at_price;
+					}
+
+					if(@$request->minimum_duration){
+						$proVariant->minimum_duration = $request->minimum_duration * 24;
+					}
+					$proVariant->sku = $slug;
+					$proVariant->title =$slug . '-' .  empty($request->product_name) ?$slug : $request->product_name;
+					$proVariant->product_id = $product->id;
+					$proVariant->quantity = 1;            
+					$proVariant->status = 1;            
+					$proVariant->barcode = $this->generateBarcodeNumber();
+					$proVariant->save();
+					ProductTranslation::insert($datatrans);
+					
+					$product_detail = Product::where('id', $product->id)->firstOrFail();
+					
+					$data = ['product_detail' => $product_detail];
+
+
+					// Upload Image
+					
+                    $fileIds = $this->uploadProductImages($product, $request);
+
+                    $this->uploadProductImage360($request, $product);
+					
+
+                    // Add Attributes
+                    $this->addProductAttribute($request, $product);
+
+                    // Add Attributes
+					$this->addProductAvailability($request, $product);
+
+					
+                    $toaster = $this->successToaster(__('Success'),__('Product added successfully') );
+                    return redirect()->back()->with('toaster', $toaster);
+				
+			}else{
+                $toaster = $this->errorToaster(__('ERROR'),'Sorry, You are not a vendor.' );
+                return redirect()->back()->with('toaster', $toaster);
+			}
+		}else{
+            $toaster = $this->errorToaster(__('ERROR'),'Sorry, You are not a vendor.' );
+            return redirect()->back()->with('toaster', $toaster);
+            
+		}
+		   
+        } catch (\Exception $e) {
+            $toaster = $this->errorToaster(__('ERROR'),$e->getMessage() );
+            return redirect()->back()->with('toaster', $toaster);
+
+        }
+	 }
+
+
+     function uploadProductImage360($request, $product){
+
+        if ($request->has('file_360')) {
+            $imageId = '';
+            $files = $request->file('file_360');
+            if(is_array($files)) {
+                foreach ($files as $file) {
+                    $img = new VendorMedia();
+                    $img->media_type = 4;
+                    $img->vendor_id = $product->vendor_id;
+                    $img->path = Storage::disk('s3')->put($this->folderName, $file, 'public');
+                    $img->save();
+                    $path1 = $img->path['proxy_url'] . '40/40' . $img->path['image_path'];
+                    if ($img->id > 0) {
+                        $imageId = $img->id;
+                        $image = new ProductImage();
+                        $image->product_id = $product->id;
+                        $image->is_default = 1;
+                        $image->media_id = $imageId;
+                        $image->save();
+                                                
+                    }
+                }
+                //return response()->json(['htmlData' => $resp]);
+            } else {
+                $img = new VendorMedia();
+                $img->media_type = 4;
+                $img->vendor_id = $product->vendor_id;
+                $img->path = Storage::disk('s3')->put($this->folderName, $files, 'public');
+                $img->save();					
+                if ($img->id > 0) {
+                    $imageId = $img->id;
+                    $image = new ProductImage();
+                    $image->product_id = $product->id;
+                    $image->is_default = 1;
+                    $image->media_id = $img->id;
+                    $image->save();
+                                    
+                }
+            }					
+        }
+        return true;
+     }
+
+     function addProductAvailability($request, $product){
+        if( @$request->date_availability) {
+            // dd("dgf");
+            $dates = explode(' - ',$request->date_availability);
+            $start_date = $dates[0];
+            $end_date = $dates[1];
+            $date_availability = getDatesBetweenTwoDates($start_date, $end_date);
+            $date_availability_data = [];
+            foreach($date_availability as $date_availability){
+                $date_availability_data[] = [
+                    'product_id' => $product->id,
+                    'date_time' => $date_availability,
+                    'not_available' => 0,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()
+                ];
+            }
+            if(@$date_availability_data){
+                ProductAvailability::insert($date_availability_data);
+            }
+            
+        }
+        return true;
+     }
+
+     function addProductAttribute($request, $product){
+        if( checkTableExists('product_attributes') ) {
+            if( !empty($request->attribute) ) {
+                $attribute = json_decode($request->attribute, true);
+                
+                if( !empty($attribute) ) {
+            
+                    $insert_arr = [];
+                    $insert_count = 0;
+                    // \Log::info($attribute);
+                    foreach($attribute as $key => $value) {
+                        // \Log::info($value);
+                        if( !empty($value) && !empty($value['option'] && is_array($value) )) {
+                            
+                            if(!empty($value['type']) && $value['type'] == 1 ) { // dropdown
+                                $value_arr = @$value['value'];
+                                
+                                foreach( $value['option'] as $key1 => $val1 ) {
+                                    if( @in_array($val1['option_id'], $value_arr) ) {
+
+                                        $insert_arr[$insert_count]['product_id'] = $product->id;
+                                        $insert_arr[$insert_count]['attribute_id'] = $value['id'];
+                                        $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+                                        $insert_arr[$insert_count]['attribute_option_id'] = $val1['option_id'];
+                                        $insert_arr[$insert_count]['key_value'] = $val1['option_id'];
+                                        $insert_arr[$insert_count]['latitude'] = null;
+                                        $insert_arr[$insert_count]['longitude'] = null;
+                                        $insert_arr[$insert_count]['is_active'] = 1;
+                                    }
+                                    $insert_count++;
+                                }
+                            }
+                            else {
+                                $value_arr = @$value['value'];
+                                
+                                // \Log::info($option['option_id']);
+                                foreach($value['option'] as $option_key => $option) {
+                                    if(!empty($value['type']) && $value['type'] == 4 ) { // textbox
+                                        $insert_arr[$insert_count]['product_id'] = $product->id;
+                                        $insert_arr[$insert_count]['attribute_id'] = $value['id'];
+                                        $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+                                        $insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
+                                        $insert_arr[$insert_count]['key_value'] = (!empty($value['value']) && !empty($value['value'][0]) ? $value['value'][0] : '');
+                                        $insert_arr[$insert_count]['latitude'] = null;
+                                        $insert_arr[$insert_count]['longitude'] = null;
+                                        $insert_arr[$insert_count]['is_active'] = 1;
+                                    }
+                                    elseif(!empty($value['type']) && $value['type'] == 6) {
+                                        
+                                        $insert_arr[$insert_count]['product_id'] = $product->id;
+                                        $insert_arr[$insert_count]['attribute_id'] = $value['id'];
+                                        $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+                                        $insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
+                                        $insert_arr[$insert_count]['key_value'] = $value['address'];
+                                        $insert_arr[$insert_count]['latitude'] = $value['latitude'] ?? null;
+                                        $insert_arr[$insert_count]['longitude'] = $value['longitude'] ?? null;
+                                        $insert_arr[$insert_count]['is_active'] = 1;
+                                    }
+                                    elseif( @in_array($option['option_id'], $value_arr) ) {
+                                        // \Log::info($option);
+                                        $insert_arr[$insert_count]['product_id'] = $product->id;
+                                        $insert_arr[$insert_count]['attribute_id'] = $value['id'];
+                                        $insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+                                        $insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
+                                        $insert_arr[$insert_count]['key_value'] = $option['option_id'];
+                                        $insert_arr[$insert_count]['latitude'] = $value['latitude'] ?? null;
+                                        $insert_arr[$insert_count]['longitude'] = $value['longitude'] ?? null;
+                                        $insert_arr[$insert_count]['is_active'] = 1;
+                                    }
+                                    
+                                    $insert_count++;
+                                }
+                            }
+                        }
+
+                    
+                    }
+                    if( !empty($insert_arr) ) {
+                        ProductAttribute::where('product_id',$request->product_id)->delete();
+                        ProductAttribute::insert($insert_arr);
+                    }
+                }
+            }
+        }
+        return true;
+     }
 
     /**
      * Display the specified resource.

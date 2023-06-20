@@ -2,6 +2,9 @@
 :root{
     font-family: 'Poppins', sans-serif;
 }
+body.al_body_template_nine {
+    background-color: #fff!important;
+}
 .pac-container{
     z-index: 1051;
 }
