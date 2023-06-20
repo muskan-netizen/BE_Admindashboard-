@@ -85,6 +85,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                 </div>
             </a>
         </div>
+    </div>
         @endforeach
         @else
         <div class="col-xl-12 col-12 mt-4"><h5 class="text-center">{{ __('No Product Found') }}</h5></div>
