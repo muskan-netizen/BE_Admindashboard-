@@ -2037,6 +2037,9 @@ body.al_body_template_six.dark.homeHeader .main-fillter .side_fillter {
     white-space: nowrap;
 }
 
+.al_body_template_four  .dashboard-right .pricing-content {
+    min-height: 55px;
+}
 /*-------------ipad css--------*/
 
 @media(max-width:991px) {
