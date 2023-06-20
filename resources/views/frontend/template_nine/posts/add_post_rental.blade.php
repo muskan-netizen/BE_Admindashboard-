@@ -360,7 +360,6 @@ body.al_body_template_nine .alPostBoxOuter ul li a.active:before {
     content: '\f058';
     font-family: 'FontAwesome'!important;
     font-size: 25px;
-    z-index: 99;
     line-height: 1;
     background: #fff;
     box-shadow: 0 0 2px;
@@ -745,24 +744,32 @@ select#category_filter {
 
         $(document).on('change', '#category_filter', function(){
             var value = $(this).val();
+            var $viewAllCats = $('.view-all_cats');
+            var $viewP2PSellCats = $('.view-p2psell_cats');
+            var $viewRentalCats = $('.view-rental_cats');
+            var $categoryID = $("#category_id");
+            var $selectedCategory = $(".selected-category");
+            var $p2pCategoryForm = $(".p2p-category-form");
+    
+            $viewAllCats.addClass('d-none');
+            $viewP2PSellCats.addClass('d-none');
+            $viewRentalCats.addClass('d-none');
             switch (value) {
-            case '10':
-                $('.view-all_cats').addClass('d-none');
-                $('.view-p2psell_cats').addClass('d-none');
-                $('.view-rental_cats').removeClass('d-none');
+                case '10':
+                $viewRentalCats.removeClass('d-none');
                 break;
                 case '13':
-                    $('.view-all_cats').addClass('d-none');
-                    $('.view-rental_cats').addClass('d-none');
-                    $('.view-p2psell_cats').removeClass('d-none');
+                $viewP2PSellCats.removeClass('d-none');
                 break;
                 default:
-                    $('.view-all_cats').removeClass('d-none');
-                    $('.view-p2psell_cats').addClass('d-none');
-                    $('.view-rental_cats').addClass('d-none');
+                $viewAllCats.removeClass('d-none');
                 break;
             }
+            $categoryID.val('');
+            $selectedCategory.text('');
+            $p2pCategoryForm.addClass('d-none');
         });
+
     </script>
 
     <?php
