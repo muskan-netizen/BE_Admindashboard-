@@ -38,14 +38,13 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                     @if(getAdditionalPreference(['chat_button'])['chat_button'])
                                     <button class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{$data->vendor->id}}" data-orderid="" data-order_id="" data-product_id="{{$data->id}}" style="margin-right: 5px !important;"><i class="fa fa-comments" aria-hidden="true"></i></button>
                                             
-                                        @endif
-                                        @if(getAdditionalPreference(['call_button'])['call_button'])
-                                            <button class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone" aria-hidden="true"></i></button>
-                                            
-                                        @endif
-                                    </div>
+                                    @endif
+                                    @if(getAdditionalPreference(['call_button'])['call_button'])
+                                        <button class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone" aria-hidden="true"></i></button>
+                                        
+                                    @endif
                                 </div>
-                            </div>  
+                            </div>
                             @if(@$data->vendor->is_seller == 1)
                                 <h6 class="sold-by d-flex">
                                     <b> <img class="blur-up lazyload" data-src="{{$favicon}}" alt="{{$data->vendor->Name}}" style="width: 25px !important; height: 25px;"></b> <b> Order by clickokart </b>
