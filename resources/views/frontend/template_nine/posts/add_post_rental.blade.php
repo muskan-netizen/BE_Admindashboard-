@@ -414,7 +414,7 @@ span.category-type-badge.d-block {
                     </div>
 
                     <div class="row">
-                        <div class="alPostBoxOuter col-md-11 mx-auto mb-4">
+                        <div class="alPostBoxOuter col-md-11 mx-auto mb-4 p2p-category-form d-none">
                             <div class="p-3">
                                 <form action="{{ route('posts.addProductWithAttribute') }}" enctype="multipart/form-data"
                                     method="post" id="product_form">
@@ -587,7 +587,7 @@ span.category-type-badge.d-block {
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script>
         $(document).on('click', '#view-all_cats', function() {
-            $('#view-all_cats').text();
+            $('#view-all_cats').hide();
             $('.view-all_cats').show();
 
         });
@@ -606,9 +606,10 @@ span.category-type-badge.d-block {
         $('.dropify').dropify();
         $(document).on('click', '.select-category', function() {
             var category_id = $(this).data('id');
-            var type_id = $(this).data('type-id');
             $("#category_id").val(category_id);
             $(".selected-category").text($(this).data('name'));
+            var type_id = $(this).data('type-id');
+            $(".p2p-category-form").removeClass('d-none');
             if(type_id == '10'){
                 $(".rental-cat-fields").removeClass('d-none');
             }else{
