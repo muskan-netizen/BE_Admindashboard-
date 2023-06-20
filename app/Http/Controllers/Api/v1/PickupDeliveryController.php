@@ -117,10 +117,10 @@ class PickupDeliveryController extends BaseController{
                     $product->toll_fee   = $tags_price['toll_fee']??0;
                     $product->tags_price = $tags_price['delivery_fee']??0;
                     $total_price += $total_price + $product->tags_price;
-                    $product->distance = decimal_format($tags_price['distance']);
-                    $product->duration = decimal_format($tags_price['duration']);
-                    $product->min_tags_price = decimal_format($tags_price['min_delivery_fee']);
-                    $product->max_tags_price = decimal_format($tags_price['max_delivery_fee']);
+                    $product->distance = decimal_format($tags_price['distance']??0);
+                    $product->duration = decimal_format($tags_price['duration']??0);
+                    $product->min_tags_price = decimal_format($tags_price['min_delivery_fee']??0);
+                    $product->max_tags_price = decimal_format($tags_price['max_delivery_fee']??0);
 
                     $product->seats_for_booking = ($product->seats_for_booking > 0)?$product->seats_for_booking:1;
                     if(isset($request->is_cab_pooling) && $request->is_cab_pooling==1 && !empty($preferences) && $preferences->is_cab_pooling == 1)
