@@ -1274,7 +1274,28 @@ body.al_body_template_nine .chat-button button.btn-solid {
     color: var(--theme-deafult)!important;
     padding: 0 1px!important;
 }
-
+body.al_body_template_nine .menu-navigation.al {
+    width: 100vw;
+    left: -50vw;
+    margin-left: 50%;
+    position: relative;
+    margin-top: 15px;
+}
+.menu-navigation.al:after {
+    position: absolute;
+    top: 0;
+    content: '';
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: var(--theme-deafult);
+    width: 100%;
+    height: 100%;
+    opacity: 0.70;
+}
+.al_body_template_nine .menu-slider .al_main_category a {
+    color: #fff;
+}
 /*----------media css--------------*/
 @media(max-width:1800px) {
     body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head a.sell-btn span{
