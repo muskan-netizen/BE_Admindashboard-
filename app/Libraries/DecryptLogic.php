@@ -19,7 +19,6 @@ class DecryptLogic
            }
         $data = substr(trim(gzinflate(base64_decode($decrypted))),3);
         return $data;
-    // dd($data);
     }
 }
 
