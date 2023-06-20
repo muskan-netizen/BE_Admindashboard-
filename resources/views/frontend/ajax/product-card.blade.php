@@ -40,7 +40,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                             
                                         @endif
                                         @if(getAdditionalPreference(['call_button'])['call_button'])
-                                            <button class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone-square" aria-hidden="true"></i></button>
+                                            <button class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone" aria-hidden="true"></i></button>
                                             
                                         @endif
                                     </div>

@@ -58,10 +58,10 @@
         .cate-item h3 {
             font-style: normal;
             font-weight: 600;
-            font-size: 16px;
-            line-height: 22px;
+            font-size: 14px;
+            line-height: 1.5;
             color: #222;
-            margin-top: 10px;
+            margin-top: 8px;
             margin-bottom: 0;
         }
 
@@ -351,6 +351,7 @@
     position: relative;
     display: flex;
     flex-wrap: wrap;
+    margin-top:40px!important;
 }
 body.al_body_template_nine .alPostBoxOuter ul li a.active:before {
     color: green;
@@ -383,6 +384,8 @@ select#category_filter {
     min-width: 170px;
     appearance: none;
     background: transparent;
+    border:1px solid #ccc;
+    border-radius: 6px;
 }
 .fillter_div{
     position: relative;
@@ -396,6 +399,25 @@ select#category_filter {
     font-family: 'FontAwesome';
     font-size: 15px;
     color: #000;
+}
+.fillter_div span {
+    font-size: 18px;
+    color: #000;
+    padding-right: 10px;
+}
+@media (max-width:1100px){
+    .alPostBoxOuter ul li {
+    list-style: none;
+    margin-bottom: 31px;
+    width: 25%;
+}
+}
+@media (max-width:767px){
+    .alPostBoxOuter ul li {
+    list-style: none;
+    margin-bottom: 31px;
+    width: 33.33%;
+}
 }
     </style>
 @endsection

@@ -46,7 +46,7 @@
                                     {{-- {{__('Chat')}} --}}
                                 @endif
                                 @if(getAdditionalPreference(['call_button'])['call_button'])
-                                    <a class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone-square" aria-hidden="true"></i></a>sad
+                                    <a class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone    " aria-hidden="true"></i></a>sad
                                     {{-- {{__('Call Button')}} --}}
                                 @endif
                             </div>
