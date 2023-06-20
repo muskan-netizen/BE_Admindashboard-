@@ -565,7 +565,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script>
         $(document).on('click', '#view-all_cats', function() {
-            $('#view-all_cats').text();
+            $('#view-all_cats').hide();
             $('.view-all_cats').show();
 
         });
