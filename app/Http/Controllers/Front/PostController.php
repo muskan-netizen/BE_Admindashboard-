@@ -65,11 +65,7 @@ class PostController extends FrontController
         $categories = $categories->get();
     
         // dd($categories);
-        if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
-            return view('frontend.template_nine.posts.add_post_rental')->with(['categories' => $categories, 'navCategories' => $navCategories]);
-        }else{
-            return view('frontend.template_nine.posts.index')->with(['categories' => $categories, 'navCategories' => $navCategories]);
-        }
+        return view('frontend.template_nine.posts.add_post_rental')->with(['categories' => $categories, 'navCategories' => $navCategories]);
     }
 
 
