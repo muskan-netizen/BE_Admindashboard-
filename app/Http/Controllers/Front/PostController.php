@@ -49,6 +49,7 @@ class PostController extends FrontController
         if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
             $categories->whereHas('type', function($q){
                 $q->where('service_type', 'rental_service');
+                $q->orWhere('service_type', 'p2p');
             });
         }else{
             $categories->whereHas('type', function($q){
