@@ -21,7 +21,12 @@ class TaxController extends Controller{
         $tax_category_options = TaxCategory::get();
 
         // total_tax_collected 
-        $total_tax_collected = Order::orderBy('id','desc');
+        $total_tax_collected = Order::orderBy('id','desc')->where(function ($query){
+            $query->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
+            $query->orWhere(function ($q2) {
+                $q2->whereIn('payment_option_id', [1,38]);
+            });
+        });;
         if (Auth::user()->is_superadmin == 0) {
             $total_tax_collected = $total_tax_collected->whereHas('vendors.vendor.permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
@@ -47,7 +52,12 @@ class TaxController extends Controller{
     public function filter(Request $request){
         $user = Auth::user();
         $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
-        $orders_query = Order::with('user','paymentOption','taxes','ordervendor');
+        $orders_query = Order::with('user','paymentOption','taxes','ordervendor')->where(function ($query){
+            $query->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
+            $query->orWhere(function ($q2) {
+                $q2->whereIn('payment_option_id', [1,38]);
+            });
+        });
         if (Auth::user()->is_superadmin == 0) {
             $orders_query = $orders_query->whereHas('vendors.vendor.permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
