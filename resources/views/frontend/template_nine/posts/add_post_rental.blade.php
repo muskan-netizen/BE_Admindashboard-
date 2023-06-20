@@ -352,6 +352,52 @@
     display: flex;
     flex-wrap: wrap;
 }
+body.al_body_template_nine .alPostBoxOuter ul li a.active:before {
+    color: green;
+    position: absolute;
+    top: 1px;
+    left: 17px;
+    content: '\f058';
+    font-family: 'FontAwesome'!important;
+    font-size: 25px;
+    z-index: 99;
+    line-height: 1;
+    background: #fff;
+    box-shadow: 0 0 2px;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+body.al_body_template_nine .alPostBoxOuter ul li a.active img {
+    border-color: green;
+    /* box-shadow: 0 0 7px green; */
+}
+body.al_body_template_nine .alPostBoxOuter ul li a.active .alCategoryItems img {
+    position: unset;
+    z-index: 1;
+}
+select#category_filter {
+    padding: 5px 15px;
+    min-width: 170px;
+    appearance: none;
+    background: transparent;
+}
+.fillter_div{
+    position: relative;
+}
+.fillter_div:after {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    content: '\f107';
+    font-family: 'FontAwesome';
+    font-size: 15px;
+    color: #000;
+}
     </style>
 @endsection
 
@@ -371,11 +417,14 @@
                             <div class="px-3">
                                 <div class="d-flex mb-2 align-items-center justify-content-between alCategoryItemsHead">
                                     <h6 class="m-0">CHOOSE A CATEGORY </h6>
-                                    <select name="category-filter" id="category_filter" value="">
-                                        <option value="all">All</option>
-                                        <option value="10">Rental</option>
-                                        <option value="13">Sell</option>
-                                    </select>
+                                    <div class="fillter_div">
+                                        <span>Fillter:</span>
+                                        <select name="category-filter" id="category_filter" value="">
+                                            <option value="all">All</option>
+                                            <option value="10">Rental</option>
+                                            <option value="13">Sell</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <ul class=" p-0 m-0 no-gutters view-all_cats">
                                     @if (@$categories)
