@@ -1267,21 +1267,14 @@ body.al_body_template_nine  span#cart_qty_span {
     color: #000;
     height: 20px;
 }
-.al_body_template_nine .alPostBoxOuter ul li a{
-    position: relative;
+
+body.al_body_template_nine .chat-button button.btn-solid {
+    background: transparent;
+    border: unset;
+    color: var(--theme-deafult)!important;
+    padding: 0 1px!important;
 }
-.al_body_template_nine .alPostBoxOuter ul li a  span.category-type-badge {
-    position: absolute;
-    top: 3px;
-    left: 9px;
-    background: #ccc;
-    display: inline-block;
-    padding: 2px 15px;
-    line-height: 1.3;
-}
-.al_body_template_nine .alPostBoxOuter ul li.category-list{
-    overflow: hidden;
-}
+
 /*----------media css--------------*/
 @media(max-width:1800px) {
     body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head a.sell-btn span{

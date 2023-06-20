@@ -79,7 +79,7 @@
             list-style: none;
         }
 
-        .alPostBoxOuter ul li a {
+        /* .alPostBoxOuter ul li a {
             list-style: none;
             cursor: pointer;
             font-size: 14px;
@@ -91,7 +91,7 @@
             border: 1px solid rgba(14, 4, 5, .2);
             padding: 10px;
             height: 135px;
-        }
+        } */
 
         .alPostBoxOuter ul li a:hover {
             text-decoration: none;
@@ -333,6 +333,28 @@
         .dark .start_form_register .form-group.choose_file {
             background: transparent;
         }
+        .cate-item img {
+    width: 120px;
+    height: 120px;
+    padding: 3px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin: 0 auto 0px;
+}
+.alPostBoxOuter ul li {
+    list-style: none;
+    margin-bottom: 31px;
+    width: 16%;
+}
+.alPostBoxOuter ul {
+    /* border: 1px solid rgba(14,4,5,.2); */
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+}
+span.category-type-badge.d-block {
+    display: none!important;
+}
     </style>
 @endsection
 
@@ -356,21 +378,21 @@
                                         <a href="javascript:;" id="view-all_cats">View All</a>
                                     @endif
                                 </div>
-                                <ul class="row p-0 m-0 no-gutters">
+                                <ul class=" p-0 m-0 no-gutters">
                                     @if (@$categories)
                                         @foreach ($categories as $key => $category)
                                             @php  $icon = $category['icon']['proxy_url'] . '200/200' . $category['icon']['image_path'];  @endphp
-                                            <li class="col-3 px-1 category-list @if ($key > 3) view-all_cats @endif"
+                                            <li class=" px-1 category-list @if ($key > 3) view-all_cats @endif"
                                                 id="category_{{ $category->id }}"
                                                 @if ($key > 3) style="display:none;" @endif>
                                                 <a class="cate-item text-center w-100 py-3 mb-0 rounded select-category"
                                                     data-name="{{ $category['translation_one']['name'] }}"
                                                     data-id="{{ $category['id'] }}" data-type-id="{{$category->type_id}}" href="#">
                                                     <div class="alCategoryItems">
-                                                        <span class="category-type-badge">
+                                                        <img class="" src="{{ $icon }}">
+                                                        <span class="category-type-badge d-block">
                                                             {{ $category->type_id == '10' ? 'Rental' : 'Sell' }}
-                                                        </span>
-                                                        <img class="w-25" src="{{ $icon }}">
+                                                        </span>                                                                                                                 
                                                         <h3>{{ $category['translation_one']['name'] }}</h3>
                                                     </div>
                                                 </a>
