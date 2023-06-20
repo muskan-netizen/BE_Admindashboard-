@@ -365,9 +365,11 @@
                                                 @if ($key > 3) style="display:none;" @endif>
                                                 <a class="cate-item text-center w-100 py-3 mb-0 rounded select-category"
                                                     data-name="{{ $category['translation_one']['name'] }}"
-                                                    data-id="{{ $category['id'] }}" href="#">
+                                                    data-id="{{ $category['id'] }}" data-type-id="{{$category->type_id}}" href="#">
                                                     <div class="alCategoryItems">
-                                                        <span class="category-type-badge">Sell</span>
+                                                        <span class="category-type-badge">
+                                                            {{ $category->type_id == '10' ? 'Rental' : 'Sell' }}
+                                                        </span>
                                                         <img class="w-25" src="{{ $icon }}">
                                                         <h3>{{ $category['translation_one']['name'] }}</h3>
                                                     </div>
@@ -434,51 +436,53 @@
                                                         aria-describedby="button-addon2" value=""
                                                         autocomplete="off" required="required">
                                                 </div>
-                                                <div class="form-group">
-                                                    <label>Pricing Detail For *</label>
-                                                    <div class="input-group mb-2">
-                                                        <div class="row">
-                                                            <div class="col input-group-prepend">
-                                                                <div class="input-group-text">
-                                                                    {{ getPrimaryCurrencySymbol() }}
+                                                <div class="rental-cat-fields d-none">
+                                                    <div class="form-group">
+                                                        <label>Pricing Detail For *</label>
+                                                        <div class="input-group mb-2">
+                                                            <div class="row">
+                                                                <div class="col input-group-prepend">
+                                                                    <div class="input-group-text">
+                                                                        {{ getPrimaryCurrencySymbol() }}
+                                                                    </div>
+                                                                    <input type="text" class="form-control" required
+                                                                        name="price" id="day_price" placeholder="Day">
                                                                 </div>
-                                                                <input type="text" class="form-control" required
-                                                                    name="price" id="day_price" placeholder="Day">
-                                                            </div>
-                                                            <div class="col input-group-prepend">
-                                                                <div class="input-group-text">
-                                                                    {{ getPrimaryCurrencySymbol() }}
+                                                                <div class="col input-group-prepend">
+                                                                    <div class="input-group-text">
+                                                                        {{ getPrimaryCurrencySymbol() }}
+                                                                    </div>
+                                                                    <input type="text" class="form-control" required
+                                                                        name="week_price" id="week_price" placeholder="Week"
+                                                                        readonly>
                                                                 </div>
-                                                                <input type="text" class="form-control" required
-                                                                    name="week_price" id="week_price" placeholder="Week"
-                                                                    readonly>
-                                                            </div>
-                                                            <div class="col input-group-prepend">
-                                                                <div class="input-group-text">
-                                                                    {{ getPrimaryCurrencySymbol() }}
+                                                                <div class="col input-group-prepend">
+                                                                    <div class="input-group-text">
+                                                                        {{ getPrimaryCurrencySymbol() }}
+                                                                    </div>
+                                                                    <input type="text" class="form-control" required
+                                                                        name="month_price" id="month_price"
+                                                                        placeholder="Month" readonly>
                                                                 </div>
-                                                                <input type="text" class="form-control" required
-                                                                    name="month_price" id="month_price"
-                                                                    placeholder="Month" readonly>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Original Price of Item *</label>
-                                                    <div class="input-group mb-2">
-                                                        <div class="input-group-prepend">
-                                                            <div class="input-group-text">{{ getPrimaryCurrencySymbol() }}
+                                                    <div class="form-group">
+                                                        <label>Original Price of Item *</label>
+                                                        <div class="input-group mb-2">
+                                                            <div class="input-group-prepend">
+                                                                <div class="input-group-text">{{ getPrimaryCurrencySymbol() }}
+                                                                </div>
                                                             </div>
+                                                            <input type="text" class="form-control" required
+                                                                name="compare_at_price" id="" placeholder="">
                                                         </div>
-                                                        <input type="text" class="form-control" required
-                                                            name="compare_at_price" id="" placeholder="">
                                                     </div>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Date Range *</label>
-                                                    <input type="text" class="form-control" name="date_availability"
-                                                        value="" />
+                                                    <div class="form-group">
+                                                        <label>Date Range *</label>
+                                                        <input type="text" class="form-control" name="date_availability"
+                                                            value="" />
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="alPostItemsData" id="productAttributes"></div>
@@ -580,9 +584,14 @@
         $('.dropify').dropify();
         $(document).on('click', '.select-category', function() {
             var category_id = $(this).data('id');
+            var type_id = $(this).data('type-id');
             $("#category_id").val(category_id);
             $(".selected-category").text($(this).data('name'));
-            console.log(category_id);
+            if(type_id == '10'){
+                $(".rental-cat-fields").removeClass('d-none');
+            }else{
+                $(".rental-cat-fields").addClass('d-none');
+            }
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('input[name="_token"]').val()
