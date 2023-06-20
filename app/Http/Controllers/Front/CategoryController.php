@@ -333,7 +333,7 @@ class CategoryController extends FrontController{
                         ->select('products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating', 'products.inquiry_only','products.minimum_order_count','products.batch_count','products.updated_at')
                         ->where('products.is_live', 1)
                         ->where('products.category_id', $category_id);
-            if(count($vendors) > 0 && strtolower($type) != 'rental service'){
+            if (!empty($vendors) && !in_array(strtolower($type), ['rental service', 'p2p'])) {
                 $products = $products->whereIn('products.vendor_id', $vendors);
             }
             $maxPrice = 0;

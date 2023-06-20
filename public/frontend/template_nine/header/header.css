@@ -399,12 +399,16 @@ body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect a span{
 .onhover-dropdown{
     font-size: 12px;
 }
+.main-menu .menu-right .icon-nav li {
+    padding-left: 15px!important;
+}
 body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect  a span{
-    font-size: 14px;
+    font-size: 12px;
     padding-top: 5px;
     display: block;
     color:#777;
     font-weight: 400!important;
+    text-transform: capitalize;
 }
 .al_body_template_nine .pixelstrap li a img {
     width: 100%;
@@ -455,9 +459,10 @@ body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect  a span{
     padding: 10px 0;
 }
 .main-menu  .logo{
-    width: auto;
+    width: 100%;
     display: flex;
     align-items: center;
+    max-width: max-content;
 }
 
 .main-menu .mobile-header .ipad-view {
@@ -537,6 +542,24 @@ li.add_post a.sell-btn span {
 }
 li.add_post a.sell-btn span i {
     padding-right: 5px;
+}
+.main-menu .menu-right .icon-nav li.mobile-account{
+    padding-left: 15px!important;
+}
+@media(max-width:1350px){
+    .main-menu .menu-right .icon-nav li.mobile-account {
+        padding-left: 10px!important;
+    }
+    body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect {
+        padding-left: 10px !important;
+    }
+    .main-menu .logo a.navbar-brand {
+        height: 45px!important;
+    }
+    li.add_post a.sell-btn span {
+        padding: 10px 13px!important;
+        font-size: 14px;
+    }
 }
 @media(max-width:767px){
     .menu-navigation.al li.al_main_category a .nav-cate-img{
