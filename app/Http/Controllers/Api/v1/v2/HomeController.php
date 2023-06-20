@@ -92,7 +92,6 @@ class HomeController extends BaseController
             
             $venderIds  = $vendorData->where('status', 1)->pluck('id');
 
-
             $navCategories = $this->categoryNav($langId, $venderIds, $type , $request);
             $homeData['navCategories'] = $navCategories;
             return $this->successResponse($homeData);

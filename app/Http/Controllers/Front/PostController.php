@@ -179,7 +179,7 @@ class PostController extends FrontController
 			
 				return $this->errorResponse($validator->errors()->first(), 422);
 			}
-			
+            
 			$client = Client::orderBy('id','asc')->first();
 			if(isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain) {
 				$sku_url =  ($client->custom_domain);

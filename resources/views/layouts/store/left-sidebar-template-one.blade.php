@@ -145,7 +145,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
 {{-- P2p Template --}}
     @elseif(p2p_module_status() && Session::get('vendorType') == 'p2p')
     <div class="main-menu al_template_one_menu">
-        <div class="container-fluid d-block p-0">
+        <div class="container-fluid d-block ">
             <div class="container p-0 align-items-center justify-content-center position-initial">
                 <div class="col-lg-12">
                     <div class="row mobile-header align-items-center justify-content-between">
@@ -229,7 +229,7 @@ fill="#000000" stroke="none">
                                 @endif
                                 
                                 @if(auth()->user() && $client_preference_detail->show_wishlist==1)
-                                <div class="icon-nav mr-2 d-none d-sm-block"> 
+                                <div class="icon-nav  d-none d-sm-block"> 
                                     <a class="fav-button" href="{{route('user.wishlists')}}"> 
                                     <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 512.000000 512.000000"
@@ -698,7 +698,7 @@ c-13 -26 -36 -53 -58 -66 l-37 -23 -1465 0 -1465 0 -37 23 c-22 13 -45 40 -58
     @else
     {{-- first Template --}}
     <div class="main-menu al_template_one_menu">
-        <div class="container-fluid d-block p-0">
+        <div class="container-fluid d-block">
             <div class="container p-0 align-items-center justify-content-center position-initial">
                 <div class="col-lg-12">
                     <div class="row mobile-header align-items-center justify-content-between">
