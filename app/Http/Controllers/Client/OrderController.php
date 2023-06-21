@@ -17,6 +17,8 @@ use App\Http\Controllers\Front\QuickApiController;
 use App\Models\RescheduleOrder;
 
 use App\Models\{Tax, Order, User, VendorOrderDispatcherStatus, OrderStatusOption, Nomenclature, NomenclatureTranslation, DispatcherStatusOption, VendorOrderStatus, ClientPreference, NotificationTemplate, OrderProduct, OrderVendor, UserAddress, Vendor, OrderReturnRequest, UserDevice, UserVendor, LuxuryOption, ClientCurrency, UserDocs, UserRegistrationDocuments, OrderCancelRequest, CaregoryKycDoc, ThirdPartyAccounting, OrderVendorReport, OrderRefund, Wallet, OrderProductDispatchRoute, ProductVariant, Cart,OrderLongTermServices,Currency, ProcessorProduct,OrderLongTermServiceSchedule, Product, OrderProductDispatchReturnRoute, OrderVendorProduct, VendorOrderProductStatus, ProductBooking};
+use App\Models\Client as ClientData;
+
 use DB;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
@@ -671,6 +673,8 @@ class OrderController extends BaseController
         $response2['pagination'] ='';
         $response2['ClassName'] =$ClassName;
         $response2['auto_accept_status'] =$auto_accept;
+        $clientData = ClientData::first();
+
         if(!empty($response2['next_page_url'])){
            // $nextPageUrl = str_replace("/order","/orders/filter",$response2['next_page_url']); 
             $url_components = parse_url($response2['next_page_url']);
@@ -690,7 +694,7 @@ class OrderController extends BaseController
             $response2['pagination'] = $pagination;
         }
         $response2['count_resp'] = count($orders);
-        $response2['html'] = \View::make('backend.order.order-parts.orderTable', array('ClassName'=>$ClassName,'orders' =>  $response,'client_preferences'=>$preferences,'clientCurrency'=>$clientCurrency,'filter_order_status'=>$filter_order_status,'fixedFee'=>$fixedFee))->render();
+        $response2['html'] = \View::make('backend.order.order-parts.orderTable', array('ClassName'=>$ClassName,'orders' =>  $response,'client_preferences'=>$preferences,'clientCurrency'=>$clientCurrency,'filter_order_status'=>$filter_order_status,'fixedFee'=>$fixedFee,'clientData'=>$clientData))->render();
         if($request->response ==2){
             return $response2;
         }
