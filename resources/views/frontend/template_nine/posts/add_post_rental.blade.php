@@ -405,6 +405,11 @@ select#category_filter {
     color: #000;
     padding-right: 10px;
 }
+
+body.dark .fillter_div:after{
+    color: #fff;
+}
+
 @media (max-width:1100px){
     .alPostBoxOuter ul li {
     list-style: none;
