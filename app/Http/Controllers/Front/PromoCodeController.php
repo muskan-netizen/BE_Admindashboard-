@@ -121,9 +121,9 @@ class PromoCodeController extends Controller{
           // $total_minimum_spend = 0;
             foreach ($cart_products as $cart_product) {
                 $total_price = 0;
-                if(isset($cart_product->product->variant) && !empty($cart_product->product->variant->first()))
+                if(isset($cart_product->pvariant) && !empty($cart_product->pvariant->actual_price))
                 {
-                    $total_price = $cart_product->product->variant->first()->price ?? 0;
+                    $total_price = $cart_product->pvariant->actual_price ?? 0;
                 }
 
                 $total_minimum_spend += $total_price * $cart_product->quantity;
