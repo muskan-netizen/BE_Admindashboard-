@@ -4697,7 +4697,7 @@ body[dir=rtl] .modal-header .close {
 .dark .flatpickr-day.notAllowed.nextMonthDay {
     color: #6d767f;
 }
-
+.site_link a {display: inline-block;width: 100%;max-width: 700px;}
 .dark .form-control-light {
     background-color: #3b4651 !important;
     border-color: #3b4651!important;

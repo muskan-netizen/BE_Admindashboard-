@@ -610,12 +610,13 @@ class BaseController extends Controller
 
     }
     
-    public function sendWalletNotification($user_id,$order_number)   
+    public function sendWalletNotification($user_id,$order_number)
     {
-        $firebaseToken = UserDevice::select('device_token')->whereNotNull('device_token')->where('user_id',$user_id)->orderBy('id','desc')->limit(1)->pluck('device_token')->toArray();        
+        $firebaseToken = UserDevice::select('device_token')->whereNotNull('device_token')->where('user_id',$user_id)->orderBy('id','desc')->limit(1)->pluck('device_token')->toArray();
         if(!empty($firebaseToken)){
             $preference = ClientPreference::select('fcm_server_key')->first();
             $fcm_server_key = !empty($preference->fcm_server_key)? $preference->fcm_server_key : 'null';
+            
             $data = [
                 "registration_ids" => $firebaseToken,
                 "notification" => [
@@ -638,7 +639,10 @@ class BaseController extends Controller
             $response = curl_exec($ch);
             curl_close($ch);
         }
-        return true; 
+        return true;
     }
 
-}
+
+    }
+
+
