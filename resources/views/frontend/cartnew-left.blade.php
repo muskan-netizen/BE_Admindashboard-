@@ -24,13 +24,8 @@
             </a>
         @endif
     </div>
-<<<<<<< HEAD
-</div> 
-@if($action != 'delivery' && $action != 'on_demand' && $action != 'rental'  && $action != 'laundry' )
-=======
 </div>
 @if($action != 'delivery' && $action != 'on_demand' && $action != 'rental' && $action != 'laundry' )
->>>>>>> pre_production
     @if (!empty($processorProduct) && $processorProduct->is_processor_enable == 1)
         <div>
             <input type="hidden" id="latitude" value="{{ $processorProduct->latitude }}">
