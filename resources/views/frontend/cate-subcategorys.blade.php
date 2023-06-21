@@ -57,8 +57,7 @@
                                                 <div class="listing-categories">
                                                     <ul>
                                                         @foreach($category->childs as $child)
-                                                            <li><a href="{{route('categoryDetail', $child->slug)}}">{{ $child->slug }}</a></li>
-                                                        @endforeach
+                                                            <li><a href="{{route('categoryDetail', $child->slug)}}">{{ $child->translation_name }}</a></li>                                                        @endforeach
                                                     </ul>
                                                 </div>
                                             @endif

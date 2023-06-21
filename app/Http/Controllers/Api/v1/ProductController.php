@@ -11,12 +11,12 @@ use Carbon\Carbon;
 use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag,DeliverySlotProduct, DeliverySlot,UserAddress};
 use Validation;
 use DB;
-use App\Http\Traits\{ApiResponser,ProductTrait};
+use App\Http\Traits\{ApiResponser,ProductTrait, ProductActionTrait};
 
 class ProductController extends BaseController
 {
     private $field_status = 2;
-    use ApiResponser,ProductTrait;
+    use ApiResponser,ProductTrait, ProductActionTrait;
     /**
      * Get Company ShortCode
      *
@@ -163,6 +163,9 @@ class ProductController extends BaseController
             if(!$product){
                 return response()->json(['error' => 'No record found.'], 404);
             }
+            if ($this->checkTemplateForAction(8)) {
+            $this->RecentView($pid);
+            }
             $product->vendor->is_vendor_closed = 0;
             if($product->vendor->show_slot == 0){
                 if( ($product->vendor->slotDate->isEmpty()) && ($product->vendor->slot->isEmpty()) ){
@@ -237,7 +240,7 @@ class ProductController extends BaseController
             if($product->variantSet){
                 foreach ($product->variantSet as $set_key => $set_value) {
                     foreach ($set_value->options as $opt_key => $opt_value) {
-                        $opt_value->value = $opt_value->product_variant_id == $variant_id ? true : false;
+                        $opt_value->value = ($opt_key == 0 )? true : false;
                     }
                 }
             }
@@ -308,7 +311,7 @@ class ProductController extends BaseController
 
             $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = [];
 
-            $suggested_product = Product::with(['vendor', 'translation', 'variant', 'productVariantByRoles']);
+            $suggested_product = Product::with(['media.image','vendor', 'translation', 'variant', 'productVariantByRoles']);
             if( !empty($product->category->category_id) ) {
                 $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)->groupBy('id')->orderby('id', 'desc')->limit(20)->get();
             }

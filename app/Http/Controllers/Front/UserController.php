@@ -42,19 +42,19 @@ class UserController extends FrontController{
         {
             return redirect()->route('passbase.page');
         }elseif ($preference->verify_email == 0 && $preference->verify_phone == 0) {
-            $this->sendCustomerSignupSuccessEmail($user);
+            //$this->sendCustomerSignupSuccessEmail($user);
             return redirect()->route('userHome');
         }elseif (Auth::user()->is_email_verified == 1 && Auth::user()->is_phone_verified == 1) {
-            $this->sendCustomerSignupSuccessEmail($user);
+           // $this->sendCustomerSignupSuccessEmail($user);
             return redirect()->route('userHome');
         }elseif ($preference->verify_email == 1 && $preference->verify_phone == 0) {
-            $this->sendCustomerSignupSuccessEmail($user);
+           // $this->sendCustomerSignupSuccessEmail($user);
             if (Auth::user()->is_email_verified == 1) {
                 return redirect()->route('userHome');
             }
         } elseif ($preference->verify_email == 0 && $preference->verify_phone == 1) {
             if (Auth::user()->is_phone_verified == 1) {
-                $this->sendCustomerSignupSuccessEmail($user);
+               // $this->sendCustomerSignupSuccessEmail($user);
                 return redirect()->route('userHome');
             }
         }

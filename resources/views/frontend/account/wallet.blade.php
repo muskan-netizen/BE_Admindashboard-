@@ -489,6 +489,27 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
 
                     </div>
                 <% } %>
+
+                <% if(payment_option.slug == 'powertrans') { %>
+                    <div class="col-md-12 mt-3 mb-3 powertrans_element_wrapper option-wrapper d-none">
+                        <div class="row no-gutters">
+                            <div class="col-6">
+                                <input type="number" min="16" maxlength="16" style=" border-right: none;" class="form-control" id="card-element-powertrans" placeholder="Enter card Number" required 
+                                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
+                            </div>
+                            <div class="col-3">
+                                <input type="number" style=" border-left: none; border-right: none;" class="form-control" maxLength="4"  id="date-element-powertrans" placeholder="YYMM" required 
+                                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+                            </div>
+                            <div class="col-3">
+                                <input type="password" maxLength="4" style=" border-left: none;"  class="form-control" id="cvv-element-powertrans" placeholder="CVV" required />
+                            </div>
+                        </div>
+
+                        <span class="error text-danger" id="card_error_powertrans"></span>
+                    </div>
+                <% } %>
+
             <% } %>
         <% }); %>
     <% } %>
@@ -530,6 +551,9 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 @endif
 <script type="text/javascript">
     var inline='';
+    var powertrans_payment_url = "{{ route('powertrans.payment') }}";
+    var pesapal_payment_url = "{{ route('pesapal.payment') }}";
+
     $('#wallet_amount').keypress(function(event) {
         if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
             event.preventDefault();
@@ -573,6 +597,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         $('#wallet_payment_methods_error').html('');
         var method = $(this).val();
         var code = method.replace('radio-', '');
+    	console.log(code)
         if (code != '') {
             $("#wallet_payment_methods .option-wrapper").addClass('d-none');
             $("#wallet_payment_methods ."+code+"_element_wrapper").removeClass('d-none');
@@ -737,6 +762,9 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 @endif
 @if(in_array('flutterwave',$client_payment_options))
 <script src="https://checkout.flutterwave.com/v3.js"></script>
+@endif
+@if(in_array('data_trans',$client_payment_options))
+    <script src="{{ $data_trans_script_url }}"></script>
 @endif
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script src="{{asset('js/payment.js')}}"></script>

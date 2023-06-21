@@ -99,7 +99,7 @@ class SearchController extends FrontController
             $response[] = ['title' => '', 'result' => $product_results];
         }
         if (@$vender_results) {
-            $response[] = ['title' => __('Venders'), 'result' => $vender_results];
+            $response[] = ['title' => __('Vendors'), 'result' => $vender_results];
         }
 
         $brands = Brand::join('brand_translations as bt', 'bt.brand_id', 'brands.id')

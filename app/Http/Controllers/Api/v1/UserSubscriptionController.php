@@ -112,6 +112,8 @@ class UserSubscriptionController extends BaseController
                         $payment_option->title = __('iDEAL');
                     }elseif($payment_option->code == 'authorize_net'){
                         $payment_option->title = __('Credit/Debit Card');
+                    }elseif($payment_option->code == 'obo'){
+                        $payment_option->title = __("MoMo, Airtel Money, Credit/Debit Cards by O'Pay");
                     }
                     $payment_option->title = __($payment_option->title);
                     unset($payment_option->credentials);
@@ -224,13 +226,16 @@ class UserSubscriptionController extends BaseController
                 $subscription_invoice->save();
                 $subscription_invoice_id = $subscription_invoice->id;
                 if($subscription_invoice_id){
-                    $payment = new Payment;
+                    $payment = Payment::where('transaction_id',$request->transaction_id)->first();
+                    if(!$payment){
+                        $payment = new Payment();
+                    }
                     $payment->balance_transaction = $subscription_plan->price;
                     $payment->transaction_id = $request->transaction_id;
                     $payment->user_subscription_invoice_id = $subscription_invoice_id;
                     $payment->date = Carbon::now()->format('Y-m-d');
                     $payment->save();
-
+                    
                     $subscription_invoice_features = array();
                     foreach($subscription_plan->features as $feature){
                         $subscription_invoice_features[] = array(

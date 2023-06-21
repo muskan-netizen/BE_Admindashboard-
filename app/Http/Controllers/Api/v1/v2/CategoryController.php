@@ -168,7 +168,7 @@ class CategoryController extends BaseController
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                 },
                 'variant' => function ($q) use ($langId) {
-                    $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
+                    $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode', 'compare_at_price');
                     // $q->groupBy('product_id');
                 }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
                 'tags.tag.translations' => function ($q) use ($langId) {
@@ -281,7 +281,7 @@ class CategoryController extends BaseController
                     $q->groupBy('language_id','product_id');
                 },
                 'variant' => function ($q) use ($langId) {
-                    $q->select('id','sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
+                    $q->select('id','sku', 'product_id', 'quantity', 'price','markup_price', 'barcode','compare_at_price');
                 },
                 'variant.checkIfInCartApp', 'checkIfInCartApp',
                 'tags.tag.translations' => function ($q) use ($langId) {
@@ -577,7 +577,7 @@ class CategoryController extends BaseController
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                         },
                         'variant' => function($q) use($langId){
-                            $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
+                            $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode', 'compare_at_price');
                             $q->groupBy('product_id');
                         },
                     ]);
@@ -607,8 +607,17 @@ class CategoryController extends BaseController
    
 
             // Get popular & top_rated products
-            $popular_products = array_map(function($v){ $v->path = get_file_path($v->path,'FILL_URL','260','260'); return $v;},$this->vendorProducts($v_ids, $langId, '', 'popular_products'));
-            $top_rated_products = array_map(function($v){ $v->path = get_file_path($v->path,'FILL_URL','260','260'); return $v;},$this->vendorProducts($v_ids, $langId, '', 'top_rated_products'));
+            $popularProducts = $this->vendorProducts($v_ids, $langId, '', 'popular_products');
+            $top_ratedProducts = $this->vendorProducts($v_ids, $langId, '', 'top_rated_products');
+
+            $popular_products[] = array_map(function($v){ 
+                $v->path = get_file_path($v->path,'FILL_URL','260','260'); 
+                return $v;
+            }, $popularProducts->toArray());
+            $top_rated_products[] = array_map(function($v){ 
+                $v->path = get_file_path($v->path,'FILL_URL','260','260'); 
+                return $v;
+            }, $top_ratedProducts->toArray());
             
             // Remove duplicate vendore
             foreach($cateVendors as $key => $value) {

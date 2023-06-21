@@ -300,7 +300,7 @@ class OrderController extends BaseController
         $pending_orders = clone $order_count;
         $active_orders = clone $order_count;
         $orders_history = clone $order_count;
-
+        $auto_accept = 0;
 
 
         $lux_id = 0;
@@ -580,15 +580,15 @@ class OrderController extends BaseController
             foreach ($order->vendors as $vendor) {
                 $vendor->isAlert = false;
                 $vendor->alertMessage = "";
+                $auto_accept = (isset($vendor) && !empty($vendor->auto_accept_order))?$vendor->auto_accept_order:0;
                 if (isset($vendor) && !empty($vendor->vendor_id))
                     $vendor->vendor_detail_url = route('order.show.detail', [$order->id, @$vendor->vendor_id]);
                 else
                     $vendor->vendor_detail_url = '#';
-
                 if(isset($vendor) && !empty($vendor->vendor_id) && @$vendor->exchanged_to_order){
                     $vendor->exchanged_to_order->vendor_detail_url = route('order.show.detail', [$vendor->exchanged_to_order->order_id, @$vendor->exchanged_to_order->vendor_id]);
                 }
-
+                
                 if(isset($vendor) && !empty($vendor->vendor_id && @$vendor->exchanged_of_order)){
                     $vendor->exchanged_of_order->vendor_detail_url = route('order.show.detail', [$vendor->exchanged_of_order->order_id, @$vendor->exchanged_of_order->vendor_id]);
                 }
@@ -670,7 +670,7 @@ class OrderController extends BaseController
         $response2['p2p_orders'] = $p2p_orders??0;
         $response2['pagination'] ='';
         $response2['ClassName'] =$ClassName;
-       
+        $response2['auto_accept_status'] =$auto_accept;
         if(!empty($response2['next_page_url'])){
            // $nextPageUrl = str_replace("/order","/orders/filter",$response2['next_page_url']); 
             $url_components = parse_url($response2['next_page_url']);
@@ -1025,7 +1025,7 @@ class OrderController extends BaseController
         $orderVendorProductIds = $request->order_vendor_product_id??[];
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
-         //try {
+         try {
 
             $timezone = Auth::user()->timezone;
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
@@ -1179,6 +1179,7 @@ class OrderController extends BaseController
                             $wallet = $user->wallet;
                             $credit_amount = $return_response['vendor_return_amount']; //$currentOrderStatus->payable_amount;
                             $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #' . $currentOrderStatus->orderDetail->order_number . ' (' . $currentOrderStatus->vendor->name . ')']);
+                            $this->sendWalletNotification($user->id, $currentOrderStatus->orderDetail->order_number);
                         }
 
                         // diarise loyalty in order table
@@ -1234,17 +1235,20 @@ class OrderController extends BaseController
                     'message' => __('Order Status Updated Successfully.' . (($orderPlacedNo) ? ' Order No : ' . $orderPlacedNo : ''))
                 ]);
             }
+            DB::commit();
+            $currentOrderStatus->order_status_option_id = $vendor_order_status_check->order_status_option_id;
+            $currentOrderStatus->save();
             return response()->json([
                 'status' => 'error',
-                'message' =>__('Order has already updated!!!')
+                'message' =>__('Order has already updated !!')
             ]);
-        // } catch (\Exception $e) {
-        //     DB::rollback();
-        //     return response()->json([
-        //         'status' => 'error',
-        //         'message' => $e->getMessage()
-        //     ]);
-        // }
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 
     public function changeVendorProductStatus(Request $request, $domain = '')
@@ -1467,11 +1471,12 @@ class OrderController extends BaseController
     public function checkIfanyProductLastMileon($request)
     {
         $order_dispatchs = 2;
-        $AdditionalPreference  =  getAdditionalPreference(['is_place_order_delivery_zero','is_service_product_price_from_dispatch']);
-        $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $AdditionalPreference  =  getAdditionalPreference(['is_place_order_delivery_zero']);
+        $checkdeliveryFeeAdded = OrderVendor::with('LuxuryOption','products')->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $luxury_option_id = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
         $is_place_order_delivery_zero = $AdditionalPreference['is_place_order_delivery_zero'];
         $is_restricted = $checkdeliveryFeeAdded->is_restricted;
+       
         /// luxury option 8 ( static ) for appointment you can check it on luxuryOptionSeeder
         if ($luxury_option_id == 8) { // only for appointment type
             $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
@@ -1524,21 +1529,16 @@ class OrderController extends BaseController
                         'service_type'     => 'on_demand'
                     ];
                  
-                    if(( $AdditionalPreference['is_service_product_price_from_dispatch'] == 1)  && ( $prod->product->category->categoryDetail->type_id == 8)){
+                    if(( $prod->is_price_buy_driver ==1)  && ( $prod->product->category->categoryDetail->type_id == 8)){
                        
                         $dispatch_domain['rejectable_order'] = 1;
                         $order_dispatchs = $this->placeRequestToDispatchSingleProduct($request->order_id, $request->vendor_id, $dispatch_domain, $request);
-                        //$order_dispatchs = $this->placeRequestToDispatchSingleProductUpdate($request->order_id, $request->vendor_id, $dispatch_domain, $prod,$is_restricted,$request);
-                       
                         if ($order_dispatchs && $order_dispatchs == 1) {
                             $OnDemand = 1;
                             return 1;
                         }
                     }
                     else if (isset($prod->product_dispatcher_tag) && !empty($prod->product_dispatcher_tag) && $prod->product->category->categoryDetail->type_id == 8) {
-
-                        //  $dispatch_domain_OnDemand = $this->getDispatchOnDemandDomain();
-                        //echo $Appointment . 'app';
 
                         if ($dispatch_domain_OnDemand && $dispatch_domain_OnDemand != false && $OnDemand == 0  && $checkdeliveryFeeAdded->delivery_fee > 0) {
 
@@ -1581,7 +1581,9 @@ class OrderController extends BaseController
 
         $dispatch_domain = $this->getDispatchDomain();
         if ($dispatch_domain && $dispatch_domain != false) {
+
             if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)) {
+
                 $order_dispatchs = $this->placeRequestToDispatch($request->order_id, $request->vendor_id, $dispatch_domain);
             }
             
@@ -1842,13 +1844,13 @@ class OrderController extends BaseController
             
             if ($order->payment_option_id == 1 && ($order->payable_amount >0)) {
                 $cash_to_be_collected = 'Yes';
-                $payable_amount = $orderVendorDetails->payable_amount + $orderVendorDetails->taxable_amount;
+                $payable_amount = $orderVendorDetails->payable_amount ;
             } else {
 
                 if($order->is_postpay==1 && $order->payment_status == 0)
                 {
                     $cash_to_be_collected = 'Yes';
-                    $payable_amount = $orderVendorDetails->payable_amount + $orderVendorDetails->taxable_amount;
+                    $payable_amount = $orderVendorDetails->payable_amount;
                 }else{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -2063,7 +2065,7 @@ class OrderController extends BaseController
                 'allocation_type' => 'a',
                 'task_type' => $task_type,
                 'schedule_time' => $schedule_time ?? null,
-                'cash_to_be_collected' => !empty($orderVendorDetails) ? ($orderVendorDetails->payable_amount + $orderVendorDetails->service_fee_percentage_amount) : 0.00,
+                'cash_to_be_collected' => $payable_amount ?? 0.00,
                 'order_number' => $order->order_number,
                 'barcode' => '',
                 'order_team_tag' => $team_tag,

@@ -128,6 +128,8 @@ class UserSubscriptionController extends FrontController
                     $payment_option->title = __('iDEAL');
                 }elseif($payment_option->code == 'authorize_net'){
                     $payment_option->title = __('Credit/Debit Card');
+                }elseif($payment_option->code == 'obo'){
+                    $payment_option->title = __("MoMo, Airtel Money, Credit/Debit Cards by O'Pay");
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);
@@ -166,10 +168,9 @@ class UserSubscriptionController extends FrontController
     public function purchaseSubscriptionPlan(Request $request, $domain = '', $slug = '')
     {
         $currency_id = Session::get('customerCurrency')??63;
-        \Log::info('$currency_id');
-        \Log::info($currency_id);
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
-        \Log::info(json_encode($clientCurrency));
+
+        $dollar_compare =  !empty($clientCurrency)?$clientCurrency->doller_compare:1;
         if( (isset($request->user_id)) && (!empty($request->user_id)) ){
             $user = User::find($request->user_id);
         }else{
@@ -212,13 +213,13 @@ class UserSubscriptionController extends FrontController
             $subscription_invoice->start_date = $start_date;
             $subscription_invoice->next_date = $next_date;
             $subscription_invoice->end_date = $end_date;
-            $subscription_invoice->subscription_amount = $request->amount / $clientCurrency->doller_compare??1;
+            $subscription_invoice->subscription_amount = $request->amount / $dollar_compare;
             $subscription_invoice->save();
             $subscription_invoice_id = $subscription_invoice->id;
             if($subscription_invoice_id){
                 $payment = new Payment;
                 $payment->user_id = $user->id;
-                $payment->balance_transaction = $request->amount / $clientCurrency->doller_compare;
+                $payment->balance_transaction = $request->amount / $dollar_compare;
                 $payment->transaction_id = $request->transaction_id;
                 $payment->user_subscription_invoice_id = $subscription_invoice_id;
                 $payment->payment_option_id = $request->payment_option_id;

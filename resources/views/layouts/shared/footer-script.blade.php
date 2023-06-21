@@ -194,7 +194,9 @@ if (Session::has('toaster')) {
                         $("#received_new_orders").find(".modal-body").html('');
                         let latest_order_template = _.template($('#latest_order_template').html());
                         $("#received_new_orders").find(".modal-body").append(response.data.html);
-                        $("#received_new_orders").modal('show');
+                        if(response.data.auto_accept_status == 0){
+                        	$("#received_new_orders").modal('show');
+                        }
                     }
                 }
             },
@@ -329,7 +331,7 @@ if (Session::has('toaster')) {
 
     });
     @endif
-    $(document).on("click", ".update_order_status", function() {
+    $(document).on("click", ".update-status", function() {
         Swal.fire({
             title: "{{__('Are you Sure?')}}",
             // icon: 'info',
@@ -387,7 +389,7 @@ if (Session::has('toaster')) {
                                 $(this).remove();
                             });
                             setTimeout(function() {
-                                if ($("#received_new_orders").find(".update_order_status").length == 0) {
+                                if ($("#received_new_orders").find(".update-status").length == 0) {
                                     $("#received_new_orders").modal('hide');
                                 }
                             }, 2000);

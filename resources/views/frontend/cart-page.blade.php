@@ -75,9 +75,11 @@
     if ($additionalPreference['is_token_currency_enable'] == 1) {
         $hidden_token = 'd-none';
     }
-    if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
-        $is_service_product_price_from_dispatch_forOnDemand =1;
-    }
+    $getOnDemandPricingRule = getOnDemandPricingRule($serviceType, (@Session::get('onDemandPricingSelected') ?? ''),$additionalPreference);
+    // if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+    //     $is_service_product_price_from_dispatch_forOnDemand =1;
+    // }
+    $is_service_product_price_from_dispatch_forOnDemand =  $getOnDemandPricingRule['is_price_from_freelancer'] ?? 0;
 
 @endphp
 
@@ -433,12 +435,16 @@
                                                                 data-cart="{{ $vendor_product->cart_id }}"
                                                                 data-product="{{ $vendor_product->product->id }}"
                                                                 data-vendor_id="{{ $vendor_product->vendor_id }}">{{ __('Add Prescription') }}</button>
+                                                                 <span class="alert-danger error_prescription bg-transparent"
+                                                          id="error_prescription_{{ $vendor_product->product->id }}"
+                                                         style="display:none;">Prescription required</span>
                                                             @if ($vendor_product->cart_product_prescription > 0)
                                                                 <h4 class="mt-0 mb-1"
                                                                     style="word-wrap: break-word; line-height:20px">
                                                                     <strong>{{ $vendor_product->cart_product_prescription }}
                                                                         {{ __('Prescription Added') }}</strong></h4>
-                                                            @endif
+                                                   
+                                                                            @endif
                                                         @endif
                                                     @endif
 
@@ -584,7 +590,7 @@
                                                             <div class="col-4 vendor_slot_cart">
                                                                 <input type="hidden" class="custom-control-input vendor_product_schedule_datetime check"
                                                                     id="tasknow" name="task_type" value='schedule'>
-                                                                  
+                                                                    
                                                                         @if ($product->slotsCnt != 0)
                                                                             <input type="date"
                                                                                 class="form-control vendor_schedule_datetime"

@@ -38,6 +38,7 @@ class HomeController extends BaseController
         try {
             $homeData = array();
             $client_language = ClientLanguage::select('language_id')->where(['is_primary' => 1, 'is_active' => 1])->first();
+            $clientPreferences = ClientPreference::first();
 
             $langId = ($request->hasHeader('language') && !empty($request->header('language'))) ? $request->header('language') : (($client_language) ? $client_language->language_id : 1);
             $homeData['profile'] = $preferences = Client::with(['preferences', 'country:id,name,code,phonecode'])->select('id','country_id', 'company_name', 'code', 'sub_domain','database_name', 'logo','dark_logo', 'company_address', 'phone_number', 'email','custom_domain','contact_phone_number','socket_url')->first();
@@ -54,14 +55,17 @@ class HomeController extends BaseController
                 $vendorData = [];
                     if($preferences->preferences->$clientVendorTypes == 1){
                         $vendorData['name'] =  $this->getNomenclatureName($vendor_typ_value, $langId, false);
-                        $vendorData["icon"] = config('constants.VendorTypesIcon.'.$vendor_typ_key);
+                        $iconFiledName = config('constants.VendorTypesIcon.'.$vendor_typ_key);
+                        $vendorData["icon"] = $clientPreferences->$iconFiledName ? $clientPreferences->$iconFiledName : asset('images/al_custom3.png');
+                        //$vendorData["name"] = $clientVendorTypes;
+                        //$client_preference_detail->$iconFiledName['proxy_url'].'36/26'.$client_preference_detail-> $iconFiledName['image_path'] 
                         //$vendorData["name"] = $clientVendorTypes;
                         $vendorData["type"] = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key;
 
                         $vendorMode[] = $vendorData;
                     }
             }
-            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo']);
+            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo','is_service_price_selection']);
     
             //pr($vendorMode);
             //mohit sir branch code updated by sohail farm meat
@@ -89,8 +93,10 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->is_one_push_book_enable    = (int) $getAdditionalPreference['is_one_push_book_enable'];
             $homeData['profile']->preferences->is_bid_ride_enable         = (int) $getAdditionalPreference['is_bid_ride_enable'];
             
-            $homeData['profile']->preferences->is_service_product_price_from_dispatch         = (int) $getAdditionalPreference['is_service_product_price_from_dispatch'];
-
+            // on demand service pricing 
+            $homeData['profile']->preferences->is_service_product_price_from_dispatch   = (int) $getAdditionalPreference['is_service_product_price_from_dispatch'];
+            $homeData['profile']->preferences->is_service_price_selection               = (int) $getAdditionalPreference['is_service_price_selection'];
+            
             if($homeData['profile']->preferences->is_one_push_book_enable == 1){
                 $homeData['profile']->preferences->pick_drop_instant_booking_vendor = Vendor::select('id', 'slug', 'name', 'is_vendor_instant_booking', 'status')
                                                                                       ->with(['products' => function ($v) {
@@ -581,7 +587,7 @@ class HomeController extends BaseController
             $homeData['vendors'] = $vendorData;
             $homeData['categories'] = $categories;
             $homeData['reqData'] = $request->all();
-            //$homeData['mobile_banners'] = $mobile_banners;
+            $homeData['mobile_banners'] = $mobile_banners;
             $homeData['on_sale_products'] = $on_sale_product_details;
             $homeData['new_products'] = $new_product_details;
             $homeData['featured_products'] = $feature_product_details;
@@ -878,7 +884,7 @@ class HomeController extends BaseController
                 foreach ($value->variant as $k => $v) {
                     $value->variant[$k]->multiplier = $currency ? $currency->doller_compare : 1;
                 }
-                if($value->variant->first()->compare_at_price>0){
+                if(isset($value->variant) && $value->variant->first()->compare_at_price > 0){
                     $value->offers = ($value->variant->first()->compare_at_price - $value->variant->first()->price) / $value->variant->first()->compare_at_price * 100;
                 }else{
                     $value->offers = 0;

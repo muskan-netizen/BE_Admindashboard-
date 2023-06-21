@@ -392,6 +392,26 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                    </div>
                <% } %>
 
+               <% if(payment_option.slug == 'powertrans') { %>
+                <div class="col-md-12 mt-3 mb-3 powertrans_element_wrapper option-wrapper d-none">
+                    <div class="row no-gutters">
+                        <div class="col-6">
+                            <input type="number" min="16" maxlength="16" style=" border-right: none;" class="form-control" id="card-element-powertrans" placeholder="Enter card Number" required 
+                            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
+                        </div>
+                        <div class="col-3">
+                            <input type="number" style=" border-left: none; border-right: none;" class="form-control" maxLength="4"  id="date-element-powertrans" placeholder="YYMM" required 
+                            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+                        </div>
+                        <div class="col-3">
+                            <input type="password" maxLength="4" style=" border-left: none;"  class="form-control" id="cvv-element-powertrans" placeholder="CVV" required />
+                        </div>
+                    </div>
+
+                    <span class="error text-danger" id="card_error_powertrans"></span>
+                </div>
+            <% } %>
+
             <% } %>
         <% }); %>
     <% } %>
@@ -467,10 +487,14 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_khalti_url = "{{route('payment.khaltiVerification')}}";
     var payment_khalti_complete_purchase = "{{route('payment.khaltiCompletePurchase')}}";
     var check_active_subscription_url = "{{route('user.subscription.plan.checkActive', ':id')}}";
-    var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
+    var create_mtn_momo_token = "{{route('mtn.momo.createToken')}}";
     var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
 	var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
 	var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
+    var payment_obo_url = "{{route('obo.pay')}}";
+    var powertrans_payment_url = "{{ route('powertrans.payment') }}";
+    var data_trans_url = "{{route('payment.payByDataTrans')}}";
+    var pesapal_payment_url = "{{ route('pesapal.payment') }}";
 
     $(document).on('change', '#subscription_payment_methods input[name="subscription_payment_method"]', function() {
         var method = $(this).val();
@@ -520,10 +544,13 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 @if(in_array('flutterwave',$client_payment_options))
 <script type="text/javascript" src="https://checkout.flutterwave.com/v3.js"></script>
 @endif
+@if(in_array('data_trans',$client_payment_options))
+    <script src="{{ $data_trans_script_url }}"></script>
+@endif
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/payment.js')}}"></script>
 <script>
-function addSlashes (element) {	
+function addSlashes (element) {
     let ele = document.getElementById(element.id);
     ele = ele.value.split('/').join('');    // Remove slash (/) if mistakenly entered.
     if(ele.length < 4 && ele.length > 0){

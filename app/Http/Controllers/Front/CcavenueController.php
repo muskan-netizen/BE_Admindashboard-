@@ -75,9 +75,18 @@ class CcavenueController extends Controller
 
         }elseif($request->from == 'subscription')
         {
-            $time = ($request->subscription_id)??'S_'.time().'_'.$request->subsid;
+            $time = ($request->subscription_id)??'S_'.time();
             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d')]);
             
+        }elseif($request->from == 'pickup_delivery')
+        {
+            $time = ($request->transaction_id)??'PD_'.time();
+            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'pickup_delivery','date'=>date('Y-m-d')]);
+        }
+        elseif($request->from == 'pickup_delivery')
+        {
+            $time = ($request->transaction_id)??'PD_'.time();
+            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'pickup_delivery','date'=>date('Y-m-d')]);
         }
         return $time;
    }
@@ -250,6 +259,7 @@ class CcavenueController extends Controller
                 $wallet = $user->wallet;
                 if(isset($order->wallet_amount_used)){
                 $wallet->depositFloat($order->wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
+                $this->sendWalletNotification($user->id, $order->order_number);
                 }
                 if(isset($request->merchant_param3) && $request->merchant_param3=='mob')
                 {

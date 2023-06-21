@@ -72,6 +72,24 @@ if (!function_exists('getAdditionalPreference')) {
     }
 }
 
+if (!function_exists('getMapConfigrationPreference')) {
+    /**
+     * getMapConfigrationPreference
+     *
+     * @param  mixed $key
+     * @return void
+     */
+
+    function getMapConfigrationPreference(){
+        $iso3 = '';
+        $mapConfigration =  getAdditionalPreference(['is_map_search_perticular_country']);
+        if(isset($mapConfigration) && $mapConfigration['is_map_search_perticular_country'] == 1){
+            $iso3 = ClientData::first()->country->iso3 ?? '';
+        }
+        return $iso3;
+    }
+}
+
 // if (!function_exists('getAdditionalImageAttribute')) {
 //     function getAdditionalImageAttribute($value)
 //     {
@@ -687,7 +705,6 @@ if (!function_exists('showSlot')) {
                     })
                     ->get();
         }
-
 
         // check if vendor has added slots. if not added then no need to execute this.
         if (isset($slots) && count($slots)>0) {

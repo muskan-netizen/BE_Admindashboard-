@@ -19,7 +19,12 @@ class LoyaltyController extends Controller{
         $loyalty_card_details = LoyaltyCard::get();
 
         // total_loyalty_spent
-        $total_loyalty_spent = Order::orderBy('id','desc');
+        $total_loyalty_spent = Order::orderBy('id','desc')->where(function ($query){
+            $query->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
+            $query->orWhere(function ($q2) {
+                $q2->whereIn('payment_option_id', [1,38]);
+            });
+        }); 
         if (Auth::user()->is_superadmin == 0) {
             $total_loyalty_spent = $total_loyalty_spent->whereHas('vendors.vendor.permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
@@ -65,7 +70,12 @@ class LoyaltyController extends Controller{
             $temp_arr = explode(' ', $month_picker_filter);
             $month_number =  getMonthNumber($temp_arr[0]);
         }
-        $orders_query = Order::with('user','paymentOption','loyaltyCard');
+        $orders_query = Order::with('user','paymentOption','loyaltyCard')->where(function ($query){
+            $query->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
+            $query->orWhere(function ($q2) {
+                $q2->whereIn('payment_option_id', [1,38]);
+            });
+        }); 
         if (Auth::user()->is_superadmin == 0) {
             $orders_query = $orders_query->whereHas('vendors.vendor.permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
