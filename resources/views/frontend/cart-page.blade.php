@@ -495,25 +495,26 @@
                                             </div>
 
                                         </div>
-                                        
                                         @if($serviceType == 'rental' || $serviceType == 'p2p')
-                                            <hr class="my-2">
-                                            <div class="row align-items-md-center alRentalStartDate">
-                                                <div class="col-3">
-                                                    <h6 class="m-0 pl-0">{{ __('Start Date') }}</h6>
-                                                    <p>{{ date('m/d/Y g:i A', strtotime($vendor_product->start_date_time)) }}
-                                                    </p>
+                                            @if(!empty($vendor_product->start_date_time) && !empty($vendor_product->end_date_time))
+                                                <hr class="my-2">
+                                                            <div class="row align-items-md-center alRentalStartDate">
+                                                    <div class="col-3">
+                                                        <h6 class="m-0 pl-0">{{ __('Start Date') }}</h6>
+                                                        <p>{{ date('m/d/Y g:i A', strtotime($vendor_product->start_date_time)) }}
+                                                        </p>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <h6 class="m-0 pl-0">{{ __('End Date') }}</h6>
+                                                        <p>{{ date('m/d/Y g:i A', strtotime($vendor_product->end_date_time)) }}
+                                                        </p>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <h6 class="m-0 pl-0" style="font-weight: 600;">{{ __('Security Amount') }}</h6>
+                                                        <p>{{ Session::get('currencySymbol') . decimal_format($vendor_product->product->security_amount) }}</p>
+                                                    </div>
                                                 </div>
-                                                <div class="col-3">
-                                                    <h6 class="m-0 pl-0">{{ __('End Date') }}</h6>
-                                                    <p>{{ date('m/d/Y g:i A', strtotime($vendor_product->end_date_time)) }}
-                                                    </p>
-                                                </div>
-                                                <div class="col-3">
-                                                    <h6 class="m-0 pl-0" style="font-weight: 600;">{{ __('Security Amount') }}</h6>
-                                                    <p>{{ Session::get('currencySymbol') . decimal_format($vendor_product->product->security_amount) }}</p>
-                                                </div>
-                                            </div>
+                                            @endif
                                         @endif
                                         
                                         @if (count($vendor_product->addon) != 0)
