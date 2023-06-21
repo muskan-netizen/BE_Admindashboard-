@@ -258,6 +258,11 @@ class PostController extends FrontController
 					if(@$request->minimum_duration){
 						$proVariant->minimum_duration = $request->minimum_duration * 24;
 					}
+
+                    if ($request->has('p2p_price') && $request->filled('p2p_price')) {
+						$proVariant->price = $request->p2p_price ?? 0;
+					}
+
 					$proVariant->sku = $slug;
 					$proVariant->title =$slug . '-' .  empty($request->product_name) ?$slug : $request->product_name;
 					$proVariant->product_id = $product->id;

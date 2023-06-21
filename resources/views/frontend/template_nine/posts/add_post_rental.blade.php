@@ -561,7 +561,7 @@ select#category_filter {
                                                                 <div class="input-group-prepend">
                                                                   <div class="input-group-text">{{getPrimaryCurrencySymbol()}}</div>
                                                                 </div>
-                                                                <input type="text" class="form-control" required name="price" id="" placeholder="">
+                                                                <input type="text" class="form-control" required name="p2p_price" id="" placeholder="">
                                                               </div>
                                                         </div>
                                                     </div>

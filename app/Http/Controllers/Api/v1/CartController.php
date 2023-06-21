@@ -1765,7 +1765,7 @@ class CartController extends BaseController
             $cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
         }
         $cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
-
+        
         //mohit sir branch code updated by sohail farm meat
         $pendingAmount = 0;
         $advancePayableAmount = 0;
@@ -1797,8 +1797,10 @@ class CartController extends BaseController
         }
 
         $total_payable_amount_calc_tip = $cart->total_payable_amount - $total_taxable_amount;
-
-        $cart->total_payable_amount = $rental_price;
+        
+        if($rental_price > 0){
+            $cart->total_payable_amount = $rental_price;
+        }
         $cart->tip = array(
             ['label' => '5%', 'value' => decimal_format(0.05 * $total_payable_amount_calc_tip)],
             ['label' => '10%', 'value' => decimal_format(0.1 * $total_payable_amount_calc_tip)],

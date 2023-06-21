@@ -1455,7 +1455,7 @@
                             @endif
                             <div class="row {{ $hidden_token }}">
                                 <div class="col-6 d-flex">
-                                    <p class="total_amt m-0">{{ __('Amount Payable') }}
+                                    <p class="total_amt m-0">{{ __('Amount Payable') }} 
                                         @if ($other_taxes)
                                             <small>({{ __('incl. tax') }})</small>
                                         @endif
