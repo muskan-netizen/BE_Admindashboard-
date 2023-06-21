@@ -384,7 +384,7 @@ class PostController extends FrontController
      function addProductAttribute($request, $product){
         if( checkTableExists('product_attributes') ) {
             if( !empty($request->attribute) ) {
-                $attribute = json_decode($request->attribute, true);
+                $attribute = $request->attribute;
                 
                 if( !empty($attribute) ) {
             
