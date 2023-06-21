@@ -6,7 +6,7 @@ use Auth;
 use HttpRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use App\Models\{Client as CP,SubscriptionInvoicesVendor};
+use App\Models\{Client as CP, ProductAddon, ProductAttribute, ProductCelebrity, ProductCrossSell, ProductRelated, ProductTag, ProductUpSell, SubscriptionInvoicesVendor};
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -40,6 +40,7 @@ trait MargTrait{
         return $encrypted;
         // dd($encrypted);
     }
+
 
     public function addProduct($request)
 	{

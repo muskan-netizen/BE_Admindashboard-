@@ -13,6 +13,7 @@ Route::any('auth/callback/xero', 'Front\XeroController@xero_callback')->name('ca
 Route::any('payment/paytab/callback', 'Front\PaytabController@callback')->name('payment.paytab.callback');
 Route::match(['get', 'post'], 'payment/paytab/return', 'Front\PaytabController@returnBack')->name('payment.paytab.return');
 Route::get('/sync-marg', [MargController::class, 'syncmarg'])->name('sync.marg');
+Route::get('/order-marg', [MargController::class, 'makeInsertOrderMargApi']);
 // Route::get('/margcmd', [MargController::class, 'margcmd'])->name('sync.marg');
 Route::match(['get','post'],'payment/payByDataTrans','Front\DataTransController@payByDataTrans')->name('payment.payByDataTrans');
 Route::get('/debug-sentry', function () {
