@@ -8770,6 +8770,9 @@ body.al_body_template_two #page-container .small-slider .home-slider .home {
         .al_mobile_banner {
             display: block !important;
         }
+        .al_body_template_one  .al_mobile_banner{
+            padding-top: 70px;
+        }
         .al_custom_search button.btn {
             padding: 7px 6px 0 0;
         }

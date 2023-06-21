@@ -1620,6 +1620,13 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
     .vendor-design_new  .vendor_icon-design {
         display: inline-block!important;
     }
-  
-
+    .al_body_template_one #mycart .shoping_cart .vendor_products_tr .product-img {
+        max-height: 80px;
+    }
+    .al_body_template_one #mycart .shoping_cart .vendor_products_tr .col-9.col-md-10 .row > .col-6 {
+        padding: 0 12px!important;
+    }
+    .al_body_template_one .shoping_cart .vendor_products_tr h4 strong {
+        font-size: 14px;
+    }
 }
