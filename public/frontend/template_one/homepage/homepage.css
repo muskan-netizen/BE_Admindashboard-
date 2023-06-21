@@ -4694,7 +4694,11 @@ body.al_body_template_one .top-banner-wrapper {
 .al_body_template_one .alRentalSinglePageView .single_product-input {
     width: 80% !important;
 }
-
+@media(max-width:1100px) {
+    .cab-banner-area .card-box {
+        padding: 48px 25px;
+    }
+}
 @media(max-width:991px) {
     .al_body_template_one .slick-slider .product-card-box .img-outer-box.position-relative {
        height: 200px;
@@ -5610,6 +5614,14 @@ body.al_body_template_one .slick-slider .common-product-box, .slick-slider .supp
     .al_template_one.site-topbar .location-bar h2 span {
         width:50%;
     }  
+    .cab-banner-area  .btn.btn-solid.new-btn {
+        padding: 0 10px!important;
+        font-size: 10px!important;
+        letter-spacing: 0.2px;
+    }
+    .cab-banner-area .card-box {
+        padding: 20px 10px!important;
+    }
 }
 
 @media (max-width:360px){

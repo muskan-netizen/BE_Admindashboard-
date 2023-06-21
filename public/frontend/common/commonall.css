@@ -1378,6 +1378,15 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
         height: 80px!important;
         object-fit: cover!important;
     }
+    .al_body_template_four .dashboard-right .dashboard h3 {
+        font-size: 16px;
+    }
+    .al_body_template_four .dashboard-right .pricing-content p {
+        font-size: 14px;
+    }
+    .pricingtable .price-value b {
+        font-size: 20px;line-height: 1.5;   
+    }
 }
 @media (max-width:991px){
     .al_body_template_four .vender-icon img {

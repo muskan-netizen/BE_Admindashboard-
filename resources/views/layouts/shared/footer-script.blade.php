@@ -417,7 +417,7 @@ if (Session::has('toaster')) {
                                 $(this).remove();
                             });
                             setTimeout(function() {
-                                if ($("#received_new_orders").find(".update_order_status").length == 0) {
+                                if ($("#received_new_orders").find(".update-status").length == 0) {
                                     $("#received_new_orders").modal('hide');
                                 }
                             }, 2000);

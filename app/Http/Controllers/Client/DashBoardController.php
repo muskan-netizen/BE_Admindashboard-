@@ -477,8 +477,6 @@ class DashBoardController extends BaseController
 
             if($date_filter)
             $vendor_orders->whereBetween('created_at', [$from_date, $end_date]);
-
-
                 //  $vendor_orders = $vendor_orders->whereHas('vendor.permissionToUser', function ($query) {
                 //         $query->where('user_id', Auth::user()->id);
                 //     });
