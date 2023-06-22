@@ -42,11 +42,11 @@
                             @if(@$product->type_id == 13)
                             <div class="chat-button">
                                 @if(getAdditionalPreference(['chat_button'])['chat_button'])
-                                    <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{$product->vendor_id}}" data-orderid="" data-order_id="" data-product_id="{{$product->id}}"><i class="fa fa-comments" aria-hidden="true"></i></a>sdad
+                                    <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{$product->vendor_id}}" data-orderid="" data-order_id="" data-product_id="{{$product->id}}"><i class="fa fa-comments" aria-hidden="true"></i></a>
                                     {{-- {{__('Chat')}} --}}
                                 @endif
                                 @if(getAdditionalPreference(['call_button'])['call_button'])
-                                    <a class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone    " aria-hidden="true"></i></a>sad
+                                    <a class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone    " aria-hidden="true"></i></a>
                                     {{-- {{__('Call Button')}} --}}
                                 @endif
                             </div>
