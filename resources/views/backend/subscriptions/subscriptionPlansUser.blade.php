@@ -200,7 +200,7 @@
                                                 </td>
                                                 <td><a href="javascript:void(0)" class="editSubscriptionPlanBtn" data-id="{{$plan->slug}}">{{$plan->title}}</a></td>
                                                 <td>{{$plan->description}}</td>
-                                                <td>${{decimal_format($plan->price)}}</td>
+                                                <td>{{ isset($clientCurrency->currency)?$clientCurrency->currency->symbol:'$' }}{{decimal_format($plan->price)}}</td>
                                                 <td>{{__($plan->features)}}</td>
                                                 <td>{{__(ucfirst($plan->frequency))}}</td>
                                                 <td>

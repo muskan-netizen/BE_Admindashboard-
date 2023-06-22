@@ -319,11 +319,11 @@ class PickupDeliveryController extends BaseController{
                         }
 
                         //Send message if ride is booked for friend
-                        if($request->type == 1 && isset($request->friendPhoneNumber))
+                      /*  if($request->type == 1 && isset($request->friendPhoneNumber))
                         {
                             $msg = "Hi ".($request->friendName??'User').", ".$user->name." has booked a ride for you. Tracking url is ".$request_to_dispatch['dispatch_traking_url'];
                             $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
-                        }
+                        }*/
                         return $order_place;
                     }else{
                         DB::rollback();
@@ -348,11 +348,11 @@ class PickupDeliveryController extends BaseController{
                         }
     
                          //Send message if ride is booked for friend
-                        if($request->type == 1 && isset($request->friendPhoneNumber))
+                       /* if($request->type == 1 && isset($request->friendPhoneNumber))
                         {
                             $msg = "Hi ".($request->friendName??'User').", ".$user->name." has booked a ride for you. Tracking url is ".$request_to_dispatch['dispatch_traking_url'];
                             $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
-                        }
+                        }*/
                         return  $order_place;
                     }
                     else{
