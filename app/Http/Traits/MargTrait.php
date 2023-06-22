@@ -24,8 +24,6 @@ trait MargTrait{
      */
 
     public function getData($crulUrl, $payload){
-        // $ch = curl_init( "https://wservices.margcompusoft.com/api/eOnlineData/MargMST2017");
-        // $payload = json_encode( array("CompanyCode" => "RakeshApi2","MargID" => 339157,"Datetime" => "", "index" => 0));
         $ch = curl_init( $crulUrl );
         $payload = json_encode( $payload);
         curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
@@ -45,8 +43,7 @@ trait MargTrait{
     public function addProduct($request)
 	{
         try{
-            DB::beginTransaction();
-			// $user = Auth::user();	
+            DB::beginTransaction();	
             $is_exist = Product::where('sku', $request->ProductCode)->first();
 
 			if(isset($request->ProductCode) && isset($request->name) && is_null($is_exist)){
@@ -119,14 +116,7 @@ trait MargTrait{
                     $proVariant->save();
 
                     $pt = ProductTranslation::insert($datatrans);
-
-                    // $product_detail = Product::where('id', $product->id)->firstOrFail();
-                    // $data = ['product_detail' => $product_detail];
-
                     DB::commit();
-					\Log::info($request->name." Added! (code)".$request->ProductCode );
-                    // return response()->json(['success' => 'Cleaned Successfully']);
-                    // return $data;
                 }
             }else{
                 \Log::info($request->name." Already exist! (code)".$request->ProductCode);
@@ -575,20 +565,13 @@ trait MargTrait{
 				$updateOrder->marg_status = $encryptedData??1;
 				$updateOrder->save();
 
-                return true;;
+                return true;
                 
             }else{
 
                 return false;
 
             }
-
-            // $decryptedData = $this->DecryptLogic->Decrypt($encryptedData, $decryptionKey);
-            // $collectionData = collect( json_decode($decryptedData));
-
-            // \Log::info('response');
-            // \Log::info(json_encode($collectionData));
-            // dd(json_decode($decryptedData));
             return true;
 
         }else{
