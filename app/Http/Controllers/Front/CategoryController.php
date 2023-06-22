@@ -149,7 +149,7 @@ class CategoryController extends FrontController{
         if( checkTableExists('product_attributes') ) {
           
             
-            if( $category->type_id == 13 && $getAdditionalPreference['is_attribute'] ) {
+            if (in_array($category->type_id, [13, 10]) && !empty($getAdditionalPreference['is_attribute'])) {
 
                 $productAttributes = Attribute::with('option', 'varcategory.cate.primary')
                     ->select('attributes.*')
