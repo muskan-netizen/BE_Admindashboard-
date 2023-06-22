@@ -2253,9 +2253,11 @@ class VendorController extends BaseController{
                              return $query;
                         });  
                         
+                        \Log::info('json_encode($vendor_categories->toArray())');
+                        \Log::info(json_encode($vendor_categories->toArray()));
                    
                     $listData =  array_values($vendor_categories->toArray());
-
+                    \Log::info(json_encode($vendor_categories->toArray()));
             }
             else{ 
             \Log::info('in here ww ');
