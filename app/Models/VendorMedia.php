@@ -13,7 +13,7 @@ class VendorMedia extends Model
     {
       $values = array();
       $img = 'default/default_image.png';
-      if(!empty($value)){
+      if(!empty($value) && !is_array($value)){
         $img = $value;
       }
       $img = str_replace(' ', '', $img);
