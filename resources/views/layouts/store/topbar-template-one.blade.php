@@ -132,7 +132,7 @@ $preference = $client_preference_detail;
                         </ul>
                     </li>
                     @endif
-                    @if( !p2p_module_status() )
+                    @if( Session::get('vendorType') != 'p2p')
                     <li class="onhover-dropdown mobile-account"> <i class="fa fa-user" aria-hidden="true"></i>
                         {{__('My Account')}}
                         <ul class="onhover-show-div">
