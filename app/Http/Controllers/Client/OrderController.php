@@ -2920,6 +2920,7 @@ class OrderController extends BaseController
             }
             if ($notification_content) {
                 $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
+                $redirect_URL['type'] = 4;
                 $data = [
                     "registration_ids" => $devices,
                     "notification" => [
@@ -2927,13 +2928,18 @@ class OrderController extends BaseController
                         'body'  => $body_content,
                         'sound' => "default",
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
-                        'click_action' => route('user.orders'),
-                        "android_channel_id" => "default-channel-id"
+                        'click_action' => '',
+                        "android_channel_id" => "default-channel-id",
+                        "redirect_type" => $redirect_URL['type'] 
                     ],
                     "data" => [
                         'title' => $notification_content->subject,
                         'body'  => $body_content,
-                        "type" => "order_status_change"
+                        "type" => "order_status_change",
+                        "order_id" =>$orderData->id,
+                        "vendor_id" =>$orderData->ordervendor->vendor_id,
+                        "order_status" =>$order_status_id,
+                        "redirect_type" => $redirect_URL['type'] 
                     ],
                     "priority" => "high"
                 ];
