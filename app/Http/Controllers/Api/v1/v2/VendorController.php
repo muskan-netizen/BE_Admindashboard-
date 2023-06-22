@@ -2209,7 +2209,7 @@ class VendorController extends BaseController{
             $product_category_ids = $product_category_ids->isNotEmpty() ? $product_category_ids->toArray() : [];
             
             if($vendor->vendor_templete_id == 5){
-            
+            \Log::info('in here');
                 $vendor_categories = Category::select('id')->whereHas('vendorCategory',function ($q)use($vid){
                     $q->where('vendor_id',$vid)->where('status', 1);
                 })->whereHas('data',function ($q)use($vid){
@@ -2255,9 +2255,11 @@ class VendorController extends BaseController{
                         
                    
                     $listData =  array_values($vendor_categories->toArray());
-                    
+
             }
             else{ 
+            \Log::info('in here ww ');
+
                 $vendorCategories = VendorCategory::with(['category.translation' => function($q) use($langId){
                     $q->where('category_translations.language_id', $langId);
                 }])->where('vendor_id', $vendor->id)->where('status', 1)->get();
