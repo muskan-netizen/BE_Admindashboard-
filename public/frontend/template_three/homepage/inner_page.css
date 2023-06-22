@@ -1273,10 +1273,10 @@ body p:empty {
     object-fit: contain;
     transform: none;
     opacity: 1;
-    will-change: transform, opacity;
+    will-change: unset;
     border-radius: inherit;
     filter: unset;
-    transition: opacity .25s ease 0s, transform .25s ease 0s
+    transition: unset;
 }
 
 .al_custom_vendors_sec h6 {
