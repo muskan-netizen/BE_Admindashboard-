@@ -215,7 +215,7 @@
 
         body.al_body_template_nine .alPostBoxOuter ul li a.active {
             background: #efe7e7;
-            border: 1px solid #ccc;
+            border: unset;  
             position: relative;
         }
 
