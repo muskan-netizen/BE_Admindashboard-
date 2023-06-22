@@ -2210,7 +2210,7 @@ class VendorController extends BaseController{
             
             if($vendor->vendor_templete_id == 5){
             \Log::info('checking logs');
-            $vendor_categories = Category::select('categories.id as cid','categories.type_id', 'types.title as redirect_to')->join('types', 'types.id', 'categories.type_id')->whereHas('vendorCategory',function ($q)use($vid){
+            $vendor_categories = Category::select('categories.id','categories.type_id', 'types.title as redirect_to')->join('types', 'types.id', 'categories.type_id')->whereHas('vendorCategory',function ($q)use($vid){
                 $q->where('vendor_id',$vid)->where('status', 1);
             })->whereHas('data',function ($q)use($vid){
                 $q->where('is_live', 1)->where('vendor_id', $vid);
@@ -2228,7 +2228,7 @@ class VendorController extends BaseController{
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description','language_id','body_html as translation_description')->where('language_id', $langId)->orderBy('body_html','desc');
                         },
                         'variant' => function($q) use($langId, $multipli){
-                            $q->select('id','sku', 'product_id', 'quantity', 'price', 'markup_price','barcode', 'compare_at_price',DB::raw("'$multipli' as multiplier"),)->orderBy('quantity', 'desc');
+                            $q->select('id as varient_id','sku', 'product_id', 'quantity', 'price', 'markup_price','barcode', 'compare_at_price',DB::raw("'$multipli' as multiplier"),)->orderBy('quantity', 'desc');
                         },'variant.checkIfInCartApp', 'checkIfInCartApp',
                          'tags.tag.translations' => function ($q) use ($langId) {
                             $q->where('language_id', $langId);
