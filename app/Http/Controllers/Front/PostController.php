@@ -179,7 +179,7 @@ class PostController extends FrontController
 			
 				return $this->errorResponse($validator->errors()->first(), 422);
 			}
-            
+            // dd($request->all());
 			$client = Client::orderBy('id','asc')->first();
 			if(isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain) {
 				$sku_url =  ($client->custom_domain);
@@ -201,7 +201,8 @@ class PostController extends FrontController
 				$product->url_slug = $generated_slug;
 				$product->title = $request->product_name;        
 				$product->category_id = $request->category_id;
-				$product->description = $request->description ?? '';
+				$product->description = $request->product_description ?? '';
+                $product->body_html = $request->product_description ?? '';
 				$product->type_id = 1;
 				$product->is_live = 1;
 				$product->publish_at = date('Y-m-d H:i:s');
@@ -209,11 +210,11 @@ class PostController extends FrontController
 				if(@$request->address){
 					$product->address = $request->address;
 				}
-				if(@$request->latitude){
-					$product->latitude = $request->latitude;
+				if(@$request->lat){
+					$product->latitude = $request->lat;
 				}
-                if(@$request->longitude){
-					$product->latitude = $request->longitude;
+                if(@$request->long){
+					$product->longitude = $request->long;
 				}
 				$client_lang = ClientLanguage::where('is_primary', 1)->first();
 				if (!$client_lang) {
@@ -227,7 +228,7 @@ class PostController extends FrontController
 				if ($product->id > 0) {
 					$datatrans[] = [
 						'title' => $request->product_name??null,
-						'body_html' => $request->body_html??null,
+						'body_html' => $request->product_description??null,
 						'meta_title' => '',
 						'meta_keyword' => '',
 						'meta_description' => '',
