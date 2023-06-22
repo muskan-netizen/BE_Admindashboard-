@@ -1318,7 +1318,17 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
 .al_body_template_six .vendor-description .profile_address h4, .al_body_template_six  .vendor-design_new .vendor-info li{
     color: #000!important;
 }
-
+.al_body_template_one #cart_template .shoping_cart .col-10 .prescription_btn {
+    background: transparent;
+    text-transform: capitalize;
+    letter-spacing: 1.2px;
+    line-height: 1.5;
+    color: var(--theme-deafult)!important;
+}
+.al_body_template_one #cart_template .shoping_cart .col-10 .prescription_btn:hover{
+    background: var(--theme-deafult)!important;
+    color: #fff!important;;
+}
 
 
 .al_body_template_six .vendor-description .profile_address h4 {
@@ -1367,6 +1377,21 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
         min-height: 120px;
         position: relative;
         z-index: -1;
+    }
+    .al_body_template_six #mycart #cart_template .vendor_product_schedule_datetime input.vendor_schedule_datetime {
+        font-size: 14px;
+    }
+    .al_body_template_six #mycart #cart_template .vendor_products_tr .vendor_product_schedule_datetime .col-5.offset-3.text-left p{
+        margin-bottom: 0;
+    }
+    .al_body_template_six #mycart #cart_template .vendor_products_tr .vendor_product_schedule_datetime .col-5.offset-3.text-left {
+        width: unset;
+        max-width: inherit;
+        flex: unset;
+    }
+    .al_body_template_six #mycart #cart_template .vendor_products_tr .vendor_product_schedule_datetime .col-4.vendor_slot_cart {
+        width: 100%;
+        max-width: 100%;
     }
 }
 
@@ -1650,6 +1675,13 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
     .vendor-design_new  .vendor_icon-design {
         display: inline-block!important;
     }
-  
-
+    .al_body_template_one #mycart .shoping_cart .vendor_products_tr .product-img {
+        max-height: 80px;
+    }
+    .al_body_template_one #mycart .shoping_cart .vendor_products_tr .col-9.col-md-10 .row > .col-6 {
+        padding: 0 12px!important;
+    }
+    .al_body_template_one .shoping_cart .vendor_products_tr h4 strong {
+        font-size: 14px;
+    }
 }
