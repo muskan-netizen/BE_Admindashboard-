@@ -2209,8 +2209,8 @@ class VendorController extends BaseController{
             $product_category_ids = $product_category_ids->isNotEmpty() ? $product_category_ids->toArray() : [];
             
             if($vendor->vendor_templete_id == 5){
-            
-            $vendor_categories = Category::select('categories.id','categories.type_id', 'types.title as redirect_to')->join('types', 'types.id', 'categories.type_id')->whereHas('vendorCategory',function ($q)use($vid){
+            \Log::info('checking logs');
+            $vendor_categories = Category::select('categories.id as cid','categories.type_id', 'types.title as redirect_to')->join('types', 'types.id', 'categories.type_id')->whereHas('vendorCategory',function ($q)use($vid){
                 $q->where('vendor_id',$vid)->where('status', 1);
             })->whereHas('data',function ($q)use($vid){
                 $q->where('is_live', 1)->where('vendor_id', $vid);
