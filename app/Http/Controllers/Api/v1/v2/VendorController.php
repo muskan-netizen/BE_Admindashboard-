@@ -2256,6 +2256,8 @@ class VendorController extends BaseController{
                 $listData =  array_values($vendor_categories->toArray());
             }
             else{ 
+            \Log::info('checking logs else');
+
                 $vendorCategories = VendorCategory::with(['category.translation' => function($q) use($langId){
                     $q->where('category_translations.language_id', $langId);
                 }])->where('vendor_id', $vendor->id)->where('status', 1)->get();
