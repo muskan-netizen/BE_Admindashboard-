@@ -19,8 +19,8 @@ class PageSeeder extends Seeder{
         DB::table('pages')->truncate();
         DB::table('page_translations')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-        $page_array = ['Privacy Policy', 'Terms & Conditions', 'Vendor Registration'];
-        $type = [4,5,1];
+        $page_array = ['Privacy Policy', 'Terms & Conditions', 'Vendor Registration', 'Cancellation Policy'];
+        $type = [4,5,1,4];
         $client_language = ClientLanguage::where('is_primary', 1)->first();
         foreach ($page_array as $key => $page) {
             $page_detail = Page::create(['slug' => Str::slug($page, '-')]);
