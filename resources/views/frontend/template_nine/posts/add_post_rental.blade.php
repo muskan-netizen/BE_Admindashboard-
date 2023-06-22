@@ -424,6 +424,30 @@ body.dark .fillter_div:after{
     width: 33.33%;
 }
 }
+@media (max-width:576px){
+    .cate-item img {
+    width: 100%;
+    height: 100%;
+    padding: 3px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin: 0 auto 0px;
+    max-height: 100px;
+    min-height: 100px;
+}
+.alPostBoxOuter ul li {
+    width: 50%;
+}
+.alCategoryItemsHead {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+.start_form_register .alPostBoxOuter h6{
+    margin-bottom: 10px!important;
+}
+
+}
     </style>
 @endsection
 
