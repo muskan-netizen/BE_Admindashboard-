@@ -2863,19 +2863,87 @@ class OrderController extends BaseController
             $orderProduct->updated_price_reason = isset($request->update_price_reason) ? ($request->update_price_reason) :0;
             $orderProduct->save();
             $orderData = Order::find($orderProduct->order_id);
+            $orderVendorData = OrderVendor::where('order_id',$orderProduct->order_id)->first();
+
             $newPayableAmount = 0;
             $newTotalAmount   = 0;
+            $tax_category_ids = [];
+            $productAddon_price = 0;
+            $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+            if (!empty($orderProduct->addon)) {
+                foreach ($orderProduct->addon as $ck => $addon) {
+                    $opt_quantity_price = 0;
+                    $opt_price_in_currency = $addon->option->price;
+                    $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
+                    $opt_quantity_price = $opt_price_in_doller_compare *  $orderProduct->quantity;
+                    $productAddon_price = $productAddon_price + $opt_quantity_price;
+                   
+                }
+            }
+            $product_taxable_amount = 0;
+            $taxable_amount = 0;
+            $payable_amount = 0;
+            $total_other_taxes = 0;
+            $total_fixed_fee_tax = 0;
+            $total_service_fee_tax = 0;
+            $deliver_fee_charges_tax = 0;
+            $total_markup_fee_tax = 0;
+            $total_taxable_amount = 0;
+            $container_charges_tax = 0;
+ 
+ 
+            if($orderData->total_other_taxes!=''){
+                foreach(explode(",",$orderData->total_other_taxes) as $row){
+                      $row1 = explode(":",$row);
+                     $check_row  = $row1[0];
+                     if($check_row == "product_tax_fee"){
+                       $product_taxable_amount = $row1[1];
+                     }else  if($check_row == "tax_fixed_fee"){
+                        $total_fixed_fee_tax = $row1[1];
+                      }else  if($check_row == "tax_service_charges"){
+                        $total_service_fee_tax = $row1[1];
+                      }else  if($check_row == "tax_delivery_charges"){
+                        $deliver_fee_charges_tax = $row1[1];
+                      }else  if($check_row == "tax_markup_fee"){
+                        $total_markup_fee_tax = $row1[1];
+                      }else  if($check_row == "container_charges_tax"){
+                        $container_charges_tax = $row1[1];
+                      }
+                }
+            }
+
+            $quantity_price = ($orderProduct->price * $orderProduct->quantity) ;
+            if (isset($orderProduct->product->taxCategory)) {
+                foreach ($orderProduct->product->taxCategory->taxRate as $tax_rate_detail) {
+                    if (!in_array($tax_rate_detail->id, $tax_category_ids)) {
+                        $tax_category_ids[] = $tax_rate_detail->id;
+                    }
+                    $rate = $tax_rate_detail->tax_rate;
+                    $product_tax = ($quantity_price + $productAddon_price) * $rate / 100;
+                    $product_taxable_amount = $taxable_amount + $product_tax;
+                    $payable_amount = $payable_amount + $product_tax;
+                }
+            }
+            $orderData->taxable_amount = $product_taxable_amount ;
+            $other_taxes_string='tax_fixed_fee:'.$total_fixed_fee_tax.',tax_service_charges:'.$total_service_fee_tax.',tax_delivery_charges:'.$deliver_fee_charges_tax.',tax_markup_fee:'.$total_markup_fee_tax.',product_tax_fee:'.$product_taxable_amount.',container_charges_tax:'.$container_charges_tax;
+            $orderData->total_other_taxes = $other_taxes_string;
             if($orderProduct->old_price < $orderProduct->price){
-                $newPayableAmount =   ($orderProduct->price - $orderProduct->old_price) + $orderData->payable_amount;
-                $newTotalAmount   = ($orderProduct->price - $orderProduct->old_price) + $orderData->total_amount;
+                $newPayableAmount =   ($orderProduct->price - $orderProduct->old_price )+ ($product_taxable_amount- $orderData->taxable_amount) + $orderData->payable_amount;
+                $newTotalAmount   = ($orderProduct->price - $orderProduct->old_price ) + $orderData->total_amount;
+                $orderVendorData->payable_amount =   $orderVendorData->payable_amount +($product_taxable_amount- $orderData->taxable_amount)  ;
+               
             }else if($orderProduct->old_price > $orderProduct->price){
-                $newPayableAmount =   $orderData->payable_amount - ($request->order_product_old_price - $request->new_product_price);
+                $newPayableAmount =   $orderData->payable_amount - ($request->order_product_old_price - $request->new_product_price) + ($orderData->taxable_amount - $product_taxable_amount );
                 $newTotalAmount   = $orderData->total_amount - ($request->order_product_old_price - $request->new_product_price);
+                $orderVendorData->payable_amount =   $orderVendorData->payable_amount +($orderData->taxable_amount - $product_taxable_amount );
             }
             if(!empty($newPayableAmount) && !empty($newTotalAmount)){
                 $orderData->total_amount   = decimal_format($newTotalAmount);
                 $orderData->payable_amount = decimal_format($newPayableAmount);
                 $orderData->save();
+                $orderVendorData->subtotal_amount =   $newTotalAmount  ;
+                $orderVendorData->taxable_amount =   $product_taxable_amount  ;
+                $orderVendorData->save();
                 DB::commit();
                 return response()->json(['status' => 'success', 'message' => __('Product price updated Successfully.')]);
             }else{
