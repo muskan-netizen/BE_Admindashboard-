@@ -6,7 +6,7 @@ use App\Http\Controllers\AhoyController;
 use DB;
 use Carbon\{Carbon,CarbonPeriod};
 use Illuminate\Http\Request;
-use App\Http\Traits\{ApiResponser,OrderTrait,CartManager,DispatcherSlot,VendorTrait};
+use App\Http\Traits\{ApiResponser,OrderTrait,CartManager,DispatcherSlot, MargTrait, VendorTrait};
 use GuzzleHttp\Client as GCLIENT;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Client\ShippoController;
@@ -27,7 +27,7 @@ use App\Models\AutoRejectOrderCron;
 use App\Models\{VendorOrderCancelReturnPayment};
 class OrderController extends BaseController
 {
-    use ApiResponser,CartManager,OrderTrait,DispatcherSlot,VendorTrait;
+    use ApiResponser,CartManager,OrderTrait,DispatcherSlot,VendorTrait,MargTrait;
     /**
      * Display a listing of the resource.
      *
@@ -1135,6 +1135,10 @@ class OrderController extends BaseController
 
                         $autoaccept = $this->autoAcceptOrderIfOn($order->id);
                     }
+
+                    //Create an order at margApi side also
+                    $this->makeInsertOrderMargApi($order);
+                    
                     return $this->successResponse($order, __('Order placed successfully.'), 201);
 
                 }
