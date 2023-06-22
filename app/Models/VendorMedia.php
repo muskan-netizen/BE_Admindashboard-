@@ -28,4 +28,5 @@ class VendorMedia extends Model
       $values['original_image'] = \Storage::disk('s3')->url($img);
       return $values;
     }
+    
 }
