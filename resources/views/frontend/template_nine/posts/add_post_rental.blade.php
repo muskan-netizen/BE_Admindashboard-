@@ -557,6 +557,20 @@ body.dark .fillter_div:after{
                                                         aria-describedby="button-addon2" value=""
                                                         autocomplete="off" required="required">
                                                 </div>
+                                                <div class="p2p-cat-fields d-none">
+                                                    <div class="alPostItemsData">
+                                                        <h5 class="text-uppercase py-3">SET A PRICE</h5>
+                                                        <div class="form-group">
+                                                            <label>Price *</label>
+                                                            <div class="input-group mb-2">
+                                                                <div class="input-group-prepend">
+                                                                  <div class="input-group-text">{{getPrimaryCurrencySymbol()}}</div>
+                                                                </div>
+                                                                <input type="text" class="form-control" required name="p2p_price" id="" placeholder="">
+                                                              </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <div class="rental-cat-fields d-none">
                                                     <div class="form-group">
                                                         <label>Pricing Detail For *</label>
@@ -701,8 +715,10 @@ body.dark .fillter_div:after{
             $(".p2p-category-form").removeClass('d-none');
             if(type_id == '10'){
                 $(".rental-cat-fields").removeClass('d-none');
+                $(".p2p-cat-fields").addClass('d-none');
             }else{
                 $(".rental-cat-fields").addClass('d-none');
+                $(".p2p-cat-fields").removeClass('d-none');
             }
             $.ajaxSetup({
                 headers: {

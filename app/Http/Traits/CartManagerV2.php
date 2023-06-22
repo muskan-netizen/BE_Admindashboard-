@@ -699,7 +699,7 @@ trait CartManagerV2{
                             $container_charges_in_doller_compare = $container_charges_in_currency * $customerCurrency->doller_compare;
                         }
                         $quantity_price = $price_in_doller_compare * $prod->quantity;
-
+                        
                     // Recurring Booking Enabled
                     // if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
                     //     if(checkColumnExists('cart_products','recurring_booking_type')){
@@ -745,7 +745,7 @@ trait CartManagerV2{
                     $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
 
                     $sub_total+=$quantity_price+$quantity_container_charges;
-
+                    
                     $prod->pvariant->price_in_cart = $prod->pvariant->price??0;
                    
                     $total_quantity += $prod->quantity;
@@ -766,15 +766,13 @@ trait CartManagerV2{
                     $prod->quantity_container_charges = decimal_format($quantity_container_charges);
                     //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
                     $prod->quantity_role_price = $quantity_role_price;
-
                     
-                    if(@$prod->pvariant->month_price && $prod->pvariant->week_price){
-                        
+                    if (($prod->pvariant->month_price ?? 0) > 0 && ($prod->pvariant->week_price ?? 0) > 0) {
                         $payable_amount = $payable_amount + $prod->additional_increments_hrs_min/(60*24) * $price_in_currency;
                     }else{
                         $payable_amount = $payable_amount + $prod->additional_price + $quantity_price + $quantity_container_charges;
                     }
-
+                    
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                     $total_container_charges = $total_container_charges + $quantity_container_charges;
                     if(
@@ -1307,7 +1305,7 @@ trait CartManagerV2{
 
 
                 $subtotal_amount = $payable_amount;
-
+                
                 $payable_amount = $payable_amount + $deliveryfee_ifnot_discounted + $security_amount;
 
 

@@ -318,13 +318,13 @@ class BaseController extends Controller{
         $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
         $preferences = ClientPreference::select('is_hyperlocal', 'client_code', 'language_id', 'celebrity_check')->first();
         $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
-                    ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to');
+                    ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to', 'categories.type_id');
                    
-                    if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
-                        $categories->whereIn('categories.type_id',[10] );
-                    }else{
+                    // if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                    //     $categories->whereIn('categories.type_id',[10] );
+                    // }else{
                         $categories->whereIn('categories.type_id',$categoryTypes );
-                    }
+                    // }
                     
                 $categories =  $categories->distinct('categories.slug');
 
@@ -372,10 +372,10 @@ class BaseController extends Controller{
         }else{
             $categories = $categories->get();
         }
-       
-        if($categories){
-            $categories = $this->buildTree($categories->toArray());
-        }
+        // dd($categories);
+        // if($categories){
+        //     $categories = $this->buildTree($categories->toArray());
+        // }
         return $categories;
     }
 
