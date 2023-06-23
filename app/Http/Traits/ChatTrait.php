@@ -4,6 +4,10 @@ use App\Models\{Order,OrderVendor,UserDevice,ClientPreference, Product};
 use Auth;
 use GuzzleHttp\Client as GCLIENT;
 use Log;
+use Aws\S3\S3Client;
+use Aws\Exception\AwsException;
+use Illuminate\Http\Request;
+use Intervention\Image\Facades\Image;
 
 trait ChatTrait{
 
@@ -193,6 +197,57 @@ trait ChatTrait{
         }
     }
 
+    public function signAws(Request $request)
+    {
+        $accessKeyId = 'AKIAUDRAUVRKKOPASJDM';
+        $secretAccessKey = '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';
+        $region = 'us-west-2';
+        $bucketName = 'testingmediaa';
+
+        $fileName = $request->input('filename');
+
+        $s3Client = new S3Client([
+            'version' => 'latest',
+            'region' => $region,
+            'credentials' => [
+                'key' => $accessKeyId,
+                'secret' => $secretAccessKey,
+            ],
+        ]);
+
+        //try {
+            
+            $cmd = $s3Client->getCommand('PutObject', [
+                'Bucket' => $bucketName,
+                'Key' => $fileName,
+                'ACL' => 'public-read',
+            ]);
+            
+            $request = $s3Client->createPresignedRequest($cmd, '+1 hour');
+            $signedUrl = (string) $request->getUri();
+
+            //$thumbnail = Image::make($request->getUri())->fit(200)->encode();
+
+            // Upload the thumbnail to S3 and generate a signed URL for it
+            // $thumbnailKey = 'thumbnails/' . $fileName;
+            // $s3Client->putObject([
+            //     'Bucket' => $bucketName,
+            //     'Key' => $thumbnailKey,
+            //     'Body' => $thumbnail,
+            //     'ACL' => 'public-read',
+            // ]);
+            // $thumbnailUrl = $s3Client->getObjectUrl($bucketName, $thumbnailKey);
+
+            return response()->json([
+                'url' => $signedUrl,
+                //'thumbnail_url' => $thumbnailUrl,
+            ]);
+
+            //return response()->json(['url' => $signedUrl]);
+        // } catch (AwsException $e) {
+        //     return response()->json(['error' => $e->getMessage()], 500);
+        // }
+    }
 
     
 }
