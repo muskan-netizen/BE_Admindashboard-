@@ -16,8 +16,10 @@ var uppy = new Uppy.Uppy()
 
     getUploadParameters(file) {
         return new Promise((resolve, reject) => {
+        var room_id = $('.send_message').attr('data-id');
+        var roomIdText = $(`#room_${room_id}`).attr('data-roomid');
         // Make a request to the Laravel endpoint to get the signed URL
-        fetch('/common/s3-sign?filename=' + encodeURIComponent(file.name))
+        fetch('/common/s3-sign?filename=' + encodeURIComponent(`uploads/${auth}/${roomIdText}/${file.name}`))
             .then(response => response.json())
             .then(data => {
                 resolve({
