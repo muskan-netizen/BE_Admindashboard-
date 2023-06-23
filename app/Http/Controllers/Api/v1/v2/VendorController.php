@@ -2246,7 +2246,7 @@ class VendorController extends BaseController{
                     {
                        $vendor_categories = $vendor_categories->where(function($q) use ($request)
                         {
-                            $q->where('id',$request->category_id)->orWhere('parent_id',$request->category_id);
+                            $q->where('categories.id',$request->category_id)->orWhere('categories.parent_id',$request->category_id);
                         });
                     }
                  
@@ -2299,7 +2299,7 @@ class VendorController extends BaseController{
                     ->where('products.is_live', 1)->withCount(['variantSet','addOn']);
                     
                     if(isset($request->category_id))
-                    $products = $products->where('category_id',$request->category_id);
+                    $products = $products->where('products.category_id',$request->category_id);
 
                     $products = $products->orderBy('product_translations.title', 'asc')->paginate($limit, $page); 
                 // if(!empty($products)){
