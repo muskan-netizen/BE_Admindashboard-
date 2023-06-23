@@ -570,6 +570,7 @@ $(document).ready(function () {
                                 $("#subscription_payment #features_list").html(response.sub_plan.features);
                                 $("#subscription_payment #subscription_id").val(sub_id);
                                 $("#subscription_payment #subscription_amount").val(response.sub_plan.price);
+                                $("#subscription_payment #type_id").val(response.sub_plan.type_id);
                                 $("#subscription_payment #subscription_payment_methods").html('');
                                 let payment_method_template = _.template($('#payment_method_template').html());
                                 $("#subscription_payment #subscription_payment_methods").append(payment_method_template({ payment_options: response.payment_options }));
@@ -577,6 +578,22 @@ $(document).ready(function () {
                                     $("#subscription_payment .subscription_confirm_btn").hide();
                                 }
                                 $("#subscription_payment").modal("show");
+                                if(response.sub_plan.type_id == 2){
+									var form = document.getElementById('meal-subscription-form');
+						          	  var formData = new FormData(form); // Create a new FormData object
+						
+						            var serializedData = JSON.stringify(Object.fromEntries(formData)); // Serialize the form data to JSON
+						
+						            var serializedField = document.createElement("input"); // Create a new input element
+						            serializedField.type = "hidden";
+						            serializedField.name = "serializedForm";
+						            serializedField.value = serializedData;
+						
+						            document.getElementById('subscription_payment_form').appendChild(serializedField); // Append the serialized field to the form
+						
+						            // Display the serialized form data in the console
+						            console.log(serializedData);								
+								}
                                 if(stripe_publishable_key != ''){
                                     stripeInitialize();
                                 }
@@ -1370,9 +1387,16 @@ $(document).ready(function () {
         let pending_amount = $("input[name='amount_pending']");
         let tipElement = $("#cart_tip_amount");
         let payment_form = '';
+        let type = $("input[name='type_id']").val();
+        let mealSubscriptionForm = '';
+        if(type == '2'){
+			mealSubscriptionForm = $("input[name='serializedForm']").val()
+			paymentAjaxData.days = $('#sub-days').html();
+		}
         // let payment_option_id = paymentAjaxData.payment_option_id;
 
         paymentAjaxData.payment_method_id = result.paymentMethod.id;
+        paymentAjaxData.type_id = type;
         // paymentAjaxData.payment_option_id = payment_option_id;
         if (path.indexOf("cart") !== -1) {
             payment_form = 'cart';
@@ -1409,6 +1433,9 @@ $(document).ready(function () {
         }
         paymentAjaxData.payment_form = payment_form;
         paymentAjaxData.total_amount = total_amount;
+        if(mealSubscriptionForm !== 'undefined' && mealSubscriptionForm !== ''){
+			paymentAjaxData.mealSubscriptionForm = mealSubscriptionForm;
+		}
         if (result.error) {
             swal.fire({
                 icon: 'error',
