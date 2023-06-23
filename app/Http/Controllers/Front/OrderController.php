@@ -1177,7 +1177,7 @@ class OrderController extends FrontController
             $editlimit_datetime = Carbon::now()->toDateTimeString();
             $order_edit_before_hours = 0;
             $is_service_product_price_from_dispatch = 0;
-            $additionalPreferences = getAdditionalPreference(['is_tax_price_inclusive','is_gift_card','is_service_product_price_from_dispatch','order_edit_before_hours','is_show_vendor_on_subcription','is_service_price_selection']);
+            $additionalPreferences = getAdditionalPreference(['is_tax_price_inclusive','is_gift_card','is_service_product_price_from_dispatch','order_edit_before_hours','is_show_vendor_on_subcription','is_service_price_selection','stock_notification_before','stock_notification_qunatity']);
 
             if(($action == 'on_demand') && ($additionalPreferences['is_service_product_price_from_dispatch'] ==1)){
                 $getOnDemandPricingRule = getOnDemandPricingRule($action, Session::get('onDemandPricingSelected'),$additionalPreferences);
@@ -2445,8 +2445,16 @@ class OrderController extends FrontController
                             'vendor_id' => $vendor_value->vendor_id
                         ])->pluck('user_id');
                         if ($request->payment_option_id == 1 || $order->is_postpay == 1 || $order->payment_status == 1) {
+                            
                             $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
                         }
+
+                        pr($additionalPreferences->stock_notification_before);
+
+                        if(!empty($additionalPreferences->stock_notification_before) && $additionalPreferences->stock_notification_before == 1){
+                           
+                        }
+
                     }
                     $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
                     $super_admin = User::where('is_superadmin', 1)->pluck('id');
@@ -2587,6 +2595,8 @@ class OrderController extends FrontController
             }
         }
     }
+
+   
 
     public function makePayment(Request $request)
     {

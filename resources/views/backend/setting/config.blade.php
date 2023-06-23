@@ -1932,6 +1932,65 @@
 
             </form>
         </div>
+
+        <div class="col-xl-4 col-lg-4 mb-3">
+            <div class="page-title-box">
+                <h4 class="page-title text-uppercase">{{ __('Vendor Notification Product Stock') }}</h4>
+            </div>
+
+            <form method="POST" action="{{ route('additional.update') }}">
+                <input type="hidden" name="crm" id="crm" value="1">
+                <input type="hidden" name="send_to" id="send_to" value="configure">
+                @csrf
+                <!-- HubSpot card start -->
+                <div class="card-box h-100">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group mb-0 switchery-demo">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <h4 class="header-title text-uppercase mb-0">{{ __('Custom Notification') }}
+                                    </h4>
+                                    <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
+                                    </button>
+                                </div>
+                                <p class="sub-header">
+                                    {{ __('Send Vendor Notification when Product Stock Out.') }}
+                                </p>
+              
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+
+                            <div class="form-group mb-0 d-flex switchery-demo">
+                                <label for="" class="mr-3">{{ __('Notification Enable') }}</label>
+                                <input type="checkbox" data-plugin="switchery" name="stock_notification_switch"
+                                    id="stock_notification_switch" class="form-control checkbox_change"
+                                    data-className="stock_notification_before" data-color="#43bee1"
+                                    @if (@$getAdditionalPreference['stock_notification_before'] == 1) checked='checked' @endif>
+                                <input type="hidden"
+                                    @if (@$getAdditionalPreference['stock_notification_before'] == 1) value="1" @else value="0" @endif
+                                    name="stock_notification_before" id="stock_notification_before" />
+                            </div>
+
+                            <div class="row mt-2" id="stock_notification_div" style="display:@if (@$getAdditionalPreference['stock_notification_before'] == 1) @else none @endif;">
+                                <div class="col-8">
+                                    <label for="" class="mr-3">{{ __('Reminder For Minimum Product Quantity') }}</label>
+                                </div>
+                                <div class="col-4">
+                                    <input type="number" name="stock_notification_qunatity" id="stock_notification_qunatity"
+                                        placeholder="" class="form-control"
+                                        value="{{ old('stock_notification_qunatity', @$getAdditionalPreference['stock_notification_qunatity'] ?? '') }}">
+                                </div>
+                                <hr/>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
                 
     </div>
 
@@ -2860,6 +2919,15 @@
                 // $('#pickup_notification_before_hours').val(0);
             } else {
                 $('#pickup_notification_div').show();
+            }
+        }
+
+        $('#stock_notification_switch')[0].onchange = function() {
+            if ($('#stock_notification_switch:checked').length != 1) {
+                $('#stock_notification_div').hide();
+                // $('#pickup_notification_before_hours').val(0);
+            } else {
+                $('#stock_notification_div').show();
             }
         }
 
