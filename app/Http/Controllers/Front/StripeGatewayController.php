@@ -18,6 +18,7 @@ use App\Http\Controllers\Front\UserSubscriptionController;
 use App\Http\Controllers\Front\giftCard\GiftcardController;
 use App\Http\Controllers\Front\PickupDeliveryController;
 use App\Models\{User, UserVendor, CaregoryKycDoc,Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, Transaction, UserAddress, UserSavedPaymentMethods, Webhook};
+use Carbon\Carbon;
 
 use function App\Notifications\via;
 
@@ -47,6 +48,10 @@ class StripeGatewayController extends FrontController
 
     public function paymentInit(Request $request, $domain='')
     {
+        if($request->payment_form == 'subscription'){
+            $this->subscriptionPaymentViaStripe( $request, $domain);
+            exit();
+        }
         $this->config();
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
@@ -606,70 +611,278 @@ class StripeGatewayController extends FrontController
         }
     }
 
-    public function subscriptionPaymentViaStripe(request $request)
+    // public function subscriptionPaymentViaStripe(request $request)
+    // {
+    //     try {
+    //         $this->config();
+    //         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+    //         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
+    //         $user = Auth::user();
+    //         $address = UserAddress::where('user_id', $user->id);
+    //         $token = $request->stripe_token;
+    //         $plan = SubscriptionPlansUser::where('slug', $request->subscription_id)->firstOrFail();
+    //         // $saved_payment_method = $this->getSavedUserPaymentMethod($request);
+    //         // if (!$saved_payment_method) {
+    //             $customerResponse = $this->gateway->createCustomer(array(
+    //                 'description' => 'Creating Customer for subscription',
+    //                 'email' => $request->email,
+    //                 'source' => $token
+    //             ))->send();
+    //             // Find the card ID
+    //             $customer_id = $customerResponse->getCustomerReference();
+    //             if ($customer_id) {
+    //                 $request->request->set('customerReference', $customer_id);
+    //                 $save_payment_method_response = $this->saveUserPaymentMethod($request);
+    //             }
+    //         // } else {
+    //         //     $customer_id = $saved_payment_method->customerReference;
+    //         // }
+
+    //         // $subscriptionResponse = $this->gateway->createSubscription(array(
+    //         //     "customerReference" => $customer_id,
+    //         //     'plan' => 'Basic Plan',
+    //         // ))->send();
+
+    //         $amount = $this->getDollarCompareAmount($request->amount);
+    //         // $authorizeResponse = $this->gateway->authorize([
+    //         //     'amount' => $amount,
+    //         //     'currency' => $this->currency,
+    //         //     'description' => 'This is a subscription purchase transaction.',
+    //         //     'customerReference' => $customer_id
+    //         // ])->send();
+    //         // if ($authorizeResponse->isSuccessful()) {
+    //             $purchaseResponse = $this->gateway->purchase([
+    //                 'currency' => $this->currency,
+    //                 'amount' => $amount,
+    //                 'metadata' => ['user_id' => $user->id, 'plan_id' => $plan->id],
+    //                 'description' => 'This is a subscription purchase transaction.',
+    //                 'customerReference' => $customer_id
+    //             ])->send();
+    //             if ($purchaseResponse->isSuccessful()) {
+    //               //  $this->successMail();
+    //                 return $this->successResponse($purchaseResponse->getData());
+    //             } else {
+    //                 $this->failMail();
+    //                 return $this->errorResponse($purchaseResponse->getMessage(), 400);
+    //             }
+    //         // } else {
+    //         //     $this->failMail();
+    //         //     return $this->errorResponse($authorizeResponse->getMessage(), 400);
+    //         // }
+    //     } catch (\Exception $ex) {
+    //         $this->failMail();
+    //         return $this->errorResponse($ex->getMessage(), 400);
+    //     }
+    // }
+
+    public function subscriptionPaymentViaStripe(request $request,$domain='')
     {
-        try {
+        try{
             $this->config();
             $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
             $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
             $user = Auth::user();
-            $address = UserAddress::where('user_id', $user->id);
             $token = $request->stripe_token;
             $plan = SubscriptionPlansUser::where('slug', $request->subscription_id)->firstOrFail();
-            // $saved_payment_method = $this->getSavedUserPaymentMethod($request);
-            // if (!$saved_payment_method) {
-                $customerResponse = $this->gateway->createCustomer(array(
-                    'description' => 'Creating Customer for subscription',
-                    'email' => $request->email,
-                    'source' => $token
-                ))->send();
-                // Find the card ID
-                $customer_id = $customerResponse->getCustomerReference();
-                if ($customer_id) {
-                    $request->request->set('customerReference', $customer_id);
-                    $save_payment_method_response = $this->saveUserPaymentMethod($request);
+            $secret_key = stripePaymentCredentials()->secret_key;
+           
+            \Stripe\Stripe::setApiKey($this->api_key_new);
+            $stripe = new \Stripe\StripeClient($secret_key);
+          
+            $webhook_url = 'https://'.$domain.'/payment/webhook/stripe';
+            
+
+            $webhook_exists = false;
+            $endpoints = $stripe->webhookEndpoints->all();
+            foreach($endpoints->data as $obj){
+                if($obj->url == $webhook_url){
+                    $webhook_exists = true;
+                    break;
                 }
-            // } else {
-            //     $customer_id = $saved_payment_method->customerReference;
-            // }
+            }
+            if(!$webhook_exists){
+                $res = $stripe->webhookEndpoints->create([
+                    'url' => $webhook_url,
+                    'enabled_events' => [
+                        'customer.subscription.created',
+                        'customer.subscription.deleted',
+                        'customer.subscription.updated',
+                        'invoice.payment_failed',
+                        'invoice.paid'
+                    ]
+                ]);
+            }
+            
 
-            // $subscriptionResponse = $this->gateway->createSubscription(array(
-            //     "customerReference" => $customer_id,
-            //     'plan' => 'Basic Plan',
-            // ))->send();
-
-            $amount = $this->getDollarCompareAmount($request->amount);
-            // $authorizeResponse = $this->gateway->authorize([
-            //     'amount' => $amount,
-            //     'currency' => $this->currency,
-            //     'description' => 'This is a subscription purchase transaction.',
-            //     'customerReference' => $customer_id
-            // ])->send();
-            // if ($authorizeResponse->isSuccessful()) {
-                $purchaseResponse = $this->gateway->purchase([
-                    'currency' => $this->currency,
-                    'amount' => $amount,
-                    'metadata' => ['user_id' => $user->id, 'plan_id' => $plan->id],
-                    'description' => 'This is a subscription purchase transaction.',
-                    'customerReference' => $customer_id
-                ])->send();
-                if ($purchaseResponse->isSuccessful()) {
-                  //  $this->successMail();
-                    return $this->successResponse($purchaseResponse->getData());
+            $stripPlanId =    $plan->strip_plan_id;
+            
+            $saved_payment_method = UserSavedPaymentMethods::where('user_id', Auth::user()->id)->where('payment_option_id', $request->payment_option_id)->first();
+           
+            if (empty($saved_payment_method)) {
+                $user = Auth::user();
+                $address = UserAddress::where('user_id', $user->id);
+                $user = Auth::user();
+                $add = [];
+                $address = UserAddress::where('user_id', $user->id)->first();
+                if($address) {
+                    $add = ["city" => $address->city, "country" => $address->country_code, "line1" => $address->street, "line2" => "", "postal_code" => $address->pincode, "state" => $address->state];
                 } else {
-                    $this->failMail();
-                    return $this->errorResponse($purchaseResponse->getMessage(), 400);
-                }
-            // } else {
-            //     $this->failMail();
-            //     return $this->errorResponse($authorizeResponse->getMessage(), 400);
-            // }
-        } catch (\Exception $ex) {
-            $this->failMail();
-            return $this->errorResponse($ex->getMessage(), 400);
-        }
-    }
+                    $add = ["city" => 'New york', "country" => 'US', "line1" => 'sector 28', "line2" => "", "postal_code" => '10001', "state" => 'New york'];
 
+                }
+                $customerResponse = \Stripe\Customer::create(array(  
+                    'description' => 'Creating Customer',
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'address'=>$add,
+                    'metadata' => [
+                        'user_id' => $user->id,
+                        'phone_number' => $user->phone_number
+                    ],
+                ));  
+                $customer_id = $customerResponse['id'];
+               
+                if ($customer_id) {
+                
+                    $payment_method = new UserSavedPaymentMethods;
+                    $payment_method->user_id = Auth::user()->id;
+                    $payment_method->payment_option_id = $request->payment_option_id;
+                    $payment_method->customerReference = $customer_id;
+                    $payment_method->save();
+                }
+            }else {
+                $customer_id = $saved_payment_method->customerReference;
+            }
+            //payment method will be attached to the customer
+            $paymentMethod = \Stripe\PaymentMethod::retrieve( $request->payment_method_id); 
+            $paymentMethod->attach(['customer' => $customer_id]);
+            \Stripe\Customer::update(
+                $customer_id,
+                [
+                    'invoice_settings' => [
+                        'default_payment_method' => $request->payment_method_id,
+                    ],
+                ]
+            );
+
+        
+            // Get Customer from Stripe 
+            $customer = \Stripe\Customer::retrieve($customer_id);
+            // Get the default payment method ID
+            $defaultPaymentMethodId = $customer->invoice_settings->default_payment_method;
+           // Get the default payment method ID
+           // $paymentMethod = \Stripe\PaymentMethod::retrieve($request->payment_method_id);
+
+            // Attach the payment method to the customer
+            //$paymentMethod->attach(['customer' => $customer_id]);
+          
+            //Carbon::now()->setTimezone($client->timezone);
+            $current_date_time = strtotime(Carbon::now()->addMinute()->toDateTimeString());
+          
+                $amount = $plan->price;
+                $postdata = array(
+                    'payment_method'       => $defaultPaymentMethodId,
+                    'amount'               => $amount * 100,
+                    'currency'             => $this->currency,
+                    'confirmation_method'  => 'manual',
+                    'confirm'              => true,
+                    'description'         =>'Subscription Checkout',
+                    'customer'             => $customer_id,
+                    'metadata' => [
+                        'user_id' => $user->id,
+                        'payment_form' => 'subscription',
+                        'subscription_id' => $request->subscription_id,
+                        'type_id' => $request->type_id
+                    ]
+                );
+                
+            $subscribedPlans = \Stripe\Subscription::all([
+                'customer' => $customer->id,
+                'status' => 'active',
+                'limit' => 100,
+            ]); // retrieve the customer's active subscriptions
+
+            $existingPlanIds = array(); // initialize an array to store the IDs of the customer's active subscriptions
+
+            foreach ($subscribedPlans->data as $pl) {
+                $existingPlanIds[] = $pl->plan->id; // add each subscription ID to the array
+            }
+
+            $newPlanId = $stripPlanId; // replace with the ID of the new plan the customer wants to subscribe to
+
+            if (in_array($newPlanId, $existingPlanIds)) { // check if the customer is already subscribed to the new plan
+                // handle the scenario where the customer is already subscribed to the new plan
+                $message = __('Your are already subscribed.');
+                $success = false;
+            } else {
+                // subscribe the customer to the new plan
+                // $intent = \Stripe\PaymentIntent::create($postdata);
+                // if (isset($intent->id)) {
+                //     $intent = \Stripe\PaymentIntent::retrieve(
+                //         $intent->id
+                //     );
+                //     $intent->confirm();
+                // }
+                // $price = \Stripe\Price::create([ 
+                //     'unit_amount' => $postdata['amount'], 
+                //     'currency' => $postdata['currency'], 
+                //     'recurring' => ['interval' => $plan->frequency], 
+                //     'product_data' => ['name' => $plan->title], 
+                // ]);
+                
+                $subscriptionData = [
+                    'customer' => $customer_id,
+                    'items' => [
+                        [
+                            'plan' => $stripPlanId,
+                        ],
+                    ],
+                    //'default_payment_method' =>  $defaultPaymentMethodId,
+                    //'billing_cycle_anchor' =>  $current_date_time,
+                    //'proration_behavior' => 'default_incomplete',
+                    //'trial_end' =>  'now',
+                    'metadata' => [
+                        'description' => 'subscription for premium content',
+                        'user_id' => $user->id,
+                        'subscription_id' => $request->subscription_id,
+                        'amount' => $plan->price,
+                        'type_id' => $request->type_id
+                        //'intent_id' =>$intent
+                        
+                    ],
+                    'expand' => ['latest_invoice.payment_intent'],
+                    'collection_method' => 'charge_automatically', // Set to 'charge_automatically' for automatic payments
+                ];
+                
+                if($request->type_id == SubscriptionPlansUser::SUBSCRIPTION_MEAL){
+                    $subscriptionData['metadata']['mealSubscriptionForm'] = $request->mealSubscriptionForm;
+                    $subscriptionData['metadata']['days'] = $request->days;
+                }
+               \Log::info($subscriptionData);
+                $subscription = \Stripe\Subscription::create($subscriptionData);
+                $message = __('Your subscription has been activated successfully.');
+                $success = true;
+                // 
+            }
+               // if ($subscription->status == 'active') {
+                $returnUrl = route('user.subscription.plans');
+                Session::put('success', $message);
+                // return redirect($returnUrl);
+                echo   json_encode([
+                    "success" => $success,
+                    'result' => $returnUrl,
+                    "message"=>$message
+                ]);
+                exit();
+            } catch(\Stripe\Exception\CardException $e) {
+                exit("A payment error occurred: {$e->getError()->message}");
+            } catch (\Stripe\Exception\InvalidRequestException $e) {
+                throw $e;
+                exit("Invalid request: {$e->getError()->message}");
+            } catch (\Exception $e) {
+               throw $e;
+            }
+    }
 
     ///// Stripe FPX Payment /////
 
