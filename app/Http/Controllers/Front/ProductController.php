@@ -424,6 +424,7 @@ class ProductController extends FrontController{
             }
         }
         $sets = array();
+        $selected_variant_title = $request->selected_variant_title;
         //pr($pv_ids);
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
         $availableSets = Product::with(['variantSet.variantDetail','variantSet.option2'=>function($q)use($product, $pv_ids){
@@ -432,6 +433,13 @@ class ProductController extends FrontController{
         //return $product;
         ->select('id')
         ->where('products.id', $product->id)->first();
+        // Assuming $availableSets is an array of objects with a 'title' property
+        foreach ($availableSets->variantSet as $key => $sets) {
+            echo $sets->variantDetail->title;
+            if ($sets->variantDetail->title === $selected_variant_title) {
+                unset($availableSets->variantSet[$key]);
+            }
+        }
         $data['availableSets'] = $availableSets->variantSet;
         if($pv_ids){
             $variantData = ProductVariant::with(['product.media.image', 'product.addOn', 'media.pimage.image', 'checkIfInCart'])
@@ -484,7 +492,13 @@ class ProductController extends FrontController{
                 $data['tokenAmount'] = $tokenAmount;
                 $data['is_token_enable'] = $is_token_enable;
 
-                return response()->json(array('status' => 'Success', 'data' => $data));
+                $returnHTML = view('frontend.product-part.product-variant-ajax')->with('availableSets', $availableSets->variantSet)->render();
+                dd($returnHTML);
+                // return response()->json(array('success' => true, 'html'=>$returnHTML));
+
+                // return response()->json(array('status' => 'Success', 'data' => $data));
+
+
             }
 
         }

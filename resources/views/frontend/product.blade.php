@@ -922,7 +922,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
     <% } %>
 </script>
 <script type="text/template" id="variant_options_template">
-    <% _.each(availableSets, function(type, key){ %>
+    <% _.each(availableSets, function(type, kkey){ %>
         <% if(type.variant_detail.type == 1 || type.variant_detail.type == 2) { %>
             <div class="size-box">
                 <ul class="productVariants">
@@ -1386,11 +1386,13 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
 
         var variants = [];
         var options = [];
+        var selected_variant_title = "";
         $('.changeVariant').each(function() {
             var that = this;
             if (this.checked == true) {
                 variants.push($(that).attr('vid'));
                 options.push($(that).attr('optid'));
+                selected_variant_title = $(that).parent().attr('data-title');
             }
         });
         ajaxCall = $.ajax({
@@ -1401,6 +1403,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
                 "_token": "{{ csrf_token() }}",
                 "variants": variants,
                 "options": options,
+                "selected_variant_title": selected_variant_title
             },
             beforeSend: function() {
                 if (ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {

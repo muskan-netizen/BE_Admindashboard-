@@ -8,7 +8,7 @@
         @endphp
         @foreach($product->variantSet as $key => $variant)
             @if($variant->type == 1 || $variant->type == 2)
-            <div class="size-box">
+            <div class="size-box" id="{{ $key === 1 ? 'variant_options' : '' }}">
                 <ul class="productVariants">
                     <li class="firstChild">{{$variant->title}}</li>
                     <li class="row otherSize">
@@ -21,7 +21,7 @@
                         $opt_id = $optn->variant_option_id;
                         $checked = ($selectedVariant == $optn->product_variant_id) ? 'checked' : '';
                         ?>
-                            <label class="radio d-inline-block txt-14 col-4 position-relative pl-4 pr-2"> <span class="color_name ellipsis">{{$optn->title}}</span>
+                            <label class="radio d-inline-block txt-14 col-4 position-relative pl-4 pr-2" data-title="{{ $key === 0 ? $variant->title : '' }}"> <span class="color_name ellipsis">{{$optn->title}}</span>
                               @if($variant->type == 2)
                             <span class="color_var var_{{$var_id}}" style="padding:8px; border: 1px dotted #CCC; background:{{$optn->hexacode}};" data-id="{{$var_id}}"></span>
                             @else
