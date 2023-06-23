@@ -2284,7 +2284,7 @@ class VendorController extends BaseController{
                             $q->groupBy('language_id','product_id');
                         },
                         'variant' => function($q) use($langId){
-                            $q->select('id','sku', 'product_id', 'title', 'quantity', 'price', 'markup_price','barcode', 'compare_at_price');
+                        $q->select('id','sku', 'product_id', 'title', 'quantity', 'price', 'markup_price','barcode', 'compare_at_price',DB::raw("'$multipli' as multiplier"));
                             // $q->groupBy('product_id');
                         }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
                         'tags.tag.translations' => function ($q) use ($langId) {
