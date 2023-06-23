@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, SmsProvider, Currency, Language, Country, User, SubscriptionPlansUser, SubscriptionPlanFeaturesUser, ShowSubscriptionPlanOnSignup, SubscriptionFeaturesListUser, SubscriptionInvoicesUser, Order, OrderVendor};
+use App\Models\{AdditionalAttribute, AdditionalAttributeProduct, Category, Client, ClientPreference, SmsProvider, Currency, Language, Country, User, SubscriptionPlansUser, SubscriptionPlanFeaturesUser, ShowSubscriptionPlanOnSignup, SubscriptionFeaturesListUser, SubscriptionInvoicesUser, Order, OrderVendor};
 use Carbon\Carbon;
 use App\Models\ClientCurrency;
 
@@ -55,6 +55,19 @@ class SubscriptionPlansUserController extends BaseController
         $active_users = User::where('status', 1)->count();
         $subscribed_users_percentage = ($subscribed_users_count / $active_users) * 100;
         $subscribed_users_percentage = number_format($subscribed_users_percentage, 2);
+        $categories = Category::with('translation_one')->select('id', 'slug')
+        ->where('deleted_at', NULL)
+        ->whereIn('type_id', [
+            '1',
+            '6',
+            '8',
+            '9',
+            '11'
+        ])
+        ->where('is_core', 1)
+        ->where('status', 1)
+        ->get();
+        $additionalAttributes = AdditionalAttribute::where('type_id', 1)->where('service_type','=', 'pick_drop')->where('user_id', auth()->user()->id)->get();
         if($sub_plans){
             foreach($sub_plans as $plan){
                 $features = '';
@@ -71,10 +84,21 @@ class SubscriptionPlansUserController extends BaseController
                     $features = implode(', ', $planFeaturesList);
                 }
                 $plan->features = $features;
+                
+                $category= '';
+                if(!empty($plan->subscriptionCategory)){
+                    $planCategoryList = [];
+                    foreach($plan->subscriptionCategory as $category){
+                        $title = $category->category->slug;
+                        $planCategoryList[] = $title;
+                    }
+                    unset($plan->subscriptionCategory);
+                    $category = implode(', ', $planCategoryList);
+                }
+                $plan->subscriptionCategory = $category;
             }
         }
-        $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
-        return view('backend/subscriptions/subscriptionPlansUser')->with(['features'=>$featuresList, 'showSubscriptionPlan'=>$showSubscriptionPlan, 'subscription_plans'=>$sub_plans, 'subscribed_users_count'=>$subscribed_users_count, 'subscribed_users_percentage'=>$subscribed_users_percentage,'clientCurrency' =>$clientCurrency]);
+        return view('backend/subscriptions/subscriptionPlansUser')->with(['features'=>$featuresList, 'showSubscriptionPlan'=>$showSubscriptionPlan, 'subscription_plans'=>$sub_plans, 'subscribed_users_count'=>$subscribed_users_count, 'subscribed_users_percentage'=>$subscribed_users_percentage, 'categories' => $categories,'additionalAttributes' => $additionalAttributes]);
     }
 
     /**
@@ -163,10 +187,28 @@ class SubscriptionPlansUserController extends BaseController
         $planFeatures = SubscriptionPlanFeaturesUser::select('feature_id', 'percent_value')->where('subscription_plan_id', $plan->id)->get();
         $featuresList = SubscriptionFeaturesListUser::where('status', 1)->get();
         $subPlanFeaturesIds = array();
-        foreach($planFeatures as $feature){
-            $subPlanFeaturesIds[] = $feature->feature_id;
+        if(!empty($planFeatures)){
+            foreach($planFeatures as $feature){
+                $subPlanFeaturesIds[] = $feature->feature_id;
+            }
         }
-        $returnHTML = view('backend.subscriptions.edit-subscriptionPlanUser')->with(['features'=>$featuresList, 'plan' => $plan, 'planFeatures' => $planFeatures, 'subPlanFeaturesIds'=>$subPlanFeaturesIds])->render();
+        $additionalAttributes = AdditionalAttribute::where('type_id', 1)->where('service_type','=', 'pick_drop')->where('user_id', auth()->user()->id)->get();
+        $attributeProduct = AdditionalAttributeProduct::with('additionalAttribute')->where('user_id', auth()->user()->id)->where('reference_id', $plan->id)->get();
+        $categories = Category::with('translation_one')->select('id', 'slug')
+        ->where('deleted_at', NULL)
+        ->whereIn('type_id', [
+            '1',
+            '6',
+            '8',
+            '9',
+            '11'
+        ])
+        ->where('is_core', 1)
+        ->where('status', 1)
+        ->get();
+        
+        $subPlanCategoryIds = $plan->subscriptionCategory()->pluck('category_id')->toArray();
+        $returnHTML = view('backend.subscriptions.edit-subscriptionPlanUser')->with(['features'=>$featuresList, 'plan' => $plan, 'planFeatures' => $planFeatures, 'subPlanFeaturesIds'=>$subPlanFeaturesIds, 'subPlanCategoryIds' => $subPlanCategoryIds, 'categories' => $categories, 'additionalAttributes' => $additionalAttributes, 'attributeProduct' => $attributeProduct])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML));
     }
 
