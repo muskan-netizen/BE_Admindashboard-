@@ -2209,7 +2209,8 @@ class VendorController extends BaseController{
             $product_category_ids = $product_category_ids->isNotEmpty() ? $product_category_ids->toArray() : [];
             
             if($vendor->vendor_templete_id == 5){
-            
+            \Log::info('in here 5 temp');
+
             $vendor_categories = Category::select('categories.id','categories.type_id', 'types.title as redirect_to')->join('types', 'types.id', 'categories.type_id')->whereHas('vendorCategory',function ($q)use($vid){
                 $q->where('vendor_id',$vid)->where('status', 1);
             })->whereHas('data',function ($q)use($vid){
@@ -2223,13 +2224,15 @@ class VendorController extends BaseController{
                          'inwishlist' => function($qry) use($userid){
                             $qry->where('user_id', $userid);
                         },
-                        'media.image', 
+                       'media.image', 
                         'translation' => function($q) use($langId){
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description','language_id','body_html as translation_description')->where('language_id', $langId)->orderBy('body_html','desc');
                         },
                         'variant' => function($q) use($langId, $multipli){
                             $q->select('id','sku', 'product_id', 'quantity', 'price', 'markup_price','barcode', 'compare_at_price',DB::raw("'$multipli' as multiplier"),)->orderBy('quantity', 'desc');
-                        },'variant.checkIfInCartApp', 'checkIfInCartApp',
+                        },
+                        'variant.checkIfInCartApp'
+                        , 'checkIfInCartApp',
                          'tags.tag.translations' => function ($q) use ($langId) {
                             $q->where('language_id', $langId);
                         }
@@ -2243,7 +2246,7 @@ class VendorController extends BaseController{
                     {
                        $vendor_categories = $vendor_categories->where(function($q) use ($request)
                         {
-                            $q->where('id',$request->category_id)->orWhere('parent_id',$request->category_id);
+                            $q->where('categories.id',$request->category_id)->orWhere('categories.parent_id',$request->category_id);
                         });
                     }
                  
@@ -2256,6 +2259,7 @@ class VendorController extends BaseController{
                 $listData =  array_values($vendor_categories->toArray());
             }
             else{ 
+
                 $vendorCategories = VendorCategory::with(['category.translation' => function($q) use($langId){
                     $q->where('category_translations.language_id', $langId);
                 }])->where('vendor_id', $vendor->id)->where('status', 1)->get();
@@ -2279,8 +2283,8 @@ class VendorController extends BaseController{
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description','language_id','body_html as translation_description')->where('language_id', $langId)->orderBy('id','desc');
                             $q->groupBy('language_id','product_id');
                         },
-                        'variant' => function($q) use($langId){
-                            $q->select('id','sku', 'product_id', 'title', 'quantity', 'price', 'markup_price','barcode', 'compare_at_price');
+                        'variant' => function($q) use($langId,$multipli){
+                        $q->select('id','sku', 'product_id', 'title', 'quantity', 'price', 'markup_price','barcode', 'compare_at_price',DB::raw("'$multipli' as multiplier"));
                             // $q->groupBy('product_id');
                         }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
                         'tags.tag.translations' => function ($q) use ($langId) {
@@ -2295,7 +2299,7 @@ class VendorController extends BaseController{
                     ->where('products.is_live', 1)->withCount(['variantSet','addOn']);
                     
                     if(isset($request->category_id))
-                    $products = $products->where('category_id',$request->category_id);
+                    $products = $products->where('products.category_id',$request->category_id);
 
                     $products = $products->orderBy('product_translations.title', 'asc')->paginate($limit, $page); 
                 // if(!empty($products)){

@@ -643,11 +643,11 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                        <div class="row mt-2">
                           <div class="col-12 mb-2">
                              <label class="primaryCurText">{{__('Android App Link')}}</label>
-                             <input class="form-control" type="text" id="android_app_link" name="android_app_link" value="{{ old('android_app_link', $preference->android_app_link  ?? '')}}">
+                             <input class="form-control" type="url" id="android_app_link" name="android_app_link" value="{{ old('android_app_link', $preference->android_app_link  ?? '')}}">
                           </div>
                           <div class="col-12">
                              <label class="primaryCurText">{{__('IOS App Link')}}</label>
-                             <input class="form-control" type="text" id="ios_link" name="ios_link" value="{{ old('ios_link', $preference->ios_link  ?? '')}}" >
+                             <input class="form-control" type="url" id="ios_link" name="ios_link" value="{{ old('ios_link', $preference->ios_link  ?? '')}}" >
                           </div>
                        </div>
                     </div>

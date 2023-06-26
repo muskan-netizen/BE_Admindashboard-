@@ -24,7 +24,7 @@ class LoyaltyController extends Controller{
             $query->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1,38]);
             });
-        });;
+        }); 
         if (Auth::user()->is_superadmin == 0) {
             $total_loyalty_spent = $total_loyalty_spent->whereHas('vendors.vendor.permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
@@ -75,7 +75,7 @@ class LoyaltyController extends Controller{
             $query->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1,38]);
             });
-        });;
+        }); 
         if (Auth::user()->is_superadmin == 0) {
             $orders_query = $orders_query->whereHas('vendors.vendor.permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
