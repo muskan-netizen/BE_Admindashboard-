@@ -655,6 +655,15 @@
 
 <div class="col-md-4 ">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_rental_weekly_monthly_price" class="mr-2 mb-0">{{__('Rental Weekly Monthly Price')}}<small class="d-block pr-5">{{__("Enable to add weekly and monthly price for product in rental.")}}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_rental_weekly_monthly_price" id="is_rental_weekly_monthly_price_switch" class="form-control checkbox_change" data-className="is_rental_weekly_monthly_price"  data-color="#43bee1" @if($getAdditionalPreference['is_rental_weekly_monthly_price'] == 1) checked='checked' @endif>
+        </span>
+        <input type="hidden"  @if($getAdditionalPreference['is_rental_weekly_monthly_price'] == 1) value="1" @else value="0" @endif  name="is_rental_weekly_monthly_price"  id="is_rental_weekly_monthly_price"/>
+    </div>
+</div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="is_enable_curb_side" class="mr-2 mb-0">{{ __('Curb Side') }}<small
                 class="d-block pr-5">{{ __('Enable Curb Side Notification To Vendor.') }}</small></label>
         <span> <input type="checkbox" data-plugin="switchery" name="is_enable_curb_side"

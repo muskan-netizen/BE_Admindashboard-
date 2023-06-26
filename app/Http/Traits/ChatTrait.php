@@ -48,7 +48,7 @@ trait ChatTrait{
         $product = Product::with([
         'category.categoryDetail', 'variant.media.pimage.image', 'vendor', 'media.image', 'related', 'upSell', 'crossSell']);
    
-        $product = $product->select('id', 'title', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min',  'is_long_term_service','service_duration');
+        $product = $product->select('id', 'title', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min',  'is_long_term_service','service_duration','latitude','longitude','address');
    
         $product = $product->where('id', $pid)
         ->first();
