@@ -8,9 +8,10 @@ use Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag,DeliverySlotProduct, DeliverySlot,UserAddress};
+use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet,OrderProductRating, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag,DeliverySlotProduct, DeliverySlot,UserAddress};
 use Validation;
 use DB;
+use Carbon\CarbonPeriod;
 use App\Http\Traits\{ApiResponser,ProductTrait, ProductActionTrait};
 
 class ProductController extends BaseController
@@ -107,14 +108,15 @@ class ProductController extends BaseController
 
     public function productById(Request $request, $pid)
     {
-        try{
+        // try{
             $pvIds = array();
             $user = Auth::user();
             $langId = $user->language;
             $userid = $user->id;
+            $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
             $product = Product::with(['inwishlist' => function($qry) use($userid){
                             $qry->where('user_id', $userid);
-                        },
+                        },'product_availability',
                         'category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
                             $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
                             ->where('category_translations.language_id', $langId);
@@ -154,15 +156,55 @@ class ProductController extends BaseController
                         },
 
                     ]);
-                    $product = $product->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min', 'returnable', 'replaceable', 'return_days', 'is_long_term_service','service_duration','is_show_dispatcher_agent','is_slot_from_dispatch','tags','mode_of_service','is_recurring_booking');
-                    
+                    $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
+                    if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                        $product = $product->with(['OrderProduct' => function($q) {
+                            $q->select('end_date_time', 'product_id', 'start_date_time');
+                            $q->whereDate('end_date_time', '>', now());
+                        }]);
+                    }
+                    $product = $product->select('id', 'sku', 'url_slug','description', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min', 'returnable', 'replaceable', 'return_days', 'is_long_term_service','service_duration','is_show_dispatcher_agent','is_slot_from_dispatch','tags','mode_of_service','is_recurring_booking', 'latitude', 'longitude', 'address');
 
+                    
                     $product = $product->where('id', $pid)
                         ->first();
 
             if(!$product){
                 return response()->json(['error' => 'No record found.'], 404);
             }
+
+            if(@$product->product_availability && @$product->OrderProduct){
+               
+                foreach($product->OrderProduct as $OrderProducts){
+                    // dd($OrderProducts);
+                    $dates = [];
+                    if(@$OrderProducts->start_date_time && @$OrderProducts->end_date_time){
+                        $period = CarbonPeriod::create(date('Y-m-d',strtotime($OrderProducts->start_date_time)), date('Y-m-d',strtotime($OrderProducts->end_date_time)));
+                        
+                        foreach ($period as $date) {
+                            $dates[] =  $date->format('Y-m-d');
+                        }
+                        
+                        if(@$dates){
+                            foreach($product->product_availability as $product_availability){
+                                foreach($dates as $date){
+                                    if( date('Y-m-d',strtotime($product_availability->date_time)) == $date){
+                                        $product_availability->not_available = 1;
+                                    }
+                                }
+                               
+                            }
+                        }
+                }
+            }
+               
+            }
+
+            $product->is_rented = 0;
+            if(@$product->OrderProduct[0]->end_date_time){
+                $product->is_rented = 1;
+            }
+
             if ($this->checkTemplateForAction(8)) {
             $this->RecentView($pid);
             }
@@ -309,6 +351,9 @@ class ProductController extends BaseController
                 }
             }
 
+            $product->product_reviews = '';
+            $product->product_reviews = OrderProductRating::with('userimage')->select('*','created_at as time_zone_created_at')->where(['product_id' => $product->id])->get();
+
             $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = [];
 
             $suggested_product = Product::with(['media.image','vendor', 'translation', 'variant', 'productVariantByRoles']);
@@ -357,6 +402,7 @@ class ProductController extends BaseController
             $response['suggested_category_products'] =  $suggested_category_products;
             $response['suggested_brand_products'] =  $suggested_brand_products;
             $response['suggested_vendor_products'] =  $suggested_vendor_products;
+
             $response['products'] = $product;
             $response['relatedProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'relate', $product->related);
             $response['upSellProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'upSell', $product->upSell);
@@ -381,9 +427,9 @@ class ProductController extends BaseController
                 'data' => $response,
             ]);
 
-        } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(), $e->getCode());
-        }
+        // } catch (Exception $e) {
+        //     return $this->errorResponse($e->getMessage(), $e->getCode());
+        // }
 
 
     }

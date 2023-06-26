@@ -48,6 +48,58 @@ class HomeController extends BaseController
     }
 
 
+    public function categoriesAll(Request $request, $domain='')
+    {
+
+        try {
+            $user = Auth::user();
+            $langId = $user->language;
+
+            $latitude = Session::get('latitude') ?? null;
+            $longitude = Session::get('longitude') ?? null;
+            $type = $request->has('type') ? $request->type : 'delivery';
+
+            if (empty($type))
+            $type = 'delivery';
+
+            $categoryTypes = getServiceTypesCategory($type);
+            $preferences = Session::get('preferences');
+            $vendorData = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+                $q->whereIn('type_id',$categoryTypes);
+            })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','id as is_vendor_closed' ,'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
+
+
+        
+
+            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
+                $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+                $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
+                //3961 for miles and 6371 for kilometers
+                $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
+                $vendorData = $vendorData->select('*', DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
+                        cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
+                        sin( radians(' . $latitude . ') ) *
+                        sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->withAvg('product', 'averageRating');
+                $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
+                $vendorData = $vendorData->whereIn('id', $ses_vendors);
+                //if($venderFilternear && ($venderFilternear == 1) ){
+                    //->orderBy('vendorToUserDistance', 'ASC')
+                    $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
+                //}
+            }
+        
+            
+            $venderIds  = $vendorData->where('status', 1)->pluck('id');
+
+            $navCategories = $this->categoryNav($langId, $venderIds, $type , $request);
+            $homeData['navCategories'] = $navCategories;
+            return $this->successResponse($homeData);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+
+    }
     public function homepage(Request $request, $domain = '')
     {
 
@@ -266,6 +318,7 @@ class HomeController extends BaseController
             die;
         }
     }
+
 
 
 
