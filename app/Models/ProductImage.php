@@ -13,6 +13,18 @@ class ProductImage extends Model
     }
 
     public function image(){
-	    return $this->belongsTo('App\Models\VendorMedia','media_id','id')->select('id' ,'media_type', 'path'); 
+        $img = 'default/default_image.png';
+	   return $this->belongsTo('App\Models\VendorMedia','media_id','id')->select('id' ,'media_type', 'path')->withDefault([
+                            "id"=> null,
+                            "media_type"=> 1,
+                            "path"=> [
+                                "proxy_url"=> \Config::get('app.IMG_URL1'),
+                                "image_path"=> \Config::get('app.IMG_URL2').'/'.$img,
+                                "image_fit"=> \Config::get('app.FIT_URl'),
+                                "original_image"=> \Storage::disk('s3')->url($img)
+                            ]
+        ]);
 	}
+
+    
 }
