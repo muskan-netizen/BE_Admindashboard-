@@ -67,6 +67,12 @@ return [
     'FIT_URL' => env('FIT_URL', 'https://images.royoorders.com/insecure/fill/'),
 
     'FILL_URL' => env('FILL_URL', 'https://images.royoorders.com/insecure/fit/'),
+    'AWS_ACCESS_KEY_ID_CHAT' => env('AWS_ACCESS_KEY_ID_CHAT',''),
+    'AWS_SECRET_ACCESS_KEY_CHAT' => env('AWS_SECRET_ACCESS_KEY_CHAT',''),
+
+    'AWS_DEFAULT_REGION_CHAT' => env('AWS_DEFAULT_REGION_CHAT',''),
+
+    'AWS_BUCKET_CHAT' => env('AWS_BUCKET_CHAT',''),
 
     'supported_languages' => ['1' => 'en', '8' => 'ar', '47' => 'fr', '51' => 'de', '148' => 'es', '152' => 'sv','173' => 'vi','128' => 'pt','144'=>'sk','40'=>'nl'],
 
