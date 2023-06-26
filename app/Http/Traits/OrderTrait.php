@@ -110,7 +110,7 @@ trait OrderTrait
                     'title' => $notification_content->subject,
                     'body' => $notification_content->content,
                     'data' => $orderData,
-                    'order_id' => $orderData->id,
+                    'order_id' =>  $orderData->id,
                     'type' => "order_created"
                 ],
                 "priority" => "high"
