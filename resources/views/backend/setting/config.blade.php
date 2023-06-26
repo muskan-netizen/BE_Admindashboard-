@@ -1896,6 +1896,12 @@
                                     @if (@$getAdditionalPreference['is_marg_enable'] == '1') checked='checked' value="1" @endif>
                                 <input type="hidden" @if (isset($getAdditionalPreference['is_marg_enable']) == 1) value="1" @else value="0" @endif
                                     name="is_marg_enable" id="is_marg_enable_hidden" />
+                            
+                                @if (isset($getAdditionalPreference['is_marg_enable']) == 1 && $getAdditionalPreference['marg_date_time'])
+                                    <label for="" class="ml-3">{{ __('Last Sync Date & Time :') }} 
+                                    </label>{{ convertDateTimeInClientTimeZone($getAdditionalPreference['marg_date_time'],'d-m-Y h:i:s') }} 
+                                @endif
+
                             </div>
                         </div>
                     </div>
@@ -1947,7 +1953,7 @@
                                 </div>
                             </div>
                         </div>
-
+                    @endif
                 </form>
                 <div class="row marg_row" style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
                     <div class="col-12">

@@ -11,17 +11,27 @@ use App\Models\User;
 use App\Models\NotificationTemplate;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
-use App\Models\{ ClientPreference, OrderLongTermServiceSchedule,UserAddress,Product,Vendor,OrderVendor};
+use App\Models\{ ClientPreference, ClientPreferenceAdditional, OrderLongTermServiceSchedule,UserAddress,Product,Vendor,OrderVendor};
 use Log;
 use Carbon\Carbon;
 use App\Models\Order;
 use App\Http\Traits\MargTrait;
+use App\Libraries\DecryptLogic;
 
 
 
 class MargApiProductUpdateCron extends Command
 {
     use MargTrait;
+
+    protected $DecryptLogic;
+
+    public function __construct(DecryptLogic $DecryptLogic)
+    {
+        $this->DecryptLogic = $DecryptLogic;
+        parent::__construct();
+    }
+
     /**
      * The name and signature of the console command.
      *
@@ -41,10 +51,6 @@ class MargApiProductUpdateCron extends Command
      *
      * @return void
      */
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     /**
      * Execute the console command.
@@ -54,12 +60,11 @@ class MargApiProductUpdateCron extends Command
     public function handle()
     {
         /**
-         * Recurring Booking Order send to dispather
+         * Sycn product quantity and add new product code from marg api
          */
 
          try {
-            $clients = CP::where('status', 1)->get();
-
+            $clients = CP::where('status', 2)->get();
 
             foreach ($clients as $key => $client) {
                 //Connect client connection
@@ -86,33 +91,39 @@ class MargApiProductUpdateCron extends Command
                 $preference = ClientPreference::first();
 
 
-                $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code']);
+                $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code','marg_date_time']);
 
+                if(isset($hub_key) && $hub_key['is_marg_enable'] == 1){
+                    $decryptionKey  = $hub_key['marg_decrypt_key'];
+                    $MargID  = $hub_key['marg_access_token'];
+                    $CompanyCode  = $hub_key['marg_company_code'];
+                    $margDateTime = $hub_key['marg_date_time']??date('Y-m-d H:i:s');
 
-            if(isset($hub_key) && $hub_key['is_marg_enable'] == 1){
-                $decryptionKey  = $hub_key['marg_decrypt_key'];
-                $MargID  = $hub_key['marg_access_token'];
-                $CompanyCode  = $hub_key['marg_company_code'];
-                $detail         = [];
-                $MargMST2017 = "https://corporate.margerp.com/api/eOnlineData/MargMST2017";
-                $reqData = ["CompanyCode" => $CompanyCode,"MargID" => $MargID,"Datetime" => Date('Y-m-d H:i:s'), "index" => 0];
-            }else{
-                return false;
-            }
+                    $detail         = [];
+                    $MargMST2017 = "https://corporate.margerp.com/api/eOnlineData/MargMST2017";
+                    $reqData = ["CompanyCode" => $CompanyCode,"MargID" => $MargID,"Datetime" => $margDateTime, "index" => 0];
+                }else{
+                    return false;
+                }
+
+                ClientPreferenceAdditional::updateOrCreate(
+                    ['key_name' => 'marg_date_time', 'client_code' => $client->code],
+                    ['key_name' => 'marg_date_time', 'key_value' => date('Y-m-d H:i:s'),'client_code' => $client->code,'client_id'=> $client->id]);
          
-            // Get the encrypted data from the request
-            $encryptedData = $this->getData($MargMST2017, $reqData);
-            // Decrypt the data using the DLL wrapper
-            $decryptedData = $this->DecryptLogic->Decrypt($encryptedData, $decryptionKey);
-            $collectionData = collect( json_decode($decryptedData));
-            //    dd($collectionData["Details"]->pro_N);
-            if(!empty($collectionData["Details"]->pro_N)){
 
-                foreach($collectionData["Details"]->pro_N as $key => $product){
-                    $detail = $this->addProduct($product);
-                 }
-                 
-            }
+                // Get the encrypted data from the request
+                $encryptedData = $this->getData($MargMST2017, $reqData);
+                // Decrypt the data using the DLL wrapper
+                $decryptedData = $this->DecryptLogic->Decrypt($encryptedData, $decryptionKey);
+                $collectionData = collect( json_decode($decryptedData));
+                //    dd($collectionData["Details"]->pro_N);
+                if(!empty($collectionData["Details"]->pro_N)){
+
+                    foreach($collectionData["Details"]->pro_N as $key => $product){
+                        \Log::info('code--'.$product->code);
+                        $detail = $this->addProduct($product);
+                    }
+                }
 
                 \DB::disconnect($database_name);
             }
@@ -120,7 +131,6 @@ class MargApiProductUpdateCron extends Command
             return $ex->getMessage();
         }
         return 0;
-
 
     }
 }

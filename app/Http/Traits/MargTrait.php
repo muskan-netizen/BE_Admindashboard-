@@ -24,6 +24,7 @@ trait MargTrait{
      */
 
     public function getData($crulUrl, $payload){
+        
         $ch = curl_init( $crulUrl );
         $payload = json_encode( $payload);
         curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
@@ -116,6 +117,9 @@ trait MargTrait{
                     $proVariant->save();
 
                     ProductTranslation::insert($datatrans);
+
+                \Log::info('Insert MargProduct code --'.$request->code);
+
                 }
             }else{
                 //Update Stock Details
@@ -132,34 +136,43 @@ trait MargTrait{
 		
 	}		
 
-    public function updateProduct(Request $request,$product)
+    function updateProduct($request,$product)
 	{
+        
 		try{
-			DB::beginTransaction();
+			// DB::beginTransaction();
             $url_slug = $this->validateSlug($request->name);
             $product = Product::findOrFail($product->id);
-            $product->sku = $request->code;      // $request->sku;
-            $product->url_slug = $url_slug;             // $request->url_slug;
-            $product->title = $request->name;           // $request->product_name;        
-            $client_lang = ClientLanguage::where('is_primary', 1)->first();
-            if (!$client_lang) {
-                $client_lang = ClientLanguage::where('is_active', 1)->first();
+           
+
+            if($product->id){
+                $product->sku = $request->code;      // $request->sku;
+                $product->url_slug = $url_slug;             // $request->url_slug;
+                $product->title = $request->name;           // $request->product_name;        
+                $client_lang = ClientLanguage::where('is_primary', 1)->first();
+                if (!$client_lang) {
+                    $client_lang = ClientLanguage::where('is_active', 1)->first();
+                }
+                $product->save();
+                \Log::info('update code --'.$request->code);
             }
-            $product->save();
             
             if ($product->id > 0)
             {
-                $marg_product  =  MargProduct::whereCode($request->code)->first();
-                    $marg_product->product_id   =       $product->id;
-                    $marg_product->rid          =       $request->rid;           
-                    $marg_product->code         =       $request->code;               
-                    $marg_product->name         =       $request->name;               
-                    $marg_product->stock        =       $request->stock;
-                    $marg_product->MRP          =       $request->MRP;
-                    $marg_product->save();
-            
+                    $marg_product  =  MargProduct::whereCode($request->code)->first();
+                    if($marg_product){
+                        $marg_product->product_id   =       $product->id;
+                        $marg_product->rid          =       $request->rid;           
+                        $marg_product->code         =       $request->code;               
+                        $marg_product->name         =       $request->name;               
+                        $marg_product->stock        =       $request->stock;
+                        $marg_product->MRP          =       $request->MRP;
+                        $marg_product->save();
+                \Log::info('update MargProduct code --'.$request->code);
 
-                $proVariant = ProductVariant::where('sku', $request->code)->firstOrFail();
+                    }
+
+                $proVariant = ProductVariant::where('sku', $request->code)->first();
                 if(isset($request->ProductCode) && isset($request->name) && !is_null($proVariant)){
 
                     $proVariant->price = $request->MRP;            
@@ -181,9 +194,9 @@ trait MargTrait{
                 ProductTranslation::UpdateOrCreate(['product_id' => $product->id,'language_id' => $client_lang->language_id],$datatrans);
 
             }
-			DB::commit();
+			// DB::commit();
 			
-			return $this->successResponse([], 'Product Updated successfully!', 200);
+			// return $this->successResponse([], 'Product Updated successfully!', 200);
 		} catch (Exception $e) {
 			return $this->errorResponse($e->getMessage(), $e->getCode());
 		}
@@ -229,11 +242,10 @@ trait MargTrait{
 		}else{
 			foreach($order->products as $product)
 			{
-				//$rid[]  = MargProduct::whereCode($product->sku)->value('rid');
-
 				$productCode[] = $product->product->sku;
 				$productQuantity[] = $product->quantity;
 			}
+            $rid  = MargProduct::first();
 		} 
 		
         $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code']);
@@ -244,7 +256,7 @@ trait MargTrait{
             $CompanyCode  = $hub_key['marg_company_code'];
             $detail         = [];
             $MargMST2017 = "https://corporate.margerp.com/api/eOnlineData/InsertOrderDetail";
-            $detail = ["OrderID"=>"", "OrderNo"=> $order->order_number, "CustomerID"=> 'MargMST2017', "MargID"=> $MargID, "Type"=> "S", "Sid"=> "194130", "ProductCode"=> implode(',',$productCode), "Quantity"=>  implode(',',$productQuantity), "Free"=> "0,0", "Lat"=> "", "Lng"=> "", "Address"=> "", "GpsID"=> "0", "UserType"=> "1", "Points"=> "0.00", "Discounts"=> "0", "Transport"=> "", "Delivery"=> "", "Bankname"=> "", "BankAdd1"=> "", "BankAdd2"=> "", "shipname"=> "", "shipAdd1"=> "", "shipAdd2"=> "", "shipAdd3"=> "", "paymentmode"=> "1", "paymentmodeAmount"=> "0", "payment_remarks"=> "", "order_remarks"=> "","CustName"=>"ramU" ,"CustMobile"=> "9289757820", "CompanyCode"=> $CompanyCode, "OrderFrom"=> $CompanyCode];
+            $detail = ["OrderID"=>"", "OrderNo"=> $order->order_number, "CustomerID"=> $rid->id, "MargID"=> $MargID, "Type"=> "S", "Sid"=> "194130", "ProductCode"=> implode(',',$productCode), "Quantity"=>  implode(',',$productQuantity), "Free"=> "0,0", "Lat"=> "", "Lng"=> "", "Address"=> "", "GpsID"=> "0", "UserType"=> "1", "Points"=> "0.00", "Discounts"=> "0", "Transport"=> "", "Delivery"=> "", "Bankname"=> "", "BankAdd1"=> "", "BankAdd2"=> "", "shipname"=> "", "shipAdd1"=> "", "shipAdd2"=> "", "shipAdd3"=> "", "paymentmode"=> "1", "paymentmodeAmount"=> "0", "payment_remarks"=> "", "order_remarks"=> "","CustName"=>"ramU" ,"CustMobile"=> "9289757820", "CompanyCode"=> $CompanyCode, "OrderFrom"=> $CompanyCode];
 
 
              // Get the encrypted data from the request
@@ -260,10 +272,6 @@ trait MargTrait{
 
                 return true;
                 
-            }else{
-
-                return false;
-
             }
             return true;
 

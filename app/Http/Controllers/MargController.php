@@ -7,6 +7,8 @@ use App\Libraries\DecryptLogic;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Http\Request;
 use App\Http\Traits\MargTrait;
+use App\Models\Client;
+use App\Models\ClientPreferenceAdditional;
 use Illuminate\Support\Facades\Artisan;
 
 class MargController extends Controller
@@ -32,12 +34,19 @@ class MargController extends Controller
             $decryptionKey  = $hub_key['marg_decrypt_key'];
             $MargID  = $hub_key['marg_access_token'];
             $CompanyCode  = $hub_key['marg_company_code'];
+            $margDateTime = $hub_key['marg_date_time']??date('Y-m-d H:i:s');
+
             $detail         = [];
             $MargMST2017 = "https://corporate.margerp.com/api/eOnlineData/MargMST2017";
-            $reqData = ["CompanyCode" => $CompanyCode,"MargID" => $MargID,"Datetime" =>Date('Y-m-d H:i:s'), "index" => 0];
+            $reqData = ["CompanyCode" => $CompanyCode,"MargID" => $MargID,"Datetime" =>$margDateTime, "index" => 0];
         }else{
             return false;
         }
+
+        $client = Client::first();
+        ClientPreferenceAdditional::updateOrCreate(
+            ['key_name' => 'marg_date_time', 'client_code' => $client->code],
+            ['key_name' => 'marg_date_time', 'key_value' => date('Y-m-d H:i:s'),'client_code' => $client->code,'client_id'=> $client->id]);
          
         // Get the encrypted data from the request
         $encryptedData = $this->getData($MargMST2017, $reqData);
