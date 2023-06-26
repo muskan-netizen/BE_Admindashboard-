@@ -64,7 +64,7 @@ class MargApiProductUpdateCron extends Command
          */
 
          try {
-            $clients = CP::where('status', 2)->get();
+            $clients = CP::where('status', 1)->get();
 
             foreach ($clients as $key => $client) {
                 //Connect client connection
