@@ -54,21 +54,45 @@ trait OrderTrait
         return 1;
     }
 
+
+    public function CheckProductStockLimit($order_id,$admin_product_limit){
+        $vendors=[];
+        $order = Order::with(['vendors.products.pvariant'])->find($order_id);
+        if (isset($order->vendors)) {
+            foreach ($order->vendors as $vendor) {
+                foreach ($vendor->products as $product) {
+                    $ProductVariant = ProductVariant::find($product->variant_id);
+
+                    if ($ProductVariant) {
+                        if ($ProductVariant->quantity < $admin_product_limit){
+                            array_push($vendors,$vendor->vendor_id); 
+             
+                        }
+                    }
+                }
+            }
+            return $vendors;
+        }
+
+    }
+
     public function sendProductStockOutPushNotificationVendors($user_ids, $orderData)
     {
-
+           
         \Log::info($user_ids);
         $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')
             ->whereIn('user_id', $user_ids)
             ->pluck('device_token')
             ->toArray();
 
+            pr($devices);
+
         $from = '';
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon', 'vendor_fcm_server_key')->first();
         if (! empty($devices) && ! empty($client_preferences->fcm_server_key)) {
             $from = $client_preferences->fcm_server_key;
         }
-        $notification_content = NotificationTemplate::where('id', 4)->first();
+        $notification_content = NotificationTemplate::where('id', 17)->first();
         if ($notification_content) {
             $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
             // dd($body_content);
@@ -76,7 +100,7 @@ trait OrderTrait
                 "registration_ids" => $devices,
                 "notification" => [
                     'title' => $notification_content->subject,
-                    'body' => $body_content,
+                    'body' => $notification_content->content,
                     'sound' => "notification.wav",
                     "icon" => (! empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                     // 'click_action' => route('order.index'),

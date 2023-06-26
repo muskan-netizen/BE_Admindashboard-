@@ -2449,10 +2449,13 @@ class OrderController extends FrontController
                             $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
                         }
 
-                        pr($additionalPreferences->stock_notification_before);
+                        
 
                         if(!empty($additionalPreferences->stock_notification_before) && $additionalPreferences->stock_notification_before == 1){
-                           
+                            $vendor_id=$this->CheckProductStockLimit($order->id,$additionalPreferences->stock_notification_qunatity);
+                            if(!empty($vendor_id)){
+                              $this->sendProductStockOutPushNotificationVendors($vendor_id,$vendor_order_detail);
+                            }
                         }
 
                     }
