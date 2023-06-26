@@ -64,7 +64,8 @@ use App\Http\Traits\ {
     CartManager,
     SquareInventoryManager,
     VendorTrait,
-    OrderTrait
+    OrderTrait,
+    MargTrait
 };
 use App\Models\AddonOption;
 use App\Models\ {
@@ -86,7 +87,7 @@ use Illuminate\Support\Facades\Http;
 
 class OrderController extends FrontController
 {
-    use ApiResponser, CartManager, SquareInventoryManager,VendorTrait,OrderTrait;
+    use ApiResponser, CartManager, SquareInventoryManager,VendorTrait,OrderTrait,MargTrait;
 
     /**
      * Display a listing of the resource.
@@ -1798,8 +1799,6 @@ class OrderController extends FrontController
 
     public function orderSave($request, $paymentStatus)
     {
-
-
         try {
             $latitude = '';
             $longitude = '';
@@ -3173,6 +3172,9 @@ class OrderController extends FrontController
             DB::commit();
             $this->sendSuccessSMS($request, $order);
 
+            //Create an order at margApi side also
+            $this->makeInsertOrderMargApi($order);
+            
             return $this->successResponse($order);
         } catch (Exception $e) {
             DB::rollback();
