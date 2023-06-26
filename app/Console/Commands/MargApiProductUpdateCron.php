@@ -120,7 +120,7 @@ class MargApiProductUpdateCron extends Command
                 if(!empty($collectionData["Details"]->pro_N)){
 
                     foreach($collectionData["Details"]->pro_N as $key => $product){
-                        \Log::info('code--'.$product->code);
+                        // \Log::info('code--'.$product->code);
                         $detail = $this->addProduct($product);
                     }
                 }

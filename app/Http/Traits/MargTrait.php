@@ -118,7 +118,7 @@ trait MargTrait{
 
                     ProductTranslation::insert($datatrans);
 
-                \Log::info('Insert MargProduct code --'.$request->code);
+                // \Log::info('Insert MargProduct code --'.$request->code);
 
                 }
             }else{
@@ -154,7 +154,7 @@ trait MargTrait{
                     $client_lang = ClientLanguage::where('is_active', 1)->first();
                 }
                 $product->save();
-                \Log::info('update code --'.$request->code);
+                // \Log::info('update code --'.$request->code);
             }
             
             if ($product->id > 0)
@@ -168,7 +168,7 @@ trait MargTrait{
                         $marg_product->stock        =       $request->stock;
                         $marg_product->MRP          =       $request->MRP;
                         $marg_product->save();
-                \Log::info('update MargProduct code --'.$request->code);
+                // \Log::info('update MargProduct code --'.$request->code);
 
                     }
 
