@@ -6,7 +6,7 @@
                 <?php $var_id = $optn->variant_type_id;
                 $opt_id = $optn->variant_option_id;
                 ?>
-                <label class="radio d-inline-block txt-14 col-4 position-relative pl-4 pr-2" data-title="{{ $key === 0 ? $variant->title : '' }}">
+                <label class="radio d-inline-block txt-14 col-4 position-relative pl-4 pr-2" data-title="{{ $key === 0 ? $optn->title : '' }}">
                     <span class="color_name ellipsis">{{$optn->title}}</span>
                     @if($sets->type == 2)
                         <span class="color_var var_{{$var_id}}" style="padding:8px; border: 1px dotted #CCC; background:{{$optn->hexacode}};" data-id="{{$var_id}}"></span>

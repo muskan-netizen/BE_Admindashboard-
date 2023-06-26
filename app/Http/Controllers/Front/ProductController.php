@@ -493,14 +493,11 @@ class ProductController extends FrontController{
                 $data['is_token_enable'] = $is_token_enable;
 
                 $returnHTML = view('frontend.product-part.product-variant-ajax')->with('availableSets', $availableSets->variantSet)->render();
-                dd($returnHTML);
-                // return response()->json(array('success' => true, 'html'=>$returnHTML));
+
+                return response()->json(array('success' => true, 'html'=>$returnHTML));
 
                 // return response()->json(array('status' => 'Success', 'data' => $data));
-
-
             }
-
         }
         //pr($data['availableSets']->toArray());
         return response()->json(array('status' => 'Error', 'message' => 'This option is currenty not available', 'data' => $data));

@@ -1381,9 +1381,8 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     $('.changeVariant').click(function() {
         updatePrice();
     });
-    function updatePrice()
-    {
 
+    function updatePrice(){
         var variants = [];
         var options = [];
         var selected_variant_title = "";
@@ -1411,7 +1410,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
                 }
             },
             success: function(resp) {
-                // console.log(resp);
+                console.log(resp);
                 if(resp.status == 'Success'){
                     $("#variant_response span").html('');
                     var response = resp.data;
@@ -1462,6 +1461,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
             },
         });
     }
+    
     function checkAddOnPrice()
     {
         price  = 0;
