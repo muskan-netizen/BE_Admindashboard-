@@ -267,6 +267,24 @@
 <div class="rightbar-overlay"></div>
 
 <!-- Modal -->
+<div class="modal fade received-orders" id="reached_location_new_order" tabindex="-1" aria-labelledby="received_ordersLabel" aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content py-md-5 px-md-4 p-sm-3 p-4">
+            <i class="fa fa-bell fa-2x text-center my-3" style="color:blue"></i>
+            <div class="modal-body pt-0 text-center">
+                <h5 class="modal-title text-center">{{__('Cutomer Notification')}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h5>{{__('Cutomer arrived at your location')}}</h5>
+                <h5>{{__('Order Number : ')}} <b id="orderNo"></b></h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
 <div class="modal fade received-orders order_received1" id="received_new_orders" tabindex="-1" aria-labelledby="received_ordersLabel" aria-hidden="true">
     <div class="modal-dialog  modal-dialog-centered">
         <div class="modal-content">

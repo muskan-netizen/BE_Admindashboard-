@@ -200,7 +200,9 @@
             autocomplete[name] = new google.maps.places.Autocomplete(document.getElementById('add-address'), {
                 types: ['geocode']
             });
-
+            if(is_map_search_perticular_country){
+                autocomplete[name].setComponentRestrictions({'country': [is_map_search_perticular_country]});
+            }
             google.maps.event.addListener(autocomplete[name], 'place_changed', function() {
                 var place = autocomplete[name].getPlace();
                 if (!place.geometry) {

@@ -26,6 +26,6 @@ class CustomerRegistrationMail extends Mailable
      * @return $this
      */
     public function build(){
-        return $this->view('email.customer_signup')->subject($this->mailData['subject'])->from($this->mailData['mail_from'])->with('mailData', $this->mailData);
+        return $this->view('email.customer_signup')->subject($this->mailData['subject'])->from($this->mailData['mail_from'],$this->mailData['client_name'])->with('mailData', $this->mailData);
     }
 }

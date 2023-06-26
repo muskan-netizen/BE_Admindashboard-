@@ -84,7 +84,6 @@ class OrderController extends BaseController
     }
     public function postPlaceOrder(Request $request)
     {
-
        try {
             $action = ($request->has('type')) ? $request->type : 'delivery';
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
@@ -116,11 +115,12 @@ class OrderController extends BaseController
                     return response()->json($errors, 422);
                 }
             }
-
+            $rate = 0;
             $total_amount = 0;
             $total_discount = 0;
             $taxable_amount = 0;
             $payable_amount = 0;
+            $new_vendor_taxable_amount = 0;
             $additional_price=0;
             $tax_category_ids = [];
             $user = Auth::user();
@@ -199,7 +199,6 @@ class OrderController extends BaseController
                 }
                 $luxury_option = LuxuryOption::where('title', $action)->first();
                 $cart = Cart::where('user_id', $user->id)->with(['editingOrder.orderStatusVendor', 'cartvendor'])->first();
-
                 if ($cart) {
 
                     // $loyalty_points_used=0;
@@ -217,7 +216,8 @@ class OrderController extends BaseController
 
                     $cart_products = CartProduct::with(['product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon' => function ($query) use ($cart) {
                         $query->where('cart_id', $cart->id);
-                    },'coupon.promo', 'product.addon','vendorProducts.productVariantByRoles'])->where('cart_id', $cart->id)->where('status', [0, 1])->orderBy('created_at', 'asc')->get();
+                    },'coupon.promo', 'product.addon','vendorProducts.productVariantByRoles'])->where('cart_id', $cart->id)->where('is_cart_checked', 1)->where('status', [0, 1])->orderBy('created_at', 'asc')->get();
+                    
                     $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0;
                     $total_subscription_discount = 0;
 
@@ -881,6 +881,17 @@ class OrderController extends BaseController
                         $vendor_payable_amount += $delivery_fee;
                         $vendor_payable_amount += $vendor_taxable_amount;
 
+                        
+                        // check if is_tax_price_inclusive is on than no tax
+                        if (! $additionalPreferences->is_tax_price_inclusive) {
+                            $new_vendor_taxable_amount = number_format((($actual_amount-$total_discount) * $rate) / 100, 2);
+                        } else {
+                            $new_vendor_taxable_amount = number_format((($actual_amount-$total_discount) * $rate) / (100 + $rate), 2);
+                        }
+                        
+                        $new_vendor_taxable_amount = str_replace(',', '', $new_vendor_taxable_amount);
+                        $new_vendor_taxable_amount = floatval($new_vendor_taxable_amount);
+                        
                         $order_vendor->coupon_id = $coupon_id;
                         $order_vendor->coupon_paid_by = $coupon_paid_by??1;
                         $order_vendor->coupon_code = $coupon_name;
@@ -889,7 +900,7 @@ class OrderController extends BaseController
                         $order_vendor->subtotal_amount = $actual_amount;
                         $order_vendor->payable_amount = $vendor_payable_amount+$total_fixed_fee_amount;
                         $order_vendor->total_markup_price = $vendor_markup_amount;
-                        $order_vendor->taxable_amount = $vendor_taxable_amount;
+                        $order_vendor->taxable_amount = $new_vendor_taxable_amount;
                         $order_vendor->discount_amount = $vendor_discount_amount;
                         $order_vendor->payment_option_id = $request->payment_option_id;
                         $order_vendor->total_container_charges = $vendor_total_container_charges;
@@ -1102,7 +1113,9 @@ class OrderController extends BaseController
                         Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL, 'order_id' => NULL]);
 
                         CartCoupon::where('cart_id', $cart->id)->delete();
-                        CartProduct::where('cart_id', $cart->id)->delete();
+                        // CartProduct::where('cart_id', $cart->id)->delete();
+                        $cart_product_ids = $cart_products->pluck('id');
+                        CartProduct::query()->whereIn('id', $cart_product_ids)->delete(); 
                         CartProductPrescription::where('cart_id', $cart->id)->delete();
                         CartDeliveryFee::where('cart_id', $cart->id)->delete();
                     }
@@ -1263,6 +1276,7 @@ class OrderController extends BaseController
         $ship = new ShippoController();
         $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Shiprocket
+        
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
             if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)){
@@ -1572,13 +1586,13 @@ class OrderController extends BaseController
 
             if ($order->payment_option_id == 1 && ($order->payable_amount >0)) {
                 $cash_to_be_collected = 'Yes';
-                $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
+                $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
             } else {
 
                 if($order->is_postpay==1 && $order->payment_status == 0)
                 {
                     $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
+                    $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
                 }else{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -1654,7 +1668,9 @@ class OrderController extends BaseController
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
                 'user_icon' => $customer->image,
-                'order_pre_time'=>$vendor_details->order_pre_time
+                'order_pre_time'=>$vendor_details->order_pre_time,
+                'app_call' => 1,
+
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -1707,13 +1723,13 @@ class OrderController extends BaseController
             $tasks = array();
             if ($order->payment_option_id == 1) {
                 $cash_to_be_collected = 'Yes';
-                $payable_amount = $order->payable_amount;
+                $payable_amount = $order->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
             } else {
 
                 if($order->is_postpay==1 && $order->payment_status == 0)
                 {
                     $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order->payable_amount;
+                    $payable_amount = $order->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
                 }else{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -1843,13 +1859,13 @@ class OrderController extends BaseController
              $tasks = array();
              if ($order->payment_option_id == 1) {
                  $cash_to_be_collected = 'Yes';
-                 $payable_amount = $order->payable_amount;
+                 $payable_amount = $order->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
              } else {
 
                 if($order->is_postpay==1 && $order->payment_status == 0)
                 {
                     $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order->payable_amount;
+                    $payable_amount = $order->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
                 }else{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -2107,9 +2123,9 @@ class OrderController extends BaseController
                     $email_template_content = $email_template->content;
                     if ($vendor_id == "") {
 
-                        $returnHTML = view('email.newOrderProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
+                        $returnHTML = view('email.newOrderProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     } else {
-                        $returnHTML = view('email.newOrderVendorProducts')->with(['cartData' => $cartDetails, 'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
+                        $returnHTML = view('email.newOrderVendorProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
                     }
                     $email_template_content = str_ireplace("{description}",'', $email_template_content);
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
@@ -2204,6 +2220,7 @@ class OrderController extends BaseController
         $paginate = $request->has('limit') ? $request->limit : 12;
         $type = $request->has('type') ? $request->type : 'active';
         $orders = OrderVendor::where('user_id', $user->id)->with('products')->orderBy('id', 'DESC');
+
         $additionalPreference =getAdditionalPreference(['is_service_product_price_from_dispatch']);
         switch ($type) {
             case 'pending': // which order not assign yet in driver
@@ -2211,22 +2228,24 @@ class OrderController extends BaseController
             $orders->whereHas('products', function ($q1) {
                         $q1->where('dispatcher_status_option_id',1);
                     });
+
                 break;
             case 'active':
                 $orders->whereNotIn('order_status_option_id', [6, 3, 9]);
-                    $orders->whereHas('products', function ($q) use ($additionalPreference) {
-                         if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
-                            $q->whereNotIn('dispatcher_status_option_id',[1,5,6]); //1=pending,5= complete,6 reject
-                         }
-                    });
+                    // $orders->whereHas('products', function ($q) use ($additionalPreference) {
+                    //      if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+                    //         $q->whereNotIn('dispatcher_status_option_id',[1,5,6]); //1=pending,5= complete,6 reject
+                    //      }
+                    // });
+                   
                 break;
             case 'past':
                 $orders->whereIn('order_status_option_id', [6, 3, 9]);
-                if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
-                    $orders->whereHas('products', function ($q) {
-                        $q->where('dispatcher_status_option_id',5); //1=pending,5= complete,6 reject
-                    });
-                }
+                // if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+                //     $orders->whereHas('products', function ($q) {
+                //         $q->where('dispatcher_status_option_id',5); //1=pending,5= complete,6 reject
+                //     });
+                // }
                 break;
             case 'schedule':
                 $order_status_options = [10];
@@ -2886,19 +2905,87 @@ class OrderController extends BaseController
             $orderProduct->updated_price_reason = isset($request->update_price_reason) ? ($request->update_price_reason) :0;
             $orderProduct->save();
             $orderData = Order::find($orderProduct->order_id);
+            $orderVendorData = OrderVendor::where('order_id',$orderProduct->order_id)->first();
+
             $newPayableAmount = 0;
             $newTotalAmount   = 0;
+            $tax_category_ids = [];
+            $productAddon_price = 0;
+            $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+            if (!empty($orderProduct->addon)) {
+                foreach ($orderProduct->addon as $ck => $addon) {
+                    $opt_quantity_price = 0;
+                    $opt_price_in_currency = $addon->option->price;
+                    $opt_price_in_doller_compare = $opt_price_in_currency * $clientCurrency->doller_compare;
+                    $opt_quantity_price = $opt_price_in_doller_compare *  $orderProduct->quantity;
+                    $productAddon_price = $productAddon_price + $opt_quantity_price;
+                   
+                }
+            }
+            $product_taxable_amount = 0;
+            $taxable_amount = 0;
+            $payable_amount = 0;
+            $total_other_taxes = 0;
+            $total_fixed_fee_tax = 0;
+            $total_service_fee_tax = 0;
+            $deliver_fee_charges_tax = 0;
+            $total_markup_fee_tax = 0;
+            $total_taxable_amount = 0;
+            $container_charges_tax = 0;
+ 
+ 
+            if($orderData->total_other_taxes!=''){
+                foreach(explode(",",$orderData->total_other_taxes) as $row){
+                      $row1 = explode(":",$row);
+                     $check_row  = $row1[0];
+                     if($check_row == "product_tax_fee"){
+                       $product_taxable_amount = $row1[1];
+                     }else  if($check_row == "tax_fixed_fee"){
+                        $total_fixed_fee_tax = $row1[1];
+                      }else  if($check_row == "tax_service_charges"){
+                        $total_service_fee_tax = $row1[1];
+                      }else  if($check_row == "tax_delivery_charges"){
+                        $deliver_fee_charges_tax = $row1[1];
+                      }else  if($check_row == "tax_markup_fee"){
+                        $total_markup_fee_tax = $row1[1];
+                      }else  if($check_row == "container_charges_tax"){
+                        $container_charges_tax = $row1[1];
+                      }
+                }
+            }
+
+            $quantity_price = ($orderProduct->price * $orderProduct->quantity) ;
+            if (isset($orderProduct->product->taxCategory)) {
+                foreach ($orderProduct->product->taxCategory->taxRate as $tax_rate_detail) {
+                    if (!in_array($tax_rate_detail->id, $tax_category_ids)) {
+                        $tax_category_ids[] = $tax_rate_detail->id;
+                    }
+                    $rate = $tax_rate_detail->tax_rate;
+                    $product_tax = ($quantity_price + $productAddon_price) * $rate / 100;
+                    $product_taxable_amount = $taxable_amount + $product_tax;
+                    $payable_amount = $payable_amount + $product_tax;
+                }
+            }
+            $orderData->taxable_amount = $product_taxable_amount ;
+            $other_taxes_string='tax_fixed_fee:'.$total_fixed_fee_tax.',tax_service_charges:'.$total_service_fee_tax.',tax_delivery_charges:'.$deliver_fee_charges_tax.',tax_markup_fee:'.$total_markup_fee_tax.',product_tax_fee:'.$product_taxable_amount.',container_charges_tax:'.$container_charges_tax;
+            $orderData->total_other_taxes = $other_taxes_string;
             if($orderProduct->old_price < $orderProduct->price){
-                $newPayableAmount =   ($orderProduct->price - $orderProduct->old_price) + $orderData->payable_amount;
-                $newTotalAmount   = ($orderProduct->price - $orderProduct->old_price) + $orderData->total_amount;
+                $newPayableAmount =   ($orderProduct->price - $orderProduct->old_price )+ ($product_taxable_amount- $orderData->taxable_amount) + $orderData->payable_amount;
+                $newTotalAmount   = ($orderProduct->price - $orderProduct->old_price ) + $orderData->total_amount;
+                $orderVendorData->payable_amount =   $orderVendorData->payable_amount +($product_taxable_amount- $orderData->taxable_amount)  ;
+               
             }else if($orderProduct->old_price > $orderProduct->price){
-                $newPayableAmount =   $orderData->payable_amount - ($request->order_product_old_price - $request->new_product_price);
+                $newPayableAmount =   $orderData->payable_amount - ($request->order_product_old_price - $request->new_product_price) + ($orderData->taxable_amount - $product_taxable_amount );
                 $newTotalAmount   = $orderData->total_amount - ($request->order_product_old_price - $request->new_product_price);
+                $orderVendorData->payable_amount =   $orderVendorData->payable_amount +($orderData->taxable_amount - $product_taxable_amount );
             }
             if(!empty($newPayableAmount) && !empty($newTotalAmount)){
                 $orderData->total_amount   = decimal_format($newTotalAmount);
                 $orderData->payable_amount = decimal_format($newPayableAmount);
                 $orderData->save();
+                $orderVendorData->subtotal_amount =   $newTotalAmount  ;
+                $orderVendorData->taxable_amount =   $product_taxable_amount  ;
+                $orderVendorData->save();
                 DB::commit();
                 return response()->json(['status' => 'success', 'message' => __('Product price updated Successfully.')]);
             }else{

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Nomenclature;
 use App\Models\NomenclatureTranslation;
 use App\Http\Controllers\Client\BaseController;
+use Illuminate\Support\Facades\Cache;
 
 class NomenclatureController extends BaseController
 {
@@ -88,7 +89,12 @@ class NomenclatureController extends BaseController
                     ]);
                     $m=0;
                     foreach ($newrequest[$name_array[$j]] as $single_name_array) {
-                        if ($single_name_array) {                         
+                        if ($single_name_array) { 
+                            $nomenclatureTranslation =  Nomenclature::where(['id' => $nomenclature->id])->first();
+                            if($nomenclatureTranslation){
+                                Cache::forget('nomenclature_' . $newrequest[$lang_id_array[$j]][$m] . '_' .$nomenclatureTranslation->label);
+                            }
+              
                             NomenclatureTranslation::updateOrCreate(['language_id' => $newrequest[$lang_id_array[$j]][$m], 'nomenclature_id' => $nomenclature->id], ['name' => $single_name_array]);
                         }
                         $m++;

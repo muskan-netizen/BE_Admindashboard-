@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, PaymentOption, PickDropDriverBid, UserBidRideRequest};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, ClientPreferenceAdditional, PaymentOption, PickDropDriverBid, UserBidRideRequest, UserDevice};
 use App\Http\Traits\{ApiResponser,PaymentTrait};
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
@@ -45,7 +45,7 @@ class PickupDeliveryController extends FrontController{
                 $json = json_decode($option->credentials);
                 $option->title = $json->manule_payment_title;
             }elseif($option->code == 'obo'){
-                $option->title = __("O'Pay");
+                $option->title = __("MoMo, Airtel Money, Credit/Debit Cards by O'Pay");
             }
 
             $option->title = __($option->title);
@@ -182,7 +182,10 @@ class PickupDeliveryController extends FrontController{
         $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
         $product->image_url = $image_url;
         $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
+       
+
         $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
+
         $product->original_tags_price = decimal_format($tags_price['delivery_fee']);
         $product->tags_price = decimal_format($tags_price['delivery_fee']);
         $product->toll_fee = decimal_format($tags_price['toll_fee']);
@@ -201,6 +204,19 @@ class PickupDeliveryController extends FrontController{
             $product->tags_price = decimal_format(($product->tags_price/$product->seats_for_booking)*$no_seats_for_pooling);
             $product->toll_fee = decimal_format(($product->toll_fee/$product->seats_for_booking)*$no_seats_for_pooling);
         }//------
+
+        $product->service_charge_amount  = 0.00;
+        if($product->vendor->fixed_service_charge)
+        {
+            $product->service_charge_amount  =  $product->vendor->service_charge_amount??0.00;
+        }else{
+
+            if($product->vendor->service_fee_percent>0){
+
+                $product->service_charge_amount  = $product->tags_price * $product->vendor->service_fee_percent/100;
+            }
+        }
+
         $product->total_tags_price = decimal_format($product->tags_price + $product->toll_fee + $product->service_charge_amount);
         $product->name = $product->translation->first() ? $product->translation->first()->title :'';
         $product->description = $product->translation->first() ? $product->translation->first()->body_html :'';
@@ -501,15 +517,25 @@ class PickupDeliveryController extends FrontController{
                 if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                     DB::commit();
                     $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
+                    $order_place['data']['invalid_agent'] = $request_to_dispatch['invalid_agent'];
                     $order_place['data']['user_name'] = $user->email;
                     $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
 
-                     //Send message if ride is booked for friend
-                    if($request->type == 1 && isset($request->friendPhoneNumber))
+
+                    //Send sendNotificationToCustomer
+                    if (isset($request->schedule_time) && !empty($request->schedule_time))
                     {
-                        $msg = "Hi ".($request->friendName??'User').", ".$user->name." has booked a ride for you.";
-                        $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
+                        $order_number = $order_place['data']->order_number??$order_place['data']['order_number'];
+                        $device_token = UserDevice::whereUserId($user->id)->orderBy('id','desc')->value('device_token');
+                        sendNotificationToCustomer($device_token,$order_number);
                     }
+                    
+                     //Send message if ride is booked for friend
+                  /*  if($request->type == 1 && isset($request->friendPhoneNumber))
+                    {
+                        $msg = "Hi ".($request->friendName??'User').", ".$user->name." has booked a ride for you. Tracking url is ".$request_to_dispatch['dispatch_traking_url'];
+                        $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
+                    } */
 
                     return  $order_place;
                 }
@@ -527,13 +553,21 @@ class PickupDeliveryController extends FrontController{
                     $order_place['data']['user_name'] = $user->email;
                     $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
 
+                     //Send sendNotificationToCustomer
+                     if (isset($request->schedule_time) && !empty($request->schedule_time))
+                     {
+                         $order_number = $order_place['data']->order_number??$order_place['data']['order_number'];
+                         $device_token = UserDevice::whereUserId($user->id)->orderBy('id','desc')->value('device_token');
+                         sendNotificationToCustomer($device_token,$order_number);
+                     }
+
+
                      //Send message if ride is booked for friend
-                    if($request->type == 1 && isset($request->friendPhoneNumber))
+                  /*  if($request->type == 1 && isset($request->friendPhoneNumber))
                     {
-                        $msg = "Hi ".($request->friendName??'User').", ".$user->name." has booked a ride for you.";
+                        $msg = "Hi ".($request->friendName??'User').", ".$user->name." has booked a ride for you. Tracking url is ".$request_to_dispatch['dispatch_traking_url'];
                         $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
-                    }
-                    \Log::info($order_place);
+                    }*/
                     return  $order_place;
                 }
                 else{
@@ -950,13 +984,21 @@ class PickupDeliveryController extends FrontController{
                     $schedule_datetime_del = $request->schedule_time;//Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
 
+                $client_preferences_addional = ClientPreferenceAdditional::pluck('key_value','key_name');
+
+                if(isset($client_preferences_addional['pickup_notification_before']) && $client_preferences_addional['pickup_notification_before'] == 1)
+                {
+                    $notify_hour = $client_preferences_addional['pickup_notification_before_hours'] ?? 1;
+                    $reminder_hour = $client_preferences_addional['pickup_notification_before2_hours'] ?? 1;
+                }
+
                 $postdata =  [
                     'order_number' =>  $order->order_number,
                     //'order_type' =>  $order->type,
                     // 'order_friend_name' =>  $order->friend_name,
                     // 'order_number' =>  $order->friend_phone_number,
                     'barcode' => '',
-                    'allocation_type' => 'a',
+                    'allocation_type' => $request->unique_id ? 'notify' : 'a',
                     'task' => $request->tasks,
                     'order_team_tag' => $team_tag,
                     'task_type' => $task_type,
@@ -989,6 +1031,10 @@ class PickupDeliveryController extends FrontController{
                     'is_cab_pooling' => isset($request->is_cab_pooling)?$request->is_cab_pooling:0,
                     'available_seats' => $product->seats_for_booking,
                     'driver_id' => $request->driver_id ?? null,
+                    'driver_unique_id' => $request->unique_id ?? null,
+                    'notify_hour' => $notify_hour ?? 0,
+                    'reminder_hour' => $reminder_hour ?? 0,
+                    'app_call' => 0,
                 ];
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;

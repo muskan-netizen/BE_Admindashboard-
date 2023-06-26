@@ -2037,6 +2037,9 @@ body.al_body_template_six.dark.homeHeader .main-fillter .side_fillter {
     white-space: nowrap;
 }
 
+.al_body_template_four  .dashboard-right .pricing-content {
+    min-height: 55px;
+}
 /*-------------ipad css--------*/
 
 @media(max-width:991px) {
@@ -4795,6 +4798,9 @@ body.al_body_template_eight .outter-fillter-data .flag-discount::before {
     top: 0;
     border-width: 22px 15px 0 0;
     border-color: #E09378 transparent transparent transparent;
+}
+.al_body_template_three .flag-discount::after{
+    content: unset;
 }
 body.al_body_template_eight .outter-fillter-data .flag-discount::before, .flag-discount::after {
     content: "";

@@ -1962,6 +1962,19 @@ class CartController extends FrontController
     }
 
     /**
+     * Update Cart Product Checked Status
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function updateCartProductStatus($domain = '', Request $request)
+    {
+        $cartProduct = CartProduct::find($request->cartproduct_id);
+        $cartProduct->is_cart_checked = $request->is_cart_checked;
+        $cartProduct->save();
+        return response()->json("Successfully Updated");
+    }
+
+    /**
      * Delete Cart Product
      *
      * @return \Illuminate\Http\Response
@@ -2571,11 +2584,35 @@ class CartController extends FrontController
     {
         DB::beginTransaction();
         try{
-
             $user = Auth::user();
             $client_timezone = DB::table('clients')->first('timezone');
             $user->timezone = $client_timezone->timezone ?? $user->timezone;
             $new_session_token = session()->get('_token');
+            if ($user) {
+                $cart_detail = Cart::where('user_id', $user->id)->first();
+            } else {
+                $cart_detail = Cart::where('unique_identifier', $new_session_token)->first();
+            }
+            $productIds = CartProduct::where('cart_id',$cart_detail->id)->whereHas('cartProduct',function($q){
+                    $q->where('pharmacy_check',1);
+            })->pluck('product_id');
+
+            if(count($productIds) > 0){
+
+                $presciptionProducts = [];
+                foreach($productIds as $product_id){
+
+                     $cartProductPrescription =  CartProductPrescription::where(['cart_id'=>$cart_detail->id,'product_id'=>$product_id])->first('product_id');
+                  if(!isset($cartProductPrescription)){
+                     array_push($presciptionProducts,$product_id);
+                  }
+                }
+
+                if(count($presciptionProducts)){
+                    return response()->json(['status'=>'error_prescription', 'presciptionProducts'=>$presciptionProducts]);
+                }
+                }
+
             if ($user || $new_session_token) {
                 if($request->task_type == 'now'){
                     $time = Carbon::now()->format('Y-m-d H:i:s');
@@ -2611,11 +2648,7 @@ class CartController extends FrontController
                     $dropSlot = $request->dropoff_scheduled_slot;
                 }
 
-                if ($user) {
-                    $cart_detail = Cart::where('user_id', $user->id)->first();
-                } else {
-                    $cart_detail = Cart::where('unique_identifier', $new_session_token)->first();
-                }
+            
 
               //  pr($time);
                 $cart_update = $cart_detail->update(['specific_instructions' => $request->specific_instructions??null,

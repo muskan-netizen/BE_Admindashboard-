@@ -465,6 +465,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('cartDelete', 'Front\CartController@emptyCartData')->name('emptyCartData');
 	Route::post('repeatOrder', 'Front\CartController@repeatOrder')->name('web.repeatOrder');
 	Route::post('/product/updateCartQuantity', 'Front\CartController@updateQuantity')->name('updateQuantity');
+	Route::post('/product/updateCartProductStatus', 'Front\CartController@updateCartProductStatus')->name('updateCartProductStatus');
 	Route::post('/product/deletecartproduct', 'Front\CartController@deleteCartProduct')->name('deleteCartProduct');
 	Route::get('userAddress', 'Front\UserController@getUserAddress')->name('getUserAddress');
 	Route::get('category/{slug?}', 'Front\CategoryController@categoryProduct')->name('categoryDetail');
@@ -591,6 +592,8 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('user/subscription/purchase/{slug}', 'Front\UserSubscriptionController@purchaseSubscriptionPlan')->name('user.subscription.plan.purchase');
 	Route::post('user/subscription/cancel/{slug}', 'Front\UserSubscriptionController@cancelSubscriptionPlan')->name('user.subscription.plan.cancel');
 	Route::get('user/subscription/checkActive/{slug}', 'Front\UserSubscriptionController@checkActiveSubscription')->name('user.subscription.plan.checkActive');
+	Route::get('user/mealSubscription/{slug}', 'Front\UserSubscriptionController@mealSubscription')->name('user.mealSubscription');
+	Route::get('user/subscription-credit', 'Front\UserSubscriptionController@subscriptionCredit')->name('user.mealSubscription.credit');
 
 	// Refer and Earn Module
 	Route::name('refer-earn.')->group(function () {

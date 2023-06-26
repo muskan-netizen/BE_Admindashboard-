@@ -662,6 +662,9 @@ function isNumberKey(evt) {
     function vendorAddressInitialize() {
         var addressInput = document.getElementById('vendor_address');
         var autocomplete = new google.maps.places.Autocomplete(addressInput);
+        if(is_map_search_perticular_country){
+                autocomplete.setComponentRestrictions({'country': [is_map_search_perticular_country]});
+            }
         google.maps.event.addListener(autocomplete, 'place_changed', function() {
             var place = autocomplete.getPlace();
             document.getElementById('vendor_longitude').value = place.geometry.location.lng();

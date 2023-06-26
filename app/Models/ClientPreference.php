@@ -35,6 +35,17 @@ class ClientPreference extends Model
       return $this->hasone('App\Models\ClientCurrency','client_code','client_code')->select( 'client_code', 'currency_id')->where('is_primary', 1);
     }
 
+    public function countries()
+    {
+      return $this->hasMany('App\Models\ClientCountries','client_code','client_code')->select( 'client_code', 'country_id', 'is_primary')->where('is_primary', 0);
+    }
+
+
+    public function primary_country()
+    {
+      return $this->hasone('App\Models\ClientCountries','client_code','client_code')->select( 'client_code', 'country_id')->where('is_primary', 1);
+    }
+
 
     public function domain()
     {

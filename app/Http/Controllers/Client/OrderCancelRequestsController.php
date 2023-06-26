@@ -131,7 +131,7 @@ class OrderCancelRequestsController extends BaseController
                 }
             })
             ->addColumn('vendor', function ($req) {
-                return ($req->order_vendor->vendor) ? $req->order_vendor->vendor->name : '';
+                return isset($req->order_vendor->vendor) ? $req->order_vendor->vendor->name : '';
             })
             ->addColumn('reject_reason', function ($req) {
                 if (!empty($req->return_reason_id) && $req->reason->title == "Other") {

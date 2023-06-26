@@ -51,14 +51,19 @@ class OrderController extends Controller{
         $user = Auth::user();
         $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
         $search_value = $request->get('search');
+
+        $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
+
         $vendor_orders = OrderVendor::with(['orderDetail.paymentOption', 'user','vendor','payment','orderstatus.OrderStatusOption']);
         if (!empty($request->get('date_filter'))) {
 
             $date_date_filter = explode(' to ', $request->get('date_filter'));
             $from_date = $date_date_filter[0];
+
             $from_date = Carbon::parse($from_date, $timezone)->setTimezone('UTC');
             $to_date = (!empty($date_date_filter[1]))?$date_date_filter[1]:$date_date_filter[0];
             $to_date = Carbon::parse($to_date, $timezone)->setTimezone('UTC')->addDays(1);
+
             $vendor_orders = $vendor_orders->whereBetween('created_at',[$from_date, $to_date]);
         }
 
@@ -71,6 +76,13 @@ class OrderController extends Controller{
             $status_filter = $request->get('status_filter');
             $vendor_orders = $vendor_orders->where('order_status_option_id', $status_filter);
         }
+        
+        $vendor_orders = $vendor_orders->whereHas('orderDetail',function ($query){
+            $query->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
+            $query->orWhere(function ($q2) {
+                $q2->whereIn('payment_option_id', [1,38]);
+            });
+        }); 
 
         if ($user->is_superadmin == 0) {
             $vendor_orders = $vendor_orders->whereHas('vendor.permissionToUser', function ($query) use($user){

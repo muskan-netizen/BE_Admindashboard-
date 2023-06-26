@@ -250,12 +250,14 @@ $(document).ready(function () {
            $('#azul-cvv-element').val('');
         }
     });
-
-
-
-
-
-
+    
+    
+    $(document).on('keypress','#driver_unique_id', function(e){
+        if(e.which === 32){
+            return false;
+        }
+        $('#driver_request_error').hide();
+    });
 
     // please order dispatcher
     $(document).on("click", "#pickup_now, #pickup_now_bid, #pickup_later",function() {
@@ -263,6 +265,21 @@ $(document).ready(function () {
         if(bookingType == 'bid')
         {
             var payid = $('#payment-method-for-bid').val();
+        }else if(bookingType == 'driver_request'){
+            var unique_id = $('#driver_unique_id').val();
+            if(unique_id == '' || unique_id == undefined){
+                $('#driver_request_error').text('Driver Unique id is required');
+                return false;
+            }
+            var isBase64 = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/;
+            var decode = isBase64.test(unique_id);
+
+            if(!decode){
+                $('#driver_request_error').text('Invalid Unique Id');
+                $('#driver_request_error').show();
+                return false;
+            }
+            
         }else{
             var payid = $(this).attr('data-payment_method');
         }
@@ -313,7 +330,12 @@ $(document).ready(function () {
         var tasks = [];
         var tasks2 = [];
 
-        let schedule_datetimeset = $('#schedule_date').val();
+        if(bookingType == 'driver_request'){
+            var schedule_datetimeset = $('#schedule_date_for_driver').val();
+        }else{
+            var schedule_datetimeset = $('#schedule_date').val();
+        }
+
         if(schedule_datetimeset != undefined && schedule_datetimeset != 0){
             schedule_datetime = moment(schedule_datetimeset).format('YYYY-MM-DD HH:mm');
             var task_type = 'schedule';
@@ -382,7 +404,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: cab_booking_create_order,
-            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id, coupon_id: coupon_id, amount: amount, tollamount:tollamount, servicechargeamount:servicechargeamount, totalamount:totalamount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime, type:type, friendName:friendName, friendPhoneNumber:friendPhoneNumber, no_seats_for_pooling:no_seats_for_pooling, is_cab_pooling:is_cab_pooling,driver_id},
+            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id, coupon_id: coupon_id, amount: amount, tollamount:tollamount, servicechargeamount:servicechargeamount, totalamount:totalamount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime, type:type, friendName:friendName, friendPhoneNumber:friendPhoneNumber, no_seats_for_pooling:no_seats_for_pooling, is_cab_pooling:is_cab_pooling,driver_id,unique_id},
             success: function(response) {
                 $('#pickup_now').attr('disabled', false);
                 $('#pickup_later').attr('disabled', false);
@@ -468,7 +490,13 @@ $(document).ready(function () {
                         payWithPowerTrans(payment_option_id,response.data);
                     }
                     cabBookingPaymentOptions(payment_option_id, response.data);
-                }else{
+                }
+                else if(response.status == 201){
+                    $('#driver_request_error').text(response.message);
+                    $('#driver_request_error').show();
+                    return false;
+                }
+                else{
                     $('#show_error_of_booking').html(response.message);
                 }
             }
@@ -617,6 +645,9 @@ $(document).ready(function () {
       var input2 = document.getElementById('destination_location_'+random_id);
       if(input2){
         var autocomplete = new google.maps.places.Autocomplete(input2);
+        if(is_map_search_perticular_country){
+            autocomplete.setComponentRestrictions({'country': [is_map_search_perticular_country]});
+        }
         google.maps.event.addListener(autocomplete, 'place_changed', function () {
             var place2 = autocomplete.getPlace();
             $('#destination_location_latitude_'+random_id).val(place2.geometry.location.lat());
@@ -1174,9 +1205,13 @@ $(document).ready(function () {
                             // console.log('innset');
                         }
                         var isBid = $('#bid_radio').prop("checked");
+                        var isParticularDriver = $('#particular_driver_radio').prop("checked");
                         if(isBid){
                             let vehicle_bid_template = _.template($('#vehicle_bid_template').html());
                             $("#cab_detail_box").append(vehicle_bid_template(cabData)).show();
+                        }else if(isParticularDriver){
+                            let particular_driver_template = _.template($('#particular_driver_template').html());
+                            $("#cab_detail_box").append(particular_driver_template(cabData)).show();
                         }else{
                             let cab_detail_box_template = _.template($('#cab_detail_box_template').html());
                             $("#cab_detail_box").append(cab_detail_box_template(cabData)).show();
@@ -1675,6 +1710,10 @@ $(document).ready(function () {
       if(input){
         var autocomplete = new google.maps.places.Autocomplete(input);
         var autocomplete2 = new google.maps.places.Autocomplete(input2);
+        if(is_map_search_perticular_country){
+            autocomplete.setComponentRestrictions({'country': [is_map_search_perticular_country]});
+            autocomplete2.setComponentRestrictions({'country': [is_map_search_perticular_country]});
+        }
         google.maps.event.addListener(autocomplete, 'place_changed', function () {
             var place = autocomplete.getPlace();
             $('#pickup_location_latitude').val(place.geometry.location.lat());
@@ -2140,6 +2179,9 @@ function initMap() {
         });
         marker.setVisible(isEdit);
         const autocomplete = new google.maps.places.Autocomplete(input);
+        if(is_map_search_perticular_country){
+            autocomplete.setComponentRestrictions({'country': [is_map_search_perticular_country]});
+        }
         autocomplete.key = fieldKey;
         autocompletes.push({ input: input, map: map, marker: marker, autocomplete: autocomplete });
     }

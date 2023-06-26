@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\UserRegistrationDocuments;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart, VerificationOption, ShowSubscriptionPlanOnSignup};
+use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart, VerificationOption, ShowSubscriptionPlanOnSignup, ClientCountries};
 use DateTime;
 use DateInterval;
 use DateTimeZone;
@@ -93,6 +93,7 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->update_order_product_price = (!empty($getAdditionalPreference['update_order_product_price']) && $getAdditionalPreference['update_order_product_price'] == 1)? true : false;
             $homeData['profile']->preferences->is_one_push_book_enable    = (int) $getAdditionalPreference['is_one_push_book_enable'];
             $homeData['profile']->preferences->is_bid_ride_enable         = (int) $getAdditionalPreference['is_bid_ride_enable'];
+            $homeData['profile']->preferences->is_particular_driver       = (int) $getAdditionalPreference['is_particular_driver'];
             
             // on demand service pricing 
             $homeData['profile']->preferences->is_service_product_price_from_dispatch   = (int) $getAdditionalPreference['is_service_product_price_from_dispatch'];
@@ -159,6 +160,15 @@ class HomeController extends BaseController
             }
 
             $homeData['parent_category'] = Category::with('translation_one','type')->where('id', '>', '1')->where('is_core', 1)->where('parent_id', 1)->where('is_visible', 1)->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1)->pluck('id', 'slug')->toArray();
+
+            $homeData['countries'] = ClientCountries::with('country')->where('is_active', 1)->orderBy('is_primary', 'desc')->get()->map(function ($item) {
+                return [
+                    'country_id' => $item->country_id,
+                    'is_primary' => $item->is_primary,
+                    'country' => $item->country->only(['id', 'code', 'nicename', 'iso3'])
+                    + ['flag' => 'https://flagcdn.com/56x42/' . strtolower($item->country->code) . '.png'],
+                ];
+            });
 
             $homeData['languages'] = ClientLanguage::with('language')->select('language_id', 'is_primary')->where('is_active', 1)->orderBy('is_primary', 'desc')->get();
             $banners = Banner::select("id", "name", "description", "image", "image_mobile", "link", 'redirect_category_id', 'redirect_vendor_id')
@@ -290,6 +300,60 @@ class HomeController extends BaseController
                 }
             }
 
+            // Send Primary Language And Primary Currency By Lattitude and Longitude
+            $primary_currencies = new \stdClass();
+            $primary_language = new \stdClass();
+            $primary_country = new \stdClass();
+            if ($request->has(['latitude', 'longitude'])) {
+                $service_area = ServiceArea::select('service_areas.primary_language', 'service_areas.country_code', 'service_areas.primary_currency', 'languages.name as language_name', 'languages.sort_code', 'languages.nativeName', 'currencies.name as currency_name', 'currencies.id as country_id', 'currencies.symbol', 'currencies.iso_code', 'countries.name', 'countries.nicename', 'countries.iso3')
+                ->join('languages', 'service_areas.primary_language', '=', 'languages.id')
+                ->join('currencies', 'service_areas.primary_currency', '=', 'currencies.id')
+                ->join('countries', 'service_areas.country_code', '=', 'countries.code')
+                ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $request->latitude . " " . $request->longitude . ")'))")
+                ->first();
+            
+                if ($service_area) {
+                    $primary_language = (object) [
+                        'language_id' => $service_area->primary_language,
+                        'is_primary' => 0,
+                        'language' => (object) [
+                            'id' => $service_area->primary_language,
+                            'name' => $service_area->language_name,
+                            'sort_code' => $service_area->sort_code,
+                            'nativeName' => $service_area->nativeName,
+                            'country_code' => $service_area->country_code,
+                        ],
+                    ];
+            
+                    $primary_currencies = (object) [
+                        'currency_id' => $service_area->primary_currency,
+                        'is_primary' => 0,
+                        'currency' => (object) [
+                            'id' => $service_area->primary_currency,
+                            'name' => $service_area->currency_name,
+                            'iso_code' => $service_area->iso_code,
+                            'symbol' => $service_area->symbol,
+                        ],
+                    ];
+            
+                    $primary_country = (object) [
+                        'country_id' => $service_area->country_id,
+                        'is_primary' => 0,
+                        'country' => (object) [
+                            'id' => $service_area->country_id,
+                            'name' => $service_area->nicename,
+                            'iso3' => $service_area->iso3,
+                            'symbol' => $service_area->country_code,
+                            'flag' => 'https://flagcdn.com/56x42/' . strtolower($service_area->country_code) . '.png',
+                        ],
+                    ];
+                }
+            }
+
+            $homeData['primary_currencies'] = $primary_currencies;
+            $homeData['primary_language'] = $primary_language;
+            $homeData['primary_country'] = $primary_country;
+            
             if (isset($homeData['profile']->custom_domain) && !empty($homeData['profile']->custom_domain) && $homeData['profile']->custom_domain != $homeData['profile']->sub_domain)
                 $domain_link = "https://" . $homeData['profile']->custom_domain;
             else
@@ -352,7 +416,7 @@ class HomeController extends BaseController
             
             $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
             $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
-
+            
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
                 
                 $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
@@ -637,19 +701,21 @@ class HomeController extends BaseController
             $vends = [];
             $venderIds = [];
             $homeData = [];
+            $spotlight_products=[];
             $user = Auth::user();
             $langId = $user->language;
             $currency_id = $user->currency;
             $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
-            $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
-            $latitude = $request->latitude;
-            $longitude = $request->longitude;
+            $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'is_service_area_for_banners','subscription_mode')->first();
+            $latitude = !empty($request->latitude) ? ($request->latitude ?? $user->latitude ) :  $preferences->Default_latitude ;
+            $longitude =!empty($request->longitude) ? ($request->longitude ?? $user->longitude ) :  $preferences->Default_longitude ;
             $paginate = $request->has('limit') ? $request->limit : 12;
             //filter
             $venderFilterClose   = $request->has('close_vendor') && $request->close_vendor ? $request->close_vendor : null;
             $venderFilterOpen   = $request->has('open_vendor') && $request->open_vendor ? $request->open_vendor : null;
             $venderFilterbest   = $request->has('best_vendor') && $request->best_vendor ? $request->best_vendor : null;
             $venderFilternear   = $request->has('near_me') && $request->near_me ? $request->near_me : null;
+            $spotlight= $request->has('is_spotlight') && $request->is_spotlight ? $request->is_spotlight : null;
           
 
             $type = $request->has('type') ? $request->type : 'delivery';
@@ -657,19 +723,19 @@ class HomeController extends BaseController
             if (empty($type))
             $type = 'delivery';
 
-            $vendor_ids = [];
-            $vendor_categories = VendorCategory::where('category_id', $cid)->where('status', 1)->get();
-            foreach ($vendor_categories as $vendor_category) {
-                if (!in_array($vendor_category->vendor_id, $vendor_ids)) {
-                    $vendor_ids[] = $vendor_category->vendor_id;
-                }
-            }
+            $categoryTypes = getServiceTypesCategory($type);
 
-            $vendorData = Vendor::select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
+            $vendorData = Vendor::byVendorSubscriptionRule($preferences)->whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+                $q->whereIn('type_id',$categoryTypes);
+            })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
+
+            $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
+
+            $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
+            $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
 
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
-                $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+                
                 $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
                 //3961 for miles and 6371 for kilometers
                 $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
@@ -677,7 +743,7 @@ class HomeController extends BaseController
                         cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
                         sin( radians(' . $latitude . ') ) *
                         sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->withAvg('product', 'averageRating');
-                $vendorData = $vendorData->whereIn('id', $vendor_ids);
+                $vendorData = $vendorData->whereIn('id', $ses_vendors);
                 //if($venderFilternear && ($venderFilternear == 1) ){
                     //->orderBy('vendorToUserDistance', 'ASC')
                     $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
@@ -686,11 +752,11 @@ class HomeController extends BaseController
 
             //filter on ratings
             if($venderFilterbest && ($venderFilterbest == 1) ){
-                $vendorData =   $vendorData->orderBy('product_avg_average_rating', 'desc');
+                $vendorData = $vendorData->orderBy('product_avg_average_rating', 'desc');
             }
+
             $allVendorData = clone $vendorData;
-            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->take(5)->get();
-            $venderIds = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
+            $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1);
 
             $timezone = $user->timezone ?? 'Asia/Kolkata';
             $start_date = new DateTime("now", new  DateTimeZone($timezone) );
@@ -699,6 +765,9 @@ class HomeController extends BaseController
 
 
             foreach ($vendorData as $vendor) {
+                $vendor->vendorrating = $this->vendorRatings($vendor->products);
+                $vendor->vendorNoOfRatings = $this->vendorNoOfRatings($vendor->products);
+                $vendor->promocodes = $this->getVendorWisePromoCodes($vendor->id);
                 unset($vendor->products);
 
                 $vendor->is_vendor_closed = 0;
@@ -763,7 +832,6 @@ class HomeController extends BaseController
                 if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
                     $vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor, $preferences, $type);
                 }
-
             }
             //filter vendor
             if($venderFilterClose && ($venderFilterClose == 1) ){
@@ -772,6 +840,7 @@ class HomeController extends BaseController
             if($venderFilterOpen && ($venderFilterOpen == 1) ){
                 $vendorData =   $vendorData->where('is_vendor_closed',0)->values();
             }
+            $vendorData =   $vendorData->take(5);
 
             $cid = $request->category_id;
             $categories = Category::with([
@@ -788,12 +857,85 @@ class HomeController extends BaseController
                 }
             ])
             ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products','sub_cat_banners')
-            ->where('id', $cid)->first();//->toArray();
+            ->where('id', $cid)->first();
 
-            // print_r($categories);die;
+            $childCatIds = $categories->childs->pluck('id');
+            $brands = Brand::with(['bc.categoryDetail', 'bc.categoryDetail.translation' =>  function ($q) use ($langId) {
+                $q->select('category_translations.name', 'category_translations.category_id', 'category_translations.language_id')->where('category_translations.language_id', $langId);
+            }, 'translation' => function ($q) use ($langId) {
+                $q->select('title', 'brand_id', 'language_id')->where('language_id', $langId);
+            }])
+                ->whereHas('bc.categoryDetail', function ($q) use ($childCatIds) {
+                    $q->where('categories.status', 1)->whereIn('categories.id', $childCatIds);
+                })
+                ->select('id', 'image', 'image_banner')->where('status', 1)->orderBy('position', 'asc')->get();
+
+            $on_sale_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, '', $type,$latitude,$longitude,$preferences, $childCatIds);
+            $new_product_details    = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_new', $type,$latitude,$longitude,$preferences, $childCatIds);
+            $feature_product_details = $this->vendorProducts($vends, $langId, $clientCurrency, 'is_featured', $type,$latitude,$longitude,$preferences, $childCatIds);
+
+            // Start Mobile Banners
+            $mobile_banners = MobileBanner::select("id", "name", "description", "image", "link", 'redirect_category_id', 'redirect_vendor_id', 'link_url')
+            ->where('status', 1)->where('validity_on', 1)
+            ->with(['category:id,type_id', 'category.type', 'vendor'])
+            ->where(function ($q) {
+                $q->whereNull('start_date_time')->orWhere(function ($q2) {
+                    $q2->whereDate('start_date_time', '<=', Carbon::now())
+                        ->whereDate('end_date_time', '>=', Carbon::now());
+                });
+            })
+            ->whereIn('redirect_category_id', $childCatIds);
+
+            if(isset($preferences->is_service_area_for_banners) && ($preferences->is_service_area_for_banners == 1) && ($preferences->is_hyperlocal == 1)){
+                if(!empty($latitude) && !empty($longitude)){
+                    $mobile_banners = $mobile_banners->whereHas('geos.serviceArea', function($query) use ($latitude, $longitude) {
+                        $query->select('id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
+                    });
+                }
+            }
+            $mobile_banners = $mobile_banners->orderBy('sorting', 'asc')->get();
+            // dd($mobile_banners);
+            if ($mobile_banners) {
+                foreach ($mobile_banners as $key => $value) {
+                    $bannerLink = '';
+                    $is_show_category = null;
+                    $vendor_name = null;
+                    if (!empty($value->link) && $value->link == 'category') {
+                        $bannerLink = $value->redirect_category_id;
+                        if ($bannerLink) {
+                            $categoryData = Category::where('status', 1)->where('id', $value->redirect_category_id)->with('translation_one')->first();
+                            $value->redirect_name = (($categoryData) && ($categoryData->translation_one)) ? $categoryData->translation_one->name : '';
+                        }
+                    }
+                    if (!empty($value->link) && $value->link == 'vendor') {
+                        $bannerLink = $value->redirect_vendor_id;
+                        if ($bannerLink) {
+                            $vendorDataSingle = Vendor::select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude')->where('status', 1)->where('id', $value->redirect_vendor_id)->first();
+                            if ($vendorDataSingle) {
+                                $vendorDataSingle->is_show_category = ($vendorDataSingle->vendor_templete_id == 2 || $vendorDataSingle->vendor_templete_id == 4) ? 1 : 0;
+                            }
+                            $is_show_category = (($vendorDataSingle) && ($vendorDataSingle->vendor_templete_id == 1)) ? 0 : 1;
+                            $value->is_show_category = $is_show_category;
+                            $value->redirect_name = $vendorDataSingle->name ?? '';
+                            $value->vendor = $vendorDataSingle;
+                        }
+                    }
+                    $value->redirect_to = ucwords($value->link);
+                    $value->redirect_id = $bannerLink;
+                    unset($value->redirect_category_id);
+                    unset($value->redirect_vendor_id);
+                }
+            }
+
+            $homeData['brands'] = $brands;
             $homeData['vendors'] = $vendorData;
+
+            $homeData['on_sale_products'] = $on_sale_product_details;
+            $homeData['new_products'] = $new_product_details;
+            $homeData['featured_products'] = $feature_product_details;
+
             $homeData['categories'] = $categories->childs;
-            $homeData['mobile_banners'] = $categories->sub_cat_banners;
+            $homeData['mobile_banners'] = $mobile_banners;
             $homeData['reqData'] = $request->all();
 
             $user_vendor_count = UserVendor::where('user_id', $user->id)->count();
@@ -902,7 +1044,7 @@ class HomeController extends BaseController
                 foreach ($value->variant as $k => $v) {
                     $value->variant[$k]->multiplier = $currency ? $currency->doller_compare : 1;
                 }
-                if($value->variant->first()->compare_at_price>0){
+                if(isset($value->variant) && $value->variant->first()->compare_at_price > 0){
                     $value->offers = ($value->variant->first()->compare_at_price - $value->variant->first()->price) / $value->variant->first()->compare_at_price * 100;
                 }else{
                     $value->offers = 0;
@@ -962,7 +1104,7 @@ class HomeController extends BaseController
             $curId = Auth::user()->language;
             $limit = $request->has('limit') ? $request->limit : 10;
             $page = $request->has('page') ? $request->page : 1;
-            $action = $request->has('type') && $request->type ? $request->type : null;
+            $action = $request->has('type') && $request->type ? $request->type : 'delivery';
            // $types = ['delivery', "dine_in", "takeaway"];
             $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'slots_with_service_area','subscription_mode')->first();
             $latitude = $request->latitude;
@@ -1484,7 +1626,7 @@ class HomeController extends BaseController
             ->with(['category:id,type_id', 'category.type', 'vendor'])
             ->where(function ($q) {
                 $q->whereNull('start_date_time')->orWhere(function ($q2) {
-                    $q2->whereDate('start_date_time', '<=', Carbon::now())
+                    $q2->whereDate('start_date_time', 'app/Http/Controllers/Api/v1/OrderController.php=', Carbon::now())
                         ->whereDate('end_date_time', '>=', Carbon::now());
                 });
             });

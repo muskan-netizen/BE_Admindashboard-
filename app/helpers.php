@@ -72,6 +72,24 @@ if (!function_exists('getAdditionalPreference')) {
     }
 }
 
+if (!function_exists('getMapConfigrationPreference')) {
+    /**
+     * getMapConfigrationPreference
+     *
+     * @param  mixed $key
+     * @return void
+     */
+
+    function getMapConfigrationPreference(){
+        $iso3 = '';
+        $mapConfigration =  getAdditionalPreference(['is_map_search_perticular_country']);
+        if(isset($mapConfigration) && $mapConfigration['is_map_search_perticular_country'] == 1){
+            $iso3 = ClientData::first()->country->iso3 ?? '';
+        }
+        return $iso3;
+    }
+}
+
 // if (!function_exists('getAdditionalImageAttribute')) {
 //     function getAdditionalImageAttribute($value)
 //     {
@@ -187,6 +205,36 @@ if (!function_exists('sendFcmCurlRequest')) {
             return $result;
         } else {
             return false;
+        }
+    }
+}
+
+if (! function_exists('sendNotificationToCustomer')) {
+    function sendNotificationToCustomer($devices,$order_number='111'){
+        \Log::info('devices--'.$devices);
+        $client_preferences = ClientPreference::select('fcm_server_key','favicon')->first();
+        if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
+            $data = [
+                "registration_ids" => $devices,
+                "notification" => [
+                    'title'     => 'Order Received',
+                    'body'      => 'Your order no. #'.$order_number.' has been received!',
+                    'sound' => "default",
+                    "icon"  => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                    "android_channel_id" => "default-channel-id"
+                ],
+                "data" => [
+                    'title'     => 'Order Received',
+                    'body'      => 'Your order no. #'.$order_number.' has been received!',
+                    'data'  => 'received_order',
+                    'type'  => ""
+                ],
+                "priority" => "high"
+            ];
+                    
+            $response = sendFcmCurlRequest($data,$client_preferences->fcm_server_key);
+            $result = json_decode($response); 
+            return $result;
         }
     }
 }

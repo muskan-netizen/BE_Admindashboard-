@@ -59,7 +59,6 @@ trait ClientPreferenceManager{
     $validated_keys = $request->only($this->client_preference_fillable_key);
     $client = Client::first();
 
-
     foreach($validated_keys as $key => $value){
       if ($key == 'saller_platform_logo') {
         if ($request->hasFile('saller_platform_logo')) { /* upload logo file */
@@ -99,4 +98,21 @@ trait ClientPreferenceManager{
   public function uploadFile($file){
       return Storage::disk('s3')->put('/vendor', $file, 'public');
   }
+
+  function getAdditionalPreference($key=array()){
+    setUserCode();
+    $return = [];
+    $dbreturn= [];
+    if(sizeof($key)){
+        $result = ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
+        $return = array_column($result->toArray(), 'key_value', 'key_name');
+        if (sizeof($result)) {
+            $dbreturn = array_column($result->toArray(), 'key_value', 'key_name');
+        }
+        $emp = array_diff($key, array_keys($dbreturn));
+        $emptyArr = array_fill_keys($emp, 0);
+        $return = array_merge($emptyArr, $dbreturn);
+    }
+    return $return;
+}
 }

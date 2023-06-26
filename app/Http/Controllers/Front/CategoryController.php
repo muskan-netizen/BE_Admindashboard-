@@ -39,11 +39,11 @@ class CategoryController extends FrontController{
         'type'  => function($q){
             $q->select('id', 'title as redirect_to' ,'service_type' );
         },
-        'childs.translation'  => function($q) use($langId){
+        'childs.translationLatest'  => function($q) use($langId){
             $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
             ->where('category_translations.language_id', $langId);
         },
-        'translation' => function($q) use($langId){
+        'translationLatest' => function($q) use($langId){
             $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
             ->where('category_translations.language_id', $langId);
         },
@@ -51,9 +51,9 @@ class CategoryController extends FrontController{
         ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products', 'parent_id', 'sub_cat_banners')
         ->where('slug', $slug)->firstOrFail();
        
-        $category->translation_name = ($category->translation->first()) ? $category->translation->first()->name : $category->slug;
-        foreach($category->childs as $key => $child){
-            $child->translation_name = ($child->translation->first()) ? $child->translation->first()->name : $child->slug;
+        $category->translation_name = ($category->translationLatest) ? $category->translationLatest->name : $category->slug;
+        foreach($category->childs as $key => $child){   
+            $child->translation_name = ($child->translationLatest) ? $child->translationLatest->name : $child->slug;
         }
         $service_type = $category->type->service_type;
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && (isset($category->type_id)) && !in_array($category->type_id,[4,5]) ){
@@ -145,7 +145,7 @@ class CategoryController extends FrontController{
         $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';
         // $newProducts =  $this->getNewProducts($vendorIds, $langId, $curId);
         $productAttributes = '';        
-        $getAdditionalPreference = getAdditionalPreference(['is_attribute','is_postpay_enable','is_cab_pooling','is_bid_ride_enable']);
+        $getAdditionalPreference = getAdditionalPreference(['is_attribute','is_postpay_enable','is_cab_pooling','is_bid_ride_enable','is_particular_driver']);
         if( checkTableExists('product_attributes') ) {
           
             
@@ -170,7 +170,7 @@ class CategoryController extends FrontController{
                 $wallet_balance = Auth::user()->balanceFloat * ($clientCurrency->doller_compare ?? 1);
                 $riders = Rider::where('user_id',Auth::user()->id)->orderBy('id','DESC')->get();
 
-                return view('frontend.booking.index')->with(['maxPrice'=>$maxPrice,'clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders, 'is_cab_pooling' => $getAdditionalPreference['is_cab_pooling'], 'is_bid_ride_enable' => $getAdditionalPreference['is_bid_ride_enable'],'is_postpay_enable' => $getAdditionalPreference['is_postpay_enable']]);
+                return view('frontend.booking.index')->with(['maxPrice'=>$maxPrice,'clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders, 'is_cab_pooling' => $getAdditionalPreference['is_cab_pooling'], 'is_bid_ride_enable' => $getAdditionalPreference['is_bid_ride_enable'],'is_postpay_enable' => $getAdditionalPreference['is_postpay_enable'], 'is_particular_driver' => $getAdditionalPreference['is_particular_driver']]);
             }
         }elseif($page == 'on demand service' || $page == 'appointment'){
          

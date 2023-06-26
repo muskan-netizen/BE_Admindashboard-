@@ -1161,6 +1161,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_khalti_url = "{{route('payment.khaltiVerification')}}";
     var payment_khalti_complete_purchase = "{{route('payment.khaltiCompletePurchase')}}";
     var update_qty_url = "{{ url('product/updateCartQuantity') }}";
+    var update_cart_product_status = "{{ url('product/updateCartProductStatus') }}";
 	var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
 
     var promocode_list_url = "{{ route('verify.promocode.list') }}";
