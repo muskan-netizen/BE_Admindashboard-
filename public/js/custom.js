@@ -1404,7 +1404,7 @@ $(document).ready(function () {
         } else if ((path.indexOf("wallet") !== -1) || ((typeof cabbookingwallet !== 'undefined') && (cabbookingwallet == 1))) {
             payment_form = 'wallet';
             total_amount = walletElement.val();
-        } else if (path.indexOf("subscription") !== -1) {
+        } else if (path.indexOf("subscription") !== -1 || path.indexOf("mealSubscription") !== -1) {
             payment_form = 'subscription';
             total_amount = subscriptionElement.val();
             // paymentAjaxData = $("#subscription_payment_form").serializeArray();
