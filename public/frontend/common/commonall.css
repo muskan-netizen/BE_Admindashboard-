@@ -1345,7 +1345,13 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
 .al_body_template_six .vendor-design_new .vender-icon .vendor-stories{
     background-color: transparent;
 }
-
+.dark .daterangepicker .calendar-time select {
+    background: #f5f5f5;
+    color: #999;
+}
+.dark .daterangepicker .calendar-time select option {
+    background: #fff;
+}  
 
 
 
@@ -1483,6 +1489,10 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
     .vendor-design_new  .vendor-info li  svg g {
         fill: #000!important;
         stroke: #000!important;
+    }
+    .dark .vendor-design_new  .vendor-info li  svg g {
+        fill: #fff!important;
+        stroke: #fff!important;
     }
     .al_body_template_one .vendor-description .profile_address h3,
     .al_body_template_one .vendor-description .vendor_icon-design h4, .vendor-info li {
