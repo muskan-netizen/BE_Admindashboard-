@@ -215,7 +215,7 @@
 
         body.al_body_template_nine .alPostBoxOuter ul li a.active {
             background: #efe7e7;
-            border: 1px solid #ccc;
+            border: unset;  
             position: relative;
         }
 
@@ -405,6 +405,11 @@ select#category_filter {
     color: #000;
     padding-right: 10px;
 }
+
+body.dark .fillter_div:after{
+    color: #fff;
+}
+
 @media (max-width:1100px){
     .alPostBoxOuter ul li {
     list-style: none;
@@ -418,6 +423,30 @@ select#category_filter {
     margin-bottom: 31px;
     width: 33.33%;
 }
+}
+@media (max-width:576px){
+    .cate-item img {
+    width: 100%;
+    height: 100%;
+    padding: 3px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin: 0 auto 0px;
+    max-height: 100px;
+    min-height: 100px;
+}
+.alPostBoxOuter ul li {
+    width: 50%;
+}
+.alCategoryItemsHead {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+.start_form_register .alPostBoxOuter h6{
+    margin-bottom: 10px!important;
+}
+
 }
     </style>
 @endsection
