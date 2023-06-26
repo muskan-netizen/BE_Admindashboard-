@@ -31,6 +31,7 @@ class ClientMigrateDataBase extends Command
      * @return void
      */
     public function __construct(){
+        echo "Connected sucessfully to database ".DB::connection()->getDatabaseName().".";
         parent::__construct();
     }
 
@@ -40,7 +41,6 @@ class ClientMigrateDataBase extends Command
      * @return int
      */
     public function handle(){
-        echo "Connected sucessfully to database ".DB::connection()->getDatabaseName().".";
         $clients = Client::get();
         foreach ($clients as $key => $client) {
             $database_name = 'royo_' . $client->database_name;
