@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BidController;
 use App\Http\Controllers\Front\CartController;
+use Illuminate\Support\Facades\Route;
 
 Route::post('ajaxGetScheduleDateDetails', 'Front\CartController@ajaxGetScheduleDateDetails')->name('ajaxGetScheduleDateDetails');
 Route::get('confirmation', 'Front\UserhomeController@confirmation')->name('confirmation');
@@ -177,6 +178,10 @@ Route::group(['middleware' => ['domain']], function () {
     // obo-pay
     Route::post('before-payment/obo','Front\OboPaymentController@beforePayment')->name('obo.pay');
     Route::get('after-payment/obo','Front\OboPaymentController@afterPayment')->name('after.obo.payment');
+
+    Route::get('livee-pay','LiveePaymentController@beforePayment')->name('livee.pay');
+    Route::get('/livee','LiveePaymentController@index');
+    Route::get('livee/success','LiveePaymentController@afterPayment')->name('livee.payment');
 
 	Route::post('checkVendorPincode','Front\PincodeController@checkVendorPincode')->name('pincode.checkVendorPincode');
 	Route::get('getShippingMethod','Front\PincodeController@getShippingMethod')->name('pincode.getShippingMethod');
@@ -373,7 +378,7 @@ Route::group(['middleware' => ['domain']], function () {
     // Mtn Momo payment gateway
 
 	Route::any('payment/webhook/mtn', 'Front\MtnMomoController@mtnCallback')->name('payment.webhook.mtn');
-	
+
 	Route::group(['prefix' => 'mtn'], function () {
 		Route::post('payment', 'Front\MtnMomoController@createToken')->name('mtn.momo.createToken');
 		Route::get('response/{id?}', 'Front\MtnMomoController@getResponse')->name('payment.response.mtn');

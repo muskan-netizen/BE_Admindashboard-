@@ -4271,33 +4271,40 @@ $(document).ready(function () {
 
     // //////////   LIVEE PAYMENT GATEWAY /////////////
 
-    Window.payWithLivee = function payWithLivee(address_id = '', payment_option_id = '', order = '') {
-        let total_amount = 0;
+    window.payWithLivee = function payWithLivee(address_id = '', payment_option_id = '', order = '') {
+        let total_amount ;
+        console.log(total_amount);
         let orderNumber = order.order_number ?? "";
-        let tipElement = $("#cart_tip_amount");
+        // let tipElement = $("#cart_tip_amount");
         let cartElement = $("input[name='cart_total_payable_amount']");
         let walletElement = $("input[name='wallet_amount']");
-        let subscriptionElement = $("input[name='subscription_amount']");
-        let subscription_id = $("input[name='subscription_id']");
-        let cabElement = $("#pickup_now");
+        // let subscriptionElement = $("input[name='subscription_amount']");
+        // let subscription_id = $("input[name='subscription_id']");
+        // let cabElement = $("#pickup_now");
         let ajaxData = {};
         if (path.indexOf("cart") !== -1) {
             payment_from = 'cart';
             total_amount = cartElement.val();
         }
-
+        else if (path.indexOf("wallet") !== -1) {
+            total_amount = walletElement.val();
+            payment_from = 'wallet';
+            console.log(total_amount);
+        }
         ajaxData.amount = total_amount;
         ajaxData.cancelUrl = path;
         ajaxData.order_number = orderNumber;
-        ajaxData.payment_from = payment_from;
+        // ajaxData.payment_from = payment_from;
 
         $.ajax({
-            type: "POST",
+            type: "GET",
             dataType: 'json',
-            url: payment_obo_url,
+            url: livee_payment_url,
             data: ajaxData,
             success: function (response) {
+                // console.log(res);
                 if (response.status == "Success") {
+
                     window.location.href = response.data;
                 } else {
                     if (cartElement.length > 0) {

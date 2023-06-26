@@ -1,58 +1,68 @@
 <?php
 
-namespace App\Http\Controllers\Front;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Http\Traits\{ApiResponser, OrderTrait};
-use App\Models\{ClientCurrency, Order, Payment, PaymentOption, User};
+// use Core\Authentication\Auth;
+
+use Algolia\AlgoliaSearch\Http\GuzzleHttpClient;
+use App\Http\Traits\ApiResponser;
+use App\Models\ClientCurrency;
+use App\Models\Order;
+use App\Models\Payment;
+use App\Models\PaymentOption;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\{Auth, Http};
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use OrderTrait;
+use Predis\Protocol\Text\Handler\ErrorResponse;
 
-class OboPaymentController extends Controller
+class LiveePaymentController extends Controller
 {
-    use ApiResponser, OrderTrait;
-
+    use ApiResponser;
     public $currency;
-    private $obo_business_name;
-    private $obo_client_id;
-    private $obo_key_id;
-    private $obo_market_place_id;
+    private $livee_business_name;
+    private $livee_client_id;
+    private $livee_key_id;
+    private $livee_market_place_id;
     private $testMode;
-    const TEST_MODE_TOKEN_API = 'https://www.obo-pay.co.rw/test/payments/v1/token';
+    const trade_key = 'sa4b4km6c0l9eq7y6od88cnjp62efvr6ix59u5taz2ghw0193';
     const TOKEN_API           = "";
-    const TEST_MODE_URL_API   = "https://www.obo-pay.co.rw/test/payments/v1/payment";
+    const resource_key   = "bj65bih1kzo740snwbru2q9px3v5503fetfdaaegmc64yle58";
     const URL_API             = "";
 
     public function __construct()
     {
-        $payOption = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'obo')->where('status', 1)->first();
+        $payOption = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'livee')->where('status', 1)->first();
+
         $credentials = json_decode($payOption->credentials);
-        $this->obo_business_name   = $credentials->obo_business_name;
-        $this->obo_client_id       = $credentials->obo_client_id;
-        $this->obo_key_id          = $credentials->obo_key_id;
-        $this->obo_market_place_id = $credentials->obo_market_place_id;
-        $this->testMode            = $payOption->test_mode;
+        // $this->livee_business_name   = $credentials->livee_business_name;
+        // $this->livee_client_id       = $credentials->livee_client_id;
+        // $this->livee_key_id          = $credentials->livee_key_id;
+        // $this->livee_market_place_id = $credentials->livee_market_place_id;
+        // $this->testMode            = $payOption->test_mode;
 
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
     }
 
 
-
     public function beforePayment(Request $request, $domain = '', $app = '')
     {
         try {
+            // $client=new GuzzleHttpClient();
             $tokenData =  $this->token();
-            if (isset($tokenData['httpStatus']) &&  $tokenData['httpStatus'] == "OK") {
-                $token = $tokenData['token'];
-                if (isset($token)) {
+            // dd($request->all());
+            if (isset($tokenData)) {
+                // dd("here");
                     // user details
                     $user = auth()->user();
                     $userEmail       = $user->email;
                     $userPhone       = $user->dial_code . $user->phone_number;
                     $userFirstName   = strtok($user->name, " ");
                     $userLastName    = substr(strstr($user->name, " "), 1);
-
+                    $urlParams='';
+                    $apiUrl = "https://www.livees.net/Checkout/api4";
                     $orderNumber = $this->orderNumber($request);
                     if ($request->payment_from == 'cart') {
                         $urlParams   = "transactionid=$orderNumber&paymentfrom=cart&success=true";
@@ -65,32 +75,64 @@ class OboPaymentController extends Controller
                     } elseif ($request->payment_from == 'tip') {
                         $urlParams   = "transactionid=$orderNumber&order_number=$request->order_number&paymentfrom=tip&amount=$request->amount&success=true";
                     }
-                    if ($this->testMode == 1) {
-                        $apiUrl = SELF::TEST_MODE_URL_API;
-                    } else {
-                        $apiUrl = SELF::URL_API;
-                    }
+
                     $header = [
-                        'Content-Type' => 'application/json',
-                        'token' => $token
+                        'Content-Type' => 'x-www-form-urlencoded ',
                     ];
-                    $input = json_encode([
-                        "amount"        => $request->amount,
-                        "currency"      => $this->currency,
-                        "email"         => $userEmail,
-                        "phone"         => $userPhone,
-                        "reference_id"  => $orderNumber,
-                        "first_name"    => $userFirstName,
-                        "last_name"     => $userLastName,
-                        "merchant"      => $this->obo_business_name,
-                        "cancel_url"    => url(($request->cancelUrl) ?? ('after-payment/obo' . '?success=false')),
-                        "return_url"    => url('after-payment/obo' . '?' . $urlParams),
-                        "custom_pg_id"  => $this->obo_market_place_id,
-                    ], JSON_UNESCAPED_SLASHES);
-                    $responce = Http::withBody($input, 'application/json')->withHeaders($header)->post($apiUrl);
-                    $responceData = json_decode($responce->body(), true);
-                    if (isset($responceData['status']) && $responceData['status'] ===  "OK") {
-                        $redirectUrl =  $responceData['data']['url'];
+                    // $input = [
+                    //     "amt2"        => $request->amount,
+                    //     "currency"      => $this->currency,
+                    //     "email"         => $userEmail,
+                    //     "phone"         => $userPhone,
+                    //     "reference_id"  => $orderNumber,
+                    //     "name"    => $userFirstName,
+                    //     "lastname"     => $userLastName,
+                    //     "_"     => self::trade_key,
+                    //     "__"  => self::resource_key,
+                    //     "cancel_url"    => url(($request->cancelUrl) ?? ('after-payment/livee' . '?success=false')),
+                    //     "postURL"    => url('after-payment/livee' . '?' . $urlParams),
+                    //     "invno"=>"101",
+                    //     "pais"=>'BO'
+
+                    // ];
+
+                    // dd($input);
+                    // $response = Http::withBody($input, 'x-www-form-urlencoded ')->withHeaders($header)->post($apiUrl);
+
+                    //  dd($apiUrl);
+
+                    $response = Http::asForm()->get($apiUrl, [
+                    //    "amt2"=>'200',
+                       "currency"      => $this->currency,
+                       "amt2"        => $request->amount,
+                           "currency"      => $this->currency,
+                           "email"         => $userEmail,
+                           "phone"         => $userPhone,
+                           "reference_id"  => $orderNumber,
+                           "name"    => $userFirstName,
+                           "lastname"     => $userLastName,
+                           "_"     => self::trade_key,
+                           "__"  => self::resource_key,
+                           "cancel_url"    => url(($request->cancelUrl) ?? ('after-payment/livee' . '?success=false')),
+                           "postURL"    => url('after-payment/livee' . '?' . $urlParams),
+                           "invno"=>"101",
+                           "pais"=>'BO'
+                    ]);
+
+                    // if ($response->status() >= 300 && $response->status() <= 399) {
+                    //     $redirectUrl = $response->headers()['Location'][0];
+
+                    //     // Send a new request to the redirect URL with the form data
+                    //     $response = Http::asForm()->post($redirectUrl, [
+                    //         "amt2" => '200',
+                    //         "currency" => $this->currency,
+                    //     ]);
+                    // }
+                    // dd($input);
+                    $responseData = $response;
+                    // dd($response);
+                    if (isset($responseData)) {
+                        $redirectUrl = $apiUrl;
                         return response()->json([
                             'status' => 'Success',
                             'data'   => $redirectUrl
@@ -98,15 +140,86 @@ class OboPaymentController extends Controller
                     } else {
                         return $this->errorResponse("Url Is Not Generated", 400);
                     }
-                }
+
             } else {
                 return $this->errorResponse('Token Error', 400);
             }
         } catch (\Exception $e) {
             return $e->getMessage();
         }
+        // $user = auth()->user();
+        // $curl = curl_init();
+        // $userEmail       = $user->email;
+        // $userPhone       = $user->dial_code . $user->phone_number;
+        // $userFirstName   = strtok($user->name, " ");
+        // $userLastName    = substr(strstr($user->name, " "), 1);
+        // $urlParams = '';
+        // $apiUrl = "https://www.livees.net/Checkout/api4";
+        // $orderNumber = $this->orderNumber($request);
+        // $input = [
+        //     "amt2"        => $request->amount,
+        //     "currency"      => $this->currency,
+        //     "email"         => $userEmail,
+        //     "phone"         => $userPhone,
+        //     "reference_id"  => $orderNumber,
+        //     "name"    => $userFirstName,
+        //     "lastname"     => $userLastName,
+        //     "_"     => self::trade_key,
+        //     "__"  => self::resource_key,
+        //     "cancel_url"    => url(($request->cancelUrl) ?? ('after-payment/livee' . '?success=false')),
+        //     "postURL"    => url('after-payment/livee' . '?' . $urlParams),
+        //     "invno" => "101",
+        //     "pais" => 'BO'
+
+        // ];
+        // curl_setopt_array($curl, array(
+        //     CURLOPT_URL => "https://www.livees.net/Checkout/api4", // your preferred url
+        //     CURLOPT_RETURNTRANSFER => true,
+        //     CURLOPT_ENCODING => "",
+        //     CURLOPT_MAXREDIRS => 10,
+        //     CURLOPT_TIMEOUT => 30000,
+        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        //     CURLOPT_CUSTOMREQUEST => "POST",
+        //     CURLOPT_POSTFIELDS => json_encode($input),
+        //     CURLOPT_HTTPHEADER => array(
+
+
+        //         "content-type: application/x-www-form-urlencoded",
+        //     ),
+        // ));
+
+        // $response = curl_exec($curl);
+        // $err = curl_error($curl);
+
+        // curl_close($curl);
+
+
+        // if ($err) {
+        //     echo "cURL Error #:" . $err;
+        // } else {
+        //     print_r(json_decode($response));
+        // }
     }
 
+    public function token()
+    {
+        try {
+            $apiUrl = "https://www.livees.net/Checkout/api4";
+            $input = json_encode([
+                "trade_key" => $this::trade_key,
+                "resource_key" => $this::resource_key
+            ]);
+
+            $header = [
+                'Content-Type' => 'application/json'
+            ];
+            $response = Http::withBody($input, 'application/json')->withHeaders($header)->post($apiUrl);
+
+            return $response;
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
     public function afterPayment(Request $request)
     {
         try {
@@ -115,7 +228,7 @@ class OboPaymentController extends Controller
                 $payment = Payment::where('transaction_id', $transactionId)->first();
                 if ($payment) {
                     $payment->viva_order_id = $transactionId;
-                    $payment->payment_option_id = 56;
+                    $payment->payment_option_id = 59;
                     $payment->save();
                 }
                 if ($request->paymentfrom == 'cart') {
@@ -128,7 +241,7 @@ class OboPaymentController extends Controller
                             return redirect()->route('order.success', $order->id);
                         } else {
 
-                            $returnUrl = route('payment.gateway.return.response') . '/?gateway=obo' . '&status=200&order=' . $order->order_number;
+                            $returnUrl = route('payment.gateway.return.response') . '/?gateway=livee' . '&status=200&order=' . $order->order_number;
                             return redirect($returnUrl);
                         }
                     }
@@ -136,7 +249,7 @@ class OboPaymentController extends Controller
                     if ($payment->payment_from == 'app') {
                         $user = User::findOrFail($payment->user_id);
                         Auth::login($user);
-                        $returnUrl = route('payment.gateway.return.response') . '/?gateway=obo' . '&status=200&transaction_id=' . $payment->transaction_id . '&action=wallet';
+                        $returnUrl = route('payment.gateway.return.response') . '/?gateway=livee' . '&status=200&transaction_id=' . $payment->transaction_id . '&action=wallet';
                     } else {
                         $user      = auth()->user();
                         $returnUrl = route('user.wallet');
@@ -146,7 +259,7 @@ class OboPaymentController extends Controller
                     return redirect($returnUrl);
                 } elseif (isset($request->subscription_id)) {
                     $data['transaction_id'] = $payment->transaction_id;
-                    $data['payment_option_id'] = 56;
+                    $data['payment_option_id'] = 59;
                     $data['subsid'] = $request->subscription_id;
                     $data['subscription_id'] = $request->subscription_id;
                     $data['amount'] = $request->amount;
@@ -156,7 +269,7 @@ class OboPaymentController extends Controller
                     if ($payment->payment_from == 'web') {
                         return redirect()->route('user.subscription.plans');
                     } else {
-                        $returnUrl = route('payment.gateway.return.response') . '/?gateway=obo' . '&status=200&transaction_id=' . $payment->transaction_id . '&action=subscription';
+                        $returnUrl = route('payment.gateway.return.response') . '/?gateway=livee' . '&status=200&transaction_id=' . $payment->transaction_id . '&action=subscription';
                         return redirect($returnUrl);
                     }
                 } elseif ($request->paymentfrom == 'pickup_delivery') {
@@ -171,7 +284,7 @@ class OboPaymentController extends Controller
                     if ($payment->payment_from == 'web') {
                         return redirect()->route('front.booking.details', $transactionId);
                     } else {
-                        $returnUrl = route('payment.gateway.return.response') . '/?gateway=obo' . '&status=200&order=' . $transactionId;
+                        $returnUrl = route('payment.gateway.return.response') . '/?gateway=livee' . '&status=200&order=' . $transactionId;
                         return redirect($returnUrl);
                     }
                 } elseif ($request->paymentfrom == 'tip') {
@@ -191,29 +304,6 @@ class OboPaymentController extends Controller
             } else {
                 return "error";
             }
-        } catch (\Exception $e) {
-            return $e->getMessage();
-        }
-    }
-
-    public function token()
-    {
-        try {
-            if ($this->testMode == 1) {
-                $apiUrl = SELF::TEST_MODE_TOKEN_API;
-            } else {
-                $apiUrl = SELF::TOKEN_API;
-            }
-            $input = json_encode([
-                "id" => $this->obo_client_id,
-                "key" => $this->obo_key_id
-            ]);
-            $header = [
-                'Content-Type' => 'application/json'
-            ];
-            $responce = Http::withBody($input, 'application/json')->withHeaders($header)->post($apiUrl);
-            $data = json_decode($responce->body(),  true);
-            return $data;
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -285,16 +375,11 @@ class OboPaymentController extends Controller
     }
 
 
-    public function mobilePay(Request $request, $domain = '')
-    {
-        try {
-            $request->request->add(['payment_from' => $request->action, 'from' => $request->action, 'amt' => $request->amount, 'subsid' => $request->subscription_id ?? '', 'user_from' => 'app']);
-            $data =  $this->beforePayment($request, $domain, 'app');
-            if (isset($data) && !empty($data)) {
-                return $data;
-            }
-        } catch (\Exception $e) {
-            return $e->getMessage();
-        }
-    }
+    public function index(){
+        return view('backend.payment.liveePay');
+     }
+
+    //  public function afterPayment(){
+    //     return redirect()->back();
+    //  }
 }

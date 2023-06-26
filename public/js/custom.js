@@ -5837,7 +5837,7 @@ $(document).ready(function () {
                 payWithPowerTrans(payment_option_id,'');
             break;
 
-             case 59:
+             case 59: console.log("here");
                 payWithLivee(payment_option_id,'');
             break;
         }
