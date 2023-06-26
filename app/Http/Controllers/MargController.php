@@ -34,7 +34,7 @@ class MargController extends Controller
             $CompanyCode  = $hub_key['marg_company_code'];
             $detail         = [];
             $MargMST2017 = "https://corporate.margerp.com/api/eOnlineData/MargMST2017";
-            $reqData = ["CompanyCode" => $CompanyCode,"MargID" => $MargID,"Datetime" => "", "index" => 0];
+            $reqData = ["CompanyCode" => $CompanyCode,"MargID" => $MargID,"Datetime" =>Date('Y-m-d H:i:s'), "index" => 0];
         }else{
             return false;
         }

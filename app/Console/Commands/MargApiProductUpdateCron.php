@@ -15,9 +15,13 @@ use App\Models\{ ClientPreference, OrderLongTermServiceSchedule,UserAddress,Prod
 use Log;
 use Carbon\Carbon;
 use App\Models\Order;
+use App\Http\Traits\MargTrait;
+
+
 
 class MargApiProductUpdateCron extends Command
 {
+    use MargTrait;
     /**
      * The name and signature of the console command.
      *
@@ -84,13 +88,31 @@ class MargApiProductUpdateCron extends Command
 
                 $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code']);
 
-                if(!isset($hub_key) && $hub_key['is_marg_enable'] != 1){
-                    return false;
-                }
 
+            if(isset($hub_key) && $hub_key['is_marg_enable'] == 1){
+                $decryptionKey  = $hub_key['marg_decrypt_key'];
+                $MargID  = $hub_key['marg_access_token'];
+                $CompanyCode  = $hub_key['marg_company_code'];
+                $detail         = [];
+                $MargMST2017 = "https://corporate.margerp.com/api/eOnlineData/MargMST2017";
+                $reqData = ["CompanyCode" => $CompanyCode,"MargID" => $MargID,"Datetime" => Date('Y-m-d H:i:s'), "index" => 0];
+            }else{
+                return false;
+            }
+         
+            // Get the encrypted data from the request
+            $encryptedData = $this->getData($MargMST2017, $reqData);
+            // Decrypt the data using the DLL wrapper
+            $decryptedData = $this->DecryptLogic->Decrypt($encryptedData, $decryptionKey);
+            $collectionData = collect( json_decode($decryptedData));
+            //    dd($collectionData["Details"]->pro_N);
+            if(!empty($collectionData["Details"]->pro_N)){
 
-
-             
+                foreach($collectionData["Details"]->pro_N as $key => $product){
+                    $detail = $this->addProduct($product);
+                 }
+                 
+            }
 
                 \DB::disconnect($database_name);
             }

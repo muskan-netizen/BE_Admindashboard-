@@ -1899,56 +1899,54 @@
                             </div>
                         </div>
                     </div>
-                
-                    <div class="row marg_row"
-                        style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
-                        <div class="col-12">
-                            <div class="form-group mb-2 mt-2">
-                                <label for="marg_company_code">{{ __('Company Code') }}</label>
-                                <input type="password" name="marg_company_code" id="marg_company_code"
-                                    placeholder="" class="form-control"
-                                    value="{{ old('marg_company_code', $getAdditionalPreference['marg_company_code'] ?? '') }}">
-                                @if ($errors->has('marg_company_code'))
-                                    <span class="text-danger" role="alert">
-                                        <strong>{{ $errors->first('marg_company_code') }}</strong>
-                                    </span>
-                                @endif
+                    
+                    @if(isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1)
+                    
+                        <div class="row marg_row">
+                            <div class="col-12">
+                                <div class="form-group mb-2 mt-2">
+                                    <label for="marg_company_code">{{ __('Company Code') }}</label>
+                                    <input type="password" name="marg_company_code" id="marg_company_code"
+                                        placeholder="" class="form-control"
+                                        value="{{ old('marg_company_code', $getAdditionalPreference['marg_company_code'] ?? '') }}">
+                                    @if ($errors->has('marg_company_code'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('marg_company_code') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row marg_row"
-                        style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
-                        <div class="col-12">
-                            <div class="form-group mb-2 mt-2">
-                                <label for="marg_access_token">{{ __('Marg ID') }}</label>
-                                <input type="password" name="marg_access_token" id="marg_access_token"
-                                    placeholder="" class="form-control"
-                                    value="{{ old('marg_access_token', $getAdditionalPreference['marg_access_token'] ?? '') }}">
-                                @if ($errors->has('marg_access_token'))
-                                    <span class="text-danger" role="alert">
-                                        <strong>{{ $errors->first('marg_access_token') }}</strong>
-                                    </span>
-                                @endif
+                        <div class="row marg_row">
+                            <div class="col-12">
+                                <div class="form-group mb-2 mt-2">
+                                    <label for="marg_access_token">{{ __('Marg ID') }}</label>
+                                    <input type="password" name="marg_access_token" id="marg_access_token"
+                                        placeholder="" class="form-control"
+                                        value="{{ old('marg_access_token', $getAdditionalPreference['marg_access_token'] ?? '') }}">
+                                    @if ($errors->has('marg_access_token'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('marg_access_token') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="row marg_row"
-                    style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
-                    <div class="col-12">
-                        <div class="form-group mb-2 mt-2">
-                            <label for="marg_decrypt_key">{{ __('Decrypt Key') }}</label>
-                            <input type="password" name="marg_decrypt_key" id="marg_decrypt_key"
-                                placeholder="" class="form-control"
-                                value="{{ old('marg_decrypt_key', $getAdditionalPreference['marg_decrypt_key'] ?? '') }}">
-                            @if ($errors->has('marg_decrypt_key'))
-                                <span class="text-danger" role="alert">
-                                    <strong>{{ $errors->first('marg_decrypt_key') }}</strong>
-                                </span>
-                            @endif
+                        <div class="row marg_row">
+                            <div class="col-12">
+                                <div class="form-group mb-2 mt-2">
+                                    <label for="marg_decrypt_key">{{ __('Decrypt Key') }}</label>
+                                    <input type="password" name="marg_decrypt_key" id="marg_decrypt_key"
+                                        placeholder="" class="form-control"
+                                        value="{{ old('marg_decrypt_key', $getAdditionalPreference['marg_decrypt_key'] ?? '') }}">
+                                    @if ($errors->has('marg_decrypt_key'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('marg_decrypt_key') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
                 </form>
                 <div class="row marg_row" style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
