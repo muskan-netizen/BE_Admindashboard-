@@ -1,4 +1,6 @@
+
 <div class="col-8 px-0 flex-column bg-white rounded-lg" id="rightChat" style="display: none;">
+	{{-- @include('backend.chat.mediaUpload.index'); --}}
 	{{-- <div class="px-4 py-4" style="border-bottom: 1px solid rgb(238, 238, 238);">
 		<h2 id="roomName" class="font-size-15 mb-0"></h2>
 	</div> --}}
@@ -142,12 +144,19 @@
 						<path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="white"></path>
 					</svg>
 				</a>
+				<a href="javascript:void(0)" style="font-size:30px;cursor:pointer" onclick="openMediaNav()"><i class="fa fa-camera" aria-hidden="true"></i>
+				</a>
+
 				<a type="submit" href="javascript:void(0)"  data-id="" class="btn btn-primary btn-rounded chat-send w-md send_message"><span class="d-none d-sm-inline-block mr-2">Send</span>
 					<svg width="13" height="13" viewBox="0 0 24 24" tabindex="-1">
 						<path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="white"></path>
 					</svg>
 				</a>
+
+				
 			</div>
 		</form>
+
+		
 	</div>
 </div>
