@@ -1,6 +1,6 @@
 @foreach($availableSets as $key => $sets)
     <ul class="productVariants">
-        <li class="firstChild">{{$sets->title}}</li>
+        <li class="firstChild">{{$sets->variantDetail->title}}</li>
         <li class="row otherSize">
             @foreach($sets->option2 as $kk => $optn)
                 <?php $var_id = $optn->variant_type_id;

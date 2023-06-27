@@ -219,22 +219,20 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             @if(!empty($product->media) && count($product->media) > 0)
 
                                                 @foreach($product->media as $k => $image)
-                                                        @php
-                                                            if(isset($image->pimage)){
-                                                                $img = $image->pimage->image;
-                                                            }else{
-                                                                $img = $image->image;
-                                                            }
-                                                        @endphp
+                                                    @php
+                                                        if(isset($image->pimage)){
+                                                            $img = $image->pimage->image;
+                                                        }else{
+                                                            $img = $image->image;
+                                                        }
+                                                    @endphp
                                                 @endforeach
                                                 @if(!is_null($img))
-                                                <img id="main_image" src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}" />
+                                                    <img id="main_image" src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}" />
                                                 @endif
                                                 @else
-
                                                     <img id="main_image" class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
-
-                                            @endif
+                                                @endif
                                             </ul>
                                         </div>
                                         {{-- @if(count($product->media) > 1)
@@ -1358,12 +1356,12 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     $(document).ready(function() {
         $(".starrate span.ctrl").width($(".starrate span.cont").width());
         $(".starrate span.ctrl").height($(".starrate span.cont").height());
-        $(".color_var").click(function () {
+        $(document).on("click",".color_var", function() {
         	var name  = $(this).attr("data-id");
             $(".var_"+name).removeClass("var-active");
             $(this).toggleClass("var-active");
             });
-        $(".radio_var").click(function () {
+        $(document).on("click",".radio_var", function() {
         	var name  = $(this).attr("data-id");
             $(".radio_"+name).removeClass("radio-active");
             $(this).toggleClass("radio-active");
@@ -1378,89 +1376,132 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     let vendor_id = "{{ $product->vendor_id }}";
     let product_id = "{{ $product->id }}";
     var add_to_cart_url = "{{ route('addToCart') }}";
-    $('.changeVariant').click(function() {
+    $(document).on('click', '.changeVariant', function() {
+        
         updatePrice();
     });
 
     function updatePrice(){
+       
         var variants = [];
         var options = [];
         var selected_variant_title = "";
         $('.changeVariant').each(function() {
-            var that = this;
+          
             if (this.checked == true) {
+                var that = this;
                 variants.push($(that).attr('vid'));
                 options.push($(that).attr('optid'));
                 selected_variant_title = $(that).parent().attr('data-title');
             }
         });
-        ajaxCall = $.ajax({
-            type: "post",
-            dataType: "json",
+        $.ajax({
             url: "{{ route('productVariant', $product->sku) }}",
+            type: 'POST',
             data: {
                 "_token": "{{ csrf_token() }}",
                 "variants": variants,
                 "options": options,
                 "selected_variant_title": selected_variant_title
             },
-            beforeSend: function() {
-                if (ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {
-                    ajaxCall.abort();
-                }
-            },
-            success: function(resp) {
-                console.log(resp);
-                if(resp.status == 'Success'){
-                    $("#variant_response span").html('');
-                    var response = resp.data;
-                    if(response.variant != ''){
-                        if(vendor_type == 'rental'){
-                            // $('.incremental_hrs').val(0);
-                            // $('.base_hours_min').val();
-                            $('.incremental_hrs').val(0);
-                            $('#incremental_hrs_hidden').val(base_hours_min);
-                            $('.incremental-left-minus').click();
-                            //$('#blocktime, #blocktime2').change();
-                        }
-                        // if(additionalPreference != 0){
-                        //     response.variant.productPrice = token_currency * response.variant.productPrice;
-                        // }
-                        $('#product_variant_wrapper').html('');
-                        let variant_template = _.template($('#variant_template').html());
-                        response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count);
-                        response.variant.compare_at_price = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.compare_at_price)).toFixed(digit_count);
-                        $("#product_variant_wrapper").append(variant_template({ Helper: NumberFormatHelper, variant:response.variant, tokenAmount: response.tokenAmount, is_token_enable: response.is_token_enable}));
-                        $('#product_variant_quantity_wrapper').html('');
-                        let variant_quantity_template = _.template($('#variant_quantity_template').html());
-                        $("#product_variant_quantity_wrapper").append(variant_quantity_template({variant:response.variant}));
-                        // console.log(response.variant.quantity);
-                        if(!response.is_available){
-                            $(".addToCart, #addon-table").hide();
-                        }else{
-                            $(".addToCart, #addon-table").show();
-                        }
-                        let variant_image_template = _.template($('#variant_image_template').html());
-                        $(".product__carousel .gallery-parent").html('');
-                        $(".product__carousel .gallery-parent").append(variant_image_template({variant:response.variant}));
-                        // easyZoomInitialize();
-                        // $('.easyzoom').easyZoom();
-
-                        if(response.variant.media != ''){
-                            $(".product-slick").slick({ slidesToShow: 1, slidesToScroll: 1, arrows: !0, fade: !0, asNavFor: ".slider-nav" });
-                            $(".slider-nav").slick({ vertical: !1, slidesToShow: 3, slidesToScroll: 1, asNavFor: ".product-slick", arrows: !1, dots: !1, focusOnSelect: !0 });
-                        }
+            success: function(response) {
+                
+                if(response.status == "Success"){
+                    if(response.html != ''){
+                        $("#variant_options").html('');
+                        $("#variant_options").html(response.html);
                     }
-                }else{
-                    $("#variant_response span").html(resp.message);
-                    $(".addToCart, #addon-table").hide();
+                   
                 }
+                // Handle the successful response
             },
-            error: function(data) {
-
-            },
+            error: function(xhr) {
+                console.log(xhr);
+                // Handle the error
+            }
         });
     }
+
+
+    // function updatePrice(){
+    //     var variants = [];
+    //     var options = [];
+    //     var selected_variant_title = "";
+    //     $('.changeVariant').each(function() {
+    //         var that = this;
+    //         if (this.checked == true) {
+    //             variants.push($(that).attr('vid'));
+    //             options.push($(that).attr('optid'));
+    //             selected_variant_title = $(that).parent().attr('data-title');
+    //         }
+    //     });
+    //     ajaxCall = $.ajax({
+    //         type: "post",
+    //         dataType: "json",
+    //         url: "{{ route('productVariant', $product->sku) }}",
+    //         data: {
+    //             "_token": "{{ csrf_token() }}",
+    //             "variants": variants,
+    //             "options": options,
+    //             "selected_variant_title": selected_variant_title
+    //         },
+    //         beforeSend: function() {
+    //             if (ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {
+    //                 ajaxCall.abort();
+    //             }
+    //         },
+    //         success: function(resp) {
+    //             console.log(resp);
+    //             if(resp.status == 'Success'){
+    //                 $("#variant_response span").html('');
+    //                 var response = resp.data;
+    //                 if(response.variant != ''){
+    //                     if(vendor_type == 'rental'){
+    //                         // $('.incremental_hrs').val(0);
+    //                         // $('.base_hours_min').val();
+    //                         $('.incremental_hrs').val(0);
+    //                         $('#incremental_hrs_hidden').val(base_hours_min);
+    //                         $('.incremental-left-minus').click();
+    //                         //$('#blocktime, #blocktime2').change();
+    //                     }
+    //                     // if(additionalPreference != 0){
+    //                     //     response.variant.productPrice = token_currency * response.variant.productPrice;
+    //                     // }
+    //                     $('#product_variant_wrapper').html('');
+    //                     let variant_template = _.template($('#variant_template').html());
+    //                     response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count);
+    //                     response.variant.compare_at_price = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.compare_at_price)).toFixed(digit_count);
+    //                     $("#product_variant_wrapper").append(variant_template({ Helper: NumberFormatHelper, variant:response.variant, tokenAmount: response.tokenAmount, is_token_enable: response.is_token_enable}));
+    //                     $('#product_variant_quantity_wrapper').html('');
+    //                     let variant_quantity_template = _.template($('#variant_quantity_template').html());
+    //                     $("#product_variant_quantity_wrapper").append(variant_quantity_template({variant:response.variant}));
+    //                     // console.log(response.variant.quantity);
+    //                     if(!response.is_available){
+    //                         $(".addToCart, #addon-table").hide();
+    //                     }else{
+    //                         $(".addToCart, #addon-table").show();
+    //                     }
+    //                     let variant_image_template = _.template($('#variant_image_template').html());
+    //                     $(".product__carousel .gallery-parent").html('');
+    //                     $(".product__carousel .gallery-parent").append(variant_image_template({variant:response.variant}));
+    //                     // easyZoomInitialize();
+    //                     // $('.easyzoom').easyZoom();
+
+    //                     if(response.variant.media != ''){
+    //                         $(".product-slick").slick({ slidesToShow: 1, slidesToScroll: 1, arrows: !0, fade: !0, asNavFor: ".slider-nav" });
+    //                         $(".slider-nav").slick({ vertical: !1, slidesToShow: 3, slidesToScroll: 1, asNavFor: ".product-slick", arrows: !1, dots: !1, focusOnSelect: !0 });
+    //                     }
+    //                 }
+    //             }else{
+    //                 $("#variant_response span").html(resp.message);
+    //                 $(".addToCart, #addon-table").hide();
+    //             }
+    //         },
+    //         error: function(data) {
+
+    //         },
+    //     });
+    // }
     
     function checkAddOnPrice()
     {
