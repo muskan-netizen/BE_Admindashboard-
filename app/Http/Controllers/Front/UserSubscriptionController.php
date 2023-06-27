@@ -184,7 +184,6 @@ class UserSubscriptionController extends FrontController
         $now = Carbon::now()->toDateString();
         $userActiveSubscription = SubscriptionInvoicesUser::with(['plan'])
                                 ->whereNull('cancelled_at')
-                                ->where('status_id', 1)
                                 ->where('user_id', Auth::user()->id)
                                 ->where('end_date', '>=', $now )
                                 ->orderBy('end_date', 'desc')->first();
