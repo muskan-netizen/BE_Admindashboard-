@@ -1270,18 +1270,24 @@ body.al_body_template_nine .collection-content .product-wrapper-grid .media-body
     min-height: auto;
 }
 
+body.al_body_template_nine span#cart_qty_span:empty {
+    display: none!important;
+}
 body.al_body_template_nine  span#cart_qty_span {
     position: absolute;
-    top: 8px;
-    right: 0;
+    top: -9px;
+    right: -4px;
     padding: 0;
     width: 20px!important;
-    display: block!important;
     border-radius: 50%;
-    max-width: 20px!important;
-    font-size: 13px;
+    max-width: 18px!important;
+    font-size: 10px;
     color: #000;
-    height: 20px;
+    height: 18px;
+    background: #eee;
+    display: flex!important;
+    justify-content: center;
+    align-items: center;
 }
 
 body.al_body_template_nine .chat-button button.btn-solid {
