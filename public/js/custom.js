@@ -1477,12 +1477,23 @@ $(document).ready(function () {
             // Show error from server on payment form
         } else if (response.requires_action) {
             // Use Stripe.js to handle required card action
-            stripe.handleCardAction(
-                response.payment_intent_client_secret
-            ).then(handleStripeJsResult);
+            if(response.hasOwnProperty('type') && response.type == 'subscription'){
+                stripe.confirmCardPayment(response.payment_intent_client_secret, {
+                    payment_method: {
+                        card: card
+                    },
+                })
+                .then(function(){
+                    setTimeout(() => {
+                        window.location.href = response.result;
+                    }, 1500);
+                });
+            }else{
+                stripe.handleCardAction(
+                    response.payment_intent_client_secret
+                ).then(handleStripeJsResult);    
+            }
         } else {
-            // console.log(response);
-            // Show success message
             setTimeout(() => {
                 window.location.href = response.result;
             }, 1500);

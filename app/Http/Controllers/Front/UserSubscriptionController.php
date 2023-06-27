@@ -225,6 +225,7 @@ class UserSubscriptionController extends FrontController
             $subscription_invoice->frequency = $subscription_plan->frequency;
             $subscription_invoice->payment_option_id = $request->payment_option_id;
             $subscription_invoice->transaction_reference = $request->transaction_id;
+            $subscription_invoice->strip_subscriber_id = $request->strip_subscriber_id;
             $now = Carbon::now();
             $current_date = $now->toDateString();
             $start_date = $current_date;
