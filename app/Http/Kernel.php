@@ -83,6 +83,7 @@ class Kernel extends HttpKernel
         'onlysuperadmin' => \App\Http\Middleware\OnlySuperAdmin::class,
         'ConnectDbFromInventory' => \App\Http\Middleware\ConnectDbFromInventory::class,
         'ConnectDbFromDispatcher' => \App\Http\Middleware\ConnectDbFromDispatcher::class,
-        'permission' => \App\Http\Middleware\PermissionMiddleware::class
+        'permission' => \App\Http\Middleware\PermissionMiddleware::class,
+        'stripeWebhookVerify' => \App\Http\Middleware\VerifyStripeWebhook::class
     ];
 }
