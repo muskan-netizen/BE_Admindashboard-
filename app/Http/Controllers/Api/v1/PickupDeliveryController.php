@@ -454,7 +454,6 @@ class PickupDeliveryController extends BaseController{
                 $schedule_datetime_del = NULL;
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
                     $schedule_datetime_del = Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-                    Log::info($schedule_datetime_del);
                 }
                 $order->scheduled_date_time = $schedule_datetime_del??NULL;
                 $order->save();
@@ -738,7 +737,6 @@ class PickupDeliveryController extends BaseController{
                 $schedule_datetime_del = NULL;
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
                     $schedule_datetime_del = $request->schedule_time;
-                    Log::info($schedule_datetime_del);
                 }
 
 
