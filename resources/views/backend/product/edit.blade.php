@@ -553,7 +553,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                              @if ($key == 'id' || $key == 'product_id' ||  $key == 'rid' || $key == 'created_at' || $key == 'updated_at' || $key == 'Is_Deleted')
                                  @continue
                              @endif
-                             @switch( $key)
+                             @switch($key)
                                  @case('catcode')
                                  <div class="col-4 mb-2">
                                  {!! Form::label('title', __('Item Category Code'), ['class' => 'control-label']) !!}
