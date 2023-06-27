@@ -4,6 +4,10 @@ use App\Models\{Order,OrderVendor,UserDevice,ClientPreference, Product};
 use Auth;
 use GuzzleHttp\Client as GCLIENT;
 use Log;
+use Aws\S3\S3Client;
+use Aws\Exception\AwsException;
+use Illuminate\Http\Request;
+use Intervention\Image\Facades\Image;
 
 trait ChatTrait{
 
@@ -193,6 +197,47 @@ trait ChatTrait{
         }
     }
 
+    public function signAws(Request $request)
+    {
+       
+
+        $accessKeyId = \Config::get('app.AWS_ACCESS_KEY_ID_CHAT');
+        $secretAccessKey = \Config::get('app.AWS_SECRET_ACCESS_KEY_CHAT');
+        $region = \Config::get('app.AWS_DEFAULT_REGION_CHAT');
+        $bucketName = \Config::get('app.AWS_BUCKET_CHAT');
+     
+        $fileName = $request->input('filename');
+
+        $s3Client = new S3Client([
+            'version' => 'latest',
+            'region' => $region,
+            'credentials' => [
+                'key' => $accessKeyId,
+                'secret' => $secretAccessKey,
+            ],
+        ]);
+
+        try {
+            
+            $cmd = $s3Client->getCommand('PutObject', [
+                'Bucket' => $bucketName,
+                'Key' => $fileName,
+                'ACL' => 'public-read',
+            ]);
+            
+            $request = $s3Client->createPresignedRequest($cmd, '+1 hour');
+            $signedUrl = (string) $request->getUri();
+
+            return response()->json([
+                'url' => $signedUrl,
+                //'thumbnail_url' => $thumbnailUrl,
+            ]);
+
+            //return response()->json(['url' => $signedUrl]);
+        } catch (AwsException $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 
     
 }

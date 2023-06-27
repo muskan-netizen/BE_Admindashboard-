@@ -54,7 +54,7 @@
             }
         }
         
-        var authDataParseData = JSON.parse(authData);
+        var authDataParseData = JSON.parse(Auth.auData);
         var email = authDataParseData.email;
         $('#roomName').html(roomIDn);
        // socket.emit('joinRoom', { email: email, roomId: roomId, message: 'Join this room', created_date: new Date() });
@@ -105,7 +105,7 @@
            $this.toggleClass( "hidden", !value.includes( n ) );
         })
     });
-
+   
     async function startChat(vendor_order_id,vendoridC,order_id){
         
 
@@ -164,7 +164,7 @@
          
             if(response.data.status) {
                 if(response.data.orderData != undefined) {
-                    console.log('hohohjo',response.data.orderData);
+                    //console.log('hohohjo',response.data.orderData);
                     var data = response.data.orderData;
                     
 
@@ -200,10 +200,10 @@
         toggleClass(roomId);
         axios.get(`${SocketConstants.Socket_url}/api/chat/${roomId}`)
         .then(async response => {
-            console.log(response);
+            //console.log(response);
             if(response.status == 200) {
                 if(response.data.length > 0) {
-                   await response.data.forEach(function (data) {
+                   await response.data.forEach(async function (data) {
                     var className= 'left-message';
                     var flex = '';
                     var cdate = new Date(data.created_date);
@@ -220,6 +220,7 @@
                     //                                 <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"></path>
                     //                                 <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"></path>
                     //                             </svg> ${data.created_date}</p>
+                    var mesHtml = await  appendMessage(data);
 
                         html+= `<div class=" ${className}">
                                 ${flex}
@@ -235,8 +236,7 @@
                                                 </svg> ${ convertDateTime(cdate)}</p>
                                             </div>
                                             
-                                            <p class="text-left">${data.message}</p>
-                                            
+                                                ${mesHtml}                                            
                                         </div>
                                     </div>
                                 </div>
@@ -276,7 +276,7 @@
         var html2='';
         axios.get(`${SocketConstants.Socket_url}/api/chat/getRoomUser/${roomId}`)
         .then(async response => {
-            console.log(response);
+            //console.log(response);
             if(response.status == 200) {
                 if(startChatype == 'user_to_user'){
                    
@@ -350,7 +350,10 @@
              className= 'right-message';
             //  flex = '<div style="flex: 110%;"></div>';
         }
+        //console.log(data);
         var updateDate =  roomData?.updated_date;
+        var mesHtml = await  appendMessage(data);
+       
             html = `<div class=" ${className}">
                 ${flex}
                 <div class="mb-4">
@@ -365,8 +368,8 @@
                                 </svg> ${ convertDateTime(cdate)}</p>
                             </div>
                             
-                            <p class="text-left">${data.message}</p>
-                            
+                           
+                            ${mesHtml}
                         </div>
                     </div>
                 </div>
@@ -409,7 +412,7 @@
             //order_id:order_id      
         })
         .then(async response => {
-             console.log(response.data.status);
+             //console.log(response.data.status);
              if(response.data.status) {
                 socket.emit('save-message', { room: room_id, nickname: 'test', message: 'Join this room', created_date: new Date() });
              }
@@ -454,13 +457,13 @@
     // }
 
 
-    function sendMessage(message,room_id,roomIdText){
+    function sendMessage(message,room_id,roomIdText, media = {}){
         // if($data['from'] == 'vendor') {
         //     $messageData = $this->sendSocketMessage($data,$user,'to_user','vendor','from_vendor','vendor_to_user');
         // } else {
         //     $messageData = $this->sendSocketMessage($data,$user,'to_vendor','user','from_user','vendor_to_user');
         // }
-        var authDataParseData = JSON.parse(authData);
+        var authDataParseData = JSON.parse(Auth.auData);
         var dImage = authDataParseData.image.image_fit+'500/500'+authDataParseData.image.image_path;
         axios.post(`${SocketConstants.Socket_url}/api/chat/sendMessageJoin`, {
             'room_id' : room_id,
@@ -474,11 +477,15 @@
             'phone_num': '+'+authDataParseData.dial_code+ ' ' +authDataParseData.phone_number,
             'display_image': dImage,
             'sub_domain' : window.location.host,
+            'is_media':media.is_media,
+            'mediaUrl':media.mediaUrl,
+            'thumbnailUrl':media.thumbnailUrl,
+            'mediaType':media.mediaType,
             //'room_name' =>$data->name,
             'chat_type': chat_type,
         })
         .then(async response => {
-             console.log(response.data.status);
+             //console.log(response.data.status);
              if(response.data.status) {
                 var notify = 1;
                
@@ -538,7 +545,7 @@
         //var data = message.message.chatData;
         //console.log('lp',message);
          var roomData = message.roomData[0];
-         console.log(roomData);
+         //console.log(roomData);
         if(roomData ==  undefined || roomData ==  'undefined'){
             return;
         }
@@ -553,7 +560,7 @@
             return;
         }
         var html='';
-        console.log('dd',message.message.roomData);
+        //console.log('dd',message.message.roomData);
         var last_message = roomData.chat_Data[0].message??roomData.chat_Data[0].message;
         var updateDate =  new Date(roomData.updated_date);
         if(roomData.type == 'user_to_user'){
@@ -636,7 +643,7 @@
             p2p_id: p2p_id
         })
         .then(async response => {
-            console.log('rpo',response);
+            //console.log('rpo',response);
             if(response.status == 200) {
                 if(response.data.roomData.length > 0) {
                     var productSelected = '';
@@ -733,5 +740,25 @@
         $('#chatRooms_'+id).addClass('active');
         $('#preview_message_'+id).removeClass('newMessage');
 
+    }
+
+    async function appendMessage(data){
+        //return new Promise((resolve, reject) => {
+            var mesHtml =  `<p class="text-left">${data.message}</p>`;
+
+            if(data.is_media == true){
+                var media_html = `<iframe src="${data.mediaUrl}" />`;
+                if(data.mediaType.includes('video')) {
+                    media_html = `<video preload="none" width="320" height="240" controls>
+                                    <source autostart="false" src="${data.mediaUrl}" >
+                                </video>"`;
+                } else if(data.mediaType.includes('image')) {
+                    media_html = `<img src="${data.mediaUrl}" alt="Royo" width="200" height="200">`;
+                }  
+
+                mesHtml = `<p class="text-left">${media_html}</p>`;
+            }
+            return mesHtml;
+        //})
     }
     //fetchChatGroups();
