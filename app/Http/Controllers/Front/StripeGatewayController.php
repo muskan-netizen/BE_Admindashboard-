@@ -1425,14 +1425,10 @@ class StripeGatewayController extends FrontController
         
         $payload = @file_get_contents('php://input');
         $event = null;
-        //Log::info("payload");
-        //Log::info($payload);
         try {
             $event = \Stripe\Event::constructFrom(
                 json_decode($payload, true)
                 );
-            //Log::info('event');
-            //Log::info($event);
         } catch(\UnexpectedValueException $e) {
             // Invalid payload
             http_response_code(400);
@@ -1440,8 +1436,6 @@ class StripeGatewayController extends FrontController
         }
         
         Webhook::create(['tracking_order_id'=>'','response'=>$request->getContent() ?? json_encode($payload)]);
-        //Log::info('stripeWebhook event');
-        //Log::info($event);
         // Handle the event
         $subscriptionController = new UserSubscriptionController();
         switch ($event->type) {
