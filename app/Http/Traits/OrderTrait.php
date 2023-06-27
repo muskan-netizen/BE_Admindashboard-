@@ -92,7 +92,7 @@ trait OrderTrait
         if (! empty($devices) && ! empty($client_preferences->fcm_server_key)) {
             $from = $client_preferences->fcm_server_key;
         }
-        $notification_content = NotificationTemplate::where('id', 17)->first();
+        $notification_content = NotificationTemplate::where('slug', 'product-stock-vendor')->first();
         if ($notification_content) {
             $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
             // dd($body_content);
