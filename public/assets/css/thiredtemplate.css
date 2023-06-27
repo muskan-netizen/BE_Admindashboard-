@@ -357,7 +357,19 @@ li.grand_total.d-flex.align-items-center.justify-content-between span,
 li.grand_total.d-flex.align-items-center.justify-content-between label.m-0 {
     color: #000;
 }
+.al_body_template_three .alSingleProducts .collection-wrapper.al .product-right.inner_spacing.pl-sm-3.p-0 hr {
+    display: none;
+}
+.al_body_template_three .alSingleProducts div#product_variant_quantity_wrapper {
+    width: 100%;
+}
 
+.al_body_template_three .render_new_products  .product-description{
+    min-height: 90px;
+}
+.dark.al_body_template_three .render_new_products .slick-slide .inner_spacing p{
+    color: #fff;
+}
 @media (max-width: 1430px) {
     .al_new_wrapper_design .top-banner-wrapper.text-center .common-banner {
         border-radius: 20px;

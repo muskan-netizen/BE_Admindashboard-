@@ -84,7 +84,6 @@ class OrderController extends BaseController
     }
     public function postPlaceOrder(Request $request)
     {
-
        try {
             $action = ($request->has('type')) ? $request->type : 'delivery';
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
@@ -200,7 +199,6 @@ class OrderController extends BaseController
                 }
                 $luxury_option = LuxuryOption::where('title', $action)->first();
                 $cart = Cart::where('user_id', $user->id)->with(['editingOrder.orderStatusVendor', 'cartvendor'])->first();
-
                 if ($cart) {
 
                     // $loyalty_points_used=0;
@@ -218,7 +216,8 @@ class OrderController extends BaseController
 
                     $cart_products = CartProduct::with(['product.pimage', 'product.variants', 'product.taxCategory.taxRate', 'coupon' => function ($query) use ($cart) {
                         $query->where('cart_id', $cart->id);
-                    },'coupon.promo', 'product.addon','vendorProducts.productVariantByRoles'])->where('cart_id', $cart->id)->where('status', [0, 1])->orderBy('created_at', 'asc')->get();
+                    },'coupon.promo', 'product.addon','vendorProducts.productVariantByRoles'])->where('cart_id', $cart->id)->where('is_cart_checked', 1)->where('status', [0, 1])->orderBy('created_at', 'asc')->get();
+                    
                     $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0;
                     $total_subscription_discount = 0;
 
@@ -1082,7 +1081,9 @@ class OrderController extends BaseController
                         Cart::where('id', $cart->id)->update(['schedule_type' => NULL, 'scheduled_date_time' => NULL, 'order_id' => NULL]);
 
                         CartCoupon::where('cart_id', $cart->id)->delete();
-                        CartProduct::where('cart_id', $cart->id)->delete();
+                        // CartProduct::where('cart_id', $cart->id)->delete();
+                        $cart_product_ids = $cart_products->pluck('id');
+                        CartProduct::query()->whereIn('id', $cart_product_ids)->delete(); 
                         CartProductPrescription::where('cart_id', $cart->id)->delete();
                         CartDeliveryFee::where('cart_id', $cart->id)->delete();
                     }
@@ -1243,6 +1244,7 @@ class OrderController extends BaseController
         $ship = new ShippoController();
         $is_place_order_delivery_zero = getAdditionalPreference(['is_place_order_delivery_zero'])['is_place_order_delivery_zero'];
         //Create Shipping place order request for Shiprocket
+        
         $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
         $checkOrder = Order::findOrFail($request->order_id);
             if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)){
@@ -1552,13 +1554,13 @@ class OrderController extends BaseController
 
             if ($order->payment_option_id == 1 && ($order->payable_amount >0)) {
                 $cash_to_be_collected = 'Yes';
-                $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
+                $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
             } else {
 
                 if($order->is_postpay==1 && $order->payment_status == 0)
                 {
                     $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
+                    $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
                 }else{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -1634,7 +1636,9 @@ class OrderController extends BaseController
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
                 'user_icon' => $customer->image,
-                'order_pre_time'=>$vendor_details->order_pre_time
+                'order_pre_time'=>$vendor_details->order_pre_time,
+                'app_call' => 1,
+
             ];
             if($order_vendor->is_restricted == 1)
             {
@@ -1687,13 +1691,13 @@ class OrderController extends BaseController
             $tasks = array();
             if ($order->payment_option_id == 1) {
                 $cash_to_be_collected = 'Yes';
-                $payable_amount = $order->payable_amount;
+                $payable_amount = $order->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
             } else {
 
                 if($order->is_postpay==1 && $order->payment_status == 0)
                 {
                     $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order->payable_amount;
+                    $payable_amount = $order->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
                 }else{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -1823,13 +1827,13 @@ class OrderController extends BaseController
              $tasks = array();
              if ($order->payment_option_id == 1) {
                  $cash_to_be_collected = 'Yes';
-                 $payable_amount = $order->payable_amount;
+                 $payable_amount = $order->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
              } else {
 
                 if($order->is_postpay==1 && $order->payment_status == 0)
                 {
                     $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order->payable_amount;
+                    $payable_amount = $order->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
                 }else{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -2184,6 +2188,7 @@ class OrderController extends BaseController
         $paginate = $request->has('limit') ? $request->limit : 12;
         $type = $request->has('type') ? $request->type : 'active';
         $orders = OrderVendor::where('user_id', $user->id)->with('products')->orderBy('id', 'DESC');
+
         $additionalPreference =getAdditionalPreference(['is_service_product_price_from_dispatch']);
         switch ($type) {
             case 'pending': // which order not assign yet in driver
@@ -2191,22 +2196,24 @@ class OrderController extends BaseController
             $orders->whereHas('products', function ($q1) {
                         $q1->where('dispatcher_status_option_id',1);
                     });
+
                 break;
             case 'active':
                 $orders->whereNotIn('order_status_option_id', [6, 3, 9]);
-                    $orders->whereHas('products', function ($q) use ($additionalPreference) {
-                         if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
-                            $q->whereNotIn('dispatcher_status_option_id',[1,5,6]); //1=pending,5= complete,6 reject
-                         }
-                    });
+                    // $orders->whereHas('products', function ($q) use ($additionalPreference) {
+                    //      if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+                    //         $q->whereNotIn('dispatcher_status_option_id',[1,5,6]); //1=pending,5= complete,6 reject
+                    //      }
+                    // });
+                   
                 break;
             case 'past':
                 $orders->whereIn('order_status_option_id', [6, 3, 9]);
-                if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
-                    $orders->whereHas('products', function ($q) {
-                        $q->where('dispatcher_status_option_id',5); //1=pending,5= complete,6 reject
-                    });
-                }
+                // if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+                //     $orders->whereHas('products', function ($q) {
+                //         $q->where('dispatcher_status_option_id',5); //1=pending,5= complete,6 reject
+                //     });
+                // }
                 break;
             case 'schedule':
                 $order_status_options = [10];
@@ -2230,8 +2237,10 @@ class OrderController extends BaseController
                     });
 
                 });
-            })
-            ->paginate($paginate);
+            });
+
+            $orders = $orders->paginate($paginate);
+
         $orders =    $this->orderlistLoop($orders, $user ,$request);
         return $this->successResponse($orders, '', 201);
     }
@@ -3870,7 +3879,15 @@ class OrderController extends BaseController
             } elseif ($order_status_id == 4) {
                 $notification_content = NotificationTemplate::where('id', 7)->first();
             } elseif ($order_status_id == 5) {
-                $notification_content = NotificationTemplate::where('id', 8)->first();
+
+                //Check for order is takeaway
+                if(@$orderData->luxury_option_id == 3)
+                {
+                    $notification_content = NotificationTemplate::where('slug', 'order-out-for-takeaway-delivery')->first();
+                }else{
+                    $notification_content = NotificationTemplate::where('id', 8)->first();
+                }
+               
             } elseif ($order_status_id == 6) {
                 $notification_content = NotificationTemplate::where('id', 9)->first();
             }
@@ -4095,5 +4112,91 @@ class OrderController extends BaseController
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }
+
+
+    public function sendVendorReachedLocation($domain = '', Request $request)
+    {
+        try{
+        $user_vendors = UserVendor::where(['vendor_id' => $request->vendor_id])->pluck('user_id');
+        $orderData= $this->minimize_orderDetails_for_notification($request->order_id,$request->vendor_id);
+        $header_code=$request->code??'';
+
+        // if(@$request->vehicle_name && @$request->number_plate){
+        //     $user_id = $request->user_id ?? Auth::user()->id;
+        //     $user_vehicle = UserVehicle::updateOrCreate([
+        //         'plate' =>  $request->number_plate,
+        //         'user_id' =>  $user_id
+        //     ], [
+        //         'name' => $request->vehicle_name,
+        //         'description' =>  $request->description ?? null
+        //     ]);
+        //     $comment = $request->vehicle_name." - ". $request->number_plate ;
+        //     if(@$request->description){
+        //         $comment .=  " - ".$request->description;
+        //     }
+        //     Order::where('id', $request->order_id)->update(['comment_for_vendor' => $comment]);
+        // }
+
+        $send = $this->sendOrderPushNotificationVendorReached($user_vendors,$orderData, $header_code);
+
+        return response()->json(['status'=>1,'message'=>'Notification sent successfully!']);
+        }catch(\Exception $e)
+        {
+            \Log::info($e->getMessage());
+        return response()->json(['status'=>0,'error'=>$e->getMessage()]);
+
+        }
+    }
+
+    public function sendOrderPushNotificationVendorReached($user_ids, $orderData, $header_code='')
+    {
+
+        $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+
+        //$vendorAppDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon','vendor_fcm_server_key')->first();
+        if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
+            $notification_content = NotificationTemplate::where('slug','reached-vendor-location')->first();
+            $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
+            if ($notification_content) {
+                if($header_code == ''){
+                    $header_code = Client::orderBy('id', 'asc')->first()->code;
+                }
+                $code = $header_code;
+                $client = Client::where('code', $code)->first();
+                $redirect_URL = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/client/order";
+
+                $data = [
+                    "registration_ids" => $devices,
+                    "notification" => [
+                        'title' => $notification_content->subject,
+                        'body'  => $body_content,
+                        'sound' => "notification.wav",
+                        "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                        "android_channel_id" => "sound-channel-id"
+                    ],
+                    "data" => [
+                        'title' => $notification_content->subject,
+                        'body'  => $notification_content->content,
+                        'data' => $orderData,
+                        'order_id' => $orderData->id,
+                        'type' => "reached_location"
+                    ],
+                    "priority" => "high"
+                ];
+            return sendFcmCurlRequest($data);
+            }
+        }
+
+        // Individual Vendor App User Token
+        $vendorAppUserDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+        if(!empty($vendorAppUserDevices) && !empty($client_preferences->vendor_fcm_server_key)) {
+            $from = $client_preferences->vendor_fcm_server_key;
+            $data['registration_ids'] = $vendorAppUserDevices;
+            return sendFcmCurlRequest($data,$from);
+        }
+    }
+
 
 }

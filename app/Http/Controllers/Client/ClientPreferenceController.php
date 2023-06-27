@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, ClientPreferenceAdditional, MapProvider, SmsProvider, NomenclatureTranslation, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption,StaticDropoffLocation,Facilty, RoleOld, User};
+use App\Models\{Client, ClientPreference, ClientPreferenceAdditional, MapProvider, SmsProvider, NomenclatureTranslation, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption,StaticDropoffLocation,Facilty, RoleOld, User, Country, ClientCountries};
 use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Http\Traits\ApiResponser;
@@ -71,7 +71,7 @@ class ClientPreferenceController extends BaseController{
 
         $productDeliveryFeeByRole = ProductDeliveryFeeByRole::groupBy('role_id')->get()->pluck('role_id')->toArray();
 
-        $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds','is_service_product_price_from_dispatch','is_file_cart_instructions','is_user_kyc_for_registration','add_to_cart_btn','chat_button','call_button','is_tracking_url','is_tracking_sms_url','is_place_order_delivery_zero','is_cust_success_signup_email','is_admin_vendor_rating','square_enable_status', 'square_credentials','is_long_term_service','is_influencer_refer_and_earn','is_show_vendor_on_subcription','is_postpay_enable','is_order_edit_enable','order_edit_before_hours','is_enable_compare_product','is_bid_enable','update_order_product_price','is_service_price_selection','is_map_search_perticular_country']);
+        $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds','is_service_product_price_from_dispatch','is_file_cart_instructions','is_user_kyc_for_registration','add_to_cart_btn','chat_button','call_button','is_tracking_url','is_tracking_sms_url','is_place_order_delivery_zero','is_cust_success_signup_email','is_admin_vendor_rating','square_enable_status', 'square_credentials','is_long_term_service','is_influencer_refer_and_earn','is_show_vendor_on_subcription','is_postpay_enable','is_order_edit_enable','order_edit_before_hours','is_enable_compare_product','is_bid_enable','update_order_product_price','is_service_price_selection', 'is_particular_driver', 'pickup_notification_before', 'pickup_notification_before_hours', 'pickup_notification_before2', 'pickup_notification_before2_hours','is_enable_curb_side','is_recurring_booking','is_map_search_perticular_country']);
 
         return view('backend/setting/config')->with([
                                                 'tags' => $tags,
@@ -99,6 +99,7 @@ class ClientPreferenceController extends BaseController{
     public function getCustomizePage(ClientPreference $clientPreference){
         $curArray = [];
         $cli_langs = [];
+        $cli_countries = [];
         $reffer_by = "";
         $reffer_to = "";
         $cli_currs = [];
@@ -109,8 +110,10 @@ class ClientPreferenceController extends BaseController{
         $appTemplates = Template::where('for', '2')->get();
         $languages = Language::where('id', '>', '0')->get();
         $currencies = Currency::where('id', '>', '0')->get();
+        $countries = Country::where('id', '>', '0')->get();
         $curtableData = array_chunk($currencies->toArray(), 2);
         $primaryCurrency = ClientCurrency::where('is_primary', 1)->first();
+        $primaryCountry = ClientCountries::where('is_primary', 1)->first();
         $nomenclatureAllToGet=Nomenclature::get();
         $want_to_tip_nomenclature=$nomenclatureAllToGet->where('label','Want To Tip')->first();
         $fixed_fee=$nomenclatureAllToGet->where('label','Fixed Fee')->first();
@@ -125,13 +128,16 @@ class ClientPreferenceController extends BaseController{
         }
 
         $preference = $ClientPreference ? $ClientPreference : new ClientPreference();
-
+        
         $nomenclature_value = $nomenclatureAllToGet->first();
         foreach ($preference->currency as $value) {
             $cli_currs[] = $value->currency_id;
         }
         foreach ($preference->language as $value) {
             $cli_langs[] = $value->language_id;
+        }
+        foreach ($preference->countries as $value) {
+            $cli_countries[] = $value->country_id;
         }
         $tags = Tag::with('primary')->get();
         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
@@ -163,7 +169,7 @@ class ClientPreferenceController extends BaseController{
         $roles = [];
 
         $roles = RoleOld::where('status',1)->get();
-        return view('backend.setting.customize', compact('client','nomenclature_value','want_to_tip_nomenclature','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to','category_kyc_documents','fixed_fee','verify_options','accounting','staticDropoff','laundry_teams','roles'));
+        return view('backend.setting.customize', compact('client','nomenclature_value','want_to_tip_nomenclature','user_registration_documents','cli_langs','languages','currencies','preference','cli_currs','curtableData', 'webTemplates', 'appTemplates','primaryCurrency','social_media_details', 'client_languages','tags','vendor_registration_documents','reffer_by','reffer_to','category_kyc_documents','fixed_fee','verify_options','accounting','staticDropoff','laundry_teams','roles','countries', 'primaryCountry', 'cli_countries'));
     }
 
     public function referandearnUpdate(Request $request, $code){
@@ -572,6 +578,41 @@ class ClientPreferenceController extends BaseController{
         if($request->has('primary_currency') && !$request->has('currency_data')){
             $delete = ClientCurrency::where('client_code',Auth::user()->code)->where('is_primary', 0)->delete();
         }
+        // Create Or Update Primary Country And Additional Country 
+        if ($request->filled('primary_country')) {
+            $primaryCountryData = [
+                'is_active' => 1,
+                'is_primary' => 1,
+                'client_code' => Auth::user()->code,
+                'country_id' => $request->primary_country,
+            ];
+        
+            ClientCountries::where('client_code', Auth::user()->code)->where('is_primary', 0)->delete();
+        
+            ClientCountries::updateOrCreate(['is_primary' => 1], $primaryCountryData);
+        }
+        
+        if ($request->filled('countries')) {
+            $existingCountryIds = [];
+            foreach ($request->countries as $country) {
+                if ($country != $request->primary_country) {
+                    $existingCountryIds[] = $country;
+                }
+            }
+            ClientCountries::where('client_code', Auth::user()->code)->where('is_primary', 0)->delete();
+            $clientCountriesData = [];
+            foreach ($existingCountryIds as $country) {
+                $clientCountriesData[] = [
+                    'is_primary' => 0,
+                    'is_active' => 1,
+                    'client_code' => Auth::user()->code,
+                    'country_id' => $country,
+                ];
+            }
+            ClientCountries::insert($clientCountriesData);
+        }
+        //  End
+
         if($request->has('currency_data') && $request->has('multiply_by')){
             $cur_multi = $exist_cid = array();
             foreach ($request->currency_data as $key => $value) {

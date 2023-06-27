@@ -486,8 +486,7 @@ class DashBoardController extends BaseController
                     $vendor_orders = $vendor_orders->whereIn('vendor_id',$vendorIds);
                 }
 
-            $total_orders = $vendor_orders->count();
-
+                $total_orders = $vendor_orders->count();
 
             }else{
                   # Orders count

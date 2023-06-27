@@ -26,7 +26,7 @@ class TaxController extends Controller{
             $query->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1,38]);
             });
-        }); ;
+        }); 
         if (Auth::user()->is_superadmin == 0) {
             $total_tax_collected = $total_tax_collected->whereHas('vendors.vendor.permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
