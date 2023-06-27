@@ -1972,9 +1972,9 @@
                         </div>
                     </div>
                     
-                    @if(isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1)
+              
                     
-                        <div class="row marg_row">
+                        <div class="row marg_row" style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
                             <div class="col-12">
                                 <div class="form-group mb-2 mt-2">
                                     <label for="marg_company_code">{{ __('Company Code') }}</label>
@@ -1989,7 +1989,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row marg_row">
+                        <div class="row marg_row" style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
                             <div class="col-12">
                                 <div class="form-group mb-2 mt-2">
                                     <label for="marg_access_token">{{ __('Marg ID') }}</label>
@@ -2004,7 +2004,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row marg_row">
+                        <div class="row marg_row" style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
                             <div class="col-12">
                                 <div class="form-group mb-2 mt-2">
                                     <label for="marg_decrypt_key">{{ __('Decrypt Key') }}</label>
@@ -2019,7 +2019,6 @@
                                 </div>
                             </div>
                         </div>
-                    @endif
                 </form>
                 <div class="row marg_row" style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
                     <div class="col-12">
