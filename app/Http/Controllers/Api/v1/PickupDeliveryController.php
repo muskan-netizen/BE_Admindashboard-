@@ -1078,13 +1078,17 @@ class PickupDeliveryController extends BaseController{
         $langId = $user->language ?? 1;
         $preferences = ClientPreference::where('id', '>', 0)->first();
         $order = OrderVendor::with('orderDetail')->where('order_id',$request->order_id)
-        ->with(['products.productRating.reviewFiles', 'products.product.category.categoryDetail.translation' => function($q) use($langId){
+        ->with(['products.productRating.reviewFiles','products.product.translation', 'products.product.category.categoryDetail.translation' => function($q) use($langId){
             $q->where('category_translations.language_id', $langId);
         }])
         ->select('*','dispatcher_status_option_id as dispatcher_status')->first();
         $dispatch_traking_url = ($request->has('new_dispatch_traking_url') && !empty($request->new_dispatch_traking_url)) ? $request->new_dispatch_traking_url : $order->dispatch_traking_url;
         $dispatch_traking_url = str_replace('/order/', '/order-details/', $dispatch_traking_url);
-        $response = Http::get($dispatch_traking_url);
+        $response = Http::get($dispatch_traking_url, [
+            'headers' => [
+                'timezone' => $user->timezone
+            ]
+        ]);
         if($response->status() == 200){
             $type = VendorOrderDispatcherStatus::where(['order_id' =>  $order->order_id ,'vendor_id' =>$order->vendor_id ])->latest()->first();
             // OrderProductRating::where('order_id', $order->order_id)
