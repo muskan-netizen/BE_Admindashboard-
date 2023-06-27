@@ -906,8 +906,11 @@ class DispatcherController extends FrontController
 
             $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
             if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
+                    $notification_content = NotificationTemplate::where('id', 17)->first();
+
                     $title = __('Order Status : #').($orderNumber ?  $orderNumber->order_number : '');
-                    $body =  $OrderStatus ? ($OrderStatus->status_data ? $OrderStatus->status_data['driver_status'] : '') : '';
+                    // $body =  $OrderStatus ? ($OrderStatus->status_data ? $OrderStatus->status_data['driver_status'] : '') : '';
+                    $body =  $notification_content->content??'';
                     
                     //pr($title);
                     //pr($body);
