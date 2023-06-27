@@ -2223,7 +2223,7 @@ class OrderController extends BaseController
                 break;
         }
         $orders = $orders->with(['orderDetail.editingInCart', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'products.productReturn',
-        'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request','products.Routes','products.order_product_status','products.product.category.categoryDetail'=>function ($q){
+        'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request','products.Routes','products.order_product_status','products.product.translation','products.product.category.categoryDetail'=>function ($q){
             $q->select('id','type_id');
         }
         ])
