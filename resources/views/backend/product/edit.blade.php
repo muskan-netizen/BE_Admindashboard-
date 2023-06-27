@@ -545,7 +545,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 @endif
 
                  {{-- marg data --}}
-                 @if(!is_null($margProduct))
+                 @if(!is_null($margProduct) && count($margProduct)>0)
                  <div class="card-box">
                      <h5 class="text-uppercase mt-0 mb-3 bg-light p-2 def">{{ __("Marg Data") }}</h5>
                      <div class="row mb-2">
