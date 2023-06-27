@@ -79,13 +79,13 @@ trait OrderTrait
     public function sendProductStockOutPushNotificationVendors($user_ids, $orderData)
     {
            
-        \Log::info($user_ids);
+     
         $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')
             ->whereIn('user_id', $user_ids)
             ->pluck('device_token')
             ->toArray();
 
-            pr($devices);
+        
 
         $from = '';
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon', 'vendor_fcm_server_key')->first();
