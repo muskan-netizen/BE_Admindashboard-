@@ -610,7 +610,7 @@ class VendorController extends BaseController
             $vendor_table->qr_url = url('/vendor/'.$vendor->slug.'/?id='.$vendor->id.'&name='.$vendor->name.'&table='.$vendor_table->id);
         }
         $co_ordinates = $all_coordinates = array();
-        $areas = ServiceArea::where('vendor_id', $id)->orderBy('created_at', 'DESC')->get();
+        $areas = ServiceArea::where('vendor_id', $id)->where('area_type', 1)->orderBy('created_at', 'DESC')->get();
         $VendorCategory = VendorCategory::where('vendor_id', $id)->where('status', 1)->pluck('category_id')->toArray();
         $zz = 1;
         $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
@@ -640,7 +640,7 @@ class VendorController extends BaseController
             $center['lat'] = $all_coordinates[0]['coordinates'][0]['lat'];
             $center['lng'] = $all_coordinates[0]['coordinates'][0]['lng'];
         }
-        $area1 = ServiceArea::where('vendor_id', $id)->orderBy('created_at', 'DESC')->first();
+        $area1 = ServiceArea::where('vendor_id', $id)->where('area_type', 1)->orderBy('created_at', 'DESC')->first();
         if (isset($area1)) {
             $co_ordinates = $area1->geo_coordinates[0];
         } else {

@@ -238,7 +238,7 @@ class FrontController extends Controller
          if($celebrity_check == 0){
             $categories = $categories->where('categories.type_id', '!=', 5);
         }
-
+        
         $categories = $categories->where('categories.id', '>', '1')
                                // ->whereNotNull('categories.type_id')
                                 //->whereNotIn('categories.type_id', [7])
@@ -248,8 +248,7 @@ class FrontController extends Controller
                                 ->where('cts.language_id', $lang_id)
                                 ->where(function ($qrt) use($lang_id,$primary){
                                     $qrt->where('cts.language_id', $lang_id)->orWhere('cts.language_id',$primary->language_id);
-                                })
-                                ->whereNull('categories.vendor_id')
+                                })->whereNull('categories.vendor_id')
                               //  ->orderBy('categories.position', 'asc')
                                 ->orderBy('categories.parent_id', 'asc')->groupBy('categories.id')->get();
 
@@ -460,7 +459,7 @@ class FrontController extends Controller
         return $products;
     }
 
-    public function metaProduct($langId, $multiplier, $for = 'related', $productArray = []){
+    public function metaProduct($langId, $multiplier = 1, $for = 'related', $productArray = []){
         if(empty($productArray)){
             return $productArray;
         }

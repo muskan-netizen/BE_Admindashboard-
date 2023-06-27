@@ -159,8 +159,8 @@ class SetDummyDataForDemo extends Command
                 CabBookingLayout::on($schemaName)->truncate();
                 CabBookingLayoutCategory::on($schemaName)->truncate();
                 CabBookingLayoutTranslation::on($schemaName)->truncate();
-                AppStyling::on($schemaName)->truncate();
-                AppStylingOption::on($schemaName)->truncate();
+                //AppStyling::on($schemaName)->truncate();
+                //AppStylingOption::on($schemaName)->truncate();
                 Tag::on($schemaName)->truncate();
                 TagTranslation::on($schemaName)->truncate();
                 ProductTag::on($schemaName)->truncate();
