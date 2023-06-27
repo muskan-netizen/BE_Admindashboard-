@@ -2360,6 +2360,20 @@
             let vendor_registration_document_id = $('input[name="vendor_registration_document_id"]').val();
             editVendorRegistrationForm(vendor_registration_document_id);
         });
+
+        var is_marg_enable = $('#is_marg_enable');
+
+        if (is_marg_enable.length > 0) {
+            is_marg_enable[0].onchange = function() {
+
+                if ($('#is_marg_enable:checked').length != 1) {
+                    $('.marg_row').hide();
+                } else {
+                    $('.marg_row').show();
+                }
+            }
+        }
+
         $(document).on('click', '.addOptionRow-Add', function(e) {
             var d = new Date();
             var n = d.getTime();
@@ -2379,6 +2393,25 @@
             $('#add_slot_modal').modal('show');
             $('#add_slot__modal #standard-modalLabel').html('Add Slot');
         });
+
+
+        $(document).on("click", "#sync_marg_btn", function() {
+                $.ajax({
+                    type: "GET",
+                    dataType: 'json',
+                    url: "{{ route('sync.marg') }}",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                    },
+                    success: function(response) {
+                        dd(response);
+                        if (response.status == "Success") {
+                           
+                        }
+                    }
+                });
+        });
+
 
         // Start Slot ////
 

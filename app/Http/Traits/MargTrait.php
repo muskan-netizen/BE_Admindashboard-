@@ -153,7 +153,7 @@ trait MargTrait{
                     $client_lang = ClientLanguage::where('is_active', 1)->first();
                 }
 
-                if($request->is_deleted)
+                if(@$request->is_deleted)
                 {
                     $product->delete();
                     return true;
