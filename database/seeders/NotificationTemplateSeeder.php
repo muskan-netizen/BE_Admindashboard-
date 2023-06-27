@@ -129,6 +129,13 @@ class NotificationTemplateSeeder extends Seeder
                 'slug' => 'order-out-for-takeaway-delivery'
             ],
             [
+                'label' =>'Order Cancelled',
+                'subject' => 'Order Cancelled',
+                'tags' => '{order_id}',
+                'content' => 'Your order ({order_id}) is canecelled by driver',
+                'slug' => 'order-cancelled'
+            ],
+            [
                 'label' =>'Product Out Of Stock (Vendor)',
                 'subject' => 'Product Out Of Stock',
                 'tags' => '',
