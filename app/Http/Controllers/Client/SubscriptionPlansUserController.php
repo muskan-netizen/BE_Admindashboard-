@@ -15,13 +15,14 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{AdditionalAttribute, AdditionalAttributeProduct, Category, Client, ClientPreference, SmsProvider, Currency, Language, Country, User, SubscriptionPlansUser, SubscriptionPlanFeaturesUser, ShowSubscriptionPlanOnSignup, SubscriptionFeaturesListUser, SubscriptionInvoicesUser, Order, OrderVendor};
+use App\Http\Traits\StripeSubscription;
+use App\Models\{AdditionalAttribute, AdditionalAttributeProduct, Category, Client, ClientPreference, SmsProvider, Currency, Language, Country, User, SubscriptionPlansUser, SubscriptionPlanFeaturesUser, ShowSubscriptionPlanOnSignup, SubscriptionFeaturesListUser, SubscriptionInvoicesUser, Order, OrderVendor, PaymentOption, SubscriptionPlanUserCategory};
 use Carbon\Carbon;
 use App\Models\ClientCurrency;
 
 class SubscriptionPlansUserController extends BaseController
 {
-    use ApiResponser;
+    use ApiResponser, StripeSubscription;
     private $folderName = '/subscriptions/image';
     public function __construct()
     {
@@ -112,8 +113,9 @@ class SubscriptionPlansUserController extends BaseController
         $message = 'added';
         $rules = array(
             'title' => 'required|string|max:50',
-            'features' => 'required',
+            'type_id' => 'required',
             'price' => 'required',
+//             'features' => 'required',
             // 'period' => 'required',
             // 'sort_order' => 'required'
         );
@@ -127,12 +129,27 @@ class SubscriptionPlansUserController extends BaseController
         if ($validation->fails()) {
             return redirect()->back()->withInput()->withErrors($validation);
         }
+        $stripe_creds = PaymentOption::select('credentials', 'test_mode')->where(['code'=>'stripe','status'=>1])->whereNotNull('credentials')->first();
+        
         if(!empty($slug)){
-            $subFeatures = SubscriptionPlanFeaturesUser::where('subscription_plan_id', $plan->id)->whereNotIn('feature_id', $request->features)->delete();
+            if(!empty($request->features))
+                $subFeatures = SubscriptionPlanFeaturesUser::where('subscription_plan_id', $plan->id)->whereNotIn('feature_id', $request->features)->delete();
+            if(!empty($request->categories))
+                SubscriptionPlanUserCategory::where('subscription_id', $plan->id)->whereNotIn('category_id', $request->categories)->delete();
         }else{
             $plan = new SubscriptionPlansUser;
             $plan->slug = uniqid();
         }
+        if($stripe_creds){
+            $creds_arr = json_decode($stripe_creds->credentials);
+            $api_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
+            $request->merge(['apiKey'=>$api_key]);
+            $res =   $this->createSubscriptionOnStripe($request) ;
+            if($res && isset($res->id)){
+                $plan->strip_plan_id =  $res->id;
+            }
+        }
+
         $plan->title = $request->title;
         $plan->price = $request->price;
         // $plan->period = $request->period;
