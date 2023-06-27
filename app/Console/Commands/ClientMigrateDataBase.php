@@ -31,7 +31,6 @@ class ClientMigrateDataBase extends Command
      * @return void
      */
     public function __construct(){
-        echo "Connected sucessfully to database ".DB::connection()->getDatabaseName().".";
         parent::__construct();
     }
 
