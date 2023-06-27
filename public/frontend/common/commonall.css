@@ -1352,6 +1352,43 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
 .dark .daterangepicker .calendar-time select option {
     background: #fff;
 }  
+/*==========  start profile user Chat css 27/06/2023   ==========*/
+#rightChat{
+    position: relative;
+}
+#rightChat .chat-input-section {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    padding: 15px!important;
+}
+#rightChat .conversation-list .ctext-wrap p.chat-time {
+    display: flex;
+    align-items: center;
+}
+#rightChat .conversation-list .ctext-wrap p.chat-time svg{
+    margin-right: 5px;
+}
+#rightChat .chat-input-section form.row {
+    align-items: center;
+}
+#rightChat .chat-input-section form.row .col-auto {
+    align-items: center;
+    display: flex;
+}
+#rightChat .chat-input-section form.row .col-auto  a:nth-child(2){
+    line-height: 1;
+}
+#rightChat .chat-input-section form.row .col-auto a:nth-child(2) i {
+    display: inline-block;
+    margin:0 10px;
+    font-size: 25px;
+}
+#rightChat  .chat-box-wrapper{
+    margin-bottom: 60px;
+}
+/*==========  end profile user Chat css 27/06/2023   ==========*/
 
 
 

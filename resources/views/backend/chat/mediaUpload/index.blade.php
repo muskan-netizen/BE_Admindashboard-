@@ -5,7 +5,8 @@
 }
 .mediaSidenav {
   height:100vw;
-  width: 0;
+  width: 320px;
+	margin-top:80px;
   position: fixed;
   z-index:9999;
   top: 0;
@@ -13,6 +14,10 @@
   overflow-x: hidden;
   transition: 0.5s;
   padding-top: 10px;
+  transform: translateX(100%)
+}
+.push_to_side #mediaSidenav{
+  transform: translateX(0%)
 }
 
 .mediaSidenav a {
@@ -59,10 +64,7 @@ body {
 	margin-right: 250px;
 } */
 
-.push_to_side #mediaSidenav{
-	width: 320px;
-	margin-top:80px;
-}
+
 </style>
 
 
