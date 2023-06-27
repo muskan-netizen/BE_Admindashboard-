@@ -17,7 +17,8 @@ class Kernel extends ConsoleKernel
         Commands\AutoRejectOrders::class,
         Commands\SetDummyDataForDemo::class,
         Commands\RejectOrderNotification::class,
-        Commands\HubSpotSyncData::class
+        Commands\HubSpotSyncData::class,
+        Commands\MargApiProductUpdateCron::class
         //
     ];
 
@@ -38,6 +39,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('service_area:active_for_vendor_slot')->everyMinute();
         $schedule->command('copy:catalog')->everyTenMinutes();
         $schedule->command('pickup:notify')->everyMinute();
+        $schedule->command('auto:sycn_product_from_marg_api')->hourly();
         // $schedule->command('inspire')->hourly();
     }
 
