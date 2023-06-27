@@ -2598,31 +2598,29 @@ class CartController extends FrontController
                     return response()->json(['status'=>'error_prescription', 'presciptionProducts'=>$presciptionProducts]);
                 }
                 }
-
             if ($user || $new_session_token) {
                 if($request->task_type == 'now'){
                     $time = Carbon::now()->format('Y-m-d H:i:s');
 
                 }else{
                     if($request->schedule_dt){   
+                            $date_time =    explode(" ",$request->schedule_dt);
+                          $schedule_dt =  date('Y-m-d H:i:s',strtotime($date_time[0]." " .$date_time[1]));
+
                         if(isset($request->slot))
                         {
                             //->setTimezone('UTC') (in case slot is comming then schedule_dt coming only date and we no need to convart date to ny UTC time  )
-                            $time = Carbon::parse($request->schedule_dt, $user->timezone)->format('Y-m-d H:i:s'); 
+                            $time = Carbon::parse($schedule_dt, $user->timezone)->format('Y-m-d H:i:s'); 
                             $slot = $request->slot;
                         }else{
 
                         if(isset($request->schedule_dt) && !empty($request->schedule_dt))
-                        $time = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-
+                        $time = Carbon::parse($schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                         }
                     }
 
 
                 }
-
-
-
                 if(isset($request->schedule_pickup) && !empty($request->schedule_pickup) &&  $request->schedule_pickup != 'undefined undefined')    # for pickup laundry
                 $request->schedule_pickup = Carbon::parse($request->schedule_pickup, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
 
@@ -2633,8 +2631,6 @@ class CartController extends FrontController
                 {
                     $dropSlot = $request->dropoff_scheduled_slot;
                 }
-
-            
 
               //  pr($time);
                 $cart_update = $cart_detail->update(['specific_instructions' => $request->specific_instructions??null,

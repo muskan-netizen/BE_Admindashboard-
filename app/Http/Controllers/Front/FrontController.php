@@ -891,7 +891,7 @@ class FrontController extends Controller
                             $curr_time = date('Y-m-d 00:00');
                         }else{
                             $daten = new DateTime("now", new DateTimeZone($timezone) );
-                            $curr_time = $daten->format('Y-m-d h:i');
+                            $curr_time = $daten->format('Y-m-d H:i');
                         }
                         $start_time = $start_time->format('Y-m-d H:m');
                         $end_time = date('Y-m-d 23:59');
