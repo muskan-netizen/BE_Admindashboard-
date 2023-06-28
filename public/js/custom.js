@@ -1003,6 +1003,19 @@ $(document).ready(function () {
             });
             return false;
         }
+        
+        if ($("#agree_term_check").length > 0) {
+            var checkbox = document.getElementById("agree_term_check");
+            if (!checkbox.checked) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please accept terms and conditions.',
+                    //footer: '<a href="">Why do I have this issue?</a>'
+                });
+                return false;
+            }
+        }
 
         var delivery_type = 'D';
         var other_taxes_string='';
