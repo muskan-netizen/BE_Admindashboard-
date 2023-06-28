@@ -76,7 +76,6 @@ trait PagarmePaymentManager{
       // dd($transaction);
       return $response;
     }catch(\Exception $ex){
-     Log::info($ex);
       return null;
     }
   }

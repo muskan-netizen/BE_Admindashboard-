@@ -152,7 +152,6 @@ trait smsManager{
                 'to'      => $to,
                 'message' => $message
             ]);
-            
             return $result;
         }catch(\Exception $e) {
             return response()->json(['data' => $e->getMessage()]);
@@ -204,7 +203,6 @@ trait smsManager{
             }
 
             $result = curl_exec($curl);
-            
             if ($result === false)
             return curl_error($curl);
             else

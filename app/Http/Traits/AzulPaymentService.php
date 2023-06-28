@@ -142,7 +142,6 @@ trait AzulPaymentService
         }
 
         if ($response['data']->IsoCode !== $this->OK_RESPONSE_CODE) {
-           
             return [
                 'message' => $response['data']->ResponseMessage,
                 'ok' => false,

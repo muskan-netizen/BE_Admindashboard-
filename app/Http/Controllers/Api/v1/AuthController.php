@@ -1185,7 +1185,7 @@ class AuthController extends BaseController
                         return $this->errorResponse(__('أنت غير مسجل معنا. يرجى الاشتراك'), 404);
                     }
                     return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404);
-                  /*  $registerUser = $this->registerViaPhone($request)->getData();
+                 /*   $registerUser = $this->registerViaPhone($request)->getData();
                     if ($registerUser->status == 'Success') {
                         $user = $registerUser->data;
                     } else {

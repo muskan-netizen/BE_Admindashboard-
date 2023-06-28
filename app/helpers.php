@@ -210,7 +210,7 @@ if (!function_exists('sendFcmCurlRequest')) {
 }
 
 if (! function_exists('sendNotificationToCustomer')) {
-    function sendNotificationToCustomer($devices,$order_number='111'){
+    function sendNotificationToCustomer($devices,$order_number=''){
         $client_preferences = ClientPreference::select('fcm_server_key','favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $data = [

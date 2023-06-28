@@ -163,7 +163,6 @@ class SkipCashController extends Controller
         $error = curl_error($ch);
         $info = curl_getinfo($ch);
         curl_close($ch);
-        
         $responseObj = json_decode($response);  
         if ($responseObj->returnCode != '200') {
             $message = 'Payment error';
@@ -186,7 +185,6 @@ class SkipCashController extends Controller
     }catch(\Exception $e)
     {
         $message = $e->getMessage();
-        \Log::info(json_encode($message));
         return $message;
     }
     }

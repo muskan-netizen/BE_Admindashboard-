@@ -33,7 +33,6 @@ class SquareInventoryController extends FrontController
                     foreach($request->data['object']['inventory_counts'] as $Object){
                         if(!empty($Object) && $location_id == $Object['location_id'] && $Object['catalog_object_type'] == "ITEM_VARIATION"){
                             $variantdata = ProductVariant::where('square_variant_id', '=', $Object['catalog_object_id'])->update(['quantity' => $Object['quantity']]);
-                            
                         }
                     }
                 }

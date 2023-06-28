@@ -311,30 +311,29 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             @endif
                                         </div>
                                         
-                                        @if(!empty($product->translation) && isset($product->translation->first()->body_html))
-                                            <div class="border-product al_disc">
-                                                <h6 class="product-title">{{__('Product Details')}}</h6>
-                                                <p></p>
-                                                {!! $product->translation->first()->body_html !!}
-                                            </div>
-                                        @endif
+                                    @if(!empty($product->translation) && isset($product->translation->first()->body_html))
+                                        <div class="border-product al_disc">
+                                            <h6 class="product-title">{{__('Product Details')}}</h6>
+                                            <p></p>
+                                            {!! $product->translation->first()->body_html !!}
+                                        </div>
+                                    @endif
 
-                                        <!--- Processor Details Farmmeat by Sohail -->
-                                        @if(isset($processorProduct))
-                                        @if (!empty($processorProduct) && $processorProduct->is_processor_enable == 1)
-                                            <div class="border-product al_disc">
-                                                <h6 class="product-title">{{__('Product processor Details')}}</h6>
-                                                <p>{{$processorProduct->name}}</p>
-                                                <p>{{$processorProduct->date}}</p>
-                                                <p>{{$processorProduct->address}}</p>
-                                            </div>
-                                        @elseif (!empty($product) && $product->product_pickup_date != null)
-                                            <div class="border-product al_disc">
-                                                <h6 class="product-title">{{__('Product Vendor Details')}}</h6>
-                                                <p>{{$product->product_pickup_date}}</p>
-                                            </div>
-                                        @endif
-                                        @endif
+                                    @if(isset($processorProduct))
+                                    @if (!empty($processorProduct) && $processorProduct->is_processor_enable == 1)
+                                        <div class="border-product al_disc">
+                                            <h6 class="product-title">{{__('Product processor Details')}}</h6>
+                                            <p>{{$processorProduct->name}}</p>
+                                            <p>{{$processorProduct->date}}</p>
+                                            <p>{{$processorProduct->address}}</p>
+                                        </div>
+                                    @elseif (!empty($product) && $product->product_pickup_date != null)
+                                        <div class="border-product al_disc">
+                                            <h6 class="product-title">{{__('Product Vendor Details')}}</h6>
+                                            <p>{{$product->product_pickup_date}}</p>
+                                        </div>
+                                    @endif
+                                    @endif
                                         
 
 

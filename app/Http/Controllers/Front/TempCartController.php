@@ -871,7 +871,6 @@ class TempCartController extends FrontController
                     "priority" => "high"
                 ];
                $res  = sendFcmCurlRequest($data,$client_preferences->fcm_server_key);
-             //  pr( $res);
             }
         }
     }

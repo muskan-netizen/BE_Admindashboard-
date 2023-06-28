@@ -3731,6 +3731,7 @@ class OrderController extends BaseController
                             $wallet = $user->wallet;
                             $credit_amount = $return_response['vendor_return_amount'] ; //$currentOrderStatus->payable_amount;
                             $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #'. $currentOrderStatus->orderDetail->order_number.' ('.$currentOrderStatus->vendor->name.')']);
+                            $this->sendWalletNotification($user->id, $currentOrderStatus->orderDetail->order_number);                            
                         }
 
                         // diarise loyalty in order table

@@ -316,7 +316,6 @@ class AppStylingController extends BaseController
 
             if(isset($request->categories[$key]) && !empty($request->categories[$key])){
                 $is_cat =  $request->categories[$key]['check'];
-            
             }
             else{
                 $is_cat =  0;
