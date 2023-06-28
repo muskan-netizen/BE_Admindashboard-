@@ -130,7 +130,7 @@
                                 </sup>
                             </div>
                         </div>
-                        <div class="row mt-3 profile-page">
+                        <div class="row mt-1 profile-page">
                             <div class="col-lg-6">
                                 <div class="card-box">
                                     <div class="row">
