@@ -223,8 +223,8 @@
                                         <div class="col-md-6 mb-3" id="nameInput">
                                             <label for="vendortype">{{__('Vendor Type')}}</label>
                                             <select name="vendor_type" id="vendor_type" class="form-control">
-                                                <option value="1">ClickOKartPartner</option>
-                                                <option value="0">Shopper</option>
+                                                <option value="0">{{getNomenclatureName('Vendor', true)}}</option>
+                                                <option value="1">{{getNomenclatureName('Seller', true)}}</option>
                                             </select>
                                         </div>
                                     @endif
@@ -662,6 +662,9 @@ function isNumberKey(evt) {
     function vendorAddressInitialize() {
         var addressInput = document.getElementById('vendor_address');
         var autocomplete = new google.maps.places.Autocomplete(addressInput);
+        if(is_map_search_perticular_country){
+                autocomplete.setComponentRestrictions({'country': [is_map_search_perticular_country]});
+            }
         google.maps.event.addListener(autocomplete, 'place_changed', function() {
             var place = autocomplete.getPlace();
             document.getElementById('vendor_longitude').value = place.geometry.location.lng();

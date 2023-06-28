@@ -33,19 +33,20 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                 <!-- page title right side here -->
                 <div class="col-md-6 float-right">
                     <form class="d-flex">
+
                         @if(auth()->user()->is_superadmin)
-                          <div class="input-group mr-2">
+                          <div class="input-group mr-2  d-none">
                             <select name="app_managers" class="form-control select2-single mr-2" id="app_managers">
                             <option value="" >Select Manager</option>
                             @foreach($managers as $mng)
                                 <option value="{{$mng->id}}" >{{$mng->name}}</option>
-                            @endforeach    
+                            @endforeach
                             </select>
                         </div>
                         @endif
 
                         @if(@auth()->user()->roles[0]->name == 'Manager')
-                        <div class="input-group mr-2">
+                        <div class="input-group mr-2  d-none">
                             <select name="type" id="reportType" class="form-control mr-2" >
                             <option value="" >Select Type</option>
                                 <option value="Vendor" >Vendor</option>
@@ -55,7 +56,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                         </div>
                         @endif
                         <div class="input-group">
-                            <input type="text" class="form-control form-control-light" id="range-datepicker" placeholder="2022-08-10 to 2022-08-22">
+                            <input type="text" class="form-control form-control-light" id="range-datepicker" value="{{ $setWeekDate }}" placeholder="">
                             <span class="input-group-text bg-primary border-primary text-white">
                                 <i class="mdi mdi-calendar-range font-13"></i>
                             </span>
@@ -63,7 +64,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                         <a href="javascript: void(0);" class="btn btn-primary mx-1" id="dashboard_refresh_btn">
                             <i class="mdi mdi-autorenew"></i>
                         </a>
-                        @if(@auth()->user()->roles[0]->name == 'Seller')
+                        @if(getRoleId(@auth()->user()->roles[0]->name) == 4)
                         <a href="{{route('noti.list')}}" class="btn btn-primary alCartIcon" ><span id="notification_counts" class="alBadge">0</span>
                             <i class="mdi mdi-cart-plus"></i>
                         </a>
@@ -108,8 +109,9 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                         </div>
                     </div><!-- Orders box end here -->
                 </div>
-               
+
                 <div class="col-sm">
+                    @if(auth()->user()->is_superadmin)
                     <!-- Orders box start here -->
                     <div class="card alDasBoxItems">
                         <div class="card-body">
@@ -122,6 +124,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                             </p>
                         </div>
                     </div><!-- Orders box end here -->
+                    @endif
                 </div>
 
             </div>
@@ -144,7 +147,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                 </div>
                 @endif
 
-                @if(@auth()->user()->getRoleNames()[0]=='Seller')
+                @if(getRoleId(@auth()->user()->getRoleNames()[0])==4)
                 <div class="col-sm">
                     <!-- Revenue box start here -->
                     <div class="card alDasBoxItems">
@@ -200,7 +203,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                 <div class="card-body alRevenueBox">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h4 class="header-title">{{ __('Revenue Monthly') }}</h4>
-                       
+
                     </div>
                     <div dir="ltr">
                         <div id="revenue-bar-chart" class="apex-charts" data-colors="#43bee1,#e3eaef"></div>
@@ -221,7 +224,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                     <!-- total revenue title start here -->
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h4 class="header-title">{{ __('Revenue Weekly') }}</h4>
-                        
+
                     </div><!-- total revenue title start here -->
 
 
@@ -247,7 +250,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                         </div>
                     </div>
 
-                    
+
                     <div dir="ltr">
                         <div id="revenue-line-chart" class="apex-charts mt-3" data-colors="#43bee1,#0acf97" style="height: 364px"></div>
                     </div><!-- Total earning chat end here -->
@@ -263,14 +266,14 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <h4 class="header-title">{{ __('Revenue By Location') }}</h4>
-                        
+
                     </div>
                     <div class="mb-4 mt-3">
                         <div id="world-map" style="height: 224px"></div>
                     </div>
 
                     <div id="revenue_locations">
-                      
+
                     </div>
                 </div>
             </div>

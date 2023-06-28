@@ -323,7 +323,7 @@ $timezone = Auth::user()->timezone;
                                                 <div class="row mt-2">
                                                     <div class="col-md-9 mb-3">
                                                         @php
-                                                        
+
                                                         $subtotal_order_price = $total_order_price = $total_tax_order_price = 0;
                                                         @endphp
                                                         @foreach ($order->vendors as $key => $vendor)
@@ -514,7 +514,7 @@ $timezone = Auth::user()->timezone;
                                                                         </li>
                                                                         @elseif($product->reqCancelOrder->status == 'Pending')
                                                                         <li class="bg-txt" style="margin-top: 10px;"><span class="badge badge-warning mr-2" style="font-size:12px">{{ __('Cancel Request Pending') }}</span><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="" aria-hidden="true" data-original-title="{{$product->reqCancelOrder->vendor_reject_reason??''}}"></i></li>
-                                                                       
+
                                                                         @elseif($product->reqCancelOrder->status == 'Rejected')
                                                                         <li class="bg-txt" style="margin-top: 10px;"><span class="badge badge-danger mr-2" style="font-size:12px">{{ __('Cancel Request Rejected') }}</span><i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="" aria-hidden="true" data-original-title="{{$product->reqCancelOrder->vendor_reject_reason??''}}"></i></li>
                                                                         @endif
@@ -828,7 +828,7 @@ $timezone = Auth::user()->timezone;
                                                                 </li>
                                                                 @endif
 
-                                                                @if ( checkColumnExists('orders', 'gift_card_amount') && $order->gift_card_amount > 0)
+                                                                @if ($order->gift_card_amount > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{ __('Gift Card Amount') }}</label>
                                                                     <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->gift_card_amount
@@ -841,9 +841,9 @@ $timezone = Auth::user()->timezone;
                                                                     <label class="m-0">{{ __('Total Payable') }}</label>
                                                                     <span>{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($order->payable_amount+$order->fixed_fee_amount)) : Session::get('currencySymbol') .decimal_format($order->payable_amount+$order->fixed_fee_amount)}}
 
-                                                                        @if(!checkColumnExists('orders', 'is_postpay'))
+
                                                                         $order->is_postpay = 0;
-                                                                        @endif
+
 
                                                                         @if ($order->payment_option_id != 1 && $order->is_postpay == 1 && $order->payment_status == 0)
                                                                         <br /><span style="color:var(--theme-deafult);">Unpaid</span>
@@ -1270,7 +1270,7 @@ $timezone = Auth::user()->timezone;
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                                 </li>
                                                                 @endif
-                                                                @if ( checkColumnExists('orders', 'gift_card_amount') && $order->gift_card_amount > 0)
+                                                                @if ($order->gift_card_amount > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{ __('Gift Card Amount') }}</label>
                                                                     <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->gift_card_amount
@@ -1596,7 +1596,7 @@ $timezone = Auth::user()->timezone;
                                                                                                 $clientCurrency->doller_compare)}}</span>
                                                                 </li>
                                                                 @endif
-                                                                @if ( checkColumnExists('orders', 'gift_card_amount') && $order->gift_card_amount > 0)
+                                                                @if ($order->gift_card_amount > 0)
                                                                 <li class="d-flex align-items-center justify-content-between">
                                                                     <label class="m-0">{{ __('Gift Card Amount') }}</label>
                                                                     <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->gift_card_amount
@@ -1918,7 +1918,7 @@ $timezone = Auth::user()->timezone;
                                                                                             $clientCurrency->doller_compare)}}</span>
                                                             </li>
                                                             @endif
-                                                            @if ( checkColumnExists('orders', 'gift_card_amount') && $order->gift_card_amount > 0)
+                                                            @if ($order->gift_card_amount > 0)
                                                             <li class="d-flex align-items-center justify-content-between">
                                                                 <label class="m-0">{{ __('Gift Card Amount') }}</label>
                                                                 <span>{{ Session::get('currencySymbol') }}{{decimal_format($order->gift_card_amount
@@ -2206,6 +2206,7 @@ $timezone = Auth::user()->timezone;
 
     });
     var ajaxCall = 'ToCancelPrevReq';
+    var payment_obo_url = "{{route('obo.pay')}}";
     var credit_tip_url = "{{ route('user.tip_after_order') }}";
     var payment_stripe_url = "{{ route('payment.stripe') }}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";

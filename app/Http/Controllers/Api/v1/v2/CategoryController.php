@@ -7,15 +7,16 @@ use Validation;
 use Carbon\Carbon;
 // use Client;
 use Illuminate\Http\Request;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,ProductActionTrait};
+use App\Http\Traits\HomePage\HomePageTrait;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, VendorCategory, ProductCategory, Client, ClientPreference};
+use App\Models\{User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, VendorCategory, ProductCategory, Client, ClientPreference, Type};
 use Log;
 class CategoryController extends BaseController
 {
     private $field_status = 2;
-    use ApiResponser;
+    use ApiResponser,HomePageTrait,ProductActionTrait;
     /**     * Get Company ShortCode     *     */
     
     public function categoryData(Request $request, $cid = 0)
@@ -25,6 +26,7 @@ class CategoryController extends BaseController
             $page = $request->has('page') ? $request->page : 1;
             $product_list = $request->has('product_list') ? $request->product_list : 'false';
             $mod_type = $request->has('type') ? $request->type : 'delivery';
+         
             if ($cid == 0) {
                 return response()->json(['error' => 'No record found.'], 404);
             }
@@ -69,7 +71,7 @@ class CategoryController extends BaseController
                     $qry->select('product_id')->from('product_categories')->where('category_id', $cid);
                 })->groupBy('product_variant_sets.variant_type_id')->get();
             if (!$category) {
-                return response()->json(['error' => 'No record found.'], 200);
+                return response()->json(['error' => 'No record found.'], 404);
             }
             $code = $request->header('code');
             $client = Client::where('code', $code)->first();
@@ -166,13 +168,13 @@ class CategoryController extends BaseController
                     $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                 },
                 'variant' => function ($q) use ($langId) {
-                    $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
+                    $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode', 'compare_at_price');
                     // $q->groupBy('product_id');
                 }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
                 'tags.tag.translations' => function ($q) use ($langId) {
                     $q->where('language_id', $langId);
                 }
-            ])->select('products.category_id', 'products.id',  'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', 'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.mode_of_service','products.tags')
+            ])->select('products.category_id', 'products.id',  'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', 'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.mode_of_service','products.tags','products.is_recurring_booking')
                 ->where('products.category_id', $category_id)->where('products.is_live', 1)->whereIn('products.vendor_id', $vendor_ids)->paginate($limit, $page);
                // ->where('mode_of_service', $mode_of_service)
             if (!empty($products)) {
@@ -279,7 +281,7 @@ class CategoryController extends BaseController
                     $q->groupBy('language_id','product_id');
                 },
                 'variant' => function ($q) use ($langId) {
-                    $q->select('id','sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
+                    $q->select('id','sku', 'product_id', 'quantity', 'price','markup_price', 'barcode','compare_at_price');
                 },
                 'variant.checkIfInCartApp', 'checkIfInCartApp',
                 'tags.tag.translations' => function ($q) use ($langId) {
@@ -290,7 +292,7 @@ class CategoryController extends BaseController
             ])->where('products.category_id', $category_id)
                 ->where('products.is_live', 1); 
 
-            $products = $products->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', DB::raw("'$multipli' as variant_multiplier")  ,'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.mode_of_service','products.tags')
+            $products = $products->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', DB::raw("'$multipli' as variant_multiplier")  ,'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.mode_of_service','products.tags','products.is_recurring_booking')
                 ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
                 ->join('product_translations', 'product_translations.product_id', '=', 'products.id') // Or whatever the join logic is
                 ->withCount('OrderProduct');
@@ -461,7 +463,7 @@ class CategoryController extends BaseController
             $products = $products->whereIn('id', $productIds);
             }
 
-            $products = $products->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', 'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.mode_of_service','products.tags')
+            $products = $products->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', 'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.mode_of_service','products.tags','products.is_recurring_booking')
                 ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
                 ->join('product_translations', 'product_translations.product_id', '=', 'products.id') // Or whatever the join logic is
                 ->withCount('OrderProduct');
@@ -548,10 +550,18 @@ class CategoryController extends BaseController
             if ($cid == 0) {
                 return response()->json(['error' => 'No record found.'], 404);
             }
+            $p_ids = [];
+            $v_ids = [];
+            $promo = [];
+            $cateVendors = [];
+            $uniqVendors = [];
             $user = Auth::user();
             $langId = $user->language;
+
+            // Get vendors
             $ses_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude);
-            
+
+            // Get all data by category id
             $category = Category::with([
                 'tags', 'type'  => function($q) {
                     $q->select('id', 'title as redirect_to');
@@ -567,35 +577,67 @@ class CategoryController extends BaseController
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                         },
                         'variant' => function($q) use($langId){
-                            $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
+                            $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode', 'compare_at_price');
                             $q->groupBy('product_id');
                         },
                     ]);
                 },
-                'products'  => function ($q) use ($langId) {
-                        $q->with(['media' => function($q){
-                            $q->groupBy('product_id');
-                        }, 'media.image',
-                        'translation' => function($q) use($langId){
-                        $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
-                        },
-                        'variant' => function($q) use($langId){
-                            $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
-                            $q->groupBy('product_id');
-                        },
-                    ]);
-                }
-                ,
                 'vendorCategory.vendor'  => function ($q) use ($ses_vendors) {
                     $q->whereIn('id', $ses_vendors);
                 },
                 'translation' => function ($q) use ($langId) {
                     $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
                         ->where('category_translations.language_id', $langId);
-                }
+                },'cateBrands'  
             ])->select('id', 'status', 'icon', 'image', 'slug', 'type_id', 'can_add_products')->where('status', 1)->where('parent_id', $cid)->get();
+
+            // Collection of refrence_ids for promocode
+            if(!empty($category)){
+                foreach($category as $cst){
+                    $p_ids = array_merge($p_ids, $cst->products->pluck('id')->toArray());
+                    $v_ids = array_merge($v_ids, $cst->vendorCategory->pluck('vendor_id')->toArray());
+                    $cateVendors[] = $cst->vendorCategory->toArray();
+                }
+            }
+
+            // Remove duplicate ids and get promocode
+                $p_ids = array_unique($p_ids);
+                $v_ids = array_unique($v_ids);
+                $promo = $this->getRefrenceWisePromoCodes($v_ids, $p_ids);
+   
+
+            // Get popular & top_rated products
+            $popularProducts = $this->vendorProducts($v_ids, $langId, '', 'popular_products');
+            $top_ratedProducts = $this->vendorProducts($v_ids, $langId, '', 'top_rated_products');
+
+            $popular_products[] = array_map(function($v){ 
+                $v->path = get_file_path($v->path,'FILL_URL','260','260'); 
+                return $v;
+            }, $popularProducts->toArray());
+            $top_rated_products[] = array_map(function($v){ 
+                $v->path = get_file_path($v->path,'FILL_URL','260','260'); 
+                return $v;
+            }, $top_ratedProducts->toArray());
             
-            return $this->successResponse($category);
+            // Remove duplicate vendore
+            foreach($cateVendors as $key => $value) {
+                foreach($value as $vel){
+                    if(in_array($vel['vendor_id'], $v_ids)){
+                        $index = array_search($vel['vendor_id'], $v_ids);
+                        unset($v_ids[$index]);
+                        $uniqVendors[] = $vel;
+                    }
+                }
+            }
+
+            $data = [
+                'top_rated_products' => $top_rated_products,
+                'popular_products' => $popular_products,
+                'uniqVendors' => $uniqVendors,
+                'category' => $category,
+                'promo' => $promo
+            ];
+            return $this->successResponse($data);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }

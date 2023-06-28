@@ -157,6 +157,31 @@ if (Session::has('toaster')) {
             'X-CSRF-TOKEN': $('input[name="_token"]').val()
         }
     });
+
+    function get_reached_vendor_location_socket(order_number){
+        Audio.prototype.play = (function(play) {
+            return function() {
+                var audio = this,
+                    args = arguments,
+                    promise = play.apply(audio, args);
+                if (promise !== undefined) {
+                    promise.catch(_ => {
+                        // Autoplay was prevented. This is optional, but add a button to start playing.
+                        var el = document.createElement("button");
+                        el.innerHTML = "Play";
+                        el.addEventListener("click", function() {
+                            play.apply(audio, args);
+                        });
+                        this.parentNode.insertBefore(el, this.nextSibling)
+                    });
+                }
+            };
+        })(Audio.prototype.play);
+        var x = document.getElementById("orderAudio");
+        x.play();
+        $("#reached_location_new_order #orderNo").html(order_number)
+        $("#reached_location_new_order").modal('show');
+    }
     
     function get_latest_order_socket(order_number){
         Audio.prototype.play = (function(play) {
@@ -190,12 +215,13 @@ if (Session::has('toaster')) {
             },
             success: function(response) {
                 if (response.status == 'Success') {
-                    //console.log(response);
                     if (response.data.html != '') {
                         $("#received_new_orders").find(".modal-body").html('');
                         let latest_order_template = _.template($('#latest_order_template').html());
                         $("#received_new_orders").find(".modal-body").append(response.data.html);
-                        $("#received_new_orders").modal('show');
+                        if(response.data.auto_accept_status == 0){
+                        	$("#received_new_orders").modal('show');
+                        }
                     }
                 }
             },
@@ -263,7 +289,10 @@ if (Session::has('toaster')) {
                     var payload_data = JSON.parse(payload.data.data);
                     console.log('firepase msg order number');
                     console.log(payload_data.order_number);
-                    get_latest_order_socket(payload_data.order_number);
+                    setTimeout(()=>{
+                         get_latest_order_socket(payload_data.order_number);
+                    },3000);
+                   
                 }
                 else if(payload.data.type=="order_cancellation_request"){
                     var notificationTitle = payload.notification.title;
@@ -277,6 +306,9 @@ if (Session::has('toaster')) {
                         window.open(payload.notification.click_action, "_blank");
                         push_notification.close();
                     };
+                }else if(payload.data.type=="reached_location"){
+                    var payload_data = JSON.parse(payload.data.data);
+                    get_reached_vendor_location_socket(payload_data.order_number,payload.data.type);
                 } else {
                     //alert();
                     //setTimeout(()=>{
@@ -327,7 +359,7 @@ if (Session::has('toaster')) {
 
     });
     @endif
-    $(document).on("click", ".update_order_status", function() {
+    $(document).on("click", ".update-status", function() {
         Swal.fire({
             title: "{{__('Are you Sure?')}}",
             // icon: 'info',
@@ -385,7 +417,7 @@ if (Session::has('toaster')) {
                                 $(this).remove();
                             });
                             setTimeout(function() {
-                                if ($("#received_new_orders").find(".update_order_status").length == 0) {
+                                if ($("#received_new_orders").find(".update-status").length == 0) {
                                     $("#received_new_orders").modal('hide');
                                 }
                             }, 2000);

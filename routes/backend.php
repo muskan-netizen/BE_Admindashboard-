@@ -54,9 +54,16 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('role/add', 'Client\RolePermissionController@indexRole')->name('roles');
         Route::post('role/save', 'Client\RolePermissionController@saveRole')->name('save.roles');
         Route::POST('role/getRole', 'Client\RolePermissionController@getRole')->name('get.role');
+        
+        Route::POST('role/getRolePermission', 'Client\RolePermissionController@getRolePermission')->name('get.role.permission');
+        Route::post('role/savePermissions', 'Client\RolePermissionController@saveRolePermissions')->name('save.role.permissions');
+
         Route::get('permission/add', 'Client\RolePermissionController@indexPermission')->name('permissions');
         Route::post('permission/save', 'Client\RolePermissionController@savePermission')->name('save.permission');
         Route::post('permission/assign', 'Client\RolePermissionController@assignPermission')->name('assign.permissions');
+        
+        Route::POST('role/getRolePermission', 'Client\RolePermissionController@getRolePermission')->name('get.role.permission');
+        Route::post('role/savePermissions', 'Client\RolePermissionController@saveRolePermissions')->name('save.role.permissions');
         
         Route::get('dashboard', 'Client\DashBoardController@index')->name('client.dashboard');
         Route::get('dashboard_old', 'Client\DashBoardController@dashboard_old')->name('client.dashboard_old');
@@ -122,8 +129,10 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('account/tax/filter', [TaxController::class, 'filter'])->name('account.tax.filter');
         Route::get('account/tax/export', [TaxController::class, 'export'])->name('account.tax.export');
         Route::get('account/vendor/filter', [VendorController::class, 'filter'])->name('account.vendor.filter');
+        Route::get('account/vendor/getVendorCalculations', [VendorController::class, 'getOrderVendorCalculations'])->name('account.vendor.calculations');
         Route::get('account/vendor/export', [VendorController::class, 'export'])->name('account.vendor.export');
         Route::get('account/order/filter', [OrderController::class, 'filter'])->name('account.order.filter');
+        Route::get('account/order/getOrderCalculations', [OrderController::class, 'getOrderVendorCalculations'])->name('account.order.calculations');
         Route::get('account/loyalty/filter', [LoyaltyController::class, 'filter'])->name('account.loyalty.filter');
         Route::get('account/loyalty/export', [LoyaltyController::class, 'export'])->name('account.loyalty.export');
         Route::get('account/order/export', [OrderController::class, 'export'])->name('account.order.export');
@@ -291,6 +300,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('vendor/payout/filter/{id}', 'Client\VendorController@payoutFilter')->name('vendor.payout.filter');
         Route::post('vendor/payout/create/{id}', 'Client\VendorController@vendorPayoutCreate')->name('vendor.payout.create');
         Route::post('vendor/saveConfig/{id}', 'Client\VendorController@updateConfig')->name('vendor.config.update');
+        Route::post('vendor/info/{id}', 'Client\VendorController@updateVendorInfo')->name('vendor.config.additioninfo');
         Route::post('vendor/saveConfig/profile/{id}', 'Client\VendorController@updateVendorConfigProfile')->name('vendor.config.update.profile');
         Route::post('vendor/social/media/urls', 'Client\VendorController@updateVendorSocialMediaUrls')->name('vendor.social.media.urls');
         Route::post('vendor/social/media/delete', 'Client\VendorController@deleteVendorSocialMediaUrl')->name('vendor.social.media.delete');
@@ -363,6 +373,15 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('customer/pay-receive', 'Client\UserController@payReceive')->name('customer.pay.receive');
         Route::post('order/updateReport', 'Client\OrderController@uploadReport')->name('order.upload.report');
         Route::get('orderReport/delete/{id}', 'Client\OrderController@deleteReport')->name('order.report.delete');
+        Route::post('order/delay_time', 'Client\OrderController@addExtraPrepTimeToOrder')->name('order.delay_time');
+
+
+        // Admin Service Area Routes
+        Route::post('admin/serviceArea', 'Client\AdminServiceAreaController@store')->name('admin.serviceArea');
+        Route::get('admin/serviceArea', 'Client\AdminServiceAreaController@index')->name('admin.serviceArea.index');
+        Route::post('admin/deleteArea', 'Client\AdminServiceAreaController@destroy')->name('admin.serviceArea.delete');
+        Route::post('admin/editArea', 'Client\AdminServiceAreaController@edit')->name('admin.serviceArea.edit');
+        Route::post('admin/updateArea/{id}', 'Client\AdminServiceAreaController@update');
 
         Route::get('rental-return-modal/get-rental-return-product-modal', 'Client\OrderController@getRentalReturnProductModal')->name('get-rental-return-product-modal');
         Route::post('order/update-product-rental-return-client', 'Client\OrderController@updateProductRentalReturn')->name('update.order.rental.return.client');
@@ -408,6 +427,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('delivery/ahoy', 'Client\DeliveryOptionController@ahoy')->name('delivery.ahoy');
         Route::post('delivery/last_mile_delivery','Client\DeliveryOptionController@last_mile_delivery')->name('delivery.last_mile_delivery');
         Route::resource('tools','Client\ToolsController');
+        Route::post('tools/copy-catalog','Client\ToolsController@storeData')->name('tools.storeData');
         Route::get('database-logs','Client\ToolsController@databaseAuditingLogs')->name('databaseAuditingLogs'); // Added By Ovi
         Route::get('database-log/{table_name}','Client\ToolsController@singleDatabaseAuditingLogs')->name('singleDatabaseAuditingLogs'); // Added By Ovi
         Route::post('tools/tax','Client\ToolsController@taxCopy')->name('tools.taxCopy');

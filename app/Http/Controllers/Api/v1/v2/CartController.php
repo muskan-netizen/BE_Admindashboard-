@@ -39,8 +39,8 @@ class CartController extends BaseController
 
     public function index(Request $request)
     {
-     
- try {
+
+    try {
 
             // if(($request->has('gateway')) && ($request->gateway != '')){
             //     if($request->has('order')){
@@ -63,80 +63,76 @@ class CartController extends BaseController
             // }
             $user = Auth::user();
             if (!$user->id) {
-                if(checkColumnExists('carts','order_id'))
-                {
-                    $cart = Cart::where('unique_identifier', $user->system_user)->with(['editingOrder']);
-                }else{
-                    $cart = Cart::where('unique_identifier', $user->system_user);
-                }
+                $cart = Cart::where('unique_identifier', $user->system_user)->with(['editingOrder']);
             } else {
-                if(checkColumnExists('carts','order_id'))
-                {
-                    $cart = Cart::where('user_id', $user->id)->with(['editingOrder']);
-                }else{
-                    $cart = Cart::where('user_id', $user->id);
-                }
+                $cart = Cart::where('user_id', $user->id)->with(['editingOrder']);
             }
+            $cartData= [];
             $cart = $cart->first();
-            $address = UserAddress::where('user_id', $cart->user_id)->where('is_primary', 1)->first();
-            $address_id = ($address) ? $address->id : 0;
-            //pr($_POST);
-            if ($user) {
-              
-                $obj = [
-                    'cart' => $cart,
-                    'currency'=> $user->currency,
-                    'code'=> $request->code,
-                    'type'=> $request->type,
-                    'language'=> $user->language,
-                    'requestType'=>2,
-                    'address_id'=> $address_id,
-                    'schedule_datetime_del'=> $request->schedule_datetime_del,
-                    'type'=> $request->type,
-                ];
-               
-                //$cart, $address_id=0 , $code = 'D',$schedule_datetime_del=''
-                $cartData = $this->getCartsNewV2($obj,$request);
-                //pr($cartData);
-                //$cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
+            if($cart) {
 
 
-                if(isset($cart->editingOrder) && !empty($cart->editingOrder) && !empty($cartData))
-                {
-                    $editlimit_datetime = Carbon::now()->toDateTimeString();
-                    $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
-                    $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
-                    $cartData->cart_error_message = '';
-                    if((strtotime($cart->editingOrder->scheduled_date_time) - strtotime($editlimit_datetime)) < 0){
-                        $cartData->cart_error_message = __("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date. Please discard order editing.");
-                    }
-                    $VendorOrderStatus = VendorOrderStatus::where('order_id', $cart->editingOrder->id)->whereNotIn('order_status_option_id', [1, 2])->count();
-                    if($VendorOrderStatus > 0){
-                        $cartData->cart_error_message = __("You can not edit this order. Either order is in processed or in processing. Please discard order editing.");
-                    }
+
+                $address = UserAddress::where('user_id', $cart->user_id)->where('is_primary', 1)->first();
+                $address_id = ($address) ? $address->id : 0;
+                //pr($_POST);
+                if ($user) {
+
+                        $obj = [
+                            'cart' => $cart,
+                            'currency'=> $user->currency,
+                            'code'=> $request->code,
+                            'type'=> $request->type,
+                            'language'=> $user->language,
+                            'requestType'=>2,
+                            'address_id'=> $address_id,
+                            'schedule_datetime_del'=> $request->schedule_datetime_del,
+                            'type'=> $request->type,
+                        ];
+
+                        //$cart, $address_id=0 , $code = 'D',$schedule_datetime_del=''
+                        $cartData = $this->getCartsNewV2($obj,$request);
+                        //pr($cartData);
+                        //$cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
+
+
+                        if(isset($cart->editingOrder) && !empty($cart->editingOrder) && !empty($cartData))
+                        {
+                            $editlimit_datetime = Carbon::now()->toDateTimeString();
+                            $order_edit_before_hours = getAdditionalPreference(['order_edit_before_hours'])['order_edit_before_hours'];
+                            $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
+                            $cartData->cart_error_message = '';
+                            if((strtotime($cart->editingOrder->scheduled_date_time) - strtotime($editlimit_datetime)) < 0){
+                                $cartData->cart_error_message = __("Order can only be edited before Time limit of ".$order_edit_before_hours." Hours from Scheduled date. Please discard order editing.");
+                            }
+                            $VendorOrderStatus = VendorOrderStatus::where('order_id', $cart->editingOrder->id)->whereNotIn('order_status_option_id', [1, 2])->count();
+                            if($VendorOrderStatus > 0){
+                                $cartData->cart_error_message = __("You can not edit this order. Either order is in processed or in processing. Please discard order editing.");
+                            }
+                        }
+
+
+                        $age_restriction = CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
+                                        $q->where('age_restriction',1);
+                                    })->count();
+                        $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
+                        $passbase['check'] = 0;
+                        $passbase['status'] = "";
+                        if($passbase_check && $age_restriction)
+                        {
+                            $passbase['check'] = 1;
+                            if(is_null($user->passbase_verification)){
+                                $passbase['status'] = 'not_created';
+                            }else{
+                                $passbase['status'] = $user->passbase_verification->status;
+                            }
+
+                            $cartData->passbase_check = $passbase['check']??0;
+                            $cartData->passbase_status= $passbase['status']??'';
+                        }
+
+                    return $this->successResponse($cartData);
                 }
-                
-
-                $age_restriction = CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
-                                $q->where('age_restriction',1);
-                            })->count();
-                $passbase_check = VerificationOption::where(['code' => 'passbase','status' => 1])->first();
-                $passbase['check'] = 0;
-                $passbase['status'] = "";
-                if($passbase_check && $age_restriction)
-                {
-                    $passbase['check'] = 1;
-                    if(is_null($user->passbase_verification)){
-                        $passbase['status'] = 'not_created';
-                    }else{
-                        $passbase['status'] = $user->passbase_verification->status;
-                    }
-
-                    $cartData->passbase_check = $passbase['check']??0;
-                    $cartData->passbase_status= $passbase['status']??'';
-                }
-
-                return $this->successResponse($cartData);
             }
 
             return $this->successResponse($cartData);
@@ -174,7 +170,7 @@ class CartController extends BaseController
     /**     * Add product In Cart    *           */
     public function add(Request $request)
     {
-     
+
         try {
             $preference = ClientPreference::first();
             $luxury_option = LuxuryOption::where('title', $request->type)->first();
@@ -188,8 +184,8 @@ class CartController extends BaseController
                 if (empty($user->system_user)) {
                     return $this->errorResponse(__('System id should not be empty.'), 404);
                 }
-                $unique_identifier = $user->system_user;
             }
+            $unique_identifier = $user->system_user;
 
             $product = Product::where('sku', $request->sku)->first();
 
@@ -222,7 +218,7 @@ class CartController extends BaseController
             }
 
             $order_edit_qty = (!empty($already_added_product_in_cart) && !empty($already_added_product_in_cart->order_quantity))?$already_added_product_in_cart->order_quantity:0;
-            if(checkColumnExists('products','is_long_term_service') && $product->is_long_term_service !=1){
+            if($product->is_long_term_service !=1){
                 if ($product->category->categoryDetail->type_id == 8) {
                 } else {
                     if ( ($product->sell_when_out_of_stock == 0) && (($productVariant->quantity + $order_edit_qty) < $request->quantity && $product->has_inventory == 1) ) {
@@ -235,7 +231,7 @@ class CartController extends BaseController
             $isLongTermService =0;
             if( $request->has('service_start_time')){
                 $isLongTermService  =1;
-               
+
                 $time = '1998-01-14 '.$request->service_start_time; /**only need time */
                 $service_start_time = Carbon::parse($time, $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 $start_date_time = $service_start_time ; /** we user start_date_time for long term order timing */
@@ -349,28 +345,26 @@ class CartController extends BaseController
                     'service_start_date'  => @$service_start_date
                 ];
 
-                
+
             //Recurring Booking
             $recurring_days = '';
-            if(checkColumnExists('products','is_recurring_booking') && $product->is_recurring_booking == 1){
+            if($product->is_recurring_booking == 1){
 
                 if (empty($request->recurringformPost)) {
                     return $this->errorResponse(__('Recurring booking type not be empty.'), 404);
                 }
 
-               
+
                 $cartRecurringCall = new FrontCartController();
                 $recurringformPost = $cartRecurringCall->recurringCalculationFunction($request);
                 $action = '5';
                 //Check if recurring_booking_type,recurring_week_day,recurring_week_type,recurring_day_data,recurring_booking_time coulmn exists in table
-               if(checkColumnExists('cart_products','recurring_booking_type')){
-                   $start_date             = $recurringformPost->startDate;
-                   $end_date               = $recurringformPost->endDate;
-                   $recurring_days  = @$recurringformPost->selectedCustomdates??null;
-                   $weekTypes  = @$recurringformPost->weekTypes??null;
-                   $action = $recurringformPost->action??5;
-                   $schedule_time = $recurringformPost->schedule_time??null;
-               }
+                $start_date             = $recurringformPost->startDate;
+                $end_date               = $recurringformPost->endDate;
+                $recurring_days  = @$recurringformPost->selectedCustomdates??null;
+                $weekTypes  = @$recurringformPost->weekTypes??null;
+                $action = $recurringformPost->action??5;
+                $schedule_time = $recurringformPost->schedule_time??null;
 
                 //In case of on recurringformPost
                 if (!empty($request->recurringformPost)) {
@@ -382,10 +376,10 @@ class CartController extends BaseController
                 }
 
             }
-           
 
-                if($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData) &&  checkColumnExists('cart_products','dispatch_agent_price') ){
-                  
+
+                if($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData)){
+
                     $dataTime = Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                     $slot = $request->dispatcherAgentData['onDemandBookingdate'] ?? Carbon::parse($request->dispatcherAgentData['onDemandBookingdate'], $timezone)->setTimezone('UTC')->format('H:i:s');
                     $cart_product_detail['schedule_type'] = 'schedule';
@@ -664,8 +658,6 @@ class CartController extends BaseController
     {
 
         try{
-        $islongTermInDB = checkColumnExists('products','is_long_term_service') ;
-        $isRecurringInDB = checkColumnExists('products','is_recurring_booking') ;
         $container_charges_tax = 0;
         $deliver_fee_charges_tax = 0;
         $total_service_fee_tax = 0;
@@ -894,7 +886,7 @@ class CartController extends BaseController
 
                     if(isset($prod->product) && !empty($prod->product)){
                       //  pr($prod->product);
-                        if($islongTermInDB ==1 && $prod->product->is_long_term_service ==1){
+                        if($prod->product->is_long_term_service ==1){
                             $vendorData->is_long_term_service = 1;
                             $LongTermProducts = $prod->product->LongTermProducts;
                             $is_long_term = 1;
@@ -939,7 +931,7 @@ class CartController extends BaseController
                         $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                         $price_in_currency = $prod->pvariant ? $prod->pvariant->price : 0;
                          //  GET PRICE from driver
-                        if( checkColumnExists('cart_products', 'dispatch_agent_price') && ( $is_service_product_price_from_dispatch ==1 )){
+                        if($is_service_product_price_from_dispatch ==1){
                             $price_in_currency = isset($prod->dispatch_agent_price) ? $prod->dispatch_agent_price : 0 ;
                         }
                         $total_markup_charges += $prod->pvariant->markup_price??0;
@@ -1076,7 +1068,7 @@ class CartController extends BaseController
                                     $checkLastMile = 1;
                                     $product_tags = $prod->product->tags;
                                 } /** check lont term product product last mile  */
-                                else if( ($islongTermInDB ==1) && ($prod->product->is_long_term_service ==1) && !empty($prod->product->LongTermProduct) && $prod->product->LongTermProduct->first()->Requires_last_mile ==1){
+                                else if(($prod->product->is_long_term_service ==1) && !empty($prod->product->LongTermProduct) && $prod->product->LongTermProduct->first()->Requires_last_mile ==1){
 
                                     $checkLastMile = 1;
                                     $product_tags = $prod->product->LongTermProduct->first()->tags;
@@ -1451,7 +1443,7 @@ class CartController extends BaseController
             }
 
             } //End Tax Code
-            
+
             // Add Delivery Slot Price In total amount
             if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
                 $delivery_slot_amount += decimal_format($prod->slot_price);
@@ -1578,13 +1570,13 @@ class CartController extends BaseController
         $cart->total_fixed_fee_amount = $total_fixed_fee_amount;
         $cart->gross_paybale_amount = $order_sub_total;
 
-        
+
         $cart->total_addon_price = $total_addon_price;
         $cart->total_discount_amount = $total_disc_amount * $clientCurrency->doller_compare;
         $cart->products = $cartData;
         $cart->item_count = $item_count;
         $cart->is_long_term_added = $is_long_term;
-        
+
         $cart->delivery_slot_amount = $delivery_slot_amount;
 
         $temp_total_paying = $total_paying  + $total_tax - $total_disc_amount;
@@ -1614,7 +1606,7 @@ class CartController extends BaseController
         // }
 
 
-        
+
         if($total_taxable_amount>0){
             $cart->total_payable_amount = $cart->total_payable_amount +$total_taxable_amount;
         }
@@ -1932,7 +1924,7 @@ class CartController extends BaseController
             if($orderVendor->schedule_slot == $schedule_slot && $if_order_scheduled == 0){
                 $schedule_pickup = Carbon::parse($orderVendor->scheduled_date_time);
                 $schedule_pickup_final = convertDateTimeInTimeZone($schedule_pickup, $timezone, 'Y-m-d');
-                
+
                 if($schedule_pickup_final == $schedule_datetime){
                     // Increment orderCount and return this count to front end for validation
                     $orderCount++;

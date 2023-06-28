@@ -44,7 +44,7 @@ trait CartManagerV2{
         $this->user_allAddresses = UserAddress::where('user_id', $this->user->id)->where('status',1)->orderBy('is_primary','Desc')->get();
     }
     $this->preferences = ClientPreference::with(['client_detail:id,code,country_id'])->first();
-    $this->additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive']);
+    $this->additionalPreferences = (object)getAdditionalPreference(['is_tax_price_inclusive','is_service_price_selection','is_service_product_price_from_dispatch']);
 
 
     $this->variantsData  = $this->variant_options = $this->vendorAddons = array();
@@ -270,8 +270,7 @@ trait CartManagerV2{
        * Get Cart Items
        *{requestType}:1 if for webb and 2 for api
        */
-      public function getCartsNewV2($obj = ['code'=>'D','address_id'=>0,'schedule_datetime_del'=>'','currency'=>'','type'=>'','language'=>'','requestType'=>1,'cart'=>[]],$request)
-      {
+    public function getCartsNewV2($obj = ['code'=>'D','address_id'=>0,'schedule_datetime_del'=>'','currency'=>'','type'=>'','language'=>'','requestType'=>1,'cart'=>[]],$request){
 
         $cart = $obj['cart'];
         //Request type 1 variables
@@ -287,8 +286,6 @@ trait CartManagerV2{
     
         $processorProduct = [];
         
-        $islongTermInDB = checkColumnExists('products','is_long_term_service') ;
-        $isRecurringBooking = checkColumnExists('products','is_recurring_booking') ;
         $this->configV2($obj);
         $address = [];
         $category_array = [];
@@ -300,6 +297,7 @@ trait CartManagerV2{
         $countries = Country::get();
         $cart->pharmacy_check = $preferences->pharmacy_check;
         $customerCurrency = $this->customerCurrency;
+        $doller_compare = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
         $nowdate = Carbon::now()->toDateTimeString();
         $latitude = '';
         $longitude = '';
@@ -321,9 +319,11 @@ trait CartManagerV2{
         $action = (session()->has('vendorType')) ? session()->get('vendorType') : 'delivery';
         $is_service_product_price_from_dispatch = 0;
         if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( $action == 'on_demand')){
-            $is_service_product_price_from_dispatch =1;
-            $this->is_service_product_price_from_dispatch =1;
+            $onDemandPricingSelected = (session()->has('onDemandPricingSelected')) ? session()->get('onDemandPricingSelected') : 'vendor';
+            $getOnDemandPricingRule = getOnDemandPricingRule($action,  $onDemandPricingSelected,$additionalPreference);
+            $this->is_service_product_price_from_dispatch = $is_service_product_price_from_dispatch =  $getOnDemandPricingRule['is_price_from_freelancer'];;
         }
+        //pr($is_service_product_price_from_dispatch );
 
         if($user){
             $user_timezone =  $user->timezone ?? $user_timezone  ;
@@ -383,11 +383,9 @@ trait CartManagerV2{
        //Get All Taxes    
 
 
-        if(checkColumnExists('cart_products','recurring_booking_type')){
-            $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','cart_id','recurring_booking_type','recurring_week_day','recurring_week_type','recurring_day_data','recurring_booking_time','delivery_date', 'slot_price', 'slot_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
-        }else{
-            $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','cart_id','delivery_date','slot_price','slot_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
-        }
+
+        $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','cart_id','recurring_booking_type','recurring_week_day','recurring_week_type','recurring_day_data','recurring_booking_time','delivery_date', 'slot_price', 'slot_id','dispatch_agent_id', 'is_cart_checked')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        
 
 
        //Get All Taxes
@@ -475,8 +473,8 @@ trait CartManagerV2{
                 $subscription_discount_delivery  = 0;
                 $subscription_discount_vendor    = 0;
                // if(!empty($user)){
-                    $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user_timezone);
-                    $vendorData->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime)) ;
+                $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user_timezone);
+                $vendorData->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime)) ;
                 // }else{
                 //     $vendorData->scheduled_date_time = date('Y-m-d',strtotime($vendorData->scheduled_date_time)) ;
                 // }
@@ -498,7 +496,7 @@ trait CartManagerV2{
              
                 $vendorData->slotsdate = $slotsdate;
                 $vendorData->slots = $slots;
-                $vendorData->slotsCnt =  $slotcount ;
+                $vendorData->slotsCnt =  $slotcount;
                 $vendorData->delay_date = date('Y-m-d');
 
                 if(session()->has('vendorTable')) {
@@ -547,7 +545,8 @@ trait CartManagerV2{
                     }
                 }
                 $cart_product_ids = [];
-
+                $vendor_discount_amount = 0;
+                
                 $deliver_fee_charges = 0;
                 $total_fixed_fee_tax = 0;
                 // $total_service_fee = 0;
@@ -571,14 +570,14 @@ trait CartManagerV2{
                     //if we required any additional price * multiply (Right now its for reccuring)
                     $prod->recurring_date_count = 1;
 
-                    if($isRecurringBooking ==1 && $prod->product->is_recurring_booking ==1){
+                    if($prod->product->is_recurring_booking ==1){
                         $prod->is_recurring_booking   = 1;
                         $prod->recurring_booking_time = convertDateTimeInTimeZone($prod->recurring_booking_time, $user_timezone, 'H:i');
                         $cnt = @count(explode(",",$prod->recurring_day_data));
                         $prod->recurring_date_count = $cnt != 0 ? $cnt : 1;
                         $is_recurring_booking         = 1;
                     }
-                    if($islongTermInDB ==1 && $prod->product->is_long_term_service ==1){
+                    if($prod->product->is_long_term_service ==1){
                         $vendorData->is_long_term_service = 1;
                         $is_long_term_service = 1;
                         $LongTermProducts = $prod->product->LongTermProducts;
@@ -655,7 +654,7 @@ trait CartManagerV2{
                         // dd($security_amount);
                    // } ///// Notable
                     //  GET PRICE from driver
-                    if( checkColumnExists('cart_products', 'dispatch_agent_price') && ( $is_service_product_price_from_dispatch ==1 )){
+                    if($is_service_product_price_from_dispatch ==1){
                             $price_in_currency = isset($prod->dispatch_agent_price) ? $prod->dispatch_agent_price : 0 ;
                         }
                         $totalMarkup += $prod->pvariant->markup_price * $prod->quantity??0;
@@ -676,10 +675,10 @@ trait CartManagerV2{
                             $container_charges_in_doller_compare = $prod->pvariant->container_charges??0;
                             if($customerCurrency && $prod->pvariant){
                                 // $price_in_currency = $prod->pvariant->price / $divider;
-                                $price_in_doller_compare = $price_in_currency * $customerCurrency->doller_compare;
+                                $price_in_doller_compare = $price_in_currency * $doller_compare;
 
                             $container_charges_in_currency = $prod->pvariant->container_charges / $divider;
-                            $container_charges_in_doller_compare = $container_charges_in_currency * $customerCurrency->doller_compare;
+                            $container_charges_in_doller_compare = $container_charges_in_currency * $doller_compare;
                         }
                         $quantity_price = $price_in_doller_compare * $prod->quantity;
 
@@ -727,8 +726,10 @@ trait CartManagerV2{
                     $total_container_charges = $container_charges_in_currency * $prod->quantity;
                     $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
 
-                    $sub_total+=$quantity_price+$quantity_container_charges;
-
+                    if($prod->is_cart_checked == 1){
+                        $sub_total+=$quantity_price+$quantity_container_charges;
+                    }
+                    
                     $prod->pvariant->price_in_cart = $prod->pvariant->price??0;
                    
                     $total_quantity += $prod->quantity;
@@ -739,7 +740,7 @@ trait CartManagerV2{
                     // $prod->bid_discount = $pro;
                     $prod->pvariant->media_one = isset($prod->pvariant->media) ? $prod->pvariant->media->first() : [];
                     $prod->pvariant->media_second = isset($prod->product->media) ? $prod->product->media->first() : [];
-                    $prod->pvariant->multiplier = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
+                    $prod->pvariant->multiplier = $doller_compare ?? 1;
                     if(@$prod->bid_discount){
                         $bid_vendor_discount += (($quantity_price * $prod->bid_discount)/100);
                     }
@@ -749,9 +750,10 @@ trait CartManagerV2{
                     $prod->quantity_container_charges = decimal_format($quantity_container_charges);
                     //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
                     $prod->quantity_role_price = $quantity_role_price;
-
-                    $payable_amount = $payable_amount + $prod->additional_price + $quantity_price + $quantity_container_charges;
-
+                    
+                    if($prod->is_cart_checked == 1){
+                        $payable_amount = $payable_amount + $prod->additional_price + $quantity_price + $quantity_container_charges;
+                    }
 
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                     $total_container_charges = $total_container_charges + $quantity_container_charges;
@@ -781,7 +783,7 @@ trait CartManagerV2{
                                     $opt_price_in_doller_compare = $addons->option->price;
                                     if($customerCurrency){
                                         $opt_price_in_currency = $addons->option->price / $divider;
-                                        $opt_price_in_doller_compare = $opt_price_in_currency * $customerCurrency->doller_compare;
+                                        $opt_price_in_doller_compare = $opt_price_in_currency * $doller_compare;
                                     }
 
                                     if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
@@ -838,7 +840,7 @@ trait CartManagerV2{
                                     $addon_price=$addons->option->price;
                                     $addons->option->price = decimal_format($opt_price_in_currency);
 
-                                    $addons->option->multiplier = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
+                                    $addons->option->multiplier = $doller_compare ?? 1;
 
 
                                     // Recurring Booking Enabled
@@ -920,6 +922,81 @@ trait CartManagerV2{
                                 }
                             }
                         }
+                        
+                        if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
+                            if (isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)) {
+                                if($vendorData->coupon->promo->restriction_on == 0 || $vendorData->coupon->promo->restriction_on == 1)
+                                {
+                                    $couponGetAmount = $coupon_product_discount;
+                                }
+                                if($vendorData->coupon->promo->first_order_only==1){
+                                    if(auth()->user()){
+                                        $userOrder = auth()->user()->orders->first();
+                                        if($userOrder){
+                                            $cart->coupon()->delete();
+                                            $vendorData->coupon()->delete();
+                                            unset($vendorData->coupon);
+                                            $PromoDelete =1;
+                                        }
+                                    }
+                                }
+                                if ($PromoDelete !=1) {
+                                    if(!($vendorData->coupon->promo->expiry_date >= $nowdate) ){
+                                        $cart->coupon()->delete();
+                                        $vendorData->coupon()->delete();
+                                        unset($vendorData->coupon);
+                                        $PromoDelete =1;
+                                    }
+                                }
+                                if ( $PromoDelete !=1) {
+                                    
+                                    $minimum_spend = 0;
+                                    if (isset($vendorData->coupon->promo->minimum_spend)) {
+                                        $minimum_spend = $vendorData->coupon->promo->minimum_spend * $doller_compare;
+                                    }
+                                    
+                                    $maximum_spend = 0;
+                                    if (isset($vendorData->coupon->promo->maximum_spend)) {
+                                        $maximum_spend = $vendorData->coupon->promo->maximum_spend * $doller_compare;
+                                    }
+                                    
+                                    if( ($minimum_spend <= $couponGetAmount ) && ($maximum_spend >= $couponGetAmount))
+                                    {
+                                        if ($vendorData->coupon->promo->promo_type_id == 2) {
+                                            $total_discount_percent = $vendorData->coupon->promo->amount;
+                                            $vendor_discount_amount = $total_discount_percent;
+                                            $payable_amount -= $total_discount_percent;
+                                            $coupon_amount_used = $total_discount_percent;
+                                        } else {
+                                            $gross_amount = decimal_format($payable_amount - $taxable_amount-$total_container_charges);
+                                            $percentage_amount = ($gross_amount * $vendorData->coupon->promo->amount / 100);
+                                            $payable_amount -= $percentage_amount;
+                                            $vendor_discount_amount = $percentage_amount;
+                                            $coupon_amount_used = $percentage_amount;
+                                        }
+                                    }
+                                    else{
+                                        
+                                        $cart->coupon()->delete();
+                                        $vendorData->coupon()->delete();
+                                        unset($vendorData->coupon);
+                                        $PromoDelete =1;
+                                    }
+                                }
+                                if ( $PromoDelete !=1) {
+                                    if($vendorData->coupon->promo->allow_free_delivery ==1   ){
+                                        $PromoFreeDeliver = 1;
+                                        // $coupon_amount_used = $coupon_amount_used ;
+                                        $coupon_amount_used = $coupon_amount_used +  $deliveryCharges_real;
+                                        $deliveryfeeOnCoupon = 1;
+                                        $payable_amount = $payable_amount;
+                                        $deliveryfeeOnCoupon = 1;
+                                    }
+                                }
+                            }
+                        }
+                        
+                        
                     //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
                     /* Getting taxes info */
                         $select = '';
@@ -930,9 +1007,9 @@ trait CartManagerV2{
                                 $rate = $tax_value->tax_rate;
                                 $tax_amount = ($price_in_doller_compare * $rate) / 100;
                                 if(!$this->additionalPreferences->is_tax_price_inclusive){
-                                    $product_tax = $quantity_price * $rate / 100;
+                                    $product_tax = ($quantity_price-$vendor_discount_amount )* $rate / 100;
                                 }else{
-                                    $product_tax = ($quantity_price * $rate) / (100 + $rate);
+                                    $product_tax = (($quantity_price-$vendor_discount_amount ) * $rate) / (100 + $rate);
                                 }
                                 // dd($product_tax);
 
@@ -1002,7 +1079,7 @@ trait CartManagerV2{
                                 $checkLastMile = 1;
                                 $lastMileDate['tags'] = $prod->product->tags;
                             } /** check lont term product product last mile  */
-                            else if( ($islongTermInDB ==1) && ($prod->product->is_long_term_service ==1) && !empty($prod->product->LongTermProduct) && $prod->product->LongTermProduct->first()->Requires_last_mile ==1){
+                            else if(($prod->product->is_long_term_service ==1) && !empty($prod->product->LongTermProduct) && $prod->product->LongTermProduct->first()->Requires_last_mile ==1){
 
                                 $checkLastMile = 1;
                                 $lastMileDate['tags'] = $prod->product->LongTermProduct->first()->tags;
@@ -1083,8 +1160,8 @@ trait CartManagerV2{
                     }
                 }
 
-                $is_slot_from_dispatch =  checkColumnExists('products', 'is_slot_from_dispatch') ?  $prod->product->is_slot_from_dispatch : '';
-                $show_dispatcher_agent =  checkColumnExists('products', 'is_show_dispatcher_agent') ? $prod->product->is_show_dispatcher_agent  : '';
+                $is_slot_from_dispatch =  $prod->product->is_slot_from_dispatch;
+                $show_dispatcher_agent =  $prod->product->is_show_dispatcher_agent;
                 $last_mile_check       = $prod->product->Requires_last_mile  ;
                 $cateTypeId = $prod->product->productcategory ? $prod->product->productcategory->type_id : '';
 
@@ -1155,7 +1232,6 @@ trait CartManagerV2{
                         ->where('is_live', 1)
                         ->first();
 
-                    $doller_compare = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
                     $upsell = new FrontController();
                     $up_prods = $upsell->metaProduct($langId, $doller_compare, 'upSell', ($product->upSell ?? ''));
                     if($up_prods){
@@ -1179,78 +1255,6 @@ trait CartManagerV2{
                 }
                 // dd($security_amount);
                 // $couponGetAmount = $payable_amount ;
-
-                if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
-                    if (isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)) {
-                        if($vendorData->coupon->promo->restriction_on == 0 || $vendorData->coupon->promo->restriction_on == 1)
-                        {
-                            $couponGetAmount = $coupon_product_discount;
-                        }
-                        if($vendorData->coupon->promo->first_order_only==1){
-                            if(auth()->user()){
-                                $userOrder = auth()->user()->orders->first();
-                                if($userOrder){
-                                    $cart->coupon()->delete();
-                                    $vendorData->coupon()->delete();
-                                    unset($vendorData->coupon);
-                                    $PromoDelete =1;
-                                }
-                            }
-                        }
-                        if ($PromoDelete !=1) {
-                            if(!($vendorData->coupon->promo->expiry_date >= $nowdate) ){
-                                $cart->coupon()->delete();
-                                $vendorData->coupon()->delete();
-                                unset($vendorData->coupon);
-                                $PromoDelete =1;
-                            }
-                        }
-                        if ( $PromoDelete !=1) {
-
-                            $minimum_spend = 0;
-                            if (isset($vendorData->coupon->promo->minimum_spend)) {
-                                $minimum_spend = $vendorData->coupon->promo->minimum_spend * $doller_compare;
-                            }
-
-                            $maximum_spend = 0;
-                            if (isset($vendorData->coupon->promo->maximum_spend)) {
-                                $maximum_spend = $vendorData->coupon->promo->maximum_spend * $doller_compare;
-                            }
-
-                            if( ($minimum_spend <= $couponGetAmount ) && ($maximum_spend >= $couponGetAmount))
-                            {
-                                if ($vendorData->coupon->promo->promo_type_id == 2) {
-                                    $total_discount_percent = $vendorData->coupon->promo->amount;
-
-                                    $payable_amount -= $total_discount_percent;
-                                    $coupon_amount_used = $total_discount_percent;
-                                } else {
-                                    $gross_amount = decimal_format($payable_amount - $taxable_amount-$total_container_charges);
-                                    $percentage_amount = ($gross_amount * $vendorData->coupon->promo->amount / 100);
-                                    $payable_amount -= $percentage_amount;
-                                    $coupon_amount_used = $percentage_amount;
-                                }
-                            }
-                            else{
-
-                                $cart->coupon()->delete();
-                                $vendorData->coupon()->delete();
-                                unset($vendorData->coupon);
-                                $PromoDelete =1;
-                            }
-                        }
-                        if ( $PromoDelete !=1) {
-                            if($vendorData->coupon->promo->allow_free_delivery ==1   ){
-                                $PromoFreeDeliver = 1;
-                              // $coupon_amount_used = $coupon_amount_used ;
-                                $coupon_amount_used = $coupon_amount_used +  $deliveryCharges_real;
-                                $deliveryfeeOnCoupon = 1;
-                                $payable_amount = $payable_amount;
-                                $deliveryfeeOnCoupon = 1;
-                            }
-                        }
-                    }
-                }
 
                 $promoCodeController = new PromoCodeController();
                 $promoCodeRequest = new Request();
@@ -1329,7 +1333,7 @@ trait CartManagerV2{
                 // $vendorData->delaySlot = (($slotsDate)?$slotsDate:'');
                 $vendorData->closed_store_order_scheduled = (($slotsDate)?$product->vendor->closed_store_order_scheduled:0);
 
-                $vendorData->delOptions = $select;
+                $vendorData->delOptions = $select??'';
 
                 //mohit sir branch code added by sohail
                 $processorProduct = [];
@@ -1493,14 +1497,13 @@ trait CartManagerV2{
             $cart->vendorCnt = $cartData->count();
             $cart->scheduled = $scheduled;
             $cart->is_recurring_booking = $is_recurring_booking;
-            $cart->schedule_type =  $cart->schedule_type;
             $cart->closed_store_order_scheduled =  0;
             $myDate = date('Y-m-d');
             if($cart->vendorCnt==1){
                 $vendorId = $cartData[0]->vendor_id;
                 $cart->scheduled->scheduled_date_time = $cartData[0]->scheduled_date_time;
                 $cart->scheduled->slot = $cartData[0]->schedule_slot;
-
+                $cart->is_vendor_closed = $cartData[0]->is_vendor_closed;
                 //type must be a : delivery , takeaway,dine_in
                 $duration = Vendor::where('id',$vendorId)->select('slot_minutes','closed_store_order_scheduled')->first();
                 $closed_store_order_scheduled = (($slotsDate)?$duration->closed_store_order_scheduled:0);
@@ -1612,7 +1615,7 @@ trait CartManagerV2{
             $other_taxes_string='tax_fixed_fee:'.$taxCharges['total_fixed_fee_tax'].',tax_service_charges:'.$taxCharges['total_service_fee'].',tax_delivery_charges:'.$taxCharges['deliver_fee_charges'].',tax_markup_fee:'.$taxCharges['total_markup_fee_tax'].',product_tax_fee:'.$total_taxable_amount;;
 
 
-
+            $cart->address_id = $address_id??'';
             $cart->bid_total_discount = $bid_total_discount??0;
             $gross_amount = decimal_format($total_payable_amount + $total_discount_amount + $loyalty_amount_saved + $wallet_amount_used - $total_taxable_amount);
             $cart->other_taxes = $other_taxes;
@@ -1729,7 +1732,7 @@ trait CartManagerV2{
             $cart->products = $cartData->toArray();
         }
         return $cart;
-      }
+    }
 
     public function hideSecretKeysV2($res){
         return $res->makeHidden(['map_key','map_secret', 'mail_password', 'mail_host', 'mail_username', 'sms_secret',
@@ -1790,7 +1793,7 @@ trait CartManagerV2{
 
             $price_in_currency = $prod->pvariant ? $prod->pvariant->price : 0;
                 //  GET PRICE from driver
-            if( checkColumnExists('cart_products', 'dispatch_agent_price') && ( $this->is_service_product_price_from_dispatch ==1 )){
+            if($this->is_service_product_price_from_dispatch ==1){
                 $price_in_currency = isset($prod->dispatch_agent_price) ? $prod->dispatch_agent_price : 0 ;
             }
             foreach ($prod->pvariant->vset as $variant_set_option) {

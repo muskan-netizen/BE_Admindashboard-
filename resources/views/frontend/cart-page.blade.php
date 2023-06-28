@@ -75,9 +75,11 @@
     if ($additionalPreference['is_token_currency_enable'] == 1) {
         $hidden_token = 'd-none';
     }
-    if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
-        $is_service_product_price_from_dispatch_forOnDemand =1;
-    }
+    $getOnDemandPricingRule = getOnDemandPricingRule($serviceType, (@Session::get('onDemandPricingSelected') ?? ''),$additionalPreference);
+    // if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+    //     $is_service_product_price_from_dispatch_forOnDemand =1;
+    // }
+    $is_service_product_price_from_dispatch_forOnDemand =  $getOnDemandPricingRule['is_price_from_freelancer'] ?? 0;
 
 @endphp
 
@@ -147,7 +149,11 @@
                     </div>
 
                     <div class="row border-bottom product_title_add py-1 no-gutters">
-                        <div class="col-md-4 col">
+                        <div class="col-md-1 col">
+                            
+                        </div>
+
+                        <div class="col-md-3 col">
                             <span>{{ __('Product Details') }}</span>
                         </div>
 
@@ -259,12 +265,13 @@
                         <div id="tbody_{{ $product->vendor->id }}">
 
                             @foreach ($product->vendor_products as $vendor_product)
-                                {{-- @php
-                                pr($vendor_product->schedule_slot_name);
-                                @endphp --}}
                                 <div class="row al align-items-md-center vendor_products_tr alFourTemplateCartPage"
                                     id="tr_vendor_products_{{ $vendor_product->id }}">
-                                    <div class="product-img col-3 col-md-2">
+                                    <div class="product-img col-1 col-md-1">
+                                        <input type="checkbox" name="checked_cart_product" class="checked-cart-product" id="checked_cart_product" value="{{$vendor_product->id}}" {{ $vendor_product->is_cart_checked ? 'checked' : '' }} >
+                                        <i class="fa fa-spinner fa-pulse d-none" id="fa_spinner_{{$vendor_product->id}}" aria-hidden="true" style="color: var(--theme-deafult)"></i>
+                                    </div>
+                                    <div class="product-img col-2 col-md-1">
                                         @if (!empty($vendor_product->pvariant->media_one))
                                             <img class='blur-up lazyload w-100'
                                                 data-src="{{ $vendor_product->pvariant->media_one->pimage->image->path->proxy_url . '200/200' . $vendor_product->pvariant->media_one->pimage->image->path->image_path }}">
@@ -433,12 +440,16 @@
                                                                 data-cart="{{ $vendor_product->cart_id }}"
                                                                 data-product="{{ $vendor_product->product->id }}"
                                                                 data-vendor_id="{{ $vendor_product->vendor_id }}">{{ __('Add Prescription') }}</button>
+                                                                 <span class="alert-danger error_prescription bg-transparent"
+                                                          id="error_prescription_{{ $vendor_product->product->id }}"
+                                                         style="display:none;">Prescription required</span>
                                                             @if ($vendor_product->cart_product_prescription > 0)
                                                                 <h4 class="mt-0 mb-1"
                                                                     style="word-wrap: break-word; line-height:20px">
                                                                     <strong>{{ $vendor_product->cart_product_prescription }}
                                                                         {{ __('Prescription Added') }}</strong></h4>
-                                                            @endif
+                                                   
+                                                                            @endif
                                                         @endif
                                                     @endif
 
@@ -584,7 +595,7 @@
                                                             <div class="col-4 vendor_slot_cart">
                                                                 <input type="hidden" class="custom-control-input vendor_product_schedule_datetime check"
                                                                     id="tasknow" name="task_type" value='schedule'>
-                                                                  
+                                                                    
                                                                         @if ($product->slotsCnt != 0)
                                                                             <input type="date"
                                                                                 class="form-control vendor_schedule_datetime"
@@ -1587,62 +1598,10 @@
                             $product->vendor->order_min_amount > 0 &&
                             $product->product_total_amount + $product->vendor->fixed_fee_amount < $product->vendor->order_min_amount
                         ))
-                         @if($cart_details->is_recurring_booking != 1 && $serviceType != 'rental') 
+                        @if($cart_details->is_recurring_booking != 1 && $serviceType != 'rental') 
                               @include('frontend.cart.scheduleSlot')
                         @endif
-                            @if ($cart_details->is_long_term_service != 1 &&
-                                ($cart_details->closed_store_order_scheduled == 1 || $client_preference_detail->off_scheduling_at_cart != 1) &&
-                                $cart_details->vendorCnt == 1 &&
-                                !in_array($serviceType, ['appointment', 'on_demand']))
-                                @if ($client_preference_detail->business_type != 'laundry')
-                                    <div class="row arabic-lng position-relative my-3" id="dateredio">
-                                        <div class=" col-md-12 mb-2 mb-md-0 text-right">
-                                            <div class="login-form col schedule_btn">
-                                                <ul
-                                                    class="list-inline ml-auto d-flex align-items-center justify-content-end">
-                                                    <li class="d-inline-block mr-1">
-                                                        <input type="hidden" class="custom-control-input check"
-                                                            id="vendor_id" name="vendor_id"
-                                                            value="{{ $cart_details->vendor_id }}">
-                                                        <input type="hidden" class="custom-control-input check"
-                                                            id="tasknow" name="task_type"
-                                                            value="{{ $cart_details->schedule_type == 'schedule' ? 'schedule' : 'now' }}">
-                                                    </li>
-                                                    @if ($cart_details->delay_date == 0)
-                                                        {{-- <li class="d-inline-block mr-1">
-                                <input type="radio" class="custom-control-input check" id="tasknow" name="tasktype" value="now" <%= ((cart_details->schedule_type == 'now' || cart_details->schedule_type == '' || cart_details->schedule_type == null) ? 'checked' : '') %> >
-                                <label class="btn btn-solid" for="tasknow">{{__('Now')}}</label>
-                            </li> --}}
-                                                    @endif
-                                                    <li class="d-inline-block ">
-                                                        <input type="radio"
-                                                            class="custom-control-input check taskschedulebtn"
-                                                            id="taskschedule" name="tasktype" value=""
-                                                            {{ $cart_details->schedule_type == 'schedule' || $cart_details->delay_date != 0 ? 'checked' : '' }}
-                                                            style="{{ $cart_details->schedule_type != 'schedule' ? '' : 'display:none!important' }}">
-                                                        <label class="btn btn-solid mb-0 taskschedulebtn"
-                                                            for="taskschedule"
-                                                            style="{{ $cart_details->schedule_type != 'schedule' ? '' : 'display:none!important' }}">{{ __('Schedule') }}</label>
-                                                    </li>
-                                                    @if ($cart_details->closed_store_order_scheduled != 1 && $cart_details->deliver_status == 0)
-                                                        <li class="close-window">
-                                                            <i class="fa fa-times cross" aria-hidden="true"></i>
-                                                        </li>
-                                                    @else
-                                                        <li class="close-window">
-                                                            <i class="fa fa-times cross"
-                                                                style="display:none!important" aria-hidden="true"></i>
-                                                        </li>
-                                                    @endif
-                                                </ul>
-                                                @include('frontend.cart.schedule_time')
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                @endif
-                            @endif
-
+                         
                             <div class="col-sm-6 col-lg-12 mt-2 text-sm-right cart-checkout_btn">
                                 @if (isset($ageVerify->status) && $ageVerify->status == 1)
                                     {{-- <button id="verify_your_age" class="btn btn-solid " type="button" >{{__('Verify Your Age')}}</button> --}}

@@ -3,14 +3,13 @@
 namespace App\Http\Controllers\Front;
 
 use Auth;
-use Omnipay\Omnipay;
-use App\Models\Payment;
 use App\Models\PaymentOption;
 use Illuminate\Http\Request;
 use App\Models\{Order, User, Cart, ClientCurrency, CartProduct};
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\Front\{FrontController, CashfreeGatewayController,EasebuzzController,VnpayController, PayUGatewayController, MyCashGatewayController,UseRedePaymentController,OpenpayPaymentController};
+
 
 class PaymentController extends FrontController{
 
@@ -71,14 +70,11 @@ class PaymentController extends FrontController{
             // }
         }
         $checkCod = '';
-        $payCoulmn = checkColumnExists('carts','payable_amount');
-        if($payCoulmn){
-            $codMinAmount = PaymentOption::select('credentials')->where('code','cod')->value('credentials');
-            $cod = json_decode($codMinAmount);
-            if(isset($cod->cod_min_amount) && ($cod->cod_min_amount>0 && $cart->payable_amount < $cod->cod_min_amount))
-            {
-                $checkCod = 'cod';
-            }
+        $codMinAmount = PaymentOption::select('credentials')->where('code','cod')->value('credentials');
+        $cod = json_decode($codMinAmount);
+        if(isset($cod->cod_min_amount) && ($cod->cod_min_amount>0 && $cart->payable_amount < $cod->cod_min_amount))
+        {
+            $checkCod = 'cod';
         }
         $ex_codes = ['cod'];
         //mohit sir branch code added by sohail
@@ -113,6 +109,8 @@ class PaymentController extends FrontController{
                     $payment_option->title = __('iDEAL');
                 }elseif($payment_option->code == 'authorize_net'){
                     $payment_option->title = __('Credit/Debit Card');
+                }elseif($payment_option->code == 'obo'){
+                    $payment_option->title = __("MoMo, Airtel Money, Credit/Debit Cards by O'Pay");
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);

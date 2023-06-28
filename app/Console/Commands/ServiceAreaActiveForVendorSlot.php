@@ -97,8 +97,8 @@ class ServiceAreaActiveForVendorSlot extends Command
                                     }
                                 }
                                 $active_service_areas = array_unique($active_service_areas);
-                                ServiceArea::whereIn('id', $active_service_areas)->where('vendor_id', $vendor->id)->update(['is_active_for_vendor_slot' => 1]);
-                                ServiceArea::whereNotIn('id', $active_service_areas)->where('vendor_id', $vendor->id)->update(['is_active_for_vendor_slot' => 0]);
+                                ServiceArea::whereIn('id', $active_service_areas)->where('vendor_id', $vendor->id)->where('area_type', 1)->update(['is_active_for_vendor_slot' => 1]);
+                                ServiceArea::whereNotIn('id', $active_service_areas)->where('vendor_id', $vendor->id)->where('area_type', 1)->update(['is_active_for_vendor_slot' => 0]);
                             }
                         }
                     }

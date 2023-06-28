@@ -9,10 +9,12 @@ trait GCashpaymentManager{
   private $public_key;
   public function __construct()
   {
-    $gcash_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'gcash')->where('status', 1)->first();
-    $creds_arr = json_decode($gcash_creds->credentials);
-    $this->public_key = $creds_arr->public_key??'';
-    $this->api_url = "https://g.payx.ph";
+    $gcash_creds = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'gcash')->where('status', 1)->first();
+    if(@$gcash_creds->status){
+        $creds_arr = json_decode($gcash_creds->credentials);
+        $this->public_key = $creds_arr->public_key??'';
+        $this->api_url = "https://g.payx.ph";
+    }
   }
 
   // public function createPaymentRequest($data)

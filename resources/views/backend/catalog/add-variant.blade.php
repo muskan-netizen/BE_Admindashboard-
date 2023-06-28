@@ -68,7 +68,7 @@
                 <h5>{{ __(getNomenclatureName('Variant') ." Options") }}</h5>
             </div>
             <div class="col-md-12" style="overflow-x: auto;">
-                <table class="table table-borderless table-responsive al_table_responsive_data optionTableAdd" id="banner-datatable">
+                <table class="table table-borderless table-responsive al_table_responsive_data optionTableAdd optionTableAddVarient" id="banner-datatable">
                     <tr class="trForClone">
                         <th class="hexacodeClass-add" style="display:none;">{{ __("Color Code") }}</th>
                         @foreach($languages as $langs)

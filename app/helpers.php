@@ -3,7 +3,7 @@
 use App\Models\CartProduct;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
-use App\Models\{CaregoryKycDoc, Cart, CartAddon, CartCoupon, CartProductPrescription, Currency, SmsTemplate, User, TempCartProduct, Vendor, WebStylingOption};
+use App\Models\{CaregoryKycDoc, Cart, CartAddon, CartCoupon, CartProductPrescription, Currency, SmsTemplate, User, TempCartProduct, Vendor, VendorAdditionalInfo, WebStylingOption};
 use App\Models\Nomenclature;
 use App\Models\UserRefferal;
 use App\Models\ProductVariant;
@@ -72,6 +72,24 @@ if (!function_exists('getAdditionalPreference')) {
     }
 }
 
+if (!function_exists('getMapConfigrationPreference')) {
+    /**
+     * getMapConfigrationPreference
+     *
+     * @param  mixed $key
+     * @return void
+     */
+
+    function getMapConfigrationPreference(){
+        $iso3 = '';
+        $mapConfigration =  getAdditionalPreference(['is_map_search_perticular_country']);
+        if(isset($mapConfigration) && $mapConfigration['is_map_search_perticular_country'] == 1){
+            $iso3 = ClientData::first()->country->iso3 ?? '';
+        }
+        return $iso3;
+    }
+}
+
 // if (!function_exists('getAdditionalImageAttribute')) {
 //     function getAdditionalImageAttribute($value)
 //     {
@@ -89,6 +107,22 @@ if (!function_exists('getAdditionalPreference')) {
 //         return $values;
 //     }
 // }
+
+if (!function_exists('getVendorAdditionalPreference')) {
+    function getVendorAdditionalPreference($vendorId,$key = ''){
+        $vendorInfo =  VendorAdditionalInfo::where('vendor_id',$vendorId);
+        if($key){
+            $data =  $vendorInfo->value($key);
+            if($key == 'compare_categories' && !empty($data))
+                $data = explode(',',$data);
+
+        }else{
+            $data =$vendorInfo->first();
+        }   
+
+        return $data??[];
+    }
+}
 
 if (!function_exists('changeDateFormate')) {
     function changeDateFormate($date,$date_format){
@@ -146,8 +180,9 @@ if (!function_exists('checkShowSubscriptionPlanOnSignup')) {
 if (!function_exists('sendFcmCurlRequest')) {
     function sendFcmCurlRequest($data ,$fcm_server_key = '')
     {
-    
-        $fcm_server_key = ($fcm_server_key =='') ? ClientPreference::first()->fcm_server_key :  $fcm_server_key ;
+   
+        $fcm_server_key = ($fcm_server_key =='') ? ClientPreference::select('fcm_server_key')->first()->fcm_server_key :  $fcm_server_key ;
+
          if (!empty($fcm_server_key )) {
            
             $headers = [
@@ -170,6 +205,36 @@ if (!function_exists('sendFcmCurlRequest')) {
             return $result;
         } else {
             return false;
+        }
+    }
+}
+
+if (! function_exists('sendNotificationToCustomer')) {
+    function sendNotificationToCustomer($devices,$order_number='111'){
+        \Log::info('devices--'.$devices);
+        $client_preferences = ClientPreference::select('fcm_server_key','favicon')->first();
+        if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
+            $data = [
+                "registration_ids" => $devices,
+                "notification" => [
+                    'title'     => 'Order Received',
+                    'body'      => 'Your order no. #'.$order_number.' has been received!',
+                    'sound' => "default",
+                    "icon"  => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                    "android_channel_id" => "default-channel-id"
+                ],
+                "data" => [
+                    'title'     => 'Order Received',
+                    'body'      => 'Your order no. #'.$order_number.' has been received!',
+                    'data'  => 'received_order',
+                    'type'  => ""
+                ],
+                "priority" => "high"
+            ];
+                    
+            $response = sendFcmCurlRequest($data,$client_preferences->fcm_server_key);
+            $result = json_decode($response); 
+            return $result;
         }
     }
 }
@@ -649,7 +714,7 @@ if (!function_exists('showSlot')) {
         $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
         //type must be a : delivery , takeaway,dine_in
         $client = ClientData::select('timezone')->first();
-        $preferences = ClientPreference::first();
+        $preferences = ClientPreference::select('scheduling_with_slots', 'business_type')->first();
         $viewSlot = array();
         if (!empty($myDate)) {
             $mytime = Carbon::createFromFormat('Y-m-d', $myDate)->setTimezone($client->timezone);
@@ -670,7 +735,6 @@ if (!function_exists('showSlot')) {
                     })
                     ->get();
         }
-
 
         // check if vendor has added slots. if not added then no need to execute this.
         if (isset($slots) && count($slots)>0) {
@@ -720,28 +784,35 @@ if (!function_exists('showSlot')) {
 if (!function_exists('showPriceWithCurrency')) {
 function showPriceWithCurrency($price = 0,$compare = 0)
     {
-            $multiply =  session()->get('currencyMultiplier') ?? 1;
-            $currencysymbol = session()->get('currencySymbol').' ';
-            $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
-            if($additionalPreference['is_token_currency_enable'] == 1)
-            {
-                $currencysymbol = "<i class='fa fa-money' aria-hidden='true'></i> ";
-                $amount =  getInToken($price * $multiply);
-            }else{
-                $amount =  decimal_format($price * $multiply);
-            }
+        setUserCode();
+        $redis = Redis::connection();
+        $multiply =  session()->get('currencyMultiplier') ?? 1;
+        $currencysymbol = session()->get('currencySymbol').' ';
+        $is_token_currency = $redis->get("ifTCurrency_".session()->get('userCode'));
+        if($is_token_currency == null){
+            $is_token_currency = getAdditionalPreference(['is_token_currency_enable'])['is_token_currency_enable'];
+            $redis->set("ifTCurrency_".session()->get('userCode'), $is_token_currency, 'EX', 36000);
+        }
+        
+        if($is_token_currency == 1)
+        {
+            $currencysymbol = "<i class='fa fa-money' aria-hidden='true'></i> ";
+            $amount =  getInToken($price * $multiply);
+        }else{
+            $amount =  decimal_format($price * $multiply);
+        }
 
-            //check to compare price greater > 0 return
-            if($compare>0)
-            {
-                if($price>0){
-                    return '<del class="ml-2 compare_at_price">'.$currencysymbol.$amount.'</del>';
-                 }else{
-                    return '';
-                }
+        //check to compare price greater > 0 return
+        if($compare>0)
+        {
+            if($price>0){
+                return '<del class="ml-2 compare_at_price">'.$currencysymbol.$amount.'</del>';
+                }else{
+                return '';
             }
+        }
 
-            return $currencysymbol.$amount;
+        return $currencysymbol.$amount;
     }
 }
 
@@ -973,7 +1044,7 @@ if (!function_exists('GoogleDistanceMatrix')) {
     function GoogleDistanceMatrix($latitude, $longitude)
     {
         $send   = [];
-        $client = ClientPreference::where('id', 1)->first();
+        $client = ClientPreference::select('map_key', 'distance_unit')->where('id', 1)->first();
         $lengths = count($latitude) - 1;
         $value = [];
 
@@ -1190,27 +1261,56 @@ if (!function_exists('taxRates')) {
     }
 }
 
+if (!function_exists('getRoleId')) {
+    function getRoleId($name){
+        if($name){
+            return  \Spatie\Permission\Models\Role::where('name',$name)->value('id');
+        }else{
+            return null;
+        }
+    }
+}
+
+
 
 if (!function_exists('getServiceTypesCategory')) {
     /**
      * config('constants.ServiceTypes')
      */
-    function getServiceTypesCategory($vendorType) {
-        //echo $vendorType; exit();
+    function getServiceTypesCategory($vendorType, $client_preference = NULL) {
         try {
-            $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
-            $client_preference = ClientPreference::select('business_type', 'p2p_check')->first();
-            // if(isset($set_template)  && $set_template->template_id == 9){
-
-            //     if(@$client_preference->p2p_check){
-            //         $vendorType = 'p2p';
-            //         // session()->put('vendorType', 'p2p');
-            //     }
-            // }
+            if($client_preference ==NULL){
+                $client_preference = ClientPreference::select('business_type', 'p2p_check')->first();
+            }
+            
+            
 
             $types =   Type::query();
+
             $service_types = [];
-            if ($vendorType == "delivery" || $vendorType == "dine_in" || $vendorType == "takeaway") {
+
+            $alltypes = [
+                'delivery'     => ['products_service'],
+                'dine_in'      => ['products_service'],
+                'takeaway'     => ['products_service'],
+                'rental'       => ['rental_service'],
+                'pick_drop'    => ['pick_drop_service'],
+                'on_demand'    => ['on_demand_service'],
+                'laundry'      => ['laundry_service'],
+                'appointment'  => ['appointment_service'],
+                'taxi'         => ['pick_drop_service'],
+                'p2p'          => ['p2p'],
+                'home_service' => ['on_demand_service', 'appointment_service'],
+            ];
+            
+            if ($vendorType == 'delivery' || $vendorType == 'dine_in' || $vendorType == 'takeaway' || $vendorType == 'rental' || $vendorType == 'pick_drop' || $vendorType == 'on_demand' || $vendorType == 'laundry' || $vendorType == 'appointment' || $vendorType == 'p2p') {
+                $service_types = $alltypes[$vendorType];
+            }
+
+            if ($client_preference->business_type == 'taxi' || $client_preference->business_type == 'laundry' || $client_preference->business_type == 'home_service' || $client_preference->business_type == 'p2p') {
+                $service_types = $alltypes[$client_preference->business_type];
+            }
+            /* if ($vendorType == "delivery" || $vendorType == "dine_in" || $vendorType == "takeaway") {
                 $service_types = ['products_service'];
             } elseif ($vendorType == "rental") {
                 $service_types = ['rental_service'];
@@ -1222,15 +1322,13 @@ if (!function_exists('getServiceTypesCategory')) {
                 $service_types = ['laundry_service'];
             } elseif ($vendorType == "appointment") {
                 $service_types = ['appointment_service'];
-            }
-            // elseif ($vendorType == "p2p") {
-            //     $service_types = ['products_service'];
-            // }
+            } 
+            
             elseif ($vendorType == "p2p") {
                 $service_types = ['p2p'];
-            }
+            }*/
 
-            if ($client_preference->business_type == 'taxi') {
+            /* if ($client_preference->business_type == 'taxi') {
                 $service_types = ['pick_drop_service'];
             } elseif ($client_preference->business_type == 'laundry') {
                 $service_types = ['laundry_service'];
@@ -1245,7 +1343,7 @@ if (!function_exists('getServiceTypesCategory')) {
             // }
             if ($client_preference->business_type == 'p2p') {
                 $service_types = ['p2p'];
-            }
+            } */
             $types =  $types->whereIn('service_type', $service_types);
             $types_id = $types->pluck('id')->toArray();
             return $types_id ;
@@ -1282,10 +1380,7 @@ if (!function_exists('getCategoryTypes')) {
                 $typeArray = ['p2p'];
                 break;
             case "super_app":
-                $typeArray = ['delivery', 'dinein', 'takeaway', 'rental', 'pick_drop', 'on_demand', 'appointment' ];
-                if( checkColumnExists('client_preferences', 'p2p_check') ) {
-                    $typeArray[] = 'p2p';
-                }
+                $typeArray = ['delivery', 'dinein', 'takeaway', 'rental', 'pick_drop', 'on_demand', 'appointment', 'p2p' ];
                 break;
             default:
             $typeArray =['delivery','dinein','takeaway','pick_drop','on_demand','appointment'];
@@ -1470,9 +1565,7 @@ if (!function_exists('inventorySyncOnOff')) {
 
 if( !function_exists('clientPrefrenceModuleStatus') ) {
     function clientPrefrenceModuleStatus($module_name) {
-        if( checkColumnExists('client_preferences', $module_name) ) {
-            return ClientPreference::first()->value($module_name);
-        }
+            return ClientPreference::select($module_name)->first()->value($module_name);
 
     }
 }
@@ -1795,12 +1888,21 @@ if (!function_exists('getDaysArrayBetweenTwoDates')) {
 
 if( !function_exists('get_file_path') ) {
     function get_file_path($url,$type="FILL_URL",$height="260",$width="260")  {
+        
         $img = 'default/default_image.png';
       if(!empty($url)){
         $img = $url;
       }
       $ex = checkImageExtension($img);
-      $values =  \Config::get('app.'.$type);
+      $return_url = $values =  \Config::get('app.'.$type);
+
+      $img = str_replace(' ', '', $img);
+      if (substr($img, 0, 7) == "http://" || substr($img, 0, 8) == "https://"){
+        $return_url  = $values.$height.'/'.$width.\Config::get('app.IMG_URL2').'/'.$img;
+      } else {
+        $return_url  = $values.$height.'/'.$width.\Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+      }
+   
       //pr($values);
     //   $img = 'default/default_image.png';
     //   if(!empty($value)){
@@ -1812,7 +1914,8 @@ if( !function_exists('get_file_path') ) {
     //   $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
     //   $values['image_fit'] = \Config::get('app.FIT_URl');
     //   $values['image'] = $value;
-      return $values.$height.'/'.$width.\Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+      //return $values.$height.'/'.$width.\Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+      return   $return_url  ;
     }
 }
 
@@ -1830,5 +1933,38 @@ if (!function_exists('getUserToken')) {
             }
         } 
             return $data;
+    }
+}
+
+if (!function_exists('getOnDemandPricingRule')) {    
+    /**
+     * getOnDemandPricingRule
+     *
+     * @param  mixed $vendorType = user selected vendor mode 
+     * @param  mixed $userSelection =  user selected pricing geting from vendor or freelancer
+     * @param  mixed $is_service_product_price_from_dispatch custoom mode selecter by admin 
+     * @param  mixed $is_service_price_selection custoom mode selecter by admin  $is_service_product_price_from_dispatch = 0,$is_service_price_selection = 0,
+     * @return void
+     */
+    function getOnDemandPricingRule($vendorType = "on_demand",$userSelection = "vendor",$additionalPreference)
+    {
+       
+        $is_service_product_price_from_dispatch = @$additionalPreference['is_service_product_price_from_dispatch'] ?? 0;
+        $is_service_price_selection             = @$additionalPreference['is_service_price_selection'] ?? 0;
+        $return['is_price_from_freelancer'] = 0;
+        $return['is_ondemand_multi_pricing'] = 0;
+            $value = 0;
+            if(($vendorType == "on_demand") && ($is_service_product_price_from_dispatch ==1 )){
+                $return['is_price_from_freelancer'] =1;
+                if($is_service_price_selection ==1 ){
+                    $return['is_ondemand_multi_pricing'] = 1;
+                    if($userSelection =='freelancer'){
+                        $return['is_price_from_freelancer'] =1;
+                    }else{
+                        $return['is_price_from_freelancer'] =0;
+                    }
+                }
+            }
+            return $return;
     }
 }

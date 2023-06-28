@@ -43,11 +43,7 @@ class OrderProduct extends Model{
        return $this->hasMany('App\Models\OrderProductAddon', 'order_product_id', 'id');
     }
     public function product(){
-      if(checkColumnExists('products', 'returnable')){
-        return $this->belongsTo('App\Models\Product')->select('id', 'sku', 'url_slug', 'is_live', 'weight', 'weight_unit', 'averageRating', 'brand_id', 'tax_category_id', 'category_id','minimum_duration_min','is_long_term_service', 'returnable', 'replaceable', 'return_days');
-      }else{
-        return $this->belongsTo('App\Models\Product')->select('id', 'sku', 'url_slug', 'is_live', 'weight', 'weight_unit', 'averageRating', 'brand_id', 'tax_category_id', 'category_id','minimum_duration_min','is_long_term_service');
-      }
+      return $this->belongsTo('App\Models\Product')->select('id', 'sku', 'url_slug', 'is_live', 'weight', 'weight_unit', 'averageRating', 'brand_id', 'tax_category_id', 'category_id','minimum_duration_min','is_long_term_service', 'returnable', 'replaceable', 'return_days', 'sync_from_inventory');
     }
      public function variant(){
       return $this->hasMany('App\Models\ProductVariant','product_id', 'product_id')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id')->where('status', 1);
@@ -160,4 +156,8 @@ class OrderProduct extends Model{
     public function RecurringService(){
       return $this->hasMany('App\Models\OrderLongTermServiceSchedule', 'order_vendor_product_id', 'id');
     }
+
+    public function order_vendor(){
+      return $this->belongsTo('App\Models\OrderVendor', 'order_vendor_id', 'id');
+  }
 }

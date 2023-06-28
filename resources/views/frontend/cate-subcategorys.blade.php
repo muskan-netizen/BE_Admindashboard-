@@ -57,8 +57,7 @@
                                                 <div class="listing-categories">
                                                     <ul>
                                                         @foreach($category->childs as $child)
-                                                            <li><a href="{{route('categoryDetail', $child->slug)}}">{{ $child->slug }}</a></li>
-                                                        @endforeach
+                                                            <li><a href="{{route('categoryDetail', $child->slug)}}">{{ $child->translation_name }}</a></li>                                                        @endforeach
                                                     </ul>
                                                 </div>
                                             @endif
@@ -247,22 +246,22 @@
 </script>
 <script type="text/javascript">
 	function changeImage(image2, check) {
-       var image = $(image2).children('.product-image').children("img");
-       var  icon = image.attr('data-icon');
-       var  icon_two = image.attr('data-icon_two');
-       if(check == 1)
-       {
-	        setTimeout(function () {
-	            image.attr('data-src',icon_two);
-	            image.attr('src',icon_two);
-	        },200);
-       }else if(check == 0){
-            setTimeout(function () {
-                image.attr('data-src',icon);
-                image.attr('src',icon);
-            },200);
+    //    var image = $(image2).children('.product-image').children("img");
+    //    var  icon = image.attr('data-icon');
+    //    var  icon_two = image.attr('data-icon_two');
+    //    if(check == 1)
+    //    {
+	//         setTimeout(function () {
+	//             image.attr('data-src',icon_two);
+	//             image.attr('src',icon_two);
+	//         },200);
+    //    }else if(check == 0){
+    //         setTimeout(function () {
+    //             image.attr('data-src',icon);
+    //             image.attr('src',icon);
+    //         },200);
 
-       }
+    //    }
     }
 </script>
 @endsection

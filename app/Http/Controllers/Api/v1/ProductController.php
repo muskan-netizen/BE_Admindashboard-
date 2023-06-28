@@ -11,12 +11,12 @@ use Carbon\Carbon;
 use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag,DeliverySlotProduct, DeliverySlot,UserAddress};
 use Validation;
 use DB;
-use App\Http\Traits\{ApiResponser,ProductTrait};
+use App\Http\Traits\{ApiResponser,ProductTrait, ProductActionTrait};
 
 class ProductController extends BaseController
 {
     private $field_status = 2;
-    use ApiResponser,ProductTrait;
+    use ApiResponser,ProductTrait, ProductActionTrait;
     /**
      * Get Company ShortCode
      *
@@ -31,6 +31,7 @@ class ProductController extends BaseController
                 $pvIds[] = $value->id;
             }
         }
+
         $products = Product::with(['inwishlist' => function($qry) use($userid){
                         $qry->where('user_id', $userid);
                     },
@@ -112,6 +113,7 @@ class ProductController extends BaseController
             $user = Auth::user();
             $langId = $user->language;
             $userid = $user->id;
+            $limit = 6; // Number of frequently bought products to retrieve
             $product = Product::with(['inwishlist' => function($qry) use($userid){
                             $qry->where('user_id', $userid);
                         },
@@ -124,7 +126,9 @@ class ProductController extends BaseController
                         //     ->groupBy('product_id'); // return first variant
                         // },
 
-                        'variant.media.pimage.image', 'vendor', 'media.image', 'related', 'upSell', 'crossSell',
+                        'variant.media.pimage.image', 'vendor', 'media.image', 'related', 'upSell', 'crossSell', 'reviews.user' => function($rev) {
+                            $rev->select('users.id', 'users.name', 'users.email', 'users.image');
+                        }, 'reviews.reviewFiles',
                         'addOn' => function($q1) use($langId){
                             $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
                             $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
@@ -139,7 +143,8 @@ class ProductController extends BaseController
                         },
                         'variantSet.options' => function($zx) use($langId, $pvIds, $pid){
                             $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id')
-                            ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id')
+                            ->join('product_variants','pvs.product_variant_id','product_variants.id')
+                            ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id','product_variants.quantity')
                             ->where('pvs.product_id', $pid)
                             ->where('vt.language_id', $langId);
                         },
@@ -154,17 +159,17 @@ class ProductController extends BaseController
                         },
 
                     ]);
-                    if(checkColumnExists('products', 'returnable')){
-                        $product = $product->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min', 'returnable', 'replaceable', 'return_days', 'is_long_term_service','service_duration','is_show_dispatcher_agent','is_slot_from_dispatch','tags','mode_of_service','is_recurring_booking');
-                    }else{
-                        $product = $product->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min',  'is_long_term_service','service_duration','is_show_dispatcher_agent','is_slot_from_dispatch','tags','mode_of_service','is_recurring_booking');
-                    }
+                    $product = $product->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min', 'returnable', 'replaceable', 'return_days', 'is_long_term_service','service_duration','is_show_dispatcher_agent','is_slot_from_dispatch','tags','mode_of_service','is_recurring_booking');
+                    
 
                     $product = $product->where('id', $pid)
                         ->first();
 
             if(!$product){
                 return response()->json(['error' => 'No record found.'], 404);
+            }
+            if ($this->checkTemplateForAction(8)) {
+            $this->RecentView($pid);
             }
             $product->vendor->is_vendor_closed = 0;
             if($product->vendor->show_slot == 0){
@@ -240,7 +245,7 @@ class ProductController extends BaseController
             if($product->variantSet){
                 foreach ($product->variantSet as $set_key => $set_value) {
                     foreach ($set_value->options as $opt_key => $opt_value) {
-                        $opt_value->value = $opt_value->product_variant_id == $variant_id ? true : false;
+                        $opt_value->value = ($opt_key == 0 )? true : false;
                     }
                 }
             }
@@ -253,7 +258,7 @@ class ProductController extends BaseController
 
 
             $response['coupon_list'] = $coupon_list;
-            if( checkColumnExists('products','is_long_term_service') && $product->is_long_term_service == 1){
+            if($product->is_long_term_service == 1){
                 $product_id = $product->LongTermProducts->product_id;
                 $url_slug   = $product->LongTermProducts->product->url_slug;
                 $vendor_slug   = $product->vendor->slug;
@@ -309,7 +314,59 @@ class ProductController extends BaseController
                 }
             }
 
+            $frequentlyBoughtProducts = Product::with(['media.image', 'vendor', 'translation', 'variant', 'productVariantByRoles'])->join('order_vendor_products', 'products.id', '=', 'order_vendor_products.product_id')->join('orders', 'order_vendor_products.order_id', '=', 'orders.id')->where('products.vendor_id', $product->vendor->id)->select('products.*')
+            ->groupBy('products.id')->orderByRaw('COUNT(products.id) DESC')->limit($limit)->get();
+
+            $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = [];
+
+            $suggested_product = Product::with(['media.image','vendor', 'translation', 'variant', 'productVariantByRoles']);
+            if( !empty($product->category->category_id) ) {
+                $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)->groupBy('id')->orderby('id', 'desc')->limit(20)->get();
+            }
+
+
+            foreach($suggested_category_products as $r_product){
+                foreach ($r_product->variant as $key => $value) {
+                    if(isset($r_product->variant[$key])){
+                        $r_product->variant[$key]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : '1.00';
+                    }
+                }
+            }
+
+            if( !empty($product->brand_id) ) {
+                $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);
+                $suggested_brand_products = $suggested_product->where('brand_id', $product->brand_id)->orderby('id', 'desc')->limit(20)->get();
+            }
+
+
+                foreach($suggested_brand_products as $r_product){
+                foreach ($r_product->variant as $key => $value) {
+                    if(isset($r_product->variant[$key])){
+                    $r_product->variant[$key]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : '1.00';
+                    }
+                }
+            }
+
+            if( !empty($product->vendor_id) ) {
+                $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);
+                $suggested_vendor_products = $suggested_product->where('vendor_id', $product->vendor_id)->orderby('id', 'desc')->limit(20)->get();
+            }
+
+
+                foreach($suggested_vendor_products as $r_product){
+                foreach ($r_product->variant as $key => $value) {
+                    if(isset($r_product->variant[$key])){
+                    $r_product->variant[$key]->multiplier = $clientCurrency ? $clientCurrency->doller_compare : '1.00';
+                    }
+                }
+            }
+
+        
+            $response['suggested_category_products'] =  $suggested_category_products;
+            $response['suggested_brand_products'] =  $suggested_brand_products;
+            $response['suggested_vendor_products'] =  $suggested_vendor_products;
             $response['products'] = $product;
+            $response['frequently_bought'] = $frequentlyBoughtProducts;
             $response['relatedProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'relate', $product->related);
             $response['upSellProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'upSell', $product->upSell);
             $response['crossProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'cross', $product->crossSell);

@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
 use App\Models\{Client, ClientPreference, SmsProvider, Currency, Language, Country, User, Vendor, SubscriptionPlansVendor, SubscriptionPlanFeaturesVendor, SubscriptionFeaturesListVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor};
 use Carbon\Carbon;
+use App\Models\ClientCurrency;
 
 class SubscriptionPlansVendorController extends BaseController
 {
@@ -74,7 +75,8 @@ class SubscriptionPlansVendorController extends BaseController
                 $plan->features = $features;
             }
         }
-        return view('backend/subscriptions/subscriptionPlansVendor')->with(['features'=>$featuresList, 'subscription_plans'=>$sub_plans, 'subscribed_vendors_count'=>$subscribed_vendors_count, 'subscribed_vendors_percentage'=>$subscribed_vendors_percentage, 'awaiting_approval_subscriptions_count'=>$awaiting_approval_subscriptions_count, 'rejected_subscriptions_count'=>$rejected_subscriptions_count, 'approved_subscriptions_count'=>$approved_subscriptions_count]);
+        $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
+        return view('backend/subscriptions/subscriptionPlansVendor')->with(['features'=>$featuresList, 'subscription_plans'=>$sub_plans, 'subscribed_vendors_count'=>$subscribed_vendors_count, 'subscribed_vendors_percentage'=>$subscribed_vendors_percentage, 'awaiting_approval_subscriptions_count'=>$awaiting_approval_subscriptions_count, 'rejected_subscriptions_count'=>$rejected_subscriptions_count, 'approved_subscriptions_count'=>$approved_subscriptions_count,'clientCurrency'=>$clientCurrency]);
     }
 
     /**
@@ -111,6 +113,7 @@ class SubscriptionPlansVendorController extends BaseController
         }
         $plan->title = $request->title;
         $plan->price = $request->price;
+        $plan->order_count = $request->order_count;
         // $plan->period = $request->period;
         $plan->frequency = $request->frequency;
         // $plan->sort_order = $request->sort_order;

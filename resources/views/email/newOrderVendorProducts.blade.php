@@ -1,3 +1,13 @@
+@php
+$timezone = @$user->timezone;
+@endphp
+
+<tr>
+   <td colspan="2" style="text-align: center;">
+       <h2 style="color: #000000;font-size: 15px;font-weight: 500;letter-spacing: 0;line-height: 19px;">{{__('ORDER NO')}}. {{@$order->order_number}} (<span style="color:{{!empty(getClientPreferenceDetail()) ? getClientPreferenceDetail()->primary_color : '#000'}};"><strong>{{getNomenclatureName($luxuryOptionTitle ?? '')}}</strong></span>)</h2>
+       <p style="opacity: 0.41;color: #000000;font-size: 12px;letter-spacing: 0;line-height: 15px;">{{ dateTimeInUserTimeZone(@$order->created_at, @$timezone) }}</p>
+   </td>
+</tr>
 <tr>
    <td>
        @foreach($cartData->products as $product)
@@ -89,11 +99,12 @@
             <td style="text-align: right;">{{$currencySymbol . decimal_format($product['taxable_amount'])}}</td>
          </tr>
 
-         <tr>
-            <td style="text-align: left;"><b>{{__('SHIPPING Charge')}}:</b></td>
-<b>{{__('Delivery Fee')}}:</b></td>
-{{$currencySymbol . decimal_format($product['delivery_fee_charges'])}}</td>
-           </tr>
+            @if(!in_array($order->luxury_option_id,[2,3]))
+             <tr>
+               <td style="text-align: left;"><b>{{__('Delivery Fee')}}:</b></td>
+               <td style="text-align: right;">{{$currencySymbol . decimal_format($order->total_delivery_fee)}}</td>
+            </tr>
+            @endif
 
          <tr>
             <td style="text-align: left;"><b>{{__('Discount')}}:</b></td>

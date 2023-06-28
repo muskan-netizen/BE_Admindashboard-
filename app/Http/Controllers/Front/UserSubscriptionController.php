@@ -7,7 +7,7 @@ use Session;
 use Timezonelist;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,PaymentTrait};
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
@@ -17,7 +17,7 @@ use App\Models\{User, UserAddress, ClientPreference, Client, ClientCurrency, Sub
 
 class UserSubscriptionController extends FrontController
 {
-    use ApiResponser;
+    use ApiResponser,PaymentTrait;
 
     /**
      * Handle the incoming request.
@@ -105,7 +105,7 @@ class UserSubscriptionController extends FrontController
         else{
             return response()->json(["status"=>"Error", "message" => __("Subscription plan not active")]);
         }
-        $code = array('stripe', 'dpo','azul', 'stripe_fpx', 'paystack','yoco', 'paylink', 'razorpay','simplify','square','ozow','pagarme', 'checkout','authorize_net','kongapay','ccavenue', 'cashfree','viva_wallet','easebuzz','vnpay','paytab','mvodafone','flutterwave','easypaisa','braintree','payphone','windcave','paytech','windcave','stripe_oxxo', 'mycash','stripe_ideal','userede','openpay','khalti','mtn_momo','plugnpay');
+        $code = $this->paymentOptionArray('Subscription');
         $ex_codes = array('cod');
         $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereIn('code', $code)->where('status', 1)->get();
         foreach ($payment_options as $k => $payment_option) {
@@ -128,6 +128,8 @@ class UserSubscriptionController extends FrontController
                     $payment_option->title = __('iDEAL');
                 }elseif($payment_option->code == 'authorize_net'){
                     $payment_option->title = __('Credit/Debit Card');
+                }elseif($payment_option->code == 'obo'){
+                    $payment_option->title = __("MoMo, Airtel Money, Credit/Debit Cards by O'Pay");
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);
@@ -165,8 +167,10 @@ class UserSubscriptionController extends FrontController
      */
     public function purchaseSubscriptionPlan(Request $request, $domain = '', $slug = '')
     {
-        $currency_id = Session::get('customerCurrency');
+        $currency_id = Session::get('customerCurrency')??63;
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+
+        $dollar_compare =  !empty($clientCurrency)?$clientCurrency->doller_compare:1;
         if( (isset($request->user_id)) && (!empty($request->user_id)) ){
             $user = User::find($request->user_id);
         }else{
@@ -209,13 +213,13 @@ class UserSubscriptionController extends FrontController
             $subscription_invoice->start_date = $start_date;
             $subscription_invoice->next_date = $next_date;
             $subscription_invoice->end_date = $end_date;
-            $subscription_invoice->subscription_amount = $request->amount / $clientCurrency->doller_compare;
+            $subscription_invoice->subscription_amount = $request->amount / $dollar_compare;
             $subscription_invoice->save();
             $subscription_invoice_id = $subscription_invoice->id;
             if($subscription_invoice_id){
                 $payment = new Payment;
                 $payment->user_id = $user->id;
-                $payment->balance_transaction = $request->amount / $clientCurrency->doller_compare;
+                $payment->balance_transaction = $request->amount / $dollar_compare;
                 $payment->transaction_id = $request->transaction_id;
                 $payment->user_subscription_invoice_id = $subscription_invoice_id;
                 $payment->payment_option_id = $request->payment_option_id;

@@ -28,7 +28,7 @@ class FrontController extends Controller
     private $field_status = 2;
     protected function sendSms($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
         try{
-         
+
             $client_preference =  getClientPreferenceDetail();
             if($client_preference->sms_provider == 1)
             {
@@ -76,6 +76,11 @@ class FrontController extends Controller
             {
             $crendentials = json_decode($client_preference->sms_credentials);
             $send = $this->sms_partner_gateway($to,$body,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 9) //for ethiopia
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->ethiopia($to,$body,$crendentials);
             }
             else{
                 if(!empty($sms_secret) && !empty($sms_from)){
@@ -149,6 +154,12 @@ class FrontController extends Controller
                 $crendentials = json_decode($client_preference->sms_credentials);
                 $send = $this->sms_partner_gateway($to,$smsbody,$crendentials);
             }
+            elseif($client_preference->sms_provider == 9) //for  Ethiopia
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->ethiopia($to,$body,$crendentials);
+            }
+
             else{
                 if(!empty($sms_secret) && !empty($sms_from)){
                     $client = new TwilioClient($sms_key, $sms_secret);
@@ -166,11 +177,11 @@ class FrontController extends Controller
         }
         return '1';
 	}
-	
-    
+
+
     public function testsms(Request $request)
     {
-        $prefer = ClientPreference::select('sms_credentials', 
+        $prefer = ClientPreference::select('sms_credentials',
                         'sms_provider', 'sms_key', 'sms_secret', 'sms_from' )->first();
         $to = $request->to ? '+91'.$request->to :'+917508983302';
         $provider = $prefer->sms_provider;
@@ -188,7 +199,7 @@ class FrontController extends Controller
     public function categoryNav($lang_id)
     {
         $preferences = Session::get('preferences');
-        // get selected vendor type 
+        // get selected vendor type
         $vendorType  = Session::get('vendorType');
         // set category layout by on behalf of vendor type
         $categoryTypes = getServiceTypesCategory($vendorType);
@@ -199,13 +210,10 @@ class FrontController extends Controller
                                 ->select('categories.id', 'categories.icon', 'categories.icon_two' , 'categories.slug', 'categories.parent_id','cts.name','categories.type_id')
                                 ->whereIn('categories.type_id',$categoryTypes )
                                 ->orderBy('position')->distinct('categories.slug');
-        //dd(DB::getQueryLog());
         $status = $this->field_status;
         $include_categories = [4,8]; // type 4 for brands
         $celebrity_check = 0;
         if ($preferences) {
-            if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
-
                 if((isset($preferences->celebrity_check)) && ($preferences->celebrity_check == 1)){
                     $celebrity_check = 1;
                     $include_categories[] = 5; // type 5 for celebrity
@@ -223,7 +231,6 @@ class FrontController extends Controller
                                 $q2->whereIn('categories.type_id', $include_categories);
                             });
                     });
-            }
         }
         $categories = $categories->leftjoin('types', 'types.id', 'categories.type_id')
                                 ->where('categories.id', '>', '1')
@@ -231,6 +238,7 @@ class FrontController extends Controller
          if($celebrity_check == 0){
             $categories = $categories->where('categories.type_id', '!=', 5);
         }
+        
         $categories = $categories->where('categories.id', '>', '1')
                                // ->whereNotNull('categories.type_id')
                                 //->whereNotIn('categories.type_id', [7])
@@ -240,13 +248,12 @@ class FrontController extends Controller
                                 ->where('cts.language_id', $lang_id)
                                 ->where(function ($qrt) use($lang_id,$primary){
                                     $qrt->where('cts.language_id', $lang_id)->orWhere('cts.language_id',$primary->language_id);
-                                })
-                                ->whereNull('categories.vendor_id')
+                                })->whereNull('categories.vendor_id')
                               //  ->orderBy('categories.position', 'asc')
-                                ->orderBy('categories.parent_id', 'asc')->groupBy('id')->get();
+                                ->orderBy('categories.parent_id', 'asc')->groupBy('categories.id')->get();
 
         if ($categories) {
-            $categories = $this->buildTree($categories); 
+            $categories = $this->buildTree($categories);
         }
 
         return $categories;
@@ -265,6 +272,7 @@ class FrontController extends Controller
     {
         $branch = array();
         foreach ($elements as $element) {
+            
             if ($element['parent_id'] == $parentId) {
                 $children = $this->buildTree($elements, $element['id']);
                 if ($children) {
@@ -299,7 +307,7 @@ class FrontController extends Controller
                         $this->getChildCategoriesForVendor($child->id, $langId, $vid);
                     }
                 }
-            
+
 
                 $vendorCategory = VendorCategory::with(['category.translation' => function ($q) use ($langId) {
                     $q->where('category_translations.language_id', $langId);
@@ -309,11 +317,11 @@ class FrontController extends Controller
                 }
                 $this->getChildCategoriesForVendor($cate->id, $langId, $vid);
             }
-               
+
 
 
             }
-        
+
         return $category_list;
     }
 
@@ -355,8 +363,6 @@ class FrontController extends Controller
             }
         }
         $serviceAreaVendors = $serviceAreaVendors->where('status', 1)->get();
-
-
         if($serviceAreaVendors->isNotEmpty()){
             foreach($serviceAreaVendors as $value){
                 $vendors[] = $value->id;
@@ -438,7 +444,7 @@ class FrontController extends Controller
                 foreach ($value->variant as $k => $v) {
                     $value->variant[$k]->multiplier = Session::get('currencyMultiplier');
                 }
-              
+
                 $value->vendor_name = $value->vendor ? $value->vendor->name : '';
                 $value->translation_title = (!empty($value->translation->first())) ? $value->translation->first()->title : $value->sku;
                 $value->translation_description = (!empty($value->translation->first())) ? $value->translation->first()->body_html : $value->sku;
@@ -453,7 +459,7 @@ class FrontController extends Controller
         return $products;
     }
 
-    public function metaProduct($langId, $multiplier, $for = 'related', $productArray = []){
+    public function metaProduct($langId, $multiplier = 1, $for = 'related', $productArray = []){
         if(empty($productArray)){
             return $productArray;
         }
@@ -758,7 +764,7 @@ class FrontController extends Controller
         Session::put('vendorType', $type);
         return Session::get('vendorType');
     }
-   
+
 
     // get cart data in on demand product listing page
     public function getCartOnDemand($request)
@@ -768,7 +774,14 @@ class FrontController extends Controller
         $client_data = Client::first();
         $countries = Country::get();
         $langId = Session::get('customerLanguage');
-        $additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch']);
+        $additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch','is_service_price_selection']);
+        $is_service_product_price_from_dispatch_forOnDemand = 0;
+
+        $getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'), (@Session::get('onDemandPricingSelected') ?? ''),$additionalPreference);
+        if($getOnDemandPricingRule['is_price_from_freelancer']==1){
+            $is_service_product_price_from_dispatch_forOnDemand =1;
+        }
+
         $guest_user = true;
         if ($user) {
             $cart = Cart::select('id', 'is_gift', 'item_count','scheduled_date_time')->with('coupon.promo')->where('status', '0')->where('user_id', $user->id)->first();
@@ -781,7 +794,7 @@ class FrontController extends Controller
         if ($cart) {
             $cartData = CartProduct::with('vendor')->where('status', [0, 1])->where('cart_id', $cart->id)->orderBy('created_at', 'asc')->get();
         }
-        
+
         $navCategories = $this->categoryNav($langId);
         $subscription_features = array();
         if ($user) {
@@ -806,7 +819,7 @@ class FrontController extends Controller
             $timezone = 'Asia/Kolkata';
 
         foreach($cartData as $key => $data){
-         
+
 
             $selectedDate = Carbon::parse($data->scheduled_date_time, 'UTC')->setTimezone($timezone)->format('Y-m-d');
             $cartData[$key]->scheduled_date_time = $selectedDate;
@@ -814,14 +827,14 @@ class FrontController extends Controller
             $vendorStartDate =  $vendorStartTime  ='';
             $cartData[$key]->period = [];
              if( $data->vendor->show_slot ==1 ){ // IF VENDOR 24*7 Availability
-                $time_slots = []; 
+                $time_slots = [];
                 $start_date = new DateTime("now", new  DateTimeZone($timezone) );
                 $start_date = $start_date->format('Y-m-d');
                 $end_date   = Date('Y-m-d', strtotime('+13 days'));
-        
-               
+
+
                 $period = CarbonPeriod::create($start_date, $end_date);
-               
+
                 $cartData[$key]->period = $period;
             }else{
                 $slotsDate = findSlot('',$data->vendor_id,'','webFormet');
@@ -832,14 +845,14 @@ class FrontController extends Controller
                     $cartData[$key]->period = CarbonPeriod::create($vendorStartDate, $vendorEndDate);
                 }
             }
-            
-            // check product 
+
+            // check product
             $productDetail = $this->productDetail($data->product_id);
             $cateTypeId = $productDetail ? ($productDetail->productcategory ? $productDetail->productcategory->type_id : '') : '';
             $is_slot_from_dispatch = $productDetail ? $productDetail->is_slot_from_dispatch  : '';
             $last_mile_check = $productDetail ? $productDetail->Requires_last_mile  : '';
             $cartData[$key]->cateTypeId = $cateTypeId;
-            if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ($last_mile_check == 1)){ 
+            if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ($last_mile_check == 1)){
                 $Dispatch =  $this->getDispatchAppointmentDomain();
                 $dispatchAgents = [];
                 if($Dispatch){
@@ -861,7 +874,7 @@ class FrontController extends Controller
                         'schedule_date'    => $selectedDate,
                         'slot_start_time'  => $vendorStartTime
                     ];
-                      
+
                     $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
                 }
                 $cartData[$key]->timeSlots = [];
@@ -869,7 +882,7 @@ class FrontController extends Controller
                 $cartData[$key]->is_dispatch_slot = 1 ;
             }else{
                 $time_slots = [];
-                if(($cateTypeId == 8) && ($additionalPreference['is_service_product_price_from_dispatch'] !=1 )){ // no need to geting verdor slot when we get driver price
+                if(($cateTypeId == 8) && ($is_service_product_price_from_dispatch_forOnDemand !=1 )){ // no need to geting verdor slot when we get driver price
                     if( $data->vendor->show_slot ==1 ){ // IF VENDOR 24*7 Availability
                         $start_time = new DateTime("now", new  DateTimeZone($timezone) );
                         $today = $start_time->format('Y-m-d');
@@ -885,7 +898,7 @@ class FrontController extends Controller
                         foreach ($timing as $k=> $slt) {
                             if($k+1 < count($timing)){
                                 $viewSlot['name'] = date('h:i:A', strtotime($slt)).' - '.date('h:i:A', strtotime($timing[$k+1]));
-                                $viewSlot['value'] = $slt.' - '.$timing[$k+1]; 
+                                $viewSlot['value'] = $slt.' - '.$timing[$k+1];
                                 $time_slots[] =  $viewSlot;
                             }
                         }
@@ -895,17 +908,17 @@ class FrontController extends Controller
                         $time_slots =  $slots;
                     }
                 }
-           
+
                 //$cartData->is_service_product_price_from_dispatch  = $additionalPreference['is_service_product_price_from_dispatch'] ;
                 $cartData[$key]->timeSlots = $time_slots;
                 $cartData[$key]->dispatchAgents = [];
             }
-          
-           
-           
+
+
+
         }
 
-        
+
 
         $start_date = new DateTime("now", new  DateTimeZone($timezone) );
         $start_date =  $start_date->format('Y-m-d');
@@ -925,21 +938,21 @@ class FrontController extends Controller
     public function getSlotFromDispatchDemand(Request $request)
     {
            $product = $this->productDetail($request->product_id);
-        
+
             $cateTypeId = $product ? ($product->productcategory ? $product->productcategory->type_id : '') : '';
             $is_slot_from_dispatch = checkColumnExists('products', 'is_slot_from_dispatch') ? ($product ? $product->is_slot_from_dispatch  : '') : '';
             $show_dispatcher_agent = checkColumnExists('products', 'is_slot_from_dispatch') ? ($product ? $product->is_show_dispatcher_agent  : '') :' ';
             $last_mile_check       = $product ? $product->Requires_last_mile  : '';
             $vendorStartDate       = $vendorStartTime  = '';
             $html = "";
-            if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ( $last_mile_check ==1) ){ 
-                
+            if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ( $last_mile_check ==1) ){
+
                 $Dispatch =  $this->getDispatchAppointmentDomain();
                 $dispatchAgents = [];
                 $cart_product_id = $request->cart_product_id??0;
-               
+
                 if($Dispatch){
-                  
+
                    $vendor_latitude =  $product->vendor ? $product->vendor->latitude : 30.71728880;
                    $vendor_longitude =  $product->vendor ? $product->vendor->longitude : 76.80350870;
                     $location[] = array(
@@ -958,15 +971,15 @@ class FrontController extends Controller
                         'schedule_date'    => $request->cur_date,
                         'slot_start_time'  => $vendorStartTime
                     ];
-                   
+
                     $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
-                   
+
                 }
-                
+
                 if((isset($dispatchAgents)) && (isset($dispatchAgents['slots'])) && ( count($dispatchAgents['slots']) > 0 ) ){
                       $html .= "<option value=''>".__('Select Slot')." </option>";
                       foreach($dispatchAgents['slots'] as $slot){
-                      
+
                           $html .= "<option value='".$slot['value']."'  data-show_agent='".json_encode($slot['agent_id'],TRUE)."' >".$slot['name'].`"</option>"`;
                       }
                 }else{
@@ -976,7 +989,7 @@ class FrontController extends Controller
             }
             $html .= "<option value=''>".__('No Slot Available')." </option>";
             return response()->json(['status'=>'Success','html'=>$html, 'message'=>"get slots"]);
-          
+
     }
 
     /////////// ***************    get all time slots *******************************  /////////////////////
@@ -1136,7 +1149,7 @@ class FrontController extends Controller
         $code = Client::orderBy('id','asc')->value('code');
         return $code;
     }
-    
+
     public function sendmailtest(Request $request,$domain='',$to){
 
         $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->where('id', '>', 0)->first();
@@ -1198,7 +1211,7 @@ class FrontController extends Controller
                 } else {
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
-                
+
                 $provider = $prefer->sms_provider;
                 $order->payable_amount = number_format((float)$order->payable_amount, $prefer->digit_after_decimal, '.', '');
 
@@ -1216,7 +1229,7 @@ class FrontController extends Controller
                 }
             }
         } catch (\Exception $ex) {
-            
+
         }
 
     }
@@ -1235,12 +1248,12 @@ class FrontController extends Controller
         $new[] = $request->token ;
         $fcm_server_key = $request->fcm_server_key ;
         // if(  $request->token  ){
-    
+
         //     echo 'fcm_server_key or tokon inveled';
         //     exit();
         // }
         $order = Order::with(['vendors.vendor:id,name,auto_accept_order,logo'])->select('id', 'order_number', 'payable_amount', 'payment_option_id', 'user_id', 'address_id', 'loyalty_amount_saved', 'total_discount', 'total_delivery_fee', 'total_amount', 'taxable_amount', 'created_at')->first();
-     
+
       // pr($order);
         $item['title']     = 'notification test by harbans';
         $item['body']      = 'this is test by h:) ';
@@ -1261,7 +1274,7 @@ class FrontController extends Controller
             ],
             "priority" => "high"
         ];
-    
+
         $headers = [
             'Authorization: key=AAAAJo1U6_Q:APA91bGawE2fcj6IKUMlUbBgyQIFZ0_-SRJtkghEqKvuyBXq83HZQOLfLTenfWT-eEXSnvU06Hk4LYeWqxkpH1xQn_MQhqIuEDfPZb-e52GJ-aXZzs5LHg2XPotX2oMDDO3iacYT75ho',
             'Content-Type: application/json',
@@ -1280,7 +1293,39 @@ class FrontController extends Controller
         echo  $new[0];
         curl_close($ch);
         return $result;
-    
+
     }
- 
+    
+    public function sendWalletNotification($user_id,$order_number)
+    {
+        $firebaseToken = UserDevice::select('device_token')->whereNotNull('device_token')->where('user_id',$user_id)->orderBy('id','desc')->limit(1)->pluck('device_token')->toArray();
+        if(!empty($firebaseToken)){
+            $preference = ClientPreference::select('fcm_server_key')->first();
+            $fcm_server_key = !empty($preference->fcm_server_key)? $preference->fcm_server_key : 'null';
+            
+            $data = [
+                "registration_ids" => $firebaseToken,
+                "notification" => [
+                    "title" => "Refund Added in Wallet",
+                    "body" => 'Wallet has been <b>refunded</b> for cancellation or failed payment of order #' .$order_number
+                ]
+            ];
+            $dataString = json_encode($data);
+            $headers = [
+                'Authorization: key=' . $fcm_server_key,
+                'Content-Type: application/json',
+            ];
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
+            $response = curl_exec($ch);
+            curl_close($ch);
+        }
+        return true;
+    }
+
 }

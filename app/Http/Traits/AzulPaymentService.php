@@ -18,31 +18,34 @@ trait AzulPaymentService
     public function __construct()
     {
         $this->creds = PaymentOption::where('code', 'azul')->where('status', 1)->first();
-        $this->creds_arr = json_decode($this->creds->credentials);
-        $this->MAIN_URL = $this->creds_arr->azul_main_url;
-        $this->ALTERNATE_URL = $this->creds_arr->azul_alternate_url;
-        $this->TEST_URL = $this->creds_arr->azul_test_url;
-        $this->ECOMMERCE_URL = $this->creds_arr->azul_ecommerce_url;
-        $this->TEST_MODE = $this->creds->test_mode;
-        $this->SAVE_TO_DATAVAULT = 1;
-        $this->DONT_SAVE_TO_DATAVAULT = 2;
-        $this->HOLD_TRANSACTION = 'Hold';
-        $this->REFUND_TRANSACTION = 'Refund';
-        $this->PAYMENT_CHANNEL = 'EC';
-        $this->OK_RESPONSE_CODE = '00';
-        $this->AZUL_OK_RESPONSE_CODE = 'ISO8583';
-        $this->MERCHANT_ID = $this->creds_arr->azul_merchant_id;
-        $this->POST_INPUT_MODE = 'E-Commerce';
-        $this->AUTH_1_HEADER = $this->creds_arr->azul_auth_header_one;
-        $this->AUTH_2_HEADER = $this->creds_arr->azul_auth_header_two;
-        $this->SSL_CERTIFICATE = $this->creds->getPath($this->creds_arr->azul_ssl_certificate);
-        $this->SSL_KEY = $this->creds->getPath($this->creds_arr->azul_ssl_key);
-        $this->errors = [
-            'INSUF FONDOS' => 'Tu tarjeta no tiene fondos suficientes para completar la transacción'
-        ];
-        $this->mode = true;
-        if ($this->TEST_MODE) {
-            $this->mode = false;
+        if(@$this->creds->status)
+        {
+            $this->creds_arr = json_decode($this->creds->credentials);
+            $this->MAIN_URL = $this->creds_arr->azul_main_url;
+            $this->ALTERNATE_URL = $this->creds_arr->azul_alternate_url;
+            $this->TEST_URL = $this->creds_arr->azul_test_url;
+            $this->ECOMMERCE_URL = $this->creds_arr->azul_ecommerce_url;
+            $this->TEST_MODE = $this->creds->test_mode;
+            $this->SAVE_TO_DATAVAULT = 1;
+            $this->DONT_SAVE_TO_DATAVAULT = 2;
+            $this->HOLD_TRANSACTION = 'Hold';
+            $this->REFUND_TRANSACTION = 'Refund';
+            $this->PAYMENT_CHANNEL = 'EC';
+            $this->OK_RESPONSE_CODE = '00';
+            $this->AZUL_OK_RESPONSE_CODE = 'ISO8583';
+            $this->MERCHANT_ID = $this->creds_arr->azul_merchant_id;
+            $this->POST_INPUT_MODE = 'E-Commerce';
+            $this->AUTH_1_HEADER = $this->creds_arr->azul_auth_header_one;
+            $this->AUTH_2_HEADER = $this->creds_arr->azul_auth_header_two;
+            $this->SSL_CERTIFICATE = $this->creds->getPath($this->creds_arr->azul_ssl_certificate);
+            $this->SSL_KEY = $this->creds->getPath($this->creds_arr->azul_ssl_key);
+            $this->errors = [
+                'INSUF FONDOS' => 'Tu tarjeta no tiene fondos suficientes para completar la transacción'
+            ];
+            $this->mode = true;
+            if ($this->TEST_MODE) {
+                $this->mode = false;
+            }
         }
     }
 
@@ -79,10 +82,10 @@ trait AzulPaymentService
                 'ECommerceUrl' => $this->ECOMMERCE_URL,
                 'CustomOrderId' => $card['order_number'],
                 'DataVaultToken' => $userCard->token,
-                'ForceNo3DS' => '1'
+                'ForceNo3DS' => '0'
             ];
         }else{
-            
+            $forceNo3DS = 1;
             if (isset($card['come_from']) && $card['come_from'] == 'app') {
                 $expiry = $card['dt'];
             }else{
@@ -91,6 +94,7 @@ trait AzulPaymentService
             }
             if(isset($card['save_card']) && $card['save_card'] == 1){
                 $saveVault = 1;
+                $forceNo3DS = 0;
             }
             
             $request = [
@@ -114,14 +118,14 @@ trait AzulPaymentService
                 'CustomOrderId' => $card['order_number'],
                 'SaveToDataVault' => $saveVault,
                 'DataVaultToken' => '',
-                'ForceNo3DS' => '1'
+                'ForceNo3DS' => $forceNo3DS
             ];
             if($saveVault){
-                $this->saveCardToDatavault($user_id, $card['cno'], $expiry, $card['cv']);
+               $this->saveCardToDatavault($user_id, $card['cno'], $expiry, $card['cv']);
             }
         }
         $response = $this->sendRequest($request);
-        if ($response['code'] != 200) {
+       if ($response['code'] != 200) {
             Log::info([
                 'error http payWithCard',
                 'order_id: ' . json_encode($response['message'])
@@ -140,7 +144,7 @@ trait AzulPaymentService
             ]);
             return [
                 'message' => $response['data']->ErrorDescription,
-                'ok' => $response['data']->ResponseCode,
+                 'ok' => false,
                 'data' => $response['data']
             ];
         }
@@ -411,12 +415,10 @@ trait AzulPaymentService
             ]);
             $response['message'] = $result->getReasonPhrase();
             $response['code'] = $result->getStatusCode();
+            $response['data'] = json_decode($result->getBody());
         } catch (ClientException $e) {
-            $response = $e->getResponse();
-            $response['data'] = $response->getBody();
-            // Life is too short to handle exceptions.
+           $response['message'] =$e->getMessage(); 
         }
-        $response['data'] = json_decode($result->getBody());
 
         // $curl = curl_init();
 

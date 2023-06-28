@@ -9,14 +9,19 @@ use Omnipay\Omnipay;
 use Illuminate\Http\Request;
 use App\Models\PaymentOption;
 use Omnipay\Common\CreditCard;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,PaymentTrait};
 use App\Http\Controllers\Api\v1\{BaseController,VnpayController, StripeGatewayController, PaystackGatewayController, PayfastGatewayController, MobbexGatewayController, YocoGatewayController, RazorpayGatewayController, SimplifyGatewayController, SquareGatewayController,PagarmeGatewayController, CheckoutGatewayController,EasebuzzController, MyCashGatewayController,OpenpayPaymentController,UseRedePaymentController,UPayGatewayController,ConektaGatewayController, TelrGatewayController, KhaltiGatewayController,PlugnpayGatewayController};
 use App\Http\Controllers\Front\DpoController;
 use App\Http\Controllers\Front\CcavenueController;
 use App\Http\Controllers\Front\KongapayController;
 use App\Http\Controllers\Front\MpesaController;
 use App\Http\Controllers\Front\MvodafoneController;
+use App\Http\Controllers\Front\NmiPaymentController;
+use App\Http\Controllers\Front\OboPaymentController;
 use App\Http\Controllers\Front\PayphoneController;
+use App\Http\Controllers\Front\PowerTransPaymentController;
+use App\Http\Controllers\Front\PesapalPaymentController;
+use App\Http\Controllers\Front\SkipCashController;
 use App\Http\Controllers\Front\ToyyibPayController;
 use App\Http\Controllers\Front\VivawalletController;
 use App\Http\Controllers\Front\WindcaveController;
@@ -25,19 +30,12 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, Product, OrderProductAddon, Client, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, CartDeliveryFee, CartProductPrescription, VendorOrderStatus, OrderStatusOption, Vendor, LoyaltyCard, User, Payment, Transaction, UserVendor};
 
 class PaymentOptionController extends BaseController{
-    use ApiResponser;
+    use ApiResponser,PaymentTrait;
     public $gateway;
 
     public function getPaymentOptions(Request $request, $page = ''){
-        if($page == 'wallet'){
-            $code = array('paypal','azul', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash', 'dpo','openpay','userede','upay','conekta','telr','khalti','plugnpay');
-        }
-        elseif($page == 'pickup_delivery'){
-            $code = array('cod','azul', 'dpo', 'razorpay','paystack','stripe','payfast','offline_manual','authorize_net','payphone','khalti','flutterwave','plugnpay');
-        }
-        else{
-            $code = array('cod','azul', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','offline_manual','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash','dpo','openpay','userede','upay','conekta','telr','khalti','plugnpay');
-        }
+ 
+        $code = $this->paymentOptionArray($page);
         //mohit sir branch code added by sohail
         $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage']);
         if($request->service_type == 'takeaway' && !empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101) ){
@@ -45,6 +43,8 @@ class PaymentOptionController extends BaseController{
         }else{
         //Till here
             $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code','credentials', 'title', 'off_site']);
+        // dd(DB::connection()->getDatabaseName());
+            // dd($payment_options->toArray());
             foreach($payment_options as $option){
                 if($option->code == 'stripe'){
                     $option->title = __('Credit/Debit Card (Stripe)');
@@ -65,6 +65,8 @@ class PaymentOptionController extends BaseController{
                     $option->title = __('iDEAL');
                 }elseif($option->code == 'authorize_net'){
                     $option->title = __('Credit/Debit Card');
+                }elseif($option->code == 'obo'){
+                    $option->title = __("MoMo, Airtel Money, Credit/Debit Cards by O'Pay");
                 }
                 $option->title = __($option->title);
             }
@@ -82,7 +84,7 @@ class PaymentOptionController extends BaseController{
             }else{
                 $domain = $client->sub_domain.env('SUBMAINDOMAIN');
             }
-            //$server_url = "http://192.168.97.160:9091/";
+            // $server_url = "http://192.168.102.171:8001/";
             $server_url = "https://".$domain."/";
             $request->serverUrl = $server_url;
             $request->currencyId = $request->header('currency');
@@ -101,11 +103,26 @@ class PaymentOptionController extends BaseController{
             return $this->errorResponse("Invalid Gateway Request", 400);
         }
     }
-    
+
+    public function postPaymentVia_obo(Request $request){
+        $gateway = new OboPaymentController();
+          return $gateway->mobilePay($request);
+    }
+
+    public function postPaymentVia_skip_cash(Request $request){
+        $gateway = new SkipCashController();
+          return $gateway->mobilePay($request);
+    }
+
+     public function postPaymentVia_nmi(Request $request){
+        $gateway = new NmiPaymentController();
+          return $gateway->mobilePay($request);
+    }
+
     public function postPaymentVia_azul(Request $request){
              $gateway = new AzulPaymentController();
                return $gateway->beforePayment($request);
-  }
+    }
 
     public function postPaymentVia_dpo(Request $request){
         $gateway = new DpoController();
@@ -277,6 +294,11 @@ class PaymentOptionController extends BaseController{
     public function postPaymentVia_khalti(Request $request){
         $gateway = new KhaltiGatewayController();
         return $gateway->khaltiPurchase($request);
+    }
+
+    public function postPaymentVia_powertrans(Request $request){
+        $gateway = new PowerTransPaymentController();
+        return $gateway->payByPowerTrans($request);
     }
 
     public function postPaymentVia_plugnpay(Request $request){
@@ -805,6 +827,12 @@ class PaymentOptionController extends BaseController{
 
 
 
-
+    public function postPaymentVia_pesapal(Request $request){
+        $gateway = new PesapalPaymentController();
+        $request->action ? $request->request->add([
+            'payment_from' => $request->action, 
+          ]) : '';
+        return $gateway->payByPesapal($request);
+    }
 
 }

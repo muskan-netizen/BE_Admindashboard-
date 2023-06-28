@@ -12,7 +12,7 @@ use Carbon\Carbon;
 use GuzzleHttp\Client as GCLIENT;
 use App\Models\Client as CP;
 use Illuminate\Http\Request;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,OrderTrait};
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Client\BaseController;
@@ -25,8 +25,7 @@ use App\Http\Traits\ReturnExchangeTrait;
 
 class OrderCancelRequestsController extends BaseController
 {
-    use ApiResponser;
-    use \App\Http\Traits\OrderTrait, ReturnExchangeTrait;
+    use ApiResponser,OrderTrait, ReturnExchangeTrait;
 
     /**
      * Display a listing of the resource.
@@ -132,7 +131,7 @@ class OrderCancelRequestsController extends BaseController
                 }
             })
             ->addColumn('vendor', function ($req) {
-                return ($req->order_vendor->vendor) ? $req->order_vendor->vendor->name : '';
+                return isset($req->order_vendor->vendor) ? $req->order_vendor->vendor->name : '';
             })
             ->addColumn('reject_reason', function ($req) {
                 if (!empty($req->return_reason_id) && $req->reason->title == "Other") {

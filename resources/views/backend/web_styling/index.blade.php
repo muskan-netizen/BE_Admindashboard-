@@ -554,12 +554,6 @@
                                 @else
                                 <input type="hidden" name="for_no_product_found_html[{{$key}}]">
                                 @endif
-                                @if($home_page_label->slug == 'banner')
-                                <a class="action-icon " userId="{{$home_page_label->id}}" data-row-id="{{$home_page_label->id}}" href="javascript:void(0);">
-
-                                    <input required type="file" accept="image/*,.pdf,.doc" data-plugins="dropify" name="banner_image[{{$key}}][check]" class="dropify" data-default-file="">
-                                </a>
-                                @endif
 
                                 <div class="mb-0 ml-1">
                                     <input class="form-control" type="hidden" value="{{$home_page_label->id}}" name="pickup_labels[]">
