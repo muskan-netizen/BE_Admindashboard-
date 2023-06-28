@@ -48,6 +48,7 @@ trait MargTrait{
             $is_exist = Product::where('sku', $request->code)->first();
 
 			if(isset($request->ProductCode) && isset($request->name) && is_null($is_exist)){
+
                 $url_slug = $this->validateSlug($request->name);
                 $request->catcode = 5;
 
@@ -118,6 +119,12 @@ trait MargTrait{
 
                     ProductTranslation::insert($datatrans);
 
+                    if(@$request->Is_Deleted)
+                    {
+                        $product->delete();
+                        \Log::info('request->name '.$request->name);
+                    }
+
                 // \Log::info('Insert MargProduct code --'.$request->code);
 
                 }
@@ -152,11 +159,6 @@ trait MargTrait{
                     $client_lang = ClientLanguage::where('is_active', 1)->first();
                 }
 
-                if(@$request->Is_Deleted)
-                {
-                    $product->delete();
-                    return true;
-                }
                 $product->save();
 
             }
@@ -196,6 +198,12 @@ trait MargTrait{
 
                 ProductTranslation::UpdateOrCreate(['product_id' => $product->id,'language_id' => $client_lang->language_id],$datatrans);
 
+
+                if(@$request->Is_Deleted)
+                {
+                    $product->delete();
+                }
+                
             }
 			// DB::commit();
 			
