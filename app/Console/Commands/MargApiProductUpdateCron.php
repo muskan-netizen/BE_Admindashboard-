@@ -116,11 +116,9 @@ class MargApiProductUpdateCron extends Command
                 // Decrypt the data using the DLL wrapper
                 $decryptedData = $this->DecryptLogic->Decrypt($encryptedData, $decryptionKey);
                 $collectionData = collect( json_decode($decryptedData));
-                //    dd($collectionData["Details"]->pro_N);
                 if(!empty($collectionData["Details"]->pro_N)){
 
                     foreach($collectionData["Details"]->pro_N as $key => $product){
-                        // \Log::info('code--'.$product->code);
                         $detail = $this->addProduct($product);
                     }
                 }

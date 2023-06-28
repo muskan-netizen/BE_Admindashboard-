@@ -39,7 +39,6 @@ class ProductEstimationController extends Controller
     public function getProductEstimationWithAddons(Request $request)
     {
         try{
-          //\Log::info(json_encode($request->all()));
             $langID = $request->header('language')??"1";
             $estimateProductsWithAddons = EstimateProduct::with(['estimate_product_addons.estimate_addon_set.option','category.primary' , 'estimate_product_translation' => function($q) use($langID) {
                 $q->where('language_id', '=', $langID);
@@ -48,7 +47,6 @@ class ProductEstimationController extends Controller
             //     $estimateProductsWithAddons = $estimateProductsWithAddons->where('category_id',$request->category_id);
             // }
             // $estimateProductsWithAddons =$estimateProductsWithAddons->get();
-            //\Log::info(json_encode($request->all()));
             return $this->successResponse($estimateProductsWithAddons);
         }catch (\Exception $e)
         {

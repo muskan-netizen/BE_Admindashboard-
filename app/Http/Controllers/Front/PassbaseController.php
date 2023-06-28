@@ -56,7 +56,6 @@ class PassbaseController extends FrontController
     }
     public function webhook(Request $request)
     {
-    	Log::info($request->all());
     	$data = $request->all();
 		if($data['event'] == "VERIFICATION_REVIEWED")
 		{

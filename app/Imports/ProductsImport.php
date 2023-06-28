@@ -403,7 +403,6 @@ class ProductsImport implements ToCollection
 				                }
 				            }
 				            else{
-				                // \Log::info("sku old ".$da[0]);
 				                $proVariant = new ProductVariant();
 				                $proVariant->sku = $da[0];
 				                $proVariant->product_id = $product;
@@ -463,7 +462,7 @@ class ProductsImport implements ToCollection
 				                ->where('cl.is_active', 1)
 				                ->where('category_translations.name', 'LIKE', $category);
 				            })->where('vendor_id', $this->vendor_id)->first();
-				            // \Log::info("new new ");
+				            
 				            if(empty($category)){
 				                
 				            }
@@ -600,7 +599,7 @@ class ProductsImport implements ToCollection
 				}
         	} catch(\Exception $ex){
         	    $error[] = "Other: " .$ex->getMessage();
-        	    //\Log::info($ex->getMessage()."".$ex->getLine());
+				\Log::info($ex->getMessage()."".$ex->getLine());
         	}
 			$vendor_csv = CsvProductImport::where('vendor_id', $this->vendor_id)->where('id', $this->csv_product_import_id)->first();
 			if (!empty($error)) {
@@ -612,7 +611,7 @@ class ProductsImport implements ToCollection
 			$vendor_csv->save();
         } catch(\Exception $ex){
             $error[] = "Other: " .$ex->getMessage();
-            //\Log::info($ex->getMessage()."".$ex->getLine());
+			\Log::info($ex->getMessage()."".$ex->getLine());
         }
 	}
 	private function generateBarcodeNumber()

@@ -81,8 +81,7 @@ trait SquarePaymentManager{
     } else {
         $errors = $api_response->getErrors();
     }
-   // Log::info("Payment ID");
-   // Log::info($payment_id);
+   
     return $payment_id;
   }
 }

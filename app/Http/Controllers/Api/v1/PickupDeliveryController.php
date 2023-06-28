@@ -86,7 +86,6 @@ class PickupDeliveryController extends BaseController{
 
                     if(!empty($request->is_cab_pooling) && $request->is_cab_pooling == 1 && !empty($preferences) && $preferences->is_cab_pooling == 1)
                     {
-                       // Log::info($request->no_seats_for_pooling);
                         $products = $products->where('products.available_for_pooling', 1);
                         if(isset($request->no_seats_for_pooling))
                         {
@@ -671,7 +670,6 @@ class PickupDeliveryController extends BaseController{
                 $order->payment_status = 1;
             }
             $order->save();
-            \Log::info($request->payment_option_id);
             if ($request->payment_option_id != 1 && $request->payment_option_id != 2 && $request->has('transaction_id') && !empty($request->transaction_id)) {
                 $payment = Payment::where('transaction_id',$request->transaction_id)->first();
                 if(!$payment){
@@ -702,7 +700,6 @@ class PickupDeliveryController extends BaseController{
                 $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
                 $order_place['data']['user_name'] = $user->email;
                 $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
-                \Log::info($order_place);
                 return  $order_place;
             }else{
                 return $request_to_dispatch;
@@ -793,7 +790,6 @@ class PickupDeliveryController extends BaseController{
                     // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                     $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                 }
-               // Log::info("order Pre Time is ".$vendor_details->order_pre_time);
 
                 $client_preferences_addional = ClientPreferenceAdditional::pluck('key_value','key_name');
                 // FacadesLog::warning(['postdata' => $client_preferences_addional]);
@@ -1403,7 +1399,6 @@ class PickupDeliveryController extends BaseController{
 
 
             if(!empty($order_vendor->web_hook_code)){
-               // Log::info("web hook found");
                 $request_to_dispatch = $this->updateOrderRequestToDispatch($request, $order, $vendor_id);
             }
             DB::commit();
@@ -1672,7 +1667,6 @@ class PickupDeliveryController extends BaseController{
                     'task_type'   => $request->task_type,
                     'agent_id'    => $request->agent_id,
                 ];
-               // Log::info($postdata);
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
                                                     'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
                                                     'content-type' => 'application/json']

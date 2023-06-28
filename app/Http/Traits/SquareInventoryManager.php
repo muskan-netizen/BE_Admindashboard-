@@ -202,7 +202,7 @@ trait SquareInventoryManager{
           {
             DB::rollback();
             $errors = $api_response->getErrors();
-            Log::info($errors);
+            
             return response()->json([
               'status'  => 'error',
               'result'  => '',
@@ -224,7 +224,7 @@ trait SquareInventoryManager{
       catch (ApiException $e) 
       {
         DB::rollback();
-        Log::info($e->getMessage());
+        
         return response()->json([
           'status'  => 'error',
           'result'  => [],
@@ -325,7 +325,7 @@ trait SquareInventoryManager{
           } else {
               DB::rollback();
               $errors = $api_response->getErrors();
-              Log::info($errors);
+              
               return response()->json([
                 'status'  => 'error',
                 'result'  => '',
@@ -398,7 +398,7 @@ trait SquareInventoryManager{
         }
       } else {
           $errors = $api_response->getErrors();
-          Log::info($errors);
+          
           return response()->json([
             'status'  => 'error',
             'result'  => '',
@@ -431,7 +431,7 @@ trait SquareInventoryManager{
           ]);
       } else {
           $errors = $api_response->getErrors();
-          Log::info($errors);
+          
           return response()->json([
             'status'  => 'error',
             'result'  => '',
@@ -480,7 +480,7 @@ trait SquareInventoryManager{
           ]);
       } else {
           $errors = $api_response->getErrors();
-          Log::info($errors);
+          
           return response()->json([
             'status'  => 'error',
             'result'  => '',
