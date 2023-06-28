@@ -311,13 +311,13 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             @endif
                                         </div>
                                         
-                                            @if(!empty($product->translation) && isset($product->translation->first()->body_html))
-                                                <div class="border-product al_disc">
-                                                    <h6 class="product-title">{{__('Product Details')}}</h6>
-                                                    <p></p>
-                                                    {!! $product->translation->first()->body_html !!}
-                                                </div>
-                                            @endif
+                                        @if(!empty($product->translation) && isset($product->translation->first()->body_html))
+                                            <div class="border-product al_disc">
+                                                <h6 class="product-title">{{__('Product Details')}}</h6>
+                                                <p></p>
+                                                {!! $product->translation->first()->body_html !!}
+                                            </div>
+                                        @endif
 
                                         <!--- Processor Details Farmmeat by Sohail -->
                                         @if(isset($processorProduct))
