@@ -310,16 +310,14 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 </h3>
                                             @endif
                                         </div>
-                                        <div class="border-product al_disc">
-                                            <h6 class="product-title">{{__('Product Details')}}</h6>
-                                            <p></p>
-                                        {{--    @if((!empty($product->translation) && isset($product->translation[0])))
-                                            <div  id="show_product_text_more" >{!!  \Illuminate\Support\Str::words($product->translation[0]->body_html, 20,  '<br><h5 onclick="showMoreTextFunction()">Read more..</h5>') !!}</div>
-                                             <div id="show_product_text_less" style="display: none;"> {!! $product->translation[0]->body_html !!} <h5 onclick="showLessTextFunction()">Read less..</h5></div>
-                                             @endif --}}
-                                            {!!(!empty($product->translation) && isset($product->translation[0])) ?
-                                            $product->translation[0]->body_html : ''!!}
-                                        </div>
+                                        
+                                            @if(!empty($product->translation) && isset($product->translation->first()->body_html))
+                                                <div class="border-product al_disc">
+                                                    <h6 class="product-title">{{__('Product Details')}}</h6>
+                                                    <p></p>
+                                                    {!! $product->translation->first()->body_html !!}
+                                                </div>
+                                            @endif
 
                                         <!--- Processor Details Farmmeat by Sohail -->
                                         @if(isset($processorProduct))
@@ -330,7 +328,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 <p>{{$processorProduct->date}}</p>
                                                 <p>{{$processorProduct->address}}</p>
                                             </div>
-                                        @elseif (!empty($product) && $processorProduct->is_processor_enable == 0)
+                                        @elseif (!empty($product) && $product->product_pickup_date != null)
                                             <div class="border-product al_disc">
                                                 <h6 class="product-title">{{__('Product Vendor Details')}}</h6>
                                                 <p>{{$product->product_pickup_date}}</p>
