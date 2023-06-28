@@ -2380,14 +2380,15 @@ $(document).ready(function () {
             dataType: 'json',
             url: cart_product_url,
             success: function (response) {
+                console.log(response);
                 if (response.status == "success") {
-                        if(response.wishListCount > 0){
-                            $('.wishListCount').removeClass('fa-heart-o');
-                            $('.wishListCount').addClass('fa-heart');
-                        }else{
-                            $('.wishListCount').removeClass('fa-heart');
-                            $('.wishListCount').addClass('fa-heart-o');
-                        }
+                    if(response.wishListCount > 0){
+                        $('.wishListCount').removeClass('fa-heart-o');
+                        $('.wishListCount').addClass('fa-heart');
+                    }else{
+                        $('.wishListCount').removeClass('fa-heart');
+                        $('.wishListCount').addClass('fa-heart-o');
+                    }
                     $("#cart_table").html('');
                     $(".spinner-box").hide();
                     $("#mycart").html(response.mycart);
@@ -3959,7 +3960,7 @@ $(document).ready(function () {
             success_error_alert('error', 'Schedule date time is required', ".cart_response");
             return false;
         }
-      
+      alert(task_type)
         $.ajax({
             type: "POST",
             dataType: 'json',

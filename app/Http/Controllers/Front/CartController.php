@@ -2201,7 +2201,6 @@ class CartController extends FrontController
             $cart_details->tokenAmount = $tokenAmount;
         }
         // till here
-        
         return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'', 'cart_error_message' => $error_message,'wishListCount'=>$wishListCount]);//'token_val' => $tokenAmount , 'is_token_enable' => $is_token_enable
     }
 
@@ -2612,6 +2611,7 @@ class CartController extends FrontController
                     return response()->json(['status'=>'error_prescription', 'presciptionProducts'=>$presciptionProducts]);
                 }
                 }
+
             if ($user || $new_session_token) {
                 if($request->task_type == 'now'){
                     $time = Carbon::now()->format('Y-m-d H:i:s');
@@ -2620,11 +2620,11 @@ class CartController extends FrontController
                     if($request->schedule_dt){   
                             $date_time =    explode(" ",$request->schedule_dt);
                           $schedule_dt =  date('Y-m-d H:i:s',strtotime($date_time[0]." " .$date_time[1]));
-
+                         $slot = $date_time[1]." " .$date_time[3];
                         if(isset($request->slot))
                         {
                             //->setTimezone('UTC') (in case slot is comming then schedule_dt coming only date and we no need to convart date to ny UTC time  )
-                            $time = Carbon::parse($schedule_dt, $user->timezone)->format('Y-m-d H:i:s'); 
+                            $time = Carbon::parse($schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s'); 
                             $slot = $request->slot;
                         }else{
 
@@ -2662,7 +2662,7 @@ class CartController extends FrontController
                 'payable_amount' => $request->payable_amount??0
                 ]);
                
-                CartProduct::where('id',$request->productid)->update(['specific_instruction'=>$request->specific_instructions]);
+                CartProduct::where('id',$request->productid)->update(['specific_instruction'=>$request->specific_instructions,'scheduled_date_time'=>$time,'schedule_slot'=> $slot]);
 
                 DB::commit();
                 if ($user) {
