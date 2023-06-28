@@ -9242,10 +9242,10 @@ body.al_body_template_two #page-container .small-slider .home-slider .home {
         .cab-booking iframe {
             height: 40vh
         }
-        body.cab-booking-header,
+        /* body.cab-booking-header,
         .location-box {
             display: none !important
-        }
+        } */
         .cab-booking #booking-map {
             height: 50vh !important;
             position: fixed !important;
@@ -9932,10 +9932,10 @@ body.al_body_template_two #page-container .small-slider .home-slider .home {
     .cab-booking iframe {
         height: 40vh
     }
-    body.cab-booking-header,
+    /* body.cab-booking-header,
     .location-box {
         display: none!important
-    }
+    } */
     .cab-booking #booking-map {
         height: 50vh!important;
         position: fixed!important;
