@@ -78,8 +78,8 @@ trait GiftCardTrait
                 }
             }
             
-        } catch (\Exception $e) {
-            
+        } catch (\Exception $e) {   
+           Log::info($e->getMessage()); 
         }
     }
 

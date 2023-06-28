@@ -384,6 +384,7 @@ class KhaltiGatewayController extends FrontController
                 return $this->errorResponse(__('Payment Failed'), 400);
             }
         } catch (\Exception $ex) {
+          Log::info($e->getMessage());
             return $this->errorResponse(__('Server Error'), 400);
         }
     }

@@ -518,6 +518,7 @@ class AttributeController extends BaseController
             }
         }
         catch(\Exception $e) {
+            \Log::info($e->getMessage());
             return response()->json(array('success' => false));
         }
     }

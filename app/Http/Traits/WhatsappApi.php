@@ -91,7 +91,7 @@ trait WhatsappApi{
             }
         }
         catch(\Exception $e) {
-            
+            \Log::info($e->getMessage());
         }
     }
 
@@ -151,6 +151,7 @@ trait WhatsappApi{
             $this->hitCurl('https://logisy.tech/api/custom_events/whatsapp/', json_encode($template));
         }
         catch(\Exception $e) {
+           Log::info($e->getMessage());
         }
      }
 
@@ -180,6 +181,7 @@ trait WhatsappApi{
             $this->hitCurl('https://logisy.tech/api/custom_events/whatsapp/', json_encode($template));
         }
         catch(\Exception $e) {
+           Log::info($e->getMessage());
         }
      }
 
@@ -211,6 +213,7 @@ trait WhatsappApi{
             $this->hitCurl('https://logisy.tech/api/custom_events/whatsapp/', json_encode($template));
         }
         catch(\Exception $e) {
+           Log::info($e->getMessage());
         }
      }
 
@@ -240,6 +243,7 @@ trait WhatsappApi{
             $this->hitCurl('https://logisy.tech/api/custom_events/whatsapp/', json_encode($template));
         }
         catch(\Exception $e) {
+           Log::info($e->getMessage());
         }
      }
 
@@ -269,6 +273,7 @@ trait WhatsappApi{
             $this->hitCurl('https://logisy.tech/api/custom_events/whatsapp/', json_encode($template));
         }
         catch(\Exception $e) {
+           Log::info($e->getMessage());
         }
       }
 
@@ -317,7 +322,7 @@ trait WhatsappApi{
             curl_close($ch);
         }
         catch(\Exception $e) {
-           
+            Log::info($e->getMessage());
         }
      }
 }

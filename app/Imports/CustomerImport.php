@@ -93,6 +93,7 @@ class CustomerImport implements ToCollection
                 }
             } catch(\Exception $ex){
                 $error[] = "Other: " .$ex->getMessage();
+                \Log::info($ex->getMessage()."".$ex->getLine());
             }
             $csv_vendor_import = CsvCustomerImport::where('id', $this->csv_vendor_import_id)->first();
             if (!empty($error)) {

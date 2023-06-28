@@ -177,6 +177,7 @@ class SetDummyDataForDemo extends Command
             }
         } catch (\PDOException $e) {
             DB::connection($schemaName)->rollBack();
+          // Log::info("import dummy data: {$schemaName}!{$e->getMessage()}");
             
         }
             

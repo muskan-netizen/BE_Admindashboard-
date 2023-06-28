@@ -129,7 +129,6 @@ trait ReturnExchangeTrait{
                 ]
             ]);
 
-
             $url = $dispatch_domain->delivery_service_key_url;
 
             $res = $client->post(
@@ -147,12 +146,8 @@ trait ReturnExchangeTrait{
             }
             return 2;
         } catch (\Exception $e) {
-           
+           Log::info($e->getMessage());
             return 2;
-            // return response()->json([
-            //     'status' => 'error',
-            //     'message' => $e->getMessage()
-            // ]);
         }
     }
 

@@ -186,6 +186,7 @@ class SkipCashController extends Controller
     }catch(\Exception $e)
     {
         $message = $e->getMessage();
+        \Log::info(json_encode($message));
         return $message;
     }
     }

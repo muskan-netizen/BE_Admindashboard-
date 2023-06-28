@@ -1664,6 +1664,7 @@ trait OrderTrait
                         $this->sendOrderSuccessSMS($order);
                 }catch(\Exception $e)
                 {
+                    \Log::info('sendSuccessSMS error :-'.$e->getMessage());
                     return true;
                 }
                 return true;
@@ -1722,6 +1723,7 @@ trait OrderTrait
 
             }catch(\Exception $e)
             {
+                \Log::info('failedOrderWalletRefund error :-'.$e->getMessage());
                 return true;
             }
             return true;

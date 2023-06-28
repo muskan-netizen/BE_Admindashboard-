@@ -2342,6 +2342,8 @@ class StoreController extends BaseController{
 			return $this->errorResponse('Sorry, You are not a vendor.', 500);
 		}
 		} catch (\Exception $e) {
+			Log::info($e->getLine());
+			Log::info($e->getMessage());
 			return $this->errorResponse('Exception occured', 500);
 		}
 	 }

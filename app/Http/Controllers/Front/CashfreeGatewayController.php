@@ -163,6 +163,7 @@ class CashfreeGatewayController extends FrontController
             }
         }
         catch(\Exception $ex){
+          Log::info($e->getMessage());
             return $this->errorResponse('Server Error', 400);
         }
     }
