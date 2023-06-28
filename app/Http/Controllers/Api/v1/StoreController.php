@@ -2331,7 +2331,6 @@ class StoreController extends BaseController{
 		
 								
 								}
-								\Log::info($insert_arr);
 								if( !empty($insert_arr) ) {
 									ProductAttribute::where('product_id',$request->product_id)->delete();
 									ProductAttribute::insert($insert_arr);
