@@ -50,6 +50,7 @@
     background-color: #eee;
     box-shadow: 0 0 10px rgb(0 0 0 / 10%);
     height: 100%;
+    max-height: 380px;
 }
 
 .al_body_template_three .common-banner.text-center img,
@@ -3547,6 +3548,9 @@ footer#footer {
     }
 }
 @media (max-width: 991px) {
+    html .al_body_template_three .vendor-design_new{
+        margin-top: 0!important;
+    }
     .al_body_template_three .vendor-design_new {
         margin-top: 15px!important;
     }
@@ -3875,7 +3879,7 @@ a.morelink.less {
     font-size: 20px;
 }
 .al_body_template_three .vendor-design_new {
-    margin-top: 0%!important;
+    margin-top: -18%!important;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3885,7 +3889,7 @@ a.morelink.less {
     margin-left: 4%;
     width: 100%;
     min-height: 300px;
-    padding: 30px 0;
+    padding: 0 0 30px;
 }
 .vendor_row{
     position: relative;
