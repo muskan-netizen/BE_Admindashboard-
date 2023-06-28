@@ -182,7 +182,7 @@ if(session()->has('applocale')){
                                     @include('layouts.store.search_template')
                                     {{-- @if(auth()->user()) @if($client_preference_detail->show_wishlist==1)
                                     <div class="icon-nav mr-2 d-none d-lg-block mr-0"> <a class="fav-button mr-0" href="{{route('user.wishlists')}}">
-                                        <i class="fa fa-heart" aria-hidden="true"></i>
+                                        <i class="fa fa-heart-o wishListCount" aria-hidden="true"></i>
                                     </a> </div>
                                     @endif @endif --}}
                                     {{-- <div class="icon-nav d-none d-lg-inline-block">
@@ -282,7 +282,7 @@ if(session()->has('applocale')){
                                                 @if (auth()->user())
                                                 @if ($client_preference_detail->show_wishlist == 1)
                                                     <div class="icon-nav mx-2 d-none d-sm-block"> <a class="fav-button"
-                                                            href="{{ route('user.wishlists') }}"> <i class="fa fa-heart" aria-hidden="true"></i> </a> </div>
+                                                            href="{{ route('user.wishlists') }}"> <i class="fa fa-heart-o wishListCount" aria-hidden="true"></i> </a> </div>
                                                     @endif
                                                 @endif
                                                 <div class="icon-nav d-none d-sm-inline-block">
@@ -416,7 +416,7 @@ if(session()->has('applocale')){
                                     <li class="search-b">
                                         <a href="{{route('user.wishlists')}}" >
                                                 <img  class="img-fluid img-white-s" src="{{asset('images/g2.png')}}"> <img  class="img-fluid img-black-s" src="{{asset('images/g2-white.png')}}">
-                                                <!-- <i class="fa fa-heart"></i> -->
+                                                <!-- <i class="fa fa-heart-o wishListCount"></i> -->
                                                 Favourite
                                         </a>
                                     </li> 
@@ -557,7 +557,7 @@ if(session()->has('applocale')){
                                             @include('layouts.store.search_template')
                                             {{-- @if(auth()->user()) @if($client_preference_detail->show_wishlist==1)
                                             <div class="icon-nav mr-2 d-none d-lg-block mr-0"> <a class="fav-button mr-0" href="{{route('user.wishlists')}}">
-                                                <i class="fa fa-heart" aria-hidden="true"></i>
+                                                <i class="fa fa-heart-o wishListCount" aria-hidden="true"></i>
                                             </a> </div>
                                             @endif @endif --}}
                                             {{-- <div class="icon-nav d-none d-lg-inline-block">
@@ -657,7 +657,7 @@ if(session()->has('applocale')){
                                                         @if (auth()->user())
                                                         @if ($client_preference_detail->show_wishlist == 1)
                                                             <div class="icon-nav mx-2 d-none d-sm-block"> <a class="fav-button"
-                                                                    href="{{ route('user.wishlists') }}"> <i class="fa fa-heart" aria-hidden="true"></i> </a> </div>
+                                                                    href="{{ route('user.wishlists') }}"> <i class="fa fa-heart-o wishListCount" aria-hidden="true"></i> </a> </div>
                                                             @endif
                                                         @endif
                                                         <div class="icon-nav d-none d-sm-inline-block">
@@ -813,7 +813,7 @@ if(session()->has('applocale')){
                 @if($client_preference_detail->show_wishlist == 1)
                 <li class="mobile-wishlist d-inline d-sm-none">
                     <a href="{{route('user.wishlists')}}">
-                        <i class="fa fa-heart" aria-hidden="true"></i>
+                        <i class="fa fa-heart-o wishListCount" aria-hidden="true"></i>
                     </a>
                 </li>
                 @endif

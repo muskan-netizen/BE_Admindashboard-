@@ -450,13 +450,21 @@ $(document).ready(function () {
                 "variant_id": $('#prod_variant_id').val()
             },
             success: function (res) {
+                $('.wishListCount').removeClass('fa-heart');
+                $('.wishListCount').removeClass('fa-heart-o');
                 if (res.status == "success") {
                     if (_this.hasClass('btn-solid')) {
                         if (res.message.indexOf('added') !== -1) {
                             _this.text(remveFrmWishlist);
                         } else {
                             _this.text(addWishlist);
+
                         }
+                    }
+                    if(res.wishListCount > 0){
+                        $('.wishListCount').addClass('fa-heart');
+                    }else{
+                        $('.wishListCount').addClass('fa-heart-o');
                     }
                 } else {
                     location.reload();
@@ -2373,6 +2381,13 @@ $(document).ready(function () {
             url: cart_product_url,
             success: function (response) {
                 if (response.status == "success") {
+                        if(response.wishListCount > 0){
+                            $('.wishListCount').removeClass('fa-heart-o');
+                            $('.wishListCount').addClass('fa-heart');
+                        }else{
+                            $('.wishListCount').removeClass('fa-heart');
+                            $('.wishListCount').addClass('fa-heart-o');
+                        }
                     $("#cart_table").html('');
                     $(".spinner-box").hide();
                     $("#mycart").html(response.mycart);
