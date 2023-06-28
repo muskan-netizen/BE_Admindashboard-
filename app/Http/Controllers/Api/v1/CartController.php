@@ -92,7 +92,6 @@ class CartController extends BaseController
 
             return $this->successResponse($cartData);
         } catch (Exception $e) {
-            \Log::info($e->getMessage());
             return $this->successResponse([]);
         }
     }
@@ -1686,7 +1685,7 @@ class CartController extends BaseController
         } else {
             $cart->total_payable_amount = ($total_paying  + $cart->total_tax) - ($total_disc_amount + $loyalty_amount_saved);
         }
-        //Log::info("total_payable_amount 1".$total_taxable_amount);
+        
         /* if($total_taxable_amount>0){
             $cart->total_payable_amount = $cart->total_payable_amount +$total_taxable_amount;
         } */
@@ -1774,8 +1773,6 @@ class CartController extends BaseController
 
         }catch(\Exception $ex)
         {
-            //\Log::info('get Cart in api error');
-            //\Log::info($ex->getMessage());
             return [];
         }
     }

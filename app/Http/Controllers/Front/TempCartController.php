@@ -872,8 +872,6 @@ class TempCartController extends FrontController
                 ];
                $res  = sendFcmCurlRequest($data,$client_preferences->fcm_server_key);
              //  pr( $res);
-               \Log::info('sendEditedOrderPushNotification sendFcmCurlRequest ');
-               \Log::info($res);
             }
         }
     }

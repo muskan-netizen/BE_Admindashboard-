@@ -115,7 +115,6 @@ class DispatcherController extends FrontController
                     $total_waiting_price = $orderVendDetail->sum('waiting_price');
                     $total_waiting_time = $orderVendDetail->sum('waiting_time');
                    
-                    \Log::info('total_waiting_price : '.$total_waiting_price.' -- total_waiting_time ='.$total_waiting_time);
                     $payable_amount =  Order::where('id', $checkiftokenExist->order_id)->value('payable_amount');
                     $old_payable_amount =  Order::where('id', $checkiftokenExist->order_id)->value('old_payable_amount');
                     $payable_amount = (($old_payable_amount>0)?$old_payable_amount:$payable_amount);

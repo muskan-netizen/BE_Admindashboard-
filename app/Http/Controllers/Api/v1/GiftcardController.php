@@ -81,7 +81,7 @@ class GiftcardController extends BaseController
             $UserGiftCard->save();
             if($sendToMail != ''){
                 $currency_id = isset($user->currency) ? $user->currency : 1;
-               // Log::info('GiftCardMail');
+               
                 $clientCurrency = ClientCurrency::where('currency_id', $currency_id )->first();
                 $currSymbol = (isset($clientCurrency->currency->symbol)) ? $clientCurrency->currency->symbol : '$';
                 $GiftCard->userCode =  $code;
