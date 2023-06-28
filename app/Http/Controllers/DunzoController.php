@@ -198,9 +198,7 @@ class DunzoController extends Controller
 				'utc_offset' => '330'
 			  );
 		}
-      //\Log::info('create Order');
     	$orderSuc = $this->createOrder($data);
-     //\Log::info(json_encode($orderSuc));
 		return $orderSuc;
 		//Response Result
         // "status": true,

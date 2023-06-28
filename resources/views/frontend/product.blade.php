@@ -310,33 +310,30 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 </h3>
                                             @endif
                                         </div>
+                                        
+                                        @if(!empty($product->translation) && isset($product->translation->first()->body_html))
                                         <div class="border-product al_disc">
                                             <h6 class="product-title">{{__('Product Details')}}</h6>
                                             <p></p>
-                                        {{--    @if((!empty($product->translation) && isset($product->translation[0])))
-                                            <div  id="show_product_text_more" >{!!  \Illuminate\Support\Str::words($product->translation[0]->body_html, 20,  '<br><h5 onclick="showMoreTextFunction()">Read more..</h5>') !!}</div>
-                                             <div id="show_product_text_less" style="display: none;"> {!! $product->translation[0]->body_html !!} <h5 onclick="showLessTextFunction()">Read less..</h5></div>
-                                             @endif --}}
-                                            {!!(!empty($product->translation) && isset($product->translation[0])) ?
-                                            $product->translation[0]->body_html : ''!!}
+                                            {!! $product->translation->first()->body_html !!}
                                         </div>
+                                    @endif
 
-                                        <!--- Processor Details Farmmeat by Sohail -->
-                                        @if(isset($processorProduct))
-                                        @if (!empty($processorProduct) && $processorProduct->is_processor_enable == 1)
-                                            <div class="border-product al_disc">
-                                                <h6 class="product-title">{{__('Product processor Details')}}</h6>
-                                                <p>{{$processorProduct->name}}</p>
-                                                <p>{{$processorProduct->date}}</p>
-                                                <p>{{$processorProduct->address}}</p>
-                                            </div>
-                                        @elseif (!empty($product) && $processorProduct->is_processor_enable == 0)
-                                            <div class="border-product al_disc">
-                                                <h6 class="product-title">{{__('Product Vendor Details')}}</h6>
-                                                <p>{{$product->product_pickup_date}}</p>
-                                            </div>
-                                        @endif
-                                        @endif
+                                    @if(isset($processorProduct))
+                                    @if (!empty($processorProduct) && $processorProduct->is_processor_enable == 1)
+                                        <div class="border-product al_disc">
+                                            <h6 class="product-title">{{__('Product processor Details')}}</h6>
+                                            <p>{{$processorProduct->name}}</p>
+                                            <p>{{$processorProduct->date}}</p>
+                                            <p>{{$processorProduct->address}}</p>
+                                        </div>
+                                    @elseif (!empty($product) && $product->product_pickup_date != null)
+                                        <div class="border-product al_disc">
+                                            <h6 class="product-title">{{__('Product Vendor Details')}}</h6>
+                                            <p>{{$product->product_pickup_date}}</p>
+                                        </div>
+                                    @endif
+                                    @endif
                                         
 
 

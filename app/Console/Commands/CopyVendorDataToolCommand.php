@@ -46,7 +46,6 @@ class CopyVendorDataToolCommand extends Command
     {
         $client = Client::select('database_name', 'sub_domain')->first();
         $database_name = 'royo_' . $client->database_name;
-        // // Log::info("checking cart start: {$database_name}!");
         $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME =  ?";
         $db = DB::select($query, [
             $database_name

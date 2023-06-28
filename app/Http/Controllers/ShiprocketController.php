@@ -173,7 +173,6 @@ class ShiprocketController extends Controller
 
     public function checkShiprocket()
     {
-		//\Log::info('sdfsd');
 		$this->configuration();
     	$token = $this->getAuthToken();
     	$order = $this->createOrder($token->token,[]);
