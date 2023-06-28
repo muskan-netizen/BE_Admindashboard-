@@ -8495,7 +8495,13 @@ body.al_body_template_two #page-container .small-slider .home-slider .home {
     height: 550px;
 }
 
-
+.cart-design .cart-summary .alFourSpecificInstructions input {
+    color: #000;
+}
+.cart-design .cart-summary .alFourSpecificInstructions input::placeholder{
+    color: #000;
+    opacity: 0.8;
+}
 /* body #page-container .small-slider .slick-slide{height: auto;} */
 
 @media (max-width:1366px) {
