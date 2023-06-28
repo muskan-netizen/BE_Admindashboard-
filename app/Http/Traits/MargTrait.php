@@ -130,7 +130,6 @@ trait MargTrait{
 
 		} catch (Exception $e) {
             DB::rollback();
-			\Log::info("error".$e->getMessage());
 			return $e->getMessage();
 		}
 		

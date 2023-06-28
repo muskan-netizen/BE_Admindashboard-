@@ -173,7 +173,6 @@ class ShiprocketController extends Controller
 
     public function checkShiprocket()
     {
-		//\Log::info('sdfsd');
 		$this->configuration();
     	$token = $this->getAuthToken();
     	$order = $this->createOrder($token->token,[]);
@@ -264,7 +263,6 @@ class ShiprocketController extends Controller
 				'weight' => ($weightSum>0)? $weightSum : $this->weight,
 			  );
 		}
-			//\Log::info(json_encode($data));
     	$orderSuc = $this->createOrder($token->token,$data);
 		if($orderSuc->status_code == 1)
 		{
@@ -372,7 +370,6 @@ class ShiprocketController extends Controller
 			}
 				
 			}catch(\Exception $e){
-				\Log::info($e->getMessage());
 				return response([],200);
 			}
 			return response([],200);

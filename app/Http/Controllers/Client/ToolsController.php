@@ -142,7 +142,6 @@ class ToolsController extends BaseController
                 }
                 // ------------------------- jobs ------------------
                 foreach ($from_products->chunk(1000) as $products) {
-                   \Log::info("products");
                     CopyData::dispatch($products, $copy_to, $copy_from, $sku_url, $from_vendor,$this->vendorObj,  $this->productObj, $this->clientObj, $this->addOnSetObj, $this->categoryObj, $this->vendorCategoryObj, $this->vendorSlotObj, $this->vendorSlotDateObj, $this->vendorDineinCategoryObj, $this->vendorDineinTableObj)->onQueue('Copy_Tool');
                 }
 
@@ -150,7 +149,6 @@ class ToolsController extends BaseController
             }
             return false;
         } catch (\Exception $e) {
-            \Log::info("error ".$e->getMessage());
             return false;
         }
     }

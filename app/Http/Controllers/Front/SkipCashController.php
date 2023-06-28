@@ -163,7 +163,7 @@ class SkipCashController extends Controller
         $error = curl_error($ch);
         $info = curl_getinfo($ch);
         curl_close($ch);
-        \Log::info($response);
+        
         $responseObj = json_decode($response);  
         if ($responseObj->returnCode != '200') {
             $message = 'Payment error';
@@ -186,7 +186,6 @@ class SkipCashController extends Controller
     }catch(\Exception $e)
     {
         $message = $e->getMessage();
-        \Log::info(json_encode($message));
         return $message;
     }
     }
@@ -385,7 +384,6 @@ class SkipCashController extends Controller
             // print_r($payload, true);
 
             // Log the payload to your application's logs
-            Log::info('SkipCash webhook received: '. print_r($payload, true));
 
             // Do any additional processing based on the webhook payload
     }

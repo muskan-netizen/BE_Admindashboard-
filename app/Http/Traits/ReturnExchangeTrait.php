@@ -129,13 +129,6 @@ trait ReturnExchangeTrait{
                 ]
             ]);
 
-            //\Log::info("header", [
-            //     'personaltoken' => $dispatch_domain->delivery_service_key,
-            //     'shortcode' => $dispatch_domain->delivery_service_key_code,
-            //     'content-type' => 'application/json'
-            // ]);
-
-            //\Log::info("header", $postdata);
 
             $url = $dispatch_domain->delivery_service_key_url;
 
@@ -144,7 +137,7 @@ trait ReturnExchangeTrait{
                 ['form_params' => ($postdata)]
             );
             $response = json_decode($res->getBody(), true);
-            //\Log::info("asdfasdfasd". $res->getBody());
+            
             if ($response && $response['task_id'] > 0) {
                 $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
                 $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
@@ -154,7 +147,7 @@ trait ReturnExchangeTrait{
             }
             return 2;
         } catch (\Exception $e) {
-           // Log::info($e->getMessage());
+           
             return 2;
             // return response()->json([
             //     'status' => 'error',

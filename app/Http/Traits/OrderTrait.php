@@ -954,7 +954,6 @@ trait OrderTrait
             $client = CP::orderBy('id', 'asc')->first();
 
             //  send all payment to fist order
-            Log::info("order Pre Time is ".$vendor_details->order_pre_time);
 
             $postdata =  [
                 'order_number'  =>  $order->order_number,
@@ -1187,7 +1186,6 @@ trait OrderTrait
 
 
         $keyData = ['{otp_code}' => $phoneCode ?? ''];
-        // //\Log::info($keyData);
 
         $checkSeeder = SmsTemplate::where('slug', 'otp-sms-tracking-url')->count();
         if ($checkSeeder > 0) {
@@ -1196,7 +1194,6 @@ trait OrderTrait
             if (!empty($prefer['sms_provider'])) {
 
                 $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
-                ////\Log::info($send);
             }
         }
     }
@@ -1357,7 +1354,7 @@ trait OrderTrait
                 $cart = Cart::where('unique_identifier', session()->get('_token'))->where('order_id', $orderid)->first();
             endif;
             if (!empty($cart)) :
-               // Log::info($cart);
+               
                 CartProduct::where('cart_id', $cart->id)->delete();
                 CartProductPrescription::where('cart_id', $cart->id)->delete();
                 Cart::where('id', $cart->id)->delete();
@@ -1667,7 +1664,6 @@ trait OrderTrait
                         $this->sendOrderSuccessSMS($order);
                 }catch(\Exception $e)
                 {
-                    \Log::info('orderSuccessCartDetail error :-'.$e->getMessage());
                     return true;
                 }
                 return true;
@@ -1706,7 +1702,6 @@ trait OrderTrait
             }
         }catch(\Exception $e)
         {
-            \Log::info('sendSuccessSMS error :-'.$e->getMessage());
             return true;
         }
         return true;
@@ -1727,7 +1722,6 @@ trait OrderTrait
 
             }catch(\Exception $e)
             {
-                \Log::info('failedOrderWalletRefund error :-'.$e->getMessage());
                 return true;
             }
             return true;

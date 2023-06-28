@@ -809,7 +809,6 @@ class ProductController extends BaseController
             return redirect()->back()->with('toaster', $toaster);
         } catch (\Exception $e) {
             DB::rollback();
-            \Log::info($e->getMessage());
             $toaster = $this->errorToaster(__('ERROR'),$e->getMessage() );
             return redirect()->back()->with('toaster', $toaster);
 
@@ -1326,7 +1325,6 @@ class ProductController extends BaseController
                                 
                                 $retResponse['tags'] = $response['tags'];
                             }
-            //               // Log::info($response);
                 }
                 return $retResponse;
             }
@@ -1355,11 +1353,9 @@ class ProductController extends BaseController
                             if($response && $response['message'] == 'success'){
                                 return $response['tags'];
                             }
-            //               // Log::info($response);
                 }
             }
             catch(\Exception $e){
-                //// Log::info($e->getMessage());
             }
     }
     # check if last mile delivery on

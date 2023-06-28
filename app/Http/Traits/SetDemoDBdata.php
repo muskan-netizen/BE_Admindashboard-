@@ -102,7 +102,6 @@ trait SetDemoDBdata{
             }
                 catch (\PDOException $e) {
                 DB::rollBack();
-               // Log::info("import dummy data: !{$e->getMessage()}");
                 
             }
             return 1;

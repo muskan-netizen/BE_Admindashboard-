@@ -64,7 +64,6 @@ class MargController extends Controller
             // }
         // ---------------------- Without Dispatch ------------------
             foreach($collectionData["Details"]->pro_N as $key => $product){
-                \Log::info(json_encode($product));
                $detail = $this->addProduct($product);
             }
         }

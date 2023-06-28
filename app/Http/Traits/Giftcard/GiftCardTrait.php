@@ -41,8 +41,7 @@ trait GiftCardTrait
             return $code;
        
     }
-    public function GiftCardMail( $mail_to,$mail_to_name ,$GiftCard ,$user ,$currSymbol = '$' ){
-       // Log::info('GiftCardMailTrad');    
+    public function GiftCardMail( $mail_to,$mail_to_name ,$GiftCard ,$user ,$currSymbol = '$' ){   
         try {
             $email_template = EmailTemplate::where('slug',  'GiftCard')->first();
            
@@ -55,11 +54,10 @@ trait GiftCardTrait
                 $content = str_ireplace("{gift_amount}", $currSymbol. $GiftCard->amount , $content);
                 $content = str_ireplace("{customer_name}", $mail_to_name , $content);
            
-               // Log::info('GiftCardMailTrad');
                 $data = ClientPreference::select('mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username',  'mail_password', 'mail_encryption', 'mail_from', 'admin_email')->first();
                 $client = Client::select('id', 'name', 'email', 'phone_number', 'logo')->first();
                 if (!empty($data->mail_driver) && !empty($data->mail_host) && !empty($data->mail_port) && !empty($data->mail_from) && !empty($data->mail_password) && !empty($data->mail_encryption)) {
-                   // Log::info('GiftCardMailTrad');    
+           
                     $email_data = [
                         'GiftCard' => $GiftCard,
                         'currSymbol' => $currSymbol,
@@ -76,14 +74,12 @@ trait GiftCardTrait
                     // $mail = 	Mail::to('harbans.singh@codebrewinnovations.com')->send(new \App\Mail\GiftCardEmail($email_data));
                     // pr($mail);
                      dispatch(new \App\Jobs\GiftCardEmailJob($email_data))->onQueue('verify_email');
-                   // Log::info('GiftCardMail response');    
-                   // Log::info(count(Mail::failures()));
+                   
                 }
             }
             
         } catch (\Exception $e) {
-           // Log::info('GiftCardMail error');    
-           // Log::info($e->getMessage()); 
+            
         }
     }
 

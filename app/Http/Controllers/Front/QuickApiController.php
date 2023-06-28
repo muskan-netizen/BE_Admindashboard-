@@ -55,7 +55,6 @@ class QuickApiController extends Controller
         
         }catch(\Exception $e)
         {
-            \Log::info($e->getMessage());
             return 0;
         }
     }
@@ -171,7 +170,6 @@ class QuickApiController extends Controller
         }
         
         }catch(\Exception $e){
-            \Log::info($e->getMessage());
             return response([],200);
         }
 

@@ -1812,10 +1812,6 @@
                 }
             }]
         });
-        // var serviceType = "{{$serviceType}}";
-        // if(serviceType == "rental"){
-        //     $("#order_placed_btn").attr('disabled', true);
-        // }
     });
 
     $(document).on('click', '.agree_term_btn', function(){
@@ -1827,8 +1823,6 @@
 
     $(document).on('click', '#agree_btn', function(){
         $('#agree_term_check').prop('checked', true);
-        // $('#agree_term_check').attr('disabled', false);
-        // $("#order_placed_btn").attr('disabled', false);
         $('#consent_form_rental').modal('hide');
     });
 
