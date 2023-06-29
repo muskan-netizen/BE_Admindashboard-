@@ -379,6 +379,39 @@ class PickupDeliveryController extends BaseController{
 
     }
 
+    public function createOrderNotification($request){
+
+        try {
+            $dispatch_domain = $this->checkIfPickupDeliveryOn();
+            $customer = Auth::user();
+            $wallet = $customer->wallet;
+            if ($dispatch_domain && $dispatch_domain != false) {
+
+
+                $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
+                'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
+                'content-type' => 'application/json']
+                                    ]);
+                $url = $dispatch_domain->pickup_delivery_service_key_url;
+                $res = $client->post(
+                $url.'/api/task/create',
+                ['form_params' => (
+                $postdata
+                )]
+                );
+                $response = json_decode($res->getBody(), true);
+
+
+            }
+
+        }catch
+        {
+
+        }
+
+
+    }
+
 
     // order place for pickup delivery
 
