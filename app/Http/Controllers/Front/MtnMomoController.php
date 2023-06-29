@@ -105,7 +105,6 @@ class MtnMomoController extends FrontController
         if (empty($mtnPayload))
             return false;
         $payload = json_decode($mtnPayload, true);
-        \Log::info($payload);
         $payment = Payment::where('transaction_id', $payload['externalId']);
         if (!$payment)
             return false;

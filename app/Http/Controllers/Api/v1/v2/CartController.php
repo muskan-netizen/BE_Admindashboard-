@@ -1693,7 +1693,6 @@ class CartController extends BaseController
 
         }catch(\Exception $ex)
         {
-            \Log::info('get Cart in api error');
             \Log::info($ex->getMessage());
             return [];
         }

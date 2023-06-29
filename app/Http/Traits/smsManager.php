@@ -153,7 +153,6 @@ trait smsManager{
                 'to'      => $to,
                 'message' => $message
             ]);
-            \Log::info(json_encode($result));
             return $result;
         }catch(\Exception $e) {
             return response()->json(['data' => $e->getMessage()]);
@@ -172,7 +171,6 @@ trait smsManager{
             $resmessage = $response->current();
 
             if ($resmessage->getStatus() == 0) {
-                Log::info("Vonage The message was sent successfully");
                 return "The message was sent successfully\n";
             } else {
                 return "The message failed with status: " . $resmessage->getStatus() . "\n";
@@ -206,8 +204,6 @@ trait smsManager{
             }
 
             $result = curl_exec($curl);
-            Log::info("SMS Partner");
-            Log::info($result);
             if ($result === false)
             return curl_error($curl);
             else

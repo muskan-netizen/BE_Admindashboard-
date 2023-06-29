@@ -671,7 +671,6 @@ class PickupDeliveryController extends BaseController{
                 $order->payment_status = 1;
             }
             $order->save();
-            \Log::info($request->payment_option_id);
             if ($request->payment_option_id != 1 && $request->payment_option_id != 2 && $request->has('transaction_id') && !empty($request->transaction_id)) {
                 $payment = Payment::where('transaction_id',$request->transaction_id)->first();
                 if(!$payment){
@@ -702,7 +701,6 @@ class PickupDeliveryController extends BaseController{
                 $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
                 $order_place['data']['user_name'] = $user->email;
                 $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
-                \Log::info($order_place);
                 return  $order_place;
             }else{
                 return $request_to_dispatch;
