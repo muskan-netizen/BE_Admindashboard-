@@ -23,9 +23,9 @@
                         ?>
                             <label class="radio d-inline-block txt-14 col-4 position-relative pl-4 pr-2" data-title="{{ $key === 0 ? $variant->title : '' }}"> <span class="color_name ellipsis">{{$optn->title}}</span>
                               @if($variant->type == 2)
-                            <span class="color_var var_{{$var_id}}" style="padding:8px; border: 1px dotted #CCC; background:{{$optn->hexacode}};" data-id="{{$var_id}}"></span>
+                            <span class="color_var var_{{$var_id}} @if($checked == 'checked') var-active radio-active @endif" style="padding:8px; border: 1px dotted #CCC; background:{{$optn->hexacode}};" data-id="{{$var_id}}"></span>
                             @else
-                            <span class="color_var radio_var radio_{{$var_id}}" style="padding:8px; border: 1px dotted #CCC; background:#fff;" data-id="{{$var_id}}"></span>
+                            <span class="color_var radio_var radio_{{$var_id}} @if($checked == 'checked') var-active radio-active @endif" style="padding:8px; border: 1px dotted #CCC; background:#fff;" data-id="{{$var_id}}"></span>
                                 @endif
                             <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}}>
                             <span class="checkround"></span>

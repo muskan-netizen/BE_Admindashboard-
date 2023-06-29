@@ -354,7 +354,7 @@ class ProductController extends FrontController{
                 $current_time_response = true;
             }
 
-            
+            // pr($product->toArray());
             return view('frontend.'.$product_page)->with(['user_vendor' => $user_vendor, 'shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference, 'suggested_category_products' => $suggested_category_products, 'suggested_brand_products'=> $suggested_brand_products, 'suggested_vendor_products'=>$suggested_vendor_products, 'coupon_list' => $coupon_list, 'attr_array' => $attr_array, 'set_template' => $set_template, 'current_time_response' => $current_time_response, 'processorProduct'=> $processorProduct]);
         }
    }
@@ -366,9 +366,6 @@ class ProductController extends FrontController{
      */
 
     public function getVariantData(Request $request, $domain = '', $sku){
-        if(count($request->options) == 2){
-            return response()->json(array('status' => 'Success', 'html'=>''));
-        }
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_token_currency_enable']);
 
         $customerCurrency = Session::get('customerCurrency');
@@ -438,11 +435,11 @@ class ProductController extends FrontController{
         ->select('id')
         ->where('products.id', $product->id)->first();
         // Assuming $availableSets is an array of objects with a 'title' property
-        foreach ($availableSets->variantSet as $key => $sets) {
-            if ($sets->variantDetail->title === $selected_variant_title) {
-                unset($availableSets->variantSet[$key]);
-            }
-        }
+        // foreach ($availableSets->variantSet as $key => $sets) {
+        //     if ($sets->variantDetail->title === $selected_variant_title) {
+        //         unset($availableSets->variantSet[$key]);
+        //     }
+        // }
         if($pv_ids){
             $variantData = ProductVariant::with(['product.media.image', 'product.addOn', 'media.pimage.image', 'checkIfInCart'])
             ->select('id', 'sku', 'quantity', 'price', 'compare_at_price', 'barcode', 'product_id')
@@ -493,8 +490,8 @@ class ProductController extends FrontController{
                 $data['variant'] = $variantData;
                 $data['tokenAmount'] = $tokenAmount;
                 $data['is_token_enable'] = $is_token_enable;
-                // pr($availableSets->variantSet);
-                $returnHTML = view('frontend.product-part.product-variant-ajax')->with('availableSets', $availableSets->variantSet)->render();
+                // pr($availableSets->variantSet->toArray());
+                $returnHTML = view('frontend.product-part.product-variant-ajax')->with(['availableSets' => $availableSets->variantSet, 'selected_variant_title' => $selected_variant_title])->render();
 
                 return response()->json(array('status' => 'Success', 'html'=>$returnHTML));
 

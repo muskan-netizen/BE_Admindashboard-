@@ -76,6 +76,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
     .customer_review_item_row  img{width:50px;height: 50px;border-radius:50%;}
     .customer_review_item_row h4{margin-bottom:0;font-size:18px;font-weight:600;padding-left:15px;margin-top:0;}
     .review-images img {width: 100%;max-width: 100px;margin: 10px 10px 10px 0px;}
+    .label-disabled {pointer-events: none;opacity: 0.5;}
     </style>
 
 @endsection
@@ -1377,17 +1378,14 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     let product_id = "{{ $product->id }}";
     var add_to_cart_url = "{{ route('addToCart') }}";
     $(document).on('click', '.changeVariant', function() {
-        
         updatePrice();
     });
 
     function updatePrice(){
-       
         var variants = [];
         var options = [];
         var selected_variant_title = "";
         $('.changeVariant').each(function() {
-          
             if (this.checked == true) {
                 var that = this;
                 variants.push($(that).attr('vid'));
