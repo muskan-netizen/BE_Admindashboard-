@@ -5,7 +5,12 @@
             $product->minimum_order_count = $product->minimum_order_count;
             else
             $product->minimum_order_count = 1;
+        
+        
+            $t_var = count($product->variantSet);
         @endphp
+
+
         @foreach($product->variantSet as $key => $variant)
             @if($variant->type == 1 || $variant->type == 2)
             <div class="size-box" id="{{ $key === 1 ? 'variant_options' : '' }}">
@@ -27,7 +32,7 @@
                             @else
                             <span class="color_var radio_var radio_{{$var_id}} @if($checked == 'checked') var-active radio-active @endif" style="padding:8px; border: 1px dotted #CCC; background:#fff;" data-id="{{$var_id}}"></span>
                                 @endif
-                            <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}}>
+                            <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" data-option-title="{{$variant->title}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="{{($key != $t_var - 1)?'changeVariant':''}} dataVar{{$var_id}} changeVariant_{{$variant->title}}" {{$checked}}>
                             <span class="checkround"></span>
                         </label>
                         @endforeach

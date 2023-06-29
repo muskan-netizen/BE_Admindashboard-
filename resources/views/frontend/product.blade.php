@@ -1361,7 +1361,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
         	var name  = $(this).attr("data-id");
             $(".var_"+name).removeClass("var-active");
             $(this).toggleClass("var-active");
-            });
+        });
         $(document).on("click",".radio_var", function() {
         	var name  = $(this).attr("data-id");
             $(".radio_"+name).removeClass("radio-active");
@@ -1378,7 +1378,24 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     let product_id = "{{ $product->id }}";
     var add_to_cart_url = "{{ route('addToCart') }}";
     $(document).on('click', '.changeVariant', function() {
+        var $this = $(this);
+        var variant_val = $(this).val();
+        var option_title = $(this).data('option-title');
+        $('.changeVariant_'+option_title).removeAttr('checked');
+        $this.attr('checked', 'checked');
         updatePrice();
+    });
+
+    $(document).on('click', '.selected_variant', function() {
+        var $this = $(this);
+        var option_title = $(this).data('option-title');
+        $('.changeVariant_'+option_title).removeAttr('checked');
+        $this.attr('checked', 'checked');
+        var isSelected = $this.is(':checked');
+        if(isSelected){
+            // alert($(this).data('variant-id'));
+            $('#prod_variant_id').val($(this).data('variant-id'));
+        }
     });
 
     function updatePrice(){

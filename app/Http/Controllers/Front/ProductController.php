@@ -366,6 +366,7 @@ class ProductController extends FrontController{
      */
 
     public function getVariantData(Request $request, $domain = '', $sku){
+        // dd($request->all());
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_token_currency_enable']);
 
         $customerCurrency = Session::get('customerCurrency');
@@ -425,6 +426,15 @@ class ProductController extends FrontController{
             }
         }
         $sets = array();
+
+        // if ($request->has('variants') && !empty($request->options)) {
+        //     foreach ($request->variants as $k => $variant) {
+        //         $product_variant = ProductVariantSet::where('variant_type_id', $request->variants[$k])
+        //         ->where('variant_option_id', $request->options[$k])->where('product_variant_sets.product_id', $product->id)->toSql(); 
+        //         dd($product_variant);
+        //     }
+        // }
+
         $selected_variant_title = $request->selected_variant_title;
         //pr($pv_ids);
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
@@ -490,7 +500,6 @@ class ProductController extends FrontController{
                 $data['variant'] = $variantData;
                 $data['tokenAmount'] = $tokenAmount;
                 $data['is_token_enable'] = $is_token_enable;
-                // pr($availableSets->variantSet->toArray());
                 $returnHTML = view('frontend.product-part.product-variant-ajax')->with(['availableSets' => $availableSets->variantSet, 'selected_variant_title' => $selected_variant_title])->render();
 
                 return response()->json(array('status' => 'Success', 'html'=>$returnHTML));

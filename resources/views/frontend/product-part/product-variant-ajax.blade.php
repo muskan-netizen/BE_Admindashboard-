@@ -4,7 +4,6 @@
             <li class="firstChild">{{$sets->variantDetail->title}}</li>
             <li class="row otherSize">
                 @foreach($sets->option2 as $kk => $optn)
-                    {{-- @dd($optn) --}}
                     <?php $var_id = $optn->variant_type_id;
                     $opt_id = $optn->variant_option_id;
                     ?>
@@ -15,7 +14,7 @@
                         @else
                             <span class="color_var radio_var radio_{{$var_id}}" style="padding:8px; border: 1px dotted #CCC; background:{{$optn->hexacode}};" data-id="{{$var_id}}"></span>
                         @endif
-                        <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}">
+                        <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" data-variant-id="{{$optn->product_variant_id}}" data-variant-price="{{$optn->price}}" vid="{{$var_id}}" optid="{{$opt_id}}" data-option-title="{{$sets->variantDetail->title}}" value="{{$opt_id}}" type="radio" class="dataVar{{$var_id}} changeVariant_{{$sets->variantDetail->title}} selected_variant">
                         <span class="checkround"></span>
                     </label>
                 @endforeach
