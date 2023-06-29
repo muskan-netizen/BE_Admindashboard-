@@ -379,14 +379,13 @@ class PickupDeliveryController extends BaseController{
 
     }
 
+
+    //Call Notification to driver api for after create order 
     public function createOrderNotification($request){
 
         try {
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
-            $customer = Auth::user();
-            $wallet = $customer->wallet;
             if ($dispatch_domain && $dispatch_domain != false) {
-
 
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
                 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
@@ -394,19 +393,21 @@ class PickupDeliveryController extends BaseController{
                                     ]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post(
-                $url.'/api/task/create',
-                ['form_params' => (
-                $postdata
-                )]
-                );
+                    $url.'/api/task/callNotification',
+                            ['form_params' => (
+                                    [   'order_id'=>$request->order_id,
+                                        'call_notification'=>1
+                                    ]
+                            )]
+                        );
                 $response = json_decode($res->getBody(), true);
-
-
+                    
+                return true;
             }
 
-        }catch
+        }catch(\Exception $e)
         {
-
+            \Log::info($e->getMessage());
         }
 
 
