@@ -1414,11 +1414,14 @@ body.al_body_template_eight .main-login-page div#login-section .divider_line {
 body.al_body_template_eight .main-signup-page .bg_inner {
     box-shadow: 0 4px 14px 0 rgb(0 0 0 / 21%);
     width: 80%;
-    margin: 0 auto;
+    margin: 20px auto;
     border-radius: 10px;
     padding: 0;
 }
-
+body.al_body_template_eight .main-signup-page .bg_inner .col-lg-6:nth-of-type(2){
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
 body.al_body_template_eight .main-signup-page .bg_inner .login_img img {
     height: 100%;
     object-fit: contain;

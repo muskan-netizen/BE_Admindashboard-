@@ -336,6 +336,15 @@ $pages = \App\Models\Page::with([
                                     @if( $is_ondemand_multi_pricing ==1 )
                                         @include('layouts.store.onDemandTopBarli')
                                     @endif
+                                    @if (auth()->user())
+                                        @if ($client_preference_detail->show_wishlist == 1)
+                                            <li class="icon-nav mx-2 "> 
+                                                <a class="fav-button" href="{{ route('user.wishlists') }}">
+                                                    <i class="fa fa-heart" aria-hidden="true"></i> 
+                                                </a> 
+                                            </li>
+                                        @endif
+                                    @endif
                                         @if($client_preference_detail->header_quick_link == 1)
 
                                         <li class="onhover-dropdown quick-links quick-links pr-2 mr-2">
