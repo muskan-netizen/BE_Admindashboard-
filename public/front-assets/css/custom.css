@@ -7277,7 +7277,7 @@ body .popular-brands .h2-heading {
 .product-box:hover,
 .product-card-box:hover,
 .suppliers-box:hover {
-    box-shadow: 0 0 0 1px rgb(255 0 24 / 17%), 0 1px 5px 0 rgb(255 0 24 / 12%)
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 17%), 0 1px 5px 0 rgb(0 0 0 / 12%)
 }
 
 .cab-img-box img.img-fluid,
@@ -7598,6 +7598,9 @@ body.dark .top-banner-wrapper p {
 
 .inner_spacing {
     width: calc(100% - 20px) !important
+}
+.al_body_template_nine .inner_spacing{
+    min-height: 115px;
 }
 
 .displayProducts .product-box {
@@ -10673,7 +10676,7 @@ body.al_body_template_one .footer-theme .sub-title li {
 }
 
 .al_body_template_one .main-fillter .side_fillter {
-    background: transparent !important;
+    background: #f5f5f5 !important;
     border-top: 1px solid #D9D9D9;
     margin-top: 18px !important;
     overflow-y: auto !important;
