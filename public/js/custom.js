@@ -3947,27 +3947,25 @@ $(document).ready(function () {
 
 
         var task_type = 'schedule';
-        var schedule_date = $("input:radio.ondemand-time-slots:checked").val();
-        var schedule_time = $("input:radio.booking_time:checked").val();
+        var schedule_date = $("input[name='booking_date']:checked").val();
+        var schedule_time = $("input[name='booking_time']:checked").val();
         var specific_instructions = $("#specific_instructions").val();
         var productid = $("#last_cart_product_id").val();
         //alert(schedule_date);
         //alert(schedule_time);
        var schedule_dt = schedule_date;
         //alert(schedule_dt);
-       var schedule_dt = schedule_date +' '+schedule_time;
+       // var schedule_dt = schedule_date +' '+schedule_time;
         if( (task_type == 'schedule') && (schedule_dt == '') ){
             success_error_alert('error', 'Schedule date time is required', ".cart_response");
             return false;
         }
-      alert(task_type)
         $.ajax({
             type: "POST",
             dataType: 'json',
             url: update_cart_schedule,
-            data: { task_type: task_type ,specific_instructions:specific_instructions,productid:productid,schedule_dt: schedule_dt}, //, schedule_dt: schedule_dt,schedule_time:schedule_time
+            data: { task_type: task_type ,specific_instructions:specific_instructions,productid:productid}, //, schedule_dt: schedule_dt,schedule_time:schedule_time
             success: function (response) {
-                console.log('response',response)
                 if (response.status == "Success") {
                    window.location.href = showCart;
                 }
@@ -3981,6 +3979,7 @@ $(document).ready(function () {
             }
         });
    });
+
 
 
 

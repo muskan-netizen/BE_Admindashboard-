@@ -2579,7 +2579,7 @@ class CartController extends FrontController
         }
     }
 
-    public function updateSchedule(Request $request, $domain = '')
+   public function updateSchedule(Request $request, $domain = '')
     {
         DB::beginTransaction();
         try{
@@ -2618,23 +2618,24 @@ class CartController extends FrontController
 
                 }else{
                     if($request->schedule_dt){   
-                            $date_time =    explode(" ",$request->schedule_dt);
-                          $schedule_dt =  date('Y-m-d H:i:s',strtotime($date_time[0]." " .$date_time[1]));
-                         $slot = $date_time[1]." " .$date_time[3];
                         if(isset($request->slot))
                         {
                             //->setTimezone('UTC') (in case slot is comming then schedule_dt coming only date and we no need to convart date to ny UTC time  )
-                            $time = Carbon::parse($schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s'); 
+                            $time = Carbon::parse($request->schedule_dt, $user->timezone)->format('Y-m-d H:i:s'); 
                             $slot = $request->slot;
                         }else{
 
                         if(isset($request->schedule_dt) && !empty($request->schedule_dt))
-                        $time = Carbon::parse($schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                        $time = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+
                         }
                     }
 
 
                 }
+
+
+
                 if(isset($request->schedule_pickup) && !empty($request->schedule_pickup) &&  $request->schedule_pickup != 'undefined undefined')    # for pickup laundry
                 $request->schedule_pickup = Carbon::parse($request->schedule_pickup, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
 
@@ -2645,6 +2646,8 @@ class CartController extends FrontController
                 {
                     $dropSlot = $request->dropoff_scheduled_slot;
                 }
+
+            
 
               //  pr($time);
                 $cart_update = $cart_detail->update(['specific_instructions' => $request->specific_instructions??null,
@@ -2662,7 +2665,7 @@ class CartController extends FrontController
                 'payable_amount' => $request->payable_amount??0
                 ]);
                
-                CartProduct::where('id',$request->productid)->update(['specific_instruction'=>$request->specific_instructions,'scheduled_date_time'=>$time,'schedule_slot'=> $slot]);
+                CartProduct::where('id',$request->productid)->update(['specific_instruction'=>$request->specific_instructions]);
 
                 DB::commit();
                 if ($user) {
