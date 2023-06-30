@@ -1035,7 +1035,9 @@ class PickupDeliveryController extends FrontController{
                     'notify_hour' => $notify_hour ?? 0,
                     'reminder_hour' => $reminder_hour ?? 0,
                     'app_call' => 0,
+                    'call_notification' => 1
                 ];
+
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post($url.'/api/task/create',['form_params' => ($postdata)]);

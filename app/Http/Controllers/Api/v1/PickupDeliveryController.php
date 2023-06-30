@@ -295,7 +295,6 @@ class PickupDeliveryController extends BaseController{
      * create order for booking
     */
      public function createOrder(Request $request){
-
         DB::beginTransaction();
         try {
             $user = Auth::user();
@@ -381,9 +380,10 @@ class PickupDeliveryController extends BaseController{
 
 
     //Call Notification to driver api for after create order 
-    public function createOrderNotification($request){
+    public function createOrderNotification(Request $request){
 
         try {
+
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             if ($dispatch_domain && $dispatch_domain != false) {
 
@@ -392,6 +392,7 @@ class PickupDeliveryController extends BaseController{
                 'content-type' => 'application/json']
                                     ]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
+                // dd($dispatch_domain->pickup_delivery_service_key_url.'/api/task/callNotifications');
                 $res = $client->post(
                     $url.'/api/task/callNotification',
                             ['form_params' => (
@@ -402,7 +403,7 @@ class PickupDeliveryController extends BaseController{
                         );
                 $response = json_decode($res->getBody(), true);
                     
-                return true;
+                return $response;
             }
 
         }catch(\Exception $e)
@@ -877,7 +878,9 @@ class PickupDeliveryController extends BaseController{
                             'notify_hour' => $notify_hour ?? 0,
                             'reminder_hour' => $reminder_hour ?? 0,
                             'app_call' => 1,
+                            'call_notification' => 1
                         ];
+
                 if($request->has('bid_task_type')){
                     $postdata['bid_task_type']    = $request->bid_task_type;
                     $postdata['accept_bid_price'] = $order->payable_amount;
