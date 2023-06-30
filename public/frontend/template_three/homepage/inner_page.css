@@ -1074,12 +1074,12 @@ h2.homepage-address {
     height: 100%;
     border-radius: 12px;
 }
-
+/* 
 .al_body_template_three .img-outer-box.position-relative {
     border-radius: 12px;
     padding: 0;
     background-color: #eee
-}
+} */
 
 .al_body_template_three .slick-slider .img-outer-box.position-relative {
     border-radius: 12px;
