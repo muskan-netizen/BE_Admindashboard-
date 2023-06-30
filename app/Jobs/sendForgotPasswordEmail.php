@@ -35,15 +35,15 @@ class sendForgotPasswordEmail implements ShouldQueue
             $this->mail_from = $data->mail_from;
             $this->client_logo = $client->logo['original'];
         }
-    // }
+    }
 
     // /**
     //  * Execute the job.
     //  *
     //  * @return void
     //  */
-    // public function handle()
-    // {
+    public function handle()
+    {
         $email = new ForgotPasswordMail($this->details);
         //dd($email);
         Mail::to($this->details['email'])->send($email);
