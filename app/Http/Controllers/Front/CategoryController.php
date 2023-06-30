@@ -121,7 +121,6 @@ class CategoryController extends FrontController{
                 }
             }
         }
-
         $variantSets = ProductVariantSet::with(['options' => function($zx) use($langId){
                             $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id');
                             $zx->select('variant_options.*', 'vt.title');
@@ -173,7 +172,6 @@ class CategoryController extends FrontController{
                 return view('frontend.booking.index')->with(['maxPrice'=>$maxPrice,'clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders, 'is_cab_pooling' => $getAdditionalPreference['is_cab_pooling'], 'is_bid_ride_enable' => $getAdditionalPreference['is_bid_ride_enable'],'is_postpay_enable' => $getAdditionalPreference['is_postpay_enable'], 'is_particular_driver' => $getAdditionalPreference['is_particular_driver']]);
             }
         }elseif($page == 'on demand service' || $page == 'appointment'){
-         
             $cartDataGet = $this->getCartOnDemand($request);
             if($request->step == 2 && empty($request->addons) && empty($request->dataset)){
                 $addos = 0;
@@ -674,7 +672,6 @@ class CategoryController extends FrontController{
         return $result;
     }
 
-
     // ***********   getTimeSlotsForOndemand ************** /////////////////
     public function getTimeSlotsForOndemand(Request $request){
 
@@ -729,12 +726,11 @@ class CategoryController extends FrontController{
 
         $dates = new DateTime("now", new DateTimeZone($timezone) );
         $today = $dates->format('Y-m-d');
-
         if($today < $request->cur_date){
             $curr_time = date('Y-m-d 00:00');
         }else{
             $daten = new DateTime("now", new DateTimeZone($timezone) );
-            $curr_time = $daten->format('h:i');
+            $curr_time = $daten->format('H:i');
         }
 
         if(!empty($request->cur_date)){

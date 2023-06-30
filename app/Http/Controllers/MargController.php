@@ -38,7 +38,7 @@ class MargController extends Controller
 
             $detail         = [];
             $MargMST2017 = "https://corporate.margerp.com/api/eOnlineData/MargMST2017";
-            $reqData = ["CompanyCode" => $CompanyCode,"MargID" => $MargID,"Datetime" =>$margDateTime, "index" => 0];
+            $reqData = ["CompanyCode" => $CompanyCode,"MargID" => $MargID,"Datetime" =>'', "index" => 0];
         }else{
             return false;
         }

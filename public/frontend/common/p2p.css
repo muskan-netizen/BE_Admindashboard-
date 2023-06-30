@@ -424,10 +424,10 @@ body.al_body_template_nine.p2p-module .collection-content.col-lg-9.outter-fillte
     width: 92%;
 } */
 
-body.al_body_template_nine.p2p-module.homeHeader .irs-to {
-    left: 83% !important;
+body.al_body_template_nine.p2p-module .irs-to {
+    left: unset !important;
+    right: 0;
 }
-
 
 /*-----------------------p2p module dark theme css -----------------*/
 

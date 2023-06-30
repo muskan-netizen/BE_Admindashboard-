@@ -544,179 +544,179 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 </div>
                 @endif
 
-                {{-- marg data --}}
-                @if(!is_null($margProduct))
-                    <div class="card-box">
-                        <h5 class="text-uppercase mt-0 mb-3 bg-light p-2 def">{{ __("Marg Data") }}</h5>
-                        <div class="row mb-2">
-                            @foreach ($margProduct as  $key => $feild)
-                                @if ($key == 'id' || $key == 'product_id' ||  $key == 'rid' || $key == 'created_at' || $key == 'updated_at' || $key == 'Is_Deleted')
-                                    @continue
-                                @endif
-                                @switch( $key)
-                                    @case('catcode')
-                                    <div class="col-4 mb-2">
-                                    {!! Form::label('title', __('Item Category Code'), ['class' => 'control-label']) !!}
-                                    {!! Form::text('marg_catcode', $feild, ['class'=>'form-control', 'id' => 'marg_catcode', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
-                                    </div> 
-                                        @break
-                                
-                                    @case('code')
-                                    <div class="col-4 mb-2">
-                                    {!! Form::label('title', __('	Item Code'), ['class' => 'control-label']) !!}
-                                    {!! Form::text('marg_code', $feild, ['class'=>'form-control', 'id' => 'marg_code', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
-                                    </div> 
-                                        @break
-                                
-                                    @case('name')
-                                    <div class="col-4 mb-2">
-                                    {!! Form::label('title', __('Item Name'), ['class' => 'control-label']) !!}
-                                    {!! Form::text('marg_name', $feild, ['class'=>'form-control', 'id' => 'marg_name', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
-                                    </div> 
-                                        @break
-                                
-                                    @case('stock')
-                                    <div class="col-4 mb-2">
-                                    {!! Form::label('title', __('Current Stock'), ['class' => 'control-label']) !!}
-                                    {!! Form::text('marg_stock', $feild, ['class'=>'form-control', 'id' => 'marg_stock', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
-                                    </div> 
-                                        @break
-                                
-                                    @case('remark')
-                                    <div class="col-4 mb-2">
-                                    {!! Form::label('title', __($key), ['class' => 'control-label']) !!}
-                                    {!! Form::text('marg_remark', $feild, ['class'=>'form-control', 'id' => 'marg_remark', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
-                                    </div> 
-                                        @break
-                                
-                                    @case('company')
-                                    <div class="col-4 mb-2">
-                                    {!! Form::label('title', __('Name of Product Company'), ['class' => 'control-label']) !!}
-                                    {!! Form::text('marg_company', $feild, ['class'=>'form-control', 'id' => 'marg_company', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
-                                    </div> 
-                                        @break
-                                
-                                    @case('shopcode')
-                                    <div class="col-4 mb-2">
-                                    {!! Form::label('title', __('Shop Code'), ['class' => 'control-label']) !!}
-                                    {!! Form::text('marg_shopcode', $feild, ['class'=>'form-control', 'id' => 'marg_shopcode', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
-                                    </div> 
-                                        @break
-                                
-                                    @case('MRP')
-                                    <div class="col-4 mb-2">
-                                    {!! Form::label('title', __('Maximum Retail Price'), ['class' => 'control-label']) !!}
-                                    {!! Form::text('marg_MRP', $feild, ['class'=>'form-control', 'id' => 'marg_MRP', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
-                                    </div> 
-                                        @break
-                                
-                                    @case('Rate')
-                                    <div class="col-4 mb-2">
-                                    {!! Form::label('title', __('Billing Price'), ['class' => 'control-label']) !!}
-                                    {!! Form::text('marg_Rate', $feild, ['class'=>'form-control', 'id' => 'marg_Rate', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
-                                    </div> 
-                                        @break
-                                
-                                    @case('Deal')
-                                    <div class="col-4 mb-2">
-                                    {!! Form::label('title', __('Deal on'), ['class' => 'control-label']) !!}
-                                    {!! Form::text('marg_Deal', $feild, ['class'=>'form-control', 'id' => 'marg_Deal', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
-                                    </div> 
-                                        @break
-                                
-                                    @case('Free')
-                                    <div class="col-4 mb-2">
-                                    {!! Form::label('title', __('Free Qty'), ['class' => 'control-label']) !!}
-                                    {!! Form::text('marg_Free', $feild, ['class'=>'form-control', 'id' => 'marg_Free', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
-                                    </div> 
-                                        @break
-                                
-                                    @case('PRate')
-                                    <div class="col-4 mb-2">
-                                    {!! Form::label('title', __('Purchase Price'), ['class' => 'control-label']) !!}
-                                    {!! Form::text('marg_PRate', $feild, ['class'=>'form-control', 'id' => 'marg_PRate', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
-                                    </div> 
-                                        @break
-                                
-                                    @case('curbatch')
-                                    <div class="col-4 mb-2">
-                                    {!! Form::label('title', __('Current Running batch of the item'), ['class' => 'control-label']) !!}
-                                    {!! Form::text('marg_curbatch', $feild, ['class'=>'form-control', 'id' => 'marg_curbatch', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
-                                    </div> 
-                                        @break
-                                
-                                    @case('exp')
-                                    <div class="col-4 mb-2">
-                                    {!! Form::label('title', __('Expiry Date of current batch'), ['class' => 'control-label']) !!}
-                                    {!! Form::text('marg_exp', $feild, ['class'=>'form-control', 'id' => 'marg_exp', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
-                                    </div> 
-                                        @break
-                                
-                                    @case('gcode')
-                                    <div class="col-4 mb-2">
-                                    {!! Form::label('title', __('Product Company Code'), ['class' => 'control-label']) !!}
-                                    {!! Form::text('marg_gcode', $feild, ['class'=>'form-control', 'id' => 'marg_gcode', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
-                                    </div> 
-                                        @break
-                                
-                                    @case('MargCode')
-                                    <div class="col-4 mb-2">
-                                    {!! Form::label('title', __('Marg Code'), ['class' => 'control-label']) !!}
-                                    {!! Form::text('marg_MargCode', $feild, ['class'=>'form-control', 'id' => 'marg_MargCode', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
-                                    </div> 
-                                        @break
-                                
-                                    @case('Conversion')
-                                    <div class="col-4 mb-2">
-                                    {!! Form::label('title', __('Item conversion'), ['class' => 'control-label']) !!}
-                                    {!! Form::text('marg_Conversion', $feild, ['class'=>'form-control', 'id' => 'marg_Conversion', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
-                                    </div> 
-                                        @break
-                                
-                                    @case('Salt')
-                                    <div class="col-4 mb-2">
-                                    {!! Form::label('title', __('Salt code'), ['class' => 'control-label']) !!}
-                                    {!! Form::text('marg_Salt', $feild, ['class'=>'form-control', 'id' => 'marg_Salt', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
-                                    </div> 
-                                        @break
-                                
-                                    @case('ENCODE')
-                                    <div class="col-4 mb-2">
-                                    {!! Form::label('title', __('Barcode'), ['class' => 'control-label']) !!}
-                                    {!! Form::text('marg_ENCODE', $feild, ['class'=>'form-control', 'id' => 'marg_ENCODE', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
-                                    </div> 
-                                        @break
-                                
-                                    @case('remarks')
-                                    <div class="col-4 mb-2">
-                                    {!! Form::label('title', __('Remarks information'), ['class' => 'control-label']) !!}
-                                    {!! Form::text('marg_remarks', $feild, ['class'=>'form-control', 'id' => 'marg_remarks', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
-                                    </div> 
-                                        @break                                    
-                                
-                                    @case('Gcode6')
-                                    <div class="col-4 mb-2">
-                                    {!! Form::label('title', __('HSN code (internal code)'), ['class' => 'control-label']) !!}
-                                    {!! Form::text('marg_Gcode6', $feild, ['class'=>'form-control', 'id' => 'marg_Gcode6', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
-                                    </div> 
-                                        @break
-                                
-                                    @case('ProductCode')
-                                    <div class="col-4 mb-2">
-                                        {!! Form::label('title', __('Product Code'), ['class' => 'control-label']) !!}         
-                                        {!! Form::text('marg_ProductCode', $feild, ['class'=>'form-control', 'id' => 'marg_ProductCode', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
-                                    </div> 
-                                        @break
-                            
-                                @default
-                                    Default case...
-                            @endswitch
+                 {{-- marg data --}}
+                 @if(!is_null($margProduct) && count($margProduct)>0)
+                 <div class="card-box">
+                     <h5 class="text-uppercase mt-0 mb-3 bg-light p-2 def">{{ __("Marg Data") }}</h5>
+                     <div class="row mb-2">
+                         @foreach ($margProduct as  $key => $feild)
+                             @if ($key == 'id' || $key == 'product_id' ||  $key == 'rid' || $key == 'created_at' || $key == 'updated_at' || $key == 'Is_Deleted')
+                                 @continue
+                             @endif
+                             @switch($key)
+                                 @case('catcode')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Item Category Code'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_catcode', $feild, ['class'=>'form-control', 'id' => 'marg_catcode', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('code')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('	Item Code'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_code', $feild, ['class'=>'form-control', 'id' => 'marg_code', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('name')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Item Name'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_name', $feild, ['class'=>'form-control', 'id' => 'marg_name', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('stock')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Current Stock'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_stock', $feild, ['class'=>'form-control', 'id' => 'marg_stock', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('remark')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __($key), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_remark', $feild, ['class'=>'form-control', 'id' => 'marg_remark', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('company')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Name of Product Company'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_company', $feild, ['class'=>'form-control', 'id' => 'marg_company', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('shopcode')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Shop Code'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_shopcode', $feild, ['class'=>'form-control', 'id' => 'marg_shopcode', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('MRP')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Maximum Retail Price'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_MRP', $feild, ['class'=>'form-control', 'id' => 'marg_MRP', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('Rate')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Billing Price'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_Rate', $feild, ['class'=>'form-control', 'id' => 'marg_Rate', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('Deal')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Deal on'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_Deal', $feild, ['class'=>'form-control', 'id' => 'marg_Deal', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('Free')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Free Qty'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_Free', $feild, ['class'=>'form-control', 'id' => 'marg_Free', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('PRate')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Purchase Price'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_PRate', $feild, ['class'=>'form-control', 'id' => 'marg_PRate', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('curbatch')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Current Running batch of the item'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_curbatch', $feild, ['class'=>'form-control', 'id' => 'marg_curbatch', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('exp')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Expiry Date of current batch'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_exp', $feild, ['class'=>'form-control', 'id' => 'marg_exp', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('gcode')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Product Company Code'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_gcode', $feild, ['class'=>'form-control', 'id' => 'marg_gcode', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('MargCode')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Marg Code'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_MargCode', $feild, ['class'=>'form-control', 'id' => 'marg_MargCode', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('Conversion')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Item conversion'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_Conversion', $feild, ['class'=>'form-control', 'id' => 'marg_Conversion', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('Salt')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Salt code'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_Salt', $feild, ['class'=>'form-control', 'id' => 'marg_Salt', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('ENCODE')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Barcode'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_ENCODE', $feild, ['class'=>'form-control', 'id' => 'marg_ENCODE', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('remarks')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('Remarks information'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_remarks', $feild, ['class'=>'form-control', 'id' => 'marg_remarks', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break                                    
+                             
+                                 @case('Gcode6')
+                                 <div class="col-4 mb-2">
+                                 {!! Form::label('title', __('HSN code (internal code)'), ['class' => 'control-label']) !!}
+                                 {!! Form::text('marg_Gcode6', $feild, ['class'=>'form-control', 'id' => 'marg_Gcode6', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                             
+                                 @case('ProductCode')
+                                 <div class="col-4 mb-2">
+                                     {!! Form::label('title', __('Product Code'), ['class' => 'control-label']) !!}         
+                                     {!! Form::text('marg_ProductCode', $feild, ['class'=>'form-control', 'id' => 'marg_ProductCode', 'placeholder' => '-- -- --', 'onkeypress' => 'return isNumberKey(event)', 'style'=>"cursor: not-allowed;"]) !!}
+                                 </div> 
+                                     @break
+                         
+                             @default
+                                 Default case...
+                         @endswitch
 
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
-                {{-- marg data --}}
+                         @endforeach
+                     </div>
+                 </div>
+             @endif
+             {{-- marg data --}}
 
                 @if($product->category->categoryDetail->type_id == 10)
                     @include('backend.product.popup.scheduleTableRows')

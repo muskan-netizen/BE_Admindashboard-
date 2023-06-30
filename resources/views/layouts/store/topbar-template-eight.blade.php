@@ -466,7 +466,7 @@ c0 -287 129 -543 350 -697 139 -97 286 -145 448 -146 105 0 162 50 162 143 0
                                           @if (auth()->user())
                                           @if ($client_preference_detail->show_wishlist == 1)
                                               <div class="icon-nav mx-2 d-none d-sm-block"> <a class="fav-button"
-                                                      href="{{ route('user.wishlists') }}"> <i class="fa fa-heart" aria-hidden="true"></i> </a> </div>
+                                                      href="{{ route('user.wishlists') }}"> <i class="fa fa-heart-o wishListCount" aria-hidden="true"></i> </a> </div>
                                               @endif
                                           @endif
                                           <div class="icon-nav d-none d-sm-inline-block">
@@ -647,7 +647,7 @@ c42 -28 59 -60 59 -112 0 -76 -59 -135 -135 -135 -80 0 -135 58 -135 144 0 43
                 @if($client_preference_detail->show_wishlist == 1)
                 <li class="mobile-wishlist d-inline d-sm-none">
                     <a href="{{route('user.wishlists')}}">
-                        <i class="fa fa-heart" aria-hidden="true"></i>
+                        <i class="fa fa-heart-o wishListCount" aria-hidden="true"></i>
                     </a>
                 </li>
                 @endif

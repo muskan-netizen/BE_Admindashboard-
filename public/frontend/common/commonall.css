@@ -368,6 +368,9 @@ label.rating-star.cancel_order, .rating-star.request_cancel_order, .extend-order
     font-weight: 400;
     border-radius: 4px;
 }
+.dark .categories-product-list .text-right select#order_type{
+    color: #fff;
+}
 
 .breadcrumb-section.bg-transparent .breadcrumb li:first-child:before {
     content: inherit;
@@ -1192,6 +1195,7 @@ body.al_body_template_two .vendor-design_new  .product-bottom-bar {
 .menu-navigation .pixelstrap ul , .menu_navigation_al_four .pixelstrap .alMainMenu ul, .menu-navigation_al .pixelstrap .al_main_category_list {
     max-height: 40vh;
     overflow-y: auto;
+    overflow-x: hidden;
 }   
 .al_body_template_four .pixelstrap ul.alInnerMenu li a span.new-tag{
     font-weight: 400;
@@ -1352,219 +1356,42 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
 .al_body_template_six .vendor-design_new .vender-icon .vendor-stories{
     background-color: transparent;
 }
-.al_body_template_six #category_products_filter .flag-discount::after {
-    content: unset  ;
+.dark .daterangepicker .calendar-time select {
+    background: #f5f5f5;
+    color: #999;
 }
-.al_body_template_six #category_products_filter .product-description_list {
-    display: flex;
-    justify-content: space-between;
-}
-.al_body_template_six #category_products_filter span.flag-discount {
-    position: absolute;
-    top: 5px;
-    left: 5px;
+.dark .daterangepicker .calendar-time select option {
     background: #fff;
-    font-size: 12px;
-    padding: 5px;
-    border-radius: 5px;
-}
-.al_body_template_six #category_products_filter .product-image img.img-fluid.blur-up.lazyloaded {
-    height: auto !important;
-    max-height: 200px;
-    min-height: 200px;
-}
-.container-badge {
-    display: flex;
-    flex-wrap: nowrap;
-}
-.container-badge .value-badge {
-    font-size: 14px;
-    margin-right: 4px;
-    font-weight: 400;
-}
-.container-badge .container-badge-value {
-    font-size: 14px;
-    font-weight: 600;
-}
-.al_body_template_five  span.flag-discount,
-.al_body_template_four  span.flag-discount,
-.al_body_template_two  span.flag-discount,
-.al_body_template_one  span.flag-discount {
-    position: absolute;
-    top: 5px;
-    left: 7px;
-    background: #fff;
-    box-shadow: 0 0 10px #ccc;
-    font-size: 12px!important;
-    padding: 5px;
-    border-radius: 5px;
-}
-.al_body_template_five  span.flag-discount:after,
-.al_body_template_four  span.flag-discount:after,
- .al_body_template_two  span.flag-discount:after,
-  .al_body_template_one  span.flag-discount:after{
-    content: unset;
-}
-.al_body_template_one #category_products_filter .product-description_list .prod-details .chat-button button {
-    padding: 5px 3px!important;
-}
-.al_body_template_five #category_products_filter .product-description_list,
-.al_body_template_four #category_products_filter .product-description_list,
- .al_body_template_two #category_products_filter .product-description_list,
-  .al_body_template_one #category_products_filter .product-description_list {
-    display: flex;
-    justify-content: space-between;
-}
-.p2p-sidebar .checkbox.checkbox-success {
-    align-items: center;
-    justify-content: flex-start;
-    display: inline-flex;
-    margin-bottom: 10px;
-    width: 100%;
-}
-.checkbox_filter {
-    display: flex;
-    margin-right: 15px;
-    margin-bottom: 10px!important;
-    min-width: 90px;
-    position: relative;
-}
-.checkbox_filter input {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    width: 100%!important;
-    height: 100%!important;
-    opacity: 0;
-    cursor: pointer!important;
-    z-index: 9;
-}
-.p2p-sidebar .checkbox.checkbox-success label {
-    margin-bottom: 0;
-    padding-left: 25px!important;
-    position: relative;
-    font-size: 14px;
-} 
-.p2p-sidebar .checkbox.checkbox-success label:before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 16px;
-    height: 16px;
-    border: 1.5px solid var(--theme-deafult);
-    transform: translateY(-50%);
-    border-radius: 4px;
-}
-.p2p-sidebar .checkbox.checkbox-success label:after {
-    content: '';
-    position: absolute;
-    top: 6px;
-    left: 3px;
-    width: 9px;
-    height: 5px;
-    border-bottom: 2px solid  #fff;
-    border-left: 2px solid  #fff;
-    transform: rotate(-45deg);
-    opacity: 0;
-}
-.checkbox_filter input:checked + label:after {
-    opacity: 1!important;
-}
-.checkbox_filter input:checked + label:before{
-    background-color: var(--theme-deafult);
-}
-.al_body_template_five  .common-banner.my-banner {
-    position: relative;
-    max-height: 300px;
-    min-height: 300px;
-    overflow: hidden;
-}
-.al_body_template_five  div#category_products_filter .product-image {
-    min-height: 200px;
-    max-height: 200px;
-    overflow: hidden;
-}
-.p2p-sidebar .form-check-inline.radio_Btn{
-    width: auto;
-    min-width: 90px;
-    display: inline-block;
-    margin-bottom: 10px;
-}
-.radio_Btn {
-    position: relative;
-    font-size: 14px;
-}
-.radio_Btn .attr_radio_4 input{
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+}  
+.al_body_template_three .alProductsPage .common-product-box .img-outer-box img {
     width: 100%;
     height: 100%;
-    cursor: pointer;
-    z-index: 9;
-    opacity: 0;
+    object-fit: cover;
 }
-.radio_Btn .attr_radio_4 label {
-    position: relative;
-    padding-left: 25px!important;
+.al_body_template_three .alProductsPage .slick-slider .slick-next {
+    right: 0;
 }
-.radio_Btn .attr_radio_4 label::before {
-    content: '';
-    position: absolute;
-    top: 50%;
+.al_body_template_three .alProductsPage .slick-slider .slick-prev {
     left: 0;
-    width: 18px;
-    height: 18px;
-    border: 1.5px solid var(--theme-deafult);
-    border-radius: 50%;
-    transform: translateY(-50%);
 }
-.radio_Btn .attr_radio_4 label::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    left: 3.5px;
-    width: 10px;
-    height: 10px;
-    background-color: var(--theme-deafult);
-    border-radius: 50%;
-    opacity: 0;
+body.al_body_template_three .dashboard-right .profile-page .info-text {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px!important;
 }
-.radio_Btn .attr_radio_4 input:checked + label::after{
-    opacity: 1!important;
+body.al_body_template_three .dashboard-right .profile-page .info-text p {
+    margin-bottom: 0;
+    padding-left: 10px;
 }
-.radio_Btn .attr_radio_4 {
-    display: inline-block;
-    width: auto;
-    position: relative;
+body.al_body_template_three .dashboard-right .profile-page .info-text label {
+    min-width: 120px;
 }
-.al_body_template_one .radio_Btn .attr_radio_4 label::after,
-.al_body_template_two .radio_Btn .attr_radio_4 label::after{
-    left: 4px;
+.al_body_template_eight  .alSingleProducts  .exzoom_nav.side_nav_img {
+    max-height: 550px;
+    overflow-y: auto;
 }
-.al_body_template_two .p2p-sidebar .checkbox.checkbox-success label:after,
-.al_body_template_three .p2p-sidebar .checkbox.checkbox-success label:after{
-    top: 7px;
-}
-.al_body_template_five  .main-fillter .side_fillter,
-.al_body_template_six  .main-fillter .side_fillter,
-.al_body_template_eight .main-fillter .side_fillter{
-    margin-top: 30px;
-    background-color: #f5f5f5!important;
-}
-.al_body_template_five .collection-collapse-block {
-    padding: 20px 20px 0!important;
-}
-.top-banner-wrapper {
-    margin-bottom: 30px;
-    position: relative;
-}
+
+
 
 @media (max-width:1440px){
     .al_body_template_four  .brand-ing {
@@ -1701,6 +1528,11 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
         fill: #000!important;
         stroke: #000!important;
     }
+    .dark .vendor-design_new  .vendor-info li  svg g {
+        fill: #fff!important;
+        stroke: #fff!important;
+    }
+    
     .al_body_template_one .vendor-description .profile_address h3,
     .al_body_template_one .vendor-description .vendor_icon-design h4, .vendor-info li {
         color: #000!important;
@@ -1798,6 +1630,7 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
 .new_cart table td{
     word-break: break-all;
 }
+
 
 
 /*======== first template css gagandeep 29-03-2023 end ========*/

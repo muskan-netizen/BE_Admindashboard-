@@ -447,10 +447,6 @@ class HomeController extends BaseController
             $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->limit(100)->get();
             $venderIds  = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
 
-            // //\Log::info($vendorData->toSql());
-            // //\Log::info($venderIds);
-            // //\Log::info($ses_vendors);
-
 
             $timezone = $user->timezone ?? 'Asia/Kolkata';
             $start_date = new DateTime("now", new  DateTimeZone($timezone) );
@@ -1052,7 +1048,6 @@ class HomeController extends BaseController
 
             }
         }
-       // Log::info($products);
         return $products;
     }
 

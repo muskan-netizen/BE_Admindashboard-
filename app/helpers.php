@@ -210,8 +210,7 @@ if (!function_exists('sendFcmCurlRequest')) {
 }
 
 if (! function_exists('sendNotificationToCustomer')) {
-    function sendNotificationToCustomer($devices,$order_number='111'){
-        \Log::info('devices--'.$devices);
+    function sendNotificationToCustomer($devices,$order_number=''){
         $client_preferences = ClientPreference::select('fcm_server_key','favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $data = [
@@ -1518,8 +1517,6 @@ if (!function_exists('inventorySyncOnOff')) {
             ]);
 
             $response = json_decode($request->getBody());
-            // \Log::info('Response Data');
-            // \Log::info(json_encode($response));
             if ($response->status) {
                 return $response->msg;
             }

@@ -243,8 +243,6 @@ class ChatController extends BaseController
                 'agent_id'=>$agent_id,
                 'agent_db'=>$agent_db,
             ]);
-            //\Log::info("================================");
-            //\Log::info($response);
 
 
             $statusCode = $response->getStatusCode();

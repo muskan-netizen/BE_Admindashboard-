@@ -16,6 +16,8 @@ Route::get('/sync-marg', [MargController::class, 'syncmarg'])->name('sync.marg')
 Route::get('/order-marg', [MargController::class, 'makeInsertOrderMargApi']);
 // Route::get('/margcmd', [MargController::class, 'margcmd'])->name('sync.marg');
 Route::match(['get','post'],'payment/payByDataTrans','Front\DataTransController@payByDataTrans')->name('payment.payByDataTrans');
+Route::get('/sync-marg', [MargController::class, 'syncmarg'])->name('sync.marg');
+Route::get('/order-marg', [MargController::class, 'makeInsertOrderMargApi']);
 Route::get('/debug-sentry', function () {
 	echo \Hash::make('dispatcher@765');
 	//throw new Exception('My first Sentry error!');
@@ -104,7 +106,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('/success-page', 'Front\DataTransController@successPage')->name('order.dataTransuccessPage');
 	Route::get('/cancel-page', 'Front\DataTransController@cancelPage')->name('order.dataTransCancel');
 	Route::post('/payment/payment_init', 'Front\StripeGatewayController@paymentInit')->name('payment_init');
-	Route::post('payment/webhook/stripe', 'Front\StripeGatewayController@stripeWebhook')->name('payment.webhook.stripe');
+	Route::post('payment/webhook/stripe', 'Front\StripeGatewayController@stripeWebhook')->name('payment.webhook.stripe')->middleware('stripeWebhookVerify');
 
 	// Stripe FPX
 	Route::post('payment/create/stripe_fpx', 'Front\StripeGatewayController@createStripeFPXPaymentIntent')->name('payment.create.stripe_fpx');

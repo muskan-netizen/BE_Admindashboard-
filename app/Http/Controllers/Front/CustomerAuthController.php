@@ -594,16 +594,16 @@ class CustomerAuthController extends FrontController
                 $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
                 if(!$user){
                     if(session()->get("locale") == "ar"){
-                        return $this->errorResponse(__('أنت غير مسجل معنا. يرجى الاشتراك.'), 404);
+                        return $this->errorResponse(__('أنت غير مسجل معنا. يرجى الاشتراك'), 404);
                     }
-                   // return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404, ['user_exists' => false]);
+                    return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404);
 
-                    $registerUser = $this->registerViaPhone($request)->getData();
+                  /*  $registerUser = $this->registerViaPhone($request)->getData();
                     if($registerUser->status == 'Success'){
                         $user = $registerUser->data;
                     }else{
                         return $this->errorResponse(__('Invalid data'), 404);
-                    }
+                    }*/
                 }else{
                     $user->phone_token = $phoneCode;
                     $user->phone_token_valid_till = $sendTime;

@@ -193,7 +193,6 @@ class NmiPaymentController extends Controller
         $this->setShipping($user->name,$user->name,$user->name,$address->address,$address->address,$address->city, $address->state,$address->pincode,$address->country,$user->email);
         $this->setOrder($number,"Royo Order",0, 0,$user->phone_number,$this->ip);
         $dataResponse = $this->doSale($request->amount??$request->amt,$request->cno,$expDate);
-        \Log::info(json_encode($dataResponse));
         return $dataResponse;
    }
 

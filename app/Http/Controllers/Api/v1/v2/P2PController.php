@@ -17,14 +17,12 @@ class P2PController extends BaseController
     public function categoryData(Request $request, $cid = 0)
     {
         
-        //\Log::info('controller called');
-        //\Log::info($request->all());
         try {
             $limit = $request->has('limit') ? $request->limit : 12;
             $page = $request->has('page') ? $request->page : 1;
             $product_list = $request->has('product_list') ? $request->product_list : 'false';
             $mod_type = $request->has('type') ? $request->type : 'delivery';
-            //\Log::info($mod_type);
+            
             if ($cid == 0) {
                 return response()->json(['error' => 'No record found.'], 404);
             }

@@ -940,7 +940,7 @@ c-13 -26 -36 -53 -58 -66 l-37 -23 -1465 0 -1465 0 -37 23 c-22 13 -45 40 -58
                                                     @if (auth()->user())
                                                     @if ($client_preference_detail->show_wishlist == 1)
                                                     <div class="icon-nav mx-2 d-none d-sm-block"> <a class="fav-button"
-                                                            href="{{ route('user.wishlists') }}"> <i class="fa fa-heart"
+                                                            href="{{ route('user.wishlists') }}"> <i class="fa fa-heart-o wishListCount"
                                                                 aria-hidden="true"></i> </a> </div>
                                                     @endif
                                                     @endif

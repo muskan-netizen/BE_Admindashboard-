@@ -1652,9 +1652,10 @@
                                     <input type="hidden" id="edit_order_schedule_slot"
                                         value="{{ $schedule_slots_edit }}">
                                 @endif
-                                @if ($serviceType == 'rental' || $serviceType == 'p2p')
+                                @if ($serviceType == 'rental')
+                                    @php $agree_term_text = getNomenclatureName('Agree Term', true); @endphp
                                     <div class="text-sm-left mb-2">
-                                        <input type="checkbox" name="agree_term_check" id="agree_term_check" value="" disabled> <a href="javascript:void(0);" class="agree_term_btn">Agree Term</a>
+                                        <input type="checkbox" name="agree_term_check" id="agree_term_check" value=""> <a href="javascript:void(0);" class="agree_term_btn">{{$agree_term_text}}</a>
                                     </div>
                                 @endif
                                 @php
@@ -1849,10 +1850,6 @@
                 }
             }]
         });
-        var serviceType = "{{$serviceType}}";
-        if(serviceType == "rental" || $serviceType == 'p2p'){
-            $("#order_placed_btn").attr('disabled', true);
-        }
     });
 
     $(document).on('click', '.agree_term_btn', function(){
@@ -1864,8 +1861,6 @@
 
     $(document).on('click', '#agree_btn', function(){
         $('#agree_term_check').prop('checked', true);
-        $('#agree_term_check').attr('disabled', false);
-        $("#order_placed_btn").attr('disabled', false);
         $('#consent_form_rental').modal('hide');
     });
 

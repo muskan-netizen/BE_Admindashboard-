@@ -65,7 +65,7 @@ trait MargTrait{
                 $product->save();
                 
                 if ($product->id > 0) {
-                    $marg_product  =  new MargProduct();
+                        $marg_product  =  new MargProduct();
                         $marg_product->product_id   =       $product->id;
                         $marg_product->rid          =       $request->rid;
                         $marg_product->catcode      =       $request->catcode;               
@@ -91,7 +91,7 @@ trait MargTrait{
                         $marg_product->remarks      =       $request->remarks;
                         $marg_product->Gcode6       =       $request->Gcode6;
                         $marg_product->ProductCode  =       $request->ProductCode;
-                    $marg_product->save();
+                        $marg_product->save();
 
                     $datatrans[] = [
                         'title' => $request->name??null, // $request->product_name??null,
@@ -118,6 +118,12 @@ trait MargTrait{
 
                     ProductTranslation::insert($datatrans);
 
+                    if(@$request->Is_Deleted)
+                    {
+                        $product->delete();
+                        \Log::info('request->name '.$request->name);
+                    }
+
                 // \Log::info('Insert MargProduct code --'.$request->code);
 
                 }
@@ -130,7 +136,6 @@ trait MargTrait{
 
 		} catch (Exception $e) {
             DB::rollback();
-			\Log::info("error".$e->getMessage());
 			return $e->getMessage();
 		}
 		
@@ -142,8 +147,7 @@ trait MargTrait{
 		try{
 			// DB::beginTransaction();
             $url_slug = $this->validateSlug($request->name);
-            $product = Product::findOrFail($product->id);
-           
+            $product = Product::findOrFail($product->id);           
 
             if($product->id){
                 $product->sku = $request->code;      // $request->sku;
@@ -153,8 +157,9 @@ trait MargTrait{
                 if (!$client_lang) {
                     $client_lang = ClientLanguage::where('is_active', 1)->first();
                 }
+
                 $product->save();
-                // \Log::info('update code --'.$request->code);
+
             }
             
             if ($product->id > 0)
@@ -168,7 +173,6 @@ trait MargTrait{
                         $marg_product->stock        =       $request->stock;
                         $marg_product->MRP          =       $request->MRP;
                         $marg_product->save();
-                // \Log::info('update MargProduct code --'.$request->code);
 
                     }
 
@@ -193,6 +197,12 @@ trait MargTrait{
 
                 ProductTranslation::UpdateOrCreate(['product_id' => $product->id,'language_id' => $client_lang->language_id],$datatrans);
 
+
+                if(@$request->Is_Deleted)
+                {
+                    $product->delete();
+                }
+                
             }
 			// DB::commit();
 			

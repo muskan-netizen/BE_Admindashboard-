@@ -1069,16 +1069,17 @@ trait CartManagerV2{
 
 
 
-                        $scheduled_date_time = $prod->scheduled_date_time !=''? $prod->scheduled_date_time : $slotsdate;
-
+                        $scheduled_date_time = isset($prod->scheduled_date_time)  ? $prod->scheduled_date_time : $slotsdate;
                         if(!empty($user)){
+
                             $scheduledDateTime = dateTimeInUserTimeZone($scheduled_date_time, $user->timezone);
                             //pr($scheduledDateTime);
-                            $prod->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime)) ;
-                            $prod->manual_scheduled_date_time = convertDateTimeInTimeZone($prod->scheduled_date_time, $user->timezone, 'Y-m-d\TH:i');
+                            $prod->scheduled_date_time = date('Y-m-d H:i:s',strtotime($scheduledDateTime)) ;
+
+                            $prod->manual_scheduled_date_time = convertDateTimeInTimeZone($scheduled_date_time, $user->timezone, 'Y-m-d\TH:i');
                            // pr(  $prod->manual_scheduled_date_time );
                         }else{
-                            $prod->scheduled_date_time = date('Y-m-d',strtotime($scheduled_date_time)) ;
+                            $prod->scheduled_date_time = date('Y-m-d H:i:s',strtotime($scheduled_date_time)) ;
                             $prod->manual_scheduled_date_time =  date('Y-m-d\TH:i',strtotime($scheduled_date_time)) ;
                         }
 
