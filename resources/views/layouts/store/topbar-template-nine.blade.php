@@ -34,17 +34,19 @@ if(session()->has('applocale')){
                             <div class="list-box style-4" style="display:none;" id="search_box_main_div"> </div>
                         </div>                       
                     </div>
+                    @if(Auth::user())
+                    @if( p2p_module_status() )
+                    <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
+                    @endif
+                    @endif
                     <div class="al_toggle-menu">
                             <span></span><span></span><span></span>
                         </div>
                 </div>
-
+                
                 <div class="col-lg-7 text-right ml-auto al_z_index p-0"  >
                     <ul class="header-dropdown ml-auto">
                         @if(Auth::user())
-                        @if( p2p_module_status() )
-                        <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
-                        @endif
                         <li class="search-b">
                             <a href="{{route('user.notification')}}" > <img  class="img-fluid img-white-s" src="{{asset('images/g4.png')}}"> <img  class="img-fluid img-black-s" src="{{asset('images/g4-white.png')}}">Notifications </a>
                         </li>
@@ -64,9 +66,6 @@ if(session()->has('applocale')){
                         </li> --}}
                         @endif
                         @if($client_preference_detail->header_quick_link == 1)
-                        @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
-                        <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
-                        @endif
                         @if( $is_ondemand_multi_pricing ==1 )
                             @include('layouts.store.onDemandTopBarli')
                         @endif
