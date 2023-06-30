@@ -242,7 +242,6 @@ class RecurringBooking extends Command
 
                 \DB::disconnect($database_name);
             }
-           // //\Log::info($orders);
         }catch (Exception $ex) {
             return $ex->getMessage();
         }

@@ -788,7 +788,6 @@ class PaymentOptionController extends BaseController{
         // Auto accept order
         $orderController = new OrderController();
         $orderController->autoAcceptOrderIfOn($order->id);
-        // //\Log::info(json_encode($order));
 
         // Remove cart
         // $cart = Cart::select('id')->where('status', '0')->where('user_id', $order->user_id)->first();

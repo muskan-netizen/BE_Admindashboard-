@@ -86,7 +86,6 @@ class PickupDeliveryController extends BaseController{
 
                     if(!empty($request->is_cab_pooling) && $request->is_cab_pooling == 1 && !empty($preferences) && $preferences->is_cab_pooling == 1)
                     {
-                       // Log::info($request->no_seats_for_pooling);
                         $products = $products->where('products.available_for_pooling', 1);
                         if(isset($request->no_seats_for_pooling))
                         {
@@ -296,7 +295,6 @@ class PickupDeliveryController extends BaseController{
      * create order for booking
     */
      public function createOrder(Request $request){
-
         DB::beginTransaction();
         try {
             $user = Auth::user();
@@ -377,6 +375,42 @@ class PickupDeliveryController extends BaseController{
                 'message' => $e->getMessage()
             ]);
         }
+
+    }
+
+
+    //Call Notification to driver api for after create order 
+    public function createOrderNotification(Request $request){
+
+        try {
+
+            $dispatch_domain = $this->checkIfPickupDeliveryOn();
+            if ($dispatch_domain && $dispatch_domain != false) {
+
+                $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
+                'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
+                'content-type' => 'application/json']
+                                    ]);
+                $url = $dispatch_domain->pickup_delivery_service_key_url;
+                // dd($dispatch_domain->pickup_delivery_service_key_url.'/api/task/callNotifications');
+                $res = $client->post(
+                    $url.'/api/task/callNotification',
+                            ['form_params' => (
+                                    [   'order_id'=>$request->order_id,
+                                        'call_notification'=>1
+                                    ]
+                            )]
+                        );
+                $response = json_decode($res->getBody(), true);
+                    
+                return $response;
+            }
+
+        }catch(\Exception $e)
+        {
+            \Log::info($e->getMessage());
+        }
+
 
     }
 
@@ -671,7 +705,6 @@ class PickupDeliveryController extends BaseController{
                 $order->payment_status = 1;
             }
             $order->save();
-            \Log::info($request->payment_option_id);
             if ($request->payment_option_id != 1 && $request->payment_option_id != 2 && $request->has('transaction_id') && !empty($request->transaction_id)) {
                 $payment = Payment::where('transaction_id',$request->transaction_id)->first();
                 if(!$payment){
@@ -702,7 +735,6 @@ class PickupDeliveryController extends BaseController{
                 $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
                 $order_place['data']['user_name'] = $user->email;
                 $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
-                \Log::info($order_place);
                 return  $order_place;
             }else{
                 return $request_to_dispatch;
@@ -793,7 +825,6 @@ class PickupDeliveryController extends BaseController{
                     // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                     $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                 }
-               // Log::info("order Pre Time is ".$vendor_details->order_pre_time);
 
                 $client_preferences_addional = ClientPreferenceAdditional::pluck('key_value','key_name');
                 // FacadesLog::warning(['postdata' => $client_preferences_addional]);
@@ -847,7 +878,9 @@ class PickupDeliveryController extends BaseController{
                             'notify_hour' => $notify_hour ?? 0,
                             'reminder_hour' => $reminder_hour ?? 0,
                             'app_call' => 1,
+                            'call_notification' => $request->call_notification??0
                         ];
+
                 if($request->has('bid_task_type')){
                     $postdata['bid_task_type']    = $request->bid_task_type;
                     $postdata['accept_bid_price'] = $order->payable_amount;
@@ -1078,13 +1111,17 @@ class PickupDeliveryController extends BaseController{
         $langId = $user->language ?? 1;
         $preferences = ClientPreference::where('id', '>', 0)->first();
         $order = OrderVendor::with('orderDetail')->where('order_id',$request->order_id)
-        ->with(['products.productRating.reviewFiles', 'products.product.category.categoryDetail.translation' => function($q) use($langId){
+        ->with(['products.productRating.reviewFiles','products.product.translation', 'products.product.category.categoryDetail.translation' => function($q) use($langId){
             $q->where('category_translations.language_id', $langId);
         }])
         ->select('*','dispatcher_status_option_id as dispatcher_status')->first();
         $dispatch_traking_url = ($request->has('new_dispatch_traking_url') && !empty($request->new_dispatch_traking_url)) ? $request->new_dispatch_traking_url : $order->dispatch_traking_url;
         $dispatch_traking_url = str_replace('/order/', '/order-details/', $dispatch_traking_url);
-        $response = Http::get($dispatch_traking_url);
+        $response = Http::get($dispatch_traking_url, [
+            'headers' => [
+                'timezone' => $user->timezone
+            ]
+        ]);
         if($response->status() == 200){
             $type = VendorOrderDispatcherStatus::where(['order_id' =>  $order->order_id ,'vendor_id' =>$order->vendor_id ])->latest()->first();
             // OrderProductRating::where('order_id', $order->order_id)
@@ -1399,7 +1436,6 @@ class PickupDeliveryController extends BaseController{
 
 
             if(!empty($order_vendor->web_hook_code)){
-               // Log::info("web hook found");
                 $request_to_dispatch = $this->updateOrderRequestToDispatch($request, $order, $vendor_id);
             }
             DB::commit();
@@ -1668,7 +1704,6 @@ class PickupDeliveryController extends BaseController{
                     'task_type'   => $request->task_type,
                     'agent_id'    => $request->agent_id,
                 ];
-               // Log::info($postdata);
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
                                                     'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
                                                     'content-type' => 'application/json']

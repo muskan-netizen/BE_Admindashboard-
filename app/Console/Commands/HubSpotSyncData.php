@@ -102,10 +102,8 @@ class HubSpotSyncData extends Command
                     $this->hubSpotSync($post_data);
                 }
                 DB::disconnect($database_name);
-               // Log::info("checking cart end: {$database_name}!");
             } else {
                 DB::disconnect($database_name);
-               // Log::info("checking cart  end: {$database_name}!");
             }
         }
     }

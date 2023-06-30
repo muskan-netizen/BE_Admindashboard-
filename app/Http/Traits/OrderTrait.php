@@ -54,6 +54,89 @@ trait OrderTrait
         return 1;
     }
 
+
+    public function CheckProductStockLimit($order_id,$admin_product_limit){
+        $vendors=[];
+        $order = Order::with(['vendors.products.pvariant'])->find($order_id);
+        if (isset($order->vendors)) {
+            foreach ($order->vendors as $vendor) {
+                foreach ($vendor->products as $product) {
+                    $ProductVariant = ProductVariant::find($product->variant_id);
+
+                    if ($ProductVariant) {
+                        if ($ProductVariant->quantity < $admin_product_limit){
+                            array_push($vendors,$vendor->vendor_id); 
+             
+                        }
+                    }
+                }
+            }
+            return $vendors;
+        }
+
+    }
+
+    public function sendProductStockOutPushNotificationVendors($user_ids, $orderData)
+    {
+           
+     
+        $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')
+            ->whereIn('user_id', $user_ids)
+            ->pluck('device_token')
+            ->toArray();
+
+        
+
+        $from = '';
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon', 'vendor_fcm_server_key')->first();
+        if (! empty($devices) && ! empty($client_preferences->fcm_server_key)) {
+            $from = $client_preferences->fcm_server_key;
+        }
+        $notification_content = NotificationTemplate::where('slug', 'product-stock-vendor')->first();
+        if ($notification_content) {
+            $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
+            // dd($body_content);
+            $data = [
+                "registration_ids" => $devices,
+                "notification" => [
+                    'title' => $notification_content->subject,
+                    'body' => $notification_content->content,
+                    'sound' => "notification.wav",
+                    "icon" => (! empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                    // 'click_action' => route('order.index'),
+                    "android_channel_id" => "sound-channel-id"
+                ],
+                "data" => [
+                    'title' => $notification_content->subject,
+                    'body' => $notification_content->content,
+                    'data' => $orderData,
+                    'order_id' =>  $orderData->id,
+                    'type' => "order_created"
+                ],
+                "priority" => "high"
+            ];
+            if (! empty($from)) {
+                // helper function
+                sendFcmCurlRequest($data);
+            }
+
+            // Individual Vendor App User Token
+            $vendorAppUserDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')
+                ->whereIn('user_id', $user_ids)
+                ->pluck('device_token')
+                ->toArray();
+
+            if (! empty($vendorAppUserDevices) && ! empty($client_preferences->vendor_fcm_server_key)) {
+
+                $from = $client_preferences->vendor_fcm_server_key;
+                $data['registration_ids'] = $vendorAppUserDevices;
+
+                $result = sendFcmCurlRequest($data);
+                //// Log::info($result);
+            }
+        }
+    }
+
     public function ProductVariantStockIncrease($product)
     {
         $ProductVariant = ProductVariant::find($product->variant_id);
@@ -871,7 +954,6 @@ trait OrderTrait
             $client = CP::orderBy('id', 'asc')->first();
 
             //  send all payment to fist order
-            Log::info("order Pre Time is ".$vendor_details->order_pre_time);
 
             $postdata =  [
                 'order_number'  =>  $order->order_number,
@@ -1104,7 +1186,6 @@ trait OrderTrait
 
 
         $keyData = ['{otp_code}' => $phoneCode ?? ''];
-        // //\Log::info($keyData);
 
         $checkSeeder = SmsTemplate::where('slug', 'otp-sms-tracking-url')->count();
         if ($checkSeeder > 0) {
@@ -1113,7 +1194,6 @@ trait OrderTrait
             if (!empty($prefer['sms_provider'])) {
 
                 $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
-                ////\Log::info($send);
             }
         }
     }
@@ -1274,7 +1354,7 @@ trait OrderTrait
                 $cart = Cart::where('unique_identifier', session()->get('_token'))->where('order_id', $orderid)->first();
             endif;
             if (!empty($cart)) :
-               // Log::info($cart);
+               
                 CartProduct::where('cart_id', $cart->id)->delete();
                 CartProductPrescription::where('cart_id', $cart->id)->delete();
                 Cart::where('id', $cart->id)->delete();
@@ -1584,7 +1664,7 @@ trait OrderTrait
                         $this->sendOrderSuccessSMS($order);
                 }catch(\Exception $e)
                 {
-                    \Log::info('orderSuccessCartDetail error :-'.$e->getMessage());
+                    \Log::info('sendSuccessSMS error :-'.$e->getMessage());
                     return true;
                 }
                 return true;
@@ -1623,7 +1703,6 @@ trait OrderTrait
             }
         }catch(\Exception $e)
         {
-            \Log::info('sendSuccessSMS error :-'.$e->getMessage());
             return true;
         }
         return true;

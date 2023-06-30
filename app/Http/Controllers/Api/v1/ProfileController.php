@@ -393,7 +393,7 @@ class ProfileController extends BaseController
                         $file = $request->file($doc_name);
                         $orignal_name = $request->file($doc_name)->getClientOriginalName();
                         $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
-                       //// Log::info($orignal_name);
+                       
                         UserDocs::updateOrCreate(
                             
                             ['user_id' => $user->id, 'user_registration_document_id' => $user_registration_document->id]
