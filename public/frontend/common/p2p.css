@@ -7,7 +7,7 @@
     overflow-y: auto !important;
     border-right: 1px solid #D9D9D9;
     height: auto;
-    max-height: 800px;
+    max-height: inherit;
     overflow-x: hidden !important;
 }
 
@@ -673,7 +673,9 @@ body.al_body_template_nine.p2p-module ul#header_cart_main_ul li .media img {
     width: 50px;
 }
 
-
+.dark.al_body_template_nine .radius-bar .search_form button.btn svg g {
+    fill: #fff;
+}
 /*----------dark theme----------*/
 
 body.dark.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head {
@@ -681,7 +683,7 @@ body.dark.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_hea
 }
 
 body.dark.al_body_template_nine.p2p-module span#cart_qty_span {
-    color: #fff;
+    color: #000;
 }
 
 body.dark.al_body_template_nine.p2p-module .menu-navigation.alThreeMenu {
@@ -1052,7 +1054,7 @@ body.al_body_template_nine .product-price-chat-sec {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 5px 10px;
+    padding: 5px 0px;
 }
 body.al_body_template_nine .product-price-chat-sec  h4{
     font-weight: 600;
@@ -1070,13 +1072,11 @@ body.al_body_template_nine .outter-fillter-data div#category_products_filter a.p
 
 /*===== 10-02-2023 CSS =====*/
 body.al_body_template_nine .product-wrapper-grid .media-body .al_clock b{
-    font-size: 14px;
-    padding-bottom: 12px;
+    font-size: 14px;    
     border-bottom: 1px solid var(--theme-deafult);
     color:#ccc;
     width: 100%;;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding: 8px 0;
 }
 body.al_body_template_nine .product-wrapper-grid .media-body .al_clock {
     padding-top:0!important;
@@ -1893,7 +1893,7 @@ body .dashboard-left .block-content ul li:hover .collapse li:hover a{
 .al_body_template_nine .alSingleProducts  .alRentalSinglePageView .single_product-input {
     border: 1px solid#cfc9c9!important;
     width: 80%!important;
-    border-radius: 5px!important;
+    border-radius: 0!important;
     position: relative!important;
     display: grid!important;
     grid-template-columns: 1fr 1fr!important;

@@ -986,8 +986,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
         <div class="product-m  related-products pb-2  related-css">
             @forelse($product->related_products as $related_product)
             <div>
-                <a class="common-product-box scale-effect text-center"
-                        href="{{route('productDetail',[$related_product->vendor->slug,$related_product->url_slug])}}">
+                <a class="common-product-box scale-effect text-center" href="{{route('productDetail',[$related_product->vendor->slug,$related_product->url_slug])}}">
                     <div class="img-outer-box position-relative">
                         <img class="img-fluid blur-up lazyload" data-src="{{ $related_product->image_url }}" alt="">
                         <!-- <div class="pref-timing">
