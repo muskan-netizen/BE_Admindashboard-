@@ -3295,7 +3295,7 @@ $(document).ready(function () {
             },
             success: function (response) {
                 if (response.status == 'success') {
-                    $(".shake-effect").effect("shake", { times: 3 }, 1200);
+                    // $(".shake-effect").effect("shake", { times: 3 }, 1200);
                     returnResponse = true;
                     cartHeader();
                     if(vendor_type == 'rental') {
@@ -3799,7 +3799,7 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.status == 'success') {
                     returnResponse = true;
-                    $(".shake-effect").effect("shake", { times: 3 }, 1200);
+                    // $(".shake-effect").effect("shake", { times: 3 }, 1200);
                     cartHeader();
                     if (that.hasClass('add_vendor_addon_product')) {
                         that.parents('.modal').modal('hide');
@@ -4060,7 +4060,7 @@ $(document).ready(function () {
             success: function (response) {
                 var address_id = dispatcherAgentData?.address_id;
                 if (response.status == 'success') {
-                    $(".shake-effect").effect("shake", { times: 3 }, 1200);
+                    // $(".shake-effect").effect("shake", { times: 3 }, 1200);
                     cartHeader(address_id);
                     if($(`#added_button_href${product_id}`).length > 0){
                         $(`#add_button_href${product_id}`).hide();
