@@ -1382,6 +1382,10 @@ body.al_body_template_three .dashboard-right .profile-page .info-text label {
     max-height: 550px;
     overflow-y: auto;
 }
+.al_body_template_eight  form#register .form-check label a {
+    font-weight: 600;
+}
+
 
 
 
