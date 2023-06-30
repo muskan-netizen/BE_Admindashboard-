@@ -8,11 +8,15 @@
             $t_var = count($product->variantSet);
         @endphp
         @foreach($product->variantSet as $key => $variant)
-            @if(($variant->type == 1 || $variant->type == 2) && )
+            @if($variant->type == 1 || $variant->type == 2)
             <div class="size-box" id="{{ $key === 1 ? 'variant_options' : '' }}">
                 <ul class="productVariants">
                     <li class="firstChild">{{$variant->title}}</li>
                     <li class="row otherSize">
+                        {{-- @php
+                                echo "<pre/>";
+                            print_r($variant->option2->toArray());
+                        @endphp --}}
                         @foreach($variant->option2 as $k => $optn)
                         <?php $var_id = $variant->variant_type_id;
                         $opt_id = $optn->variant_option_id;
