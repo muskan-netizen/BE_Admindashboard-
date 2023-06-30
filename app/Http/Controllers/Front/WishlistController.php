@@ -58,11 +58,13 @@ class WishlistController extends FrontController
      */
     public function updateWishlist(Request $request)
     {
+        
         $product = Product::where('sku', $request->sku)->firstOrFail();
         $exist = UserWishlist::where('user_id', Auth::user()->id)->where('product_id', $product->id)->first();
         if($exist){
             $exist->delete();
-            return response()->json(array('status' => 'success', 'message'=> 'Product has been removed from wishlist.'));
+            $wishListCount =  UserWishlist::where('user_id', Auth::user()->id)->count('id');
+            return response()->json(array('status' => 'success', 'message'=> 'Product has been removed from wishlist.','wishListCount'=>$wishListCount));
         }
         $wishlist = new UserWishlist();
         $wishlist->user_id = Auth::user()->id;
@@ -70,7 +72,8 @@ class WishlistController extends FrontController
         $wishlist->product_variant_id = $request->variant_id;
         $wishlist->added_on = Carbon::now();
         $wishlist->save();
-        return response()->json(array('status' => 'success', 'message' => 'Product has been added in wishlist.'));
+        $wishListCount =  UserWishlist::where('user_id', Auth::user()->id)->count('id');
+        return response()->json(array('status' => 'success', 'message' => 'Product has been added in wishlist.','wishListCount'=>$wishListCount));
     }
 
      /**
