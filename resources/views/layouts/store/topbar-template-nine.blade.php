@@ -11,9 +11,9 @@ if(session()->has('applocale')){
     $applocale = session()->get('applocale');
 }
 @endphp
-<div class="top-header site-topbar al_custom_head">
+<div class="top-header site-topbar al_custom_head mobileHeader d-none">
     <nav class="navbar navbar-expand-lg p-0 ">
-        <div class="container ">
+        <div class="container-fluid ">
             <div class="row d-flex align-items-center justify-content-between w-100">
                 <div class="col-lg-5 p-0 d-md-flex align-items-center justify-content-start"   >
                     <a class="navbar-brand mr-3"  href="{{ route('userHome') }}">
@@ -452,9 +452,7 @@ if(session()->has('applocale')){
                         <div class="mobile-list">
                             <ul class="header-dropdown ml-auto">                    
                                 @if($client_preference_detail->header_quick_link == 1)
-                                @if( p2p_module_status() )
-                                <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
-                                @endif
+                               
                                 <li class="onhover-dropdown quick-links quick-links">
                                     <span class="quick-links ml-1 align-middle">{{ __('Quick Links') }}</span>
                                     <ul class="onhover-show-div">
@@ -857,7 +855,7 @@ if(session()->has('applocale')){
         </div>
     </div>--}}
 </div>
-<div class="al_mobile_menu al_new_mobile_header">
+<div class="al_mobile_menu al_new_mobile_header d-none">
                 <div class="al_new_cart">
                     @if($client_preference_detail->cart_enable == 1)
                     <div class="onhover-dropdown_al onhover-div mobile-cart">
