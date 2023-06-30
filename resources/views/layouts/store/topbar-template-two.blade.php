@@ -51,7 +51,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     <ul class="header-dropdown">
                         <!-- <li class="mobile-wishlist d-inline d-sm-none">
                             <a href="{{route('user.wishlists')}}">
-                                <i class="fa fa-heart" aria-hidden="true"></i>
+                                <i class="fa fa-heart-o wishListCount" aria-hidden="true"></i>
                             </a>
                         </li> -->
                        
@@ -204,7 +204,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     @if($client_preference_detail->show_wishlist == 1)
                     <li class="mobile-wishlist d-inline d-sm-none">
                         <a href="{{route('user.wishlists')}}">
-                            <i class="fa fa-heart" aria-hidden="true"></i>
+                            <i class="fa fa-heart-o wishListCount"  aria-hidden="true"></i>
                         </a>
                     </li>
                     @endif
