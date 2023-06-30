@@ -27,6 +27,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
         }
     */
     .border-product.al_disc ol,.border-product.al_disc ul{padding-left:30px}.border-product.al_disc ol li,.border-product.al_disc ul li{display:list-item;padding-left:0;padding-top:8px;list-style-type:disc;font-size:14px}.border-product.al_disc ol li{list-style-type:decimal}.productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit}
+    #more  {display:  none;}
 
     .img-zoom-lens {
       position: absolute;
@@ -60,13 +61,21 @@ $clientData = \App\Models\Client::select('socket_url')->first();
         z-index: 10;
         display: none;
     }
-   
-    .select2-results__option{
-    width:100%;
-   }
-   .select2-container{
-    width:100%!important;
-   }
+    .review-date.mt-2 { margin-left: 10px; }
+    .review-images img { min-height: 60px;border-radius: 8px;}
+    .review-images a {display: inline-block;width: auto;padding: 0;}
+    .review-images a:first-child img{margin-left: 10px;}
+    .select2-results__option{width:100%;}
+    .select2-container{width:100%!important;}
+    .customer_review .item{padding:10px;border:1px solid #ccc;}
+    .review_header{display:flex;padding-bottom:5px;}
+    .review_header p{font-size:14px;margin-bottom:0px;padding-left:10px;}
+    .customer_review .heading{border-bottom:1px solid #ccc;}
+    .customer_review .heading h2{font-size:30px;line-height:1.3;font-weight:700;}
+    .customer_review_item_row{display:flex;align-items:center;padding:10px 0;}
+    .customer_review_item_row  img{width:50px;height: 50px;border-radius:50%;}
+    .customer_review_item_row h4{margin-bottom:0;font-size:18px;font-weight:600;padding-left:15px;margin-top:0;}
+    .review-images img {width: 100%;max-width: 100px;margin: 10px 10px 10px 0px;}
     </style>
 
 @endsection
@@ -304,8 +313,12 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                         <div class="border-product al_disc">
                                             <h6 class="product-title">{{__('Product Details')}}</h6>
                                             <p></p>
+                                        {{--    @if((!empty($product->translation) && isset($product->translation[0])))
+                                            <div  id="show_product_text_more" >{!!  \Illuminate\Support\Str::words($product->translation[0]->body_html, 20,  '<br><h5 onclick="showMoreTextFunction()">Read more..</h5>') !!}</div>
+                                             <div id="show_product_text_less" style="display: none;"> {!! $product->translation[0]->body_html !!} <h5 onclick="showLessTextFunction()">Read less..</h5></div>
+                                             @endif --}}
                                             {!!(!empty($product->translation) && isset($product->translation[0])) ?
-                                                $product->translation[0]->body_html : ''!!}
+                                            $product->translation[0]->body_html : ''!!}
                                         </div>
 
                                         <!--- Processor Details Farmmeat by Sohail -->
@@ -376,44 +389,13 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
 
                                             </div>
                                             @endif
-                                        <div id="product_variant_options_wrapper">
-                                            @if(!empty($product->variantSet))
-                                                @php
-                                                    $selectedVariant = isset($product->variant[0]) ? $product->variant[0]->id : 0;
-                                                    if($product->minimum_order_count > 0)
-                                                    $product->minimum_order_count = $product->minimum_order_count;
-                                                    else
-                                                    $product->minimum_order_count = 1;
-                                                @endphp
-                                                @foreach($product->variantSet as $key => $variant)
-                                                    @if($variant->type == 1 || $variant->type == 2)
-                                                    <div class="size-box">
-                                                        <ul class="productVariants">
-                                                            <li class="firstChild">{{$variant->title}}</li>
-                                                            <li class="row otherSize">
-                                                                @foreach($variant->option2 as $k => $optn)
-                                                                <?php $var_id = $variant->variant_type_id;
-                                                                $opt_id = $optn->variant_option_id;
-                                                                $checked = ($selectedVariant == $optn->product_variant_id) ? 'checked' : '';
-                                                                ?>
-                                                                    <label class="radio d-inline-block txt-14 col-4 position-relative pl-4 pr-2"> <span class="color_name ellipsis">{{$optn->title}}</span>
-                                                                      @if($variant->type == 2)
-                                                                    <span class="color_var var_{{$var_id}}" style="padding:8px; border: 1px dotted #CCC; background:{{$optn->hexacode}};" data-id="{{$var_id}}"></span>
-                                                                	@else
-                                                                    <span class="color_var radio_var radio_{{$var_id}}" style="padding:8px; border: 1px dotted #CCC; background:#fff;" data-id="{{$var_id}}"></span>
-                                                               	 	@endif
-                                                                    <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" vid="{{$var_id}}" optid="{{$opt_id}}" value="{{$opt_id}}" type="radio" class="changeVariant dataVar{{$var_id}}" {{$checked}}>
-                                                                    <span class="checkround"></span>
-                                                                </label>
-                                                                @endforeach
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                    @else
-                                                    @endif
-                                                @endforeach
-                                            @endif
-                                        </div>
+                                       
+                                        @if(!empty($product->variantSet))
+                                            @include('frontend.product-part.product-variant')
+                                        @endif
+
+
+
                                         <div id="variant_response">
                                             <span class="text-danger mb-2 mt-2"></span>
                                         </div>
@@ -795,31 +777,41 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 </div> --}}
                                                 <div class="tab-pane show {{(count($rating_details)>0)?'active':''}}" id="top-review" role="tabpanel" aria-labelledby="review-top-tab">
                                                     @forelse ($rating_details as $rating)
-                                                    <div v-for="item in list" class="w-100 d-flex justify-content-between mb-3">
-                                                        <div class="review-box">
-
-                                                            <div class="review-author mb-1">
-                                                                <p><strong>{{$rating->user->name??'NA'}}</strong> - <i class="fa fa-star{{ $rating->rating >= 1 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                                    <i class="fa fa-star{{ $rating->rating >= 2 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                                    <i class="fa fa-star{{ $rating->rating >= 3 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                                    <i class="fa fa-star{{ $rating->rating >= 4 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                                    <i class="fa fa-star{{ $rating->rating >= 5 ? '' : '-o' }}" aria-hidden="true"></i>
-                                                                </p>
+                                                    <div v-for="item in list" class="w-100 d-flex justify-content-between mb-2">
+                                                        <div class="review-box customer_review">
+                                                            <div class="">
+                                                                <div class="customer_review_item_row">
+                                                                    <div class="image">
+                                                                        <img src="{{$rating->user->image['proxy_url'].'400/160'.$rating->user->image['image_path']}}" alt="{{$rating->user->name??'NA'}}">
+                                                                    </div>
+                                                                    <div class="">
+                                                                        <h4>{{$rating->user->name??'NA'}}</h4>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="star review-author">
+                                                                    <p> 
+                                                                        <i class="fa fa-star{{ $rating->rating >= 1 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                        <i class="fa fa-star{{ $rating->rating >= 2 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                        <i class="fa fa-star{{ $rating->rating >= 3 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                        <i class="fa fa-star{{ $rating->rating >= 4 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                        <i class="fa fa-star{{ $rating->rating >= 5 ? '' : '-o' }}" aria-hidden="true"></i>
+                                                                    </p>
+                                                                </div>
+                                                                <div class="review-date mt-2">
+                                                                    <time> {{ $rating->time_zone_created_at->diffForHumans();}} </time>
+                                                                </div>
+                                                                <div class="review-images">
+                                                                    @if(isset($rating->reviewFiles))
+                                                                        @foreach ($rating->reviewFiles as $files)
+                                                                            <a target="_blank" href="{{$files->file['image_fit'].'900/900'.$files->file['image_path']}}" class="col review-photo mt-2 lightBoxGallery" data-gallery="">
+                                                                                <img class="blur-up lazyload" data-src="{{$files->file['image_fit'].'300/300'.$files->file['image_path']}}">
+                                                                            </a>
+                                                                        @endforeach
+                                                                    @endif
+                                                                </div>
                                                             </div>
-                                                            <div class="review-comment">
+                                                            <div class="review_dis">
                                                                 <p>{{$rating->review??''}}</p>
-                                                            </div>
-                                                            <div class="row review-wrapper">
-                                                                @if(isset($rating->reviewFiles))
-                                                                @foreach ($rating->reviewFiles as $files)
-                                                                <a target="_blank" href="{{$files->file['image_fit'].'900/900'.$files->file['image_path']}}" class="col review-photo mt-2 lightBoxGallery" data-gallery="">
-                                                                    <img class="blur-up lazyload" data-src="{{$files->file['image_fit'].'300/300'.$files->file['image_path']}}">
-                                                                </a>
-                                                                @endforeach
-                                                                @endif
-                                                            </div>
-                                                            <div class="review-date mt-2">
-                                                                <time> {{ $rating->time_zone_created_at->diffForHumans();}} </time>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -827,24 +819,19 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                     <p>{{__('No Reviews Yet')}}</p>
                                                     @endforelse
                                                 </div>
-                                                    @include('frontend.compare-product-table')
-                                                
+                                                @include('frontend.compare-product-table')
                                             </div>
                                         </div>
                                     </div>
                                 </section>
                                 @endif
                             </div>
-
-
-
-                            </div>
+                        </div>
                     </div>
-
                     {{-- Related Products --}}
                     @if(!empty($set_template) && !empty($set_template->template_id) && ($set_template->template_id == '8' || $set_template->template_id == '9'))
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-12 mt-3">
                             @php
                                 $similar_title = getNomenclatureName('Similar Product', true);
                                 $similar_title_label = ($similar_title=="Similar Product")?__('Similar Product'):__($similar_title);
@@ -1653,6 +1640,17 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
         		$(this).addClass("ellipsis");
         	}
         });
+
+        function showLessTextFunction() {
+            $("#show_product_text_less").attr("style", "display:none");
+            $("#show_product_text_more").attr("style", "display:block");
+        }
+
+        function showMoreTextFunction() {
+            $("#show_product_text_less").attr("style", "display:block");
+            $("#show_product_text_more").attr("style", "display:none");
+        }
+
 
         </script>
 

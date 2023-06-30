@@ -297,6 +297,7 @@ trait CartManagerV2{
         $countries = Country::get();
         $cart->pharmacy_check = $preferences->pharmacy_check;
         $customerCurrency = $this->customerCurrency;
+        $doller_compare = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
         $nowdate = Carbon::now()->toDateTimeString();
         $latitude = '';
         $longitude = '';
@@ -383,7 +384,7 @@ trait CartManagerV2{
 
 
 
-        $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','cart_id','recurring_booking_type','recurring_week_day','recurring_week_type','recurring_day_data','recurring_booking_time','delivery_date', 'slot_price', 'slot_id','dispatch_agent_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','cart_id','recurring_booking_type','recurring_week_day','recurring_week_type','recurring_day_data','recurring_booking_time','delivery_date', 'slot_price', 'slot_id','dispatch_agent_id', 'is_cart_checked')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
         
 
 
@@ -693,10 +694,10 @@ trait CartManagerV2{
                             $container_charges_in_doller_compare = $prod->pvariant->container_charges??0;
                             if($customerCurrency && $prod->pvariant){
                                 // $price_in_currency = $prod->pvariant->price / $divider;
-                                $price_in_doller_compare = $price_in_currency * $customerCurrency->doller_compare;
+                                $price_in_doller_compare = $price_in_currency * $doller_compare;
 
                             $container_charges_in_currency = $prod->pvariant->container_charges / $divider;
-                            $container_charges_in_doller_compare = $container_charges_in_currency * $customerCurrency->doller_compare;
+                            $container_charges_in_doller_compare = $container_charges_in_currency * $doller_compare;
                         }
                         $quantity_price = $price_in_doller_compare * $prod->quantity;
                         
@@ -756,7 +757,7 @@ trait CartManagerV2{
                     // $prod->bid_discount = $pro;
                     $prod->pvariant->media_one = isset($prod->pvariant->media) ? $prod->pvariant->media->first() : [];
                     $prod->pvariant->media_second = isset($prod->product->media) ? $prod->product->media->first() : [];
-                    $prod->pvariant->multiplier = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
+                    $prod->pvariant->multiplier = $doller_compare ?? 1;
                     if(@$prod->bid_discount){
                         $bid_vendor_discount += (($quantity_price * $prod->bid_discount)/100);
                     }
@@ -801,7 +802,7 @@ trait CartManagerV2{
                                     $opt_price_in_doller_compare = $addons->option->price;
                                     if($customerCurrency){
                                         $opt_price_in_currency = $addons->option->price / $divider;
-                                        $opt_price_in_doller_compare = $opt_price_in_currency * $customerCurrency->doller_compare;
+                                        $opt_price_in_doller_compare = $opt_price_in_currency * $doller_compare;
                                     }
 
                                     if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
@@ -858,7 +859,7 @@ trait CartManagerV2{
                                     $addon_price=$addons->option->price;
                                     $addons->option->price = decimal_format($opt_price_in_currency);
 
-                                    $addons->option->multiplier = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
+                                    $addons->option->multiplier = $doller_compare ?? 1;
 
 
                                     // Recurring Booking Enabled
@@ -940,7 +941,6 @@ trait CartManagerV2{
                                 }
                             }
                         }
-                        $doller_compare = ($customerCurrency) ? $customerCurrency->doller_compare : 1;
                         
                         if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
                             if (isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)) {
@@ -1352,7 +1352,7 @@ trait CartManagerV2{
                 // $vendorData->delaySlot = (($slotsDate)?$slotsDate:'');
                 $vendorData->closed_store_order_scheduled = (($slotsDate)?$product->vendor->closed_store_order_scheduled:0);
 
-                $vendorData->delOptions = $select;
+                $vendorData->delOptions = $select??'';
 
                 //mohit sir branch code added by sohail
                 $processorProduct = [];

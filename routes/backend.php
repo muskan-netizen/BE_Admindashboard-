@@ -375,6 +375,14 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('orderReport/delete/{id}', 'Client\OrderController@deleteReport')->name('order.report.delete');
         Route::post('order/delay_time', 'Client\OrderController@addExtraPrepTimeToOrder')->name('order.delay_time');
 
+
+        // Admin Service Area Routes
+        Route::post('admin/serviceArea', 'Client\AdminServiceAreaController@store')->name('admin.serviceArea');
+        Route::get('admin/serviceArea', 'Client\AdminServiceAreaController@index')->name('admin.serviceArea.index');
+        Route::post('admin/deleteArea', 'Client\AdminServiceAreaController@destroy')->name('admin.serviceArea.delete');
+        Route::post('admin/editArea', 'Client\AdminServiceAreaController@edit')->name('admin.serviceArea.edit');
+        Route::post('admin/updateArea/{id}', 'Client\AdminServiceAreaController@update');
+
         Route::get('rental-return-modal/get-rental-return-product-modal', 'Client\OrderController@getRentalReturnProductModal')->name('get-rental-return-product-modal');
         Route::post('order/update-product-rental-return-client', 'Client\OrderController@updateProductRentalReturn')->name('update.order.rental.return.client');
 
@@ -419,6 +427,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('delivery/ahoy', 'Client\DeliveryOptionController@ahoy')->name('delivery.ahoy');
         Route::post('delivery/last_mile_delivery','Client\DeliveryOptionController@last_mile_delivery')->name('delivery.last_mile_delivery');
         Route::resource('tools','Client\ToolsController');
+        Route::post('tools/copy-catalog','Client\ToolsController@storeData')->name('tools.storeData');
         Route::get('database-logs','Client\ToolsController@databaseAuditingLogs')->name('databaseAuditingLogs'); // Added By Ovi
         Route::get('database-log/{table_name}','Client\ToolsController@singleDatabaseAuditingLogs')->name('singleDatabaseAuditingLogs'); // Added By Ovi
         Route::post('tools/tax','Client\ToolsController@taxCopy')->name('tools.taxCopy');
@@ -631,6 +640,21 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('account/usersubscriptions', [SubscriptionPlansUserController::class, 'userSubscriptionReport'])->name('account.userSubscription');
         Route::get('usersubscriptions/list/filter', [SubscriptionPlansUserController::class, 'subscriptionfilter'])->name('subscription.list.filter');
 
+        Route::group(['prefix' => '/attributes'], function () {
+            Route::get('index', 'Client\CategoryController@manageAttribute')->name('manage.attribute');
+            Route::get('add', 'Client\CategoryController@getAddAttributeForm')->name('manage.attribute.add');
+            Route::get('edit/{id}', 'Client\CategoryController@getEditAttributeForm')->name('manage.attribute.edit');
+            Route::post('store', 'Client\CategoryController@storeAttributeForm')->name('manage.attribute.store');
+            Route::put('update/{id}', 'Client\CategoryController@updateAttributeForm')->name('manage.attribute.update');
+            Route::delete('delete/{id}', 'Client\CategoryController@destroyAttribute')->name('manage.attribute.delete');
+        });
+        Route::group(['middleware' => 'onlysuperadmin', 'prefix' => '/mealSubscription'], function () {
+            Route::get('packages', 'Client\MealSubscriptionController@getMealSubscriptionPlans')->name('mealSubscription.plans');
+            Route::post('package/save/{slug?}', 'Client\MealSubscriptionController@saveSubscriptionPlan')->name('mealSubscription.plan.save');
+            Route::post('package/updateStatus/{slug}', 'Client\MealSubscriptionController@updateSubscriptionPlanStatus')->name('mealSubscription.plan.updateStatus');
+            Route::get('package/edit/{slug}', 'Client\MealSubscriptionController@editSubscriptionPlan')->name('mealSubscription.plan.edit');
+            Route::get('package/delete/user/{slug}', 'Client\MealSubscriptionController@deleteSubscriptionPlan')->name('mealSubscription.plan.delete');
+        });
     });
 });
 

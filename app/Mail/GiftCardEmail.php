@@ -38,6 +38,6 @@ class GiftCardEmail extends Mailable{
      */
     public function build(){
         // dd($this->mailData['user_address']);
-        return $this->view('email.GiftCardEmail')->from($this->mailData['mail_from'])->subject($this->mailData['subject'])->with('mailData', $this->mailData);
+        return $this->view('email.GiftCardEmail')->from($this->mailData['mail_from'],$this->mailData['client_name'])->subject($this->mailData['subject'])->with('mailData', $this->mailData);
     }
 }

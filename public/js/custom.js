@@ -22,7 +22,6 @@ $(function () {
     var header_height = jQuery('.site-header').height();
     var window_height = jQuery(window).height();
     var header_content_width = jQuery('#content-wrap').height();
-
     // console.log('header_height',header_height,'footer_height',footer_height);
     jQuery(".al_offset-top-home, .inner-pages-offset").css('margin-top', header_height+'px');
     jQuery("#content-wrap").css('padding-bottom', footer_height);
@@ -571,6 +570,7 @@ $(document).ready(function () {
                                 $("#subscription_payment #features_list").html(response.sub_plan.features);
                                 $("#subscription_payment #subscription_id").val(sub_id);
                                 $("#subscription_payment #subscription_amount").val(response.sub_plan.price);
+                                $("#subscription_payment #type_id").val(response.sub_plan.type_id);
                                 $("#subscription_payment #subscription_payment_methods").html('');
                                 let payment_method_template = _.template($('#payment_method_template').html());
                                 $("#subscription_payment #subscription_payment_methods").append(payment_method_template({ payment_options: response.payment_options }));
@@ -578,6 +578,22 @@ $(document).ready(function () {
                                     $("#subscription_payment .subscription_confirm_btn").hide();
                                 }
                                 $("#subscription_payment").modal("show");
+                                if(response.sub_plan.type_id == 2){
+									var form = document.getElementById('meal-subscription-form');
+						          	  var formData = new FormData(form); // Create a new FormData object
+						
+						            var serializedData = JSON.stringify(Object.fromEntries(formData)); // Serialize the form data to JSON
+						
+						            var serializedField = document.createElement("input"); // Create a new input element
+						            serializedField.type = "hidden";
+						            serializedField.name = "serializedForm";
+						            serializedField.value = serializedData;
+						
+						            document.getElementById('subscription_payment_form').appendChild(serializedField); // Append the serialized field to the form
+						
+						            // Display the serialized form data in the console
+						            console.log(serializedData);								
+								}
                                 if(stripe_publishable_key != ''){
                                     stripeInitialize();
                                 }
@@ -969,7 +985,7 @@ $(document).ready(function () {
 
     }
     $(document).on("click", "#order_placed_btn", async function () {
-
+        
         if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val()!=$("#schedule_datetime").val())){
             success_error_alert('error', error_unchanged_schedule_date, ".cart_response");
             $("#schedule_datetime").val($("#edit_order_schedule_datetime").val());
@@ -982,6 +998,7 @@ $(document).ready(function () {
                 $(this).addClass('has_error');
             }
         });
+
         if($(".prescription_btn").hasClass('has_error')){
             Swal.fire({
                 icon: 'error',
@@ -989,6 +1006,18 @@ $(document).ready(function () {
                 text: 'kindly select a prescription!',
                 //footer: '<a href="">Why do I have this issue?</a>'
             })
+            return false;
+        }
+
+        var checkboxes = $('.checked-cart-product');
+        var checkedCheckboxes = checkboxes.filter(':checked');
+        if (checkedCheckboxes.length === 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Please select at least one product.',
+                //footer: '<a href="">Why do I have this issue?</a>'
+            });
             return false;
         }
 
@@ -1163,8 +1192,7 @@ $(document).ready(function () {
                 url: update_cart_schedule,
                 data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, dropoff_scheduled_slot : slot_dropoff, address: address,payable_amount : cartAmount },
                 success: function (response) {
-
-
+                    $(".error_prescription").attr("style", "display:none");
                     if(response.status == "passbase_submitted"){
                         Swal.fire({
                             text: response.message,
@@ -1182,6 +1210,12 @@ $(document).ready(function () {
                                     window.location.replace(passbase_page);
                                 }
                             });
+                        return false;
+                    }else if (response.status == "error_prescription") {
+                        $.each(response.presciptionProducts, function (key, product_id) {
+                            $("#error_prescription_"+product_id).attr("style", "display:block");
+                        });
+
                         return false;
                     }else if (response.status == "Pending") {
                         window.location.replace(verifyaccounturl);
@@ -1224,6 +1258,7 @@ $(document).ready(function () {
                             },
                             error: function (error) {
                                 var response = $.parseJSON(error.responseText);
+                                
                                 let error_messages = response.message;
                                 $.each(error_messages, function (key, error_message) {
                                     $('#min_order_validation_error_' + error_message.vendor_id).html(error_message.message).show();
@@ -1352,9 +1387,16 @@ $(document).ready(function () {
         let pending_amount = $("input[name='amount_pending']");
         let tipElement = $("#cart_tip_amount");
         let payment_form = '';
+        let type = $("input[name='type_id']").val();
+        let mealSubscriptionForm = '';
+        if(type == '2'){
+			mealSubscriptionForm = $("input[name='serializedForm']").val()
+			paymentAjaxData.days = $('#sub-days').html();
+		}
         // let payment_option_id = paymentAjaxData.payment_option_id;
 
         paymentAjaxData.payment_method_id = result.paymentMethod.id;
+        paymentAjaxData.type_id = type;
         // paymentAjaxData.payment_option_id = payment_option_id;
         if (path.indexOf("cart") !== -1) {
             payment_form = 'cart';
@@ -1362,7 +1404,7 @@ $(document).ready(function () {
         } else if ((path.indexOf("wallet") !== -1) || ((typeof cabbookingwallet !== 'undefined') && (cabbookingwallet == 1))) {
             payment_form = 'wallet';
             total_amount = walletElement.val();
-        } else if (path.indexOf("subscription") !== -1) {
+        } else if (path.indexOf("subscription") !== -1 || path.indexOf("mealSubscription") !== -1) {
             payment_form = 'subscription';
             total_amount = subscriptionElement.val();
             // paymentAjaxData = $("#subscription_payment_form").serializeArray();
@@ -1391,6 +1433,9 @@ $(document).ready(function () {
         }
         paymentAjaxData.payment_form = payment_form;
         paymentAjaxData.total_amount = total_amount;
+        if(mealSubscriptionForm !== 'undefined' && mealSubscriptionForm !== ''){
+			paymentAjaxData.mealSubscriptionForm = mealSubscriptionForm;
+		}
         if (result.error) {
             swal.fire({
                 icon: 'error',
@@ -1432,12 +1477,23 @@ $(document).ready(function () {
             // Show error from server on payment form
         } else if (response.requires_action) {
             // Use Stripe.js to handle required card action
-            stripe.handleCardAction(
-                response.payment_intent_client_secret
-            ).then(handleStripeJsResult);
+            if(response.hasOwnProperty('type') && response.type == 'subscription'){
+                stripe.confirmCardPayment(response.payment_intent_client_secret, {
+                    payment_method: {
+                        card: card
+                    },
+                })
+                .then(function(){
+                    setTimeout(() => {
+                        window.location.href = response.result;
+                    }, 1500);
+                });
+            }else{
+                stripe.handleCardAction(
+                    response.payment_intent_client_secret
+                ).then(handleStripeJsResult);    
+            }
         } else {
-            // console.log(response);
-            // Show success message
             setTimeout(() => {
                 window.location.href = response.result;
             }, 1500);
@@ -2230,6 +2286,9 @@ $(document).ready(function () {
         var input = document.getElementById('address');
         if (input) {
             var autocomplete = new google.maps.places.Autocomplete(input);
+            if(is_map_search_perticular_country){
+                autocomplete.setComponentRestrictions({'country': [is_map_search_perticular_country]});
+            }
             autocomplete.bindTo('bounds', bindMap);
             google.maps.event.addListener(autocomplete, 'place_changed', function () {
                 var place = autocomplete.getPlace();
@@ -2363,7 +2422,6 @@ $(document).ready(function () {
                     var token_val = response.token_val;
                     // console.log(cart_details);
                     if (cart_details!= undefined) {
-
                         // if((response.is_token_enable == 1) && (response.token_val > 0) ){
                         //     response.token_val;
                         // }
@@ -2658,6 +2716,7 @@ $(document).ready(function () {
             let elemClasses = $(iconElem).attr("class");
             $(iconElem).removeAttr("class").addClass("fa fa-spinner fa-pulse");
         }
+
         ajaxCall = $.ajax({
             type: "post",
             dataType: "json",
@@ -2694,6 +2753,30 @@ $(document).ready(function () {
             }
         });
     }
+
+    function updateCartProductStatus(cartproduct_id, is_cart_checked) {
+        ajaxCall = $.ajax({
+            type: "post",
+            dataType: "json",
+            url: update_cart_product_status,
+            data: { "cartproduct_id": cartproduct_id, "is_cart_checked": is_cart_checked },
+            success: function (response) {
+                if(response.status == "error")
+                {
+                    Swal.fire({
+                        title: "Warning!",
+                        text: response.message,
+                        icon: "warning",
+                        button: "OK",
+                    });
+                }else{
+                    cartHeader();
+                }
+            },
+            error: function (err) { }
+        });
+    }
+
     $(document).on('click', '.tip_radio_controls .tip_radio', function () {
         var tip = $(this).val();
         var amount_payable = parseFloat($("#cart_payable_amount_original").val());
@@ -2827,6 +2910,8 @@ $(document).ready(function () {
 
     });
     $(document).on('click', '.qty-minus', function () {
+        $('.qty-minus').prop('disabled', true);
+        $('.qty-plus').prop('disabled', true);
         let base_price = $(this).data('base_price');
         let cartproduct_id = $(this).attr("data-id");
         let minimum_order_count = $(this).attr("data-minimum_order_count");
@@ -2856,7 +2941,23 @@ $(document).ready(function () {
             $('#remove_item_modal #cartproduct_id').val(cartproduct_id);
         }
     });
+
+    $(document).on('click', '.checked-cart-product', function () {
+        if ($(this).is(':checked')) {
+            var cart_product_id = $(this).val();
+            var is_cart_checked = 1;
+        } else {
+            var cart_product_id = $(this).val();
+            var is_cart_checked = 0;
+        }
+        $('#fa_spinner_'+cart_product_id).removeClass("d-none");
+        $(this).addClass("d-none");
+        updateCartProductStatus(cart_product_id, is_cart_checked);
+    });
+
     $(document).on('click', '.qty-plus', function () {
+        $('.qty-plus').prop('disabled', true);
+        $('.qty-minus').prop('disabled', true);
         let base_price = $(this).data('base_price');
         let cartproduct_id = $(this).attr("data-id");
         let qty = $('#quantity_' + cartproduct_id).val();
@@ -3563,6 +3664,7 @@ $(document).ready(function () {
     });
 
     function updateProductQuantity(product_id, cartproduct_id, quantity, base_price = 0, iconElem = '') {
+
         ajaxCall = $.ajax({
             type: "post",
             dataType: "json",
@@ -3924,7 +4026,6 @@ $(document).ready(function () {
     });
 
     $(document).on("click", ".productAddonOption", function () {
-
         var cart_id = '';
         var cart_product_id = '';
         let that = $(this);

@@ -40,14 +40,16 @@ trait LalaMoves{
 
   public function configDetails()
   {
-    $simp_creds = ShippingOption::select('credentials', 'test_mode')->where('code', 'lalamove')->where('status', 1)->first();
-    $creds_arr = json_decode($simp_creds->credentials);
-    $this->api_key = $creds_arr->api_key??'';
-    $this->secret_key = $creds_arr->secret_key ?? '';
-    $this->base_url = (($simp_creds->test_mode=='1')?'https://rest.sandbox.lalamove.com':'https://rest.lalamove.com'); //Live url - https://rest.lalamove.com
-    $this->region = $creds_arr->country_region ?? ''; // Malaysia regions ----  MY_JHB, MY_KUL, MY_NTL
-    $this->locale_key = $creds_arr->locale_key ?? ''; // Malaysia region locale type en_MY, ms_MY
-    $this->service_type = $creds_arr->service_type ?? ''; // Malaysia region ServiceType MOTORCYCLE, WALKER , VAN , 4x4 , TRUCK330, TRUCK550 
+    $simp_creds = ShippingOption::select('credentials', 'test_mode','status')->where('code', 'lalamove')->where('status', 1)->first();
+    if(@$simp_creds->status){
+        $creds_arr = json_decode($simp_creds->credentials);
+        $this->api_key = $creds_arr->api_key??'';
+        $this->secret_key = $creds_arr->secret_key ?? '';
+        $this->base_url = (($simp_creds->test_mode=='1')?'https://rest.sandbox.lalamove.com':'https://rest.lalamove.com'); //Live url - https://rest.lalamove.com
+        $this->region = $creds_arr->country_region ?? ''; // Malaysia regions ----  MY_JHB, MY_KUL, MY_NTL
+        $this->locale_key = $creds_arr->locale_key ?? ''; // Malaysia region locale type en_MY, ms_MY
+        $this->service_type = $creds_arr->service_type ?? ''; // Malaysia region ServiceType MOTORCYCLE, WALKER , VAN , 4x4 , TRUCK330, TRUCK550 
+    }
   }
 
 

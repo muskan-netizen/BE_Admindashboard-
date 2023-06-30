@@ -674,7 +674,7 @@ class UserController extends BaseController
                 if (!empty($request->get('search'))) {
                     $search = $request->get('search');
                     $instance->where(function ($query) use ($search) {
-                        $query->where('date', 'LIKE', '%' . $search . '%')
+                        $query->where('created_at', 'LIKE', '%' . $search . '%')
                             ->orWhere('meta', 'LIKE', '%' . $search . '%')
                             ->orWhere('amount', 'LIKE', '%' . $search . '%');
                     });
