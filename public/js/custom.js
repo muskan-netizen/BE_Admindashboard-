@@ -3313,15 +3313,6 @@ $(document).ready(function () {
                     }
                    showRemoveCart(modelText);
                 } else {
-                    var variants = [];
-                    var options = [];
-                    $('.changeVariant').each(function() {
-                        if (this.checked == true) {
-                            var that = this;
-                            variants.push($(that).attr('vid'));
-                            options.push($(that).attr('optid'));
-                        }
-                    });
                     var variant_id = $('#prod_variant_id').val();
                     var start_date =  $('#start_time').val();
                     var end_date =  $('#end_time').val();
