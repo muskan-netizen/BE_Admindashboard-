@@ -212,7 +212,7 @@ class OrderCancelRequestsController extends BaseController
             ))->find($order_id);
             
             $currentOrderStatus = OrderVendor::with('orderDetail', 'vendor', 'products')->where(['id' => $order_vendor_id, 'vendor_id' => $vendor_id, 'order_id' => $order_id])->first();
-            $orderVendorProduct = OrderProduct::with('addon', 'addon.option', 'variant')->where('order_vendor_id', $currentOrderStatus->id)->first();
+            $orderVendorProduct = OrderProduct::with('addon', 'addon.option', 'variant')->where('order_vendor_id', $currentOrderStatus->id)->where('id', $order_vendor_product_id)->first();
             
 
             $cancelledProductPrice = $this->checkreplaceProduct($request, $orderVendorProduct) * $orderVendorProduct->quantity;
