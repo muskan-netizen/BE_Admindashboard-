@@ -5,6 +5,7 @@
     let OrdervendorID = '';
     let order_id = '';
     let vendoridC = '';
+    let const_img = '/assets/js/chat/profile-pic-dummy.png'
     $(document).on('click','.start_chat',async function(e){
         e.preventDefault();
         var vendor_order_id = $(this).attr('data-vendor_order_id');
@@ -289,13 +290,13 @@
                     await response.data.userData.forEach(function (data) {
                      html+= `<div class="alPhoneNumberDetails">
                             <ul class="p-0 m-0 d-lg-flex align-items-center text-lg-left text-center">
-                                <li class="mr-xl-2"><img class="rounded-circle userImg" src="${data.display_image}"></li>
+                                <li class="mr-xl-2"><img class="rounded-circle userImg" onError="this.onerror=null;this.src='${const_img}';" src="${data.display_image}"></li>
                                 <li><span class="alUserName">${data.username}  (${data.user_type}) </span><p class="m-0 alPhoneNumber">${data.phone_num}</p></li>
                             </ul>
                         </div>`;
                       
                         html2+=   `<a class="user_data_left" href="javascript:void(0)">
-                            <img class="rounded-circle userImg" src="${data.display_image}">
+                            <img class="rounded-circle userImg" onError="this.onerror=null;this.src='${const_img}';" src="${data.display_image}">
                         </a>`;
 
                     });
@@ -608,7 +609,7 @@
         if(data.user_Data.length > 0) {
             await data.user_Data.forEach(function (data) {
                 html2+=   `<a class="user_data_left" href="javascript:void(0)">
-                <img class="rounded-circle userImg" src="${data.display_image}">
+                    <img class="rounded-circle userImg" onError="this.onerror=null;this.src='${const_img}';" src="${data.display_image}">
                 </a>`;
             });
             return html2; 
@@ -761,4 +762,5 @@
             return mesHtml;
         //})
     }
+
     //fetchChatGroups();
