@@ -2073,7 +2073,7 @@ class CartController extends FrontController
     {
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'order_edit_before_hours', 'is_gift_card', 'is_token_currency_enable','is_service_product_price_from_dispatch','token_currency','advance_booking_amount', 'advance_booking_amount_percentage','is_file_cart_instructions','is_service_price_selection']);
                 
-
+        $wishListCount = 0;
         $cart_details = null;
         $user = Auth::user();
         $curId = Session::get('customerCurrency');
@@ -2095,6 +2095,7 @@ class CartController extends FrontController
             $cart = $cart->with(['coupon.promo','editingOrder'])->first();
 
             //pr($cart->toArray());
+            $wishListCount =  UserWishlist::where('user_id', $user->id)->count('id');
 
         } else {
             $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type', 'order_id','address_id')->with(['coupon.promo', 'editingOrder'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
@@ -2199,8 +2200,7 @@ class CartController extends FrontController
             $cart_details->tokenAmount = $tokenAmount;
         }
         // till here
-        
-        return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'', 'cart_error_message' => $error_message]);//'token_val' => $tokenAmount , 'is_token_enable' => $is_token_enable
+        return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'', 'cart_error_message' => $error_message,'wishListCount'=>$wishListCount]);//'token_val' => $tokenAmount , 'is_token_enable' => $is_token_enable
     }
 
 
@@ -2578,7 +2578,7 @@ class CartController extends FrontController
         }
     }
 
-    public function updateSchedule(Request $request, $domain = '')
+   public function updateSchedule(Request $request, $domain = '')
     {
         DB::beginTransaction();
         try{
