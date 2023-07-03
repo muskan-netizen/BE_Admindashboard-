@@ -183,8 +183,8 @@ line-height: inherit;
     list-style: none;
 }
 .user_data_left img {
-    width: 30px;
-    height: 30px;
+    width: 24px;
+    height: 24px;
 }
 .user_data_left span {
     position: inherit;
@@ -192,7 +192,11 @@ line-height: inherit;
 .user_show a {
     display: inline-block;
     width: 20px;
-    float: left;
+    float: unset;
+    margin: 0 auto;
+}
+.user_show{
+    text-align: center;
 }
 
 .hidden {
@@ -227,6 +231,7 @@ div#rightChat .chat-input-section {
 div#rightChat  .conversation-head {
     border-bottom: 1px solid #E7F6FC;
     background: #fff;
+    box-shadow: 5px 0 10px #ccc ;
 }
 .chat-body > .col-4 {
     background: #f5f5f5!important;
@@ -247,12 +252,29 @@ div#rightChat .chat-input-section form.row .col-auto  a:nth-of-type(2) {
     margin-right: 12px;
     line-height: 1;
 }
+
+@media(max-width:1600px){
+    .user_data_left img {
+        width: 18px;
+        height: 18px;
+    }
+    .user_show a{
+        width: auto;
+    }
+    .orderNumber{
+        font-size: 12px;
+    }
+}
 @media(max-width:1499px){
     .chat-box-wrapper{min-height: 390px;
         max-height: 390px;}
     .chat-list-container {
         min-height: 590px;
         max-height: 590px;
+    }
+    .user_data_left img {
+        width: 16px;
+        height: 16px;
     }
 }
 
@@ -264,13 +286,3 @@ div#rightChat .chat-input-section form.row .col-auto  a:nth-of-type(2) {
         max-height: 540px;
     }
 }
-
-
-
-
-
-
-
-
-
-
