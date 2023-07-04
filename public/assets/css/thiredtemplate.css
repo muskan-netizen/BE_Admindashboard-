@@ -292,6 +292,7 @@ body.dark.al_body_template_three .cart-design .modal-content .modal-body .theme-
     width: calc(100% - 250px)
 }
 
+
 .product-wrapper-grid.list-view .suppliers-img-outer {
     display: inline-block;
     vertical-align: top;
@@ -855,7 +856,7 @@ li.grand_total.d-flex.align-items-center.justify-content-between label.m-0 {
 
     .al_body_template_three .common-banner,
     .al_body_template_three .product-banner-img {
-        height: 120px;
+        height: 100%;min-height:100px;
         border-radius: 20px
     }
 

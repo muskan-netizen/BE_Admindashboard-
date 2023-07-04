@@ -1749,8 +1749,8 @@ body.al_body_template_eight .custom-vender-card .suppliers-img-outer {
 }
 
 body.al_body_template_eight .custom-vender-card .suppliers-img-outer img {
-    height: 300px;
-    object-fit: cover;
+    height: 220px;
+    object-fit: contain;
 }
 
 body.al_body_template_eight .custom-vender-card .supplier-rating {
@@ -1852,9 +1852,9 @@ body.al_body_template_eight .suppliers-box .suppliers-img-outer {
     height: 100%;
     background-color: #f9f9f9;
     padding: 0;
-    min-height: 188px;
+    min-height: 220px;
     object-fit: fill;
-    max-height: 300px;
+    max-height: 220px;
 }
 .al_body_template_eight .render_full_spotlight_deals .deals-product {
     min-height: 266px;
