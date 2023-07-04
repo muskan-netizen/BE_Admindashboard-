@@ -371,6 +371,18 @@ li.grand_total.d-flex.align-items-center.justify-content-between label.m-0 {
 .dark.al_body_template_three .render_new_products .slick-slide .inner_spacing p{
     color: #fff;
 }
+
+@media (max-width: 1690px) {
+    .al_body_template_three .cab-banner-area .card-box{
+        padding: 28px;
+    }
+    .al_body_template_three .cab-banner-area .cab-footer .btn{
+        padding: 10px 10px;
+        font-size: 12px;
+    }
+}
+
+
 @media (max-width: 1430px) {
     .al_new_wrapper_design .top-banner-wrapper.text-center .common-banner {
         border-radius: 20px;
@@ -474,7 +486,13 @@ li.grand_total.d-flex.align-items-center.justify-content-between label.m-0 {
     body[dir="rtl"].al_body_template_three .al_new_cart {
         margin: 10px;
     }
-
+    .al_body_template_three .cab-banner-area .card-box {
+        padding: 18px;
+    }
+    .al_body_template_three .cab-banner-area .cab-footer .btn {
+        padding: 12px 10px;
+        font-size: 10px;
+    }
 
 }
 
@@ -1484,6 +1502,9 @@ li.grand_total.d-flex.align-items-center.justify-content-between label.m-0 {
 @media (max-width:320px){
     .slick-slider .d-flex.align-items-center.justify-content-between.al_clock b{
         font-size: 12px !important;
+    }
+    .al_body_template_three .cab-banner-area .cab-footer .btn{
+        width:100% !important;
     }
 
 }
