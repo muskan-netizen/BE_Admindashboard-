@@ -2235,6 +2235,9 @@ ol.breadcrumb {
     object-fit: cover;
     position: absolute;
 }
+.alScrollspyProduct .class_img img{
+    position: unset;
+}
 
 .product-order {
     border-radius: 10px;
