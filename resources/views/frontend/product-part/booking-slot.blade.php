@@ -405,11 +405,14 @@
         }
         function calculateExtraTimeforproduct(selectedStartDate,selectedEndDate){
           var total_sel_min = diff_minutes(selectedStartDate,selectedEndDate);
-          console.log("asdfasdfasdf");
           // console.log(parseInt(default_minutes));
           //console.log(parseFloat(total_sel_min) - Number(default_minutes));
           var remaining = parseFloat(total_sel_min) - Number(default_minutes);
           //default_step
+          
+          if(default_step == 0){
+          	default_step = 60;
+          }
           var divide = parseInt(remaining)/default_step;
           divide = Math.floor(divide);
           var reminder = parseInt(remaining)%default_step;
