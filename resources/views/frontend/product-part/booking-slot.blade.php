@@ -230,8 +230,8 @@
             // console.log(document.getElementById('incremental_hrs').value);
 
              var total1=   $('#total_hrs').val();
-              console.log('total',total_min);
-              console.log('incremental_hrs',default_step);
+             // console.log('total',total_min);
+           //   console.log('incremental_hrs',default_step);
               total_min = parseInt(total1)+parseInt(default_step);
 
               $('#total_hrs').val(total_min);
@@ -441,7 +441,7 @@
           $('#incremental_hrs_hidden').val(timeToHrMinConvertCal(t_min_hr_min));
           $('#total_hrs').val(parseInt(t_min_hr_min));
 
-           console.log(parseInt(t_min_hr_min)+parseInt(default_minutes));
+           //console.log(parseInt(t_min_hr_min)+parseInt(default_minutes));
 
         }
 
