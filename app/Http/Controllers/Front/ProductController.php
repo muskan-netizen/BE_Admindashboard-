@@ -438,18 +438,30 @@ class ProductController extends FrontController{
         $selected_variant_title = $request->selected_variant_title;
         //pr($pv_ids);
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
-        $availableSets = Product::with(['variantSet.variantDetail','variantSet.option2'=>function($q)use($product, $pv_ids){
+        $availableSets = Product::with(['variantSet.variantDetail' => function ($q) {
+            $q->orderBy('position','ASC');
+        },'variantSet.option2'=>function($q)use($product, $pv_ids){
             $q->where('product_variant_sets.product_id', $product->id)->whereIn('product_variant_id', $pv_ids);
         }])
         //return $product;
         ->select('id')
         ->where('products.id', $product->id)->first();
         // Assuming $availableSets is an array of objects with a 'title' property
-        // foreach ($availableSets->variantSet as $key => $sets) {
-        //     if ($sets->variantDetail->title === $selected_variant_title) {
-        //         unset($availableSets->variantSet[$key]);
-        //     }
-        // }
+        foreach ($availableSets->variantSet as $key => $sets) {
+            if ($sets->variantDetail->title === $selected_variant_title) {
+                unset($availableSets->variantSet[$key]);
+            }
+        }
+        // Convert the object to an array
+        $availableSets = json_decode(json_encode($availableSets->variantSet), true);
+
+        usort($availableSets, function ($a, $b) {
+            return $a['variant_detail']['position'] - $b['variant_detail']['position'];
+        });
+
+        $availableSets = json_decode(json_encode($availableSets), false);
+
+        // pr($availableSets);
         if($pv_ids){
             $variantData = ProductVariant::with(['product.media.image', 'product.addOn', 'media.pimage.image', 'checkIfInCart'])
             ->select('id', 'sku', 'quantity', 'price', 'compare_at_price', 'barcode', 'product_id')
@@ -500,7 +512,7 @@ class ProductController extends FrontController{
                 $data['variant'] = $variantData;
                 $data['tokenAmount'] = $tokenAmount;
                 $data['is_token_enable'] = $is_token_enable;
-                $returnHTML = view('frontend.product-part.product-variant-ajax')->with(['availableSets' => $availableSets->variantSet, 'selected_variant_title' => $selected_variant_title])->render();
+                $returnHTML = view('frontend.product-part.product-variant-ajax')->with(['availableSets' => $availableSets, 'selected_variant_title' => $selected_variant_title])->render();
 
                 return response()->json(array('status' => 'Success', 'html'=>$returnHTML));
 

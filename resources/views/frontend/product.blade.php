@@ -1401,13 +1401,12 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     function updatePrice(){
         var variants = [];
         var options = [];
-        var selected_variant_title = "";
+        var firstCheckedSelectedTitle = $('.changeVariant:checked').first().parent().data('title');
         $('.changeVariant').each(function() {
             if (this.checked == true) {
                 var that = this;
                 variants.push($(that).attr('vid'));
                 options.push($(that).attr('optid'));
-                selected_variant_title = $(that).parent().attr('data-title');
             }
         });
         $.ajax({
@@ -1417,10 +1416,9 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
                 "_token": "{{ csrf_token() }}",
                 "variants": variants,
                 "options": options,
-                "selected_variant_title": selected_variant_title
+                "selected_variant_title": firstCheckedSelectedTitle
             },
             success: function(response) {
-                
                 if(response.status == "Success"){
                     if(response.html != ''){
                         $("#variant_options").html('');
