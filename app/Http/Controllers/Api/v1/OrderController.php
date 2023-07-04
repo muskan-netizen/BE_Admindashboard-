@@ -3699,7 +3699,7 @@ class OrderController extends BaseController
 
 
 
-                    if ($request->status_option_id == 3) {
+                    if ($order_status_option_id == 3) {
                         if ($orderData->shipping_delivery_type=='D' && !empty($currentOrderStatus->dispatch_traking_url)) {
                             $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
                             $response = Http::get($dispatch_traking_url);
