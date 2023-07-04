@@ -195,7 +195,7 @@
   "My Account": "mein Konto",
   "I accept the": "Bestellung aufgeben0",
   "and have read the": "Bestellung aufgeben1",
-  "Logout": "Abmelden",
+  "Logout": "Ausloggen",
   "Terms And Conditions": "Bestellung aufgeben3",
   "Verify Email Addresss": "Bestellung aufgeben4",
   "Enter the code we just sent you on your phone number address": "Geben Sie den Code, den wir Ihnen gerade gesendet haben, unter Ihrer Telefonnummer ein",
@@ -1035,8 +1035,5 @@
   "DATE & TIME":"TERMINZEIT",
   "PRICE DETAILS":"PREISDETAILS",
   "View all address":"Alle Adressen anzeigen",
-  "Enter the code we just sent you on your phone number": "Geben Sie den Code, den wir Ihnen gerade gesendet haben, unter Ihrer Telefonnummer ein",
-  
-
-
+  "Enter the code we just sent you on your phone number": "Geben Sie den Code, den wir Ihnen gerade gesendet haben, unter Ihrer Telefonnummer ein" 
 }
