@@ -1379,11 +1379,17 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     var add_to_cart_url = "{{ route('addToCart') }}";
     $(document).on('click', '.changeVariant', function() {
         var $this = $(this);
+         
+        var data_id = $(this).attr('data-variant-id');
+        // Set session variable
+        sessionStorage.setItem('selected_variant', data_id);
+        var myValue = sessionStorage.getItem('selected_variant');
+
         var variant_val = $(this).val();
         var option_title = $(this).data('option-title');
         $('.changeVariant_'+option_title).removeAttr('checked');
         $this.attr('checked', 'checked');
-        updatePrice();
+        updatePrice(myValue);
     });
 
     $(document).on('click', '.selected_variant', function() {
@@ -1398,7 +1404,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
         }
     });
 
-    function updatePrice(){
+    function updatePrice(myValue){
         var variants = [];
         var options = [];
         var firstCheckedSelectedTitle = $('.changeVariant:checked').first().parent().data('title');
@@ -1416,13 +1422,15 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
                 "_token": "{{ csrf_token() }}",
                 "variants": variants,
                 "options": options,
-                "selected_variant_title": firstCheckedSelectedTitle
+                "selected_variant_title": firstCheckedSelectedTitle,
+                'is_variant_checked':myValue
             },
             success: function(response) {
                 if(response.status == "Success"){
                     if(response.html != ''){
                         $("#variant_options").html('');
                         $("#variant_options").html(response.html);
+                       
                     }
                    
                 }
