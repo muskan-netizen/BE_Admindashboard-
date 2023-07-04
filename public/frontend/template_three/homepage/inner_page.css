@@ -2607,6 +2607,12 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
 .vendor_image_div .top-banner-wrapper {
     height: 100%!important;
 }
+
+.al_body_template_three.modal-open .product-addon-modal .modal-content >.d-flex {
+    height: auto!important;
+    max-height: 400px;
+}
+
 @media (min-width: 1024px) {
     .ds {
         position: absolute;
@@ -3620,6 +3626,10 @@ footer#footer {
     .vendor-stories{
         height: 100%!important;
         width: 100%!important;
+    }
+    .al_body_template_three.modal-open .product-addon-modal .modal-content >.d-flex {
+        height: auto!important;
+        max-height: 350px;
     }
 }
 
