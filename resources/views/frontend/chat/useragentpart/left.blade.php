@@ -30,7 +30,7 @@
 								{{-- <div class="align-self-center mr-3">
 									<div class="rounded-circle bg-gray" style="width: 8px; height: 8px; opacity: 0;"></div>
 								</div> --}}
-								<div class="align-self-center col-4">
+								<div class="align-self-center col-4	">
 									<div class="user_show">
 										<p class="orderNumber m-0 mb-2">#{{ $chatroom['room_id'] }}</p>
 										@if(count($chatroom['user_Data']) > 0)

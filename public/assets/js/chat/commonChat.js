@@ -671,12 +671,12 @@
                     var updateDate =  new Date(data.updated_date);
                     html = `<div id="chatRooms_${data._id}" data-text="${data.room_id}" data-chat_type="${chatType}" data-product_id="${data.product_id!=undefined?data.product_id:''}"  data-sort="${i}" data-timestamp="" class="list-group rounded-0 chatRoomsDivs">
                         <div id="room_${data._id}" data-orderid="${data.order_id}" data-chat_type="${chatType}" data-ordervendorid="${data.order_vendor_id}" data-vendor_id="${data.vendor_id}" data-product_id="${data.product_id!=undefined?data.product_id:''}"  data-id="${data._id}" data-roomid="${data.room_id}" data-roomname="${data.room_id}" class="chat-list-item row fetchChat">
-                            <div class="align-self-center col-4">
+                            <div class="align-self-center col-3">
                                 <div class="user_show">
                                 ${renderUserd}
                                 </div>
                             </div>
-                            <div class="col-8 position-relative pl-0">
+                            <div class="col-9 position-relative pl-0">
                                 <div class="alNameTime last_message">
                                 <h6 id="preview_message_name_${data._id}" class="mb-1 mt-0">${last_message_name}</h6>
                                     <span id="preview_message_time_${data._id}">
