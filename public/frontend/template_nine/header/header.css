@@ -513,7 +513,7 @@ li.onhover-dropdown.mobile-account {
 body.al_body_template_nine .main-menu .menu-right .icon-nav li ul.onhover-show-div li {
     width: 100%;
     display: block;
-    padding: 0;
+    padding: 0!important;
 }
 body.al_body_template_nine .main-menu .menu-right .icon-nav li ul.onhover-show-div {
     display: block;
