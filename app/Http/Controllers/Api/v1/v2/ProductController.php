@@ -75,6 +75,7 @@ class ProductController  extends FrontController
         }
         $sets = array();
         //pr($pv_ids);
+        $selected_variant_title = $request->selected_title;
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
         $availableSets = Product::with(['variantSet.variantDetail','variantSet.option2'=>function($q)use($product, $pv_ids){
             $q->where('product_variant_sets.product_id', $product->id)->whereIn('product_variant_id', $pv_ids);
@@ -82,7 +83,21 @@ class ProductController  extends FrontController
         //return $product;
         ->select('id')
         ->where('products.id', $product->id)->first();
-        $data['availableSets'] = $availableSets->variantSet;
+        // Assuming $availableSets is an array of objects with a 'title' property
+        foreach ($availableSets->variantSet as $key => $sets) {
+            if ($sets->variantDetail->title === $selected_variant_title) {
+                unset($availableSets->variantSet[$key]);
+            }
+        }
+        // Convert the object to an array
+        $availableSets = json_decode(json_encode($availableSets->variantSet), true);
+
+        usort($availableSets, function ($a, $b) {
+            return $a['variant_detail']['position'] - $b['variant_detail']['position'];
+        });
+
+        $availableSets = json_decode(json_encode($availableSets), false);
+        $data['availableSets'] = $availableSets;
         if($pv_ids){
             $variantData = ProductVariant::with(['product.media.image', 'product.addOn', 'media.pimage.image', 'checkIfInCart'])
             ->select('id', 'sku', 'quantity', 'price', 'compare_at_price', 'barcode', 'product_id')

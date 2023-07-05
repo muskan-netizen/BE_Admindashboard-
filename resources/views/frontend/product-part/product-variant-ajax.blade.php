@@ -2,6 +2,7 @@
 @php
     $t_var = count($availableSets);
 @endphp
+{{-- @dd($is_variant_checked) --}}
 @foreach($availableSets as $key => $sets)
     @php
         $notChecked = 1;
@@ -24,7 +25,10 @@
                         ?>
                         <label class="radio d-inline-block txt-14 col-4 position-relative pl-4 pr-2 {{ $optn->quantity == 0 ? 'label-disabled' : '' }} @if(@$notChecked && @$flag) radio-active @endif" data-title="{{ $key === 0 ? $optn->title : '' }}">
                             <span class="color_name ellipsis">{{$optn->title}}</span>
-                            <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" data-variant-id="{{$optn->product_variant_id}}" data-variant-price="{{$optn->price}}" vid="{{$var_id}}" optid="{{$opt_id}}" data-option-title="{{$sets->variant_detail->title}}" value="{{$opt_id}}" type="radio" class="dataVar{{$var_id}} changeVariant_{{$sets->variant_detail->title}} selected_variant {{ $key != $t_var - 1 ? 'changeVariant' : '' }} selected_variant_{{$optn->product_variant_id}}" @if(@$notChecked  && @$flag) checked @endif @if($optn->product_variant_id == $is_variant_checked) checked @endif >
+                            <input id="lineRadio-{{$opt_id}}" name="{{'var_'.$var_id}}" data-variant-id="{{$optn->product_variant_id}}" data-variant-price="{{$optn->price}}" vid="{{$var_id}}" optid="{{$opt_id}}" data-option-title="{{$sets->variant_detail->title}}" value="{{$opt_id}}" type="radio" class="dataVar{{$var_id}} changeVariant_{{$sets->variant_detail->title}} selected_variant selected_variant_{{$optn->product_variant_id}} changeVariant" @if(@$notChecked  && @$flag) checked @endif @if (!empty($is_variant_checked) && in_array($optn->product_variant_id, $is_variant_checked)) checked @endif>
+                            {{--  {{ $key != $t_var - 1 ? 'changeVariant' : '' }} --}}
+                            {{--      @if($optn->product_variant_id == $is_variant_checked) checked @endif  --}}
+                            {{-- @if (in_array($is_variant_checked, $optn->product_variant_id)) checked @endif --}}
                             @if($sets->variant_detail->type == 2)
                                 <span class="color_var var_{{$var_id}}" style="padding:8px; border: 1px dotted #CCC; background:{{$optn->hexacode}};" data-id="{{$var_id}}"></span>
                             @else

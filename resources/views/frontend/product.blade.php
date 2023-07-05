@@ -1380,10 +1380,16 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     $(document).on('click', '.changeVariant', function() {
         var $this = $(this);
          
-        var data_id = $(this).attr('data-variant-id');
-        // Set session variable
-        sessionStorage.setItem('selected_variant', data_id);
-        var myValue = sessionStorage.getItem('selected_variant');
+        // var data_id = $(this).attr('data-variant-id');
+        // // Set session variable
+        // sessionStorage.setItem('selected_variant', data_id);
+        // var myValue = sessionStorage.getItem('selected_variant');
+        var myValue = []; // Initialize an empty array
+
+        $('.selected_variant:checked').each(function() {
+            var value = $(this).attr('data-variant-id'); // Get the value of the 'data' attribute
+            myValue.push(value); // Push the value into the array
+        });
 
         var variant_val = $(this).val();
         var option_title = $(this).data('option-title');
@@ -1396,7 +1402,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
         var $this = $(this);
         var option_title = $(this).data('option-title');
         $('.changeVariant_'+option_title).removeAttr('checked');
-        $this.attr('checked', 'checked');
+        // $this.attr('checked', 'checked');
         var isSelected = $this.is(':checked');
         if(isSelected){
             // alert($(this).data('variant-id'));

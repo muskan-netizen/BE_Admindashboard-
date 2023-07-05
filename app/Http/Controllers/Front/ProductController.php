@@ -427,12 +427,20 @@ class ProductController extends FrontController{
         }
         $sets = array();
 
+        // if ($request->has('variants') && !empty($request->variants)) {
+        //     foreach ($request->variants as $key => $value) {
+        //         $product_variant_id = ProductVariantSet::where('variant_type_id', $value)->where('variant_option_id', $request->options[$key])->where('product_variant_sets.product_id', $product->id)->first();
+        //     }
+            
+        // }
+
         // if ($request->has('variants') && !empty($request->options)) {
         //     foreach ($request->variants as $k => $variant) {
-        //         $product_variant = ProductVariantSet::where('variant_type_id', $request->variants[$k])
-        //         ->where('variant_option_id', $request->options[$k])->where('product_variant_sets.product_id', $product->id)->toSql(); 
-        //         dd($product_variant);
+        //         $product_variant_id = ProductVariantSet::where('variant_type_id', $request->variants[$k])
+        //         ->where('variant_option_id', $request->options[$k])->where('product_variant_sets.product_id', $product->id)->get(); 
+        //         // dd($product_variant);
         //     }
+        //     dd($product_variant_id);
         // }
 
         $selected_variant_title = $request->selected_variant_title;
