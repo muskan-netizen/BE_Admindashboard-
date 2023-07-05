@@ -163,6 +163,10 @@ class SubscriptionPlansUserController extends BaseController
         if( ($request->has('description')) && (!empty($request->description)) ){
             $plan->description = $request->description;
         }
+        if($request->has('order_limit') && !empty($request->order_limit)){
+            $plan->order_limit = $request->order_limit;
+        }
+        $plan->type_id = $request->type_id;
         $plan->save();
         $planId = $plan->id;
         if( ($request->has('features')) && (!empty($request->features)) ){
@@ -187,6 +191,59 @@ class SubscriptionPlansUserController extends BaseController
                 //     }
                 //     $subFeature->save();
                 // }
+            }
+        }
+         
+        if($request->has('categories') && !empty($request->categories)){
+            foreach ($request->categories as $category) {
+                $exists = $plan->subscriptionCategory()->where('category_id', $category)->first();
+                if(!empty($exists))
+                    continue;
+                $subscriptionCategory = new SubscriptionPlanUserCategory();
+                $subscriptionCategory->category_id = $category;
+                $subscriptionCategory->subscription_id = $plan->id;
+                $subscriptionCategory->save();
+            }
+        }
+        
+        if($request->has('meal_timing') && !empty($request->meal_timing) || $request->has('meal_package') && !empty($request->meal_package)){
+            $additioanlAttribute = AdditionalAttribute::with('primary')->get();
+            if ($additioanlAttribute->count() > 0) {
+                foreach ($additioanlAttribute as $attribute) {
+                    $doc_name = str_replace(" ", "_", $attribute->primary->slug);
+                    if ($attribute->field_type != "textbox" && $attribute->field_type != "selector" && $attribute->field_type != "checkbox") {
+                        if ($request->hasFile($doc_name)) {
+                            $attributeProduct = new AdditionalAttributeProduct();
+                            $attributeProduct->user_id = Auth::id();
+                            $attributeProduct->additional_attribute_id = $attribute->id;
+                            $attributeProduct->reference_id = $plan->id;
+                            $filePath = $this->folderName . '/' . Str::random(40);
+                            $file = $request->file($doc_name);
+                            $attributeProduct->product_data = Storage::disk('s3')->put($filePath, $file, 'public');
+                            $attributeProduct->save();
+                        }
+                    } elseif ($attribute->field_type == "checkbox") {
+                        if ($request->has($doc_name)) {
+                            foreach ($request->$doc_name as $field => $value) {
+                                $attributeProduct = new AdditionalAttributeProduct();
+                                $attributeProduct->user_id = Auth::id();
+                                $attributeProduct->reference_id = $plan->id;
+                                $attributeProduct->additional_attribute_id = $attribute->id;
+                                $attributeProduct->product_data = $field;
+                                $attributeProduct->save();
+                            }
+                        }
+                    } else {
+                        if (! empty($request->$doc_name)) {
+                            $attributeProduct = new AdditionalAttributeProduct();
+                            $attributeProduct->user_id = Auth::id();
+                            $attributeProduct->additional_attribute_id = $attribute->id;
+                            $attributeProduct->reference_id = $plan->id;
+                            $attributeProduct->product_data = $request->$doc_name;
+                            $attributeProduct->save();
+                        }
+                    }
+                }
             }
         }
         return redirect()->back()->with('success', 'Subscription has been '.$message.' successfully.');
