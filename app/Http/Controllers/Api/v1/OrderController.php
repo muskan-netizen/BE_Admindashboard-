@@ -1016,7 +1016,12 @@ class OrderController extends BaseController
                     $order->subscription_discount = $total_subscription_discount;
                     $order->luxury_option_id = $luxury_option->id;
                     $payable_amount = $payable_amount - $Order_bid_discount??0;
-
+                    if($order->scheduled_slot){   
+                         $scheduled_time =    explode("-",$order->scheduled_slot);
+                         $schedule_dt =  date('Y-m-d',strtotime($order->scheduled_date_time));
+                         $schedule_dt = date('Y-m-d H:i:s',strtotime( $schedule_dt." ".$scheduled_time[0]));
+                         $order->scheduled_date_time = Carbon::parse($schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                     }
                     if (!$additionalPreferences->is_tax_price_inclusive) {
                         $order->payable_amount = $payable_amount;
                     }else{
