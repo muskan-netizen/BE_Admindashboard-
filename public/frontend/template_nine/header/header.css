@@ -513,7 +513,7 @@ li.onhover-dropdown.mobile-account {
 body.al_body_template_nine .main-menu .menu-right .icon-nav li ul.onhover-show-div li {
     width: 100%;
     display: block;
-    padding: 0;
+    padding: 0!important;
 }
 body.al_body_template_nine .main-menu .menu-right .icon-nav li ul.onhover-show-div {
     display: block;
@@ -575,7 +575,7 @@ body.dark .mobile-account span {
     }
 }
 @media(max-width:991px){
-    .al_template_one_menu .al_new_mobile_header, .al_template_one, .mobile-header {
+    .al_template_one_menu.p2p_module_enable .al_new_mobile_header, .p2p_module_enable .al_template_one, .p2p_module_enable .mobile-header {
         display: none!important;
     }
     .al_body_template_nine .mobileHeader {
@@ -599,6 +599,11 @@ body.dark .mobile-account span {
     }
     body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head a.sell-btn{
         margin-bottom: 0!important;
+    }
+    .al_body_template_nine  .mobile-header .logo {
+        max-width: 100%;
+        justify-content: center;
+        margin-bottom: 10px;
     }
 }
 

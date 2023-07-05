@@ -2272,7 +2272,7 @@ body.al_body_template_eight section.section-b-space.ratio_asos .collection-filte
 } */
 
 body.al_body_template_eight .outter-fillter-data .custom_filtter ul li span:after {
-    content: '';
+    content: unset;
     background: #D9D9D9;
     height: 1px;
     position: absolute;
