@@ -6,7 +6,7 @@ body.al_body_template_eight .category-related-product.suggested-product.slick-in
     padding: 5px 10px;
     background: var(--theme-deafult);
     font-size: 14px;
-    font-weight: 400;
+    font-weight: 400; 
     position: absolute;
     top: 10px;
     left: 0;
