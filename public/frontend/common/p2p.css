@@ -1507,7 +1507,7 @@ body.al_body_template_nine .menu-navigation.al {
         display: block;
         text-align: left;
         margin-left: 18px!important;
-        border-bottom: 1px solid #ccc;
+        /* border-bottom: 1px solid #ccc; */
         margin-right: 0px!important;
     }
     body.al_body_template_nine .al_toggle-menu.active {
@@ -1528,6 +1528,11 @@ body.al_body_template_nine .menu-navigation.al {
     .al_template_one .onhover-dropdown:before{
         right: 8px;
     }
+    body.al_body_template_nine.p2p-module .col-lg-5 .navbar-brand{order: 1;}
+    body.al_body_template_nine.p2p-module .col-lg-5 .al_custom_head_map_box {order: 3;width:100%;}
+    body.al_body_template_nine.p2p-module .col-lg-5 .al_toggle-menu{order: 2;margin-left: auto;}
+    body.al_body_template_nine.p2p-module .ratio_asos .top-banner-wrapper .top-banner-content h4{font-size: 25px;}
+   
 }
 
 @media(max-width:767px) {
@@ -1663,9 +1668,13 @@ body.al_body_template_nine .menu-navigation.al {
         display: none !important;
     }
     body.al_body_template_nine.p2p-module section.p2p-categories .col-md-2 {
-        width: 50%;
-        max-width: 50%;
-        flex: 50%;
+        width: 33.33%;
+        max-width: 33.33%;
+        flex:33.33%;
+    }
+    body.al_body_template_nine.p2p-module section.p2p-categories .cate-item a{
+        padding-bottom: 0!important;
+        margin-bottom: 15px;
     }
     body.al_body_template_nine.p2p-module #al_new_design .pixelstrap a,
     #al_new_design .pixelstrap a:active,
@@ -1823,13 +1832,16 @@ body.al_body_template_nine .menu-navigation.al {
         display: flex;
         flex-wrap: wrap;
     }
-    body.al_body_template_nine.p2p-module .col-lg-5 .navbar-brand{order: 1;}
-    body.al_body_template_nine.p2p-module .col-lg-5 .al_custom_head_map_box {order: 3;width:100%;}
-    body.al_body_template_nine.p2p-module .col-lg-5 .al_toggle-menu{order: 2;margin-left: auto;}
-    body.al_body_template_nine.p2p-module .ratio_asos .top-banner-wrapper .top-banner-content h4{font-size: 25px;}
+
 }
 
-
+@media(max-width:576px) {
+    body.al_body_template_nine.p2p-module section.p2p-categories .col-md-2 {
+        width: 50%;
+        max-width: 50%;
+        flex: 50%;
+    }
+}
 /*======================= new css add for p2p template on 1/12/2023===================== */
 /* for nine template */
 a.sell-btn {margin-right: 0 !important;}

@@ -682,7 +682,15 @@ c42 -28 59 -60 59 -112 0 -76 -59 -135 -135 -135 -80 0 -135 58 -135 144 0 43
     </div>--}}
 </div>
 <div class="al_mobile_menu al_new_mobile_header">
-
+                <div class="d-flex">
+                    @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
+                    <li class="add_post pr-2"><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn">
+                        <span>
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                            {{ __('Add Post') }}</span>
+                        </a></li>
+                @endif
+                
                 <div class="al_new_cart">
                     @if($client_preference_detail->cart_enable == 1)
                     <div class="onhover-dropdown_al onhover-div mobile-cart">
@@ -694,11 +702,13 @@ c42 -28 59 -60 59 -112 0 -76 -59 -135 -135 -135 -80 0 -135 58 -135 144 0 43
                     </div>
                     @endif
                 </div>
+            
                 <a class="al_toggle-menu" href="javascript:void(0)">
                     <i></i>
                     <i></i>
                     <i></i>
                 </a>
+            </div>
                 <div class="al_menu-drawer" id="navbarsfoodTemplate">
                     <ul class="header-dropdown ml-auto">
                         <li class="onhover-dropdown_al mobile-account_al">

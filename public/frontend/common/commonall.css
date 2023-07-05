@@ -1565,8 +1565,15 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
     margin-bottom: 30px;
     position: relative;
 }
-
-
+.al_body_template_six  .outter-fillter-data .chat-button button ,
+ .al_body_template_three  .outter-fillter-data .chat-button button,
+ .al_body_template_one  .outter-fillter-data .chat-button button  {
+    font-size: 16px!important;
+}
+.al_body_template_four .chat-button button {
+    padding: 0!important;
+    font-size: 16px!important;
+}
 
 @media (max-width:1440px){
     .al_body_template_four  .brand-ing {
@@ -1611,6 +1618,9 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
     .al_body_template_six #mycart #cart_template .vendor_products_tr .vendor_product_schedule_datetime .col-4.vendor_slot_cart {
         width: 100%;
         max-width: 100%;
+    }
+    .al_body_template_three .top-header .header-dropdown li.onhover-dropdown {
+        padding-left: 5px;
     }
 }
 
@@ -1725,8 +1735,40 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
     .al_body_template_four .vendor-design_new .row.vendor-details-left.align-items-center {
         flex-wrap: nowrap;
     }
+    .al_body_template_three .al_mobile_menu  li.add_post {
+        padding-right: 15px;
+    }
+    .al_body_template_three .al_mobile_menu li.add_post span i {
+        opacity: 1!important;
+        color: var(--theme-deafult);
+        padding-right: 3px;
+    }
+    .al_body_template_four .al_four_custom_head .d-md-none{
+        display: block!important;
+    }
+    .al_body_template_four .al_four_custom_head  .col-8 {
+        text-align: center;
+    }
+    .al_body_template_eight .al_mobile_menu.al_new_mobile_header li span i, .al_body_template_eight .al_mobile_menu.al_new_mobile_header li span {
+        color: var(--theme-deafult);
+        font-size: 16px;
+        z-index: 99999;
+    }
+    body.al_body_template_eight .al_new_mobile_header li{
+        border-bottom: unset!important;
+    }
+    .al_custom_head_map_box {
+        max-width: 390px;
+    }
+    body.al_body_template_eight .al_mobile_menu {
+        top: 24px;
+        
+    }
 
 }
+
+
+
 @media (max-width:767px){
     .al_body_template_four .vender-icon img {
         width: 50px;
@@ -1759,7 +1801,12 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
 .al_body_template_four .al_box_third_template .product-description{
     min-height: 115px;
 }
-
+.al_custom_head_map_box {
+    max-width: 100%;
+}
+body.al_body_template_eight .al_mobile_menu{
+    top: 16px;
+}
 
 }
 /*======== first template css gagandeep 29-03-2023 start ========*/
@@ -1902,5 +1949,25 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
     }
     .al_body_template_one .shoping_cart .vendor_products_tr h4 strong {
         font-size: 14px;
+    }
+    .al_body_template_six  .site-header .rightHead .add_post a.sell-btn span {
+        padding: 14px 15px!important;
+        font-size: 0px!important;
+    }   
+    .al_body_template_six  li.add_post.pr-3 {
+        padding-right: 5px!important;
+    }
+    body.al_body_template_six .logo a.navbar-brand img {
+        width: 70px;
+        height: auto!important;
+    }
+    .al_body_template_six .site-header .rightHead .add_post a.sell-btn span{
+        position: relative;
+    }
+    .al_body_template_six .site-header .rightHead .add_post a.sell-btn span:before {
+        content: "+";
+        position: absolute;
+        font-size: 36px;
+        left: 5px;
     }
 }
