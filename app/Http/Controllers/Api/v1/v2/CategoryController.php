@@ -268,7 +268,7 @@ class CategoryController extends BaseController
             }
             return $category_details;
         } elseif ($type == 'product' || $type == 'appointment' || $type == 'on demand service' || strtolower($type) == 'laundry' || $type = 'rental service') {
-            $vendor_ids = Vendor::where('status', 1)->pluck('id')->toArray();
+            $vendors = Vendor::where('status', 1)->pluck('id')->toArray();
             
 
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
@@ -297,12 +297,18 @@ class CategoryController extends BaseController
                 ->join('product_translations', 'product_translations.product_id', '=', 'products.id') // Or whatever the join logic is
                 ->withCount('OrderProduct');
             
-            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                $user = Auth::user();
-                $ses_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude, $mod_type);
-                $products = $products->whereIn('products.vendor_id', $ses_vendors);
-            }
-
+                $sess_vendors = [];
+                if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                    $user = Auth::user();
+                    $sess_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude, $mod_type);
+                }
+                if(!empty($ses_vendors)){
+                    $vendor_ids = $sess_vendors;
+                }else{
+                    $vendor_ids = $vendors;
+                }
+                $products = $products->whereIn('products.vendor_id', $vendor_ids);
+                
             $products = $products->orderBy('product_translations.title', 'asc');
             
             $products = $products->withCount(['variantSet','addOn'])->groupBy('id');
