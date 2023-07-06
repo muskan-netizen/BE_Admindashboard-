@@ -443,6 +443,14 @@ class ProductController extends FrontController{
         //     dd($product_variant_id);
         // }
 
+        $selected_variant = DB::table('product_variant_sets')->where('product_id', $product->id)
+        ->whereIn('variant_option_id', $request->options)
+        ->whereIn('variant_type_id', $request->variants)
+        ->groupBy('product_variant_id')
+        ->havingRaw("COUNT(DISTINCT variant_option_id) = ". count($request->options). " " )
+        ->havingRaw("COUNT(DISTINCT variant_type_id) = ".count($request->variants)." ")
+        ->first();
+
         $selected_variant_title = $request->selected_variant_title;
         //pr($pv_ids);
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
@@ -522,7 +530,7 @@ class ProductController extends FrontController{
                 $data['is_token_enable'] = $is_token_enable;
                 $returnHTML = view('frontend.product-part.product-variant-ajax')->with(['availableSets' => $availableSets, 'selected_variant_title' => $selected_variant_title,'is_variant_checked' => $request->is_variant_checked])->render();
 
-                return response()->json(array('status' => 'Success', 'html'=>$returnHTML));
+                return response()->json(array('status' => 'Success', 'html' => $returnHTML, 'selected_variant' => $selected_variant));
 
                 // return response()->json(array('status' => 'Success', 'data' => $data));
             }

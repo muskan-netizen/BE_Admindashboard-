@@ -3065,10 +3065,6 @@ $(document).ready(function () {
     });
 
     $(document).on("click", ".addToCart", function () {
-        var lastCheckedVariant = $('.selected_variant:checked').last();
-        var variantId = lastCheckedVariant.data('variant-id');
-        $('#prod_variant_id').val(variantId);
-
         if(localStorage.in_cart == "true"){
             Swal.fire({
                 icon: 'error',

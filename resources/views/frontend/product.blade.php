@@ -1403,11 +1403,11 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
         var option_title = $(this).data('option-title');
         $('.changeVariant_'+option_title).removeAttr('checked');
         // $this.attr('checked', 'checked');
-        var isSelected = $this.is(':checked');
-        if(isSelected){
-            // alert($(this).data('variant-id'));
-            $('#prod_variant_id').val($(this).data('variant-id'));
-        }
+        // var isSelected = $this.is(':checked');
+        // if(isSelected){
+        //     // alert($(this).data('variant-id'));
+        //     $('#prod_variant_id').val($(this).data('variant-id'));
+        // }
     });
 
     function updatePrice(myValue){
@@ -1436,7 +1436,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
                     if(response.html != ''){
                         $("#variant_options").html('');
                         $("#variant_options").html(response.html);
-                       
+                        $('#prod_variant_id').val(response.selected_variant.product_variant_id);                       
                     }
                    
                 }
