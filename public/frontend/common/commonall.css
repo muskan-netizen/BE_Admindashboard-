@@ -1555,7 +1555,7 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
 .al_body_template_five  .main-fillter .side_fillter,
 .al_body_template_six  .main-fillter .side_fillter,
 .al_body_template_eight .main-fillter .side_fillter{
-    margin-top: 30px;
+    margin-top: 0;
     background-color: #f5f5f5!important;
 }
 .al_body_template_five .collection-collapse-block {
@@ -1573,6 +1573,20 @@ body.dark.al_body_template_nine .cart-design .cart-summary .login-form #schedule
 .al_body_template_four .chat-button button {
     padding: 0!important;
     font-size: 16px!important;
+}
+.al_body_template_one span#cart_qty_span {
+    position: absolute;
+    top: 0;
+    right: 4px;
+    background: var(--theme-deafult);
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
 }
 
 @media (max-width:1440px){
