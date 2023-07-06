@@ -64,14 +64,21 @@ class MargApiProductUpdateCron extends Command
          */
 
          try {
-            Log::info('connected name : '.DB::connection()->getDatabaseName());
             $clients = CP::where('status', 1)->get();
             foreach ($clients as $key => $client) {
-                \Log::info($client->database_name);
-                \Log::info($client);
+               
                 //Connect client connection
                 $database_name  = 'royo_' . $client->database_name;
                 $header         = $client->database_name;
+
+
+                $result = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", [$database_name]);
+                if (empty($result)) {
+                    \Log::info($client->database_name);
+                    \Log::info($client);
+                    continue;
+                }
+
 
                 $default = [
                     'driver' => env('DB_CONNECTION', 'mysql'),
