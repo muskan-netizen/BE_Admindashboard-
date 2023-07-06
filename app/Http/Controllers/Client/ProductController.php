@@ -367,8 +367,8 @@ class ProductController extends BaseController
         }
         //mohit sir branch code added by sohail
         $processorProduct = ProcessorProduct::where('product_id', $product->id)->first();
-        $margProduct = MargProduct::where('product_id', $product->id)->get()->take(1);
-        if(@$margProduct && count($margProduct)>0)
+        $margProduct = MargProduct::where('product_id', $product->id)->first();
+        if(@$margProduct && isset($margProduct))
         {
             $margProduct = $margProduct->toArray()??[];
         }
