@@ -2190,8 +2190,7 @@
                         name="blockchain_route_formation" id="blockchain_route_formation" />
                 </div>
         
-                <div class="row mt-2" id="blockchain_configuration_div"
-                    style="display:@if (@$getAdditionalPreference['blockchain_route_formation'] == 1) @else none @endif;">
+                <div class="row mt-2  @if (@$getAdditionalPreference['blockchain_route_formation'] == 1) @else d-none @endif;" id="blockchain_configuration_div">
                    
                     <div class="col-6">
                     <label for="" class="mr-3">{{ __('Blockchain Api Domain') }}</label>
@@ -3200,22 +3199,24 @@
                 $('#stock_notification_div').show();
             }
         }
-        $('#blockchain_route_formation_switch').onchange = function() {
-
+        $('#blockchain_route_formation_switch').on('change', function() {
+  
             if ($('#blockchain_route_formation_switch:checked').length != 1) {
                 $('#blockchain_configuration_div').hide();
             } else {
                 $('#blockchain_configuration_div').show();
             }
-        }
+      
+         });
+
        
-        // $('#pickup_notification_switch2')[0].onchange = function() {
-        //     if ($('#pickup_notification_switch2:checked').length != 1) {
-        //         $('#pickup_notification_div2').hide();
-        //     } else {
-        //         $('#pickup_notification_div2').show();
-        //     }
-        // }
+        $('#pickup_notification_switch2')[0].onchange = function() {
+            if ($('#pickup_notification_switch2:checked').length != 1) {
+                $('#pickup_notification_div2').hide();
+            } else {
+                $('#pickup_notification_div2').show();
+            }
+        }
         var dinein_option = $('#dinein_check');
         if (dinein_option.length > 0) {
             dinein_option[0].onchange = function() {

@@ -72,6 +72,8 @@ trait ClientPreferenceManager{
             ['key_name' => $key, 'key_value' => $value,'client_code' => $client->code,'client_id'=> $client->id]);
     }
 
+   
+
     if($request->has('is_blockchain_route')){
     if($request->has('blockchain_route_formation_switch'))
     {
@@ -88,9 +90,10 @@ trait ClientPreferenceManager{
       
     }
      else{
+      
       ClientPreferenceAdditional::updateOrCreate(
         ['key_name' => 'blockchain_route_formation', 'client_code' => $client->code],
-        ['key_name' => 'blockchain_route_formation', 'key_value' => $request->has('blockchain_route_formation_switch') ? 1 : 0,'client_code' => $client->code,'client_id'=> $client->id]);
+        ['key_name' => 'blockchain_route_formation', 'key_value' => 0,'client_code' => $client->code,'client_id'=> $client->id]);
      }
     }
   
