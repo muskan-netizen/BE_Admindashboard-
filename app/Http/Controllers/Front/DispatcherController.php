@@ -507,7 +507,7 @@ class DispatcherController extends FrontController
                     'vendor_id' =>  $checkiftokenExist->vendor_id,
                     'type' =>  $request->task_type??1]);
                   
-                $this->sendOrderNotification($update->id);
+                // $this->sendOrderNotification($update->id);
 
             if(isset($request->dispatch_traking_url) && !empty($request->dispatch_traking_url))
             {
