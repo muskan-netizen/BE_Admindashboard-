@@ -179,8 +179,6 @@ class ChatController extends BaseController
             $vendor_name = null;
             $product_name = null;
             $product_price = null;
-            $agent_id      = null;
-            $agent_db      = null;
             // dd(is_null($order_id));
             // check order_vendor_id and order_id is empty then it is called for p2p chat
             if( $c_type == 'user_to_user' ) {
