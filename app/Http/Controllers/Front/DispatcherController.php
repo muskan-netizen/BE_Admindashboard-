@@ -507,7 +507,7 @@ class DispatcherController extends FrontController
                     'vendor_id' =>  $checkiftokenExist->vendor_id,
                     'type' =>  $request->task_type??1]);
                   
-                // $this->sendOrderNotification($update->id);
+       
 
             if(isset($request->dispatch_traking_url) && !empty($request->dispatch_traking_url))
             {
@@ -533,6 +533,7 @@ class DispatcherController extends FrontController
 
 
               DB::commit();
+              $this->sendOrderNotification($update->id);
                     $message = "Order status updated.";
                     return $this->successResponse($update, $message);
 
@@ -894,6 +895,7 @@ class DispatcherController extends FrontController
     {
 
         Log::info('test');
+        Log::info(time());
 
         $OrderStatus = VendorOrderDispatcherStatus::select('*','dispatcher_status_option_id as status_data')->find($vendor_order_status_id);
 
