@@ -57,7 +57,7 @@ class DispatcherController extends FrontController
                     'dispatcher_status_option_id' =>  $request->dispatcher_status_option_id,
                     'vendor_id' =>  $checkiftokenExist->vendor_id,
                     'type' =>  $request->task_type??1]);
-                    $this->sendOrderNotification($update->id);
+                    // $this->sendOrderNotification($update->id);
                     $type = $request->task_type??1;
                    $dispatch_status = $request->dispatcher_status_option_id;
                     switch ($dispatch_status) {
