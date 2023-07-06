@@ -1022,6 +1022,7 @@ class OrderController extends BaseController
     public function changeStatus(Request $request, $domain = '')
     {
       
+        
         $orderPlaced = true;
         $orderPlacedNo = '';
         $productIds = $request->productIds??[];
@@ -1050,6 +1051,7 @@ class OrderController extends BaseController
 
 
                 $orderData = OrderVendor::with('orderDetail')->where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
+             
                 if(@$orderData->exchanged_of_order){
                     $return = OrderReturnRequest::where('order_id', $orderData->exchanged_of_order->order_id)->first();
                     if (@$return && $request->status_option_id == 2) { //accept exchange
@@ -1075,7 +1077,7 @@ class OrderController extends BaseController
                         $vendor_order_product_status->save();
                     }
                 }
-               
+              
                 if ($request->status_option_id == 2) {
                     //Check Order delivery type
                     
@@ -1089,6 +1091,7 @@ class OrderController extends BaseController
                             $order_dispatch = $this->checkIfIsProductRecurringLastMileon($request);
                         }
                         else{
+                         
                             $order_dispatch = $this->checkIfanyProductLastMileon($request);
                         }
                         if ($order_dispatch && $order_dispatch == 1){
@@ -1479,7 +1482,7 @@ class OrderController extends BaseController
         $luxury_option_id = $checkdeliveryFeeAdded->LuxuryOption ? $checkdeliveryFeeAdded->LuxuryOption->luxury_option_id : 1;
         $is_place_order_delivery_zero = $AdditionalPreference['is_place_order_delivery_zero'];
         $is_restricted = $checkdeliveryFeeAdded->is_restricted;
-       
+     
         /// luxury option 8 ( static ) for appointment you can check it on luxuryOptionSeeder
         if ($luxury_option_id == 8) { // only for appointment type
             $dispatch_domain_Appointment = $this->checkIfAppointmentOnCommon();
@@ -1837,7 +1840,8 @@ class OrderController extends BaseController
             $customer = User::find($order->user_id);
             $cus_address = UserAddress::find($order->address_id);
             $tasks = array();
-           
+            $getAdditionalPreference = getAdditionalPreference(['blockchain_route_formation','blockchain_api_domain','blockchain_address_id']);
+         
             $dynamic = uniqid($order->id . $vendor);
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'phone_no', 'email', 'name', 'latitude', 'longitude', 'address','order_pre_time')->first();
             $orderVendorDetails = OrderVendor::where('vendor_id', $vendor_details->id)->where('order_id', $order->id)->first();
@@ -2082,12 +2086,27 @@ class OrderController extends BaseController
                 'payment_method' => $order->payment_method,
                 'order_pre_time'=>$vendor_details->order_pre_time
             ];
-            //pr($postdata);
+           
             if ($orderVendorDetails->is_restricted == 1) {
                 $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
                 $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
             }
 
+            if($getAdditionalPreference['blockchain_route_formation'] == 1)
+            {
+                $client = new Client([
+                    'headers' => [
+                        'personaltoken' => $dispatch_domain->delivery_service_key,
+                        'shortcode' => $dispatch_domain->delivery_service_key_code,
+                        'content-type' => 'application/json',
+                        'blockchain_route_formation' => $getAdditionalPreference['blockchain_route_formation'],
+                        'blockchain_api_domain' => $getAdditionalPreference['blockchain_api_domain'],
+                        'blockchain_address_id' => $getAdditionalPreference['blockchain_address_id']
+                    ]
+                ]);
+           
+            }
+            else{
             $client = new Client([
                 'headers' => [
                     'personaltoken' => $dispatch_domain->delivery_service_key,
@@ -2095,11 +2114,11 @@ class OrderController extends BaseController
                     'content-type' => 'application/json'
                 ]
             ]);
-
-            $url = $dispatch_domain->delivery_service_key_url;
+            }        
+             $url = $dispatch_domain->delivery_service_key_url;
             // dd($url);
             $res = $client->post(
-                $url . '/api/task/create',
+                 $url . '/api/task/create',
                 ['form_params' => ($postdata)]
             );
 

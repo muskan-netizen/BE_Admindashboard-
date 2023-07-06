@@ -71,6 +71,29 @@ trait ClientPreferenceManager{
             ['key_name' => $key, 'client_code' => $client->code],
             ['key_name' => $key, 'key_value' => $value,'client_code' => $client->code,'client_id'=> $client->id]);
     }
+
+    if($request->has('is_blockchain_route')){
+    if($request->has('blockchain_route_formation_switch'))
+    {
+      
+      ClientPreferenceAdditional::updateOrCreate(
+        ['key_name' => 'blockchain_route_formation', 'client_code' => $client->code],
+        ['key_name' => 'blockchain_route_formation', 'key_value' => $request->has('blockchain_route_formation_switch') ? 1 : 0,'client_code' => $client->code,'client_id'=> $client->id]);
+      ClientPreferenceAdditional::updateOrCreate(
+          ['key_name' => 'blockchain_api_domain', 'client_code' => $client->code],
+          ['key_name' => 'blockchain_api_domain', 'key_value' =>$request->input('blockchain_api_domain') ?? null,'client_code' => $client->code,'client_id'=> $client->id]);
+      ClientPreferenceAdditional::updateOrCreate(
+            ['key_name' => 'blockchain_address_id', 'client_code' => $client->code],
+            ['key_name' => 'blockchain_address_id', 'key_value' => $request->input('blockchain_address_id') ?? null,'client_code' => $client->code,'client_id'=> $client->id]);
+      
+    }
+     else{
+      ClientPreferenceAdditional::updateOrCreate(
+        ['key_name' => 'blockchain_route_formation', 'client_code' => $client->code],
+        ['key_name' => 'blockchain_route_formation', 'key_value' => $request->has('blockchain_route_formation_switch') ? 1 : 0,'client_code' => $client->code,'client_id'=> $client->id]);
+     }
+    }
+  
     return 1;
   }
 

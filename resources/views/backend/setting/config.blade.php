@@ -2161,6 +2161,58 @@
         </div>
 
     </div>
+     <div class="col-xl-4 col-lg-4 mb-3">
+        <div class="page-title-box">
+            <h4 class="page-title text-uppercase">{{ __('Blockchain Route Formation') }}</h4>
+        </div>
+        <div class="card-box">
+        <form method="POST" action="{{ route('additional.update') }}">
+        <input type="hidden" name="is_blockchain_route" id="is_blockchain_route" value="1">
+          @csrf
+
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <h4 class="header-title text-uppercase mb-0">{{ __('Blockchain Route Formation') }}
+                </h4>
+                <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
+                </button>
+            </div>
+            
+
+            <div class="col-12">
+                  
+                <div class="form-group mb-0 d-flex switchery-demo">
+                    <label for="" class="mr-3">{{ __('Enable') }}</label>
+                    <input type="checkbox" data-plugin="switchery" name="blockchain_route_formation_switch"
+                        id="blockchain_route_formation_switch" class="form-control checkbox_change"
+                        data-className="blockchain_route_formation" data-color="#43bee1"
+                        @if (@$getAdditionalPreference['blockchain_route_formation'] == 1) checked='checked' @endif>
+                    <input type="hidden" @if (@$getAdditionalPreference['blockchain_route_formation'] == 1) value="1" @else value="0" @endif
+                        name="blockchain_route_formation" id="blockchain_route_formation" />
+                </div>
+        
+                <div class="row mt-2" id="blockchain_configuration_div"
+                    style="display:@if (@$getAdditionalPreference['blockchain_route_formation'] == 1) @else none @endif;">
+                   
+                    <div class="col-6">
+                    <label for="" class="mr-3">{{ __('Blockchain Api Domain') }}</label>
+                        <input type="text" name="blockchain_api_domain" id="blockchain_api_domain"
+                            placeholder="" class="form-control"
+                            value="{{ old('blockchain_api_domain', @$getAdditionalPreference['blockchain_api_domain'] ?? '') }}">
+                    </div>
+                    <div class="col-6">
+                    <label for="" class="mr-3">{{ __('Blockchain Address Id') }}</label>
+                        <input type="text" name="blockchain_address_id" id="blockchain_address_id"
+                            placeholder="" class="form-control"
+                            value="{{ old('blockchain_address_id', @$getAdditionalPreference['blockchain_address_id'] ?? '') }}">
+                    </div>
+                    <hr />
+                </div>
+        
+                </form>
+            </div>
+        </div>
+
+    </div>
     {{-- ends here marg form --}}
     </div>
 
@@ -3148,14 +3200,22 @@
                 $('#stock_notification_div').show();
             }
         }
+        $('#blockchain_route_formation_switch').onchange = function() {
 
-        $('#pickup_notification_switch2')[0].onchange = function() {
-            if ($('#pickup_notification_switch2:checked').length != 1) {
-                $('#pickup_notification_div2').hide();
+            if ($('#blockchain_route_formation_switch:checked').length != 1) {
+                $('#blockchain_configuration_div').hide();
             } else {
-                $('#pickup_notification_div2').show();
+                $('#blockchain_configuration_div').show();
             }
         }
+       
+        // $('#pickup_notification_switch2')[0].onchange = function() {
+        //     if ($('#pickup_notification_switch2:checked').length != 1) {
+        //         $('#pickup_notification_div2').hide();
+        //     } else {
+        //         $('#pickup_notification_div2').show();
+        //     }
+        // }
         var dinein_option = $('#dinein_check');
         if (dinein_option.length > 0) {
             dinein_option[0].onchange = function() {
@@ -3189,6 +3249,7 @@
                 $('#xero_config_div').show();
             }
         }
+        
 
         var xero_enable_switch = $('#xero_enable_switch');
         if (xero_enable_switch.length > 0) {
