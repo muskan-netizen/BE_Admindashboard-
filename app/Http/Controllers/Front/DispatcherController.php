@@ -450,6 +450,7 @@ class DispatcherController extends FrontController
     /******************    ---- pickup delivery status update (Need to dispatcher_status_option_id ) -----   ******************/
     public function dispatchPickupDeliveryUpdate(Request $request, $domain = '', $web_hook_code)
     {
+        Log::info('2nd time Why');
         try {
             DB::beginTransaction();
             $checkiftokenExist = OrderVendor::where('web_hook_code',$web_hook_code)->first();
