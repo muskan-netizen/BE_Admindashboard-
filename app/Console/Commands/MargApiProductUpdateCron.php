@@ -65,8 +65,9 @@ class MargApiProductUpdateCron extends Command
 
          try {
             $clients = CP::where('status', 1)->get();
-
             foreach ($clients as $key => $client) {
+                \Log::info($client->database_name);
+                \Log::info($client);
                 //Connect client connection
                 $database_name  = 'royo_' . $client->database_name;
                 $header         = $client->database_name;
