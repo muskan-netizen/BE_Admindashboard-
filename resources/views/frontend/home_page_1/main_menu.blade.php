@@ -77,7 +77,7 @@
         </div>
         @include('layouts.store.search_template')
         @if(auth()->user() && $client_preference_detail->show_wishlist==1)
-        <div class="icon-nav mr-2 d-none d-sm-block"> <a class="fav-button" href="{{route('user.wishlists')}}"> <i class="fa fa-heart" aria-hidden="true"></i> </a> </div>
+        <div class="icon-nav mr-2 d-none d-sm-block"> <a class="fav-button" href="{{route('user.wishlists')}}"> <i class="fa fa-heart-o wishListCount" aria-hidden="true"></i> </a> </div>
         @endif
         <div class="icon-nav d-none d-sm-inline-block">
             <form name="filterData" id="filterData" action="{{route('changePrimaryData')}}">
@@ -201,7 +201,7 @@
                             @if (auth()->user())
                             @if ($client_preference_detail->show_wishlist == 1)
                             <div class="icon-nav mx-2 d-none d-sm-block"> <a class="fav-button"
-                                    href="{{ route('user.wishlists') }}"> <i class="fa fa-heart"
+                                    href="{{ route('user.wishlists') }}"> <i class="fa fa-heart-o wishListCount"
                                         aria-hidden="true"></i> </a> </div>
                             @endif
                             @endif

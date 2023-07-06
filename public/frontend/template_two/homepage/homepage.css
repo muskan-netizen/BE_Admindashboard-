@@ -9,6 +9,22 @@
     border-radius: 12px !important;
 }
 
+.home-slider-wrapper span.carousel-control-prev-icon {
+    background-color: #000;
+    width: 40px !important;
+    height: 40px !important;
+    background-size: 12px;
+    border-radius: 2px;
+}
+.home-slider-wrapper span.carousel-control-next-icon {
+    background-color: #000;
+    width: 40px !important;
+    height: 40px !important;
+    background-size: 12px;
+    border-radius: 2px;
+}
+
+
 #main-menu.menu-slider li.active a {
     color: var(--theme-deafult);
     border-bottom: 1px solid var(--theme-deafult);

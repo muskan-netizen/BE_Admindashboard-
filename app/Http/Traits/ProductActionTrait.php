@@ -7,6 +7,7 @@ use Session;
 use Carbon\Carbon;
 use DB;
 use Grimzy\LaravelMysqlSpatial\Types\Point;
+use App\Http\Controllers\Front\FrontController;
 
 
 trait ProductActionTrait{
@@ -711,7 +712,10 @@ trait ProductActionTrait{
     public function getBrandsForHomePage($language_id, $field_status)
     {
         try 
-        {
+        {            
+            $frontController = new FrontController();
+            $navCategories = $frontController->categoryNav($language_id,true);         
+            $category_ids = implode(",", $navCategories);            
             $redirect_url = route('brandDetail', "brands_id");
             $mainQuery = "SELECT `br`.`id`,
             `br`.`image`, 
@@ -719,10 +723,10 @@ trait ProductActionTrait{
             REPLACE('".$redirect_url."', 'brands_id', `br`.`id`) AS `redirect_url`,
             (CASE WHEN `bt`.`title` IS NULL THEN `br`.`title` ELSE `bt`.`title` END) AS `translation_title`
             FROM `brands` AS `br` 
-
+            LEFT JOIN `brand_categories` AS `bc` on `bc`.`brand_id` = `br`.id
             LEFT JOIN `brand_translations` AS `bt` ON `bt`.`brand_id` = `br`.`id` AND `bt`.`language_id` = $language_id 
 
-            WHERE `br`.`status` !=$field_status
+            WHERE `br`.`status` !=$field_status AND `bc`.`category_id` in ($category_ids)
             GROUP BY `br`.`id`";
         
             $brands = DB::select( DB::raw($mainQuery));

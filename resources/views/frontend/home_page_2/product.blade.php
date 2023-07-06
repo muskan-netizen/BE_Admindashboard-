@@ -17,7 +17,7 @@
                 <p>{{  $product->vendor_name  }}</p>
                 @if($is_service_product_price_from_dispatch_forOnDemand!=1) 
                 <h4>
-                    <b> {{ showPriceWithCurrency($product->price_numeric) }} </b>
+                    <b> {{ htmlspecialchars_decode(showPriceWithCurrency($product->price_numeric)) }} </b>
 
                         <!-- <p><i class="fa fa-clock-o"></i> 30-40 min</p>  -->
                         @php

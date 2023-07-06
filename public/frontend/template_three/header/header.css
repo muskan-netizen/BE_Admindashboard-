@@ -131,8 +131,8 @@ body.al_body_template_three .al_custom_head_map_box {
     color: var(--theme-deafult);
     background: #fff;
     box-shadow: 0 0 4px;
-    width: auto;
-    height: auto;
+    width: 20px;
+    height:20px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -142,6 +142,9 @@ body.al_body_template_three .al_custom_head_map_box {
     right: -7px;
     padding: 5px;
     line-height: 1;
+}
+span#cart_qty_span:empty {
+    display: none;
 }
 .main-menu .search_bar.menu-right .icon-nav a span#cart_qty_span:empty {
     display: none;

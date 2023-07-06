@@ -31,7 +31,13 @@
 .al_body_template_three .breadcrumb-section.bg-transparent.pt-0 {
     padding: 0
 }
-
+.home-slider-wrapper .al_desktop_banner a.carousel-control-prev, a.carousel-control-next {
+    background-color: #000;
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    transform: translate(-5px, 120px);
+}
 .al_body_template_three .add-to-fav {
     display: none
 }
@@ -40,6 +46,9 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap
+}
+body[dir=rtl] .third-temp-lan {
+    padding-left: 10px !important;
 }
 
 .al_body_template_three .common-banner,
@@ -1074,12 +1083,12 @@ h2.homepage-address {
     height: 100%;
     border-radius: 12px;
 }
-
+/* 
 .al_body_template_three .img-outer-box.position-relative {
     border-radius: 12px;
     padding: 0;
     background-color: #eee
-}
+} */
 
 .al_body_template_three .slick-slider .img-outer-box.position-relative {
     border-radius: 12px;
@@ -2607,6 +2616,12 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
 .vendor_image_div .top-banner-wrapper {
     height: 100%!important;
 }
+
+.al_body_template_three.modal-open .product-addon-modal .modal-content >.d-flex {
+    height: auto!important;
+    max-height: 400px;
+}
+
 @media (min-width: 1024px) {
     .ds {
         position: absolute;
@@ -3547,6 +3562,34 @@ footer#footer {
         height: 75px!important;
     }
 }
+
+body[dir] .third-temp-lan .product-buttons button {
+    font-size: 12px !important;
+    letter-spacing: 0.6px;
+}
+body[dir] .third-temp-lan .product-buttons a {
+    font-size: 12px !important;
+    letter-spacing: 0.6px;
+}
+
+
+@media (min-width:992px) and (max-width:1364px){
+body[dir] .third-temp-lan .product-buttons button {
+    font-size: 8px !important;
+    letter-spacing: 0.6px;
+}
+body[dir] .third-temp-lan .product-buttons a {
+    font-size: 8px !important;
+    letter-spacing: 0.6px;
+}
+body[dir] .third-temp-lan {
+    padding-left: 0px !important;
+}
+
+}
+
+
+
 @media (max-width: 991px) {
     html .al_body_template_three .vendor-design_new{
         margin-top: 0!important;
@@ -3620,6 +3663,10 @@ footer#footer {
     .vendor-stories{
         height: 100%!important;
         width: 100%!important;
+    }
+    .al_body_template_three.modal-open .product-addon-modal .modal-content >.d-flex {
+        height: auto!important;
+        max-height: 350px;
     }
 }
 
