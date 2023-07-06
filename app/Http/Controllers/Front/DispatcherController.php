@@ -533,6 +533,7 @@ class DispatcherController extends FrontController
 
 
               DB::commit();
+              Log::info('2 baar chl rhe hai');
               $this->sendOrderNotification($update->id);
                     $message = "Order status updated.";
                     return $this->successResponse($update, $message);
