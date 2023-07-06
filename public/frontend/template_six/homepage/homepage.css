@@ -277,7 +277,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
 
 .al_body_template_six .alSixMainMenu .slick-next.slick-arrow,
 .al_body_template_six .vendors .slick-next.slick-arrow {
-    right: 10px;
+    right: 0;
 }
 
 .al_body_template_six .alSixMainMenu .slick-prev.slick-arrow,
@@ -749,6 +749,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
     justify-content: center;
     position: relative;
     z-index: 9;
+    margin-bottom:30px;
 }
 .al_body_template_six .alSixMainMenu .slick-disabled {
     display: none!important;
