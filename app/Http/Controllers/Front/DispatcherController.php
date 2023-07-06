@@ -57,7 +57,7 @@ class DispatcherController extends FrontController
                     'dispatcher_status_option_id' =>  $request->dispatcher_status_option_id,
                     'vendor_id' =>  $checkiftokenExist->vendor_id,
                     'type' =>  $request->task_type??1]);
-                    // $this->sendOrderNotification($update->id);
+                    $this->sendOrderNotification($update->id);
                     $type = $request->task_type??1;
                    $dispatch_status = $request->dispatcher_status_option_id;
                     switch ($dispatch_status) {
@@ -450,7 +450,6 @@ class DispatcherController extends FrontController
     /******************    ---- pickup delivery status update (Need to dispatcher_status_option_id ) -----   ******************/
     public function dispatchPickupDeliveryUpdate(Request $request, $domain = '', $web_hook_code)
     {
-        Log::info('2nd time Why');
         try {
             DB::beginTransaction();
             $checkiftokenExist = OrderVendor::where('web_hook_code',$web_hook_code)->first();
@@ -508,7 +507,7 @@ class DispatcherController extends FrontController
                     'vendor_id' =>  $checkiftokenExist->vendor_id,
                     'type' =>  $request->task_type??1]);
                   
-       
+                $this->sendOrderNotification($update->id);
 
             if(isset($request->dispatch_traking_url) && !empty($request->dispatch_traking_url))
             {
@@ -534,8 +533,6 @@ class DispatcherController extends FrontController
 
 
               DB::commit();
-              Log::info('2 baar chl rhe hai');
-              $this->sendOrderNotification($update->id);
                     $message = "Order status updated.";
                     return $this->successResponse($update, $message);
 
@@ -896,9 +893,6 @@ class DispatcherController extends FrontController
     public function sendOrderNotification( $vendor_order_status_id )
     {
 
-        Log::info('test');
-        Log::info(time());
-
         $OrderStatus = VendorOrderDispatcherStatus::select('*','dispatcher_status_option_id as status_data')->find($vendor_order_status_id);
 
         if($OrderStatus){
@@ -908,7 +902,7 @@ class DispatcherController extends FrontController
             // $checkuservendor = UserVendor::where('user_id',$user_id)->first();
             // $sound = ($checkuservendor)?"notification.wav":"default";
             $devices = UserDevice::whereNotNull('device_token')->where('user_id', $user_id)->pluck('device_token');
-              Log::info($devices);
+        
             $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
             if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
                     $title = __('Order Status : #').($orderNumber ?  $orderNumber->order_number : '');
