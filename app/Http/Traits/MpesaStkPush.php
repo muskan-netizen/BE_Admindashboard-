@@ -25,8 +25,8 @@ trait MpesaStkpush
 
         $this->short_code = '174379';
         $this->parent_short_code='174379';
-        $this->consumer_key="u9zuYcOsETn3NOMHXvCkRk6MHQ87EK7e"; //Your Consumer key
-        $this->consumer_secret="f7Vwqi0P4U66cGHY"; //Your Secret key
+        $this->consumer_key="O7xnTbGuvnLP6qARXZ74W2cyJWQALbp2"; //Your Consumer key
+        $this->consumer_secret="CBeBLWEs9u6yRYly"; //Your Secret key
         $this->passkey = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"; //Your Passkey
         $this->CallBackURL = "https://webhook.site/030d03b3-e00f-41bd-ad73-063250ae013f"; //Your callback URL
         $this->env = "sandbox"; //Your Environment sandbox or Live
@@ -97,7 +97,7 @@ trait MpesaStkpush
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $data_string);
         $response = curl_exec($curl);
-        // dd($response);
+         dd($response);
         return $response;
     }
 

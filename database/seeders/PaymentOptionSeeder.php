@@ -72,6 +72,7 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '56', 'path' => '', 'code' => 'obo', 'title' => 'Obo', 'off_site' => '1', 'status' => '0'),
         array('id' => '57', 'path' => '', 'code' => 'pesapal', 'title' => 'pesapal', 'off_site' => '1', 'status' => '0'),
         array('id' => '58', 'path' => '', 'code' => 'powertrans', 'title' => 'powertrans', 'off_site' => '1', 'status' => '0'),
+        array('id' => '60', 'path' => '', 'code' => 'mpesasafari', 'title' => 'Mpesa Safari', 'off_site' => '1', 'status' => '0'),
       );
 
       if($option_count == 0)

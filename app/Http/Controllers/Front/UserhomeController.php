@@ -22,6 +22,8 @@ use Illuminate\Http\Response;
 use Cookie;
 use App\Http\Traits\{OrderTrait,ProductActionTrait,VendorTrait};
 use App\Http\Traits\HomePage\{HomePageTrait};
+use Gathuku\Mpesa\Facades\Mpesa;
+use App\Http\Traits\MpesaStkpush;
 
 class UserhomeController extends FrontController
 {
@@ -46,6 +48,11 @@ class UserhomeController extends FrontController
             abort(403);
         });
         
+    }
+    
+    public function mPesa(){
+        $expressResponse=Mpesa::express(100,'254708374149','24242524','Testing Payment');
+        dd($expressResponse);
     }
 
 
