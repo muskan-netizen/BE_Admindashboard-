@@ -143,7 +143,7 @@
 									<div class="item">
 										<h5>Seat Number</h5>		
 										<p>								
-										<input class="" type="number" name="location" value="" placeholder="04">
+										<input class="pl-0" type="number" name="location" value="" placeholder="04">
 									  </p>
 									</div>
 								</div>
