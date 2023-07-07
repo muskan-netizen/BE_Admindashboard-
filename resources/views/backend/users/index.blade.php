@@ -194,6 +194,8 @@
                         @endif
                         <button class="btn btn-info waves-effect waves-light text-sm-right exportUserModal" data-url="{{ route('customer.export') }}" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Export') }}
                         </button>
+                        <button class="btn btn-info waves-effect waves-light text-sm-right exportUsersPdf" ><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Export as PDF') }}
+                        </button>
                         <button class="btn btn-info waves-effect waves-light text-sm-right importUserModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
                         </button>
                         <button class="btn btn-info waves-effect waves-light text-sm-right addUserModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
@@ -389,11 +391,26 @@
                     },
                     buttons: [{
                         className: 'btn btn-success waves-effect waves-light',
-                        text: '<span class="btn-label"><i class="mdi mdi-export-variant"></i></span>{{__("Export CSV")}}',
+                        text: '<span class="btn-label"><i class="mdi mdi-file-pdf-box"></i></span>{{__("Export CSV")}}',
                         action: function(e, dt, node, config) {
                             window.location.href = "{{ route('customer.export') }}";
                         }
-                    }],
+                    },
+                            {
+                                extend: 'pdf',
+                                text: 'Export to PDF',
+                                className:'btn btn-success waves-effect Export_btn waves-light ml-2',
+                                id:'exp-btn',
+                                text: '<span class="btn-label"><i class="mdi mdi-file-pdf-box"></i></span>Export PDF',
+                                orientation: 'landscape',
+                                exportOptions: {
+                                    columns: ':visible'
+                                },
+                                customize: function (doc) {
+                                doc.pageOrientation = 'landscape';
+                                doc.pageSize = 'A3'; // Set the custom page size
+                            }
+                            }],
                     ajax: {
                         url: "{{route('user.filterdata')}}",
                         data: function(d) {
@@ -844,7 +861,22 @@
                         action: function(e, dt, node, config) {
                             window.location.href = "{{ route('customer.export') }}";
                         }
-                    }],
+                    },
+                            {
+                             extend: 'pdf',
+                                text: 'Export to PDF',
+                                className:'btn btn-success waves-effect Export_btn waves-light ml-2',
+                                id:'exp-btn',
+                                text: '<span class="btn-label"><i class="mdi mdi-export-variant"></i></span>Export PDF',
+                                orientation: 'landscape',
+                                exportOptions: {
+                                    columns: ':visible'
+                                },
+                                customize: function (doc) {
+                                doc.pageOrientation = 'landscape';
+                                doc.pageSize = 'A3'; // Set the custom page size
+                            }
+                            }],
                     ajax: {
                         url: "{{route('user.filterdata')}}",
                         data: function(d) {
@@ -1064,8 +1096,17 @@
                         });
                     }
                 });
+
+                
+              
        // console.log('start_date',start_date,'end_date',end_date);
     }
+    $('.exportUsersPdf').click(function(){
+            
+                  $('.buttons-pdf').click();
+    });
 </script>
 @include('backend.users.pagescript')
+@include('backend.export_pdf')
+
 @endsection
