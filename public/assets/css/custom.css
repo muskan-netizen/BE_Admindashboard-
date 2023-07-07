@@ -1139,6 +1139,9 @@ body.dark .btn.btn-primary-outline.action-icon {
 #addCardBox .btn {
     border-radius: 0
 }
+.vendor_export_button {
+    margin-top: -26px;
+}
 
 body.dark .tagsinput {
     background-color: transparent;

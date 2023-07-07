@@ -8,6 +8,9 @@
 div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
 .dt-buttons.btn-group.flex-wrap {right: 310px;top: -50px;}
 </style>
+<link href="https://cdn.datatables.net/buttons/1.5.1/css/buttons.dataTables.min.css" rel="stylesheet" />
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
+
 @endsection
 @section('content')
 <div class="content">
@@ -227,8 +230,24 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                                 action: function ( e, dt, node, config ) {
                                     //window.location.href = "{{ route('account.order.export') }}";
                                     $('#export-form').trigger('submit');
-                                }
-                        }],
+                                },
+                                
+                            },
+                            {
+                                extend: 'pdf',
+                                text: 'Export to PDF',
+                                className:'btn btn-success waves-effect Export_btn waves-light ml-2',
+                                id:'exp-btn',
+                                text: '<span class="btn-label"><i class="mdi mdi-file-pdf-box"></i></span>Export PDF',
+                                orientation: 'landscape',
+                                exportOptions: {
+                                    columns: ':visible'
+                                },
+                                customize: function (doc) {
+                                doc.pageOrientation = 'landscape';
+                                doc.pageSize = 'A3'; // Set the custom page size
+                            }
+                            }],
                         ajax: {
                           url: "{{route('account.order.filter')}}",
                           data: function (d) {
@@ -359,4 +378,5 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
 @endsection
 @section('script')
 <script src="{{asset('assets/libs/datatables/datatables.min.js')}}"></script>
+@include('backend.export_pdf')
 @endsection
