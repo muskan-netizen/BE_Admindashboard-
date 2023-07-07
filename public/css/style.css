@@ -234,8 +234,22 @@ linear-gradient(90.29deg, rgba(255, 255, 255, 0.56) 8.57%, rgba(255, 255, 255, 0
     opacity: 0;
 
 }
+.banner_tab div#tabs-content .item input {
+    appearance: none!important;
+    background: unset;
+    border: unset;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    padding-left: 26px;
+    height: 100%;
+}
 .banner_tab .form-group label{
     margin:0;
+    opacity: 0.8;
 }
 .banner_tab .form-group input:checked + label + span {
     opacity: 1;
@@ -243,9 +257,18 @@ linear-gradient(90.29deg, rgba(255, 255, 255, 0.56) 8.57%, rgba(255, 255, 255, 0
 }
 .banner_tab .form-group input:checked + label  {
     color: #214E39;
+    opacity: 1;
 }
-
-
+.banner_tab div#tabs-content .item p {
+    display: grid;
+    grid-template-columns: 25px 1fr;
+    align-items: center;
+    position: relative;
+    height: 040px;
+}
+.banner_tab div#tabs-content .item input:focus {
+    outline: navajowhite;
+}
 /*====  Our Services css ====*/
 .ourServices{
 	padding: 60px 0;
@@ -389,12 +412,12 @@ linear-gradient(90.29deg, rgba(255, 255, 255, 0.56) 8.57%, rgba(255, 255, 255, 0
     content: unset;
 }
 .fleet_slider  button.slick-prev:after {
-    background-image: url('../images/icons/left.png');
+    background-image: url('../yacht-images/icons/left.png');
     background-repeat: no-repeat;
     background-position: 45%;
 }
 .fleet_slider  button.slick-next:after {
-    background-image: url('../images/icons/right.png');
+    background-image: url('../yacht-images/icons/right.png');
     background-repeat: no-repeat;
     background-position: 55%;
 }
@@ -471,7 +494,7 @@ linear-gradient(90.29deg, rgba(255, 255, 255, 0.56) 8.57%, rgba(255, 255, 255, 0
 
 }
 .mobileApp {
-    background: url('../images/bg.png');
+    background: url('../yacht-images/bg.png');
     background-repeat: no-repeat;
     background-position: center center;
     background-size: contain;
@@ -555,6 +578,15 @@ linear-gradient(90.29deg, rgba(255, 255, 255, 0.56) 8.57%, rgba(255, 255, 255, 0
 }
 .site_footer  .footer_row .item .social_icon ul li:last-child a{
 	margin-right: 0;
+}
+
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0; 
 }
 
 /*====  Responsive css ====*/

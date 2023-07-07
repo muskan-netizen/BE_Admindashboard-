@@ -1027,6 +1027,14 @@ input[type=number]::-webkit-outer-spin-button {
                 </div>
                 <div class="cab-amount-details px-2">
                     <div class="row">
+
+                        <% if(result.yacht) { %>
+                            <div class="col-6 mb-2">{{__('Yacht Name')}}</div>
+                            <div class="col-6 mb-2 text-right" id=""><%= result.yacht.title %> </div>
+                            <div class="col-6 mb-2">{{__('Yacht image')}}</div>
+                            <img style="height:70px; width:170px" src="<%= result.yacht.image_url %>">
+                        <% } %>
+
                         <div class="col-6 mb-2">{{__('Distance')}}</div>
                         <div class="col-6 mb-2 text-right" id="distance"><%= result.distance %> {{__($client_preference_detail->distance_unit_for_time)}}</div>
                         <div class="col-6 mb-2">{{__('Duration')}}</div>

@@ -1231,12 +1231,17 @@ $(document).ready(function () {
         }
         var no_seats_for_pooling = $('input[name="no_seats_for_pooling"]').val();
         var is_cab_pooling = $('input[name="is_cab_pooling_radio"]:checked').val();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const yacht_id = urlParams.get('yacht_id');
+
         $.ajax({
             type: "POST",
             dataType: 'json',
-            data: {locations:locations,rider_id:rider_id, schedule_date_delivery:schedule_datetime, is_cab_pooling:is_cab_pooling, no_seats_for_pooling:no_seats_for_pooling},
+            data: {locations:locations,rider_id:rider_id, schedule_date_delivery:schedule_datetime, is_cab_pooling:is_cab_pooling, no_seats_for_pooling:no_seats_for_pooling,yacht_id},
             url: get_product_detail+'/'+product_id,
             success: function(response) {
+                console.log({response});
                 remove_spinner('.cab-booking-loader');
                 if(response.status == 'Success'){
                     $('#cab_detail_box').html('');

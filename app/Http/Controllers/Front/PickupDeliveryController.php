@@ -276,7 +276,12 @@ class PickupDeliveryController extends FrontController{
                 }
             }
         }
-
+        if(isset($request->yacht_id)){
+            $yacht = Product::with(['pimage','variant'])->select('id','title')->find($request->yacht_id);
+            $product->yacht = $yacht;
+            $image_url = $yacht->media->first() ? $yacht->media->first()->image->path['image_fit'].'360/360'.$yacht->media->first()->image->path['image_path'] : '';
+            $product->yacht->image_url = $image_url;
+        }
         return $this->successResponse($product);
     }
     # get all vehicles category by vendor

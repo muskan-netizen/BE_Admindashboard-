@@ -382,7 +382,7 @@ class YachtController extends FrontController
         //     $q->where('slug', $request->service);
         // })->pluck('id');
         
-        $data['products'] = Product::where(function($q) use ($request){
+        $data['products'] = Product::with('variant')->where(function($q) use ($request){
             if(isset($request->pickup_date) && isset($request->drop_date)){
                 $q->where('pickup_time', '>=', $request->pickup_date)
                 ->orWhere('drop_time', '<=', $request->drop_date);

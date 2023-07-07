@@ -3391,7 +3391,7 @@ $(document).ready(function () {
                     returnResponse = true;
                     cartHeader();
                     if($("#pickup_service").is(":checked")){
-                        location.href =  '/category/cabservice?destination_location='+response.vendor.address+'&destination_location_latitude'+response.vendor.latitude+'&destination_location_longitude'+response.vendor.longitude;
+                        location.href =  '/category/cabservice?destination_location='+response.vendor.address+'&destination_location_latitude'+response.vendor.latitude+'&destination_location_longitude'+response.vendor.longitude+'&yacht_id='+product_id;
                     }
                     if(vendor_type == 'rental') {
                        location.href =  '/viewcart';

@@ -277,7 +277,8 @@
 								</div>
 
 								<div class="d-flex align-items-center justify-content-left al_clock ">
-									<b> {{ showPriceWithCurrency($product->price_numeric ?? 0) }} </b>
+									<b>{{Session::get('currencySymbol')}}{{decimal_format($product->variant[0]->price)}}</b>
+									{{-- <b> {{ showPriceWithCurrency($product->price_numeric ?? 0) }} </b> --}}
 									@php
 										$comp = @$product->compare_price_numeric??0;
 									@endphp

@@ -116,12 +116,11 @@
 				  	<div id="tabs-content">
 					    <div id="tab1" class="tab-content">
 					      	<div class="row align-items-center">
-					      		<div class="col-md-3">
+					      		<div class="col-md-2">
 					      			<div class="item">
 					      				<h5>Location</h5>
 					      				<p><img src="yacht-images/icons/3.png" alt=""> 
-											<input class="" type="text" name="location" id="location" value="1801 Oak Ridge Ln">
-											<input class="" type="number" name="seats" value="50">
+											<input class="" type="text" name="location" id="location" value="" placeholder="1801 Oak Ridge Ln">
 											<input type="hidden" id="location_longitude" value="">
 											<input type="hidden" id="location_latitude" value="">
 										</p>
@@ -143,7 +142,15 @@
 										</p>
 					      			</div>
 					      		</div>
-					      		<div class="col-md-3">
+								  <div class="col-md-2">
+									<div class="item">
+										<h5>Seat Number</h5>		
+										<p>								
+										<input class="pl-0" type="number" name="location" value="" placeholder="04">
+									  </p>
+									</div>
+								</div>
+					      		<div class="col-md-2">
 					      			<div class="cta">
 										<button type="submit">Search</button>
 					      			</div>
