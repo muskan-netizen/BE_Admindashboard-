@@ -8,8 +8,6 @@
 div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
 .dt-buttons.btn-group.flex-wrap {right: 310px;top: -50px;}
 </style>
-<link href="https://cdn.datatables.net/buttons/1.5.1/css/buttons.dataTables.min.css" rel="stylesheet" />
-<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
 
 @endsection
 @section('content')
