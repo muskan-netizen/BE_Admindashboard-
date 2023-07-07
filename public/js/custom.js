@@ -5020,6 +5020,10 @@ $(document).ready(function () {
                 payWithPowerTrans(payment_option_id,'');
             break;
 
+            case 59:
+                payWithLivees(payment_option_id);
+                break;
+
         }
 
     }
@@ -5576,7 +5580,7 @@ $(document).ready(function () {
             case '59':
               var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
               if (order != '') {
-                payWithLivee(payment_option_id, order);
+                payWithLivees(address_id, payment_option_id, order);
               }
             break;
         }
@@ -5838,7 +5842,7 @@ $(document).ready(function () {
             break;
 
              case 59: console.log("here");
-                payWithLivee(payment_option_id,'');
+                payWithLivees(payment_option_id,payment_from='wallet');
             break;
         }
     }

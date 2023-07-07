@@ -47,7 +47,9 @@ class PickupDeliveryController extends FrontController{
             }elseif($option->code == 'obo'){
                 $option->title = __("O'Pay");
             }
-
+            elseif($option->code == 'livee'){
+                $option->title = __("Livees");
+            }
             $option->title = __($option->title);
             $option->slug = strtolower(str_replace(' ', '_', $option->title));
         }
@@ -478,7 +480,7 @@ class PickupDeliveryController extends FrontController{
      * create order for booking
     */
      public function createOrder(Request $request){
-       
+
         try {
             DB::beginTransaction();
             if(isset($request->schedule_datetime) && !empty($request->schedule_datetime))
@@ -679,7 +681,7 @@ class PickupDeliveryController extends FrontController{
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
                     $schedule_datetime_del  =$request->schedule_time ;// Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
-               
+
                 $order->scheduled_date_time = $schedule_datetime_del;
                 /*book for a friend*/
                 $order->type                = $request->type;
@@ -1170,7 +1172,7 @@ class PickupDeliveryController extends FrontController{
     {
         {
             DB::beginTransaction();
-            try 
+            try
             {
                 $vendor = Vendor::where('id', $request->vendor_id)->first();
                 $product = Product::where('id', $request->product_id)->first();
@@ -1178,11 +1180,11 @@ class PickupDeliveryController extends FrontController{
                 if(!$vendor || !$product){
                     return response()->json(['status' => 201, 'message' => __('No record found.')], 404);
                 }
-    
+
                 $getAdditionalPreference = getAdditionalPreference(['bid_expire_time_limit_seconds']);
                 $expiryseconds = ($getAdditionalPreference['bid_expire_time_limit_seconds'] > 0) ? $getAdditionalPreference['bid_expire_time_limit_seconds'] : 30;
-                
-    
+
+
                 $UserBidRideRequest                         = new UserBidRideRequest();
                 $UserBidRideRequest->user_id                = Auth::user()->id;
                 $UserBidRideRequest->product_id             = $request->product_id;
@@ -1192,7 +1194,7 @@ class PickupDeliveryController extends FrontController{
                 $UserBidRideRequest->web_hook_code          = uniqid(Auth::user()->id.$request->vendor_id);
                 $UserBidRideRequest->expired_at             = Carbon::now()->addSeconds($expiryseconds)->format('Y-m-d H:i:s');
                 $UserBidRideRequest->save();
-                
+
                 $request_to_dispatch = $this->placeRequestForDriverBidsToDispatch($request, $product, $UserBidRideRequest);
                 if($UserBidRideRequest){
                     DB::commit();
@@ -1211,14 +1213,14 @@ class PickupDeliveryController extends FrontController{
     }
 
     public function placeRequestForDriverBidsToDispatch($request, $product, $UserBidRideRequest){
-        try 
+        try
         {
             $getAdditionalPreference = getAdditionalPreference(['bid_expire_time_limit_seconds']);
             $expiryseconds = ($getAdditionalPreference['bid_expire_time_limit_seconds'] > 0) ? $getAdditionalPreference['bid_expire_time_limit_seconds'] : 30;
 
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             $customer = Auth::user();
-            if($dispatch_domain && $dispatch_domain != false && !empty($UserBidRideRequest)) 
+            if($dispatch_domain && $dispatch_domain != false && !empty($UserBidRideRequest))
             {
                 $unique = Auth::user()->code;
                 $client_do = Client::orderBy('id', 'asc')->first();
@@ -1228,9 +1230,9 @@ class PickupDeliveryController extends FrontController{
                 }else{
                     $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
                 }
-                
+
                 $call_back_url = "https://".$domain."/dispatch/driver/bids/update/".$UserBidRideRequest->web_hook_code;
-                
+
                 $postdata =  [
                             'tasks'                   => $request->tasks,
                             'call_back_url'           => $call_back_url??null,

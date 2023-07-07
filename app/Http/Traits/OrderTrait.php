@@ -67,7 +67,7 @@ trait OrderTrait
             if(isset($ProductVariant->square_variant_id) && !empty($ProductVariant->square_variant_id))
             $this->inventoryAdjustmentInSquarePos($ProductVariant->square_variant_id, $ProductVariant->quantity, "PHYSICAL_COUNT", "IN_STOCK");
         }
-       
+
         return 1;
     }
 
@@ -317,11 +317,11 @@ trait OrderTrait
             $return_response = 2;
             $paymentSentAlready = 0;
             $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address','order_pre_time')->first();
-         
+
             $order_vendor = OrderVendor::with(['products.product.categoryName', 'products.order_product_status'])->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
-         
+
             foreach( $order_vendor->products as $product){
-                
+
                 if( $product->dispatcher_status_option_id < 2){
                     $allocation_type = 'a';
                     $agent = '';
@@ -332,10 +332,10 @@ trait OrderTrait
                         $cash_to_be_collected = 'No';
                         $payable_amount = 0.00;
                     }
-    
+
                     $tasks = array();
                     $meta_data = '';
-    
+
                     $unique = Auth::user()->code;
                     $team_tag = $unique . "_" . $vendor;
                     if (!empty($product->scheduled_date_time) && $product->scheduled_date_time > 0) {
@@ -343,17 +343,17 @@ trait OrderTrait
                         $user = Auth::user();
                         $selectedDate = dateTimeInUserTimeZone($product->scheduled_date_time, $user->timezone);
                         $slot = trim(explode("-", $product->schedule_slot)[0]);
-    
+
                         $slotTime = date('H:i:s', strtotime("$slot"));
                         $selectedDate = date('Y-m-d', strtotime($selectedDate));
                         $scheduleDateTime = $selectedDate . ' ' . $slotTime;
                         $schedule_time =  $scheduleDateTime ?? null;
                     }
                     $rejectable_order = isset($dispatch_domain['rejectable_order'])? $dispatch_domain['rejectable_order'] : 0;
-    
+
                     $task_type_id = $dispatch_domain['service_type'] == 'appointment' ?  3 : 1;
                     $service_time = $product->product->first() ? $product->product->minimum_duration_min : 0;
-                    
+
                     if( $rejectable_order ==1){
                         $service_time = '60';
                     }
@@ -380,7 +380,7 @@ trait OrderTrait
                             'phone_number' => $vendor_details->phone_no ?? null,
                             'appointment_duration' => $dispatch_domain['service_type'] == 'appointment' ? $service_time : null,
                         );
-                    
+
                         if($product->dispatch_agent_id){
                             $allocation_type = 'm';
                             $agent = $product->dispatch_agent_id;
@@ -401,7 +401,7 @@ trait OrderTrait
                                 'phone_number' => ($customer->dial_code . $customer->phone_number) ?? null,
                             );
                         }
-    
+
                         if ($customer->dial_code == "971") {
                             // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
                             $customerno = "0" . $customer->phone_number;
@@ -427,9 +427,9 @@ trait OrderTrait
                                 $payable_amount = 0.00;
                             }
                             $dynamic = uniqid($order->id . $vendor . $product->product_id.$x);
-    
+
                             // $call_back_url = route('dispatch-order-product-status-update', $dynamic);
-                          
+
                             if (isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain)
                                 $call_back_url = "https://" . $client->custom_domain . "/dispatch-order-product-status-update/" . $dynamic;
                             else
@@ -469,16 +469,16 @@ trait OrderTrait
                                 'specific_instruction' =>  $specific_instruction,
                                 'driverCost' =>  $driverCost,
                                 'order_pre_time'=>$vendor_details->order_pre_time
- 
+
                             ];
-                          
+
                             if($order_vendor->is_restricted == 1)
                             {
                                 $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
                                 $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
                             }
-    
-    
+
+
                             $client = new Client([
                                 'headers' => [
                                     'personaltoken' => $dispatch_domain['service_key'],
@@ -486,7 +486,7 @@ trait OrderTrait
                                     'content-type'  => 'application/json'
                                 ]
                             ]);
-    
+
                             $url = $dispatch_domain['service_key_url'];
                             $res = $client->post(
                                 $url . '/api/task/create',
@@ -495,7 +495,7 @@ trait OrderTrait
                             $response = json_decode($res->getBody(), true);
                             if ($response && $response['task_id'] > 0) {
                                 $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
-    
+
                                 $dispatch_route                                 = new OrderProductDispatchRoute();
                                 $dispatch_route->order_id                       = $request->order_id ;
                                 $dispatch_route->order_vendor_id                = $product->order_vendor_id ;
@@ -505,7 +505,7 @@ trait OrderTrait
                                 $dispatch_route->dispatcher_status_option_id    = 1 ;
                                 $dispatch_route->order_status_option_id         = 1 ;
                                 $dispatch_route->save();
-    
+
                                 $update = VendorOrderProductDispatcherStatus::updateOrCreate([
                                     'dispatcher_id' => null,
                                     'order_id' =>  $request->order_id,
@@ -513,10 +513,10 @@ trait OrderTrait
                                     'vendor_id' =>  $request->vendor_id,
                                     'order_product_route_id' => $dispatch_route->id
                                 ]);
-    
+
                                 $return_response = 1;
                             }
-    
+
                         }
                         $update = VendorOrderProductStatus::updateOrCreate([
                             'order_id' =>    $order_vendor->order_id,
@@ -526,10 +526,10 @@ trait OrderTrait
                             'order_vendor_product_id' =>  $product->id,
                         ]);
                         OrderProduct::where('id',$product->id)->update(['dispatcher_status_option_id'=>1,'order_status_option_id'=>2]);
-                        
+
                     }
                 }
-               
+
             }
             return $return_response;
         } catch (\Exception $e) {
@@ -590,7 +590,7 @@ trait OrderTrait
 
         Vendor::where('id', $vendor_id)->update(['rating' => $vendor_rating]);
         return $vendor_rating;
-        
+
     }
 
     /**
@@ -1333,7 +1333,7 @@ trait OrderTrait
      {
 
            try {
- 
+
              $order = Order::find($order);
              $customer = User::find($order->user_id);
              $cus_address = UserAddress::find($order->address_id);
@@ -1344,7 +1344,7 @@ trait OrderTrait
              $paymentSentAlready = 0;
              $is_order_amount_send_to_dispatcher = 0;
              $vendor_details = Vendor::where('id', $vendor)->select('id', 'name', 'phone_no', 'email', 'latitude', 'longitude', 'address')->first();
- 
+
                 $product = $vendorProduct;
                 $allocation_type = 'a';
                 $agent = '';
@@ -1353,9 +1353,9 @@ trait OrderTrait
                     $cash_to_be_collected = 'Yes';
                     $payable_amount = $order->payable_amount;
                     $is_order_amount_send_to_dispatcher = 1;
-                  
+
                 } else {
-                    
+
                     if($order->is_postpay==1 && ($order->payment_status == 0)  && ($order->is_order_amount_send_to_dispatcher ==0))
                     {
                         $cash_to_be_collected = 'Yes';
@@ -1366,10 +1366,10 @@ trait OrderTrait
                         $payable_amount = 0.00;
                     }
                 }
- 
+
                  $tasks = array();
                  $meta_data = '';
- 
+
                  $unique = Auth::user()->code;
                  $team_tag = $unique . "_" . $vendor;
                  if (!empty($product->scheduled_date_time) && $product->scheduled_date_time > 0) {
@@ -1377,19 +1377,19 @@ trait OrderTrait
                      $user = Auth::user();
                      $selectedDate = dateTimeInUserTimeZone($product->scheduled_date_time, $user->timezone);
                      $slot = trim(explode("-", $product->schedule_slot)[0]);
- 
+
                      $slotTime = date('H:i:s', strtotime("$slot"));
                      $selectedDate = date('Y-m-d', strtotime($selectedDate));
                      $scheduleDateTime = $selectedDate . ' ' . $slotTime;
                      $schedule_time =  $scheduleDateTime ?? null;
                  }
- 
+
                  $task_type_id = $dispatch_domain['service_type'] == 'appointment' ?  3 : 1;
                  $service_time = $product->product->first() ? $product->product->minimum_duration_min : 0;
 
                  $rejectable_order = isset($dispatch_domain['rejectable_order'])? $dispatch_domain['rejectable_order'] : 0;
-                 
-            
+
+
                  $tasks[] = array(
                      'task_type_id' => $task_type_id,
                      'latitude'     => $vendor_details->latitude ?? '',
@@ -1403,7 +1403,7 @@ trait OrderTrait
                      'phone_number' => $vendor_details->phone_no ?? null,
                      'appointment_duration' =>  $dispatch_domain['service_type'] == 'appointment' ?  $service_time  : null,
                  );
-               
+
                  if ($product->dispatch_agent_id) {
                      $allocation_type = 'm';
                      $agent = $product->dispatch_agent_id;
@@ -1422,7 +1422,7 @@ trait OrderTrait
                          'phone_number' => ($customer->dial_code . $customer->phone_number)  ?? null,
                      );
                  }
- 
+
                  if ($customer->dial_code == "971") {
                      // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
                      $customerno = "0" . $customer->phone_number;
@@ -1430,9 +1430,9 @@ trait OrderTrait
                      // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                      $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
                  }
- 
+
                  $client = CP::orderBy('id', 'asc')->first();
-              
+
                      //  send all payment to fist order
                      if ($paymentSentAlready == 0) {
                          $paymentSentAlready = 1;
@@ -1441,7 +1441,7 @@ trait OrderTrait
                          $payable_amount = 0.00;
                      }
                      $dynamic = uniqid($order->id . $vendor . $product->product_id );
- 
+
                      $call_back_url = route('dispatch-order-product-status-update', $dynamic);
                      $postdata =  [
                          'order_number'  =>  $order->order_number,
@@ -1472,14 +1472,14 @@ trait OrderTrait
                          'service_time' =>  $service_time,
                          'rejectable_order' =>  $rejectable_order
                      ];
- 
-                     
+
+
                      if ($is_restricted == 1) {
                          $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
                          $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
                      }
- 
- 
+
+
                      $client = new Client([
                          'headers' => [
                              'personaltoken' => $dispatch_domain['service_key'],
@@ -1487,7 +1487,7 @@ trait OrderTrait
                              'content-type'  => 'application/json'
                          ]
                      ]);
- 
+
                      $url = $dispatch_domain['service_key_url'];
                      $res = $client->post(
                          $url . '/api/task/create',
@@ -1501,7 +1501,7 @@ trait OrderTrait
                             $order->save();
                         }
                          $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
- 
+
                          $dispatch_route                                 = new OrderProductDispatchRoute();
                          $dispatch_route->order_id                       = $request->order_id;
                          $dispatch_route->order_vendor_id                = $product->order_vendor_id;
@@ -1511,7 +1511,7 @@ trait OrderTrait
                          $dispatch_route->dispatcher_status_option_id    = 1;
                          $dispatch_route->order_status_option_id         = 1;
                          $dispatch_route->save();
- 
+
                          $update = VendorOrderProductDispatcherStatus::updateOrCreate([
                              'dispatcher_id' => null,
                              'order_id' =>  $request->order_id,
@@ -1519,11 +1519,11 @@ trait OrderTrait
                              'vendor_id' =>  $request->vendor_id,
                              'order_product_route_id' => $dispatch_route->id
                          ]);
- 
+
                          $return_response = 1;
                      }
-                
-            
+
+
              return $return_response;
          } catch (\Exception $e) {
              //return 2;
@@ -1605,7 +1605,7 @@ trait OrderTrait
                 } else {
                     $to = '+' . $user->dial_code . $user->phone_number;
                 }
-                
+
                 $provider = $prefer->sms_provider;
                 $order->payable_amount = number_format((float)$order->payable_amount, $prefer->digit_after_decimal, '.', '');
 
@@ -1633,10 +1633,10 @@ trait OrderTrait
     public function failedOrderWalletRefund($order)
     {
         try{
-                if (isset($order->wallet_amount_used)) 
+                if (isset($order->wallet_amount_used))
                 {
                     $user = auth()->user();
-                    $wallet = $user->wallet;  
+                    $wallet = $user->wallet;
                         $wallet->depositFloat($order->wallet_amount_used, [
                             'Wallet has been <b>refunded</b> for cancellation of order #' . $order->order_number
                         ]);
@@ -1669,7 +1669,7 @@ trait OrderTrait
                 'content-type' => 'application/json'
             ]
         ]);
-        $url = $dispatch_domain->delivery_service_key_url;    
+        $url = $dispatch_domain->delivery_service_key_url;
                $res = $client->post(
             $url . '/api/task/update_order_prepration_time',
             ['form_params' => ($postdata)]
@@ -1702,8 +1702,8 @@ trait OrderTrait
         ];
         sendFcmCurlRequest($data);
      }
-     
-     
+
+
 
 
 

@@ -168,6 +168,24 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
         </div>
     </div>
 </section>
+
+<div class="modal fade" id="LiveesModal" tabindex="-1" aria-labelledby="LiveesModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title text-center" id="exampleModalLabel">Livees User Details</h3>
+          <button type="button" class="btn livees-btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-times-circle-o fa-2x" aria-hidden="true"></i></button>
+        </div>
+        <div class="livees-modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+
+        </div>
+      </div>
+    </div>
+  </div>
+
 <div class="modal fade wallet_money" id="add-money" tabindex="-1" aria-labelledby="add-moneyLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -201,7 +219,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
     </div>
   </div>
 </div>
-<div class="modal fade" id="topup_wallet" tabindex="-1" aria-labelledby="topup_walletLabel" aria-hidden="true">
+<div class="modal fade" id="topup_wallet" tabindex="-1" aria-labelledby="topup_walletLabel" >
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header border-bottom">
@@ -583,12 +601,16 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var powertrans_payment_url = "{{ route('powertrans.payment') }}";
     var pesapal_payment_url = "{{ route('pesapal.payment') }}";
     var livee_payment_url = "{{route('livee.pay')}}"
+    // var livee_email={{auth()->user()->email}};
 
     $('#wallet_amount').keypress(function(event) {
         if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
             event.preventDefault();
         }
     });
+    $(".livees-btn-close").on('click',function(){
+        $("#LiveesModal").modal('hide');
+    })
     $('.verifyEmail').click(function() {
         verifyUser('email');
     });

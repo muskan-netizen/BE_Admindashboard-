@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 Route::group(['prefix' => 'v1/auth', 'middleware' => ['ApiLocalization']], function () {
     Route::get('country-list', 'Api\v1\AuthController@countries');
    // Route::group(['middleware' => ['dbCheck', 'AppAuth', 'apilogger']], function() {
@@ -135,10 +137,10 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::match(['get','post'],'payment/{gateway}', 'Api\v1\PaymentOptionController@postPayment');
       //  Route::match(['get','post'],'payment/plugnpay','Api\v1\PlugnpayGatewayController@beforePayment');
-        
+
         //azulpay
         Route::match(['get','post'],'payment/azulpay','Api\v1\AzulPaymentController@beforePayment');
-        
+
         //Route::get('payment/{gateway}', 'Api\v1\PaymentOptionController@postPayment');
         Route::post('payment/razorpay/pay/{amount}/{order}', 'Api\v1\RazorpayGatewayController@razorpayCompletePurchase')->name('payment.razorpayCompletePurchase');
         Route::post('payment/complete/paytab','Api\v1\PaytabController@completePayment');
@@ -152,7 +154,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('user/get-user-cards','Api\v1\ProfileController@getUserCards');
         Route::get('user/setDefaultCard','Api\v1\ProfileController@setDefaultCard');
         Route::get('user/deleteCard','Api\v1\ProfileController@deleteCard');
-        
+
         Route::post('payment/place/order', 'Api\v1\PaymentOptionController@postPlaceOrder');
         Route::get('user/loyalty/info', 'Api\v1\LoyaltyController@index');
         Route::post('add/vendorTable/cart','Api\v1\CartController@addVendorTableToCart');
@@ -275,8 +277,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::get('get-influencer-form/{id}', 'Api\v1\InfluencerController@getInfluencerForm');
             Route::post('save-influencer-form', 'Api\v1\InfluencerController@save');
         });
-     
-        
+
+
         //-------routes for bid and ride------------------------------------
         Route::post('create/user/bid_ride_request', 'Api\v1\PickupDeliveryController@createBidRideRequest');
         Route::post('order-ride-bid-details', 'Api\v1\PickupDeliveryController@getBidsRelatedToOrderRide');
@@ -287,5 +289,5 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::post('create-token', 'Api\v1\MtnMomoController@createToken')->name('mtn.createtoken');
             Route::get('response/{id?}', 'Api\v1\MtnMomoController@getResponse')->name('mtn.response');
         });
-    });  
+    });
 });

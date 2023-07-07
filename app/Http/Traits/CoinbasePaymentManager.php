@@ -7,7 +7,7 @@ use CoinbaseCommerce\Resources\Checkout;
 use CoinbaseCommerce\Resources\Charge;
 
 use Log;
-trait CoinbasePaymentManager{  
+trait CoinbasePaymentManager{
 
   public function init()
   {
@@ -80,7 +80,7 @@ trait CoinbasePaymentManager{
       'requested_info' => ['email'],
     ];
     $response=$this->postCurl($endpoint,$data);
-    dd($response);
+    // dd($response);
     return $response;
   }
   private function postCurl($data,$token=null):object{

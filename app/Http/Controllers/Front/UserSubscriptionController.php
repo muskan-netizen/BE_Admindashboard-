@@ -79,7 +79,7 @@ class UserSubscriptionController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function selectSubscriptionPlan(Request $request, $domain = '', $slug = '')
-    {
+    {  
         $langId = Session::get('customerLanguage');
         $navCategories = $this->categoryNav($langId);
         $currency_id = Session::get('customerCurrency');
@@ -130,6 +130,8 @@ class UserSubscriptionController extends FrontController
                     $payment_option->title = __('Credit/Debit Card');
                 }elseif($payment_option->code == 'obo'){
                     $payment_option->title = __("O'Pay");
+                }elseif($payment_option->code == 'livee'){
+                    $payment_option->title = __("Livees");
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);

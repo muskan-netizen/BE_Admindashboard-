@@ -4271,63 +4271,96 @@ $(document).ready(function () {
 
     // //////////   LIVEE PAYMENT GATEWAY /////////////
 
-    window.payWithLivee = function payWithLivee(address_id = '', payment_option_id = '', order = '') {
-        let total_amount ;
+    window.payWithLivees = function payWithLivees(address_id = '', payment_option_id = '', order = '') {
+        let total_amount;
+
         console.log(total_amount);
         let orderNumber = order.order_number ?? "";
-        // let tipElement = $("#cart_tip_amount");
         let cartElement = $("input[name='cart_total_payable_amount']");
         let walletElement = $("input[name='wallet_amount']");
-        // let subscriptionElement = $("input[name='subscription_amount']");
-        // let subscription_id = $("input[name='subscription_id']");
-        // let cabElement = $("#pickup_now");
+        let tipElement = $("#cart_tip_amount");
+        let subscriptionElement = $("input[name='subscription_amount']");
+        let subscription_id = $("input[name='subscription_id']");
+        let cabElement = $("#pickup_now");
         let ajaxData = {};
+
         if (path.indexOf("cart") !== -1) {
             payment_from = 'cart';
             total_amount = cartElement.val();
+            console.log("inside catr");
+            var rowData = 'amt=' + total_amount + '&order_number=' + order.order_number + '&payment_from=' + payment_from;
         }
         else if (path.indexOf("wallet") !== -1) {
             total_amount = walletElement.val();
             payment_from = 'wallet';
+            var rowData = 'amt=' + total_amount + '&order_number=' + order.order_number + '&payment_from=' + payment_from;
             console.log(total_amount);
         }
-        ajaxData.amount = total_amount;
-        ajaxData.cancelUrl = path;
-        ajaxData.order_number = orderNumber;
-        // ajaxData.payment_from = payment_from;
+        else if (path.indexOf("subscription") !== -1) {
+            console.log("inside subsc");
+            total_amount = subscriptionElement.val();
+            payment_from = 'subscription';
+            var rowData = 'amt='+ total_amount + '&order_number=' + order.order_number + '&payment_from=' + payment_from+'&subscription_id='+subscription_id.val();
+        console.log(rowData);
 
-        $.ajax({
-            type: "GET",
-            dataType: 'json',
-            url: livee_payment_url,
-            data: ajaxData,
-            success: function (response) {
-                // console.log(res);
-                if (response.status == "Success") {
+        }
+        else if (cabElement.length > 0) {
+            total_amount = cabElement.data('amount');
+            payment_from = 'pickup_delivery';
+            ajaxData.reload_route = address_id;
+            var rowData = 'amt='+ total_amount + '&order_number=' + order.order_number + '&payment_from=' + payment_from+'&subscription_id='+subscription_id.val();
 
-                    window.location.href = response.data;
-                } else {
-                    if (cartElement.length > 0) {
-                        success_error_alert('error', response.message, ".payment_response");
-                        $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
-                    } else if (walletElement.length > 0) {
-                        success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
-                        $(".topup_wallet_confirm").removeAttr("disabled");
-                    }
-                }
-            },
-            error: function (error) {
-                var response = $.parseJSON(error.responseText);
-                if (cartElement.length > 0) {
-                    success_error_alert('error', response.message, ".payment_response");
-                    $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
-                } else if (walletElement.length > 0) {
-                    success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
-                    $(".topup_wallet_confirm").removeAttr("disabled");
-                }
-            }
-        });
+        }
+        else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+            total_amount = tipElement.val(); console.log(total_amount);
+            payment_from = 'tip';
+            orderNumber = $("#order_number").val();
+            var rowData = 'amt='+ total_amount + '&order_number=' + order.order_number + '&payment_from=' + payment_from+'&subscription_id='+subscription_id.val();
+
+        }
+
+        window.location = livee_payment_url + '?' + rowData;
+        // ajaxData.amount = total_amount;
+        // ajaxData.cancelUrl = path;
+        // ajaxData.order_number = orderNumber;
+        // ajaxData.payment_from=payment_from;
+
+        // $.ajax({
+        //     type:'GET',
+        //     url:livee_payment_url,
+        //     data: ajaxData,
+        //     success: function (response) {
+        // location.href="/livees-pay";
+        // console.log(response);
+        // if(ajaxData.payment_from=='wallet'){
+        // $("#topup_wallet").modal('hide');
+        //  $(".livees-modal-body").html(response);
+        // // $("#LiveesModal").modal('show');
+        // $(".liveesForm").submit();
+        // }
+        // else if(ajaxData.payment_from=='cart')
+        // {
+        //       $("#proceed_to_pay_modal").modal('hide');
+        //  $(".livees-modal-body").html(response);
+        // // $("#LiveesModal").modal('show');
+        // $(".liveesForm").submit();
+        // }
+
+
+        //     },
+        //     error: function (error) {
+        //         var response = $.parseJSON(error.responseText);
+        //         if (cartElement.length > 0) {
+        //             success_error_alert('error', response.message, ".payment_response");
+        //             $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+        //         } else if (walletElement.length > 0) {
+        //             success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
+        //             $(".topup_wallet_confirm").removeAttr("disabled");
+        //         }
+        //     }
+        // });
 
     }
+
 
 });

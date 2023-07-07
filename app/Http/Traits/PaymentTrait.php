@@ -11,7 +11,7 @@ trait PaymentTrait{
 
         }elseif($type=='Subscription')
         {
-            $paymentOptions = ['stripe', 'dpo','azul', 'stripe_fpx', 'paystack','yoco', 'paylink', 'razorpay','simplify','square','ozow','pagarme', 'checkout','authorize_net','kongapay','ccavenue', 'cashfree','viva_wallet','easebuzz','vnpay','paytab','mvodafone','flutterwave','easypaisa','braintree','payphone','windcave','paytech','windcave','stripe_oxxo', 'mycash','stripe_ideal','userede','openpay','khalti','mtn_momo','plugnpay','nmi','yappy','skip_cash','data_trans','pesapal','powertrans','obo'];
+            $paymentOptions = ['stripe', 'dpo','azul', 'stripe_fpx', 'paystack','yoco', 'paylink', 'razorpay','simplify','square','ozow','pagarme', 'checkout','authorize_net','kongapay','ccavenue', 'cashfree','viva_wallet','easebuzz','vnpay','paytab','mvodafone','flutterwave','easypaisa','braintree','payphone','windcave','paytech','windcave','stripe_oxxo', 'mycash','stripe_ideal','userede','openpay','khalti','mtn_momo','plugnpay','nmi','yappy','skip_cash','data_trans','pesapal','powertrans','obo','livee'];
 
         }elseif($type=='wallet')
         {
@@ -19,15 +19,15 @@ trait PaymentTrait{
 
         }elseif($type=='pickup_delivery')
         {
-            $paymentOptions = ['cod','azul', 'dpo', 'razorpay','paystack','stripe','payfast','offline_manual','authorize_net','payphone','khalti','flutterwave','plugnpay','nmi','yappy','skip_cash','ccavenue','data_trans','mtn_momo','pesapal'];
+            $paymentOptions = ['cod','azul', 'dpo', 'razorpay','paystack','stripe','payfast','offline_manual','authorize_net','payphone','khalti','flutterwave','plugnpay','nmi','yappy','skip_cash','ccavenue','data_trans','mtn_momo','pesapal','livee'];
 
         }elseif($type=='tip')
         {
-            $paymentOptions = ['data_trans','mtn_momo','pesapal'];
+            $paymentOptions = ['data_trans','mtn_momo','pesapal'.'livee'];
 
         }elseif($type=='payout')
         {
-            //Vendor Payouts 
+            //Vendor Payouts
             $paymentOptions = ['cash','stripe','pagarme','razorpay'];
 
         }elseif($type=='homepage')

@@ -1780,13 +1780,13 @@ Options']) @section('css')
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group mb-2">
-                                    <label for="livee_consumer_key" class="mr-3">{{ __("LIVEE MERCHANT KEY") }}</label>
+                                    <label for="livee_consumer_key" class="mr-3">{{ __("LIVEES MERCHANT KEY") }}</label>
                                     <input type="password" name="livee_merchant_key" id="livee_merchant_key" class="form-control" value="{{$livee_merchant_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>
 							 <div class="col-12">
                                 <div class="form-group mb-2">
-                                    <label for="livee_consumer_secret" class="mr-3">{{ __("LIVEE RESOURCE KEY") }}</label>
+                                    <label for="livee_consumer_secret" class="mr-3">{{ __("LIVEES RESOURCE KEY") }}</label>
                                     <input type="password" name="livee_resource_key" id="livee_resource_key" class="form-control" value="{{$livee_resource_key}}" @if($opt->status == 1) required @endif>
                                 </div>
                             </div>

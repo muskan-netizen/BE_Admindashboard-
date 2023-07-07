@@ -702,7 +702,22 @@ $client_preferences = \App\Models\ClientPreference::first();
         </div>
     <% } %>
 </script>
+<div class="modal fade" id="LiveesModal" tabindex="-1" aria-labelledby="LiveesModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title text-center" id="exampleModalLabel">Livees User Details</h3>
+          <button type="button" class="btn livees-btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-times-circle-o fa-2x" aria-hidden="true"></i></button>
+        </div>
+        <div class="livees-modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
 
+        </div>
+      </div>
+    </div>
+  </div>
 <div class="modal fade" id="proceed_to_pay_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="pay-billLabel">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
