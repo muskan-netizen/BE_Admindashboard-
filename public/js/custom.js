@@ -3390,6 +3390,9 @@ $(document).ready(function () {
                     $(".shake-effect").effect("shake", { times: 3 }, 1200);
                     returnResponse = true;
                     cartHeader();
+                    if($("#pickup_service").is(":checked")){
+                        location.href =  '/category/cabservice?destination_location='+response.vendor.address+'&destination_location_latitude'+response.vendor.latitude+'&destination_location_longitude'+response.vendor.longitude;
+                    }
                     if(vendor_type == 'rental') {
                        location.href =  '/viewcart';
                     }

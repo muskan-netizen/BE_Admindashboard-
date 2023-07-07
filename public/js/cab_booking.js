@@ -414,6 +414,7 @@ $(document).ready(function () {
                     let order_number = response.data.order_number;
                     let reload_route = response.data.route;
                     if((payment_option_id == 1) || (payment_option_id == 2)){
+                        placeOrderBeforePayment('',payment_option_id,0);
                         window.location.replace(response.data.route);
 
                         // $('#cab_detail_box').html('');
@@ -505,6 +506,55 @@ $(document).ready(function () {
         });
     });
 
+    window.placeOrderBeforePayment = function placeOrderBeforePayment(address_id = 0, payment_option_id, tip = 0) {
+        var task_type = $("input[name='task_type']").val();
+        var schedule_dt = $("#schedule_datetime").val();
+        var slot = $("#slot").val();
+        var is_gift = $('#is_gift:checked').val() ?? 0;
+        // place_order_url=domain+/user/
+        if ((task_type == 'schedule') && (schedule_dt == '')) {
+            $("#proceed_to_pay_modal").modal('hide');
+            $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+            success_error_alert('error', 'Schedule date time is required', ".cart_response");
+            return false;
+        }
+        var orderResponse = '';
+
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            async: false,
+            url: place_order_url,
+            data: { address_id: address_id, payment_option_id: payment_option_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, slot: slot },
+            success: function (response) {
+                if (response.status == "Success") {
+                    orderResponse = response.data;
+                    // return orderResponse;
+                } else {
+                    if ($(".payment_response").length > 0) {
+                        $(".payment_response").removeClass("d-none");
+                        success_error_alert("error", response.message, ".payment_response");
+                        $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                    }
+                }
+            },
+            error: function (error) {
+
+                var response = $.parseJSON(error.responseText);
+                // success_error_alert('error', response.message, ".payment_response");
+                if ($('.payment_response').length > 0) {
+                    $(".payment_response").removeClass('d-none');
+                    success_error_alert('error', response.message, ".payment_response");
+                    $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
+                }
+            },
+            complete: function (data) {
+                $('.spinner-overlay').hide();
+            }
+        });
+        return orderResponse;
+    }
+    
     function paymentViaStripe(stripe_token, order_id, payment_option_id,) {
         let total_amount = 0;
         let tip = 0;

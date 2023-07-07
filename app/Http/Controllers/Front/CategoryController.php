@@ -160,7 +160,7 @@ class CategoryController extends FrontController{
         }
         
         $newProducts = [];
-        if($page == 'pickup/delivery'){
+        if($page == 'pickup/delivery' || $page == 'product' && $slug == 'yacht'){
             if(!Auth::user()){
                 return redirect()->route('customer.login');
             }else{

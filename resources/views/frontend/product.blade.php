@@ -610,7 +610,13 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'inline-block'; ?>">
                                                 @if($product->inquiry_only == 0)
                                                 <div class="product-description border-product pb-0">
-                                                    <h6 class="product-title mt-0">{{__('Quantity')}}:
+                                                    <h6 class="product-title mt-0">
+                                                        @if($product->category->categoryDetail->slug == 'yacht')
+                                                        {{__('Seats Booking')}}
+                                                        @else
+                                                        {{__('Quantity')}}
+                                                        @endif
+                                                        :
                                                         @if($product->has_inventory && !$product->variant[0]->quantity > 0 && $product->sell_when_out_of_stock != 1)
                                                             <span id="outofstock" style="color: red;">{{ __('Out of Stock')}}</span>
                                                         @else
@@ -645,6 +651,13 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 @endif
 
                                             </div>
+
+                                            @if($product->category && $product->category->categoryDetail->slug == 'yacht')
+                                                <div>
+                                                    <label for="">Pickup Service</label>
+                                                    <input type="checkbox" name="pickup_service" id="pickup_service">
+                                                </div>
+                                            @endif
 
                                             <div class="product-buttons">
 

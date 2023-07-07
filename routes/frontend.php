@@ -408,7 +408,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('/search-all/{keyword}', 'Front\SearchController@showSearchResults')->name('showSearchResults');
 	Route::get('/', 'Front\UserhomeController@index')->name('userHome');
 	Route::get('/yacht', 'Front\YachtController@yacht')->name('yacht');
-	Route::post('products-searchResults', 'Front\YachtController@productsSearchResult')->name('productSearch');
+	Route::any('products-searchResults', 'Front\YachtController@productsSearchResult')->name('productSearch');
 	Route::get('/setSessionIndex', 'Front\UserhomeController@setSessionIndex')->name('setSessionIndex');
 
 	Route::get('/updateLocation', 'Front\UserhomeController@setHyperlocalAddress')->name('updateLocation');

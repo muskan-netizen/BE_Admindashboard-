@@ -303,6 +303,7 @@ class CartController extends FrontController
         
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
+        $vendor = Vendor::find($request->vendor_id);
         try {
             $cart_detail = [];
             $user = Auth::user();
@@ -578,7 +579,7 @@ class CartController extends FrontController
             }
             $quantityCart = CartProduct::where('cart_id',$cart_detail->id)->sum('quantity');
 
-            return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!','cart_product_id' => $cartProduct->id,'cart_quantity'=>$quantityCart??0,'product_id' => $cartProduct->product_id]);
+            return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!','cart_product_id' => $cartProduct->id,'cart_quantity'=>$quantityCart??0,'product_id' => $cartProduct->product_id,'vendor' => $vendor]);
         } catch (Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }

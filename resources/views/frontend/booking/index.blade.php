@@ -1807,6 +1807,9 @@ input[type=number]::-webkit-outer-spin-button {
         var powertrans_payment_url = "{{ route('powertrans.payment') }}";
 
         var pesapal_payment_url = "{{ route('pesapal.payment') }}";
+
+        var place_order_url = "{{route('user.placeorder')}}";
+
         /// ************* product order form **************///////
         $('body').on('click', '.clproduct_order_form', function(event) {
             event.preventDefault();

@@ -36,9 +36,10 @@
 					<nav class="menu">
 						<ul class="d-flex  align-items-center">
 							<li><a href="" title="">Home</a></li>
-							<li><a href="" title="">Car Rental</a></li>
-							<li><a href="" title="">Airport Pickup and Drop</a></li>
-							<li><a href="" title="">Sign in / Login</a></li>							
+							<li><a href="{{ route('productSearch',['service' => 'rental']) }}" title="">Car Rental</a></li>
+							<li><a href="{{ route('productSearch',['service' => 'airport']) }}" title="">Airport Pickup and Drop</a></li>
+							<li><a href="{{ route('productSearch',['service' => 'yacht']) }}" title="">Yacht</a></li>
+							<li><a href="user/login" title="">Sign in / Login</a></li>							
 						</ul>
 					</nav>
 				</div>
@@ -119,7 +120,10 @@
 					      			<div class="item">
 					      				<h5>Location</h5>
 					      				<p><img src="yacht-images/icons/3.png" alt=""> 
-											<input class="" type="text" name="location" value="1801 Oak Ridge Ln">
+											<input class="" type="text" name="location" id="location" value="1801 Oak Ridge Ln">
+											<input class="" type="number" name="seats" value="50">
+											<input type="hidden" id="location_longitude" value="">
+											<input type="hidden" id="location_latitude" value="">
 										</p>
 					      			</div>
 					      		</div>
@@ -202,81 +206,21 @@
 	<section class="ourFleet">
 		<div class="container">
 			<div class="heading">
-				<h2>Our Fleet</h2>
+				<h2>Our Category</h2>
 			</div>
 			<div class="fleet_slider">
-				<!-- 1 -->
-				<div class="item">
-					<div class="image">
-						<img src="yacht-images/fleet/1.png" alt="">
+				@forelse($categories as $category)
+					<div class="item">
+						<div class="image">
+							<img src="{{ $category->icon['proxy_url'].'200/200'.$category->icon['image_path']}} " alt="">
+						</div>
+						<div class="text">
+							<h3>{{ $category->slug ?? ''}}</h3>
+						</div>
 					</div>
-					<div class="text">
-						<h3>SUVs</h3>
-					</div>
-				</div>
-				<!-- 2 -->
-				<div class="item">
-					<div class="image">
-						<img src="yacht-images/fleet/2.png" alt="">
-					</div>
-					<div class="text">
-						<h3>Convertibles</h3>
-					</div>
-				</div>
-				<!-- 3 -->
-				<div class="item">
-					<div class="image">
-						<img src="yacht-images/fleet/3.png" alt="">
-					</div>
-					<div class="text">
-						<h3>Sports Car</h3>
-					</div>
-				</div>
-				<!-- 4 -->
-				<div class="item">
-					<div class="image">
-						<img src="yacht-images/fleet/4.png" alt="">
-					</div>
-					<div class="text">
-						<h3>Minivans</h3>
-					</div>
-				</div>
-				<!-- 5 -->
-				<div class="item">
-					<div class="image">
-						<img src="yacht-images/fleet/5.png" alt="">
-					</div>
-					<div class="text">
-						<h3>Passenger vans</h3>
-					</div>
-				</div>
-				<!-- 6 -->
-				<div class="item">
-					<div class="image">
-						<img src="yacht-images/fleet/5.png" alt="">
-					</div>
-					<div class="text">
-						<h3>Pickup Trucks</h3>
-					</div>
-				</div>
-				<!-- 7 -->
-				<div class="item">
-					<div class="image">
-						<img src="yacht-images/fleet/1.png" alt="">
-					</div>
-					<div class="text">
-						<h3>SUVs</h3>
-					</div>
-				</div>
-				<!-- 8 -->
-				<div class="item">
-					<div class="image">
-						<img src="yacht-images/fleet/2.png" alt="">
-					</div>
-					<div class="text">
-						<h3>Convertibles</h3>
-					</div>
-				</div>
+				@empty
+					No Category Found
+				@endforelse
 			</div>
 		</div>
 	</section>
@@ -452,4 +396,23 @@ $('#tabs-nav li').click(function(){
   });
 	</script>
 </body>
+@php
+$mapKey = '1234';
+$theme = \App\Models\ClientPreference::where(['id' => 1])->first();
+if($theme && !empty($theme->map_key)){
+	$mapKey = $theme->map_key;
+}
+@endphp
+<script src="https://maps.googleapis.com/maps/api/js?key={{$mapKey}}&v=3.exp&libraries=places,drawing"></script>
+
+<script>
+	var input = document.getElementById('location');
+        var autocomplete = new google.maps.places.Autocomplete(input);
+        google.maps.event.addListener(autocomplete, 'place_changed', function () {
+            var place = autocomplete.getPlace();
+            document.getElementById('location_longitude').value = place.geometry.location.lng();
+            document.getElementById('location_latitude').value = place.geometry.location.lat();
+        });
+</script>
+
 </html>
