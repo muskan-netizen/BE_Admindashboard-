@@ -178,7 +178,7 @@ class PickupDeliveryController extends FrontController{
                         },'variant' => function($q) use($language_id){
                             $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode');
                             $q->groupBy('product_id');
-                        }])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags', 'products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id')->where('products.id', $product_id)->where('products.is_live', 1)->first();
+                        }])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags', 'products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id','seats')->where('products.id', $product_id)->where('products.is_live', 1)->first();
         $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
         $product->image_url = $image_url;
         $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
@@ -506,6 +506,21 @@ class PickupDeliveryController extends FrontController{
 
             }
 
+            $product = Product::find($request->product_id);
+            if($product && $product->available_seats < $request->seats){
+                return response()->json(['status' => 203, 'message' => $request->seats.' Seats not Availeble']);
+            }
+
+            if($product->extra_time)
+            {
+                $beforeTime = ($product->extra_time + ($request->duration_time * 2));
+                $scheduleDatetime = Carbon::parse($product->pickup_time)->subMinute($beforeTime);
+                $timezone = $request->time_zone;
+                $given = new DateTime($scheduleDatetime, new DateTimeZone($timezone));
+                $given->setTimezone(new DateTimeZone("UTC"));
+                $request->merge(['schedule_time' => $given->format("Y-m-d H:i:s")]);
+            }
+
            // pr($request->all());
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
@@ -517,7 +532,7 @@ class PickupDeliveryController extends FrontController{
                 if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                     DB::commit();
                     $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
-                    $order_place['data']['invalid_agent'] = $request_to_dispatch['invalid_agent'];
+                    // $order_place['data']['invalid_agent'] = $request_to_dispatch['invalid_agent'];
                     $order_place['data']['user_name'] = $user->email;
                     $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
 
@@ -788,6 +803,7 @@ class PickupDeliveryController extends FrontController{
                 $order_product->product_name         = $product->sku;
                 $order_product->no_seats_for_pooling = (isset($request->is_cab_pooling) && $request->is_cab_pooling== 1 && isset($request->no_seats_for_pooling))?$request->no_seats_for_pooling:0;
                 $order_product->is_cab_pooling       = isset($request->is_cab_pooling)?$request->is_cab_pooling:0;
+                $order_product->booking_seats        = $request->seats ?? 0;
 
                 if(isset($request->user_product_order_form) && !empty($request->user_product_order_form))
                 $user_product_order_form             = json_encode($request->user_product_order_form);

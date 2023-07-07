@@ -570,6 +570,11 @@ class ProductController extends BaseController
             
             $product->is_slot_from_dispatch        = ($request->has('is_slot_from_dispatch') && $request->is_slot_from_dispatch == 'on') ? 1 : 0;
             $product->is_show_dispatcher_agent     = ($request->has('is_show_dispatcher_agent') && $request->is_show_dispatcher_agent == 'on') ? 1 : 0;
+
+            $product->pickup_time = ($request->has('pickup_time')) ? $request->pickup_time : null;
+            $product->drop_time = ($request->has('drop_time')) ? $request->drop_time : null;
+            $product->extra_time = ($request->has('extra_time')) ? $request->extra_time : null;
+
             $product->save();
             if($request->has('slot_ids') && $request->slot_ids != ''){
                 $product->syncProductDeliverySlot()->sync($request->slot_ids);

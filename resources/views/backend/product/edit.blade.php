@@ -1136,6 +1136,22 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::label('title', __('Return/Replace Days'),['class' => 'control-label']) !!}
                             {!! Form::number('return_days', $product->return_days, ['class'=>'form-control', 'id' => 'return_days', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
+                        <div class="col-md-6 mb-2">
+                            {!! Form::label('title', __('Number of Seats'),['class' => 'control-label']) !!}
+                            {!! Form::number('seats', $product->seats ?? '', ['class'=>'form-control', 'id' => 'seats', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="title" class="control-label">{{ __("Pickup Date") }}</label>
+                            <input class="form-control" id="pickup_time" name="pickup_time" type="datetime-local" value="{{ $product->pickup_time ?? ''}}">
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="title" class="control-label">{{ __("Drop Date") }}</label>
+                            <input class="form-control" id="drop_time" name="drop_time" type="datetime-local" value="{{ $product->drop_time ?? ''}}">
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="title" class="control-label">{{ __("Extra Time (min)") }}</label>
+                            <input class="form-control" id="extra_time" name="extra_time" type="number" value="{{ $product->extra_time ?? ''}}">
+                        </div>
                     </div>
                     <div class="row">
                         @if(isset($getAdditionalPreference['is_price_by_role']) && $getAdditionalPreference['is_price_by_role'] == '1')

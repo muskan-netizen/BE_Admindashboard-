@@ -1031,6 +1031,7 @@ input[type=number]::-webkit-outer-spin-button {
                         <div class="col-6 mb-2 text-right" id="distance"><%= result.distance %> {{__($client_preference_detail->distance_unit_for_time)}}</div>
                         <div class="col-6 mb-2">{{__('Duration')}}</div>
                         <div class="col-6 mb-2 text-right" id="duration"><%= result.duration %> {{__('mins')}}</div>
+                        <input type="hidden" id="duration_time" value="<%= result.duration %>">
                         <% if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){ %>
                         <div class="col-6 mb-2">{{__('Subscription Discount')}}</div>
                         <div class="col-6 mb-2 text-right" id="subscription-percent"><%= result.subscription_percent_value+'%' %></div>
@@ -1039,6 +1040,11 @@ input[type=number]::-webkit-outer-spin-button {
                         <div class="col-6 mb-2 text-right" id="discount"><p class="total_amt m-0" id="subscription-amout">{{Session::get('currencySymbol')}}<%= result.subscription_discount %></p></div>
                         <input type="hidden" id="subscription-amout-h" value="<%= result.subscription_discount %>">
                         <% } %>
+
+                        <% if((result.seats > 0)){ %>
+                            <input type="number" class="from-control" id="seats" value="" name="seats" placeholder="Number of Seats Booking">
+                        <% } %>
+                        
                         <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>
                             <div class="col-6 mb-2">Loyalty</div>
                             <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved %></div>
@@ -1069,7 +1075,7 @@ input[type=number]::-webkit-outer-spin-button {
         </div>
 
     </div>
-    <span id="show_error_of_booking" class="error"></span>
+    <span id="show_error_of_booking" class="error text-danger"></span>
 
     <div class="payment-promo-container p-2">
         <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal">

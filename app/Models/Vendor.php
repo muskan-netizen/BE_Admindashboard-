@@ -216,4 +216,8 @@ class Vendor extends Model implements Auditable{
       return $query;
     }
 
+    public function categories()
+    {
+      return $this->belongsToMany(Category::class, 'vendor_categories');
+    }
 }
