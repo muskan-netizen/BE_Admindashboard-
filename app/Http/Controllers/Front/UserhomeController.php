@@ -52,7 +52,7 @@ class UserhomeController extends FrontController
     
     public function mPesa(){
         $expressResponse=Mpesa::express(100,'254708374149','24242524','Testing Payment');
-        dd($expressResponse);
+        return $expressResponse;
     }
 
 
