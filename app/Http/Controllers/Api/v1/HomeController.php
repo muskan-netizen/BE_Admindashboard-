@@ -504,7 +504,11 @@ class HomeController extends BaseController
 
                 $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4) ? 1 : 0;
 
-                $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $vendor->id)->where('status', 1)->get();
+                $vendorCategories = VendorCategory::with('category.translation_one')
+                ->where('vendor_id', $vendor->id)
+                ->where('status', 1)
+                ->groupBy('category_id')
+                ->get();
                 $categoriesList = '';
                 foreach ($vendorCategories as $key => $category) {
                     if ($category->category) {
@@ -515,6 +519,8 @@ class HomeController extends BaseController
                         }
                     }
                 }
+
+              
                 $vendor->categoriesList = $categoriesList;
 
                 $vends[] = $vendor->id;
