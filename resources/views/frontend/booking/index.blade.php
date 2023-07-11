@@ -428,6 +428,7 @@ input[type=number]::-webkit-outer-spin-button {
                             style="display:none !important;">
                             <i class="fa fa-search" aria-hidden="true"></i>
                             <input class="form-control pickup-text" name="destination_location_name[]" type="text"
+                            {{ (request()->segment(2) == 'airport' || request()->yacht_id) ? 'disabled' : '' }}
                                 placeholder="{{ __('Add A Stop') }}" id="destination_location" />
                         </div>
                         <div class="location-search d-flex align-items-center" style="display:none !important;"
@@ -1049,8 +1050,8 @@ input[type=number]::-webkit-outer-spin-button {
                         <input type="hidden" id="subscription-amout-h" value="<%= result.subscription_discount %>">
                         <% } %>
 
-                        <% if((result.seats > 0)){ %>
-                            <input type="number" class="from-control" id="seats" value="" name="seats" placeholder="Number of Seats Booking">
+                        <% if((result.yacht)){ %>
+                            {{-- <input type="number" class="from-control" id="seats" value="" name="seats" placeholder="Number of Seats Booking"> --}}
                         <% } %>
                         
                         <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>

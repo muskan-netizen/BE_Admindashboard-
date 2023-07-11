@@ -381,16 +381,36 @@ class YachtController extends FrontController
         // $vendor_ids = Vendor::with(['categories'])->whereHas('categories', function($q)use($request){
         //     $q->where('slug', $request->service);
         // })->pluck('id');
-        
-        $data['products'] = Product::with('variant')->where(function($q) use ($request){
-            if(isset($request->pickup_date) && isset($request->drop_date)){
-                $q->where('pickup_time', '>=', $request->pickup_date)
-                ->orWhere('drop_time', '<=', $request->drop_date);
+        if($request->service == 'airport'){
+            $mapKey = '1234';
+            $theme = \App\Models\ClientPreference::where(['id' => 1])->first();
+            if($theme && !empty($theme->map_key)){
+                $mapKey = $theme->map_key;
             }
-        })->when($request->seats,function($q) use ($request){
-            $q->where('seats','>=', $request->seats);
-        })->where('category_id',$category->id)->get();
-        
+            $response = \Http::get("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$request->location_latitude,$request->location_longitude&rankby=distance&type=airport&key=$mapKey")['results'];
+            $data['products'] = collect($response)->map(function($result){
+                return [
+                    'title' => $result['name'],
+                    'path' => $result['icon'],
+                    'location' => $result['vicinity'],
+                    'latitude' => $result['geometry']['location']['lat'],
+                    'longitude' => $result['geometry']['location']['lng'],
+                ];
+            });
+        }
+        else{
+            $data['products'] = Product::with('variant')->where(function($q) use ($request){
+                if(isset($request->pickup_time) && isset($request->drop_time)){
+                    $q->where('pickup_time', '<=', $request->pickup_time)
+                    ->where('drop_time', '>=', $request->drop_time);
+                }
+            })->where(function($q) use ($request){
+                if($request->seats){
+                    $q->where('seats','>=', $request->seats);
+                }
+            })->where('category_id',$category->id)->get();
+        }
+        $data['service'] = $request->service;
         return view('frontend.yacht.products',$data);
     }
 }

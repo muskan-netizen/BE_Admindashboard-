@@ -121,8 +121,8 @@
 					      				<h5>Location</h5>
 					      				<p><img src="yacht-images/icons/3.png" alt=""> 
 											<input class="" type="text" name="location" id="location" value="" placeholder="1801 Oak Ridge Ln">
-											<input type="hidden" id="location_longitude" value="">
-											<input type="hidden" id="location_latitude" value="">
+											<input type="hidden" name="location_longitude" id="location_longitude" value="">
+											<input type="hidden" name="location_latitude" id="location_latitude" value="">
 										</p>
 					      			</div>
 					      		</div>
@@ -146,7 +146,7 @@
 									<div class="item">
 										<h5>Seat Number</h5>		
 										<p>								
-										<input class="pl-0" type="number" name="location" value="" placeholder="04">
+										<input class="pl-0" type="number" name="seats" value="" placeholder="04">
 									  </p>
 									</div>
 								</div>

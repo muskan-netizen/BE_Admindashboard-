@@ -260,12 +260,24 @@
 			<div class="product-m ">
 				<div class="row">
 							@forelse ($products as $product )
-							<div class="col">
+							<div class="col-6 col-lg-3">
 								<div class="product-card-box position-relative al_box_third_template al"  >
-									<a class="common-product-box text-center" href="{{ $product->vendor->slug ?? ''}}/product/{{ $product->url_slug ?? '' }}">
-										<div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ get_file_path($product->path ?? '','FILL_URL','260','260') }}" alt="" title="">
-											<div class="pref-timing"> {{ $product->title }}</div>
+									@php
+									if ($service == 'airport') {
+										$link = 'category/airport?destination_location='.$product['location'].'&destination_location_latitude='.$product['latitude'].'&destination_location_longitude='.$product['longitude'];
+									}else{
+										$link = $product->vendor->slug.'/product/'.$product->url_slug;
+									}
+									@endphp
+									<a class="common-product-box text-center" href="{{ $link }}">
+										<div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ $service == 'airport' ? $product['path'] : get_file_path($product->path ?? '','FILL_URL','260','260') }}" alt="" title="">
+											<div class="pref-timing"> {{ $product['title'] }}</div>
+											@if ($service == 'yacht')
 											<label for="">Seats Available({{ $product->available_seats }})</label>
+											@endif
+											@if ($service == 'airport')
+											<label for="">({{ $product['location'] }})</label>
+											@endif
 											<div class="pref-timing"> </div>
 										</div>
 									</a>
@@ -277,6 +289,7 @@
 								</div>
 
 								<div class="d-flex align-items-center justify-content-left al_clock ">
+									@if ($service != 'airport')
 									<b>{{Session::get('currencySymbol')}}{{decimal_format($product->variant[0]->price)}}</b>
 									{{-- <b> {{ showPriceWithCurrency($product->price_numeric ?? 0) }} </b> --}}
 									@php
@@ -284,6 +297,7 @@
 									@endphp
 									@if(@$comp && $comp>0)
 										{!!showPriceWithCurrency($product->compare_price_numeric,'1') !!}
+									@endif
 									@endif
 								</div>
 							</div>
