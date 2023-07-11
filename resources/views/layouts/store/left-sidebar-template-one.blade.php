@@ -148,7 +148,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
         <div class="container-fluid d-block ">
             <div class="container p-0 align-items-center justify-content-center position-initial">
                 <div class="col-lg-12">
-                    @include('layouts.store.topbar-template-nine')
+                  {{--  @include('layouts.store.topbar-template-nine')--}}
                     <div class="row mobile-header align-items-center justify-content-between">
                         <div class="logo">
                             <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-flex align-items-center" style="height:60px" href="{{route('userHome')}}"><img alt="" src="{{$urlImg}}"></a>
