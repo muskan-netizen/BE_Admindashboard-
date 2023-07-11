@@ -153,7 +153,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                         <div class="logo">
                             <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-flex align-items-center" style="height:60px" href="{{route('userHome')}}"><img alt="" src="{{$urlImg}}"></a>
                             <div class="radius-bar d-xl-inline al_custom_search mr-sm-2">
-                                <div class="search_form d-flex align-items-start justify-content-start"> <button
+                                <div class="search_form d-flex align-items-start justify-content-start"> {{--<button
                                         class="btn">
 <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
 viewBox="0 0 512.000000 512.000000"
@@ -175,7 +175,7 @@ fill="#000000" stroke="none">
 999 448 74 6 269 -4 363 -19z"/>
 </g>
 </svg>
-</button> @php
+</button>--}} @php
                                     $searchPlaceholder=getNomenclatureName('Search', true);
                                     $searchPlaceholder=($searchPlaceholder==='Search product, vendor, item') ?
                                     __('Search product, vendor, item') : $searchPlaceholder; @endphp <input
