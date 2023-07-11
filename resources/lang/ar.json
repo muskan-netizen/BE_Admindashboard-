@@ -1235,7 +1235,7 @@
   "Add New" : "اضف جديد",
   "Followers" : "متابعون",
   "Followings" : "أتباع",
-  "Post" : "بريد",
+  "Post" : "النشر",
   "All" : "الجميع",
   "A non well formed numeric value encountered" : "قيمة رقمية غير شكل جيد واجه",
   "Please enter your name" : "من فضلك أدخل إسمك",
@@ -1278,5 +1278,7 @@
   "We are not accepting orders less then" : "نحن لا نقبل الطلبات أقل من ذلك الحين",
   "Tracking Url":"تتبع url",
   "Enable to allow guest customers to send otp.":"تمكين للسماح للعملاء الضيوف بإرسال otp.",
-  "Skip":"تخطي"
+  "Skip":"تخطي",
+  "Chats":"الدردشات",
+  "Search Here":"هنا ابحث"
 }
