@@ -734,7 +734,7 @@ fill="#000000" stroke="none">
                                 @endif
                                 <div class="radius-bar d-xl-inline al_custom_search mr-sm-2">
                                     <div class="search_form d-flex align-items-start justify-content-start">
-                                         <button class="btn">
+                                        {{-- <button class="btn">
                                             <svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512.000000 512.000000" preserveAspectRatio="xMidYMid meet"> <metadata>
                                             Created by potrace 1.16, written by Peter Selinger 2001-2019
                                             </metadata>
@@ -752,7 +752,7 @@ fill="#000000" stroke="none">
                                             999 448 74 6 269 -4 363 -19z"/>
                                             </g>
                                             </svg>
-                                        </button> 
+                                        </button> --}}
                                         @php
                                         $searchPlaceholder=getNomenclatureName('Search', true);
                                         $searchPlaceholder=($searchPlaceholder==='Search product, vendor, item') ?
