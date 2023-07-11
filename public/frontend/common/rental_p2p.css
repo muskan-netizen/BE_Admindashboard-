@@ -140,7 +140,7 @@ a.backArroww.position-absolute {
 .dark .form-control,
 .dark .btn,
 .dark .custom-select {
-    background-color: #2b2b2b;
+    background-color: transparent;
     color: #fff;
     border-color: #444242 !important
 }
