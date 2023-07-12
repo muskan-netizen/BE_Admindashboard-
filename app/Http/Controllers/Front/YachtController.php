@@ -378,7 +378,7 @@ class YachtController extends FrontController
     {
         \Log::info(['request' => $request->all()]);
         // $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
-        $category = Category::where('slug',$request->service)->firstOrFail();
+        $category = Category::where('slug',$request->service)->first();
         // $vendor_ids = Vendor::with(['categories'])->whereHas('categories', function($q)use($request){
         //     $q->where('slug', $request->service);
         // })->pluck('id');
