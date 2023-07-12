@@ -192,6 +192,7 @@ linear-gradient(90.29deg, rgba(255, 255, 255, 0.56) 8.57%, rgba(255, 255, 255, 0
 	font-weight: 600;
 	line-height: 18px;
 	padding: 10px 40px;
+    width: 100%;
 }
 .banner_tab .form-group{
     /* background: rgba(255, 255, 255, 0.86); */
@@ -602,4 +603,16 @@ input[type=number]::-webkit-outer-spin-button {
 	.ourServices .item .text{
 		max-width: 280px;
 	}
+}
+
+@media (max-width:768px){    
+    .banner_tab div#tabs-content .col {
+        width: 100%;
+        max-width: 100%;
+        flex: 100%;
+        margin-bottom: 10px;
+    }
+    .banner_tab div#tabs-content .item{
+        border-right: unset;
+    }
 }

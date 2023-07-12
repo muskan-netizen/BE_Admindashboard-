@@ -28,7 +28,9 @@
 				<div class="left">
 					<div class="logo">
 						<div class="image">
+						<a href="{{route('userHome')}}">
 							<img src="yacht-images/logo.png" alt="Logo">
+						</a>
 						</div>
 					</div>
 				</div>
@@ -120,7 +122,7 @@
 				  	<div id="tabs-content">
 					    <div id="tab1" class="tab-content">
 					      	<div class="row align-items-center">
-					      		<div class="col-md-2">
+					      		<div class="col">
 					      			<div class="item">
 					      				<h5>Location</h5>
 					      				<p><img src="yacht-images/icons/3.png" alt=""> 
@@ -130,7 +132,7 @@
 										</p>
 					      			</div>
 					      		</div>
-					      		<div class="col-md-3">
+					      		<div class="col">
 					      			<div class="item">
 					      				<h5>Pickup Date & Time</h5>
 					      				<p><img src="yacht-images/icons/4.png" alt="">
@@ -138,7 +140,7 @@
 										</p>
 					      			</div>
 					      		</div>
-					      		<div class="col-md-3">
+					      		<div class="col">
 					      			<div class="item">
 					      				<h5>Drop Date & Time</h5>
 					      				<p><img src="yacht-images/icons/4.png" alt="">
@@ -146,7 +148,7 @@
 										</p>
 					      			</div>
 					      		</div>
-								<div class="col-md-2" style="display: none" id="seats_div">
+								<div class="col" style="display: none" id="seats_div">
 									<div class="item">
 										<h5>Seat Number</h5>		
 										<p>								
@@ -154,7 +156,7 @@
 									  </p>
 									</div>
 								</div>
-					      		<div class="col-md-2">
+					      		<div class="col">
 					      			<div class="cta">
 										<button type="submit">Search</button>
 					      			</div>
