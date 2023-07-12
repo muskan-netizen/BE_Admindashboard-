@@ -146,7 +146,7 @@
 										</p>
 					      			</div>
 					      		</div>
-								  <div class="col-md-2">
+								<div class="col-md-2" style="display: none" id="seats_div">
 									<div class="item">
 										<h5>Seat Number</h5>		
 										<p>								
@@ -426,4 +426,18 @@ if($theme && !empty($theme->map_key)){
         });
 </script>
 
+<script>
+	$("input[name='service']").click(function(){
+		if($(this).val() == 'yacht'){
+			$('#location').attr('required',false);
+			$('#seats_div').show();
+		}else if($(this).val() == 'airport'){
+			$('#location').attr('required',true);
+			$('#seats_div').hide();
+		}else{
+			$('#location').attr('required',false);
+			$('#seats_div').hide();
+		}
+	})
+</script>
 </html>
