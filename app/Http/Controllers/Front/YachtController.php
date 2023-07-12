@@ -376,11 +376,14 @@ class YachtController extends FrontController
 
     public function productsSearchResult(Request $request)
     {
+        \Log::info(['request' => $request->all()]);
         // $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
         $category = Category::where('slug',$request->service)->firstOrFail();
         // $vendor_ids = Vendor::with(['categories'])->whereHas('categories', function($q)use($request){
         //     $q->where('slug', $request->service);
         // })->pluck('id');
+        \Log::info(['category' => $category]);
+
         if($request->service == 'airport'){
             $mapKey = '1234';
             $theme = \App\Models\ClientPreference::where(['id' => 1])->first();
