@@ -401,7 +401,7 @@ class YachtController extends FrontController
                 ];
             });
         }
-        else{
+        else if($category){
             $data['products'] = Product::with('variant')->where(function($q) use ($request){
                 if(isset($request->pickup_time) && isset($request->drop_time)){
                     $q->where('pickup_time', '<=', $request->pickup_time)
@@ -412,6 +412,8 @@ class YachtController extends FrontController
                     $q->where('seats','>=', $request->seats);
                 }
             })->where('category_id',$category->id)->get();
+        }else{
+            $data['products'] = [];
         }
         $data['service'] = $request->service;
         return view('frontend.yacht.products',$data);
