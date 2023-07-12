@@ -2584,7 +2584,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                   <div id="save_social_media">
                      <input type="hidden" name="vendor_registration_document_id" value="">
                      <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                            <div class="form-group position-relative">
                               <label for="">Type</label>
                               <div class="input-group mb-2">
@@ -2597,7 +2597,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                               </div>
                            </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                            <div class="form-group position-relative">
                               <label for="">Is Required?</label>
                               <div class="input-group mb-2">
@@ -2608,6 +2608,17 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                               </div>
                            </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="form-group position-relative">
+                               <label for="">Need Expiration Date</label>
+                               <div class="input-group mb-2">
+                                <select class="form-control" name="need_expiration_date">
+                                   <option value="1">{{__('Yes')}}</option>
+                                   <option value="0">{{__('No')}}</option>
+                                </select>
+                             </div>
+                            </div>
+                         </div>
                         <div class="col-md-12 selector-option-al ">
                             <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="selector-datatable">
                                 <tr class="trForClone">

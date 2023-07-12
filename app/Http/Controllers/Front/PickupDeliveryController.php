@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, ClientPreferenceAdditional, PaymentOption, PickDropDriverBid, UserBidRideRequest, UserDevice};
-use App\Http\Traits\{ApiResponser,PaymentTrait};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, ClientPreferenceAdditional, OrderLongTermServiceSchedule, PaymentOption, PickDropDriverBid, UserBidRideRequest, UserDevice};
+use App\Http\Traits\{ApiResponser, OrderTrait, PaymentTrait};
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
@@ -21,7 +21,7 @@ use Log,DateTime,DateTimeZone;
 
 class PickupDeliveryController extends FrontController{
 
-    use ApiResponser,PaymentTrait;
+    use ApiResponser,PaymentTrait,OrderTrait;
 
     public function getPaymentOptions(Request $request, $domain = '')
     {
@@ -510,12 +510,20 @@ class PickupDeliveryController extends FrontController{
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
 
+            if($order_place['data']['recurring_booking_time'])
+            {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Recurring Order placed successfully.'
+                ]);
+            }
+
+
             if( ( $order_place && $order_place['status'] == 200 && ($request->payment_option_id == 1) ) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
                 $data = [];
                 $order = $order_place['data'];
                 $request_to_dispatch = $this->placeRequestToDispatch($request, $order, $request->vendor_id);
                 if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
-                    DB::commit();
                     $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
                     $order_place['data']['invalid_agent'] = $request_to_dispatch['invalid_agent'];
                     $order_place['data']['user_name'] = $user->email;
@@ -577,6 +585,20 @@ class PickupDeliveryController extends FrontController{
             }
             else{
                 DB::commit();
+
+                   //Send message if ride is booked for friend
+                   if(@$request->share_ride_users && count($request->share_ride_users)>0)
+                   {
+                       foreach($request->share_ride_users as $share_ride_users)
+                       {
+                           $share_ride_users = (object)$share_ride_users;
+           
+                           $dialCode = '+'.$share_ride_users->dial_code??'91';
+                           $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name??'User'." has booked a ride. Tracking url is ".$order_place['data']['dispatch_traking_url'];
+                           $send = $this->sendSms('', '', '', '', $dialCode.$share_ride_users->phone_number, $msg);
+                       }
+                   }
+
                 //DB::rollback();
                 return $order_place;
             }
@@ -713,14 +735,35 @@ class PickupDeliveryController extends FrontController{
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
                     $schedule_datetime_del  =$request->schedule_time ;// Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
+
+                $recurringformPost = '';
+                if(isset($request->recurringformPost) && !empty($request->recurringformPost))
+                {
+                    //This Function Return objected array of recurring data
+                    $recurringformPost = recurringCalculationFunction($request);
+    
+                     //Check if recurring_booking_type,recurring_week_day,recurring_week_type,recurring_day_data,recurring_booking_time coulmn exists in table
+                    $order->recurring_booking_type  =@$recurringformPost->action??null;
+                    $order->recurring_week_day      =@$recurringformPost->weekTypes??null;
+                    $order->recurring_week_type     =@$recurringformPost->weekTypes??null;
+                    $order->recurring_day_data      =@$recurringformPost->selectedCustomdates??null;
+                    $order->recurring_booking_time  =@$recurringformPost->schedule_time??null;
+                    $order->scheduled_date_time     = Null;
+
+                }else{
+
+                    $order->scheduled_date_time = $schedule_datetime_del;
+
+                }
+
                
-                $order->scheduled_date_time = $schedule_datetime_del;
                 /*book for a friend*/
                 $order->type                = $request->type;
                 $order->friend_name         = $request->friendName;
                 $order->friend_phone_number = $request->friendPhoneNumber;
                 $order->luxury_option_id    = $luxury_option->id;
                 $order->save();
+
 
                 // save pickup delivery task
                 $order_location               = new OrderLocations();
@@ -895,7 +938,15 @@ class PickupDeliveryController extends FrontController{
                 if (($request->has('transaction_id')) && (!empty($request->transaction_id))) {
                     $order->payment_status = 1;
                 }
+                
                 $order->save();
+
+
+                 /** for Recurring Service */
+                 if(!empty($order->recurring_booking_time) && !empty($request->recurringformPost)){
+                    DB::commit();
+                    $this->saveOrderLongTermServiceSchedule($order,$order_product->id);
+                }
 
                 if (($request->payment_option_id != 1) && ($request->payment_option_id != 2) && ($request->has('transaction_id')) && (!empty($request->transaction_id))) {
                     $payment = new Payment();
@@ -910,6 +961,7 @@ class PickupDeliveryController extends FrontController{
             $order['route'] = route('front.booking.details',$order->order_number);
             $data = [];
             $data['status'] = 200;
+            $data['recurring_booking_time'] = @$order->recurring_booking_time??null;
             $data['message'] =  'Order Placed';
             $data['data'] = $order;
             return $data;
@@ -1353,4 +1405,5 @@ class PickupDeliveryController extends FrontController{
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }
+
 }

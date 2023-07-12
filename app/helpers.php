@@ -1965,3 +1965,74 @@ if (!function_exists('getOnDemandPricingRule')) {
             return $return;
     }
 }
+
+if (!function_exists('recurringCalculationFunction')) {    
+    function recurringCalculationFunction($request)
+    {
+        $recurringformPost = (object)$request->recurringformPost;
+        $weekTypes ='';
+        $daysCnt ='';
+        if(!empty($recurringformPost->weekDay)){
+            $weekTypes = implode(',',$recurringformPost->weekDay);
+        }
+
+        $startDate = $recurringformPost->startDate;
+        $endDate = $recurringformPost->endDate;
+
+        $selectedCustomdates = [];
+        
+        if($recurringformPost->action=='2' || $recurringformPost->action=='1'){
+            $startDate = $recurringformPost->startDate;
+            $endDate = $recurringformPost->endDate;
+            
+            if($recurringformPost->action=='1'){
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            } else {
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate,$recurringformPost->weekDay);
+            }
+            
+            $daysCnt =count($selectedCustomdates);
+            $selectedCustomdates = implode(',',$selectedCustomdates);
+        }elseif($recurringformPost->action=='3'){
+            $startDate = Carbon::now()->addDays(1);
+            $endDate = Carbon::now()->addDays(1);
+            $endDate = $endDate->addMonths($recurringformPost->month_number);
+            $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            $daysCnt =count($selectedCustomdates);
+            $selectedCustomdates = implode(',',$selectedCustomdates);
+        }elseif($recurringformPost->action=='4'){
+            if(!empty($recurringformPost->selectedCustomdates)){
+                $daysCnt =count($recurringformPost->selectedCustomdates);
+                $selectedCustomdates = implode(',',$recurringformPost->selectedCustomdates);
+            }
+        }elseif($recurringformPost->action=='6'){
+            $startDate = $recurringformPost->startDate;
+            $endDate = $recurringformPost->endDate;
+            if($recurringformPost->action=='1'){
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            } else {
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate,$recurringformPost->weekDay,'A');
+            }
+            
+            $daysCnt =count($selectedCustomdates);
+            $selectedCustomdates = implode(',',$selectedCustomdates);
+        }
+
+
+        if(empty($daysCnt)){
+            $days = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            $daysCnt =count($days);
+        }
+
+            return (object)[
+                'weekTypes' => @$weekTypes,
+                'selectedCustomdates' => @$selectedCustomdates,
+                'startDate' => @$startDate,
+                'endDate' => @$endDate,
+                'action'  => @$recurringformPost->action,
+                'schedule_time'=>@$recurringformPost->schedule_time??'10:00',
+                'daysCnt'=>@$daysCnt??'1'
+            ];
+
+    }
+}

@@ -667,6 +667,20 @@
 
 <div class="col-md-4 ">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_share_ride_users" class="mr-2 mb-0">{{ __('Share Ride Users') }}<small
+                class="d-block pr-5">{{ __('.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_share_ride_users"
+                id="is_share_ride_users_switch" class="form-control checkbox_change"
+                data-className="is_share_ride_users" data-color="#43bee1"
+                @if (@$getAdditionalPreference['is_share_ride_users'] == 1) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['is_share_ride_users'] == 1) value="1" @else value="0" @endif
+            name="is_share_ride_users" id="is_share_ride_users" />
+    </div>
+</div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="is_enable_curb_side" class="mr-2 mb-0">{{ __('Curb Side') }}<small
                 class="d-block pr-5">{{ __('Enable Curb Side Notification To Vendor.') }}</small></label>
         <span> <input type="checkbox" data-plugin="switchery" name="is_enable_curb_side"

@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
 use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client, ClientPreferenceAdditional, Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, OrderVendorProduct, ProductFaq, ProductFaqSelectOption, UserBidRideRequest, PickDropDriverBid, UserDevice};
 use App\Http\Traits\ApiResponser;
+use App\Http\Traits\OrderTrait;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
@@ -20,7 +21,7 @@ use Illuminate\Support\Facades\Log as FacadesLog;
 
 class PickupDeliveryController extends BaseController{
 
-    use ApiResponser;
+    use ApiResponser,OrderTrait;
     private $riderObj;
     public function __construct()
     {
@@ -299,6 +300,14 @@ class PickupDeliveryController extends BaseController{
         try {
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
+            if($order_place['data']['recurring_booking_time'])
+            {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Recurring Order placed successfully.'
+                ]);
+            }
+
             if($order_place && $order_place['status'] == 200){
                 if (($request->payment_option_id == 1) || ($request->payment_option_id == 42) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) || (( $request->has('is_postpay')) && ($request->is_postpay==1))){
                     $data = [];
@@ -359,6 +368,22 @@ class PickupDeliveryController extends BaseController{
                     }
                 }else{
                     DB::commit();
+
+                     //Send message if ride is booked for friend
+                    if(@$request->share_ride_users && count($request->share_ride_users)>0)
+                    {
+                        foreach($request->share_ride_users as $share_ride_users)
+                        {
+                            $share_ride_users = (object)$share_ride_users;
+            
+                            $dialCode = '+'.$share_ride_users->dial_code??'91';
+                            $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name??'User'." has booked a ride. Tracking url is ".$order_place['data']['dispatch_traking_url'];
+                            $send = $this->sendSms('', '', '', '', $dialCode.$share_ride_users->phone_number, $msg);
+                            // \Log::info(json_encode($msg));
+
+                        }
+                    }
+
                     //DB::rollback();
                     return $order_place;
                 }
@@ -489,7 +514,24 @@ class PickupDeliveryController extends BaseController{
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
                     $schedule_datetime_del = Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
-                $order->scheduled_date_time = $schedule_datetime_del??NULL;
+                $recurringformPost = '';
+                if(isset($request->recurringformPost) && !empty($request->recurringformPost))
+                {
+                    //This Function Return objected array of recurring data
+                    $recurringformPost = recurringCalculationFunction($request);
+                     //Check if recurring_booking_type,recurring_week_day,recurring_week_type,recurring_day_data,recurring_booking_time coulmn exists in table
+                    $order->recurring_booking_type  =$recurringformPost->action??null;
+                    $order->recurring_week_day      =$recurringformPost->weekTypes??null;
+                    $order->recurring_week_type     =$recurringformPost->weekTypes??null;
+                    $order->recurring_day_data      =$recurringformPost->selectedCustomdates??null;
+                    $order->recurring_booking_time  =$recurringformPost->schedule_time??null;
+                    $order->scheduled_date_time     =Null;
+
+                }else{
+
+                    $order->scheduled_date_time = $schedule_datetime_del;
+
+                }
                 $order->save();
 
                 // save pickup delivery task
@@ -502,8 +544,8 @@ class PickupDeliveryController extends BaseController{
                 $order_location->tasks = json_encode($request->tasks );
                 $order_location->save();
 
-                     $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
-                     $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+                $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
+                $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
                 $vendor = Vendor::whereHas('product', function ($q) use ($request) {
                     $q->where('id', $request->product_id);
                 })->select('*','id as vendor_id')->orderBy('created_at', 'asc')->first();
@@ -673,6 +715,12 @@ class PickupDeliveryController extends BaseController{
                 }
                 $order->save();
 
+                 /** for Recurring Service */
+                 if(!empty($order->recurring_booking_time) && !empty($request->recurringformPost)){
+                    DB::commit();
+                    $this->saveOrderLongTermServiceSchedule($order,$order_product->id);
+                }
+
                 if (($request->payment_option_id != 1) && ($request->payment_option_id != 2) && (!empty($request->transaction_id))) {
                     $payment = new Payment();
                     $payment->date = date('Y-m-d');
@@ -686,6 +734,7 @@ class PickupDeliveryController extends BaseController{
                         $data = [];
                         $data['status'] = 200;
                         $data['message'] =  __('Order Placed');
+                        $data['recurring_booking_time'] = @$order->recurring_booking_time??null;
                         $data['data'] = $order;
                         return $data;
         }

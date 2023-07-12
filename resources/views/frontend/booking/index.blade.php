@@ -358,18 +358,24 @@ input[type=number]::-webkit-outer-spin-button {
                             @endif
 
                             @if($is_bid_ride_enable == 1)
-                                <input type="radio" id="bid_radio"  name="is_cab_pooling_radio" value="0">
+                                <input type="radio" id="bid_radio" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="0">
                                 <label class="mb-0  my-2" >
                                     <h5 class="m-0" id="">Bid</h5>
                                 </label>
                             @endif
 
                             @if($is_particular_driver == 1)
-                                <input type="radio" id="particular_driver_radio"  name="is_cab_pooling_radio" value="2">
+                                <input type="radio" id="particular_driver_radio" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="2">
                                 <label class="mb-0  my-2" >
                                     <h5 class="m-0" id="">Request to Driver</h5>
                                 </label>
                             @endif
+                            @if($is_recurring_booking == 1)
+                            <input type="radio" id="is_recurring_booking" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="4">
+                            <label class="mb-0  my-2" >
+                                <h5 class="m-0" id="">Reccurring Booking</h5>
+                            </label>
+                        @endif
                         </div>
                     @endif
 
@@ -434,11 +440,20 @@ input[type=number]::-webkit-outer-spin-button {
                             id="destination_location_add_temp">
 
                         </div>
-                        <div class="scheduled-ride">
+                        <div class="scheduled-ride TypeBookingNow">
                             <button><i class="fa fa-clock-o" aria-hidden="true"></i> <span
                                     class="mx-2 scheduleDateTimeApnd">{{ __('Now') }}</span> <i
                                     class="fa fa-angle-down" aria-hidden="true"></i></button>
                         </div>
+
+                        @if($is_recurring_booking == 1)
+                            <div class="scheduled-ride-rec TypeBookingRec" style="display:none">
+                                <button><i class="fa fa-clock-o" aria-hidden="true"></i> <span
+                                        class="mx-2 scheduleDateTimeApndRec">{{ __('Recurring') }}</span> <i
+                                        class="fa fa-angle-down" aria-hidden="true"></i></button>
+                            </div>
+                        @endif
+
                         @if ($wallet_balance < 0)
                             <div class="row">
                                 <div class="col-md-7">
@@ -500,15 +515,23 @@ input[type=number]::-webkit-outer-spin-button {
                             </div>
 
                             <div class="date-radio-list1 style-4">
-                                <div class="datepicker date input-group p-2">
+                                <div class="datepicker date input-group p-2 now-option">
                                     <input type="text" name="schedule_pickup_date" placeholder="Choose Date"
-                                        class="form-control" id="schedule_pickup_date">
+                                        class="form-control" id="schedule_pickup_date" style="width:100%!important">
                                     <div class="input-group-append">
                                         <span class="input-group-text calendar_icon" for="schedule_pickup_date"><i
                                                 class="fa fa-calendar"></i></span>
                                     </div>
                                 </div>
+                            
+                                @if($is_recurring_booking == 1)
+                                    <div class="recurring-option">
+                                        @include('frontend.product-part.recurring-booking')
+                                    </div>
+                                @endif
+
                             </div>
+
 
                             <div class="scheduled-footer">
 
@@ -523,7 +546,7 @@ input[type=number]::-webkit-outer-spin-button {
                         </div>
 
                         <!-- Riders Code -->
-                        <div class="alAddRiderSecOuter" id="rider_section" style="display:none;">
+                        <div class="alAddRiderSecOuter " id="rider_section"  style="display:none;">
                             <div class="col-12 d-flex justify-content-between align-items-center">
                                 @if (count($riders) > 0)
                                     <p class="m-0">Riders : <span id="rider_count">{{ count($riders) }}</span></p>
@@ -556,6 +579,43 @@ input[type=number]::-webkit-outer-spin-button {
                                 </div>
                             </div>
                         </div>
+
+                        @if($is_share_ride_users)
+                            <div class="" id="rider_section_user"  >
+                                <div class="col-12 d-flex justify-content-between align-items-center">
+                                    @if (count($riders) > 0)
+                                        <p class="m-0">Share Ride Details : <span id="rider_count">{{ count($riders) }}</span></p>
+                                    @endif
+                                    <button class="btn rounded {{ count($riders) == 0 ? 'w-100' : '' }}  add_rider_button"
+                                        data-toggle="modal" data-target="#alAddRiderSecModal"><i class="fa fa-plus"></i>
+                                        {{ __('Add Share Ride Details') }}</button>
+                                </div>
+                                <div class="col-12 mt-2">
+                                    <div class="row alRiderImgBox">
+                                        @foreach ($riders as $key => $rider)
+                                            <div class="col-3 text-center alHoverRiderBox">
+
+                                                <input class="alCheckMark" type="checkbox" name="share_ride_users[]"
+                                                    id="share_ride_users-{{ $key }}" {{ $key == 0 ? 'checked' : '' }}
+                                                    value="{{ $rider->id }}">
+                                                <label for="share_ride_users-{{ $key }}"
+                                                    class="share_ride_users-{{ $key }}">
+
+                                                    <div class="alRiderImg mb-1" style="background-color:<?php printf("#%06X\n", mt_rand(0, 0xffffff)); ?>">
+                                                        {{ substr($rider->first_name, 0, 1) }}</div>
+                                                    <div class="dalRiderInfo">
+                                                        <p class="alRiderName mb-0">{{ $rider->first_name }}</p>
+                                                    </div>
+
+                                                </label>
+                                                <span class="alCloseBtn deleteRider" data-id="{{ $rider->id }}">X</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
                         <div class="col-md-12" id="product_rider_div" style="display:none;">
                             <button class="btn btn-solid w-100"
                                 id="submit_product_rider_button">{{ __('Next') }}</button>
@@ -1598,6 +1658,10 @@ input[type=number]::-webkit-outer-spin-button {
                         <div class="form-group">
                             <label for="lastname" class="col-form-label">{{ __('Last Name') }}:</label>
                             <input type="text" class="form-control" name="last_name">
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="col-form-label">{{ __('Email') }}:</label>
+                            <input type="email" class="form-control" name="email">
                         </div>
                         <div class="form-group">
                             <label for="phonenumber" class="col-form-label">{{ __('Phone Number') }}:</label>

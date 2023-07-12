@@ -18,7 +18,8 @@ class Kernel extends ConsoleKernel
         Commands\SetDummyDataForDemo::class,
         Commands\RejectOrderNotification::class,
         Commands\HubSpotSyncData::class,
-        Commands\MargApiProductUpdateCron::class
+        Commands\MargApiProductUpdateCron::class,
+        Commands\RecurringBooking::class
         //
     ];
 
@@ -34,7 +35,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('auto:reject_order')->everyMinute();
         $schedule->command('auto:reject_order_notifi')->everyMinute();
         $schedule->command('set_default_dummy:data')->dailyAt('00:30');
-        $schedule->command('auto:create_recurring_order_for_dispatcher')->dailyAt('00:30');
+        $schedule->command('auto:create_recurring_order_for_dispatcher')->hourly();
         $schedule->command('send_campaign:notification')->everyMinute();
         $schedule->command('service_area:active_for_vendor_slot')->everyMinute();
         $schedule->command('copy:catalog')->everyTenMinutes();

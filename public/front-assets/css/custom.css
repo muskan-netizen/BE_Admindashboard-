@@ -4220,6 +4220,24 @@ h4#driver_name {
     font-weight: 600
 }
 
+.scheduled-ride-rec {
+    padding: 16px 10px
+}
+
+.scheduled-ride-rec button i {
+    font-weight: 600
+}
+
+.scheduled-ride-rec button {
+    background-color: #eee;
+    padding: 10px 12px;
+    border-radius: 50px;
+    line-height: 16px;
+    font-size: 14px;
+    border: 0;
+    font-weight: 600
+}
+
 .round-shape {
     width: 36px;
     height: 36px;
