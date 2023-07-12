@@ -39,7 +39,11 @@
 							<li><a href="{{ route('productSearch',['service' => 'rental']) }}" title="">Car Rental</a></li>
 							<li><a href="{{ route('productSearch',['service' => 'airport']) }}" title="">Airport Pickup and Drop</a></li>
 							<li><a href="{{ route('productSearch',['service' => 'yacht']) }}" title="">Yacht</a></li>
-							<li><a href="user/login" title="">Sign in / Login</a></li>							
+							@if (Auth::guest())
+								<li><a href="user/login" title="">Sign in / Login</a></li>
+							@else	
+								<li><a href="{{route('user.profile')}}" title="">My Account</a></li>
+							@endif
 						</ul>
 					</nav>
 				</div>
