@@ -314,7 +314,7 @@ class PickupDeliveryController extends BaseController{
                         $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
                         $order_place['data']['user_name'] = $user->email;
                         $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
-    
+
                          //Send message if ride is booked for friend
                         if($request->type == 1 && isset($request->friendPhoneNumber))
                         {
@@ -628,6 +628,7 @@ class PickupDeliveryController extends BaseController{
 
      // order update for pickup delivery
      public function orderUpdateAfterPaymentPickupDelivery($request){
+        \Log::info("inside orderUpdateAfterPaymentPickupDelivery ");\Log::info($request->all());
             $order = Order::where('order_number', $request->order_number)->first();
             $vendorId = OrderVendor::where('order_id',$order->id)->first();
             $vendor_id = $vendorId->vendor_id;
@@ -651,7 +652,7 @@ class PickupDeliveryController extends BaseController{
                 $payment->balance_transaction = !empty($order->payable_amount)?$order->payable_amount:$request->amount;
                 $payment->type = 'pickup/delivery';
                 $payment->save();
-                
+
             }
 
             if($request->payment_option_id = 49){

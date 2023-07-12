@@ -4289,6 +4289,7 @@ $(document).ready(function () {
             total_amount = cartElement.val();
             console.log("inside catr");
             var rowData = 'amt=' + total_amount + '&order_number=' + order.order_number + '&payment_from=' + payment_from;
+            console.log(rowData);
         }
         else if (path.indexOf("wallet") !== -1) {
             total_amount = walletElement.val();
@@ -4305,17 +4306,19 @@ $(document).ready(function () {
 
         }
         else if (cabElement.length > 0) {
+            console.log("inside cabElement");
             total_amount = cabElement.data('amount');
             payment_from = 'pickup_delivery';
             ajaxData.reload_route = address_id;
-            var rowData = 'amt='+ total_amount + '&order_number=' + order.order_number + '&payment_from=' + payment_from+'&subscription_id='+subscription_id.val();
+            var rowData = 'amt='+ total_amount + '&order_number=' + order.order_number + '&payment_from=' + payment_from + '&reload_route='+address_id;
+            console.log(rowData);
 
         }
         else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
             total_amount = tipElement.val(); console.log(total_amount);
             payment_from = 'tip';
             orderNumber = $("#order_number").val();
-            var rowData = 'amt='+ total_amount + '&order_number=' + order.order_number + '&payment_from=' + payment_from+'&subscription_id='+subscription_id.val();
+            var rowData = 'amt='+ total_amount + '&order_number=' + order_number + '&payment_from=' + payment_from+'&subscription_id=' +subscription_id.val();
 
         }
 

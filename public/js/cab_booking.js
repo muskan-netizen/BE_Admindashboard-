@@ -466,6 +466,8 @@ $(document).ready(function () {
                     }
                     else if(payment_option_id == 58){
                         payWithPowerTrans(payment_option_id,response.data);
+                    }else if(payment_option_id == 59){
+                        payWithLivees(payment_option_id,'',response.data);
                     }
                     cabBookingPaymentOptions(payment_option_id, response.data);
                 }else{

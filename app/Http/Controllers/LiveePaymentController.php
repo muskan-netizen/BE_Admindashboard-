@@ -57,12 +57,12 @@ class LiveePaymentController extends Controller
     public function index(Request $request, $amt)
     {
         try {
-            // \Log::info($request->all());
+            \Log::info($request->all());
             // dd($request->all());
             $orderNumber = $this->orderNumber($request);
             $users = $this->createUserToken();
             // $user = Auth::loginUsingId(1);
-            $user=Auth::user();
+            $user = Auth::user();
             // dd($request->all());
             $urlParams = '';
             $amount = $request->amt;
@@ -110,7 +110,7 @@ class LiveePaymentController extends Controller
             //             "</form>".
             //     "   </div>";
             //         return response()->json([$html]);
-            return view('backend.payment.liveePay', compact('amount', 'postURL','user'));
+            return view('backend.payment.liveePay', compact('amount', 'postURL', 'user'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -139,14 +139,14 @@ class LiveePaymentController extends Controller
     {
         try {
             //  \Log::info("success");
-              \Log::info($request->all());
+            \Log::info($request->all());
             // // if ($request->has('success') ) {
             $transactionId = $request->transactionid;
             $payment = Payment::where('transaction_id', $transactionId)->first();
             // dd($transactionId);
             if ($payment) {
                 \Log::info("payment");
-                 \Log::info($payment);
+                \Log::info($payment);
 
                 $payment->viva_order_id = $transactionId;
                 $payment->payment_option_id = 59;
@@ -180,27 +180,28 @@ class LiveePaymentController extends Controller
                 $wallet  = $user->wallet;
                 $wallet->depositFloat($payment->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $payment->transaction_id . '</b>']);
                 return redirect($returnUrl);
-            }
-            elseif (isset($request->subscription_id)) {
-                \Log::info("success",$request->all());
+            } elseif (isset($request->subscription_id)) {
+                \Log::info("success", $request->all());
                 $data['transaction_id'] = $payment->transaction_id;
                 $data['payment_option_id'] = 59;
                 $data['subsid'] = $request->subscription_id;
                 $data['subscription_id'] = $request->subscription_id;
-                $data['amount'] =$request->amount;
+                $data['amount'] = $request->amount;
                 $request = new \Illuminate\Http\Request($data);
                 \Log::info($request->all());
 
                 $subscriptionController = new UserSubscriptionController();
                 $subscriptionController->purchaseSubscriptionPlan($request, $request->subscription_id);
 
-                if ($payment->payment_from == 'web') {  \Log::info("inside webs");
+                if ($payment->payment_from == 'web') {
+                    \Log::info("inside webs");
                     return redirect()->route('user.subscription.plans');
                 } else {
                     $returnUrl = route('payment.gateway.return.response') . '/?gateway=livee' . '&status=200&transaction_id=' . $payment->transaction_id . '&action=subscription';
                     return redirect($returnUrl);
                 }
             } elseif ($request->paymentfrom == 'pickup_delivery') {
+                \Log::info("inside pd");
                 $data['payment_option_id'] = 59;
                 $data['transaction_id'] = $transactionId;
                 $data['amount'] = $request->amount;
@@ -216,7 +217,8 @@ class LiveePaymentController extends Controller
                     return redirect($returnUrl);
                 }
             } elseif ($request->paymentfrom == 'tip') {
-\Log::info("inside tips");\Log::info($request->paymentfrom);
+                \Log::info("inside tips");
+                \Log::info($request->paymentfrom);
                 $data['tip_amount'] = $request->amt;
                 $data['order_number'] = $request->order_number;
                 $data['transaction_id'] = $transactionId;
@@ -252,12 +254,11 @@ class LiveePaymentController extends Controller
                 // pr($request->auth_token);
                 $user = User::where('id', $request->user_id)->first();
                 Auth::login($user);
-            }
-            else{
+            } else {
                 $user = Auth::loginUsingId(1);
             }
-            $request->request->add(['payment_from' => isset($request->paymentfrom)?$request->paymentfrom:$request->payment_from]);
-            $request->request->add(['amount' => isset($request->amt)?$request->amt:$request->amount]);
+            $request->request->add(['payment_from' => isset($request->paymentfrom) ? $request->paymentfrom : $request->payment_from]);
+            $request->request->add(['amount' => isset($request->amt) ? $request->amt : $request->amount]);
 
             $orderNumber = $this->orderNumber($request);
             // dd($request->all());
@@ -268,7 +269,7 @@ class LiveePaymentController extends Controller
             // $payment = Payment::where('transaction_id', $request->transaction_id)->first();
             // $user = $payment->user_id;
             $name = strtok(auth()->user()->name, " ");
-           // $lastname = substr(strstr(auth()->user()->name, " "), 1);
+            // $lastname = substr(strstr(auth()->user()->name, " "), 1);
             $email = auth()->user()->email;
             $phone = auth()->user()->phone_number;
 
@@ -285,7 +286,7 @@ class LiveePaymentController extends Controller
                 $urlParams   = "transactionid=$orderNumber&order_number=$request->order_number&paymentfrom=tip&amount=$request->amount&success=true";
             }
             $postURL = url('/livee/success' . '?' . $urlParams);
-            \Log::info("url ".$postURL);
+            \Log::info("url " . $postURL);
             return view('backend.payment.liveePay', compact('amount', 'postURL', 'user'));
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -296,7 +297,7 @@ class LiveePaymentController extends Controller
     {
 
         try {
-            $time    = isset($request->transaction_id)?$request->transaction_id:time();
+            $time    = isset($request->transaction_id) ? $request->transaction_id : time();
             $user_id = auth()->id();
             $amount  = $request->amt;
             // dd($request->all());
@@ -325,14 +326,13 @@ class LiveePaymentController extends Controller
                 Payment::create([
                     'amount' => 0,
                     'transaction_id' => $time,
-                    'balance_transaction' => round($amount,2),
+                    'balance_transaction' => round($amount, 2),
                     'type' => 'subscription',
                     'date' => date('Y-m-d'),
                     'user_id' => $user_id,
                     'payment_from' => $request->come_from ?? 'web',
                 ]);
-            }
-            elseif ($request->payment_from == 'tip') {
+            } elseif ($request->payment_from == 'tip') {
                 // \Log::info("inside tippppp");
                 $time = time();
                 Payment::create([
@@ -344,8 +344,8 @@ class LiveePaymentController extends Controller
                     'user_id' => $user_id,
                     'payment_from' => $request->come_from ?? 'web',
                 ]);
-
             } else if ($request->payment_from == 'pickup_delivery') {
+                \Log::info("inside pickup");
                 $time = $request->order_number;
                 Payment::create([
                     'amount' => 0,
@@ -397,7 +397,7 @@ class LiveePaymentController extends Controller
             CartProduct::where('cart_id', $cartid)->delete();
             CartProductPrescription::where('cart_id', $cartid)->delete();
 
-            if (! empty($order->vendors)) {
+            if (!empty($order->vendors)) {
                 foreach ($order->vendors as $vendor_value) {
                     $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
                     $user_vendors = UserVendor::where([
@@ -411,9 +411,8 @@ class LiveePaymentController extends Controller
             $super_admin = User::where('is_superadmin', 1)->pluck('id');
             $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
 
-                // send sms
-                $this->sendOrderSuccessSMS($order);
-
+            // send sms
+            $this->sendOrderSuccessSMS($order);
         } catch (\Exception $e) {
             \Log::info('orderSuccessCartDetail error :-' . $e->getMessage());
             return true;
@@ -433,7 +432,7 @@ class LiveePaymentController extends Controller
         $amount = $request->amount;
         $user = auth()->user();
         $action = isset($request->action) ? $request->action : '';
-        $params = '?amt=' . $amount . '&paymentfrom=' . $action."&come_from=app&user_id=".$user->id;
+        $params = '?amt=' . $amount . '&paymentfrom=' . $action . "&come_from=app&user_id=" . $user->id;
         if ($action == 'cart') {
             $params = $params . '&order_number=' . $request->order_number . '&app=1';
         } elseif ($action == 'wallet') {
@@ -441,6 +440,8 @@ class LiveePaymentController extends Controller
         } elseif ($action == 'subscription') {
             $params = $params . '&app=3&subscription_id=' . $request->subscription_id;
         } elseif ($action == 'tip') {
+            $params = $params . '&app=3&order_number=' . $request->order_number;
+        }elseif ($action == 'pickup_delivery') {
             $params = $params . '&app=3&order_number=' . $request->order_number;
         }
         // dd($request->all());
@@ -454,7 +455,7 @@ class LiveePaymentController extends Controller
         //     return $e->getMessage();
         // }
         $url = url('payment/livees/api/' . $params);
-            // \Log::info
+        // \Log::info
         return $this->successResponse(($url));
     }
 
