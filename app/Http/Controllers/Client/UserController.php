@@ -327,7 +327,6 @@ class UserController extends BaseController
 
         $wallet = $user->wallet;
         $userCustomData = $this->userMetaData($user->id, 'web', 'web');
-        $user->createPermissionsUser();
         return $user->id;
     }
 
@@ -474,8 +473,6 @@ class UserController extends BaseController
                 $addpermission[] =  array('user_id' => $id, 'permission_id' => $userpermissions[$i]);
             }
             UserPermissions::insert($addpermission);
-        }else{
-            $user->createPermissionsUser();
         }
         // dd($request->vendor_permissions);
         //for updating vendor permissions
