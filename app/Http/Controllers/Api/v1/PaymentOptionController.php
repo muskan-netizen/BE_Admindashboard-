@@ -92,10 +92,7 @@ class PaymentOptionController extends BaseController
             } else {
                 $domain = $client->sub_domain . env('SUBMAINDOMAIN');
             }
-            // // $server_url = "http://192.168.102.171:8001/";
-            // $server_url = "https://" . $domain . "/";
-            // $request->serverUrl = $server_url;
-            // $request->currencyId = $request->header('currency');
+
 
             $function = 'postPaymentVia_' . $gateway;
 
@@ -396,33 +393,6 @@ class PaymentOptionController extends BaseController
         }
     }
 
-    // public function postPaymentVia_stripe(Request $request){
-    //     try{
-    //         $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
-    //         $creds_arr = json_decode($stripe_creds->credentials);
-    //         $api_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
-    //         $this->gateway = Omnipay::create('Stripe');
-    //         $this->gateway->setApiKey($api_key);
-    //         $this->gateway->setTestMode(true); //set it to 'false' when go live
-    //         $token = $request->stripe_token;
-    //         $response = $this->gateway->purchase([
-    //             'currency' => 'INR',
-    //             'token' => $token,
-    //             'amount' => $request->amount,
-    //             'metadata' => ['order_id'=>'11'],
-    //             'description' => 'Transaction type purchase',
-    //         ])->send();
-    //         if ($response->isSuccessful()) {
-    //             return $this->successResponse($response->getTransactionReference());
-    //         }
-    //         else {
-    //             return $this->errorResponse($response->getMessage(), 400);
-    //         }
-    //     }catch(\Exception $ex){
-    //         return $this->errorResponse($ex->getMessage(), 400);
-    //     }
-    // }
-
     public function creditMyWallet(Request $request)
     {
         $user = Auth::user();
@@ -691,9 +661,6 @@ class PaymentOptionController extends BaseController
                         ]);
                     }
 
-                    // if(!empty($request->payment_option_id) && $request->payment_option_id == 42){
-
-                    // }
 
                     DB::commit();
                     return $this->successResponse($order, __('Order placed successfully.'), 201);

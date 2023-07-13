@@ -976,7 +976,7 @@ $(document).ready(function () {
 
     }
     $(document).on("click", "#order_placed_btn", async function () {
-        
+
         if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val()!=$("#schedule_datetime").val())){
             success_error_alert('error', error_unchanged_schedule_date, ".cart_response");
             $("#schedule_datetime").val($("#edit_order_schedule_datetime").val());
@@ -1011,7 +1011,7 @@ $(document).ready(function () {
             });
             return false;
         }
-        
+
         if ($("#agree_term_check").length > 0) {
             var checkbox = document.getElementById("agree_term_check");
             if (!checkbox.checked) {
@@ -1262,7 +1262,7 @@ $(document).ready(function () {
                             },
                             error: function (error) {
                                 var response = $.parseJSON(error.responseText);
-                                
+
                                 let error_messages = response.message;
                                 $.each(error_messages, function (key, error_message) {
                                     $('#min_order_validation_error_' + error_message.vendor_id).html(error_message.message).show();
@@ -5714,14 +5714,7 @@ $(document).ready(function () {
                         // }
                     }
                 });
-                // stripe.createToken(card).then(function (result) {
-                //     if (result.error) {
-                //         $('#stripe_card_error').html(result.error.message);
-                //         $(".topup_wallet_confirm").attr("disabled", false);
-                //     } else {
-                //         paymentViaStripe(result.token.id, '', payment_option_id, '', '');
-                //     }
-                // });
+
             break;
 
             case 5:
@@ -5747,7 +5740,6 @@ $(document).ready(function () {
                     }
                 }).catch(function (error) {
                     // Re-enable button now that request is complete
-                    // alert("error occured: " + error);
                 Swal.fire({
                     // title: "Warning!",
                     text: "error occured: " + error,
@@ -5946,6 +5938,5 @@ function numberWithCommas(x) {
     // x=x.toFixed(2)
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
-//   var number = 213242.3412;
-//   alert(numberWithCommas(number));
+/
 $(".related-css").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"20px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}}]});

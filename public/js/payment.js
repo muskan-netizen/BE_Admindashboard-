@@ -53,7 +53,6 @@ $(document).ready(function () {
             }
 
         }
-        // paymentSuccessViaPaystack(urlParams.get('amount'), urlParams.get('trxref'), path, tipAmount, order_number);
     }
 
 
@@ -101,9 +100,6 @@ $(document).ready(function () {
         ajaxData.returnUrl = path;
         ajaxData.cancelUrl = path;
 
-        // console.log(ajaxData);
-        // return false;
-
 
         $.ajax({
             type: "POST",
@@ -141,14 +137,12 @@ $(document).ready(function () {
         let address_id = 0;
         let payment_form = '';
         if (path.indexOf("cart") !== -1) {
-            // $('#order_placed_btn').trigger('click');
-            // $('#v-pills-paystack-tab').trigger('click');
+
             $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
             address_id = $("input:radio[name='address_id']:checked").val();
             payment_form = "cart"
         } else if (path.indexOf("wallet") !== -1) {
-            // $('#topup_wallet_btn').trigger('click');
-            // $('#wallet_topup_form #radio-paystack').prop("checked", true);
+
             $("#topup_wallet_btn, .topup_wallet_confirm").attr("disabled", true);
             payment_form = "wallet"
         }
@@ -351,14 +345,9 @@ $(document).ready(function () {
                 { name: 'cart_id', value: cart_id },
                 { name: 'order_number', value: order.order_number }
             );
-            // ajaxData.tip = tip;
-            // ajaxData.address_id = address_id;
-            // ajaxData.payment_form = 'cart';
-            // ajaxData.cart_id = cart_id;
-            // ajaxData.order_number = order.order_number;
+
         } else if (path.indexOf("wallet") !== -1) {
             total_amount = walletElement.val();
-            // ajaxData.payment_form = 'wallet';
             ajaxData.push({ name: 'payment_form', value: 'wallet' });
         } else if (path.indexOf("subscription") !== -1) {
             total_amount = subscriptionElement.val();
@@ -370,17 +359,14 @@ $(document).ready(function () {
                 { name: 'payment_form', value: 'tip' },
                 { name: 'order_number', value: $("#order_number").val() }
             );
-            // ajaxData.payment_form = 'tip';
-            // ajaxData.order_number = $("#order_number").val();
+
         }
         ajaxData.push(
             { name: 'token', value: token },
             { name: 'amount', value: total_amount },
             { name: 'returnUrl', value: path }
         );
-        // ajaxData.token = token;
-        // ajaxData.amount = total_amount;
-        // ajaxData.returnUrl = path;
+
         $.ajax({
             type: "POST",
             dataType: 'json',
