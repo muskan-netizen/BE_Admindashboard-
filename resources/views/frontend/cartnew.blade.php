@@ -1094,6 +1094,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var off_scheduling_at_cart = "<?= $client_preferences->off_scheduling_at_cart; ?>";
     var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
     var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
+    var payment_mpesa_safari_url = "{{route('mpesasafari.pay')}}";
 </script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/payment.js')}}"></script>

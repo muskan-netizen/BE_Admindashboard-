@@ -553,6 +553,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var inline='';
     var powertrans_payment_url = "{{ route('powertrans.payment') }}";
     var pesapal_payment_url = "{{ route('pesapal.payment') }}";
+    var payment_mpesa_safari_url = "{{route('mpesasafari.pay')}}";
 
     $('#wallet_amount').keypress(function(event) {
         if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {

@@ -5112,6 +5112,10 @@ $(document).ready(function () {
             case 58:
                 payWithPowerTrans(payment_option_id,'');
             break;
+            
+             case 60:
+                paymentViaMpesaSafari(payment_option_id,'');
+            break;
                 
         }
 
@@ -5665,6 +5669,12 @@ $(document).ready(function () {
                 payWithPowerTrans(payment_option_id, order);
               }
             break;
+            case '60':
+              var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+              if (order != '') {
+                paymentViaMpesaSafari(payment_option_id, order);
+              }
+            break;
         }
 
     }
@@ -5921,6 +5931,9 @@ $(document).ready(function () {
             
             case 58:
                 payWithPowerTrans(payment_option_id,'');
+            break;
+            case 60:
+                paymentViaMpesaSafari(payment_option_id,'');
             break;
         }
     }

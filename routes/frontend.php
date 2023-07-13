@@ -176,7 +176,10 @@ Route::group(['middleware' => ['domain']], function () {
 
     //azulpay
     Route::match(['get','post'],'payment/nmi','Front\NmiPaymentController@beforePayment')->name('nmi.pay');
-
+    
+    //mpesasafari
+    Route::match(['get','post'],'payment/mpesa','Front\MpesaSafariController@createPayment')->name('mpesasafari.pay');
+    
     // obo-pay
     Route::post('before-payment/obo','Front\OboPaymentController@beforePayment')->name('obo.pay');
     Route::get('after-payment/obo','Front\OboPaymentController@afterPayment')->name('after.obo.payment');
@@ -407,7 +410,6 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('/autocomplete-search', 'Front\SearchController@postAutocompleteSearch')->name('autocomplete');
 	Route::get('/search-all/{keyword}', 'Front\SearchController@showSearchResults')->name('showSearchResults');
 	Route::get('/', 'Front\UserhomeController@index')->name('userHome');
-	Route::get('/mpesa', 'Front\UserhomeController@mPesa')->name('mPesa');
 	
 	Route::get('/setSessionIndex', 'Front\UserhomeController@setSessionIndex')->name('setSessionIndex');
 

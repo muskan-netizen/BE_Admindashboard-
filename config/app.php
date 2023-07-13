@@ -189,8 +189,6 @@ return [
         Orangehill\Iseed\IseedServiceProvider::class,
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
         Jorenvh\Share\Providers\ShareServiceProvider::class,
-        Gathuku\Mpesa\MpesaServiceProvider::class,
-
         /*
          * Package Service Providers...
          */
@@ -281,8 +279,7 @@ return [
         'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
         'Share' => Jorenvh\Share\ShareFacade::class,
         // 'HTMLMin' => HTMLMin\HTMLMin\Facades\HTMLMin::class,
-        'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
-        'Mpesa' => Gathuku\Mpesa\Facades\Mpesa::class
+        'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class
     ],
 
 ];
