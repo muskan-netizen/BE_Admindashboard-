@@ -28,6 +28,7 @@ class CategoryController extends FrontController{
      */
     public function categoryProduct(Request $request, $domain = '', $slug = 0)
     {        
+        
         //$preferences = Session::get('preferences');
         $vendorType = Session::get('vendorType');
         $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'):  getClientPreferenceDetail();
@@ -365,6 +366,7 @@ class CategoryController extends FrontController{
      */
     public function categoryVendorProducts(Request $request, $domain = '', $slug1 = 0, $slug2 = 0)
     {
+        
         // slug1 => category slug
         // slug2 => vendor slug
         $maxPrice = 0;
