@@ -162,7 +162,7 @@ class DunzoController extends Controller
 			$cus_address = UserAddress::find($order->address_id);
 			$orderProducts = OrderVendorProduct::where(['order_id'=>$orderVendor->order_id,'order_vendor_id'=>$orderVendor->id])->get();
             $scheduledAt = '';
-            $preTime = ($vendor_details->order_pre_time >0) ? $vendor_details->order_pre_time : '0';
+            $preTime = ($vendor_details->order_pre_time >0) ? $vendor_details->order_pre_time : '10';
             if(isset($order->scheduled_date_time) && $order->scheduled_date_time){
                 $date = date('Y-m-d H:i:s', strtotime('+'. $preTime.' minutes', strtotime($order->scheduled_date_time)));
                 $date = Carbon::parse($date, 'UTC');
