@@ -929,7 +929,6 @@ class PickupDeliveryController extends FrontController{
                     $payable_amount = 0.00;
 
                 }
-            //   // Log::info($cash_to_be_collected);
                 $unique = $customer->code;
                 $team_tag = $unique."_".$vendor;
                 $dynamic = uniqid($order->id.$vendor);
@@ -989,7 +988,7 @@ class PickupDeliveryController extends FrontController{
 
                 $postdata =  [
                     'order_number' =>  $order->order_number,
-                   
+
                     'barcode' => '',
                     'allocation_type' => $request->unique_id ? 'notify' : 'a',
                     'task' => $request->tasks,
@@ -1328,7 +1327,6 @@ class PickupDeliveryController extends FrontController{
             return $this->successResponse(['biddata' => $biddata, 'bid_expire_time_limit_seconds' => $getAdditionalPreference['bid_expire_time_limit_seconds']], 200);
         }
         catch (\Exception $e) {
-            \Log::error($e->getMessage());
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }
@@ -1342,7 +1340,6 @@ class PickupDeliveryController extends FrontController{
             return $this->successResponse($update, "Request accepted successfully", 200);
         }
         catch (\Exception $e) {
-            \Log::error($e->getMessage());
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }

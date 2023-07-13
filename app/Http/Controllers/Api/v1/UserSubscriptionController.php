@@ -171,7 +171,6 @@ class UserSubscriptionController extends BaseController
      */
     public function purchaseSubscriptionPlan(Request $request, $slug)
     {
-        \Log::info("purchaseSubscriptionPlan");        \Log::info($request->all());;
 
         try{
             $validator = Validator::make($request->all(), [
@@ -189,8 +188,7 @@ class UserSubscriptionController extends BaseController
 
 
             $subscription_plan = SubscriptionPlansUser::with('features.feature')->where('slug', $slug)->where('status', '1')->first();
-        //   \Log::info("slug"); \Log::info($slug);
-        //     \Log::info("inside scccc");
+
             if( ($user) && ($subscription_plan) ){
                 $last_subscription = SubscriptionInvoicesUser::with(['plan', 'features.feature'])
                     ->where('user_id', $user->id)
@@ -201,7 +199,6 @@ class UserSubscriptionController extends BaseController
                 $subscription_invoice->subscription_id = $subscription_plan->id;
                 $subscription_invoice->slug = strtotime(Carbon::now()).'_'.$slug;
                 $subscription_invoice->payment_option_id = $request->payment_option_id;
-                // $subscription_invoice->status_id = 2;
                 $subscription_invoice->frequency = $subscription_plan->frequency;
                 $subscription_invoice->payment_option_id = $request->payment_option_id;
                 $subscription_invoice->transaction_reference = $request->transaction_id;
