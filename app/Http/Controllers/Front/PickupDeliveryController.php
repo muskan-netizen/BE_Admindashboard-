@@ -165,6 +165,14 @@ class PickupDeliveryController extends FrontController{
             $client_timezone = DB::table('clients')->first('timezone');
             $user->timezone = $client_timezone->timezone ?? $user->timezone;
         }
+        $recurring = '';
+        $recurringDays = 0;
+        if($request->recurringformPost)
+        {
+           $recurring = recurringCalculationFunction($request);
+           $recurringDays  = $recurring->daysCnt??1; 
+        //    \Log::info(json_encode($recurringDays));
+        }
 
         $schedule_datetime_del = '';
         if(isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
@@ -183,6 +191,13 @@ class PickupDeliveryController extends FrontController{
         $product->image_url = $image_url;
         $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
        
+        if($recurringDays)
+        {
+            $tags_price['delivery_fee'] = decimal_format($tags_price['delivery_fee'] * $recurringDays);
+            $product->daysCnt = $recurringDays;
+            $product->selectedCustomdates = $recurring->selectedCustomdates;
+            $product->schedule_time = $recurring->schedule_time;
+        }
 
         $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
 
@@ -513,7 +528,8 @@ class PickupDeliveryController extends FrontController{
             if($order_place['data']['recurring_booking_time'])
             {
                 return response()->json([
-                    'status' => 'success',
+                    'status' => '200',
+                    'redirect' => route('user.orders'),
                     'message' => 'Recurring Order placed successfully.'
                 ]);
             }
@@ -589,10 +605,12 @@ class PickupDeliveryController extends FrontController{
                    //Send message if ride is booked for friend
                    if(@$request->share_ride_users && count($request->share_ride_users)>0)
                    {
-                       foreach($request->share_ride_users as $share_ride_users)
-                       {
-                           $share_ride_users = (object)$share_ride_users;
-           
+                    
+                        $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
+                        foreach($share_ride_users as $share_ride_users)
+                        {
+                            $share_ride_users = (object)$share_ride_users;
+   
                            $dialCode = '+'.$share_ride_users->dial_code??'91';
                            $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name??'User'." has booked a ride. Tracking url is ".$order_place['data']['dispatch_traking_url'];
                            $send = $this->sendSms('', '', '', '', $dialCode.$share_ride_users->phone_number, $msg);

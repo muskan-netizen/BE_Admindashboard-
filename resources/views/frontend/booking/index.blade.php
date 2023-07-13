@@ -581,13 +581,15 @@ input[type=number]::-webkit-outer-spin-button {
                         </div>
 
                         @if($is_share_ride_users)
-                            <div class="" id="rider_section_user"  >
+                        <button class="btn btn-solid m-2 share_ride_btn" ><i class="fa fa-share"></i>
+                            {{ __('Share Ride') }}</button>
+
+                            <div class="share_ride_div" id="rider_section_user" style="display: none">
                                 <div class="col-12 d-flex justify-content-between align-items-center">
                                     @if (count($riders) > 0)
-                                        <p class="m-0">Share Ride Details : <span id="rider_count">{{ count($riders) }}</span></p>
+                                        <p class="m-0">Share Rider Details : <span id="rider_count">{{ count($riders) }}</span></p>
                                     @endif
-                                    <button class="btn rounded {{ count($riders) == 0 ? 'w-100' : '' }}  add_rider_button"
-                                        data-toggle="modal" data-target="#alAddRiderSecModal"><i class="fa fa-plus"></i>
+                                    <button class="btn rounded {{ count($riders) == 0 ? 'w-100' : '' }}  add_share_rider_button" ><i class="fa fa-plus"></i>
                                         {{ __('Add Share Ride Details') }}</button>
                                 </div>
                                 <div class="col-12 mt-2">
@@ -624,22 +626,52 @@ input[type=number]::-webkit-outer-spin-button {
 
                     </div>
                 </div>
+
                 <script type="text/template" id="rider_template">
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        <% if(riders.length > 0){%>
+                            <p class="m-0">Riders : <%= riders.length %></p>
+                        <% } %>
+                        <button class="btn rounded <% if(riders.length > 0){'w-100'} %> add_rider_button" data-toggle="modal" data-target="#alAddRiderSecModal"><i class="fa fa-plus"></i> {{__('Add Rider')}}</button>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <div class="row alRiderImgBox">
+                            <% _.each(riders, function(rider, key){%>
+                                <%
+                                var randomColor = "#" + ((1<<24)*Math.random() | 0).toString(16);
+                                %>
+                                <div class="col-3 text-center alHoverRiderBox">
+                                    <input class="alCheckMark" type="radio" name="rider_id" id="option-<%= key %>" <% if(key == 0){'checked'} %> >
+                                    <label for="option-<%= key %>" class="option option-<%= key %>">
+                                        <div class="alRiderImg mb-1" style="background-color: <%=randomColor%> "> <%= (rider.first_name).charAt(0)%></div>
+                                        <div class="dalRiderInfo">
+                                            <p class="alRiderName mb-0"><%=rider.first_name%></p>
+                                        </div>
+                                    </label>
+                                    <span class="alCloseBtn deleteRider" data-id="<%=rider.id%>">X</span>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                </script>
+
+                <script type="text/template" id="share_rider_template">
             <div class="col-12 d-flex justify-content-between align-items-center">
                 <% if(riders.length > 0){%>
-                    <p class="m-0">Riders : <%= riders.length %></p>
+                    <p class="m-0">Share Rider Details : <%= riders.length %></p>
                 <% } %>
-                <button class="btn rounded <% if(riders.length > 0){'w-100'} %> add_rider_button" data-toggle="modal" data-target="#alAddRiderSecModal"><i class="fa fa-plus"></i> {{__('Add Rider')}}</button>
+                <button class="btn rounded <% if(riders.length > 0){'w-100'} %> add_share_rider_button" ><i class="fa fa-plus"></i> {{__('Add Share Rider Details')}}</button>
             </div>
             <div class="col-12 mt-2">
                 <div class="row alRiderImgBox">
+
                     <% _.each(riders, function(rider, key){%>
                         <%
                         var randomColor = "#" + ((1<<24)*Math.random() | 0).toString(16);
                         %>
                         <div class="col-3 text-center alHoverRiderBox">
-                            <input class="alCheckMark" type="radio" name="rider_id" id="option-<%= key %>" <% if(key == 0){'checked'} %> >
-                            <label for="option-<%= key %>" class="option option-<%= key %>">
+                            <input class="alCheckMark" type="checkbox" name="share_ride_users[]" id="share_ride_users-<%= key %>" <% if(key == 0){'checked'} %> >
+                            <label for="share_ride_users-<%= key %>" class="option option-<%= key %>">
                                 <div class="alRiderImg mb-1" style="background-color: <%=randomColor%> "> <%= (rider.first_name).charAt(0)%></div>
                                 <div class="dalRiderInfo">
                                     <p class="alRiderName mb-0"><%=rider.first_name%></p>
@@ -1102,6 +1134,17 @@ input[type=number]::-webkit-outer-spin-button {
                         <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>
                             <div class="col-6 mb-2">Loyalty</div>
                             <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved %></div>
+                        <% } %>
+
+                        <% if((result.daysCnt) && (result.daysCnt) > 0 ){ %>
+                            <div class="col-6 mb-2">Recurring Days</div>
+                            <div class="col-6 mb-2 text-right"><%= result.daysCnt %></div>
+
+                            <div class="col-6 mb-2">Recurring Dates</div>
+                            <div class="col-6 mb-2 text-right"><%= result.selectedCustomdates %></div>
+
+                            <div class="col-6 mb-2">Recurring Schedule Time</div>
+                            <div class="col-6 mb-2 text-right"><%= result.schedule_time %></div>
                         <% } %>
                     </div>
                 </div>
@@ -1924,6 +1967,10 @@ input[type=number]::-webkit-outer-spin-button {
                 $('#product_order_form').modal('hide');
             });
 
+            $(document).delegate('.add_share_rider_button', 'click', function() {
+                $('#alAddRiderSecModal').modal();
+                $('.add_rider_submit_button').addClass('add_share_rider_submit_button').removeClass('add_rider_submit_button');
+            });
 
             function getFormData(dom_query) {
                 var out = {};

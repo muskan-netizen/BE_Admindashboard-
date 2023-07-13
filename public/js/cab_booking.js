@@ -283,6 +283,13 @@ $(document).ready(function () {
         }else{
             var payid = $(this).attr('data-payment_method');
         }
+
+        var share_ride_users = $("input[name='share_ride_users[]']:checked").map(function () {
+            return this.value;
+        }).get();
+
+
+
         if(payid == 49){
             cno = $('#plugnpay-card-element').val();
             dt  = $('#plugnpay-date-element').val();
@@ -411,11 +418,18 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: cab_booking_create_order,
-            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id, coupon_id: coupon_id, amount: amount, tollamount:tollamount, servicechargeamount:servicechargeamount, totalamount:totalamount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime, type:type, friendName:friendName, friendPhoneNumber:friendPhoneNumber, no_seats_for_pooling:no_seats_for_pooling, is_cab_pooling:is_cab_pooling,driver_id,unique_id,recurringformPost},
+            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id, coupon_id: coupon_id, amount: amount, tollamount:tollamount, servicechargeamount:servicechargeamount, totalamount:totalamount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime, type:type, friendName:friendName, friendPhoneNumber:friendPhoneNumber, no_seats_for_pooling:no_seats_for_pooling, is_cab_pooling:is_cab_pooling,driver_id,unique_id,recurringformPost,share_ride_users},
             success: function(response) {
                 $('#pickup_now').attr('disabled', false);
                 $('#pickup_later').attr('disabled', false);
                 if(response.status == '200'){
+
+                    if(response.redirect != '')
+                    {   
+                        alert(response.message);
+                        window.location.href = response.redirect;
+                    }
+
                     let order_number = response.data.order_number;
                     let reload_route = response.data.route;
                     if((payment_option_id == 1) || (payment_option_id == 2)){
@@ -909,6 +923,46 @@ $(document).ready(function () {
         var dial_code = $(this).attr('data-dial-code');
         $('#dialCode').val(dial_code);
     });
+
+
+    $(document).on('click','.add_share_rider_submit_button',function(){
+        alert('dfsdf');
+
+        var form = document.getElementById('add_rider_form');
+        var formData = new FormData(form);
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            type: "post",
+            headers: {
+                Accept: "application/json"
+            },
+            url: add_rider_url,
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+         
+                    let share_rider_template = _.template($('#share_rider_template').html());
+                    $("#rider_section_user").html(share_rider_template({riders: response.riders})).show();
+                    $("#rider_section_user").show();
+                    $("#rider_section").hide();
+                
+                $('#alAddRiderSecModal').modal('hide');
+                form.reset();
+            },
+            beforeSend: function() {
+                $(".loader_box").show();
+            },
+            complete: function() {
+                $(".loader_box").hide();
+            }
+        });
+    });
+
     $(document).on('click','.add_rider_submit_button',function(){
         var form = document.getElementById('add_rider_form');
         var formData = new FormData(form);
@@ -930,17 +984,8 @@ $(document).ready(function () {
                 let rider_template = _.template($('#rider_template').html());
                 
                 var is_cab_pooling = $('input[name="is_cab_pooling_radio"]:checked').val();
-              
-                if(is_cab_pooling == 4)
-                {
-                    $("#rider_section_user").html(rider_template({riders: response.riders})).show();
-                    $("#rider_section_user").show();
-                    $("#rider_section").hide();
-                }else{
-                    $("#rider_section").html(rider_template({riders: response.riders})).show();
-                    $("#rider_section").show();
-                    $("#rider_section_user").show();
-                }
+                $("#rider_section").html(rider_template({riders: response.riders})).show();
+                
                 
                 $('#alAddRiderSecModal').modal('hide');
                 form.reset();
@@ -1197,7 +1242,7 @@ $(document).ready(function () {
         getVehicleDetail(product_id);
     });
 
-    function getVehicleDetail(product_id, rider_id=0)
+    function getVehicleDetail(product_id, rider_id=0,$recurringformPost = {})
     {
         add_spinner('.cab-booking-loader');
         var locations = [];
@@ -1228,7 +1273,7 @@ $(document).ready(function () {
         $.ajax({
             type: "POST",
             dataType: 'json',
-            data: {locations:locations,rider_id:rider_id, schedule_date_delivery:schedule_datetime, is_cab_pooling:is_cab_pooling, no_seats_for_pooling:no_seats_for_pooling},
+            data: {locations:locations,rider_id:rider_id, schedule_date_delivery:schedule_datetime, is_cab_pooling:is_cab_pooling, no_seats_for_pooling:no_seats_for_pooling,recurringformPost},
             url: get_product_detail+'/'+product_id,
             success: function(response) {
                 remove_spinner('.cab-booking-loader');
@@ -2327,6 +2372,10 @@ $(document).on("click",".btn-price-up-down",function(){
     } else {
         input.val(input.attr('min'));
     }
+});
+
+$(document).on("click",".share_ride_btn",function(){
+    $('#rider_section_user').toggle();    
 });
 
 
