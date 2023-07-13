@@ -10750,14 +10750,14 @@ body.al_body_template_one .footer-theme .sub-title li {
 
 .al_body_template_one .outter-fillter-data .custom_filtter ul li span {
     font-weight: 500;
-    font-size: 20px;
+    font-size: 18px;
     line-height: 24px;
     color: #0A0A0A;
     position: relative;
 }
 
 .al_body_template_one .outter-fillter-data .custom_filtter ul li span:after {
-    content: '';
+    content: unset;
     background: #D9D9D9;
     height: 1px;
     position: absolute;
@@ -10783,7 +10783,7 @@ body.al_body_template_one .footer-theme .sub-title li {
 .al_body_template_one .outter-fillter-data .custom_filtter ul li a {
     font-style: normal;
     font-weight: 400;
-    font-size: 18px;
+    font-size: 16px;
     line-height: 22px;
     color: #6F6F6F;
     position: relative;
@@ -11066,7 +11066,7 @@ body.al_body_template_one .vender-peragraph {
 }
 
 body.al_body_template_one.homeHeader .outter-fillter-data div#category_products_filter a.product-box.scale-effect {
-    height: 370px;
+    min-height: 370px;
 }
 
 

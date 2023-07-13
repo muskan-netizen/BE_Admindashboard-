@@ -209,6 +209,15 @@ $preference = $client_preference_detail;
                         @endif
                     </ul>
                 </li>
+                
+                @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
+                    <li class="add_post"><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn">
+                        <span>
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                            {{ __('') }}</span>
+                        </a></li>
+                @endif
+
                 @if($client_preference_detail->show_wishlist == 1)
                 <li class="mobile-wishlist d-inline d-sm-none al_iconsMb">
                     <a href="{{route('user.wishlists')}}">
@@ -242,6 +251,7 @@ $preference = $client_preference_detail;
                     </ul>
                 </li>
                 @endif
+
             </ul>
         </div>
     </div>
