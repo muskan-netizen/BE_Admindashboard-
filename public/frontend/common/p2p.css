@@ -1144,7 +1144,14 @@ body.al_body_template_nine.p2p-module .top-header .header-dropdown li.onhover-dr
     border-right: 1px solid #ccc;
     margin-right: 10px!important;
 }
-
+body.al_body_template_nine.p2p-module .top-header .header-dropdown li:last-child {
+    border-right: unset;
+    padding-right: 15px!important;
+    margin-right: 0!important;
+}
+div:empty {
+    display: none;
+  }
 body.al_body_template_nine.p2p-module .header-dropdown .onhover-dropdown a {
     margin-right: 15px!important;
     width:100%;
