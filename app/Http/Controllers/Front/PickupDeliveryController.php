@@ -471,8 +471,8 @@ class PickupDeliveryController extends FrontController{
     # check if last mile delivery on
     public function checkIfPickupDeliveryOn(){
         $preference = ClientPreference::first();
-        if($preference->need_dispacher_ride == 1 && !empty($preference->pickup_delivery_service_key) && !empty($preference->pickup_delivery_service_key_code) && !empty($preference->pickup_delivery_service_key_url))
-            return $preference;
+        if($preference->need_dispacher_ride == 1 && !empty($preference->pickup_delivery_service_key) && !empty($preference->pickup_delivery_service_key_code) && !empty($preference->pickup_delivery_service_key_url)){
+            return $preference;}
         else
             return false;
     }
