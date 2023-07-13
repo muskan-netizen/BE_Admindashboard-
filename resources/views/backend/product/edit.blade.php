@@ -1152,6 +1152,22 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             <label for="title" class="control-label">{{ __("Extra Time (min)") }}</label>
                             <input class="form-control" id="extra_time" name="extra_time" type="number" value="{{ $product->extra_time ?? ''}}">
                         </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="title" class="control-label">{{ __("Transmission") }}</label>
+                            <select name="transmission" id="" class="form-control">
+                                <option value="">Select Transmission</option>
+                                <option {{ $product->transmission == 'Manual' ? 'selected' : '' }} value="Manual">Manual</option>
+                                <option {{ $product->transmission == 'Automatic' ? 'selected' : '' }} value="Automatic">Automatic</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="title" class="control-label">{{ __("Fuel Type") }}</label>
+                            <select name="fuel_type" id="" class="form-control">
+                                <option value="">Select Fuel Type</option>
+                                <option {{ $product->fuel_type == 'Petrol' ? 'selected' : '' }} value="Petrol">Petrol</option>
+                                <option {{ $product->fuel_type == 'Diesel' ? 'selected' : '' }} value="Diesel">Diesel</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="row">
                         @if(isset($getAdditionalPreference['is_price_by_role']) && $getAdditionalPreference['is_price_by_role'] == '1')

@@ -306,6 +306,7 @@ class OrderController extends BaseController
                     }
                     $order->taxable_amount =  decimal_format($total_taxes);
                     $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
+                    $order->pick_drop_order_number = $request->pick_drop_order_number ?? null;
                     $order->save();
 
                     $is_long_term_order = 0;

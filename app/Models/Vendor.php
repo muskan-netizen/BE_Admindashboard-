@@ -220,4 +220,13 @@ class Vendor extends Model implements Auditable{
     {
       return $this->belongsToMany(Category::class, 'vendor_categories');
     }
+
+    public function scopeDistanceInMeters($query, $latitude = 0, $longitude = 0)
+    {
+        if ($latitude && $longitude) {
+            return $query->selectRaw("vendors.*, (6371000 * acos(cos(radians($latitude)) * cos(radians(latitude)) * cos(radians(longitude) - radians($longitude)) + sin(radians($latitude)) * sin(radians(latitude)))) AS distance_in_meter");
+        }
+        return $query->selectRaw("0 as distance_in_meter");
+    }
+
 }

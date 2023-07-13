@@ -414,7 +414,7 @@ $(document).ready(function () {
                     let order_number = response.data.order_number;
                     let reload_route = response.data.route;
                     if((payment_option_id == 1) || (payment_option_id == 2)){
-                        placeOrderBeforePayment('',payment_option_id,0);
+                        placeOrderBeforePayment('',payment_option_id,0,order_number);
                         window.location.replace(response.data.route);
 
                         // $('#cab_detail_box').html('');
@@ -506,7 +506,7 @@ $(document).ready(function () {
         });
     });
 
-    window.placeOrderBeforePayment = function placeOrderBeforePayment(address_id = 0, payment_option_id, tip = 0) {
+    window.placeOrderBeforePayment = function placeOrderBeforePayment(address_id = 0, payment_option_id, tip = 0,pick_drop_order_number) {
         var task_type = $("input[name='task_type']").val();
         var schedule_dt = $("#schedule_datetime").val();
         var slot = $("#slot").val();
@@ -525,7 +525,7 @@ $(document).ready(function () {
             dataType: 'json',
             async: false,
             url: place_order_url,
-            data: { address_id: address_id, payment_option_id: payment_option_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, slot: slot },
+            data: { address_id: address_id, payment_option_id: payment_option_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, slot: slot,pick_drop_order_number },
             success: function (response) {
                 if (response.status == "Success") {
                     orderResponse = response.data;

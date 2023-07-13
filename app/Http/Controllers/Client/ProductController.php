@@ -574,6 +574,8 @@ class ProductController extends BaseController
             $product->pickup_time = ($request->has('pickup_time')) ? $request->pickup_time : null;
             $product->drop_time = ($request->has('drop_time')) ? $request->drop_time : null;
             $product->extra_time = ($request->has('extra_time')) ? $request->extra_time : null;
+            $product->transmission = ($request->has('transmission')) ? $request->transmission : null;
+            $product->fuel_type = ($request->has('fuel_type')) ? $request->fuel_type : null;
 
             $product->save();
             if($request->has('slot_ids') && $request->slot_ids != ''){

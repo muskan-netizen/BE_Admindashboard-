@@ -262,16 +262,28 @@
 							@forelse ($products as $product )
 							<div class="col-6 col-lg-3">
 								<div class="product-card-box position-relative al_box_third_template al"  >
-									@php
+									@php									
 									if ($service == 'airport') {
 										$link = 'category/airport?destination_location='.$product['location'].'&destination_location_latitude='.$product['latitude'].'&destination_location_longitude='.$product['longitude'];
+										$imgSrc = $product['path'];
+										$productTitle = $product['title'];
 									}else{
 										$link = $product->vendor->slug.'/product/'.$product->url_slug;
+										if(count($product->pimage)){
+											$img = $product->pimage[0]->image;
+											$defaultImg = 0;
+										}else{
+											$img = loadDefaultImage();
+											$defaultImg = 1;
+										}
+										$imgSrc = $defaultImg ? $img : get_file_path(@$img->path['image_fit'].'500/500'.@$img->path['image_path'] ?? '','FILL_URL','330','330');
+										$productTitle = $product['title']. ' ('.number_format(($product->vendor->distance_in_meter/1000),2).' km)';
 									}
+									
 									@endphp
 									<a class="common-product-box text-center" href="{{ $link }}">
-										<div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ $service == 'airport' ? $product['path'] : get_file_path($product->path ?? '','FILL_URL','260','260') }}" alt="" title="">
-											<div class="pref-timing"> {{ $product['title'] }}</div>
+										<div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ $imgSrc }}" src="{{ $imgSrc }}" alt="" title="">
+											<div class="pref-timing"> {{ $productTitle }}</div>
 											@if ($service == 'yacht')
 											<label for="">Seats Available({{ $product->available_seats }})</label>
 											@endif

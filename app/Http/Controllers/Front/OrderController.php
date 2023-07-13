@@ -1333,6 +1333,7 @@ class OrderController extends FrontController
             $order->user_latitude = $latitude ? $latitude : null;
             $order->user_longitude = $longitude ? $longitude : null;
             $order->is_postpay = (isset($request->is_postpay)) ? $request->is_postpay : 0;
+            $order->pick_drop_order_number = $request->pick_drop_order_number ?? null;
             /* Save initial details of order */
             $order->save();
 
