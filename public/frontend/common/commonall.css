@@ -1379,17 +1379,11 @@ body.al_body_template_three .dashboard-right .profile-page .info-text {
     align-items: center;
     margin-bottom: 15px!important;
 }
-<<<<<<< HEAD
-body.al_body_template_three .dashboard-right .profile-page .info-text p {
-    margin-bottom: 0;
-    padding-left: 10px;
-=======
 .al_body_template_five  .main-fillter .side_fillter,
 .al_body_template_six  .main-fillter .side_fillter,
 .al_body_template_eight .main-fillter .side_fillter{
     margin-top: 0;
     background-color: #f5f5f5!important;
->>>>>>> 63d55464dd52b87c6a560c8963f28015f9b346e9
 }
 body.al_body_template_three .dashboard-right .profile-page .info-text label {
     min-width: 120px;
