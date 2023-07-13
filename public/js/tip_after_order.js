@@ -28,14 +28,8 @@ $(document).on('change', '#wallet_payment_methods input[name="wallet_payment_met
         // this ID matches the id of the element we created earlier.
         inline.mount('#yoco-card-frame');
     }
-    // else {
-    //     $("#wallet_payment_methods .yoco_element_wrapper").addClass('d-none');
-    // }
     if (code == 'checkout') {
-        // $("#wallet_payment_methods .checkout_element_wrapper").removeClass('d-none');
         Frames.init(checkout_public_key);
     }
-    // else {
-    //     $("#wallet_payment_methods .checkout_element_wrapper").addClass('d-none');
-    // }
+
 });

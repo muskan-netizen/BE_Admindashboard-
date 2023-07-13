@@ -4321,48 +4321,7 @@ $(document).ready(function () {
             var rowData = 'amt='+ total_amount + '&order_number=' + order_number + '&payment_from=' + payment_from+'&subscription_id=' +subscription_id.val();
 
         }
-
         window.location = livee_payment_url + '?' + rowData;
-        // ajaxData.amount = total_amount;
-        // ajaxData.cancelUrl = path;
-        // ajaxData.order_number = orderNumber;
-        // ajaxData.payment_from=payment_from;
-
-        // $.ajax({
-        //     type:'GET',
-        //     url:livee_payment_url,
-        //     data: ajaxData,
-        //     success: function (response) {
-        // location.href="/livees-pay";
-        // console.log(response);
-        // if(ajaxData.payment_from=='wallet'){
-        // $("#topup_wallet").modal('hide');
-        //  $(".livees-modal-body").html(response);
-        // // $("#LiveesModal").modal('show');
-        // $(".liveesForm").submit();
-        // }
-        // else if(ajaxData.payment_from=='cart')
-        // {
-        //       $("#proceed_to_pay_modal").modal('hide');
-        //  $(".livees-modal-body").html(response);
-        // // $("#LiveesModal").modal('show');
-        // $(".liveesForm").submit();
-        // }
-
-
-        //     },
-        //     error: function (error) {
-        //         var response = $.parseJSON(error.responseText);
-        //         if (cartElement.length > 0) {
-        //             success_error_alert('error', response.message, ".payment_response");
-        //             $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
-        //         } else if (walletElement.length > 0) {
-        //             success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
-        //             $(".topup_wallet_confirm").removeAttr("disabled");
-        //         }
-        //     }
-        // });
-
     }
 
 
