@@ -53,11 +53,11 @@ class CMSPageController extends BaseController
 
         $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module']);
 
-        $data['is_gst_required_for_vendor_registration'] = $getAdditionalPreference['is_gst_required_for_vendor_registration']??0;
-        $data['is_baking_required_for_vendor_registration'] = $getAdditionalPreference['is_baking_details_required_for_vendor_registration']??0;
-        $data['is_advance_details_required_for_vendor_registration'] = $getAdditionalPreference['is_advance_details_required_for_vendor_registration']??0;
-        $data['is_vendor_category_required_for_vendor_registration'] = $getAdditionalPreference['is_vendor_category_required_for_vendor_registration']??0;
-        $data['is_seller_module'] = $getAdditionalPreference['is_seller_module']??0;
+        $data['is_gst_required_for_vendor_registration'] = (int)$getAdditionalPreference['is_gst_required_for_vendor_registration']??0;
+        $data['is_baking_required_for_vendor_registration'] = (int)$getAdditionalPreference['is_baking_details_required_for_vendor_registration']??0;
+        $data['is_advance_details_required_for_vendor_registration'] = (int)$getAdditionalPreference['is_advance_details_required_for_vendor_registration']??0;
+        $data['is_vendor_category_required_for_vendor_registration'] = (int)$getAdditionalPreference['is_vendor_category_required_for_vendor_registration']??0;
+        $data['is_seller_module'] = (int)$getAdditionalPreference['is_seller_module']??0;
 
         $user = Auth::user();
       //  $langId = $user->language;
