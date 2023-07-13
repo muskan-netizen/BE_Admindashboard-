@@ -264,7 +264,7 @@ class CategoryController extends FrontController{
                 $value->vendorRating = $this->vendorRating($value->products);
                 $vendorCategories = VendorCategory::with(['category.translation' => function($q) use($langId){
                     $q->where('category_translations.language_id', $langId);
-                }])->where('vendor_id', $value->id)->where('status', 1)->get();
+                }])->where('vendor_id', $value->id)->groupBy('category_id')->where('status', 1)->get();
                 $categoriesList = '';
                 foreach ($vendorCategories as $key => $category) {
                     if ($category->category) {
