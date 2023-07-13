@@ -106,9 +106,9 @@ class PickupDeliveryController extends BaseController{
                     {
                         $product->service_charge_amount  =  $product->vendor->service_charge_amount??0.00;
                     }else{
-            
+
                         if($product->vendor->service_fee_percent>0){
-            
+
                             $product->service_charge_amount  = $product->tags_price * $product->vendor->service_fee_percent/100;
                         }
                     }
@@ -337,6 +337,7 @@ class PickupDeliveryController extends BaseController{
                         $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
 
 
+
                         //Send sendNotificationToCustomer
                         if (isset($request->schedule_time) && !empty($request->schedule_time))
                         {
@@ -344,7 +345,7 @@ class PickupDeliveryController extends BaseController{
                             $device_token = UserDevice::whereUserId($user->id)->orderBy('id','desc')->value('device_token');
                             sendNotificationToCustomer($device_token,$order_number);
                         }
-    
+
                          //Send message if ride is booked for friend
                        /* if($request->type == 1 && isset($request->friendPhoneNumber))
                         {
@@ -379,7 +380,7 @@ class PickupDeliveryController extends BaseController{
     }
 
 
-    //Call Notification to driver api for after create order 
+    //Call Notification to driver api for after create order
     public function createOrderNotification(Request $request){
 
         try {
@@ -402,7 +403,7 @@ class PickupDeliveryController extends BaseController{
                             )]
                         );
                 $response = json_decode($res->getBody(), true);
-                    
+
                 return $response;
             }
 
@@ -694,6 +695,7 @@ class PickupDeliveryController extends BaseController{
 
      // order update for pickup delivery
      public function orderUpdateAfterPaymentPickupDelivery($request){
+        \Log::info("inside orderUpdateAfterPaymentPickupDelivery ");\Log::info($request->all());
             $order = Order::where('order_number', $request->order_number)->first();
             $vendorId = OrderVendor::where('order_id',$order->id)->first();
             $vendor_id = $vendorId->vendor_id;
@@ -716,7 +718,7 @@ class PickupDeliveryController extends BaseController{
                 $payment->balance_transaction = !empty($order->payable_amount)?$order->payable_amount:$request->amount;
                 $payment->type = 'pickup/delivery';
                 $payment->save();
-                
+
             }
 
             if($request->payment_option_id = 49){
@@ -835,7 +837,7 @@ class PickupDeliveryController extends BaseController{
                 }
                 // FacadesLog::warning(['postdata' => $notify_hour
                 // ,$reminder_hour]);
-                
+
                 $postdata =  [
                             'order_number' =>  $order->order_number,
                             'customer_name' => $customer->name ?? 'Dummy Customer',
