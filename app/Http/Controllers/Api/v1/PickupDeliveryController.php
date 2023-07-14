@@ -470,6 +470,7 @@ class PickupDeliveryController extends BaseController{
                     $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name." has booked a ride. Tracking url is ".$order_place['data']['dispatch_traking_url']??null;
                     \Log::info(json_encode($msg));
                     $send = $this->sendSms('', '', '', '', $dialCode.$share_ride_users->phone_number, $msg);
+                    \Log::info('--response sms--');
                     \Log::info(json_encode($send));
                     // \Log::info(json_encode($msg));
 
