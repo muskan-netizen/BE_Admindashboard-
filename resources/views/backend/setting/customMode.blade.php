@@ -1,4 +1,4 @@
-    z@if ($client_preference_detail->business_type != 'taxi')
+    @if ($client_preference_detail->business_type != 'taxi')
     @if ($client_preference_detail->business_type != 'laundry')
         <div class="col-md-4">
             <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
