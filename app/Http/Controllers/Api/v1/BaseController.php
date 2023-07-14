@@ -319,13 +319,13 @@ class BaseController extends Controller{
         $preferences = ClientPreference::select('is_hyperlocal', 'client_code', 'language_id', 'celebrity_check')->first();
         $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
                     ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to', 'categories.type_id');
-                   
+
                     // if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
                     //     $categories->whereIn('categories.type_id',[10] );
                     // }else{
                         $categories->whereIn('categories.type_id',$categoryTypes );
                     // }
-                    
+
                 $categories =  $categories->distinct('categories.slug');
 
         $status = $this->field_status;
@@ -892,7 +892,7 @@ class BaseController extends Controller{
             $dispatch_domain = $this->checkIfLastMileDeliveryOn();
             $url = $dispatch_domain->delivery_service_key_url;
             $endpoint = $url . "/api/send-documents";
-             $dispatch_domain->delivery_service_key = 'icDerSAVT4Fd795DgPsPfONXahhTOA';
+            //  $dispatch_domain->delivery_service_key = 'icDerSAVT4Fd795DgPsPfONXahhTOA';
             $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
 
             $response = $client->post($endpoint);
@@ -953,7 +953,7 @@ class BaseController extends Controller{
                 $mail_from = 'dineshk@codebrewinnovations.com';
                 $sendto = 'dkdenni7@gmail.com';
                 try{
-                    
+
                     Mail::send([], [],
                     function ($message) use($sendto, $client_name, $mail_from) {
                         $message->from($mail_from, $client_name);
