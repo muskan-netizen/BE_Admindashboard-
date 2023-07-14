@@ -145,7 +145,7 @@ class OrderController extends FrontController
                 'reports'
             ]);
             $allOrders = $allOrders->with('vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail');
-            
+
             $allOrders = $allOrders->whereHas('vendors', function ($q) use($vendorUser) {
                 $q->whereHas('products');
                 //lender
@@ -347,7 +347,7 @@ class OrderController extends FrontController
                 }
             }
         }
-   
+
 
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
 
@@ -661,7 +661,7 @@ class OrderController extends FrontController
                 }
             }
         }
-   
+
 
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
 
@@ -725,7 +725,7 @@ class OrderController extends FrontController
             if (!$orderVendor) {
                 return $this->errorResponse(__('Order vendor not found.'), 404);
             }
-        
+
             $orderVendor->order_status_option_id = $request->order_vendor_status;
             $orderVendor->save();
             $response = [
@@ -1774,7 +1774,7 @@ class OrderController extends FrontController
         // $navCategories = $this->categoryNav($langId);
         // return view('frontend/orderPayment')->with(['navCategories' => $navCategories, 'first_name' => $request->first_name, 'last_name' => $request->last_name, 'email_address' => $request->email_address, 'phone' => $request->phone, 'total_amount' => $request->total_amount, 'address_id' => $request->address_id]);
         // }
-
+\Log::info("request");\Log::info($request->all());
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
          if($request->payment_option_id=='52'){
             if($primaryCurrency->currency->iso_code!='QAR'){
@@ -1808,7 +1808,7 @@ class OrderController extends FrontController
             $giftCardUsedAmount = 0;
             $userGiftCardCode = null;
             $nowDate = Carbon::now()->toDateTimeString();
-
+\Log::info("inside orderSave");
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
             if ($action == 'takeaway' || $action == 'dine_in' || $action == 'appointment') {
                 $latitude = Session::get('latitude') ?? '';
@@ -2033,7 +2033,7 @@ class OrderController extends FrontController
             ])
                 ->orderBy('created_at', 'asc')
                 ->get();
-            
+
             /* Initialize empty data */
             $total_amount = 0;
             $total_discount = 0;
@@ -2629,7 +2629,7 @@ class OrderController extends FrontController
                         $vendor_payable_amount += $service_fee_percentage_amount;
                     }
 
-                   
+
                     if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
                         $service_fee_percentage_amount        = 0;
                         $vendor_service_fee_percentage_amount = 0;
@@ -2729,7 +2729,7 @@ class OrderController extends FrontController
                 $OrderVendor->delivery_fee = $delivery_fee;
                 $OrderVendor->subtotal_amount = $actual_amount;
                 $OrderVendor->discount_amount = $vendor_discount_amount;
-                
+
                 // check if is_tax_price_inclusive is on than no tax
                 if (! $additionalPreferences->is_tax_price_inclusive) {
                     $new_vendor_taxable_amount = number_format((($actual_amount-$total_discount) * $rate) / 100, 2);
@@ -2751,9 +2751,9 @@ class OrderController extends FrontController
                 $OrderVendor->taxable_amount =$new_vendor_taxable_amount;
                 $OrderVendor->payment_option_id = $request->payment_option_id;
                 $OrderVendor->subtotal_amount = $OrderVendor->subtotal_amount - $bid_vendor_discount??0;
-          
-               
-                
+
+
+
                 $OrderVendor->payable_amount = $vendor_payable_amount +$fixedFeeAmount+$new_vendor_taxable_amount;
                 if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
                     $OrderVendor->subtotal_amount = $OrderVendor->payable_amount = $request->total_amount;
@@ -3133,11 +3133,11 @@ class OrderController extends FrontController
                             'vendor_id' => $vendor_value->vendor_id
                         ])->pluck('user_id');
                         if ($request->payment_option_id == 1 || $order->is_postpay == 1 || $order->payment_status == 1) {
-                            
+
                             $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
                         }
 
-                        
+
 
                         if(!empty($additionalPreferences->stock_notification_before) && $additionalPreferences->stock_notification_before == 1){
                             $vendor_id=$this->CheckProductStockLimit($order->id,$additionalPreferences->stock_notification_qunatity);
@@ -3189,7 +3189,7 @@ class OrderController extends FrontController
 
             //Create an order at margApi side also
             $this->makeInsertOrderMargApi($order);
-            
+
             return $this->successResponse($order);
         } catch (Exception $e) {
             DB::rollback();
@@ -3288,7 +3288,7 @@ class OrderController extends FrontController
         }
     }
 
-   
+
 
     public function makePayment(Request $request)
     {
@@ -4706,7 +4706,7 @@ class OrderController extends FrontController
                     $payment->balance_transaction = $request->tip_amount;
                     $payment->type = 'tip';
                     $payment->save();
-                    
+
                 }
                 $message = 'Tip has been submitted successfully';
                 $response['tip_amount'] = $request->tip_amount;
