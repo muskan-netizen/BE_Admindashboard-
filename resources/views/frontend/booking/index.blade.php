@@ -373,7 +373,7 @@ input[type=number]::-webkit-outer-spin-button {
                             @if($is_recurring_booking == 1)
                             <input type="radio" id="is_recurring_booking" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="4">
                             <label class="mb-0  my-2" >
-                                <h5 class="m-0" id="">Reccurring Booking</h5>
+                                <h5 class="m-0" id="">Standing Order</h5>
                             </label>
                         @endif
                         </div>

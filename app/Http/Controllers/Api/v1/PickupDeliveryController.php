@@ -198,6 +198,7 @@ class PickupDeliveryController extends BaseController{
             if($request->recurringformPost)
             {
             $recurring = recurringCalculationFunction($request);
+            // \Log::info(json_encode($recurring));
             $recurringDays  = $recurring->daysCnt??1; 
             }
 
@@ -217,6 +218,7 @@ class PickupDeliveryController extends BaseController{
             $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
             $product->image_url = $image_url;
             $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
+            // \Log::info(json_encode($tags_price));
         
             if($recurringDays)
             {
