@@ -589,18 +589,18 @@ $(document).ready(function () {
                                 if(response.sub_plan.type_id == 2){
 									var form = document.getElementById('meal-subscription-form');
 						          	  var formData = new FormData(form); // Create a new FormData object
-						
+
 						            var serializedData = JSON.stringify(Object.fromEntries(formData)); // Serialize the form data to JSON
-						
+
 						            var serializedField = document.createElement("input"); // Create a new input element
 						            serializedField.type = "hidden";
 						            serializedField.name = "serializedForm";
 						            serializedField.value = serializedData;
-						
+
 						            document.getElementById('subscription_payment_form').appendChild(serializedField); // Append the serialized field to the form
-						
+
 						            // Display the serialized form data in the console
-						            console.log(serializedData);								
+						            console.log(serializedData);
 								}
                                 if(stripe_publishable_key != ''){
                                     stripeInitialize();
@@ -1512,7 +1512,7 @@ $(document).ready(function () {
             }else{
                 stripe.handleCardAction(
                     response.payment_intent_client_secret
-                ).then(handleStripeJsResult);    
+                ).then(handleStripeJsResult);
             }
         } else {
             setTimeout(() => {
@@ -5976,5 +5976,5 @@ function numberWithCommas(x) {
     // x=x.toFixed(2)
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
-/
+
 $(".related-css").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"20px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}}]});
