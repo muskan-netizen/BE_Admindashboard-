@@ -687,3 +687,4 @@
             name="is_enable_curb_side" id="is_enable_curb_side" />
     </div>
 </div>
+@endif
