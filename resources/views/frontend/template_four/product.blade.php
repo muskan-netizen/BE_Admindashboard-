@@ -169,14 +169,10 @@ $checkSlot = findSlot('',$product->vendor->id,'');
                                                                 $img = $image->image;
                                                             }
                                                         @endphp
-                                                @endforeach
                                                 @if(!is_null($img))
-                                                <img id="main_image" src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}" />
+                                                <li><img id="main_image" src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}" /></li>
                                                 @endif
-                                                @else
-                                                        
-                                                    <img id="main_image" class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
-                                                        
+                                                @endforeach
                                             @endif
                                         </ul>
                                     </div>
