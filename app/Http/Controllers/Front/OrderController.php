@@ -2716,7 +2716,8 @@ class OrderController extends FrontController
                 $payable_amount += $additionalPrice;
                 $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
                 if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
-                    $payable_amount = $request->total_amount;
+                    // $payable_amount = $request->total_amount;
+                    $payable_amount = !empty($request->total_amount) ? $request->total_amount:0 ;
                     $vendor_payable_amount = $request->total_amount;
                 }
                 // dump("+AdditionalPrice ".$additionalPrice."/- ----".$payable_amount);
