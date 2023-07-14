@@ -532,10 +532,11 @@ class PickupDeliveryController extends FrontController{
                 \Log::info(json_encode($order_place['data']['route']));
 
                 \Log::info('sms In web');
-                \Log::info(json_encode($share_ride_users->phone_number));
+                
                 $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
                  foreach($share_ride_users as $share_ride_users)
                  {
+                    \Log::info(json_encode($share_ride_users->phone_number));
                     $share_ride_users = (object)$share_ride_users;
                     $dialCode = !empty($share_ride_users->dial_code) ? '+91' : $share_ride_users->dial_code;
                     $phone = $share_ride_users->phone_number;
