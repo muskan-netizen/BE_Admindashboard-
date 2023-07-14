@@ -467,7 +467,7 @@ class PickupDeliveryController extends BaseController{
                     $share_ride_users = (object)$share_ride_users;
     
                     $dialCode = '+'.$share_ride_users->dial_code??'91';
-                    $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name??'User'." has booked a ride. Tracking url is ".$order_place['data']['dispatch_traking_url']??null;
+                    $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name." has booked a ride. Tracking url is ".$order_place['data']['dispatch_traking_url']??null;
                     \Log::info(json_encode($msg));
                     $send = $this->sendSms('', '', '', '', $dialCode.$share_ride_users->phone_number, $msg);
                     \Log::info(json_encode($send));
