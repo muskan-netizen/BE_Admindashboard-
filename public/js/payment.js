@@ -141,14 +141,12 @@ $(document).ready(function () {
         let address_id = 0;
         let payment_form = '';
         if (path.indexOf("cart") !== -1) {
-            // $('#order_placed_btn').trigger('click');
-            // $('#v-pills-paystack-tab').trigger('click');
+
             $("#order_placed_btn, .proceed_to_pay").attr("disabled", true);
             address_id = $("input:radio[name='address_id']:checked").val();
             payment_form = "cart"
         } else if (path.indexOf("wallet") !== -1) {
-            // $('#topup_wallet_btn').trigger('click');
-            // $('#wallet_topup_form #radio-paystack').prop("checked", true);
+
             $("#topup_wallet_btn, .topup_wallet_confirm").attr("disabled", true);
             payment_form = "wallet"
         }
@@ -351,11 +349,7 @@ $(document).ready(function () {
                 { name: 'cart_id', value: cart_id },
                 { name: 'order_number', value: order.order_number }
             );
-            // ajaxData.tip = tip;
-            // ajaxData.address_id = address_id;
-            // ajaxData.payment_form = 'cart';
-            // ajaxData.cart_id = cart_id;
-            // ajaxData.order_number = order.order_number;
+            
         } else if (path.indexOf("wallet") !== -1) {
             total_amount = walletElement.val();
             // ajaxData.payment_form = 'wallet';
@@ -4323,45 +4317,7 @@ $(document).ready(function () {
         }
 
         window.location = livee_payment_url + '?' + rowData;
-        // ajaxData.amount = total_amount;
-        // ajaxData.cancelUrl = path;
-        // ajaxData.order_number = orderNumber;
-        // ajaxData.payment_from=payment_from;
 
-        // $.ajax({
-        //     type:'GET',
-        //     url:livee_payment_url,
-        //     data: ajaxData,
-        //     success: function (response) {
-        // location.href="/livees-pay";
-        // console.log(response);
-        // if(ajaxData.payment_from=='wallet'){
-        // $("#topup_wallet").modal('hide');
-        //  $(".livees-modal-body").html(response);
-        // // $("#LiveesModal").modal('show');
-        // $(".liveesForm").submit();
-        // }
-        // else if(ajaxData.payment_from=='cart')
-        // {
-        //       $("#proceed_to_pay_modal").modal('hide');
-        //  $(".livees-modal-body").html(response);
-        // // $("#LiveesModal").modal('show');
-        // $(".liveesForm").submit();
-        // }
-
-
-        //     },
-        //     error: function (error) {
-        //         var response = $.parseJSON(error.responseText);
-        //         if (cartElement.length > 0) {
-        //             success_error_alert('error', response.message, ".payment_response");
-        //             $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
-        //         } else if (walletElement.length > 0) {
-        //             success_error_alert('error', response.message, "#wallet_topup_form .payment_response");
-        //             $(".topup_wallet_confirm").removeAttr("disabled");
-        //         }
-        //     }
-        // });
 
     }
 

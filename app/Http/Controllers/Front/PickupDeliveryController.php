@@ -184,7 +184,7 @@ class PickupDeliveryController extends FrontController{
         $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
         $product->image_url = $image_url;
         $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
-       
+
 
         $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
 
@@ -531,7 +531,7 @@ class PickupDeliveryController extends FrontController{
                         $device_token = UserDevice::whereUserId($user->id)->orderBy('id','desc')->value('device_token');
                         sendNotificationToCustomer($device_token,$order_number);
                     }
-                    
+
                      //Send message if ride is booked for friend
                   /*  if($request->type == 1 && isset($request->friendPhoneNumber))
                     {
@@ -628,9 +628,7 @@ class PickupDeliveryController extends FrontController{
                 $payment->save();
             }
             $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
-            //Log::info("Request To Dispatch");
-           //// Log::info($request_to_dispatch);
-
+            
             if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                 $user = User::find($order->user_id);
                 $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
