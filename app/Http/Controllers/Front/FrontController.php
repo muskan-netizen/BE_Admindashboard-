@@ -28,8 +28,10 @@ class FrontController extends Controller
     private $field_status = 2;
     protected function sendSms($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
         // try{
-
             $client_preference =  getClientPreferenceDetail();
+            Log::info('SMS twilio respons');
+            Log::info(json_encode($client_preference));
+           
             if($client_preference->sms_provider == 1)
             {
                 if(!empty($client_preference->sms_secret) && !empty($client_preference->sms_from)){
