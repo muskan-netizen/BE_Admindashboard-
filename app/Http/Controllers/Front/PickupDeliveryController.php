@@ -532,7 +532,8 @@ class PickupDeliveryController extends FrontController{
                 \Log::info(json_encode($order_place));
 
                 \Log::info('sms In web');
-                $routeUrl =  OrderVendor::where('order_id',$order_place['data']['id'])->value('dispatch_traking_url');
+                $order_id = Order::where('order_number',$order_place['data']['order_number'])->first();
+                $routeUrl =  OrderVendor::where('order_id',$order_id->id)->value('dispatch_traking_url');
                 $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
                  foreach($share_ride_users as $share_ride_users)
                  {
