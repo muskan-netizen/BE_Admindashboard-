@@ -533,15 +533,17 @@ class PickupDeliveryController extends FrontController{
 
                 \Log::info('sms In web');
                 $order_id = Order::where('order_number',$order_place['data']['order_number'])->first();
-                $routeUrl =  OrderVendor::where('order_id',$order_id->id)->value('dispatch_traking_url');
+                \Log::info($order_id);
+                $routeUrl =  OrderVendor::where('order_id',$order_id)->first();
+                \Log::info($routeUrl);
                 $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
                  foreach($share_ride_users as $share_ride_users)
                  {
-                    \Log::info($routeUrl);
+                    \Log::info($routeUrl->dispatch_traking_url);
                     $share_ride_users = (object)$share_ride_users;
                     $dialCode = !empty($share_ride_users->dial_code) ? '+91' : $share_ride_users->dial_code;
                     $phone = $share_ride_users->phone_number;
-                    $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name." has booked a ride. Tracking url is ".$routeUrl??null;
+                    $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name." has booked a ride. Tracking url is ".$routeUrl->dispatch_traking_url??null;
                     \Log::info(json_encode($msg));
                     $send = $this->sendSms('', '', '', '', $phone, $msg);
                     \Log::info('--response sms--');
