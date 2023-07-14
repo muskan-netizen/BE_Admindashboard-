@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Front\FrontController;
 use Session;
 use App\Models\{Product, ClientCurrency, ProductVariant, ProductVariantSet};
+use DB;
 
 class ProductController  extends FrontController
 {
@@ -74,6 +75,18 @@ class ProductController  extends FrontController
             }
         }
         $sets = array();
+
+        if ($request->has('variants') && $request->has('options')) {
+            $selected_variant = DB::table('product_variant_sets')->join('product_variants', 'product_variants.id', '=', 'product_variant_sets.product_variant_id')->where('product_variant_sets.product_id', $product->id)
+            ->whereIn('variant_option_id', $request->options)
+            ->whereIn('variant_type_id', $request->variants)
+            ->groupBy('product_variant_id')
+            ->havingRaw("COUNT(DISTINCT variant_option_id) = ". count($request->options). " " )
+            ->havingRaw("COUNT(DISTINCT variant_type_id) = ".count($request->variants)." ")
+            ->select('product_variant_sets.*', 'product_variants.price', 'product_variants.price', 'product_variants.compare_at_price', 'product_variants.quantity')
+            ->first();
+        }
+
         //pr($pv_ids);
         $selected_variant_title = $request->selected_title;
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
@@ -148,6 +161,7 @@ class ProductController  extends FrontController
                 $data['variant'] = $variantData;
                 $data['tokenAmount'] = $tokenAmount;
                 $data['is_token_enable'] = $is_token_enable;
+                $data['selected_variant'] = $selected_variant;
 
                 return response()->json(array('status' => 'Success', 'data' => $data));
             }

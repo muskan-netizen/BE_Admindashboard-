@@ -427,29 +427,16 @@ class ProductController extends FrontController{
         }
         $sets = array();
 
-        // if ($request->has('variants') && !empty($request->variants)) {
-        //     foreach ($request->variants as $key => $value) {
-        //         $product_variant_id = ProductVariantSet::where('variant_type_id', $value)->where('variant_option_id', $request->options[$key])->where('product_variant_sets.product_id', $product->id)->first();
-        //     }
-            
-        // }
-
-        // if ($request->has('variants') && !empty($request->options)) {
-        //     foreach ($request->variants as $k => $variant) {
-        //         $product_variant_id = ProductVariantSet::where('variant_type_id', $request->variants[$k])
-        //         ->where('variant_option_id', $request->options[$k])->where('product_variant_sets.product_id', $product->id)->get(); 
-        //         // dd($product_variant);
-        //     }
-        //     dd($product_variant_id);
-        // }
-
-        $selected_variant = DB::table('product_variant_sets')->where('product_id', $product->id)
-        ->whereIn('variant_option_id', $request->options)
-        ->whereIn('variant_type_id', $request->variants)
-        ->groupBy('product_variant_id')
-        ->havingRaw("COUNT(DISTINCT variant_option_id) = ". count($request->options). " " )
-        ->havingRaw("COUNT(DISTINCT variant_type_id) = ".count($request->variants)." ")
-        ->first();
+        if ($request->has('variants') && $request->has('options')) {
+            $selected_variant = DB::table('product_variant_sets')->join('product_variants', 'product_variants.id', '=', 'product_variant_sets.product_variant_id')->where('product_variant_sets.product_id', $product->id)
+            ->whereIn('variant_option_id', $request->options)
+            ->whereIn('variant_type_id', $request->variants)
+            ->groupBy('product_variant_id')
+            ->havingRaw("COUNT(DISTINCT variant_option_id) = ". count($request->options). " " )
+            ->havingRaw("COUNT(DISTINCT variant_type_id) = ".count($request->variants)." ")
+            ->select('product_variant_sets.*', 'product_variants.price', 'product_variants.compare_at_price', 'product_variants.quantity')
+            ->first();
+        }
 
         $selected_variant_title = $request->selected_variant_title;
         //pr($pv_ids);
