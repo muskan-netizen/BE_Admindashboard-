@@ -35,8 +35,8 @@ class FrontController extends Controller
                 if(!empty($client_preference->sms_secret) && !empty($client_preference->sms_from)){
                     $client = new TwilioClient($client_preference->sms_key, $client_preference->sms_secret);
                     $send =  $client->messages->create($to, ['from' => $client_preference->sms_from, 'body' => $body]);
-                    //// Log::info('SMS twilio respons');
-                    //// Log::info($send);
+                    Log::info('SMS twilio respons');
+                    Log::info(json_encode($send));
                 }else{
                     return 2;
                 }

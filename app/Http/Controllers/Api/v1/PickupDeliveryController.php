@@ -455,6 +455,27 @@ class PickupDeliveryController extends BaseController{
         try {
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
+
+
+            DB::commit();
+            //Send message if ride is booked for friend
+           if(@$request->share_ride_users && count($request->share_ride_users)>0)
+            {
+                foreach($request->share_ride_users as $share_ride_users)
+                {
+                    \Log::info('sms In app');
+                    $share_ride_users = (object)$share_ride_users;
+    
+                    $dialCode = '+'.$share_ride_users->dial_code??'91';
+                    $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name??'User'." has booked a ride. Tracking url is ".$order_place['data']['dispatch_traking_url']??null;
+                    \Log::info(json_encode($msg));
+                    $send = $this->sendSms('', '', '', '', $dialCode.$share_ride_users->phone_number, $msg);
+                    \Log::info(json_encode($send));
+                    // \Log::info(json_encode($msg));
+
+                }
+            }
+
             if($order_place['data']['recurring_booking_time'])
             {
                 return response()->json([
@@ -462,6 +483,7 @@ class PickupDeliveryController extends BaseController{
                     'message' => 'Recurring Order placed successfully.'
                 ]);
             }
+
 
             if($order_place && $order_place['status'] == 200){
                 if (($request->payment_option_id == 1) || ($request->payment_option_id == 42) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) || (( $request->has('is_postpay')) && ($request->is_postpay==1))){
@@ -525,19 +547,19 @@ class PickupDeliveryController extends BaseController{
                     DB::commit();
 
                      //Send message if ride is booked for friend
-                    if(@$request->share_ride_users && count($request->share_ride_users)>0)
-                    {
-                        foreach($request->share_ride_users as $share_ride_users)
-                        {
-                            $share_ride_users = (object)$share_ride_users;
+                    // if(@$request->share_ride_users && count($request->share_ride_users)>0)
+                    // {
+                    //     foreach($request->share_ride_users as $share_ride_users)
+                    //     {
+                    //         $share_ride_users = (object)$share_ride_users;
             
-                            $dialCode = '+'.$share_ride_users->dial_code??'91';
-                            $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name??'User'." has booked a ride. Tracking url is ".$order_place['data']['dispatch_traking_url'];
-                            $send = $this->sendSms('', '', '', '', $dialCode.$share_ride_users->phone_number, $msg);
-                            // \Log::info(json_encode($msg));
+                    //         $dialCode = '+'.$share_ride_users->dial_code??'91';
+                    //         $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name??'User'." has booked a ride. Tracking url is ".$order_place['data']['dispatch_traking_url'];
+                    //         $send = $this->sendSms('', '', '', '', $dialCode.$share_ride_users->phone_number, $msg);
+                    //         // \Log::info(json_encode($msg));
 
-                        }
-                    }
+                    //     }
+                    // }
 
                     //DB::rollback();
                     return $order_place;
