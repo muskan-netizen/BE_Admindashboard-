@@ -926,8 +926,6 @@ $(document).ready(function () {
 
 
     $(document).on('click','.add_share_rider_submit_button',function(){
-        alert('dfsdf');
-
         var form = document.getElementById('add_rider_form');
         var formData = new FormData(form);
         $.ajaxSetup({

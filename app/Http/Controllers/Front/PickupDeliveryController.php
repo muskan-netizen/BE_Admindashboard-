@@ -171,7 +171,6 @@ class PickupDeliveryController extends FrontController{
         {
            $recurring = recurringCalculationFunction($request);
            $recurringDays  = $recurring->daysCnt??1; 
-        //    \Log::info(json_encode($recurringDays));
         }
 
         $schedule_datetime_del = '';

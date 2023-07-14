@@ -177,6 +177,159 @@ class PickupDeliveryController extends BaseController{
             return $this->errorResponse($e->getMessage().''.$e->getLineNo(), $e->getCode());
         }
     }
+
+
+    public function postCabProductById(Request $request){
+
+        try
+        {
+            $user = Auth::user();
+            $product_id = $request->product_id;
+            $language_id = $user->language;
+            $preferences = ClientPreference::where('id', '>', 0)->first();
+            $preferences->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
+
+            if(!empty($user)){
+                $client_timezone = DB::table('clients')->first('timezone');
+                $user->timezone = $client_timezone->timezone ?? $user->timezone;
+            }
+            $recurring = '';
+            $recurringDays = 0;
+            if($request->recurringformPost)
+            {
+            $recurring = recurringCalculationFunction($request);
+            $recurringDays  = $recurring->daysCnt??1; 
+            }
+
+            $schedule_datetime_del = '';
+            if(isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
+                $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+            }else{
+                $schedule_datetime_del = Carbon::now()->timezone('UTC')->format('Y-m-d H:i:s');
+            }
+
+            $product = Product::with(['category.categoryDetail','media.image', 'vendor', 'tollpass', 'travelmode', 'emissiontype', 'translation' => function($q) use($language_id){
+                                $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $language_id);
+                            },'variant' => function($q) use($language_id){
+                                $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode');
+                                $q->groupBy('product_id');
+                            }])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags', 'products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id')->where('products.id', $product_id)->where('products.is_live', 1)->first();
+            $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
+            $product->image_url = $image_url;
+            $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
+        
+            if($recurringDays)
+            {
+                $tags_price['delivery_fee'] = decimal_format($tags_price['delivery_fee'] * $recurringDays);
+                $product->daysCnt = $recurringDays;
+                $product->selectedCustomdates = $recurring->selectedCustomdates;
+                $product->schedule_time = $recurring->schedule_time;
+            }
+
+            $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
+
+            $product->original_tags_price = decimal_format($tags_price['delivery_fee']);
+            $product->tags_price = decimal_format($tags_price['delivery_fee']);
+            $product->toll_fee = decimal_format($tags_price['toll_fee']);
+
+            $product->distance = decimal_format($tags_price['distance']);
+            $product->duration = decimal_format($tags_price['duration']);
+            $product->min_tags_price = decimal_format($tags_price['min_delivery_fee']);
+
+            //for cab pooling
+            $product->seats_for_booking = ($product->seats_for_booking > 0)?$product->seats_for_booking:1;
+            $no_seats_for_pooling = isset($request->no_seats_for_pooling)?$request->no_seats_for_pooling:1;
+            $product->no_seats_for_pooling = $no_seats_for_pooling;
+            if(!empty($request->is_cab_pooling) && $request->is_cab_pooling == 1 && !empty($preferences) && $preferences->is_cab_pooling == 1)
+            {
+                $product->original_tags_price = decimal_format(($product->original_tags_price/$product->seats_for_booking)*$no_seats_for_pooling);
+                $product->tags_price = decimal_format(($product->tags_price/$product->seats_for_booking)*$no_seats_for_pooling);
+                $product->toll_fee = decimal_format(($product->toll_fee/$product->seats_for_booking)*$no_seats_for_pooling);
+            }//------
+
+            $product->service_charge_amount  = 0.00;
+            if($product->vendor->fixed_service_charge)
+            {
+                $product->service_charge_amount  =  $product->vendor->service_charge_amount??0.00;
+            }else{
+
+                if($product->vendor->service_fee_percent>0){
+
+                    $product->service_charge_amount  = $product->tags_price * $product->vendor->service_fee_percent/100;
+                }
+            }
+
+       
+
+            $product->total_tags_price = decimal_format($product->tags_price + $product->toll_fee + $product->service_charge_amount);
+            $product->name = $product->translation->first() ? $product->translation->first()->title :'';
+            $product->description = $product->translation->first() ? $product->translation->first()->body_html :'';
+            $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
+            $product->faqlist = count($product->ProductFaq);
+            if(isset($request->rider_id) && $request->rider_id)
+            {
+                $rider = Rider::where('id',$request->rider_id)->first();
+                $product->friend_name = $rider->first_name.(!is_null($rider->last_name) ? " ".$rider->last_name : "");
+                // $product->friend_phone_name = "+".$rider->dial_code.$rider->phone_number;
+                $product->friend_phone_name = $rider->phone_number;
+            }
+            foreach ($product->variant as $k => $v) {
+                $product->variant[$k]->price = $product->total_tags_price;
+                $product->variant[$k]->toll_fee = $product->toll_fee;
+                $product->variant[$k]->multiplier = 1;
+            }
+            $loyalty_amount_saved = 0;
+            $redeem_points_per_primary_currency = '';
+            $loyalty_card = LoyaltyCard::where('status', '0')->first();
+            if ($loyalty_card) {
+                $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
+            }
+            $loyalty_points_used = 0;
+            $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
+            if ($order_loyalty_points_earned_detail) {
+                $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
+                if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
+                    $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
+                }
+            }
+            $product->loyalty_amount_saved = decimal_format((float)$loyalty_amount_saved ?? 0);
+
+            if($product->loyalty_amount_saved > $product->total_tags_price)
+            $product->loyalty_amount_saved = $product->total_tags_price;
+
+            $subscription_features = array();
+            $user_subscription = null;
+            $user = Auth::user();
+
+
+            $product->subscription_discount = 0;
+            $product->subscription_percent_value = 0;
+            if ($user) {
+                $now = Carbon::now()->toDateTimeString();
+                $user_subscription = SubscriptionInvoicesUser::with('features')
+                    ->select('id', 'user_id', 'subscription_id')
+                    ->where('user_id', $user->id)
+                    ->where('end_date', '>', $now)
+                    ->orderBy('end_date', 'desc')->first();
+                if ($user_subscription) {
+                    foreach ($user_subscription->features as $feature) {
+                        if ($feature->feature_id == 2) {
+                            $product->subscription_discount = $product->total_tags_price - ($feature->percent_value * $product->total_tags_price / 100);
+                            $product->subscription_percent_value = $feature->percent_value;
+                        }
+                    }
+                }
+            }
+
+            return $this->successResponse($product);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage().''.$e->getLineNo(), $e->getCode());
+        }
+    
+    }
+
+
+    
     /**
      * list of vehicles details
     */

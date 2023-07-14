@@ -341,7 +341,7 @@ input[type=number]::-webkit-outer-spin-button {
                         </div>
                     @endif
                     
-                    @if($is_cab_pooling == 1 || $is_bid_ride_enable == 1 || $is_particular_driver == 1)
+                    @if($is_cab_pooling == 1 || $is_bid_ride_enable == 1 || $is_recurring_booking == 1 || $is_particular_driver == 1)
                         <div class="pool_radio_controls text-center">
                             <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_booking" name="is_cab_pooling_radio"
                                 value="0" checked>
