@@ -20,6 +20,8 @@ use App\Imports\ProductsImport;
 use App\Imports\QrcodesImport;
 use GuzzleHttp\Client as GCLIENT;
 use Carbon\Carbon;
+use App\Jobs\ProductImportCsvJob;
+use Illuminate\Support\Facades\File;
 class ProductController extends BaseController
 {
     use ApiResponser, SquareInventoryManager;
@@ -1189,6 +1191,48 @@ class ProductController extends BaseController
      * @return \Illuminate\Http\Response
      */
     public function importCsv(Request $request){
+        $validated = $request->validate([
+            'product_excel' => 'required|mimes:csv,txt'
+        ]);
+        $vendor_id = $request->vendor_id;
+        $fileModel = new CsvProductImport;
+        if($request->file('product_excel')) {
+            $fileName = time().'_'.$request->file('product_excel')->getClientOriginalName();
+            $filePath = $request->file('product_excel')->storeAs('csv_products', $fileName, 'public');
+            $fileModel->vendor_id = $request->vendor_id;
+            $fileModel->name = $fileName;
+            $fileModel->path = 'storage/' . $filePath;
+            $fileModel->status = 1;
+            $fileModel->save();
+            //  $files = CsvProductImport::where('status', 1)->where('type', 0)->first();
+            //foreach ($files as $file) {
+            if (File::exists($fileModel->storage_url)) {
+                $csv = file($fileModel->storage_url);
+                $chunks = array_chunk($csv, 1000);
+                $header = [];
+                $flag = 0;
+                foreach ($chunks as $key => $chunk) {
+                    $data = array_map('str_getcsv', $chunk);
+                    if ($key == 0) {
+                        $header = $data[0];
+                        unset($data[0]);
+                    }
+                    $flag = ProductImportCsvJob::dispatch($fileModel->vendor_id, $fileModel->id, json_encode($data), $header);
+                }
+                if ($flag) {
+                    unlink($fileModel->storage_url);
+                }
+            }
+            //  }
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Product import file uploaded successfully!'
+            ]);
+        }
+    }
+    
+    public function importCsvOld(Request $request){
         $validated = $request->validate([
             'product_excel' => 'required|mimes:csv,txt'
         ]);
