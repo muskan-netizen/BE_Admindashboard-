@@ -529,6 +529,7 @@ class PickupDeliveryController extends FrontController{
             if(@$request->share_ride_users && count($request->share_ride_users)>0)
             {
                 \Log::info('sms In web');
+                \Log::info(json_encode($request->share_ride_users));
                 $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
                  foreach($share_ride_users as $share_ride_users)
                  {
