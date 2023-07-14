@@ -529,7 +529,7 @@ class PickupDeliveryController extends FrontController{
             if(@$request->share_ride_users && count($request->share_ride_users)>0)
             {
                 \Log::info('sms In order_place');
-                \Log::info(json_encode($order_place['route']));
+                \Log::info(json_encode($order_place));
 
                 \Log::info('sms In web');
                 \Log::info(json_encode($request->share_ride_users));
