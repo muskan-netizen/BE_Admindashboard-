@@ -17,13 +17,17 @@ class ServiceArea extends Model
         $temp = str_replace(')',']',$temp);
         $temp = '['.$temp.']';
         $temp_array =  json_decode($temp,true);
-
-        foreach($temp_array as $k=>$v){
-            $data[] = [
-                'lat' => $v[0],
-                'lng' => $v[1]
-            ];
+        
+        if(is_array($temp_array))
+        {
+            foreach($temp_array as $k=>$v){
+                $data[] = [
+                    'lat' => $v[0] ?? '',
+                    'lng' => $v[1] ?? ''
+                ];
+            }
         }
+       
         return $data;
     }
 }

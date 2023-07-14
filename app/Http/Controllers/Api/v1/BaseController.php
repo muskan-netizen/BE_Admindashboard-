@@ -319,13 +319,13 @@ class BaseController extends Controller{
         $preferences = ClientPreference::select('is_hyperlocal', 'client_code', 'language_id', 'celebrity_check')->first();
         $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
                     ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to', 'categories.type_id');
-                   
+
                     // if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
                     //     $categories->whereIn('categories.type_id',[10] );
                     // }else{
                         $categories->whereIn('categories.type_id',$categoryTypes );
                     // }
-                    
+
                 $categories =  $categories->distinct('categories.slug');
 
         $status = $this->field_status;
@@ -356,7 +356,7 @@ class BaseController extends Controller{
         if($celebrity_check == 0){
             $categories = $categories->where('categories.type_id', '!=', 5);
         }
-        
+
         $categories = $categories->where('categories.is_visible', 1)
                         ->where('categories.status', '!=', $status)
                         ->where('categories.is_core', 1)
@@ -820,23 +820,6 @@ class BaseController extends Controller{
         $d = floor ($minutes / 1440);
         $h = floor (($minutes - $d * 1440) / 60);
         $m = $minutes - ($d * 1440) - ($h * 60);
-        // return (($d > 0) ? $d.' days ' : '') . (($h > 0) ? $h.' hours ' : '') . (($m > 0) ? $m.' minutes' : '');
-
-        // if($scheduleTime != ''){
-        //     $datetime = Carbon::parse($scheduleTime)->setTimezone(Auth::user()->timezone)->toDateTimeString();
-        // }else{
-        //     $datetime = Carbon::parse($order_vendor_created_at)->setTimezone(Auth::user()->timezone)->addMinutes($minutes)->toDateTimeString();
-        // }
-
-        // if(Carbon::parse($datetime)->isToday()){
-        //     $format = 'h:i A';
-        // }else{
-        //     $format = 'M d, Y h:i A';
-        // }
-        // // $time = convertDateTimeInTimeZone($datetime, Auth::user()->timezone, $format);
-        // $time = Carbon::parse($datetime)->format($format);
-
-
 
         if(isset($user) && !empty($user))
         $user =  $user;
@@ -874,7 +857,6 @@ class BaseController extends Controller{
             $searchTerm = $result->translations->count() != 0 ? $result->translations->first()->name : ucfirst($searchTerm);
         }
         return $searchTerm;
-        // return $plural ? $searchTerm : rtrim($searchTerm, 's');
     }
 
     /* doller compare amount */
@@ -910,8 +892,7 @@ class BaseController extends Controller{
             $dispatch_domain = $this->checkIfLastMileDeliveryOn();
             $url = $dispatch_domain->delivery_service_key_url;
             $endpoint = $url . "/api/send-documents";
-            // $dispatch_domain->delivery_service_key_code = '649a9a';
-            // $dispatch_domain->delivery_service_key = 'icDerSAVT4Fd795DgPsPfONXahhTOA';
+            //  $dispatch_domain->delivery_service_key = 'icDerSAVT4Fd795DgPsPfONXahhTOA';
             $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
 
             $response = $client->post($endpoint);
@@ -972,14 +953,7 @@ class BaseController extends Controller{
                 $mail_from = 'dineshk@codebrewinnovations.com';
                 $sendto = 'dkdenni7@gmail.com';
                 try{
-                    // $data = [
-                    //     'customer_name' => 'Test',
-                    //     'code_text' => '',
-                    //     'logo' => $client->logo['original'],
-                    //     'frequency' => $subscription->frequency,
-                    //     'end_date' => $subscription->end_date,
-                    //     'link'=> "http://local.myorder.com/user/subscription/select/".$subscription->plan->slug,
-                    // ];
+
                     Mail::send([], [],
                     function ($message) use($sendto, $client_name, $mail_from) {
                         $message->from($mail_from, $client_name);
@@ -1084,15 +1058,15 @@ class BaseController extends Controller{
             return false;
         }
     }
-    
-    
+
+
     public function sendWalletNotification($user_id,$order_number)
     {
         $firebaseToken = UserDevice::select('device_token')->whereNotNull('device_token')->where('user_id',$user_id)->orderBy('id','desc')->limit(1)->pluck('device_token')->toArray();
         if(!empty($firebaseToken)){
             $preference = ClientPreference::select('fcm_server_key')->first();
             $fcm_server_key = !empty($preference->fcm_server_key)? $preference->fcm_server_key : 'null';
-            
+
             $data = [
                 "registration_ids" => $firebaseToken,
                 "notification" => [

@@ -106,9 +106,9 @@ class PickupDeliveryController extends BaseController{
                     {
                         $product->service_charge_amount  =  $product->vendor->service_charge_amount??0.00;
                     }else{
-            
+
                         if($product->vendor->service_fee_percent>0){
-            
+
                             $product->service_charge_amount  = $product->tags_price * $product->vendor->service_fee_percent/100;
                         }
                     }
@@ -316,12 +316,7 @@ class PickupDeliveryController extends BaseController{
                             sendNotificationToCustomer($device_token,$order_number);
                         }
 
-                        //Send message if ride is booked for friend
-                      /*  if($request->type == 1 && isset($request->friendPhoneNumber))
-                        {
-                            $msg = "Hi ".($request->friendName??'User').", ".$user->name." has booked a ride for you. Tracking url is ".$request_to_dispatch['dispatch_traking_url'];
-                            $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
-                        }*/
+
                         return $order_place;
                     }else{
                         DB::rollback();
@@ -337,6 +332,7 @@ class PickupDeliveryController extends BaseController{
                         $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
 
 
+
                         //Send sendNotificationToCustomer
                         if (isset($request->schedule_time) && !empty($request->schedule_time))
                         {
@@ -344,7 +340,7 @@ class PickupDeliveryController extends BaseController{
                             $device_token = UserDevice::whereUserId($user->id)->orderBy('id','desc')->value('device_token');
                             sendNotificationToCustomer($device_token,$order_number);
                         }
-    
+
                          //Send message if ride is booked for friend
                        /* if($request->type == 1 && isset($request->friendPhoneNumber))
                         {
@@ -379,7 +375,7 @@ class PickupDeliveryController extends BaseController{
     }
 
 
-    //Call Notification to driver api for after create order 
+    //Call Notification to driver api for after create order
     public function createOrderNotification(Request $request){
 
         try {
@@ -392,7 +388,6 @@ class PickupDeliveryController extends BaseController{
                 'content-type' => 'application/json']
                                     ]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
-                // dd($dispatch_domain->pickup_delivery_service_key_url.'/api/task/callNotifications');
                 $res = $client->post(
                     $url.'/api/task/callNotification',
                             ['form_params' => (
@@ -402,7 +397,7 @@ class PickupDeliveryController extends BaseController{
                             )]
                         );
                 $response = json_decode($res->getBody(), true);
-                    
+
                 return $response;
             }
 
@@ -716,7 +711,7 @@ class PickupDeliveryController extends BaseController{
                 $payment->balance_transaction = !empty($order->payable_amount)?$order->payable_amount:$request->amount;
                 $payment->type = 'pickup/delivery';
                 $payment->save();
-                
+
             }
 
             if($request->payment_option_id = 49){
@@ -752,19 +747,6 @@ class PickupDeliveryController extends BaseController{
             $wallet = $customer->wallet;
             if ($dispatch_domain && $dispatch_domain != false) {
                 $tasks = array();
-                // if ($request->payment_option_id == 1) {
-                //     $cash_to_be_collected = 'Yes';
-                //     $payable_amount = $order->payable_amount;
-                // } else {
-                //     if($order->is_postpay==1)
-                //     {
-                //         $cash_to_be_collected = 'Yes';
-                //         $payable_amount = $order->payable_amount;
-                //     }else{
-                //         $cash_to_be_collected = 'No';
-                //         $payable_amount = 0.00;
-                //     }
-                // }
 
                 $schedule_datetime_del = NULL;
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
@@ -835,7 +817,7 @@ class PickupDeliveryController extends BaseController{
                 }
                 // FacadesLog::warning(['postdata' => $notify_hour
                 // ,$reminder_hour]);
-                
+
                 $postdata =  [
                             'order_number' =>  $order->order_number,
                             'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -906,7 +888,7 @@ class PickupDeliveryController extends BaseController{
 
                     $or_ids = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->with(['vendor'])->first();
 
-                    //if($or_ids->vendor->auto_accept_order==1):
+
                         $update_vendor = VendorOrderStatus::updateOrCreate([
                             'order_id' =>  $order->id,
                             'order_status_option_id' => 2,
@@ -914,9 +896,6 @@ class PickupDeliveryController extends BaseController{
                             'order_vendor_id' =>  $or_ids->id]);
 
                         OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['order_status_option_id' => 2,'dispatcher_status_option_id' => 1]);
-                    // else:
-                    //     OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['dispatcher_status_option_id' => 1]);
-                    // endif;
 
                     $update = VendorOrderDispatcherStatus::updateOrCreate(['dispatcher_id' => null,
                     'order_id' =>  $order->id,
@@ -1657,7 +1636,6 @@ class PickupDeliveryController extends BaseController{
             }
         }
         catch (\Exception $e) {
-            \Log::error($e->getMessage());
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }
@@ -1752,7 +1730,7 @@ class PickupDeliveryController extends BaseController{
             return $this->successResponse($update, "Request declined successfully", 200);
         }
         catch (\Exception $e) {
-            \Log::error($e->getMessage());
+
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }
@@ -1879,7 +1857,6 @@ class PickupDeliveryController extends BaseController{
             return $this->successResponse(['biddata' => $biddata, 'bid_expire_time_limit_seconds' => $getAdditionalPreference['bid_expire_time_limit_seconds']], 200);
         }
         catch (\Exception $e) {
-            \Log::error($e->getMessage());
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }
@@ -1894,7 +1871,7 @@ class PickupDeliveryController extends BaseController{
             return $this->successResponse($update, "Request accepted successfully", 200);
         }
         catch (\Exception $e) {
-            \Log::error($e->getMessage());
+
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }

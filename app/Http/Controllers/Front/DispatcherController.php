@@ -902,7 +902,7 @@ class DispatcherController extends FrontController
             // $checkuservendor = UserVendor::where('user_id',$user_id)->first();
             // $sound = ($checkuservendor)?"notification.wav":"default";
             $devices = UserDevice::whereNotNull('device_token')->where('user_id', $user_id)->pluck('device_token');
-
+        
             $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
             if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
                     $title = __('Order Status : #').($orderNumber ?  $orderNumber->order_number : '');

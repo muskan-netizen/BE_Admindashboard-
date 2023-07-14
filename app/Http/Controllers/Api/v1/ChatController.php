@@ -240,8 +240,8 @@ class ChatController extends BaseController
                 'vendor_name' => $vendor_name,
                 'product_name' => $product_name,
                 'product_price' => $product_price,
-                'agent_id'=>$agent_id,
-                'agent_db'=>$agent_db,
+                'agent_id'=>@$agent_id,
+                'agent_db'=>@$agent_db,
             ]);
 
 

@@ -163,6 +163,8 @@ class UserSubscriptionController extends FrontController
                     $payment_option->title = __('Credit/Debit Card');
                 }elseif($payment_option->code == 'obo'){
                     $payment_option->title = __("MoMo, Airtel Money, Credit/Debit Cards by O'Pay");
+                }elseif($payment_option->code == 'livee'){
+                    $payment_option->title = __("Livees");
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);
@@ -320,9 +322,9 @@ class UserSubscriptionController extends FrontController
                             ];
                             SubscriptionPlanUserDetail::insert($mealSubscriptiondata);
                         }
-                        
+
                         /* Create order for meal subscription */
-                        
+
                         $order = new Order();
                         $order->user_id = $request->user_id;
                         $order->order_number = generateOrderNo();
@@ -338,14 +340,14 @@ class UserSubscriptionController extends FrontController
                         })->get();
                         $mealVendor = $mealVendor->first();
                         $product = $mealVendor->products->first();
-                        
+
                         $OrderVendor = new OrderVendor();
                         $OrderVendor->status = 0;
                         $OrderVendor->user_id = $order->user_id;
                         $OrderVendor->order_id = $order->id;
                         $OrderVendor->vendor_id = $mealVendor->id;
                         $OrderVendor->save();
-                        
+
                         $order_product = new OrderProduct();
                         $order_product->order_id = $order->id;
                         $order_product->price = $subscription_plan->price;
@@ -356,7 +358,7 @@ class UserSubscriptionController extends FrontController
                         $order_product->image = $product->pimage->first() ? $product->pimage->first()->path : '';
                         $order_product->quantity = 1;
                         $order_product->save();
-                        
+
                         if($autorenew){
                             $days = 0;
                             switch ($subscription_plan->frequency){
@@ -369,7 +371,7 @@ class UserSubscriptionController extends FrontController
                                 case 'yearly':
                                     $days = 365;
                                     break;
-                                    
+
                             }
                             $service_end_date = Carbon::parse($start_date)->addDays($days);
                             $serviceDay = Carbon::parse($start_date)->dayName;
@@ -386,8 +388,8 @@ class UserSubscriptionController extends FrontController
                                 'status' => 0
                             ];
                             $OrderLongTermServices = OrderLongTermServices::create($LongTermSericeData);
-                            
-                            
+
+
                             $RecurringServiceSchedule = [];
                             for ($x = 0; $x < $days; $x++) {
                                 if($x)
@@ -454,7 +456,7 @@ class UserSubscriptionController extends FrontController
         })->where('reference_id', $subscription_plan->id)->get();
 
         $getAdmin = User::where('is_superadmin', 1)->first();
-         
+
         $additionalAttributes = AdditionalAttribute::where('type_id', 1)->where('service_type', '=', 'pick_drop')
             ->where('user_id', $getAdmin->id)
             ->get();
@@ -531,6 +533,6 @@ class UserSubscriptionController extends FrontController
             $active_subscription->save();
             return redirect()->back()->with('success', 'Your '.$active_subscription->plan->title.' subscription has been updated successfully');
         }
-        
+
     }
 }

@@ -5,6 +5,7 @@
     let OrdervendorID = '';
     let order_id = '';
     let vendoridC = '';
+    let const_img = '/assets/js/chat/profile-pic-dummy.png'
     $(document).on('click','.start_chat',async function(e){
         e.preventDefault();
         var vendor_order_id = $(this).attr('data-vendor_order_id');
@@ -289,13 +290,13 @@
                     await response.data.userData.forEach(function (data) {
                      html+= `<div class="alPhoneNumberDetails">
                             <ul class="p-0 m-0 d-lg-flex align-items-center text-lg-left text-center">
-                                <li class="mr-xl-2"><img class="rounded-circle userImg" src="${data.display_image}"></li>
+                                <li class="mr-xl-2"><img class="rounded-circle userImg" onError="this.onerror=null;this.src='${const_img}';" src="${data.display_image}"></li>
                                 <li><span class="alUserName">${data.username}  (${data.user_type}) </span><p class="m-0 alPhoneNumber">${data.phone_num}</p></li>
                             </ul>
                         </div>`;
                       
                         html2+=   `<a class="user_data_left" href="javascript:void(0)">
-                            <img class="rounded-circle userImg" src="${data.display_image}">
+                            <img class="rounded-circle userImg" onError="this.onerror=null;this.src='${const_img}';" src="${data.display_image}">
                         </a>`;
 
                     });
@@ -608,7 +609,7 @@
         if(data.user_Data.length > 0) {
             await data.user_Data.forEach(function (data) {
                 html2+=   `<a class="user_data_left" href="javascript:void(0)">
-                <img class="rounded-circle userImg" src="${data.display_image}">
+                    <img class="rounded-circle userImg" onError="this.onerror=null;this.src='${const_img}';" src="${data.display_image}">
                 </a>`;
             });
             return html2; 
@@ -670,12 +671,12 @@
                     var updateDate =  new Date(data.updated_date);
                     html = `<div id="chatRooms_${data._id}" data-text="${data.room_id}" data-chat_type="${chatType}" data-product_id="${data.product_id!=undefined?data.product_id:''}"  data-sort="${i}" data-timestamp="" class="list-group rounded-0 chatRoomsDivs">
                         <div id="room_${data._id}" data-orderid="${data.order_id}" data-chat_type="${chatType}" data-ordervendorid="${data.order_vendor_id}" data-vendor_id="${data.vendor_id}" data-product_id="${data.product_id!=undefined?data.product_id:''}"  data-id="${data._id}" data-roomid="${data.room_id}" data-roomname="${data.room_id}" class="chat-list-item row fetchChat">
-                            <div class="align-self-center col-4">
+                            <div class="align-self-center col-3">
                                 <div class="user_show">
                                 ${renderUserd}
                                 </div>
                             </div>
-                            <div class="col-8 position-relative pl-0">
+                            <div class="col-9 position-relative pl-0">
                                 <div class="alNameTime last_message">
                                 <h6 id="preview_message_name_${data._id}" class="mb-1 mt-0">${last_message_name}</h6>
                                     <span id="preview_message_time_${data._id}">
@@ -761,4 +762,5 @@
             return mesHtml;
         //})
     }
+
     //fetchChatGroups();

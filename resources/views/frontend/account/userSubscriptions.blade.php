@@ -454,11 +454,11 @@ ul li {margin: 0 0 10px;color: #6c757d;}
                 <div class="col-md-12 mt-3 mb-3 powertrans_element_wrapper option-wrapper d-none">
                     <div class="row no-gutters">
                         <div class="col-6">
-                            <input type="number" min="16" maxlength="16" style=" border-right: none;" class="form-control" id="card-element-powertrans" placeholder="Enter card Number" required 
+                            <input type="number" min="16" maxlength="16" style=" border-right: none;" class="form-control" id="card-element-powertrans" placeholder="Enter card Number" required
                             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
                         </div>
                         <div class="col-3">
-                            <input type="number" style=" border-left: none; border-right: none;" class="form-control" maxLength="4"  id="date-element-powertrans" placeholder="YYMM" required 
+                            <input type="number" style=" border-left: none; border-right: none;" class="form-control" maxLength="4"  id="date-element-powertrans" placeholder="YYMM" required
                             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
                         </div>
                         <div class="col-3">
@@ -553,6 +553,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var powertrans_payment_url = "{{ route('powertrans.payment') }}";
     var data_trans_url = "{{route('payment.payByDataTrans')}}";
     var pesapal_payment_url = "{{ route('pesapal.payment') }}";
+    var livee_payment_url = "{{route('livee.pay')}}"
 
     $(document).on('change', '#subscription_payment_methods input[name="subscription_payment_method"]', function() {
         var method = $(this).val();
