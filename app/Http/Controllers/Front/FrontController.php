@@ -223,14 +223,14 @@ class FrontController extends Controller
                 } else {
                     $vendors = (Session::has('vendors')) ? Session::get('vendors') : $this->getServiceAreaVendors();
                 }
-                $categories = $categories->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
-                    ->where(function ($q1) use ($vendors , $include_categories) {
-                        $q1->whereIn('vct.vendor_id', $vendors)
-                            ->where('vct.status', 1)
-                            ->orWhere(function ($q2) use($include_categories) {
-                                $q2->whereIn('categories.type_id', $include_categories);
-                            });
-                    });
+                // $categories = $categories->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
+                //     ->where(function ($q1) use ($vendors , $include_categories) {
+                //         $q1->whereIn('vct.vendor_id', $vendors)
+                //             ->where('vct.status', 1)
+                //             ->orWhere(function ($q2) use($include_categories) {
+                //                 $q2->whereIn('categories.type_id', $include_categories);
+                //             });
+                //     });
         }
         $categories = $categories->leftjoin('types', 'types.id', 'categories.type_id')
                                 ->where('categories.id', '>', '1')

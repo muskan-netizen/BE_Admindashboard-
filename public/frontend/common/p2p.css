@@ -673,7 +673,9 @@ body.al_body_template_nine.p2p-module ul#header_cart_main_ul li .media img {
     width: 50px;
 }
 
-
+.dark.al_body_template_nine .radius-bar .search_form button.btn svg g {
+    fill: #fff;
+}
 /*----------dark theme----------*/
 
 body.dark.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head {
@@ -681,7 +683,7 @@ body.dark.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_hea
 }
 
 body.dark.al_body_template_nine.p2p-module span#cart_qty_span {
-    color: #fff;
+    color: #000;
 }
 
 body.dark.al_body_template_nine.p2p-module .menu-navigation.alThreeMenu {
@@ -1142,10 +1144,18 @@ body.al_body_template_nine.p2p-module .top-header .header-dropdown li.onhover-dr
     border-right: 1px solid #ccc;
     margin-right: 10px!important;
 }
-
+body.al_body_template_nine.p2p-module .top-header .header-dropdown li:last-child {
+    border-right: unset;
+    padding-right: 15px!important;
+    margin-right: 0!important;
+}
+div:empty {
+    display: none;
+  }
 body.al_body_template_nine.p2p-module .header-dropdown .onhover-dropdown a {
     margin-right: 15px!important;
     width:100%;
+    display: flex;
     }
     body.al_body_template_nine.p2p-module .header-dropdown li {
     padding-right: 5px!important;
@@ -1317,6 +1327,9 @@ body.al_body_template_nine .menu-navigation.al {
 .al_body_template_nine .menu-slider .al_main_category a {
     color: #fff;
 }
+
+
+
 /*----------media css--------------*/
 @media(max-width:1800px) {
     body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head a.sell-btn span{
@@ -1458,7 +1471,7 @@ body.al_body_template_nine .menu-navigation.al {
         transform: translate(0);
     }
     body.al_body_template_nine.p2p-module .top-header .header-dropdown li.onhover-dropdown span {
-        font-size: 12px!important;
+        font-size: 14px!important;
         line-height: 1.5!important;
         padding: 5px 0!important;
     }
@@ -1499,8 +1512,11 @@ body.al_body_template_nine .menu-navigation.al {
         margin-top: 10px;
     }
     body.al_body_template_nine.p2p-module .top-header .header-dropdown li.onhover-dropdown > span, body.al_body_template_nine.p2p-module .top-header .header-dropdown li.onhover-dropdown > a {
-        /* border-bottom: 1px solid #ccc; */
         display: block;
+        text-align: left;
+        margin-left: 18px!important;
+        /* border-bottom: 1px solid #ccc; */
+        margin-right: 0px!important;
     }
     body.al_body_template_nine .al_toggle-menu.active {
         position: absolute;
@@ -1520,6 +1536,11 @@ body.al_body_template_nine .menu-navigation.al {
     .al_template_one .onhover-dropdown:before{
         right: 8px;
     }
+    body.al_body_template_nine.p2p-module .col-lg-5 .navbar-brand{order: 1;}
+    body.al_body_template_nine.p2p-module .col-lg-5 .al_custom_head_map_box {order: 3;width:100%;}
+    body.al_body_template_nine.p2p-module .col-lg-5 .al_toggle-menu{order: 2;margin-left: auto;}
+    body.al_body_template_nine.p2p-module .ratio_asos .top-banner-wrapper .top-banner-content h4{font-size: 25px;}
+   
 }
 
 @media(max-width:767px) {
@@ -1531,7 +1552,7 @@ body.al_body_template_nine .menu-navigation.al {
         padding: 0!important;
     }
     body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head a.sell-btn{
-        margin-bottom: 10px!important;
+        margin-bottom: 0px!important;
     }
     body.al_body_template_nine .top-header.site-topbar.al_custom_head{
         border: unset!important;
@@ -1625,7 +1646,7 @@ body.al_body_template_nine .menu-navigation.al {
         display: flex;
     }
     body.al_body_template_nine.p2p-module nav.navbar.navbar-expand-lg.p-0 {
-        padding: 0 10px !important;
+        padding: 0 !important;
     }
     body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head {
         background-color: #fff;
@@ -1655,9 +1676,13 @@ body.al_body_template_nine .menu-navigation.al {
         display: none !important;
     }
     body.al_body_template_nine.p2p-module section.p2p-categories .col-md-2 {
-        width: 50%;
-        max-width: 50%;
-        flex: 50%;
+        width: 33.33%;
+        max-width: 33.33%;
+        flex:33.33%;
+    }
+    body.al_body_template_nine.p2p-module section.p2p-categories .cate-item a{
+        padding-bottom: 0!important;
+        margin-bottom: 15px;
     }
     body.al_body_template_nine.p2p-module #al_new_design .pixelstrap a,
     #al_new_design .pixelstrap a:active,
@@ -1815,13 +1840,16 @@ body.al_body_template_nine .menu-navigation.al {
         display: flex;
         flex-wrap: wrap;
     }
-    body.al_body_template_nine.p2p-module .col-lg-5 .navbar-brand{order: 1;}
-    body.al_body_template_nine.p2p-module .col-lg-5 .al_custom_head_map_box {order: 3;width:100%;}
-    body.al_body_template_nine.p2p-module .col-lg-5 .al_toggle-menu{order: 2;margin-left: auto;}
-    body.al_body_template_nine.p2p-module .ratio_asos .top-banner-wrapper .top-banner-content h4{font-size: 25px;}
+
 }
 
-
+@media(max-width:576px) {
+    body.al_body_template_nine.p2p-module section.p2p-categories .col-md-2 {
+        width: 50%;
+        max-width: 50%;
+        flex: 50%;
+    }
+}
 /*======================= new css add for p2p template on 1/12/2023===================== */
 /* for nine template */
 a.sell-btn {margin-right: 0 !important;}

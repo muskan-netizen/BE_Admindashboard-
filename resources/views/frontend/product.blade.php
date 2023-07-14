@@ -400,7 +400,9 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                         @if($product->is_recurring_booking == 1)
                                             @include('frontend.product-part.recurring-booking')
                                         @endif
-                                        @if($product->category->categoryDetail->type_id == 10)
+                                        @if(@getAdditionalPreference(['is_rental_weekly_monthly_price'])['is_rental_weekly_monthly_price'] && $product->category->categoryDetail->type_id == 10)
+                                            @include('frontend.product-part.booking-slot-p2p-rental')
+                                        @elseif($product->category->categoryDetail->type_id == 10)
                                             @include('frontend.product-part.booking-slot')
                                         @endif
 
@@ -981,8 +983,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
         <div class="product-m  related-products pb-2  related-css">
             @forelse($product->related_products as $related_product)
             <div>
-                <a class="common-product-box scale-effect text-center"
-                        href="{{route('productDetail',[$related_product->vendor->slug,$related_product->url_slug])}}">
+                <a class="common-product-box scale-effect text-center" href="{{route('productDetail',[$related_product->vendor->slug,$related_product->url_slug])}}">
                     <div class="img-outer-box position-relative">
                         <img class="img-fluid blur-up lazyload" data-src="{{ $related_product->image_url }}" alt="">
                         <!-- <div class="pref-timing">

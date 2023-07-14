@@ -136,6 +136,8 @@ class CustomerAuthController extends FrontController
         }else{
             $register_page = "account.registernew";
         }
+        
+
         if (!Session::get('referrer')) {
             return view('frontend.'.$register_page)->with(['navCategories' => $navCategories,'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents]);
         } else {
@@ -246,6 +248,9 @@ class CustomerAuthController extends FrontController
                     ]);
                 }
             }
+            
+            $getAdditionalPreference = getAdditionalPreference(['is_user_pre_signup']);
+            
             $user = new User();
             $county = Country::where('code', strtoupper($req->countryData))->first();
             $client_timezone = Client::where('id', '>', 0)->value('timezone');
@@ -257,6 +262,14 @@ class CustomerAuthController extends FrontController
             $user->status = 1;
             $user->role_id = 1;
             $user->name = $req->name;
+            
+            if(isset($getAdditionalPreference) && ($getAdditionalPreference['is_user_pre_signup'] == 1))
+            {
+                $user->is_presignup = 1;
+            }else{
+                $user->is_presignup = 0;
+                
+            }
             $user->email = $email;
             $user->is_email_verified = 0;
             $user->is_phone_verified = 0;

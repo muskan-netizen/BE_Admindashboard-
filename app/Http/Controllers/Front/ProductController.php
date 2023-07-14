@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption,ProductRecentlyViewed, Attribute, ProductAttribute,DeliverySlotProduct, UserVendor, DeliverySlot,UserAddress,ProcessorProduct};
-
+use Carbon\CarbonPeriod;
 use Carbon\Carbon;
 use App\Http\Traits\{ProductActionTrait, ProductTrait,ProductVariantActionTrait};
 class ProductController extends FrontController{
@@ -77,7 +77,34 @@ class ProductController extends FrontController{
         $p_id = $product->id;
         $product =  $this->getProduct($p_id,$vendor,$url_slug,$user,$langId);
 
+        if(@$product->product_availability && @$product->OrderProduct){
+            $product_notavailability = [];
+            foreach($product->OrderProduct as $OrderProducts){
+                // dd($OrderProducts);
+                $dates = [];
+                if(@$OrderProducts->start_date_time && @$OrderProducts->end_date_time){
+                    $period = CarbonPeriod::create(date('Y-m-d',strtotime($OrderProducts->start_date_time)), date('Y-m-d',strtotime($OrderProducts->end_date_time)));
+                    
+                    foreach ($period as $date) {
+                        $dates[] =  $date->format('Y-m-d');
+                    }
+                    
+                    if(@$dates){
+                        foreach($product->product_availability as $product_availability){
+                            foreach($dates as $date){
+                                if( date('Y-m-d',strtotime($product_availability->date_time)) == $date){
+                                    $product_notavailability[] = $product_availability->date_time;
+                                    $product_availability->not_available = 1;
+                                }
+                            }
+                           
+                        }
+                    }
+            }
+        }
+    }
 
+        $product_availability = json_encode($product->product_availability->pluck('date_time'));
         if($this->checkTemplateForAction(8)){
             $this->RecentView($p_id);
         }
@@ -355,7 +382,9 @@ class ProductController extends FrontController{
             }
 
             
-            return view('frontend.'.$product_page)->with(['user_vendor' => $user_vendor, 'shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference, 'suggested_category_products' => $suggested_category_products, 'suggested_brand_products'=> $suggested_brand_products, 'suggested_vendor_products'=>$suggested_vendor_products, 'coupon_list' => $coupon_list, 'attr_array' => $attr_array, 'set_template' => $set_template, 'current_time_response' => $current_time_response, 'processorProduct'=> $processorProduct]);
+            return view('frontend.'.$product_page)->with(['user_vendor' => $user_vendor, 'shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference, 'suggested_category_products' => $suggested_category_products, 'suggested_brand_products'=> $suggested_brand_products, 'suggested_vendor_products'=>$suggested_vendor_products, 'coupon_list' => $coupon_list, 'attr_array' => $attr_array, 'set_template' => $set_template, 'current_time_response' => $current_time_response, 'processorProduct'=> $processorProduct, 
+            'product_notavailability' => $product_notavailability,
+            'product_availability' => $product_availability]);
         }
    }
 

@@ -471,6 +471,14 @@
                                 </a>
                             </li>
                         @endif
+                        @if(Auth::user()->is_superadmin == 1)
+                            <li>  
+                                <a href="{{route('manage.attribute')}}">
+                                    <i class="icon-profile"></i>
+                                    <span>{{ __("Manage Attributes") }}</span>
+                                </a>
+                            </li>
+                        @endif
                         {{-- @if(Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="{{route('verifyoption.index')}}">

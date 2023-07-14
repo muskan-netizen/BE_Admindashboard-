@@ -64,7 +64,7 @@ class Product extends Model implements Auditable
 
   public function variant()
   {
-    return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id', 'container_charges', 'markup_price', 'incremental_price', 'incremental_price_per_min')->where('status', 1);
+    return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id', 'container_charges', 'markup_price', 'incremental_price', 'incremental_price_per_min', 'month_price', 'week_price')->where('status', 1);
   }
 
   
@@ -521,5 +521,9 @@ class Product extends Model implements Auditable
     return $this->belongsToMany('App\Models\DeliverySlot', 'delivery_slots_product', 'product_id', 'delivery_slot_id')->withTimestamps();
   }
 
+  public function product_availability()
+  {
+    return $this->hasMany('App\Models\ProductAvailability');
+  }
 
 }
