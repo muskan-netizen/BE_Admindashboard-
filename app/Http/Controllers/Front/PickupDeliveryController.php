@@ -524,34 +524,6 @@ class PickupDeliveryController extends FrontController{
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
 
-            DB::commit();
-            //Send message if ride is booked for friend
-            if(@$request->share_ride_users && count($request->share_ride_users)>0)
-            {
-                \Log::info('sms In order_place');
-                \Log::info(json_encode($order_place));
-
-                \Log::info('sms In web');
-                $order_id = Order::where('order_number',$order_place['data']['order_number'])->first();
-                \Log::info($order_id);
-                $routeUrl =  OrderVendor::where('order_id',$order_id->id)->first();
-                \Log::info($routeUrl);
-                $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
-                 foreach($share_ride_users as $share_ride_users)
-                 {
-                    \Log::info($routeUrl->dispatch_traking_url);
-                    $share_ride_users = (object)$share_ride_users;
-                    $dialCode = !empty($share_ride_users->dial_code) ? '+91' : $share_ride_users->dial_code;
-                    $phone = $share_ride_users->phone_number;
-                    $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name." has booked a ride. Tracking url is ".$routeUrl->dispatch_traking_url??null;
-                    \Log::info(json_encode($msg));
-                    $send = $this->sendSms('', '', '', '', $phone, $msg);
-                    \Log::info('--response sms--');
-                    \Log::info(json_encode($send));
-                }
-            }
-
-
             if($order_place['data']['recurring_booking_time'])
             {
                 return response()->json([
@@ -581,12 +553,27 @@ class PickupDeliveryController extends FrontController{
                         sendNotificationToCustomer($device_token,$order_number);
                     }
                     
-                     //Send message if ride is booked for friend
-                  /*  if($request->type == 1 && isset($request->friendPhoneNumber))
-                    {
-                        $msg = "Hi ".($request->friendName??'User').", ".$user->name." has booked a ride for you. Tracking url is ".$request_to_dispatch['dispatch_traking_url'];
-                        $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
-                    } */
+                    DB::commit();
+            //Send message if ride is booked for friend
+            if(@$request->share_ride_users && count($request->share_ride_users)>0)
+            {
+                \Log::info('sms In order_place');
+                \Log::info(json_encode($order_place));
+
+                $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
+                 foreach($share_ride_users as $share_ride_users)
+                 {
+                    \Log::info($request_to_dispatch['dispatch_traking_url']);
+                    $share_ride_users = (object)$share_ride_users;
+                    $dialCode = !empty($share_ride_users->dial_code) ? '+91' : $share_ride_users->dial_code;
+                    $phone = $share_ride_users->phone_number;
+                    $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name." has booked a ride. Tracking url is ".$request_to_dispatch['dispatch_traking_url']??null;
+                    \Log::info(json_encode($msg));
+                    $send = $this->sendSms('', '', '', '', $phone, $msg);
+                    \Log::info('--response sms--');
+                    \Log::info(json_encode($send));
+                }
+            }
 
                     return  $order_place;
                 }
@@ -613,12 +600,30 @@ class PickupDeliveryController extends FrontController{
                      }
 
 
+                  
+                     DB::commit();
                      //Send message if ride is booked for friend
-                  /*  if($request->type == 1 && isset($request->friendPhoneNumber))
-                    {
-                        $msg = "Hi ".($request->friendName??'User').", ".$user->name." has booked a ride for you. Tracking url is ".$request_to_dispatch['dispatch_traking_url'];
-                        $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
-                    }*/
+                     if(@$request->share_ride_users && count($request->share_ride_users)>0)
+                     {
+                         \Log::info('sms In order_place');
+                         \Log::info(json_encode($order_place));
+         
+                     
+                         $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
+                          foreach($share_ride_users as $share_ride_users)
+                          {
+                             \Log::info($request_to_dispatch['dispatch_traking_url']);
+                             $share_ride_users = (object)$share_ride_users;
+                             $dialCode = !empty($share_ride_users->dial_code) ? '+91' : $share_ride_users->dial_code;
+                             $phone = $share_ride_users->phone_number;
+                             $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name." has booked a ride. Tracking url is ".$request_to_dispatch['dispatch_traking_url']??null;
+                             \Log::info(json_encode($msg));
+                             $send = $this->sendSms('', '', '', '', $phone, $msg);
+                             \Log::info('--response sms--');
+                             \Log::info(json_encode($send));
+                         }
+                     }
+
                     return  $order_place;
                 }
                 else{
