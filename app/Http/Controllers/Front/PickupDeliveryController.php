@@ -540,7 +540,7 @@ class PickupDeliveryController extends FrontController{
                     $dialCode = $share_ride_users->dial_code??'91';
                     $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name." has booked a ride. Tracking url is ".$order_place['data']['route']??null;
                     \Log::info(json_encode($msg));
-                    $send = $this->sendSms('', '', '', '', $dialCode.$share_ride_users->phone_number, $msg);
+                    $send = $this->sendSms('', '', '', '', $share_ride_users->phone_number, $msg);
                     \Log::info('--response sms--');
                     \Log::info(json_encode($send));
                 }
