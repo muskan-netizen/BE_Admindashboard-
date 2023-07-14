@@ -158,7 +158,9 @@ class ProductVariant extends Model
     {
         $checkMarkup = 0;
         $vendor = Product::where('id', $this->product_id)->select('vendor_id','tax_category_id')->first();
-        $checkMarkup = Vendor::where('id',$vendor->vendor_id)->value('add_markup_price');
+        if(!empty($vendor)){
+            $checkMarkup = Vendor::where('id',$vendor->vendor_id)->value('add_markup_price');
+            }
         //if vendor price add with markup price
            if(auth()->user() !=null && auth()->user()->is_admin == 1){
             $userVendor = UserVendor::where('user_id', auth()->id())->where('vendor_id', $vendor->vendor_id)->first();
