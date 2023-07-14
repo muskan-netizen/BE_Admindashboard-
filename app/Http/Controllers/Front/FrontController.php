@@ -27,7 +27,7 @@ class FrontController extends Controller
 
     private $field_status = 2;
     protected function sendSms($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
-       // try{
+        try{
 
             $client_preference =  getClientPreferenceDetail();
             if($client_preference->sms_provider == 1)
@@ -93,12 +93,12 @@ class FrontController extends Controller
                 }
             }
             //return $send;
-        // }
-        // catch(\Exception $e){
-        //     //// Log::info('SMS logs');
-        //     //// Log::info($e->getMessage());
-        //     return '2';
-        // }
+        }
+        catch(\Exception $e){
+            //// Log::info('SMS logs');
+            //// Log::info($e->getMessage());
+            return '2';
+        }
         return '1';
 	}
     protected function sendSmsNew($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){

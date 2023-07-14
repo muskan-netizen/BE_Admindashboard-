@@ -528,13 +528,16 @@ class PickupDeliveryController extends FrontController{
             //Send message if ride is booked for friend
             if(@$request->share_ride_users && count($request->share_ride_users)>0)
             {
+                \Log::info('sms In order_place');
+                \Log::info(json_encode($order_place));
+
                 \Log::info('sms In web');
                 \Log::info(json_encode($request->share_ride_users));
                 $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
                  foreach($share_ride_users as $share_ride_users)
                  {
                     $share_ride_users = (object)$share_ride_users;
-                    $dialCode = '+'.$share_ride_users->dial_code??'91';
+                    $dialCode = $share_ride_users->dial_code??'91';
                     $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name." has booked a ride. Tracking url is ".$order_place['data']['dispatch_traking_url']??null;
                     \Log::info(json_encode($msg));
                     $send = $this->sendSms('', '', '', '', $dialCode.$share_ride_users->phone_number, $msg);
