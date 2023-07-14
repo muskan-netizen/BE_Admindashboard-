@@ -975,6 +975,8 @@ class PickupDeliveryController extends FrontController{
                     $payment->save();
                 }
             }
+            DB::commit();
+
             $order['route'] = route('front.booking.details',$order->order_number);
             $data = [];
             $data['status'] = 200;
