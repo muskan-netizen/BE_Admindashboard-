@@ -451,14 +451,10 @@ class PickupDeliveryController extends BaseController{
      * create order for booking
     */
      public function createOrder(Request $request){
-        \Log::info(json_encode($request->all()));
         DB::beginTransaction();
         try {
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
-
-            \Log::info(json_encode($order_place));
-
            
             if($order_place['data']['recurring_booking_time'])
             {
@@ -511,8 +507,8 @@ class PickupDeliveryController extends BaseController{
             }
                 
             DB::commit();
-            if(@$order_place['data']['recurring_booking_time']!=null)
-            {
+            // if(@$order_place['data']['recurring_booking_time']!=null)
+            // {
                 if(@$request->share_ride_users && count($request->share_ride_users)>0)
                 {
                     $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
@@ -527,7 +523,7 @@ class PickupDeliveryController extends BaseController{
 
                     }
                 }
-            }
+            // }
 
                //Send sendNotificationToCustomer
                if (isset($request->schedule_time) && !empty($request->schedule_time))
@@ -1426,6 +1422,7 @@ class PickupDeliveryController extends BaseController{
     public function getAllRiders(Request $request)
     {
         $data = $request->all();
+
         $data['user_id'] = Auth::user()->id;
         if($request->isMethod('post')){
             $add = $this->riderObj->createRider($data);

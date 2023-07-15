@@ -570,9 +570,9 @@ $timezone = Auth::user()->timezone;
                                         <td></td>
                                     </tr>
                                     @endif
-                                    {{-- {{dd($product)}} --}}
+                                    {{-- {{dd($recurring_booking)}} --}}
 
-                                    @if( isset($product->recurring_bookings))
+                                    @if( isset($recurring_booking))
                                         <tr class="route">
                                             <th scope="row" colspan="4" class="text-end">
                                                 <div class="outer_div p-2 mb-2">
@@ -584,7 +584,7 @@ $timezone = Auth::user()->timezone;
                                                             <th width="40%">{{ __('Scheduled date time') }}</th>
                                                             <th width="20%">{{ __('Dispatch Traking Url') }}</th>
 
-                                                            @foreach ($product->recurring_bookings as $key=>$booking)
+                                                            @foreach ($recurring_booking as $key=>$booking)
                                                                 <tr>
                                                                     <td>{{ $key + 1 }}</td>
                                                                     <td>{{ $booking->schedule_date }} </td>

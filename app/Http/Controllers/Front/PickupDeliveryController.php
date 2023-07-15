@@ -576,8 +576,8 @@ class PickupDeliveryController extends FrontController{
             DB::commit();
 
             //Send message if ride is booked for friend
-            if(@$order_place['data']['recurring_booking_time']!=null)
-            {
+            // if(@$order_place['data']['recurring_booking_time']!=null)
+            // {
                 if(@$request->share_ride_users && count($request->share_ride_users)>0)
                 {
                     $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
@@ -590,7 +590,7 @@ class PickupDeliveryController extends FrontController{
                         $send = $this->sendSms('', '', '', '', $phone, $msg);
                     }
                 }
-            }
+            // }
 
 
              //Send sendNotificationToCustomer
