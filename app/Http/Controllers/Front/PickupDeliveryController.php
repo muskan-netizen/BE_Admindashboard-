@@ -585,7 +585,7 @@ class PickupDeliveryController extends FrontController{
                     $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
                     foreach($share_ride_users as $share_ride_users)
                     {
-                        \Log::info(json_encode($request->share_ride_users));
+                        \Log::info(json_encode($share_ride_users));
 
                         $share_ride_users = (object)$share_ride_users;
                         $dialCode = empty($share_ride_users->dial_code) ? '+91' : null;
