@@ -505,6 +505,8 @@ class PickupDeliveryController extends BaseController{
                 DB::rollback();
                 return $order_place;
             }
+
+            \Log::info(json_encode($request->share_ride_users));
                 
             DB::commit();
             // if(@$order_place['data']['recurring_booking_time']!=null)

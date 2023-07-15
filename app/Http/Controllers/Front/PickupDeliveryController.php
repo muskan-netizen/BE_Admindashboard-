@@ -578,6 +578,8 @@ class PickupDeliveryController extends FrontController{
             //Send message if ride is booked for friend
             // if(@$order_place['data']['recurring_booking_time']!=null)
             // {
+                \Log::info(json_encode($request->share_ride_users));
+
                 if(@$request->share_ride_users && count($request->share_ride_users)>0)
                 {
                     $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
