@@ -451,11 +451,13 @@ class PickupDeliveryController extends BaseController{
      * create order for booking
     */
      public function createOrder(Request $request){
+        \Log::info(json_encode($request->all()));
         DB::beginTransaction();
         try {
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
 
+            \Log::info(json_encode($order_place));
 
            
             if($order_place['data']['recurring_booking_time'])
@@ -507,7 +509,8 @@ class PickupDeliveryController extends BaseController{
                 DB::rollback();
                 return $order_place;
             }
-
+                
+            DB::commit();
             if(@$order_place['data']['recurring_booking_time']!=null)
             {
                 if(@$request->share_ride_users && count($request->share_ride_users)>0)
