@@ -12,7 +12,7 @@ use App\Models\User;
 use App\Models\NotificationTemplate;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
-use App\Models\{ ClientPreference, OrderLongTermServiceSchedule,UserAddress,Product,Vendor,OrderVendor};
+use App\Models\{ ClientPreference, OrderLocations, OrderLongTermServiceSchedule,UserAddress,Product,Vendor,OrderVendor, OrderVendorProduct};
 use Log;
 use Carbon\Carbon;
 use App\Models\Order;
@@ -98,13 +98,39 @@ class RecurringBooking extends Command
                         $recurring_data = OrderLongTermServiceSchedule::find($booking->id);
                         $order          = Order::where('order_number',$booking->order_number)->first();
                         $customer       = User::find($order->user_id);
-                        $product        = Product::find($booking->order_vendor_product_id);
+                        $productPr        = OrderVendorProduct::find($booking->order_vendor_product_id);
+                        $product        = $productPr->product;
                         $vendor         = $product->vendor_id;
+                        $web_hook_code = OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->value('web_hook_code')??null;
 
-                        if($booking->type != 4)
+                        if($booking->type == 4)
                         {
-                           
+                            $requestData = [];
+                            $requestData['payment_option_id'] = $order->payment_option_id;
+                            $requestData['product_id'] = $product->id;
+                            $requestData['type'] = $order->type;
+                            $requestData['task_type'] = 'now';
+                            $requestData['schedule_time'] = $recurring_data->schedule_date;
+                            // $requestData['unique_id'] = $order->unique_id;
 
+                            $tasks = OrderLocations::where('order_id',$order->id)->value('tasks');
+                            $requestData['tasks'] = json_decode($tasks);
+
+                            $request = (object)$requestData;
+                            $call = new PickupDeliveryController();
+                            $call =  $call->placeRequestToDispatch($request,$order,$vendor);
+                            // \Log::info($call);
+                            if ($call && $call['task_id'] > 0) {
+                                $dispatch_traking_url                   = $call['dispatch_traking_url'] ?? '';
+                                $recurring_data->web_hook_code          = $web_hook_code;
+                                $recurring_data->dispatch_traking_url   = $dispatch_traking_url;
+                                $recurring_data->save();
+                            }
+
+                        }else
+                        {
+
+                                                 
                             $cus_address    = UserAddress::find($order->address_id);
                             $tasks          = array();
 
@@ -240,19 +266,9 @@ class RecurringBooking extends Command
                                 $recurring_data->dispatch_traking_url   = $dispatch_traking_url;
                                 $recurring_data->save();
                             }
-                        }elseif($booking->type == 4)
-                        {
-                            $requestData['payment_option_id'] = $order->payment_option_id;
-                            $requestData['product_id'] = $product->product_id;
-                            $requestData['type'] = $order->type;
-                            $requestData['task_type'] = 'now';
-                            $requestData['schedule_time'] = $recurring_data->schedule_date;
-
-                            $request = (object)$requestData;
-                            $call = new PickupDeliveryController();
-                            $call =  $call->placeRequestToDispatch($request,$order,$vendor);
-
+                        
                         }
+
                     }
 
                 }
@@ -262,6 +278,8 @@ class RecurringBooking extends Command
                 \DB::disconnect($database_name);
             }
         }catch (Exception $ex) {
+            \Log::info('json_encode($booking)');
+
             return $ex->getMessage();
         }
         return 0;

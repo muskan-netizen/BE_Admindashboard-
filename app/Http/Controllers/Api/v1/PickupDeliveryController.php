@@ -508,20 +508,23 @@ class PickupDeliveryController extends BaseController{
                 return $order_place;
             }
 
-             if(@$request->share_ride_users && count($request->share_ride_users)>0)
-             {
-                 $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
-                  foreach($share_ride_users as $share_ride_users)
-                  {
-                   
-                     $share_ride_users = (object)$share_ride_users;
-                     $dialCode = empty($share_ride_users->dial_code) ? '+91' : null;
-                     $phone = $dialCode.$share_ride_users->phone_number;
-                     $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name." has booked a ride. Tracking url is ".$request_to_dispatch['dispatch_traking_url']??null;
-                     $send = $this->sendSms('', '', '', '', $phone, $msg);
+            if(@$order_place['data']['recurring_booking_time']!=null)
+            {
+                if(@$request->share_ride_users && count($request->share_ride_users)>0)
+                {
+                    $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
+                    foreach($share_ride_users as $share_ride_users)
+                    {
+                    
+                        $share_ride_users = (object)$share_ride_users;
+                        $dialCode = empty($share_ride_users->dial_code) ? '+91' : null;
+                        $phone = $dialCode.$share_ride_users->phone_number;
+                        $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name." has booked a ride. Tracking url is ".$request_to_dispatch['dispatch_traking_url']??null;
+                        $send = $this->sendSms('', '', '', '', $phone, $msg);
 
-                 }
-             }
+                    }
+                }
+            }
 
                //Send sendNotificationToCustomer
                if (isset($request->schedule_time) && !empty($request->schedule_time))
@@ -530,6 +533,8 @@ class PickupDeliveryController extends BaseController{
                    $device_token = UserDevice::whereUserId($user->id)->orderBy('id','desc')->value('device_token');
                    sendNotificationToCustomer($device_token,$order_number);
                }
+
+               return  $order_place;
             
         }
         catch(\Exception $e){

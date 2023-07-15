@@ -517,10 +517,8 @@ class PickupDeliveryController extends FrontController{
                 $given = new DateTime($request->schedule_datetime, new DateTimeZone($timezone));
                 $given->setTimezone(new DateTimeZone("UTC"));
                 $request->merge(['schedule_time' => $given->format("Y-m-d H:i:s")]);
-
             }
 
-           // pr($request->all());
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
 
@@ -578,16 +576,19 @@ class PickupDeliveryController extends FrontController{
             DB::commit();
 
             //Send message if ride is booked for friend
-            if(@$request->share_ride_users && count($request->share_ride_users)>0)
+            if(@$order_place['data']['recurring_booking_time']!=null)
             {
-                $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
-                foreach($share_ride_users as $share_ride_users)
+                if(@$request->share_ride_users && count($request->share_ride_users)>0)
                 {
-                    $share_ride_users = (object)$share_ride_users;
-                    $dialCode = empty($share_ride_users->dial_code) ? '+91' : null;
-                    $phone = $dialCode.$share_ride_users->phone_number;
-                    $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name." has booked a ride. Tracking url is ".$request_to_dispatch['dispatch_traking_url']??null;
-                    $send = $this->sendSms('', '', '', '', $phone, $msg);
+                    $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
+                    foreach($share_ride_users as $share_ride_users)
+                    {
+                        $share_ride_users = (object)$share_ride_users;
+                        $dialCode = empty($share_ride_users->dial_code) ? '+91' : null;
+                        $phone = $dialCode.$share_ride_users->phone_number;
+                        $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name." has booked a ride. Tracking url is ".$request_to_dispatch['dispatch_traking_url']??null;
+                        $send = $this->sendSms('', '', '', '', $phone, $msg);
+                    }
                 }
             }
 
@@ -1010,14 +1011,14 @@ class PickupDeliveryController extends FrontController{
                 if(empty($friendPhoneNumber)){
                     $type=0;
                 }
-
+         
                 $task_type = 'now';
-                if($request->has('task_type')){
+                if(!empty($request->task_type)){
                     $task_type = $request->task_type;
                 }elseif(!empty($order->scheduled_date_time)){
                     $task_type = 'schedule';
                 }
-
+                // dd($request->task_type);
                 if ($customer->dial_code == "971") {
                     // $customerno = '+' . $customer->dial_code . "0" . $customer->phone_number;
                     $customerno = "0" . $customer->phone_number;
@@ -1029,7 +1030,7 @@ class PickupDeliveryController extends FrontController{
                 $client = Client::orderBy('id', 'asc')->first();
 
                 $user = Auth::user();
-                if(empty($user->timezone))
+                if(@$user && empty($user->timezone))
                 {
                     $client_timezone = DB::table('clients')->first('timezone');
                     $user->timezone = $client_timezone->timezone ?? $user->timezone;
@@ -1053,8 +1054,8 @@ class PickupDeliveryController extends FrontController{
                     // 'order_friend_name' =>  $order->friend_name,
                     // 'order_number' =>  $order->friend_phone_number,
                     'barcode' => '',
-                    'allocation_type' => $request->unique_id ? 'notify' : 'a',
-                    'task' => $request->tasks,
+                    'allocation_type' => @$request->unique_id ? 'notify' : 'a',
+                    'task' => $request->tasks??null,
                     'order_team_tag' => $team_tag,
                     'task_type' => $task_type,
                     'order_agent_tag' => $order_agent_tag,
