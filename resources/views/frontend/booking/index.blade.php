@@ -551,8 +551,7 @@ input[type=number]::-webkit-outer-spin-button {
                                 @if (count($riders) > 0)
                                     <p class="m-0">Riders : <span id="rider_count">{{ count($riders) }}</span></p>
                                 @endif
-                                <button class="btn rounded {{ count($riders) == 0 ? 'w-100' : '' }}  add_rider_button"
-                                    data-toggle="modal" data-target="#alAddRiderSecModal"><i class="fa fa-plus"></i>
+                                <button class="btn rounded {{ count($riders) == 0 ? 'w-100' : '' }}  add_rider_button"><i class="fa fa-plus"></i>
                                     {{ __('Add Rider') }}</button>
                             </div>
                             <div class="col-12 mt-2">
@@ -670,7 +669,7 @@ input[type=number]::-webkit-outer-spin-button {
                         var randomColor = "#" + ((1<<24)*Math.random() | 0).toString(16);
                         %>
                         <div class="col-3 text-center alHoverRiderBox">
-                            <input class="alCheckMark" type="checkbox" name="share_ride_users[]" id="share_ride_users-<%= key %>" <% if(key == 0){'checked'} %> >
+                            <input class="alCheckMark" type="checkbox" name="share_ride_users[]" id="share_ride_users-<%= key %>" <% if(key == 0){'checked'} %> value="<%=rider.id%>" >
                             <label for="share_ride_users-<%= key %>" class="option option-<%= key %>">
                                 <div class="alRiderImg mb-1" style="background-color: <%=randomColor%> "> <%= (rider.first_name).charAt(0)%></div>
                                 <div class="dalRiderInfo">
@@ -1970,6 +1969,11 @@ input[type=number]::-webkit-outer-spin-button {
             $(document).delegate('.add_share_rider_button', 'click', function() {
                 $('#alAddRiderSecModal').modal();
                 $('.add_rider_submit_button').addClass('add_share_rider_submit_button').removeClass('add_rider_submit_button');
+            });
+
+            $(document).delegate('.add_rider_button', 'click', function() {
+                $('#alAddRiderSecModal').modal();
+                $('.add_share_rider_submit_button').addClass('add_rider_submit_button').removeClass('add_share_rider_submit_button');
             });
 
             function getFormData(dom_query) {

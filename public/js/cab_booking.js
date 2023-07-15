@@ -917,6 +917,15 @@ $(document).ready(function () {
             initialCountry: initial_country_code,
         });
     });
+
+    $(document).on('click','.add_share_rider_button',function(){
+        var input = document.querySelector("#phone");
+        window.intlTelInput(input, {
+            separateDialCode: true,
+            utilsScript: utilsScript_path,
+            initialCountry: initial_country_code,
+        });
+    });
     $(document).delegate('.iti__country','click', function() {
         var code = $(this).attr('data-country-code');
         $('#countryData').val(code);
