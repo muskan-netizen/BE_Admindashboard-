@@ -510,23 +510,6 @@ class PickupDeliveryController extends FrontController{
      public function createOrder(Request $request){
        
         try {
-
-            //Send message if ride is booked for friend
-            if(@$request->share_ride_users && count($request->share_ride_users)>0)
-            {
-                $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
-                // pr($share_ride_users);
-                 foreach($share_ride_users as $share_ride_users)
-                 {
-                    $share_ride_users = (object)$share_ride_users;
-                    $dialCode = empty($share_ride_users->dial_code) ? '+91' : null;
-                    $phone = $dialCode.$share_ride_users->phone_number;
-                    $msg = "Hi ".($share_ride_users->first_name??'User');
-                    dd($phone);
-                }
-            }
-            dd('ddd');
-
             DB::beginTransaction();
             if(isset($request->schedule_datetime) && !empty($request->schedule_datetime))
             {
@@ -543,6 +526,7 @@ class PickupDeliveryController extends FrontController{
 
             if($order_place['data']['recurring_booking_time'])
             {
+                DB::commit();
                 return response()->json([
                     'status' => '200',
                     'redirect' => route('user.orders'),
@@ -562,30 +546,7 @@ class PickupDeliveryController extends FrontController{
                     $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
 
 
-                    //Send sendNotificationToCustomer
-                    if (isset($request->schedule_time) && !empty($request->schedule_time))
-                    {
-                        $order_number = $order_place['data']->order_number??$order_place['data']['order_number'];
-                        $device_token = UserDevice::whereUserId($user->id)->orderBy('id','desc')->value('device_token');
-                        sendNotificationToCustomer($device_token,$order_number);
-                    }
-                    
-                    DB::commit();
-            //Send message if ride is booked for friend
-            if(@$request->share_ride_users && count($request->share_ride_users)>0)
-            {
-                $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
-                 foreach($share_ride_users as $share_ride_users)
-                 {
-                    $share_ride_users = (object)$share_ride_users;
-                    $dialCode = !empty($share_ride_users->dial_code) ? '+91' : $share_ride_users->dial_code;
-                    $phone = $share_ride_users->phone_number;
-                    $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name." has booked a ride. Tracking url is ".$request_to_dispatch['dispatch_traking_url']??null;
-                    $send = $this->sendSms('', '', '', '', $phone, $msg);
-                }
-            }
-
-                    return  $order_place;
+                    // return  $order_place;
                 }
                 else{
                     DB::rollback();
@@ -596,38 +557,12 @@ class PickupDeliveryController extends FrontController{
                 $order = $order_place['data'];
                 $request_to_dispatch = $this->placeRequestToDispatch($request, $order, $request->vendor_id);
                 if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
-                    DB::commit();
+                   
                     $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
                     $order_place['data']['user_name'] = $user->email;
                     $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
 
-                     //Send sendNotificationToCustomer
-                     if (isset($request->schedule_time) && !empty($request->schedule_time))
-                     {
-                         $order_number = $order_place['data']->order_number??$order_place['data']['order_number'];
-                         $device_token = UserDevice::whereUserId($user->id)->orderBy('id','desc')->value('device_token');
-                         sendNotificationToCustomer($device_token,$order_number);
-                     }
 
-
-                  
-                     DB::commit();
-                     //Send message if ride is booked for friend
-                     if(@$request->share_ride_users && count($request->share_ride_users)>0)
-                     {         
-                     
-                         $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
-                          foreach($share_ride_users as $share_ride_users)
-                          {
-                             $share_ride_users = (object)$share_ride_users;
-                             $dialCode = !empty($share_ride_users->dial_code) ? '+91' : $share_ride_users->dial_code;
-                             $phone = $share_ride_users->phone_number;
-                             $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name." has booked a ride. Tracking url is ".$request_to_dispatch['dispatch_traking_url']??null;
-                             $send = $this->sendSms('', '', '', '', $phone, $msg);
-                         }
-                     }
-
-                    return  $order_place;
                 }
                 else{
                     DB::rollback();
@@ -639,6 +574,34 @@ class PickupDeliveryController extends FrontController{
                 //DB::rollback();
                 return $order_place;
             }
+
+
+            //Send message if ride is booked for friend
+            if(@$request->share_ride_users && count($request->share_ride_users)>0)
+            {
+                $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
+                foreach($share_ride_users as $share_ride_users)
+                {
+                    $share_ride_users = (object)$share_ride_users;
+                    $dialCode = empty($share_ride_users->dial_code) ? '+91' : null;
+                    $phone = $dialCode.$share_ride_users->phone_number;
+                    $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name." has booked a ride. Tracking url is ".$request_to_dispatch['dispatch_traking_url']??null;
+                    $send = $this->sendSms('', '', '', '', $phone, $msg);
+                }
+            }
+
+
+             //Send sendNotificationToCustomer
+             if (isset($request->schedule_time) && !empty($request->schedule_time))
+             {
+                 $order_number = $order_place['data']->order_number??$order_place['data']['order_number'];
+                 $device_token = UserDevice::whereUserId($user->id)->orderBy('id','desc')->value('device_token');
+                 sendNotificationToCustomer($device_token,$order_number);
+             }
+
+             return  $order_place;
+
+
         }catch(\Exception $e){
             DB::rollback();
             return response()->json([
