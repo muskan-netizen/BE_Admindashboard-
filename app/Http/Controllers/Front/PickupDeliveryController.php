@@ -585,11 +585,15 @@ class PickupDeliveryController extends FrontController{
                     $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
                     foreach($share_ride_users as $share_ride_users)
                     {
+                        \Log::info(json_encode($request->share_ride_users));
+
                         $share_ride_users = (object)$share_ride_users;
                         $dialCode = empty($share_ride_users->dial_code) ? '+91' : null;
                         $phone = $dialCode.$share_ride_users->phone_number;
                         $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name." has booked a ride. Tracking url is ".$request_to_dispatch['dispatch_traking_url']??null;
                         $send = $this->sendSms('', '', '', '', $phone, $msg);
+                        \Log::info(json_encode($msg));
+
                     }
                 }
             // }
