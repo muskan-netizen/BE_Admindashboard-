@@ -575,6 +575,7 @@ class PickupDeliveryController extends FrontController{
                 return $order_place;
             }
 
+            DB::commit();
 
             //Send message if ride is booked for friend
             if(@$request->share_ride_users && count($request->share_ride_users)>0)
@@ -944,7 +945,7 @@ class PickupDeliveryController extends FrontController{
 
                  /** for Recurring Service */
                  if(!empty($order->recurring_booking_time) && !empty($request->recurringformPost)){
-                    DB::commit();
+                    // DB::commit();
                     $this->saveOrderLongTermServiceSchedule($order,$order_product->id);
                 }
 
@@ -958,7 +959,7 @@ class PickupDeliveryController extends FrontController{
                     $payment->save();
                 }
             }
-            DB::commit();
+            // DB::commit();
 
             $order['route'] = route('front.booking.details',$order->order_number);
             $data = [];

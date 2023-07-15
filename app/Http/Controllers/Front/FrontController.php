@@ -27,21 +27,14 @@ class FrontController extends Controller
 
     private $field_status = 2;
     protected function sendSms($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
-        // try{
+        try{
             $client_preference =  getClientPreferenceDetail();
-            Log::info('SMS twilio respons');
-            Log::info(json_encode($client_preference));
            
             if($client_preference->sms_provider == 1)
             {
                 if(!empty($client_preference->sms_secret) && !empty($client_preference->sms_from)){
                     $client = new TwilioClient($client_preference->sms_key, $client_preference->sms_secret);
-                    Log::info($to);
-                    Log::info('SMS twilio respons');
-                    Log::info($client);
                     $send =  $client->messages->create($to, ['from' => $client_preference->sms_from, 'body' => $body]);
-                    Log::info('SMS twilio respons');
-                    Log::info(json_encode($send));
                 }else{
                     return 2;
                 }
@@ -98,12 +91,12 @@ class FrontController extends Controller
                 }
             }
             //return $send;
-        // }
-        // catch(\Exception $e){
-        //     //// Log::info('SMS logs');
-        //     //// Log::info($e->getMessage());
-        //     return '2';
-        // }
+        }
+        catch(\Exception $e){
+            Log::info('SMS logs');
+            Log::info($e->getMessage());
+            return '2';
+        }
         return '1';
 	}
     protected function sendSmsNew($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
