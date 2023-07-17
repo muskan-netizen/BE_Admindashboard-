@@ -1190,7 +1190,7 @@ class ProductController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function importCsv(Request $request){
+    public function importCsvNew(Request $request){
         $validated = $request->validate([
             'product_excel' => 'required|mimes:csv,txt'
         ]);
@@ -1232,7 +1232,7 @@ class ProductController extends BaseController
         }
     }
     
-    public function importCsvOld(Request $request){
+    public function importCsv(Request $request){
         $validated = $request->validate([
             'product_excel' => 'required|mimes:csv,txt'
         ]);
