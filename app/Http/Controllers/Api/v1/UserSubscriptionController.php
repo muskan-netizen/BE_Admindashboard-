@@ -171,7 +171,7 @@ class UserSubscriptionController extends BaseController
      */
     public function purchaseSubscriptionPlan(Request $request, $slug)
     {
-        \Log::info("purchaseSubscriptionPlan");        \Log::info($request->all());;
+        
 
         try{
             $validator = Validator::make($request->all(), [
@@ -189,7 +189,7 @@ class UserSubscriptionController extends BaseController
 
 
             $subscription_plan = SubscriptionPlansUser::with('features.feature')->where('slug', $slug)->where('status', '1')->first();
-       
+
             if( ($user) && ($subscription_plan) ){
                 $last_subscription = SubscriptionInvoicesUser::with(['plan', 'features.feature'])
                     ->where('user_id', $user->id)
