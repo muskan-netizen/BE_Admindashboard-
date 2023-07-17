@@ -172,6 +172,12 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
     public function authentication_logs(){
         return $this->hasMany('Yadahan\AuthenticationLog\AuthenticationLog', 'authenticatable_id');
     }
+    
+    public function createPermissionsUser(){
+        $id = $this->id;
+        $permission_details = PermissionsOld::select('id as permission_id',\DB::raw("$id as user_id"))->whereIn('id', [1,2,3,12,17,18,19,20,21])->get()->toArray();
+        UserPermissions::insert($permission_details);
+    }
 
     public function bidRequests()
     {

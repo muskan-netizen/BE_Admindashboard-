@@ -111,6 +111,8 @@ class PaymentController extends FrontController{
                     $payment_option->title = __('Credit/Debit Card');
                 }elseif($payment_option->code == 'obo'){
                     $payment_option->title = __("MoMo, Airtel Money, Credit/Debit Cards by O'Pay");
+                }elseif($payment_option->code == 'livee'){
+                    $payment_option->title = __("Livees");
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);
@@ -154,7 +156,6 @@ class PaymentController extends FrontController{
     {
         if($gateway == 'mycash'){
             $data = $request->all();
-            // //\Log::info($data);
             return view('frontend.payment_gatway.mycash_otp_verify', compact('data'));
         }
     }
