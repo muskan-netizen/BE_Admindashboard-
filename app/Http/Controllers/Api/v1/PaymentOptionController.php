@@ -396,32 +396,7 @@ class PaymentOptionController extends BaseController
         }
     }
 
-    // public function postPaymentVia_stripe(Request $request){
-    //     try{
-    //         $stripe_creds = PaymentOption::select('credentials')->where('code', 'stripe')->where('status', 1)->first();
-    //         $creds_arr = json_decode($stripe_creds->credentials);
-    //         $api_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
-    //         $this->gateway = Omnipay::create('Stripe');
-    //         $this->gateway->setApiKey($api_key);
-    //         $this->gateway->setTestMode(true); //set it to 'false' when go live
-    //         $token = $request->stripe_token;
-    //         $response = $this->gateway->purchase([
-    //             'currency' => 'INR',
-    //             'token' => $token,
-    //             'amount' => $request->amount,
-    //             'metadata' => ['order_id'=>'11'],
-    //             'description' => 'Transaction type purchase',
-    //         ])->send();
-    //         if ($response->isSuccessful()) {
-    //             return $this->successResponse($response->getTransactionReference());
-    //         }
-    //         else {
-    //             return $this->errorResponse($response->getMessage(), 400);
-    //         }
-    //     }catch(\Exception $ex){
-    //         return $this->errorResponse($ex->getMessage(), 400);
-    //     }
-    // }
+
 
     public function creditMyWallet(Request $request)
     {
@@ -691,9 +666,7 @@ class PaymentOptionController extends BaseController
                         ]);
                     }
 
-                    // if(!empty($request->payment_option_id) && $request->payment_option_id == 42){
-
-                    // }
+                    
 
                     DB::commit();
                     return $this->successResponse($order, __('Order placed successfully.'), 201);
@@ -845,15 +818,6 @@ class PaymentOptionController extends BaseController
         $orderController = new OrderController();
         $orderController->autoAcceptOrderIfOn($order->id);
 
-        // Remove cart
-        // $cart = Cart::select('id')->where('status', '0')->where('user_id', $order->user_id)->first();
-        // //\Log::info(json_encode($cart));
-        // Cart::where('id', $cart->id)->update(['schedule_type' => null, 'scheduled_date_time' => null]);
-        // CartAddon::where('cart_id', $cart->id)->delete();
-        // CartCoupon::where('cart_id', $cart->id)->delete();
-        // CartProduct::where('cart_id', $cart->id)->delete();
-        // CartProductPrescription::where('cart_id', $cart->id)->delete();
-        // CartDeliveryFee::where('cart_id', $cart->id)->delete();
 
         // Send Notification
         if (!empty($order->vendors)) {
