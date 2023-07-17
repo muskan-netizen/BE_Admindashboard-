@@ -591,6 +591,7 @@ $timezone = Auth::user()->timezone;
     </div>
 </div>
 <!-- end repat order modal -->
+@include('frontend.modals.modal_recurring')
 
 @endsection
 @section('script')
@@ -1154,6 +1155,13 @@ $(document).delegate(".order_placed_btn_pending", "click", function() {
         document.getElementById(element.id).value = finalVal;
     }
 }
+       
+        $('.recurringBtn').click(function() 
+        {
+            var data = $(this).attr('data-recurring_day_data');
+            $(".recurring-modal").modal();
+            $('#days-recurring').html(data);
+        });
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>

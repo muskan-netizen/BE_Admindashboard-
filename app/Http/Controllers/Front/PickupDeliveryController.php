@@ -576,10 +576,7 @@ class PickupDeliveryController extends FrontController{
             DB::commit();
 
             //Send message if ride is booked for friend
-            // if(@$order_place['data']['recurring_booking_time']!=null)
-            // {
                 \Log::info(json_encode($request->share_ride_users));
-
                 if(@$request->share_ride_users && count($request->share_ride_users)>0)
                 {
                     $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
@@ -592,11 +589,11 @@ class PickupDeliveryController extends FrontController{
                         $phone = $dialCode.$share_ride_users->phone_number;
                         $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name." has booked a ride. Tracking url is ".$request_to_dispatch['dispatch_traking_url']??null;
                         $send = $this->sendSms('', '', '', '', $phone, $msg);
+                        \Log::info(json_encode($send));
                         \Log::info(json_encode($msg));
 
                     }
                 }
-            // }
 
 
              //Send sendNotificationToCustomer

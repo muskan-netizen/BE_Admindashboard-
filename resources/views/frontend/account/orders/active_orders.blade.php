@@ -147,6 +147,11 @@
                                                                                             <a class="start_chat_driver chat-icon btn btn-solid" data-driver_details_api="{{$vendor->dispatch_traking_url}}" data-vendor_order_id="{{$vendor->id}}" data-vendor_id="{{$vendor->vendor_id}}" data-orderid="" data-order_id="{{$order->id}}">{{__('Driver Chat')}}</a>
                                                                                             @endif
                                                                                         @endif
+
+                                                                                        @if(@$order->recurring_day_data)
+                                                                                            <a class="btn btn-solid recurringBtn"  data-recurring_day_data="{{$order->recurring_day_data}}">{{__('Recurring')}}</a>
+                                                                                        @endif
+
                                                                                     </div>
                                                                                 @endif
                                                                                 <span class="left_arrow pulse"></span>
