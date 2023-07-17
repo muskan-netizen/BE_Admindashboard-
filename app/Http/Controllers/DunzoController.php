@@ -16,8 +16,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Log;
 use Carbon\Carbon;
-
-
 class DunzoController extends Controller
 {
 	
@@ -153,29 +151,28 @@ class DunzoController extends Controller
 
 	public function createOrderRequestDunzo($user_id,$orderVendor)
     { 
+
 		$this->configuration();
 		if($this->status)
 		{
+
 			$order = Order::find($orderVendor->order_id);
         	$customer = User::find($user_id);
 			$vendor_details = Vendor::find($orderVendor->vendor_id);
 			$cus_address = UserAddress::find($order->address_id);
 			$orderProducts = OrderVendorProduct::where(['order_id'=>$orderVendor->order_id,'order_vendor_id'=>$orderVendor->id])->get();
             $scheduledAt = '';
-            $preTime = ($vendor_details->order_pre_time>0)?$vendor_details->order_pre_time:'10';
+            $preTime = ($vendor_details->order_pre_time >0) ? $vendor_details->order_pre_time : '10';
             if(isset($order->scheduled_date_time) && $order->scheduled_date_time){
-                $date = date('Y-m-d',strtotime($order->scheduled_date_time));
-                $time = date('H:i:s',strtotime($order->scheduled_date_time));
-                $scheduledAt = $date.' '.$time;
-                $date = Carbon::parse($scheduledAt,'UTC');
-                $date = $date->addMinutes($preTime);
+                $date = date('Y-m-d H:i:s', strtotime('+'. $preTime.' minutes', strtotime($order->scheduled_date_time)));
+                $date = Carbon::parse($date, 'UTC');
+
             }else{
+                $date = date('Y-m-d H:i:s', strtotime('+'. $preTime.' minutes', strtotime($order->created_at)));
                 $date = Carbon::parse($order->created_at, 'UTC');
-                $date = $date->addMinutes($preTime);
             }
             $date->setTimezone($customer->timezone);
             $dateT = $date->isoFormat('YYYY-MM-DD HH:mm:ss');
-
 			$data = array (
 				'partner_order_id' => $orderVendor->id.'-'.$orderVendor->order_id.'-'.$orderVendor->vendor_id,
 				'pickup_contact_name' => $vendor_details->name ?? '',  
@@ -200,6 +197,7 @@ class DunzoController extends Controller
 		}
     	$orderSuc = $this->createOrder($data);
 		return $orderSuc;
+
 		//Response Result
         // "status": true,
         // "code": 200,

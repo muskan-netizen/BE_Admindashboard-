@@ -235,10 +235,11 @@ label.rating-star.cancel_order, .rating-star.request_cancel_order, .extend-order
 .al_body_template_four .vendor-info li a  {
     color: #fff;
 }
-.al_body_template_three .img-outer-box{
-    height: 260px;
-    min-height: 260px;
-}
+.al_body_template_three .img-outer-box {
+    height: 240px;
+    min-height: 240px;
+    background: #fff!important;
+}   
 .al_body_template_one .vendor-info i,
 .al_body_template_four .vendor-info i {
     color: #fff;
@@ -1420,6 +1421,10 @@ body.al_body_template_three .dashboard-right .profile-page .info-text label {
     max-height: 550px;
     overflow-y: auto;
 }
+.al_body_template_eight  form#register .form-check label a {
+    font-weight: 600;
+}
+
 
 
 

@@ -16,6 +16,21 @@ body.al_body_template_four .alFourTemplateCartButtons a.shoping i {
     position: inherit;
 }
 
+.home-slider-wrapper span.carousel-control-prev-icon {
+    background-color: #000;
+    width: 40px !important;
+    height: 40px !important;
+    background-size: 12px;
+    border-radius: 2px;
+}
+.home-slider-wrapper span.carousel-control-next-icon {
+    background-color: #000;
+    width: 40px !important;
+    height: 40px !important;
+    background-size: 12px;
+    border-radius: 2px;
+}
+
 body.al_body_template_four .row.mb-md-1.alFourTemplateCartButtons.mt-2.pt-2 {
     margin-bottom: 20px !important;
 }

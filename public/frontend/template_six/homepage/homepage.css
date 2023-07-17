@@ -12,6 +12,22 @@ body.al_body_template_six.light {
     display: none;
 }
 
+
+.home-slider-wrapper span.carousel-control-prev-icon {
+    background-color: #000;
+    width: 40px !important;
+    height: 40px !important;
+    background-size: 12px;
+    border-radius: 2px;
+}
+.home-slider-wrapper span.carousel-control-next-icon {
+    background-color: #000;
+    width: 40px !important;
+    height: 40px !important;
+    background-size: 12px;
+    border-radius: 2px;
+}
+
 .carousel-inner a.banner-img-outer {
     display: block;
     height: 350px;

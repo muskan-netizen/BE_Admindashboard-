@@ -62,6 +62,7 @@ class AdminServiceAreaController extends BaseController{
         $returnData['languages'] = $languages;
         $returnData['currencies'] = $currencies;
         $returnData['areas'] = $areas;
+        $returnData['client_preference_detail'] = getClientPreferenceDetail();
         return view('backend/service-area/index')->with($returnData);
     }
 

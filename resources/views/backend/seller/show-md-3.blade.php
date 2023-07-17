@@ -539,7 +539,7 @@
                         <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
                     </div>
                 </div>
-            </form>
+            </form> 
         </div>
     </div>
 </div> --}}
