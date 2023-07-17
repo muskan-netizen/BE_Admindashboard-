@@ -2443,9 +2443,10 @@ class OrderController extends BaseController
                 unset($order->payment_option_id);
                 unset($order->orderDetail);
             }
+            return $orders;
         }
-        return $orders;
-    }
+       
+    
 
     public function getRejectedOrdersList(Request $request)
     {
