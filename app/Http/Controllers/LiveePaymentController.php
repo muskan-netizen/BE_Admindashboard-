@@ -34,21 +34,27 @@ class LiveePaymentController extends Controller
 {
     use ApiResponser;
     public $currency;
-    private $livee_business_name;
-    private $livee_client_id;
-    private $livee_key_id;
-    private $livee_market_place_id;
-    private $testMode;
-    const trade_key = 'sa4b4km6c0l9eq7y6od88cnjp62efvr6ix59u5taz2ghw0193';
-    const TOKEN_API           = "";
-    const resource_key   = "bj65bih1kzo740snwbru2q9px3v5503fetfdaaegmc64yle58";
-    const URL_API             = "";
+    private $trade_key;
+    private $resource_key;
+    private $apiUrl;
+    // const trade_key = 'sa4b4km6c0l9eq7y6od88cnjp62efvr6ix59u5taz2ghw0193';
+    // const TOKEN_API           = "";
+    // const resource_key   = "bj65bih1kzo740snwbru2q9px3v5503fetfdaaegmc64yle58";
+
 
     public function __construct()
     {
         $payOption = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'livee')->where('status', 1)->first();
 
+        if($payOption->status)
         $credentials = json_decode($payOption->credentials);
+
+        $this->trade_key = $credentials->livee_merchant_key;
+        $this->resource_key = $credentials->livee_resource_key;
+        $this->apiUrl = "https://www.livees.net/Checkout/api4";
+
+
+
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
         $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
     }
@@ -91,10 +97,10 @@ class LiveePaymentController extends Controller
     public function token()
     {
         try {
-            $apiUrl = "https://www.livees.net/Checkout/api4";
+            $apiUrl = $this->apiUrl;
             $input = json_encode([
-                "trade_key" => $this::trade_key,
-                "resource_key" => $this::resource_key
+                "trade_key" => $this->trade_key,
+                "resource_key" => $this->resource_key
             ]);
 
             $header = [
@@ -145,7 +151,7 @@ class LiveePaymentController extends Controller
                 $wallet->depositFloat($payment->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $payment->transaction_id . '</b>']);
                 return redirect($returnUrl);
             } elseif (isset($request->subscription_id)) {
-      
+
                 $data['transaction_id'] = $payment->transaction_id;
                 $data['payment_option_id'] = 59;
                 $data['subsid'] = $request->subscription_id;
@@ -237,6 +243,8 @@ class LiveePaymentController extends Controller
                 $urlParams   = "transactionid=$orderNumber&order_number=$request->order_number&paymentfrom=tip&amount=$request->amount&success=true";
             }
             $postURL = url('/livee/success' . '?' . $urlParams);
+            \Log::info('add url '.$postURL);
+            \Log::info($postURL);
             return view('backend.payment.liveePay', compact('amount', 'postURL', 'user'));
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -388,6 +396,7 @@ class LiveePaymentController extends Controller
         }
 
         $url = url('payment/livees/api/' . $params);
+        \Log::info($url);
         return $this->successResponse(($url));
     }
 
