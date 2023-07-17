@@ -121,12 +121,22 @@ trait Mpesa{
        $this->consumer_key=$json->mpesasafari_consumer_key; //Your Consumer key
        $this->consumer_secret=$json->mpesasafari_consumer_secret; //"Your Secret key
        $this->lipa_na_mpesa_key = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"; //Your Passkey
-       $this->lnmocallback = "https://webhook.site/04c6d8b2-0fce-4083-9a92-aab85b77efdf"; //Your callback URL
        $this->base_url  = (($mpesa->test_mode==1)?'https://sandbox.safaricom.co.ke':'https://api.safaricom.co.ke');
        $this->initiator_username = "lmukhuyu"; //Username of your choice
        $this->initiator_password = "Zallu3279@"; //Password of your choice
        $this->access_token = $this->getAccessToken(); //Set up access token
        $this->testmode = $mpesa->test_mode;
+       $this->lnmocallback = $this->getWebhookUrl();
+       
+   }
+       
+   public function getWebhookUrl(){
+       return'https://'.'192.168.102.169:8001'.'/webhook/mpesa';
+       
+       if($this->testmode)
+           return "https://webhook.site/6f12a228-fc95-4241-8495-1ff5f41cf421"; //Your callback URL
+       else
+           return route('safari.payment');
    }
    
    /**
@@ -451,12 +461,12 @@ trait Mpesa{
    {
        $timestamp = date('YmdHis');
        $passwd = base64_encode($this->lipa_na_mpesa.$this->lipa_na_mpesa_key.$timestamp);
+       $checkoutRequestID = 'ws_CO_17072023155438206708374149';
        
        if ($checkoutRequestID == null || $checkoutRequestID == '') {
            //throw new Exception("Checkout Request ID cannot be null");
            return false;
        }
-       
        $data = array(
            'BusinessShortCode' => $this->lipa_na_mpesa,
            'Password' => $passwd,

@@ -5112,16 +5112,13 @@ $(document).ready(function () {
             case 58:
                 payWithPowerTrans(payment_option_id,'');
             break;
-            
+            case 59:
+                payWithLivees(payment_option_id);
+                break;
              case 60:
                 paymentViaMpesaSafari(payment_option_id,'');
             break;
                 
-
-            case 59:
-                payWithLivees(payment_option_id);
-                break;
-
         }
 
     }
@@ -5674,17 +5671,17 @@ $(document).ready(function () {
                 payWithPowerTrans(payment_option_id, order);
               }
             break;
-            case '60':
-              var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-              if (order != '') {
-                paymentViaMpesaSafari(payment_option_id, order);
-              }
             case '59':
               var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
               if (order != '') {
                 payWithLivees(address_id, payment_option_id, order);
               }
             break;
+           case '60':
+              var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+              if (order != '') {
+                paymentViaMpesaSafari(payment_option_id, order);
+              }
         }
 
     }
@@ -5926,11 +5923,11 @@ $(document).ready(function () {
             case 58:
                 payWithPowerTrans(payment_option_id,'');
             break;
-            case 60:
-                paymentViaMpesaSafari(payment_option_id,'');
-
              case 59:
                 payWithLivees(payment_option_id,payment_from='wallet');
+            break;
+            case 60:
+                paymentViaMpesaSafari(payment_option_id,'');
             break;
         }
     }

@@ -33,7 +33,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::any('webhook/ahoy', 'AhoyController@ahoyWebhook')->name('ahoyWebhook');
 	Route::get('webhook/user_rating', 'Front\UserRatingController@userRatingWebhook')->name('user_rating_webhook');
     Route::any('livee/success','LiveePaymentController@afterPayment')->name('livee.payment');
-
+    Route::any('webhook/mpesa','Front\MpesaSafariController@successPage')->name('safari.payment');
+    
 	// order dispatcher order web hooks
 	Route::get('dispatch-order-status-update/{id?}', 'Front\DispatcherController@dispatchOrderStatusUpdate')->name('dispatch-order-update'); // Order Status update Dispatch
 	Route::get('dispatch-pickup-delivery/{id?}', 'Front\DispatcherController@dispatchPickupDeliveryUpdate')->name('dispatch-pickup-delivery'); // pickup delivery update from dispatch
