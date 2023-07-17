@@ -80,7 +80,7 @@ trait CoinbasePaymentManager{
       'requested_info' => ['email'],
     ];
     $response=$this->postCurl($endpoint,$data);
-    // dd($response);
+  
     return $response;
   }
   private function postCurl($data,$token=null):object{
