@@ -114,6 +114,9 @@ class UserSubscriptionController extends BaseController
                         $payment_option->title = __('Credit/Debit Card');
                     }elseif($payment_option->code == 'obo'){
                         $payment_option->title = __("MoMo, Airtel Money, Credit/Debit Cards by O'Pay");
+                        $payment_option->title = __("O'Pay");
+                    }elseif($payment_option->code == 'livee'){
+                        $payment_option->title = __("Livees");
                     }
                     $payment_option->title = __($payment_option->title);
                     unset($payment_option->credentials);
@@ -166,8 +169,9 @@ class UserSubscriptionController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function purchaseSubscriptionPlan(Request $request, $slug = '')
+    public function purchaseSubscriptionPlan(Request $request, $slug)
     {
+        
 
         try{
             $validator = Validator::make($request->all(), [
@@ -235,7 +239,7 @@ class UserSubscriptionController extends BaseController
                     $payment->user_subscription_invoice_id = $subscription_invoice_id;
                     $payment->date = Carbon::now()->format('Y-m-d');
                     $payment->save();
-                    
+
                     $subscription_invoice_features = array();
                     foreach($subscription_plan->features as $feature){
                         $subscription_invoice_features[] = array(
