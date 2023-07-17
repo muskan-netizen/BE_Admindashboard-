@@ -695,7 +695,6 @@ class PickupDeliveryController extends BaseController{
 
      // order update for pickup delivery
      public function orderUpdateAfterPaymentPickupDelivery($request){
-        \Log::info("inside orderUpdateAfterPaymentPickupDelivery ");\Log::info($request->all());
             $order = Order::where('order_number', $request->order_number)->first();
             $vendorId = OrderVendor::where('order_id',$order->id)->first();
             $vendor_id = $vendorId->vendor_id;
@@ -1754,7 +1753,6 @@ class PickupDeliveryController extends BaseController{
             return $this->successResponse($update, "Request declined successfully", 200);
         }
         catch (\Exception $e) {
-            \Log::error($e->getMessage());
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }
@@ -1881,7 +1879,6 @@ class PickupDeliveryController extends BaseController{
             return $this->successResponse(['biddata' => $biddata, 'bid_expire_time_limit_seconds' => $getAdditionalPreference['bid_expire_time_limit_seconds']], 200);
         }
         catch (\Exception $e) {
-            \Log::error($e->getMessage());
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }
@@ -1896,7 +1893,6 @@ class PickupDeliveryController extends BaseController{
             return $this->successResponse($update, "Request accepted successfully", 200);
         }
         catch (\Exception $e) {
-            \Log::error($e->getMessage());
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }

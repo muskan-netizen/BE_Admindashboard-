@@ -145,7 +145,7 @@ class LiveePaymentController extends Controller
                 $wallet->depositFloat($payment->balance_transaction, ['Wallet has been <b>credited</b> for order number <b>' . $payment->transaction_id . '</b>']);
                 return redirect($returnUrl);
             } elseif (isset($request->subscription_id)) {
-                ::info("success", $request->all());
+                // ::info("success", $request->all());
                 $data['transaction_id'] = $payment->transaction_id;
                 $data['payment_option_id'] = 59;
                 $data['subsid'] = $request->subscription_id;

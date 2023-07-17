@@ -189,8 +189,7 @@ class UserSubscriptionController extends BaseController
 
 
             $subscription_plan = SubscriptionPlansUser::with('features.feature')->where('slug', $slug)->where('status', '1')->first();
-        //   \Log::info("slug"); \Log::info($slug);
-        //     \Log::info("inside scccc");
+       
             if( ($user) && ($subscription_plan) ){
                 $last_subscription = SubscriptionInvoicesUser::with(['plan', 'features.feature'])
                     ->where('user_id', $user->id)
