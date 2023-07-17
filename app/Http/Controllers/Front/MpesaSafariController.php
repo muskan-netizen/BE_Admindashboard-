@@ -177,7 +177,7 @@ class MpesaSafariController extends Controller
     public function completeOrderCart($request, $payment)
     {
         $order = Order::where('order_number', $payment->transaction_id)->first();
-        if (isset($request) && ($request->get('statusId') == '2'))
+        if (!empty($order))
         {
             $order->payment_status = '1';
             $order->save();
@@ -189,22 +189,13 @@ class MpesaSafariController extends Controller
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=mpesasafari'.'&status=200&order='.$order->order_number;
                 return redirect($returnUrl);
             }
-        } else {
-            $this->failedOrderWalletRefund($order);
-            $this->sendWalletNotification($order->user_id, $order->order_number);
-            if($payment->payment_from != 'app'){
-                return redirect(route('showCart'))->with('error',$request->message);
-            } else {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=mpesasafari'.'&status=00&order='.$order->order_number;
-                return redirect($returnUrl);
-            }
-        }
+        } 
     }
     
     
     public function completeOrderWallet($request, $payment)
     {
-        if (isset($request) && ($request->get('statusId') == '2')){
+        //if (isset($request) && ($request->get('statusId') == '2')){
             $user = User::findOrFail($payment->user_id);
             Auth::login($user);
             $wallet = $user->wallet;
@@ -215,19 +206,19 @@ class MpesaSafariController extends Controller
             }else{
                 return redirect(route('user.wallet'))->with('success', 'Wallet amount added successfully.');
             }
-        }else{
-            if ($payment->payment_from == 'app') {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=mpesasafari'.'&status=200&transaction_id='.$request->order_id.'&action=wallet';
-                return redirect($returnUrl);
-            }else{
-                return redirect(route('user.wallet'))->with('error', 'Amount Failed.');
-            }
-        }
+//         }else{
+//             if ($payment->payment_from == 'app') {
+//                 $returnUrl = route('payment.gateway.return.response').'/?gateway=mpesasafari'.'&status=200&transaction_id='.$request->order_id.'&action=wallet';
+//                 return redirect($returnUrl);
+//             }else{
+//                 return redirect(route('user.wallet'))->with('error', 'Amount Failed.');
+//             }
+//         }
     }
     
     public function completeOrderTip($request, $payment)
     {
-        if (isset($request) && ($request->get('statusId') == '2')){
+       // if (isset($request) && ($request->get('statusId') == '2')){
             $data['tip_amount'] = $request->amount;
             $data['order_number'] = $request->order_number;
             $data['transaction_id'] = $payment->transaction_id;
@@ -241,20 +232,20 @@ class MpesaSafariController extends Controller
             }else{
                 return redirect(route('user.orders'))->with('success', 'Tip given successfully.');
             }
-        }else{
-            if ($payment->payment_from == 'app') {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=mpesasafari'.'&status=200&transaction_id='.$request->order_id.'&action=tip';
-                return redirect($returnUrl);
-            }else{
-                return redirect(route('user.orders'))->with('error', 'Failed.');
-            }
-        }
+//         }else{
+//             if ($payment->payment_from == 'app') {
+//                 $returnUrl = route('payment.gateway.return.response').'/?gateway=mpesasafari'.'&status=200&transaction_id='.$request->order_id.'&action=tip';
+//                 return redirect($returnUrl);
+//             }else{
+//                 return redirect(route('user.orders'))->with('error', 'Failed.');
+//             }
+//         }
     }
     
     
     public function completeOrderSubs(Request $request,$payment)
     {
-        if (isset($request) && ($request->get('statusId') == '2')){
+        //if (isset($request) && ($request->get('statusId') == '2')){
             $subscription = explode('_',$payment->transaction_id);
             $request->request->add(['user_id' => $payment->user_id, 'payment_option_id' => 60, 'amount' => $payment->balance_transaction, 'transaction_id' => $request->transId]);
             $subscriptionController = new UserSubscriptionController();
@@ -266,22 +257,22 @@ class MpesaSafariController extends Controller
             }else{
                 return Redirect::to(route('user.subscription.plans'))->with('error',$request->message);
             }
-        }else{
-            $payment->delete();
-            if(isset($payment->payment_from) && $payment->payment_from=='app')
-            {
-                $returnUrl = route('payment.gateway.return.response').'/?gateway=mpesasafari'.'&status=00&transaction_id='.$request->transId.'&action=subscription';
-                return Redirect::to($returnUrl);
-            }else{
-                return Redirect::to(route('user.subscription.plans'))->with('error',$request->message);
-            }
-        }        
+//         }else{
+//             $payment->delete();
+//             if(isset($payment->payment_from) && $payment->payment_from=='app')
+//             {
+//                 $returnUrl = route('payment.gateway.return.response').'/?gateway=mpesasafari'.'&status=00&transaction_id='.$request->transId.'&action=subscription';
+//                 return Redirect::to($returnUrl);
+//             }else{
+//                 return Redirect::to(route('user.subscription.plans'))->with('error',$request->message);
+//             }
+//         }        
     }
     
     public function completePickupDelivery($request, $payment)
     {
         $order = Order::where('order_number', $payment->transaction_id)->first();
-        if (isset($request) && ($request->get('statusId') == '2')){
+       // if (isset($request) && ($request->get('statusId') == '2')){
             $request->request->add(['order_number'=> $order->order_number, 'payment_option_id' => 60, 'amount' => $order->payable_amount, 'transaction_id' => $request->TransID]);
             $plaseOrderForPickup = new PickupDeliveryController();
             $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
@@ -293,10 +284,10 @@ class MpesaSafariController extends Controller
             }else{
                 return Redirect::to(route('front.booking.details',$order->order_number));
             }
-        }else{
-            $data = Payment::where('transaction_id',$payment->transaction_id)->first();
-            $data->delete();
-            return Redirect::to(route('front.booking.details'))->with('error',$request->message);
-        }
+//         }else{
+//             $data = Payment::where('transaction_id',$payment->transaction_id)->first();
+//             $data->delete();
+//             return Redirect::to(route('front.booking.details'))->with('error',$request->message);
+//         }
     }
   }
