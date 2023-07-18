@@ -373,7 +373,7 @@ input[type=number]::-webkit-outer-spin-button {
                             @if($is_recurring_booking == 1)
                             <input type="radio" id="is_recurring_booking" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="4">
                             <label class="mb-0  my-2" >
-                                <h5 class="m-0" id="">Standing Order</h5>
+                                <h5 class="m-0" id="">{{ __(getDynamicTypeName('Recurring')) }}</h5>
                             </label>
                         @endif
                         </div>
@@ -847,6 +847,11 @@ input[type=number]::-webkit-outer-spin-button {
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.service_charge_amount%></b></label></span>
                     <% } %>
 
+                    <% if((result.product_tax_name) && (result.product_tax_name) > 0 ){ %>
+                        <div class="col-6 mb-2">Product Tax Name</div>
+                        <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.product_tax %></div>
+                    <% } %>
+
                     <% if(result.service_charge_amount > 0 || result.toll_fee > 0){ %>
                         <h4 class="d-flex align-items-center justify-content-between"><b>{{ __('Total') }}</b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_total_amount">{{Session::get('currencySymbol')}}<%= (result.total_tags_price)%></b></label></h4>
@@ -1103,6 +1108,11 @@ input[type=number]::-webkit-outer-spin-button {
                     <% if(result.service_charge_amount > 0){ %>
                         <span class="d-flex align-items-center justify-content-between"><b>{{ __('Service Charge') }}</b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.service_charge_amount%></b></label></span>
+                    <% } %>
+
+                    <% if((result.product_tax_name) && (result.product_tax_name) > 0 ){ %>
+                        <div class="col-6 mb-2">Product Tax Name</div>
+                        <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.product_tax %></div>
                     <% } %>
 
                     <% if(result.service_charge_amount > 0 || result.toll_fee > 0){ %>

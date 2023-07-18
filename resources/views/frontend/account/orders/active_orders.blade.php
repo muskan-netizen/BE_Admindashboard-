@@ -149,7 +149,7 @@
                                                                                         @endif
 
                                                                                         @if(@$order->recurring_day_data)
-                                                                                            <a class="btn btn-solid recurringBtn"  data-recurring_day_data="{{$order->recurring_day_data}}">{{__('Recurring')}}</a>
+                                                                                            <a class="btn btn-solid recurringBtn" data-recurring_slot="{{$order->recurring_booking_time}}"  data-recurring_day_data="{{$order->recurring_day_data}}">{{getNomenclatureName('Recurring', true)}}</a>
                                                                                         @endif
 
                                                                                     </div>

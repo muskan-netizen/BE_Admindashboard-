@@ -180,12 +180,12 @@ class PickupDeliveryController extends FrontController{
             $schedule_datetime_del = Carbon::now()->timezone('UTC')->format('Y-m-d H:i:s');
         }
 
-        $product = Product::with(['category.categoryDetail','media.image', 'vendor', 'tollpass', 'travelmode', 'emissiontype', 'translation' => function($q) use($language_id){
+        $product = Product::with(['taxCategory','category.categoryDetail','media.image', 'vendor', 'tollpass', 'travelmode', 'emissiontype', 'translation' => function($q) use($language_id){
                             $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $language_id);
                         },'variant' => function($q) use($language_id){
                             $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode');
                             $q->groupBy('product_id');
-                        }])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags', 'products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id')->where('products.id', $product_id)->where('products.is_live', 1)->first();
+                        }])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags', 'products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id','products.tax_category_id')->where('products.id', $product_id)->where('products.is_live', 1)->first();
         $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
         $product->image_url = $image_url;
         $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
@@ -198,7 +198,7 @@ class PickupDeliveryController extends FrontController{
             $product->schedule_time = $recurring->schedule_time;
         }
 
-        $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
+        // $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
 
         $product->original_tags_price = decimal_format($tags_price['delivery_fee']);
         $product->tags_price = decimal_format($tags_price['delivery_fee']);
@@ -219,12 +219,13 @@ class PickupDeliveryController extends FrontController{
             $product->toll_fee = decimal_format(($product->toll_fee/$product->seats_for_booking)*$no_seats_for_pooling);
         }//------
 
+
+        //Check for fixed service fee and service fee percent
         $product->service_charge_amount  = 0.00;
         if($product->vendor->fixed_service_charge)
         {
             $product->service_charge_amount  =  $product->vendor->service_charge_amount??0.00;
         }else{
-
             if($product->vendor->service_fee_percent>0){
 
                 $product->service_charge_amount  = $product->tags_price * $product->vendor->service_fee_percent/100;
@@ -232,6 +233,30 @@ class PickupDeliveryController extends FrontController{
         }
 
         $product->total_tags_price = decimal_format($product->tags_price + $product->toll_fee + $product->service_charge_amount);
+
+        $curId = Session::get('customerCurrency');
+        $customerCurrency = ClientCurrency::where('currency_id', $curId)->first();
+        $price_in_doller_compare = $product->total_tags_price  * $customerCurrency->doller_compare;
+
+        // dd($product->taxCategory);
+        //Add Tax on product
+        $taxData = array();
+        if (!empty($product->taxCategory) && count($product->taxCategory->taxRate) > 0) {
+            foreach ($product->taxCategory->taxRate as $tckey => $tax_value) {
+                $rate = $tax_value->tax_rate;
+                $product_tax = ($price_in_doller_compare * $rate) / 100;
+
+                $taxData[$tckey]['identifier'] = $tax_value->identifier;
+                $taxData[$tckey]['rate'] = $rate;
+                $taxData[$tckey]['product_tax'] = decimal_format($product_tax);
+                $payable_amount = $product->total_tags_price + $product_tax;
+                $product->product_tax = decimal_format($product_tax);
+                $product->product_tax_name = $tax_value->identifier;
+                $product->total_tags_price = $payable_amount;
+            }
+        }
+
+
         $product->name = $product->translation->first() ? $product->translation->first()->title :'';
         $product->description = $product->translation->first() ? $product->translation->first()->body_html :'';
         $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
@@ -290,7 +315,8 @@ class PickupDeliveryController extends FrontController{
                 }
             }
         }
-
+        \Log::info('json_encode($product)');
+        \Log::info(json_encode($product));
         return $this->successResponse($product);
     }
     # get all vehicles category by vendor

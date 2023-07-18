@@ -1158,9 +1158,16 @@ $(document).delegate(".order_placed_btn_pending", "click", function() {
        
         $('.recurringBtn').click(function() 
         {
-            var data = $(this).attr('data-recurring_day_data');
+            var date = $(this).attr('data-recurring_day_data');
+            var slot = $(this).attr('data-recurring_slot');
+
+            const dateDate = date.split(",");
+            var days = dateDate.length;
+
             $(".recurring-modal").modal();
-            $('#days-recurring').html(data);
+            $('#days-recurring').html(days);
+            $('#slot-recurring').html(slot);
+            $('#date-recurring').html(date);
         });
 
 </script>
