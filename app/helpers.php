@@ -738,7 +738,11 @@ if (!function_exists('showSlot')) {
         // check if vendor has added slots. if not added then no need to execute this.
         if (isset($slots) && count($slots)>0) {
             $min[] = '';
-            $cart = CartProduct::where('vendor_id', $vid)->where('cart_id',$cart_id)->get();
+            $cart = CartProduct::where('vendor_id', $vid);
+            if(!empty($cart_id)){
+                $cart->where('cart_id',$cart_id);
+            }
+            $cart = $cart->get();
             if (isset($cart) && $cart->count()>0) {
                 foreach ($cart as $product) {
                     $delayHr= isset($product->product->delay_order_hrs) ? ($product->product->delay_order_hrs) : 0;
@@ -834,19 +838,19 @@ if (!function_exists('showNumericPrice')) {
 if (!function_exists('getShowSlot')) {
     function getShowSlot($myDate = null, $vid, $type = 'delivery', $duration="60", $slot_type=0, $request_from='',$cart_id = 0)
     {
-        $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type, $cart_id);
+        $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type,'', $cart_id);
         if(count((array)$slots) == 0){
             $myDate  = date('Y-m-d',strtotime('+1 day'));
-            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type, $cart_id);
+            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type,'', $cart_id);
         }
         if(count((array)$slots) == 0){
             $myDate  = date('Y-m-d',strtotime('+2 day'));
-            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type, $cart_id);
+            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type,'', $cart_id);
         }
 
         if(count((array)$slots) == 0){
             $myDate  = date('Y-m-d',strtotime('+3 day'));
-            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type, $cart_id);
+            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type,'', $cart_id);
         }
         $response['slots']=$slots;
         $response['date']=$myDate;
