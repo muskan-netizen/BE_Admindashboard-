@@ -1317,7 +1317,6 @@ class OrderController extends FrontController
                 $latitude = '';
                 $longitude = '';
             }
-
             /* Uodating client other details in order object */
             $order->payment_option_id = $request->payment_option_id;
             $order->total_other_taxes = $request->other_taxes_string;
@@ -1415,11 +1414,9 @@ class OrderController extends FrontController
 
             /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
             if (! empty($request->other_taxes_string)) {
-                foreach (explode(":", $request->other_taxes_string) as $row) {
-                    $total_other_taxes += (float) $row;
-                }
-            }
-
+                $total_other_taxes = array_sum(explode(":", $request->other_taxes_string));
+                $total_other_taxes = decimal_format($total_other_taxes);
+            }  
             /* Loop through evey cart product to get desired data for order */
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
 
