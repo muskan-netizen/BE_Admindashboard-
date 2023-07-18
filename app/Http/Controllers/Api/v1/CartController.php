@@ -838,7 +838,7 @@ class CartController extends BaseController
                 $vendor_latitude = $vendorData->vendor->latitude ?? 30.71728880;
                 $vendor_longitude =  $vendorData->vendor->longitude ?? 76.80350870;
 
-                $slotsDate = findSlot('',$vendorData->vendor->id,$type,'webFormet');
+                $slotsDate = findSlot('',$vendorData->vendor->id,$type,'webFormet',$cartID);
                 // $vendorData->delaySlot = $slotsDate;
                 $vendorData->delaySlot = (($slotsDate)? ( $slotsDate['datetime']?  $slotsDate['datetime'] : '' ):'');
                 $vendorStartDate =  (($slotsDate)? ( $slotsDate['date'] ?  $slotsDate['date'] : '' ):'');
@@ -1577,10 +1577,10 @@ class CartController extends BaseController
             //type must be a : delivery , takeaway,dine_in
             $duration = Vendor::where('id',$vendorId)->select('slot_minutes','closed_store_order_scheduled')->first();
             $slotsDate = findSlot('',$vendorId,$type,'api');
-            $slots = showSlot($slotsDate,$vendorId,$type,$duration->slot_minutes, 1);
+            $slots = showSlot($slotsDate,$vendorId,$type,$duration->slot_minutes, 1,'',$cartID);
             $cart->slots = $slots;
             if($preferences->business_type == 'laundry'){
-                $dropoff_slots = showSlot($slotsDate,$vendorId,$type,$duration->slot_minutes, 2);
+                $dropoff_slots = showSlot($slotsDate,$vendorId,$type,$duration->slot_minutes, 2,'',$cartID);
                 $cart->dropoff_slots = $dropoff_slots;
             }else{
                 $cart->dropoff_slots = [];
