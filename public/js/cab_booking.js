@@ -926,6 +926,7 @@ $(document).ready(function () {
             initialCountry: initial_country_code,
         });
     });
+    
     $(document).delegate('.iti__country','click', function() {
         var code = $(this).attr('data-country-code');
         $('#countryData').val(code);
@@ -937,7 +938,7 @@ $(document).ready(function () {
     $(document).on('click','.add_share_rider_submit_button',function(){
         var form = document.getElementById('add_rider_form');
         var formData = new FormData(form);
-        $.ajaxSetup({
+        $.ajaxSetup({   
             headers: {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
             }
@@ -952,7 +953,6 @@ $(document).ready(function () {
             contentType: false,
             processData: false,
             success: function(response) {
-         
                     let share_rider_template = _.template($('#share_rider_template').html());
                     $("#rider_section_user").html(share_rider_template({riders: response.riders})).show();
                     $("#rider_section_user").show();

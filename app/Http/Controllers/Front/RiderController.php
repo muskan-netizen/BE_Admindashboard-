@@ -19,8 +19,13 @@ class RiderController extends FrontController
     }
     public function addRider(Request $request){
     	$data = $request->all();
-        \Log::info('rider data');
-        \Log::info(json_encode($data));
+
+        if(empty($data->phone_number))
+        {
+            $all_riders = $this->riderObj->getAllByUserId($data['user_id']);
+    	    return response()->json(['riders' => $all_riders],200);
+        }
+
     	$data['user_id'] = Auth::user()->id;
         $data['phone_number'] = '+'.$data['dial_code'].$data['phone_number'];
         $data['dial_code'] = $data['dial_code'];

@@ -600,7 +600,7 @@ input[type=number]::-webkit-outer-spin-button {
                                                     id="share_ride_users-{{ $key }}" {{ $key == 0 ? 'checked' : '' }}
                                                     value="{{ $rider->id }}">
                                                 <label for="share_ride_users-{{ $key }}"
-                                                    class="share_ride_users-{{ $key }}">
+                                                    class="share_ride_users-{{ $key }}" title="{{$rider->phone_number}}">
 
                                                     <div class="alRiderImg mb-1" style="background-color:<?php printf("#%06X\n", mt_rand(0, 0xffffff)); ?>">
                                                         {{ substr($rider->first_name, 0, 1) }}</div>
@@ -670,7 +670,7 @@ input[type=number]::-webkit-outer-spin-button {
                         %>
                         <div class="col-3 text-center alHoverRiderBox">
                             <input class="alCheckMark" type="checkbox" name="share_ride_users[]" id="share_ride_users-<%= key %>" <% if(key == 0){'checked'} %> value="<%=rider.id%>" >
-                            <label for="share_ride_users-<%= key %>" class="option option-<%= key %>">
+                            <label for="share_ride_users-<%= key %>" class="option option-<%= key %>" title="<%= rider.phone_number%>">
                                 <div class="alRiderImg mb-1" style="background-color: <%=randomColor%> "> <%= (rider.first_name).charAt(0)%></div>
                                 <div class="dalRiderInfo">
                                     <p class="alRiderName mb-0"><%=rider.first_name%></p>
