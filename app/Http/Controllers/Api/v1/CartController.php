@@ -1809,10 +1809,11 @@ class CartController extends BaseController
         $slot = [];
         $vendorId = $request->vendor_id??0;
         $delivery = $request->delivery??'delivery';
+        $cartId = $request->cart_id??0;
         //type must be a : delivery , takeaway,dine_in
         $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
         $duration = $duration->slot_minutes??'';
-        $slots = showSlot($request->date,$vendorId,$delivery,$duration, 1, 'pickup'); // Added 1 for pickup
+        $slots = showSlot($request->date,$vendorId,$delivery,$duration, 1, 'pickup',$cartId); // Added 1 for pickup
         if(count($slots)<=0){
             $slot = [];
         }else{
