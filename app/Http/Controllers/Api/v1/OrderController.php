@@ -2371,7 +2371,7 @@ class OrderController extends BaseController
 
             }
             if ($order->delivery_fee > 0) {
-                $order_pre_time = ($order->order_pre_time > 0) ? $order->order_1016pre_time : 0;
+                $order_pre_time = ($order->order_pre_time > 0) ? $order->order_pre_time : 0;
                 $user_to_vendor_time = ($order->user_to_vendor_time > 0) ? $order->user_to_vendor_time : 0;
                 $ETA = $order_pre_time + $user_to_vendor_time;
                 $order->ETA = ($ETA > 0) ? $this->formattedOrderETA($ETA, $order->created_at, $order->orderDetail->scheduled_date_time) : dateTimeInUserTimeZone($order->created_at, $user->timezone);
