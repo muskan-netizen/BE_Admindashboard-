@@ -616,7 +616,7 @@ trait cartManager{
                         $prod->long_term_products=$LongTermProducts;
                     }
 
-                  $slotsDate = findSlot('',$vendorData->vendor->id,'','webFormet');
+                  $slotsDate = findSlot('',$vendorData->vendor->id,'','webFormet',$cart_id);
 
                   $vendorData->delaySlot = (($slotsDate)? ( $slotsDate['datetime']?  $slotsDate['datetime'] : '' ):'');
                   $vendorStartDate =  (($slotsDate)? ( $slotsDate['date'] ?  $slotsDate['date'] : '' ):'');

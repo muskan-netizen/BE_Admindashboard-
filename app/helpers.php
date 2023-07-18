@@ -976,26 +976,26 @@ if (!function_exists('SplitTimeTemp')) {
 
 
 if (!function_exists('findSlot')) {
-    function findSlot($myDate = null, $vid, $type = 'delivery', $api = null)
+    function findSlot($myDate = null, $vid, $type = 'delivery', $api = null,$cart_id = 0)
     {
         $type = empty($type) ? 'delivery' :$type;
         $myDate  = date('Y-m-d');
         $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
-        $slots = showSlot($myDate, $vid,  $type);
+        $slots = showSlot($myDate, $vid,  $type,"60",0,'',$cart_id);
 
         if (count((array)$slots) == 0) {
             $myDate  = date('Y-m-d', strtotime('+1 day'));
-            $slots = showSlot($myDate, $vid, $type);
+            $slots = showSlot($myDate, $vid, $type,"60",0,'',$cart_id);
         }
 
         if (count((array)$slots) == 0) {
             $myDate  = date('Y-m-d', strtotime('+2 day'));
-            $slots = showSlot($myDate, $vid, $type);
+            $slots = showSlot($myDate, $vid, $type,"60",0,'',$cart_id);
         }
 
         if (count((array)$slots) == 0) {
             $myDate  = date('Y-m-d', strtotime('+3 day'));
-            $slots = showSlot($myDate, $vid, $type);
+            $slots = showSlot($myDate, $vid, $type,"60",0,'',$cart_id);
         }
         if (isset($slots) && count((array)$slots)>0) {
             $time = explode(' - ', $slots[0]['value']);
