@@ -1723,7 +1723,7 @@ class CartController extends BaseController
 
 
         if (isset($cart_product_luxury_id) && isset($cart_product_luxury_id->luxury_option_id) && $cart_product_luxury_id->luxury_option_id ==4) {
-        $additional_price=($cart_product_luxury_id->additional_increments_hrs_min/$prod->pvariant->incremental_price_per_min);
+        $additional_price= isset($prod->pvariant->incremental_price_per_min)  && $prod->pvariant->incremental_price_per_min > 0 ? ($cart_product_luxury_id->additional_increments_hrs_min/$prod->pvariant->incremental_price_per_min) : 0;
         $cart->total_payable_amount= number_format((float)$cart->total_payable_amount+$additional_price, 2, '.', '');
         $cart->additional_price=$additional_price;
         }
