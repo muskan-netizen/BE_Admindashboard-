@@ -310,6 +310,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
     width: 50px;
     border-radius: 50px;
     z-index: 1;
+    right: 0px !important;
 }
 
 .al_body_template_six .alSixMainMenu .slick-next:before,

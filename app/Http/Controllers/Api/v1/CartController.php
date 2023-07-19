@@ -812,7 +812,7 @@ class CartController extends BaseController
 
             $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user_timezone);
             $vendorData->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime));
-            $slotsRes = getShowSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery');
+            $slotsRes = getShowSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery',"60",0,'',$cartID);
 
             $slots = (array)$slotsRes['slots'];
             // this variable for get slot from dispatc
@@ -838,7 +838,7 @@ class CartController extends BaseController
                 $vendor_latitude = $vendorData->vendor->latitude ?? 30.71728880;
                 $vendor_longitude =  $vendorData->vendor->longitude ?? 76.80350870;
 
-                $slotsDate = findSlot('',$vendorData->vendor->id,$type,'webFormet');
+                $slotsDate = findSlot('',$vendorData->vendor->id,$type,'webFormet',$cartID);
                 // $vendorData->delaySlot = $slotsDate;
                 $vendorData->delaySlot = (($slotsDate)? ( $slotsDate['datetime']?  $slotsDate['datetime'] : '' ):'');
                 $vendorStartDate =  (($slotsDate)? ( $slotsDate['date'] ?  $slotsDate['date'] : '' ):'');
@@ -1577,10 +1577,10 @@ class CartController extends BaseController
             //type must be a : delivery , takeaway,dine_in
             $duration = Vendor::where('id',$vendorId)->select('slot_minutes','closed_store_order_scheduled')->first();
             $slotsDate = findSlot('',$vendorId,$type,'api');
-            $slots = showSlot($slotsDate,$vendorId,$type,$duration->slot_minutes, 1);
+            $slots = showSlot($slotsDate,$vendorId,$type,$duration->slot_minutes, 1,'',$cartID);
             $cart->slots = $slots;
             if($preferences->business_type == 'laundry'){
-                $dropoff_slots = showSlot($slotsDate,$vendorId,$type,$duration->slot_minutes, 2);
+                $dropoff_slots = showSlot($slotsDate,$vendorId,$type,$duration->slot_minutes, 2,'',$cartID);
                 $cart->dropoff_slots = $dropoff_slots;
             }else{
                 $cart->dropoff_slots = [];
@@ -1723,7 +1723,7 @@ class CartController extends BaseController
 
 
         if (isset($cart_product_luxury_id) && isset($cart_product_luxury_id->luxury_option_id) && $cart_product_luxury_id->luxury_option_id ==4) {
-        $additional_price=($cart_product_luxury_id->additional_increments_hrs_min/$prod->pvariant->incremental_price_per_min);
+        $additional_price= isset($prod->pvariant)  && $prod->pvariant->incremental_price_per_min > 0 ? ($cart_product_luxury_id->additional_increments_hrs_min/$prod->pvariant->incremental_price_per_min) : 0;
         $cart->total_payable_amount= number_format((float)$cart->total_payable_amount+$additional_price, 2, '.', '');
         $cart->additional_price=$additional_price;
         }
@@ -1809,10 +1809,11 @@ class CartController extends BaseController
         $slot = [];
         $vendorId = $request->vendor_id??0;
         $delivery = $request->delivery??'delivery';
+        $cartId = $request->cart_id??0;
         //type must be a : delivery , takeaway,dine_in
         $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
         $duration = $duration->slot_minutes??'';
-        $slots = showSlot($request->date,$vendorId,$delivery,$duration, 1, 'pickup'); // Added 1 for pickup
+        $slots = showSlot($request->date,$vendorId,$delivery,$duration, 1, 'pickup',$cartId); // Added 1 for pickup
         if(count($slots)<=0){
             $slot = [];
         }else{

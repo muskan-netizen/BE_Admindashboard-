@@ -1869,6 +1869,7 @@ $(document).ready(function () {
         var task_type = $("input[name='task_type']").val();
         var schedule_dt = $("#schedule_datetime").val();
         var slot = $("#slot").val();
+        var other_taxes_string = $("#other_taxes_string").val();
         var is_gift = $('#is_gift:checked').val() ?? 0;
         // place_order_url=domain+/user/
         if ((task_type == 'schedule') && (schedule_dt == '')) {
@@ -1884,7 +1885,7 @@ $(document).ready(function () {
             dataType: 'json',
             async: false,
             url: place_order_url,
-            data: { address_id: address_id, payment_option_id: payment_option_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, slot: slot },
+            data: { address_id: address_id, payment_option_id: payment_option_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, slot: slot,other_taxes_string:other_taxes_string },
             success: function (response) {
                 if (response.status == "Success") {
                     orderResponse = response.data;
