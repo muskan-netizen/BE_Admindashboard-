@@ -7,7 +7,7 @@ trait PaymentTrait{
     {
         if($type=='cart')
         {
-            $paymentOptions = ['cod','azul', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','offline_manual','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash','dpo','openpay','userede','upay','conekta','telr','khalti','plugnpay','nmi','yappy','skip_cash','data_trans','mtn_momo','pesapal'];
+            $paymentOptions = ['cod','azul', 'paypal', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'mobbex','yoco','paylink','razorpay','gcash','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','offline_manual','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash','dpo','openpay','userede','upay','conekta','telr','khalti','plugnpay','nmi','yappy','skip_cash','data_trans','mtn_momo','pesapal','obo'];
 
         }elseif($type=='Subscription')
         {
@@ -15,7 +15,7 @@ trait PaymentTrait{
 
         }elseif($type=='wallet')
         {
-            $paymentOptions = ['paypal','azul', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash', 'dpo','openpay','userede','upay','conekta','telr','khalti','plugnpay','nmi','yappy','skip_cash','data_trans','mtn_momo','pesapal'];
+            $paymentOptions = ['paypal','azul', 'paystack', 'payfast', 'stripe', 'stripe_fpx', 'yoco', 'paylink','razorpay','simplify','square','pagarme','checkout','authorize_net','kongapay','ccavenue', 'cashfree','toyyibpay','easebuzz','vnpay','paytab','flutterwave','mvodafone','windcave','payphone','stripe_oxxo','stripe_ideal','viva_wallet', 'mycash', 'dpo','openpay','userede','upay','conekta','telr','khalti','plugnpay','nmi','yappy','skip_cash','data_trans','mtn_momo','pesapal','obo'];
 
         }elseif($type=='pickup_delivery')
         {
