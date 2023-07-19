@@ -5612,19 +5612,7 @@
         background: #2c3e50
     }
 
-    .footer-card {
-        background: #fff;
-        padding: 20px;
-        position: -webkit-sticky;
-        position: sticky;
-        bottom: 0;
-        z-index: 1;
-        background-color: #fff;
-        float: left;
-        clear: left;
-        width: 100%;
-        box-shadow: 0 16px 32px 0 rgb(0, 0, 0 / 5%) !important
-    }
+    .footer-card {background: #fff;padding: 20px;position: -webkit-sticky;position: sticky;bottom: 0;z-index: 1;background-color: #fff;float: left;clear: left;width: 100%;box-shadow: 0 16px 32px 0 rgb(0, 0, 0 / 5%) !important    }
 
     .cab-booking-header .top-header .header-dropdown li a,
     .cab-booking-header .top-header .header-dropdown li {
