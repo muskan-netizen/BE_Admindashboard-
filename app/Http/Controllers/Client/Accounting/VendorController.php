@@ -24,7 +24,9 @@ class VendorController extends Controller{
     public function getOrderVendorCalculations(Request $request,$flag = false){
         $from_date = "";
         $to_date = "";
-        $vendors = OrderVendor::with('orderDetail')->orderBy('id','desc');
+        $vendors = OrderVendor::with('orderDetail')->whereHas('vendor',function($q) {
+            $q->where('status', '!=', '2')->where('is_seller', 0);
+        })->orderBy('id','desc');
         if (Auth::user()->is_superadmin == 0) {
             $vendors = $vendors->whereHas('vendor.permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
