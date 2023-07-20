@@ -870,16 +870,11 @@ class PickupDeliveryController extends FrontController{
                 $product_taxable_amount   = 0;
                 $product_payable_amount   = 0;
                 $vendor_taxable_amount    = 0;
-                if ($product['taxCategory']) {
-                    foreach ($product['taxCategory']['taxRate'] as $tax_rate_detail) {
-                        $rate                  = round($tax_rate_detail->tax_rate);
-                        $tax_amount            = ($price_in_dollar_compare * $rate) / 100;
-                        $product_tax           = $quantity_price * $rate / 100;
-                        $taxable_amount        = $taxable_amount + $product_tax;
-                        $payable_amount        = $payable_amount + $product_tax;
-                        $vendor_payable_amount = $vendor_payable_amount;
-                    }
+                
+                if ($request->total_other_taxes) {
+                    $payable_amount = $payable_amount + $request->total_other_taxes;
                 }
+
                 $vendor_taxable_amount              += $request->total_other_taxes;
                 $total_amount                       += $variant->price;
                 $order_product                       = new OrderProduct;
