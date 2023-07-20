@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderVendor;
 use App\Models\OrderVendorProduct;
@@ -18,10 +17,12 @@ use Log;
 use Carbon\Carbon;
 use App\Models\ClientPreference;
 use App\Models\UserDevice;
-class DunzoController extends Controller
+use App\Http\Controllers\Front\FrontController;
+use App\Http\Traits\OrderTrait;
+class DunzoController extends FrontController
 {
 	
-	use \App\Http\Traits\Dunzo;
+    use \App\Http\Traits\Dunzo,OrderTrait;
 
     private $api_key;
     private $app_url;
@@ -330,6 +331,7 @@ class DunzoController extends Controller
     
     public function dunzoWebhookOld(Request $request)
     {
+        $trackingId = '';
         $json = json_decode($request->getContent());
         if($request && isset($json->order_uuid)){
             //is for Dunzo webhook
