@@ -273,7 +273,7 @@ class DunzoController extends FrontController
                     $update = VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'2']);                
                 }
                 $this->sendOrderNotification($update->id);
-                if(isset($order_status_option_id) && !empty($order_status_option_id) && (in_array($order_status_option_id ,[6,3]))){            
+                if(isset($order_status_option_id) && !empty($order_status_option_id)){            
                     $checkif= VendorOrderStatus::where(['order_id' => $details->order_id,
                         'order_status_option_id' =>  $order_status_option_id,
                         'vendor_id' =>  $details->vendor_id,
