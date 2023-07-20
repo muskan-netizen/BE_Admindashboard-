@@ -238,7 +238,6 @@ class DunzoController extends Controller
         //         "long": 11.55854455
         //     }
         // }
-        $update = '';
         $trackingId = '';
         $json = json_decode($request->getContent());
         if($request && isset($json->order_uuid)){
@@ -263,7 +262,7 @@ class DunzoController extends Controller
                 $dispatcher_status_option_id = '6';
                 $order_status_option_id = '3';
             }
-            if(!empty($dispatcher_status_option_id)){
+            if(!empty($dispatcher_status_option_id) && !empty($details)){
                 $data = array('order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>$dispatcher_status_option_id);
                 if($dispatcher_status_option_id == 5){
                     $data = array_merge($data,array('type' => '2'));
