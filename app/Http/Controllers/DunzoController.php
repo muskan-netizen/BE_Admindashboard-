@@ -330,8 +330,6 @@ class DunzoController extends Controller
     
     public function dunzoWebhookOld(Request $request)
     {
-        $update = '';
-        $trackingId = '';
         $json = json_decode($request->getContent());
         if($request && isset($json->order_uuid)){
             //is for Dunzo webhook
@@ -342,7 +340,7 @@ class DunzoController extends Controller
                 $details = OrderVendor::where('web_hook_code',$awb)->first();
                 
                 VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'1']);
-                $update =    VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'2']);
+                VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'2']);
             }elseif(isset($json->order_status_id) && $json->order_status_id == '4')
             {
                 $awb = $json->order_uuid;
@@ -351,7 +349,7 @@ class DunzoController extends Controller
                 //Update in vendor status
                 VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'4']);
                 
-                $update =  VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'3']);
+                VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'3']);
             }elseif(isset($json->order_status_id) && $json->order_status_id == '8')
             {
                 $awb = $json->order_uuid;
@@ -360,7 +358,7 @@ class DunzoController extends Controller
                 //Update in vendor status
                 VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'5']);
                 
-                $update = VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'4']);
+                VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'4']);
             }elseif(isset($json->order_status_id) && $json->order_status_id == '5')
             {
                 $awb = $json->order_uuid;
@@ -369,40 +367,7 @@ class DunzoController extends Controller
                 //Update in vendor status
                 VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'6']);
                 
-                $update = VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'5','type'=>'2']);
-            }elseif(isset($json->order_status_id) && $json->order_status_id == '6')
-            {
-                $awb = $json->order_uuid;
-                $details = OrderVendor::where('web_hook_code',$awb)->first();
-                
-                //Update in vendor status
-                VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>'6']);
-                
-                $update = VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'6','type'=>'2']);
-                
-                $checkif= VendorOrderStatus::where(['order_id' => $details->order_id,
-                    'order_status_option_id' =>  '3',
-                    'vendor_id' =>  $details->vendor_id,
-                    'order_vendor_id' =>  $details->id])->count();
-                
-                if($checkif == 0){
-                    $update_vendor = VendorOrderStatus::updateOrCreate([
-                        'order_id' =>  $details->order_id,
-                        'order_status_option_id' =>  '3',
-                        'vendor_id' =>  $details->vendor_id,
-                        'order_vendor_id' =>  $details->id ]);
-                    
-                    OrderVendor::where('vendor_id', $details->vendor_id)->where('order_id', $details->order_id)->update(['order_status_option_id' => '3']);
-                    // if driver is reject order
-                    if($request->status_option_id == 3 ){
-                        $this->cancelOrderByDriver($details);
-                    }
-                }
-                
-            }
-            if(!empty($update)){
-                OrderVendor::where('vendor_id', $details->vendor_id)->where('order_id', $details->order_id)->update(['dispatcher_status_option_id' => $request->dispatcher_status_option_id]);
-                $this->sendOrderNotification($update->id);
+                VendorOrderDispatcherStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'dispatcher_status_option_id'=>'5','type'=>'2']);
             }
         }elseif(@$json->awb){
             
