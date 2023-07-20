@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, ClientPreferenceAdditional, OrderLongTermServiceSchedule, PaymentOption, PickDropDriverBid, UserBidRideRequest, UserDevice};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, ClientPreferenceAdditional, OrderLongTermServiceSchedule, PaymentOption, PickDropDriverBid, TaxRate, UserBidRideRequest, UserDevice};
 use App\Http\Traits\{ApiResponser, OrderTrait, PaymentTrait};
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
@@ -155,11 +155,27 @@ class PickupDeliveryController extends FrontController{
         }
         return $this->successResponse($vendors);
     }
+
+    public function getTaxes()
+    {
+        /* Getting All Taxes available and making TaxRate array according to requirement */
+        $taxes=TaxRate::all();
+        $taxRates=array();
+        foreach($taxes as $tax){
+            $taxRates[$tax->id]=['tax_rate'=>$tax->tax_rate,'tax_amount'=>$tax->tax_amount];
+        }
+        return $taxRates;
+    }
+
     public function postCabProductById(Request $request, $domain = '',$product_id = 0){
         $user = Auth::user();
+        $taxRates = $this->getTaxes();
         $language_id = Session::get('customerLanguage');
         $preferences = ClientPreference::where('id', '>', 0)->first();
         $preferences->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
+        $taxCharges = 0;
+        $service_charge_tax = 0;
+        $product_tax = 0;
 
         if(!empty($user)){
             $client_timezone = DB::table('clients')->first('timezone');
@@ -190,7 +206,7 @@ class PickupDeliveryController extends FrontController{
         $product->image_url = $image_url;
         $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
        
-        if($recurringDays)
+        if($recurringDays) 
         {
             $tags_price['delivery_fee'] = decimal_format($tags_price['delivery_fee'] * $recurringDays);
             $product->daysCnt = $recurringDays;
@@ -227,7 +243,6 @@ class PickupDeliveryController extends FrontController{
             $product->service_charge_amount  =  $product->vendor->service_charge_amount??0.00;
         }else{
             if($product->vendor->service_fee_percent>0){
-
                 $product->service_charge_amount  = $product->tags_price * $product->vendor->service_fee_percent/100;
             }
         }
@@ -251,10 +266,34 @@ class PickupDeliveryController extends FrontController{
                 $taxData[$tckey]['product_tax'] = decimal_format($product_tax);
                 $payable_amount = $product->total_tags_price + $product_tax;
                 $product->product_tax = decimal_format($product_tax);
-                $product->product_tax_name = $tax_value->identifier;
+                $product->product_tax_name = $tax_value->identifier .' '.$rate.'%';
                 $product->total_tags_price = $payable_amount;
+                $taxCharges = $taxCharges + $product_tax;
             }
         }
+        // dd($price_in_doller_compare);
+
+
+        $service_charges_tax_rate = 0;
+            if($product->vendor->service_charges_tax_id!=null){
+                if(isset($taxRates[$product->vendor->service_charges_tax_id])){
+                       $service_charges_tax_rate=$taxRates[$product->vendor->service_charges_tax_id]['tax_rate'];
+                }
+            } 
+            
+
+        if($product->service_charge_amount && $service_charges_tax_rate)
+        {
+            $service_charge_tax = ($product->service_charge_amount * $service_charges_tax_rate) /100;
+            $taxCharges = $taxCharges + $service_charge_tax;
+            $product->total_tags_price = $product->total_tags_price  + $service_charge_tax;
+        }
+
+
+        $other_taxes=$taxCharges;
+        $other_taxes_string='service_charge_tax:'.($service_charge_tax??0).',product_tax_fee:'.($product_tax??0);
+        $product->total_other_taxes = $other_taxes??0;
+        $product->total_other_taxes_string = $other_taxes_string;
 
 
         $product->name = $product->translation->first() ? $product->translation->first()->title :'';
@@ -315,8 +354,6 @@ class PickupDeliveryController extends FrontController{
                 }
             }
         }
-        \Log::info('json_encode($product)');
-        \Log::info(json_encode($product));
         return $this->successResponse($product);
     }
     # get all vehicles category by vendor
@@ -534,7 +571,7 @@ class PickupDeliveryController extends FrontController{
      * create order for booking
     */
      public function createOrder(Request $request){
-       
+       \Log::info(json_encode($request->all()));
         try {
             DB::beginTransaction();
             if(isset($request->schedule_datetime) && !empty($request->schedule_datetime))
@@ -602,22 +639,17 @@ class PickupDeliveryController extends FrontController{
             DB::commit();
 
             //Send message if ride is booked for friend
-                \Log::info(json_encode($request->share_ride_users));
                 if(@$request->share_ride_users && count($request->share_ride_users)>0)
                 {
                     $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
                     foreach($share_ride_users as $share_ride_users)
                     {
-                        \Log::info(json_encode($share_ride_users));
 
                         $share_ride_users = (object)$share_ride_users;
                         $dialCode = empty($share_ride_users->dial_code) ? '+91' : null;
                         $phone = $dialCode.$share_ride_users->phone_number;
                         $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name." has booked a ride. Tracking url is ".$request_to_dispatch['dispatch_traking_url']??null;
                         $send = $this->sendSms('', '', '', '', $phone, $msg);
-                        \Log::info(json_encode($send));
-                        \Log::info(json_encode($msg));
-
                     }
                 }
 
@@ -762,6 +794,7 @@ class PickupDeliveryController extends FrontController{
                 $order->address_id          = $request->address_id;
                 $order->payment_option_id   = $payment_option;
                 $order->is_postpay          = ($request->postpay_enable)?$request->postpay_enable:0;
+                $order->total_other_taxes   = ($request->total_other_taxes_string)?$request->total_other_taxes_string:'';
                 $schedule_datetime_del      = NULL;
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
                     $schedule_datetime_del  =$request->schedule_time ;// Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
@@ -847,7 +880,7 @@ class PickupDeliveryController extends FrontController{
                         $vendor_payable_amount = $vendor_payable_amount;
                     }
                 }
-                $vendor_taxable_amount              += $taxable_amount;
+                $vendor_taxable_amount              += $request->total_other_taxes;
                 $total_amount                       += $variant->price;
                 $order_product                       = new OrderProduct;
                 $order_product->order_vendor_id      = $order_vendor->id;
@@ -941,7 +974,7 @@ class PickupDeliveryController extends FrontController{
                 $order->loyalty_amount_saved = $loyalty_amount_saved;
                 $order->total_toll_amount    = $total_toll_amount;
                 $order->total_service_fee    = $total_service_fee;
-                $finalAmount                 = $delivery_fee + $payable_amount - $total_discount - $loyalty_amount_saved + $total_toll_amount + $total_service_fee;
+                $finalAmount                 = $delivery_fee + $payable_amount - $total_discount - $loyalty_amount_saved + $total_toll_amount + $request->servicechargeamount;
                 if ($user) {
                     $now = Carbon::now()->toDateTimeString();
                     $user_subscription = SubscriptionInvoicesUser::with('features')

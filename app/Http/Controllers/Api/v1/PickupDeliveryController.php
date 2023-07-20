@@ -11,10 +11,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client, ClientPreferenceAdditional, Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, OrderVendorProduct, ProductFaq, ProductFaqSelectOption, UserBidRideRequest, PickDropDriverBid, UserDevice};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client, ClientPreferenceAdditional, Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, OrderVendorProduct, ProductFaq, ProductFaqSelectOption, UserBidRideRequest, PickDropDriverBid, TaxRate, UserDevice};
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\OrderTrait;
 use GuzzleHttp\Client as GCLIENT;
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log as FacadesLog;
@@ -179,6 +180,18 @@ class PickupDeliveryController extends BaseController{
     }
 
 
+    public function getTaxes()
+    {
+        /* Getting All Taxes available and making TaxRate array according to requirement */
+        $taxes=TaxRate::all();
+        $taxRates=array();
+        foreach($taxes as $tax){
+            $taxRates[$tax->id]=['tax_rate'=>$tax->tax_rate,'tax_amount'=>$tax->tax_amount];
+        }
+        return $taxRates;
+    }
+
+
     public function postCabProductById(Request $request){
 
         try
@@ -188,6 +201,11 @@ class PickupDeliveryController extends BaseController{
             $language_id = $user->language;
             $preferences = ClientPreference::where('id', '>', 0)->first();
             $preferences->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
+
+            $taxRates = $this->getTaxes();
+            $taxCharges = 0;
+            $service_charge_tax = 0;
+            $product_tax = 0;
 
             if(!empty($user)){
                 $client_timezone = DB::table('clients')->first('timezone');
@@ -209,12 +227,12 @@ class PickupDeliveryController extends BaseController{
                 $schedule_datetime_del = Carbon::now()->timezone('UTC')->format('Y-m-d H:i:s');
             }
 
-            $product = Product::with(['category.categoryDetail','media.image', 'vendor', 'tollpass', 'travelmode', 'emissiontype', 'translation' => function($q) use($language_id){
+            $product = Product::with(['taxCategory','category.categoryDetail','media.image', 'vendor', 'tollpass', 'travelmode', 'emissiontype', 'translation' => function($q) use($language_id){
                                 $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $language_id);
                             },'variant' => function($q) use($language_id){
                                 $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode');
                                 $q->groupBy('product_id');
-                            }])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags', 'products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id')->where('products.id', $product_id)->where('products.is_live', 1)->first();
+                            }])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags', 'products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id','products.tax_category_id')->where('products.id', $product_id)->where('products.is_live', 1)->first();
             $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
             $product->image_url = $image_url;
             $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
@@ -254,16 +272,63 @@ class PickupDeliveryController extends BaseController{
             {
                 $product->service_charge_amount  =  $product->vendor->service_charge_amount??0.00;
             }else{
-
                 if($product->vendor->service_fee_percent>0){
 
                     $product->service_charge_amount  = $product->tags_price * $product->vendor->service_fee_percent/100;
                 }
-            }
-
+            } 
        
 
             $product->total_tags_price = decimal_format($product->tags_price + $product->toll_fee + $product->service_charge_amount);
+
+
+        
+            $customerCurrency = ClientCurrency::where('is_primary', 1)->first();
+            $price_in_doller_compare = $product->total_tags_price  * $customerCurrency->doller_compare;
+    
+            // dd($product->taxCategory);
+            //Add Tax on product
+            $taxData = array();
+            if (!empty($product->taxCategory) && count($product->taxCategory->taxRate) > 0) {
+                foreach ($product->taxCategory->taxRate as $tckey => $tax_value) {
+                    $rate = $tax_value->tax_rate;
+                    $product_tax = ($price_in_doller_compare * $rate) / 100;
+    
+                    $taxData[$tckey]['identifier'] = $tax_value->identifier;
+                    $taxData[$tckey]['rate'] = $rate;
+                    $taxData[$tckey]['product_tax'] = decimal_format($product_tax);
+                    $payable_amount = $product->total_tags_price + $product_tax;
+                    $product->product_tax = decimal_format($product_tax);
+                    $product->product_tax_name = $tax_value->identifier .' '.$rate.'%';
+                    $product->total_tags_price = $payable_amount;
+                    $taxCharges = $taxCharges + $product_tax;
+                }
+            }
+            // dd($price_in_doller_compare);
+    
+    
+            $service_charges_tax_rate = 0;
+                if($product->vendor->service_charges_tax_id!=null){
+                    if(isset($taxRates[$product->vendor->service_charges_tax_id])){
+                           $service_charges_tax_rate=$taxRates[$product->vendor->service_charges_tax_id]['tax_rate'];
+                    }
+                } 
+              
+            if($product->service_charge_amount && $service_charges_tax_rate)
+            {
+                $service_charge_tax = ($product->service_charge_amount * $service_charges_tax_rate) /100;
+                $taxCharges = $taxCharges + $service_charge_tax;
+                $product->total_tags_price = $product->total_tags_price  + $service_charge_tax;
+            }
+    
+    
+            $other_taxes=$taxCharges;
+            $other_taxes_string='service_charge_tax:'.($service_charge_tax??0).',product_tax_fee:'.($product_tax??0);
+            $product->total_other_taxes = $other_taxes??0;
+            $product->total_other_taxes_string = $other_taxes_string;
+
+
+
             $product->name = $product->translation->first() ? $product->translation->first()->title :'';
             $product->description = $product->translation->first() ? $product->translation->first()->body_html :'';
             $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
@@ -655,6 +720,7 @@ class PickupDeliveryController extends BaseController{
                 $order->luxury_option_id = $luxury_option->id;
 
                 $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
+                $order->total_other_taxes   = ($request->other_taxes_string)?$request->other_taxes_string:'';
 
                 $schedule_datetime_del = NULL;
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
@@ -721,17 +787,22 @@ class PickupDeliveryController extends BaseController{
                 $product_taxable_amount = 0;
                 $product_payable_amount = 0;
                 $vendor_taxable_amount = 0;
-                if ($product['tax_category']) {
-                    foreach ($product['tax_category']['tax_rate'] as $tax_rate_detail) {
-                        $rate = round($tax_rate_detail->tax_rate);
-                        $tax_amount = ($price_in_dollar_compare * $rate) / 100;
-                        $product_tax = $quantity_price * $rate / 100;
-                        $taxable_amount = $taxable_amount + $product_tax;
-                        $payable_amount = $payable_amount + $product_tax;
-                        $vendor_payable_amount = $vendor_payable_amount;
-                    }
+                // if ($product['tax_category']) {
+                //     foreach ($product['tax_category']['tax_rate'] as $tax_rate_detail) {
+                //         $rate = round($tax_rate_detail->tax_rate);
+                //         $tax_amount = ($price_in_dollar_compare * $rate) / 100;
+                //         $product_tax = $quantity_price * $rate / 100;
+                //         $taxable_amount = $taxable_amount + $product_tax;
+                //         $payable_amount = $payable_amount + $product_tax;
+                //         $vendor_payable_amount = $vendor_payable_amount;
+                //     }
+                // }
+
+                if ($request->other_taxes) {
+                        $payable_amount = $payable_amount + $request->other_taxes;
                 }
-                $vendor_taxable_amount += $taxable_amount;
+
+                $vendor_taxable_amount += $request->other_taxes;
                 $total_amount += $variant->price;
                 $order_product = new OrderProduct;
                 $order_product->order_vendor_id = $order_vendor->id;
@@ -845,7 +916,7 @@ class PickupDeliveryController extends BaseController{
                         }
                     }
                 }else{
-                    $order->payable_amount = $delivery_fee + $payable_amount - $total_discount - $loyalty_amount_saved + $total_toll_amount + $total_service_fee;
+                    $order->payable_amount = $delivery_fee + $payable_amount - $total_discount - $loyalty_amount_saved + $total_toll_amount +  $request->servicechargeamount;
                 }
 
 

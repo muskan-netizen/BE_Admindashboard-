@@ -847,11 +847,6 @@ input[type=number]::-webkit-outer-spin-button {
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.service_charge_amount%></b></label></span>
                     <% } %>
 
-                    <% if((result.product_tax_name) && (result.product_tax_name) > 0 ){ %>
-                        <div class="col-6 mb-2">Product Tax Name</div>
-                        <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.product_tax %></div>
-                    <% } %>
-
                     <% if(result.service_charge_amount > 0 || result.toll_fee > 0){ %>
                         <h4 class="d-flex align-items-center justify-content-between"><b>{{ __('Total') }}</b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_total_amount">{{Session::get('currencySymbol')}}<%= (result.total_tags_price)%></b></label></h4>
@@ -971,10 +966,6 @@ input[type=number]::-webkit-outer-spin-button {
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.service_charge_amount%></b></label></span>
                     <% } %>
 
-                    <% if(result.service_charge_amount > 0 || result.toll_fee > 0){ %>
-                        <h4 class="d-flex align-items-center justify-content-between"><b>{{ __('Total') }}</b> <label><sub class="ling-throgh" id
-                        ="discount_amount" style="display:none;"></sub> <b id="real_total_amount">{{Session::get('currencySymbol')}}<%= (result.total_tags_price)%></b></label></h4>
-                    <% } %>
 
                     <input type="hidden" id="hddn_amount_toll_fee" value="<%= (result.toll_fee)%>"/>
                     <input type="hidden" name="cart_product_ids[]" value="<%= result.id %>">
@@ -1109,16 +1100,18 @@ input[type=number]::-webkit-outer-spin-button {
                         <span class="d-flex align-items-center justify-content-between"><b>{{ __('Service Charge') }}</b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.service_charge_amount%></b></label></span>
                     <% } %>
-
-                    <% if((result.product_tax_name) && (result.product_tax_name) > 0 ){ %>
-                        <div class="col-6 mb-2">Product Tax Name</div>
-                        <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.product_tax %></div>
+                           
+                    <% if((result.product_tax) && (result.product_tax) > 0 ){ %>        
+                        <span class="d-flex align-items-center justify-content-between"><b><%= result.product_tax_name %></b> <label><sub class="ling-throgh" id
+                            ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.total_other_taxes %></b></label></span>
                     <% } %>
 
                     <% if(result.service_charge_amount > 0 || result.toll_fee > 0){ %>
                         <h4 class="d-flex align-items-center justify-content-between"><b>{{ __('Total') }}</b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_total_amount">{{Session::get('currencySymbol')}}<%= (result.total_tags_price)%></b></label></h4>
                     <% } %>
+                        <input type="hidden" name="total_other_taxes" value="<%= result.total_other_taxes %>"/>
+                        <input type="hidden" name="total_other_taxes_string" value="<%= result.total_other_taxes_string %>"/>
                         <input type="hidden" id="hddn_amount_toll_fee" value="<%= (result.toll_fee)%>"/>
                         <input type="hidden" name="cart_product_ids[]" value="<%= result.id %>">
                         <input type="hidden" id="hddn_real_amount" value="<%= (result.tags_price)%>"/>
