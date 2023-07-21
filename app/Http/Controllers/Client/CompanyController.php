@@ -71,8 +71,8 @@ class CompanyController extends BaseController{
      */
     public function edit(Request $request, $domain = ''){
         $area = Company::where('id', $request->data)->first();
-        $returnHTML = view('backend.service-area.editArea')->with(['area' => $area, 'languages' => $languages, 'currencies' => $currencies])->render();
-        return response()->json(array('success' => true, 'html' => $returnHTML, 'zoomLevel'  => $area->zoom_level, 'coordinate'  => $area->geo_array));
+        $returnHTML = view('backend.company.editArea')->with(['area' => $area])->render();
+        return response()->json(array('success' => true, 'html' => $returnHTML));
     }
 
     /**

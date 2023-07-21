@@ -378,6 +378,10 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         Route::post('admin/company', 'Client\CompanyController@store')->name('company.add');
         Route::get('admin/company', 'Client\CompanyController@index')->name('company.getList');
+        Route::post('admin/deleteCompany', 'Client\CompanyController@destroy')->name('company.delete');
+        Route::post('admin/editCompany', 'Client\CompanyController@edit')->name('company.edit');
+        Route::post('admin/updateCompany/{id}', 'Client\CompanyController@update')->name('company.update');
+
         // Admin Service Area Routes
         Route::post('admin/serviceArea', 'Client\AdminServiceAreaController@store')->name('admin.serviceArea');
         Route::get('admin/serviceArea', 'Client\AdminServiceAreaController@index')->name('admin.serviceArea.index');

@@ -74,14 +74,7 @@
                                             </td>
 
                                             <td>
-                                                {{-- @if ($client_preference_detail->slots_with_service_area == 1 && $vendor->show_slot == 0)
-                                                    <input type="checkbox" data-plugin="switchery"
-                                                        name="is_active_for_vendor_slot"
-                                                        class="form-control is_active_for_vendor_slot" data-color="#43bee1"
-                                                        data-aid="{{ $geo->id }}"
-                                                        @if ($geo->is_active_for_vendor_slot == 1) checked @endif
-                                                        {{ $vendor->cron_for_service_area == 1 ? 'disabled' : '' }}>
-                                                @endif
+                                                
 
                                                 <button type="button"
                                                     class="btn btn-primary-outline action-icon editAreaBtn"
@@ -97,7 +90,7 @@
                                                         class="btn btn-primary-outline action-icon"><i
                                                             class="mdi mdi-delete"></i></button>
 
-                                                </form> --}}
+                                                </form>
                                             </td>
                                         </tr>
                                     @empty
@@ -208,20 +201,7 @@
                 $('#latlongs').val(overlay.getPath().getArray());
             });
         }
-        $("#geo_form").on("submit", function(e) {
-            var lat = $('#latlongs').val();
-            var trainindIdArray = lat.replace("[", "").replace("]", "").split(',');
-            var length = trainindIdArray.length;
-
-            if (length < 6) {
-                Swal.fire(
-                    'Select Location?',
-                    'Please Draw a Location On Map first',
-                    'question'
-                )
-                e.preventDefault();
-            }
-        });
+  
         /*                  EDIT       AREA        MODAL           */
         var CSRF_TOKEN = $("input[name=_token]").val();
         $(document).on('click', '.editAreaBtn', function() {
@@ -234,16 +214,15 @@
             $.ajax({
                 type: "post",
                 dataType: "json",
-                url: "{{ route('admin.serviceArea.edit') }}",
+                url: "{{ route('company.edit') }}",
                 data: {
                     _token: CSRF_TOKEN,
                     data: aid
                 },
                 success: function(data) {
                     document.getElementById("edit-area-form").action =
-                        "{{ url('client/admin/updateArea') }}" + '/' + aid;
+                        "{{ url('client/admin/updateCompany') }}" + '/' + aid;
                     $('#edit-area-form #editAreaBox').html(data.html);
-                    initialize_edit(data.zoomLevel, data.coordinate);
                     $('#edit-area-modal').modal({
                         backdrop: 'static',
                         keyboard: false
@@ -251,69 +230,6 @@
                 }
             });
         });
-        var Editmap; // Global declaration of the map
-        function initialize_edit(zoomLevel = 0, coordinates = '') {
-            var zoomLevel = zoomLevel;
-            var coordinate = coordinates;
-            if (coordinate != '') {
-                coordinate = coordinate.split('(');
-                coordinate = coordinate.join('[');
-                coordinate = coordinate.split(')');
-                coordinate = coordinate.join(']');
-                coordinate = "[" + coordinate;
-                coordinate = coordinate + "]";
-                coordinate = JSON.parse(coordinate);
-                var triangleCoords = [];
-                const lat1 = coordinate[0][0];
-                const long1 = coordinate[0][1];
-                var max_x = lat1;
-                var min_x = lat1;
-                var max_y = long1;
-                var min_y = long1;
-                $.each(coordinate, function(key, value) {
-                    if (value[0] > max_x) {
-                        max_x = value[0];
-                    }
-                    if (value[0] < min_x) {
-                        min_x = value[0];
-                    }
-                    if (value[1] > max_y) {
-                        max_y = value[1];
-                    }
-                    if (value[1] < min_y) {
-                        min_y = value[1];
-                    }
-                    triangleCoords.push(new google.maps.LatLng(value[0], value[1]));
-                });
-                var myLatlng = new google.maps.LatLng((min_x + ((max_x - min_x) / 2)), (min_y + ((max_y - min_y) / 2)));
-                var myOptions = {
-                    zoom: parseInt(zoomLevel),
-                    center: myLatlng,
-                    mapTypeId: google.maps.MapTypeId.ROADMAP
-                }
-                Editmap = new google.maps.Map(document.getElementById("edit_map-canvas"), myOptions);
-                myPolygon = new google.maps.Polygon({
-                    paths: triangleCoords,
-                    draggable: true, // turn off if it gets annoying
-                    editable: true,
-                    strokeColor: '#424fsd',
-                    //strokeOpacity: 0.8,
-                    //strokeWeight: 2,
-                    fillColor: '#bb3733',
-                    //fillOpacity: 0.35
-                });
-                myPolygon.setMap(Editmap);
-                google.maps.event.addListener(myPolygon, "mouseup", function(event) {
-                    $('#zoom_level_edit').val(Editmap.getZoom());
-                    document.getElementById("latlongs_edit").value = myPolygon.getPath().getArray();
-                });
-            }
-        }
-        
-        google.maps.event.addDomListener(window, 'load', initialize);
-        google.maps.event.addDomListener(window, 'load', initialize_show);
-        google.maps.event.addDomListener(window, 'load', initialize_edit);
-        google.maps.event.addDomListener(document.getElementById('refresh'), 'click', deleteSelectedShape);
         
     </script>
     <script type="text/javascript">
