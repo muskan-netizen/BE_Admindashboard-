@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\{ApiResponser,CartManager, KwikApi,BiddingCartTrait, CartManagerV2};
 use App\Http\Controllers\Client\ShippoController;
-use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
+use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController, RoadieController};
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate, Page,WebStylingOption, ProductDeliveryFeeByRole};
 use Http\Message\Cookie;
 
@@ -300,7 +300,6 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
-        
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
         try {
@@ -2240,6 +2239,7 @@ class CartController extends FrontController
 
     public function getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del='', $dispatcher_tags='',$totalRoute = '1')
     {
+        // dd($address);
         $option = array();
         $delivery_count = 0;
         try {
@@ -2305,8 +2305,7 @@ class CartController extends FrontController
                     $option = array_merge($option,$optionKwikApi);
                 }
                 //End Kwik Delivery changes code
-
-
+                
                 //Lalamove Delivery changes code
                 $lalamove = new LalaMovesController();
                 $deliver_lalmove_fee = $lalamove->getDeliveryFeeLalamove($vendorData->vendor_id);
@@ -2371,6 +2370,29 @@ class CartController extends FrontController
                         $option = array_merge($option,$optionDunzo);
                     }
                 }
+                
+                //Roadie Delivery changes code
+                $roadie = new RoadieController();
+                if($roadie->roadie_status){
+                    $deliver_roadie_fee = $roadie->getEstimate($vendorData,$address);
+                    if($deliver_roadie_fee['price'] > 0){
+                        $deliver_charge_roadie = decimal_format($deliver_roadie_fee['price']);
+                        $optionRoadie[] = array(
+                            'type'=>'RO',
+                            'courier_name'=>__('Roadie'),
+                            'rate' => $deliver_charge_roadie,
+                            'courier_company_id' => 0,
+                            'etd' => 0,
+                            'etd_hours' => 0,
+                            'duration' => 0,
+                            'estimated_delivery_days' => 0,
+                            'code' => 'RO_0'
+                        );
+                        $option = array_merge($option,$optionRoadie);
+                    }
+                }
+
+
                 // //\Log::info($vendorData->vendor->ahoy_location);
                 if(isset($vendorData->vendor->ahoy_location)){
                     //getAhoy (Masa) Delivery fee changes code

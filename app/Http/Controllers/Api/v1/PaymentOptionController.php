@@ -47,8 +47,7 @@ class PaymentOptionController extends BaseController
         } else {
             //Till here
             $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code', 'credentials', 'title', 'off_site']);
-            // dd(DB::connection()->getDatabaseName());
-            // dd($payment_options->toArray());
+            
             foreach ($payment_options as $option) {
                 if ($option->code == 'stripe') {
                     $option->title = __('Credit/Debit Card (Stripe)');
@@ -82,7 +81,7 @@ class PaymentOptionController extends BaseController
 
     public function postPayment(Request $request, $gateway = '')
     {
-        // dd($request->all());
+
         if (!empty($gateway)) {
             $code = $request->header('code');
             $client = Client::where('code', $code)->first();
@@ -92,7 +91,6 @@ class PaymentOptionController extends BaseController
             } else {
                 $domain = $client->sub_domain . env('SUBMAINDOMAIN');
             }
-
 
             $function = 'postPaymentVia_' . $gateway;
 
@@ -811,6 +809,7 @@ class PaymentOptionController extends BaseController
         // Auto accept order
         $orderController = new OrderController();
         $orderController->autoAcceptOrderIfOn($order->id);
+
         // Send Notification
         if (!empty($order->vendors)) {
             foreach ($order->vendors as $vendor_value) {

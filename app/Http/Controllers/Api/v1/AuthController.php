@@ -658,14 +658,9 @@ class AuthController extends BaseController
                 $vendor->phone_no = $user->phone_number ?? '';
                 $vendor->slug = Str::slug($user->name, "-");
                 $vendor->save();
-            
-                $permission_details = PermissionsOld::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
-            
+                        
                 UserVendor::create(['user_id' => $user->id, 'vendor_id' => $vendor->id]);
-            
-                foreach ($permission_details as $permission_detail) {
-                    UserPermissions::create(['user_id' => $user->id, 'permission_id' => $permission_detail->id]);
-                }
+                $user->createPermissionsUser();
 
                 $response['vendor_id'] = $vendor->id;
                 $p2p_type = Type::where('service_type', 'p2p')->first();

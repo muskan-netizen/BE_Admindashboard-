@@ -28,8 +28,8 @@ $(document).on('change', '#wallet_payment_methods input[name="wallet_payment_met
         // this ID matches the id of the element we created earlier.
         inline.mount('#yoco-card-frame');
     }
+
     if (code == 'checkout') {
         Frames.init(checkout_public_key);
     }
-
 });

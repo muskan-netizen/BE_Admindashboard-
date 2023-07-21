@@ -1808,7 +1808,7 @@ class OrderController extends FrontController
             $giftCardUsedAmount = 0;
             $userGiftCardCode = null;
             $nowDate = Carbon::now()->toDateTimeString();
-\Log::info("inside orderSave");
+
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
             if ($action == 'takeaway' || $action == 'dine_in' || $action == 'appointment') {
                 $latitude = Session::get('latitude') ?? '';
@@ -3283,7 +3283,7 @@ class OrderController extends FrontController
                 $from = $client_preferences->vendor_fcm_server_key;
                 $data['registration_ids'] = $vendorAppUserDevices;
 
-                $result = sendFcmCurlRequest($data);
+                $result = sendFcmCurlRequest($data,$from);
                 //// Log::info($result);
             }
         }

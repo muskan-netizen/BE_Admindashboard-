@@ -1348,7 +1348,6 @@ $(document).ready(function () {
         $('.scheduled-ride-list').attr("style", "display: block !important");
 
         $(".scheduled-footer").html('<button class="btn btn-solid w-100" id="check-schedule-date-time">Select</button>');
-
     });
 
     var enumerateDaysBetweenDates = function(startDate, endDate) {

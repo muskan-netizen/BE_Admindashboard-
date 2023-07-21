@@ -2424,7 +2424,6 @@ $(document).ready(function () {
         OrderStorage.setStorageSingle('RecurringBookingAdded','');
         OrderStorage.setStorageSingle('cartFirstProductId','');
         OrderStorage.setStorageSingle('cartAddressId','');
-        OrderSessionStorage.setStorageSingle('dispatcher_agent_id','')
         $.ajax({
             data: { address_id: address_id, schedule_date_delivery: $("#schedule_datetime").val()},
             type: "get",
@@ -5740,16 +5739,7 @@ $(document).ready(function () {
                                 card: card,
                             }).then(stripePaymentMethodHandler);
                             // paymentViaStripeSource(result.source.id, address_id, payment_option_id,delivery_type, order);
-                        // }else{
-                        //     stripe.createToken(card).then(function(result) {
-                        //         if (result.error) {
-                        //             $('#stripe_card_error').html(result.error.message);
-                        //             $(".topup_wallet_confirm").attr("disabled", false);
-                        //         } else {
-                        //             paymentViaStripe(result.token.id, '', payment_option_id, '', '');
-                        //         }
-                        //     });
-                        // }
+                       
                     }
                 });
 

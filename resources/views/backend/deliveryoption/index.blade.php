@@ -449,8 +449,6 @@
 
         <!-- End Ship Rocket -->
 
-
-
         <!--- Dunzo Code -->
 
         @if($optDunzo)
@@ -573,6 +571,93 @@
         @endif
 
         <!-- End Dunzo -->
+
+        <!--- Roadie Code -->
+
+        @if($roadieOption)
+        <div class="col-md-6 mb-3">
+            <form method="POST" id="payment_option_form" action="{{route('delivery.roadie')}}" class="h-100">
+                @csrf
+                @method('POST')
+                <div class="card-box h-100">
+                    <input type="hidden" name="method_id" id="{{$roadieOption->id}}" value="{{$roadieOption->id}}">
+                    <input type="hidden" name="method_name" id="{{$roadieOption->code}}" value="{{$roadieOption->code}}">
+
+                    <?php
+                    $creds = json_decode($roadieOption->credentials);
+                    
+                    $api_access_token = (isset($creds->api_access_token)) ? $creds->api_access_token : '';
+                    $api_base_url = (isset($creds->api_base_url)) ? $creds->api_base_url : '';
+
+                    ?>
+                    <div class="row">
+                        <div class="col-md-12 d-flex justify-content-between align-items-center">
+                            <h3 class="mb-1"> <span class="alPaymentImage"> <img style="width:8%;" src="{{asset('deliveryLogo/'.$roadieOption->code.'.png')}}" alt=""></span>  {{__($roadieOption->title)}}</h3>
+                            <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
+                        </div>
+
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-6">
+                            <div class="form-group mb-0 switchery-demo  d-flex justify-content-between align-items-center">
+                                <label for="" class="mr-3">{{ __("Enable") }}</label>
+                                <input type="checkbox" data-id="{{$roadieOption->id}}" data-title="{{$roadieOption->code}}" data-plugin="switchery" name="active" class="chk_box all_select" data-color="#43bee1" @if($roadieOption->status == 1) checked @endif>
+                            </div>
+                        </div>
+                        @if ( (strtolower($roadieOption->code) == 'roadie'))
+                        <div class="col-6">
+                            <div class="form-group mb-0 switchery-demo  d-flex justify-content-between align-items-center">
+                                <label for="" class="mr-3 ">{{ __('Sandbox') }}</label>
+                                <input type="checkbox" data-id="{{$roadieOption->id}}" data-title="{{$roadieOption->code}}" data-plugin="switchery" name="sandbox" class="chk_box" data-color="#43bee1" @if($roadieOption->test_mode == 1) checked @endif>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+
+
+
+                    @if ( (strtolower($roadieOption->code) == 'roadie') )
+                    <div id="roadie_fields_wrapper" @if($roadieOption->status != 1) style="display:none" @endif>
+                        <hr>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-0">
+                                    <label for="roadie_app_url" class="mr-3">{{ __("API Base URL") }}</label>
+                                    <input type="text" name="api_base_url" id="roadie_api_base_url" class="form-control" value="{{$api_base_url}}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-0">
+                                    <label for="roadie_api_key" class="mr-3">{{ __("API Access Token") }}</label>
+                                    <input type="text" name="api_access_token" id="roadie_api_access_token" class="form-control" value="{{$api_access_token}}" @if($roadieOption->status == 1) required @endif>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 mt-3 p-0">
+
+                            <h5 class="d-inline-block ">
+                                <span>{{ __('Webhook Url') }} : </span>
+                                <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('roadieWebhook')}}</span></a>
+                            </h5>
+                            <sup class="position-relative">
+                                <a class="copy-icon ml-2" id="copy_icon2" data-url="{{route('roadieWebhook')}}" style="cursor:pointer;">
+                                    <i class="fa fa-copy"></i>
+                                </a>
+                                <h6 id="copy_message2" class="copy-message mt-2"></h6>
+                            </sup>
+                            <hr/>
+                        </div>
+                    </div>
+                    @endif
+                </div>
+            </form>
+        </div>
+        @endif
+
+        <!-- End Roadie -->
 
 
 

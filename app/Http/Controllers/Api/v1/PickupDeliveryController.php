@@ -1730,7 +1730,6 @@ class PickupDeliveryController extends BaseController{
             return $this->successResponse($update, "Request declined successfully", 200);
         }
         catch (\Exception $e) {
-
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }
@@ -1871,7 +1870,6 @@ class PickupDeliveryController extends BaseController{
             return $this->successResponse($update, "Request accepted successfully", 200);
         }
         catch (\Exception $e) {
-
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }
