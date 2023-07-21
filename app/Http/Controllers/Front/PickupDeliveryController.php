@@ -1003,7 +1003,6 @@ class PickupDeliveryController extends FrontController{
 
                  /** for Recurring Service */
                  if(!empty($order->recurring_booking_time) && !empty($request->recurringformPost)){
-                    // DB::commit();
                     $this->saveOrderLongTermServiceSchedule($order,$order_product->id);
                 }
 

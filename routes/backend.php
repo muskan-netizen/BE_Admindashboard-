@@ -376,6 +376,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('order/delay_time', 'Client\OrderController@addExtraPrepTimeToOrder')->name('order.delay_time');
 
 
+        Route::post('admin/company', 'Client\CompanyController@store')->name('company.add');
+        Route::get('admin/company', 'Client\CompanyController@index')->name('company.getList');
         // Admin Service Area Routes
         Route::post('admin/serviceArea', 'Client\AdminServiceAreaController@store')->name('admin.serviceArea');
         Route::get('admin/serviceArea', 'Client\AdminServiceAreaController@index')->name('admin.serviceArea.index');
