@@ -879,14 +879,31 @@ class BaseController extends Controller{
         return $amount;
     }
 
+   
     public function checkIfLastMileDeliveryOn()
     {
+
         $preference = ClientPreference::first();
-        if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url)) {
-            return $preference;
-        } else {
-            return false;
+        if( isset($preference)  && $preference->business_type == 'taxi'){
+        
+                if($preference->need_dispacher_ride == 1 && !empty($preference->pickup_delivery_service_key) && !empty($preference->pickup_delivery_service_key_code) && !empty($preference->pickup_delivery_service_key_url))
+                return $preference;
+                else
+                return false;
+        }elseif(  isset($preference)  &&  $preference->business_type == 'laundry'){
+                if($preference->need_laundry_service == 1 && !empty($preference->laundry_service_key) && !empty($preference->laundry_service_key_code) && !empty($preference->laundry_service_key_url))
+                return $preference;
+                else
+                return false;
+        } else{
+            if (isset($preference)  ) {
+                if($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+                return $preference;
+                else
+                return false;
+            }
         }
+        return false;
     }
 
     public function driverDocuments()
