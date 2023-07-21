@@ -1191,9 +1191,7 @@ $(document).ready(function () {
                 if(response.status == 'Success'){
                     $('#cab_detail_box').html('');
                     if(response.data.length != 0){
-                        // var Helper = { formatPrice: function(x){   //x=x.toFixed(2)
-                        //     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                        //      } };
+
                         var schedule_date_time = ''
                         if(schedule_datetime !='' && schedule_datetime != undefined){
                             schedule_date_time = moment(schedule_datetime).format('MMM Do YY, h:mm:ss a')
@@ -1204,7 +1202,7 @@ $(document).ready(function () {
                         $('.address-form').addClass('d-none');
                         $('.cab-detail-box').removeClass('d-none');
                         if(response.data.faqlist > 0){
-                            // console.log('innset');
+
                         }
                         var isBid = $('#bid_radio').prop("checked");
                         var isParticularDriver = $('#particular_driver_radio').prop("checked");
@@ -1257,9 +1255,6 @@ $(document).ready(function () {
 
     $(document).on("click","#get-current-location",function() {
         getLocation();
-        /* var currentLocation          = $('#address-input').val();
-        var currentLocationLatitude  = $('#address-latitude').val();
-        var currentLocationLongitude = $('#address-longitude').val(); */
 
         var latitude             = $('#address-latitude').val();
         var longitude            = $('#address-longitude').val();
@@ -1353,7 +1348,6 @@ $(document).ready(function () {
         $('.scheduled-ride-list').attr("style", "display: block !important");
 
         $(".scheduled-footer").html('<button class="btn btn-solid w-100" id="check-schedule-date-time">Select</button>');
-       
     });
 
     var enumerateDaysBetweenDates = function(startDate, endDate) {
@@ -1393,12 +1387,6 @@ $(document).ready(function () {
                 $('#schedule_date').val(scheduleDateTimeSet);
                 $('.scheduleDateTimeApnd').text( moment(scheduleDateTimeSet).format('MMM Do YY, h:mm:ss a'));
                 $('#schedule_datetime').val(scheduleDateTimeSet);
-            // }else{
-            //     $('#schedule_datetime').val('');
-            //     $('#schedule_date').val('');
-            //     $('.scheduleDateTimeApnd').text('Now');
-            // }
-
 
 
             $('.cab-detail-box').attr("style", "display: block !important");

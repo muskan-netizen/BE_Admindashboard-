@@ -274,7 +274,6 @@ body .rating-form .btn-reset {
 @php
     $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery']);
 @endphp
-@if( !p2p_module_status() )
 <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">
@@ -298,6 +297,12 @@ body .rating-form .btn-reset {
                         </div>
                     </div>
                     @endif
+
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Featured'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="is_featured" class="form-control" data-color="#43bee1" @if($vendor->is_featured == 1) checked @endif>
+                    </div>
+
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('24*7 Availability'),['class' => 'control-label']) !!}
@@ -520,7 +525,6 @@ body .rating-form .btn-reset {
         </div>
     </div>
 </div>
-@endif
 @if(isset($getAdditionalPreference['is_admin_vendor_rating']) && $getAdditionalPreference['is_admin_vendor_rating'] == '1')
 <button class="add_edit_driver_review">Vendor Rating</button>
 <input type="hidden" value="{{$vendor->id}}" id="vendor_id">

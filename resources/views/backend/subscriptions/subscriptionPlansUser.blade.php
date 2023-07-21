@@ -1,5 +1,7 @@
 @extends('layouts.vertical', ['title' => 'Subscriptions'])
-
+@php
+use app\Models\SubscriptionPlansUser;
+@endphp
 @section('css')
 <!-- Plugins css -->
 <link href="{{asset('assets/libs/admin-resources/admin-resources.min.css')}}" rel="stylesheet" type="text/css" />
@@ -59,6 +61,9 @@
                 letter-spacing: 0.1px;
                 color: #000000bd;
     }
+    }
+    .meal-sub-field{
+        display:none;
     }
 </style>
 @endsection
@@ -185,6 +190,9 @@
                                                 <th>{{ __("Description") }}</th>
                                                 <th>{{ __("Price") }}</th>
                                                 <th>{{ __("Features") }}</th>
+                                                <th>{{ __("Type") }}</th>
+                                                <th>{{ __("Categories") }}</th>
+                                                <th>{{ __("Order Limit") }}</th>
                                                 <th>{{ __("Frequency") }}</th>
                                                 <th>{{ __("Status") }}</th>
                                                 <th>{{ __("Action") }}</th>
@@ -200,8 +208,11 @@
                                                 </td>
                                                 <td><a href="javascript:void(0)" class="editSubscriptionPlanBtn" data-id="{{$plan->slug}}">{{$plan->title}}</a></td>
                                                 <td>{{$plan->description}}</td>
-                                                <td>{{ isset($clientCurrency->currency)?$clientCurrency->currency->symbol:'$' }}{{decimal_format($plan->price)}}</td>
+                                                <td>${{decimal_format($plan->price)}}</td>
                                                 <td>{{__($plan->features)}}</td>
+                                                <td>{{__($plan->subscriptionTypeName($plan->type_id))}}</td>
+                                                <td>{{__($plan->subscriptionCategory)}}</td>
+                                                <td>{{__($plan->order_limit)}}</td>
                                                 <td>{{__(ucfirst($plan->frequency))}}</td>
                                                 <td>
                                                     <input type="checkbox" data-id="{{$plan->slug}}" data-plugin="switchery" name="userSubscriptionStatus" class="chk_box status_check" data-color="#43bee1" {{($plan->status == 1) ? 'checked' : ''}} >
@@ -272,7 +283,40 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div class="col-md-6 features_wrapper">
+                                <div class="col-md-6">
+                                    <div class="form-group" id="nameInput">
+                                        {!! Form::label('subscriptionType', __('Subscription Type'),['class' => 'control-label']) !!}
+                                        {!! Form::select('type_id', SubscriptionPlansUser::subscriptionTypes(), '' ,['class'=>'form-control','id' => 'subscriptionType']) !!}
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong></strong>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 meal-sub-field">
+                                    <div class="form-group" id="nameInput">
+                                        {!! Form::label('orderLimit', __('Order Limit'),['class' => 'control-label']) !!}
+                                        {!! Form::text('order_limit', '' ,['class'=>'form-control', 'id' => 'orderLimit', 'onkeypress' => "return isNumberKey(event)"]) !!}
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong></strong>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 category_wrapper meal-sub-field">
+									<div class="form-group">
+										{!! Form::label('title', __('Select Category'),['class' =>
+										'control-label']) !!} <select
+											class="form-control select2-multiple category_features"
+											name="categories[]" data-toggle="select2" multiple="multiple"
+											data-placeholder="Select Category...">
+											@foreach($categories as $pc)
+											<option value="{{$pc->id}}">{{$pc->translation_one ?
+												ucfirst($pc->translation_one['name']) : ' '}}</option>
+											@endforeach
+										</select>
+									</div>
+								</div>
+                                
+                                <div class="col-md-6 features_wrapper user-sub-field">
                                     <div class="form-group">
                                         <label for="">{{ __("Features") }}</label>
                                         <select class="form-control select2-multiple subscription_features" name="features[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." required="required">
@@ -304,6 +348,61 @@
                                         </select>
                                     </div>
                                 </div>
+                                
+                                <div class="col-md-6 meal-sub-field">
+                            <div class="row">
+                            @foreach($additionalAttributes as $attribute)
+                                @if(isset($attribute->primary) && !empty($attribute->primary))
+                                    @if(strtolower($attribute->field_type) == 'selector')
+                                        <div class="col-md-6 mb-3" id="{{$attribute->primary->slug??''}}Input">
+                                            <label for="">{{$attribute->primary ? $attribute->primary->name : ''}}</label>
+                                            <select class="form-control {{ (!empty($attribute->is_required))?'required':''}}" name="{{$attribute->primary->slug}}"  id="input_file_selector_{{$attribute->id}}">
+                                                <option value="" >{{__('Please Select '). ($attribute->title) }}</option>
+                                                @foreach ($attribute->option as $key =>$value )
+                                                    <option value="{{$value->id}}">{{$value->trans? $value->trans->title: ""}}</option>
+                                                @endforeach
+                                            </select>
+                                            <span class="invalid-feedback" id="{{$attribute->primary->slug}}_error"><strong></strong></span>
+                                        </div>
+                                    @elseif(strtolower($attribute->field_type) == 'checkbox')
+                                    	
+                                    	<div class="col-md-6 form-group" id="{{$attribute->primary->slug??''}}Input">
+                                    	<label for="">{{$attribute->title}}</label>
+                                        	<div class="">
+                                        		@foreach($attribute->option as $options)
+                                                    @php
+                                                    	$translation = $options->trans;
+                                                	@endphp
+													<div class="specialOption">
+                                                        <input type="checkbox" name="{{$attribute->primary->slug}}[{{$translation->title}}]" class="intpCheck" opt="" varId="" id="opt_ven_{{$translation->id}}">
+                                                        <label for="opt_ven_{{$translation->id}}">{{$translation->title}}</label>
+                                                    </div> 
+                                            	@endforeach
+                                        </div>
+                                    </div> 
+                                    @else
+                                        <div class="col-md-6" >
+                                            <div class="form-group" id="{{$attribute->primary->slug??''}}Input">
+                                                <label for="">{{$attribute->title}}</label>
+                                                @if(strtolower($attribute->field_type) == 'text')
+                                                    <input id="input_file_logo_{{$attribute->id}}" type="text" name="{{$attribute->primary->slug}}" class="form-control">
+                                                @else
+                                                    @if(strtolower($attribute->field_type) == 'image')
+                                                    <input type="file" accept="image/*" data-plugins="dropify" name="{{$attribute->primary->slug}}" class="dropify" data-default-file="" />
+                                                    @else
+                                                    <input type="file" accept=".pdf" data-plugins="dropify" name="{{$attribute->primary->slug}}" class="dropify" data-default-file="" />
+                                                    @endif
+                                                @endif
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong></strong>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endif
+                            @endforeach
+                            </div>
+                        </div>
                                 <?php /* ?><div class="col-md-6">
                                     <div class="form-group">
                                         <label for="">Sort Order</label>
@@ -416,7 +515,34 @@
             $(this).parents('.features_wrapper').next().find('input').removeAttr('required');
         }
     });
-
+    
+    $( "#edit-subscription-plan" ).on('shown.bs.modal', function(){
+        let subType = $('#edit-subscriptionType').val();
+    	changeFields(subType)
+    });
+    
+    
+    function changeFields(type){
+    	if(typeof(type) == 'object'){
+    		type = type.target.value;
+    	}
+    	if(type == 1){
+    		$('.meal-sub-field').hide();
+    		$('.user-sub-field').show();
+    		$('.user-sub-field select').attr('required', 'required')
+    		$('.meal-sub-field select').removeAttr('required').val(null).trigger("change");
+    		$('.meal-sub-field input').removeAttr('required').val('')
+    	}else if(type == 2){
+    		$('.meal-sub-field').show();
+    		$('.user-sub-field').hide();
+    		$('.meal-sub-field select').attr('required', 'required')
+    		$('.meal-sub-field #orderLimit').attr('required', 'required')
+    		$('.user-sub-field select').removeAttr('required').val(null).trigger("change"); 
+    	}
+    }
+    
+    $(document).on('change', '#subscriptionType', changeFields);
+    $(document).on('change', '#edit-subscriptionType', changeFields);
 </script>
 
 @endsection

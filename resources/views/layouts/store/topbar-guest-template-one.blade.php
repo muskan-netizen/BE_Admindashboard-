@@ -115,12 +115,24 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     <li class="onhover-dropdown mobile-account">
                         <i class="fa fa-user" aria-hidden="true"></i>{{__('Account')}}
                         <ul class="onhover-show-div">
-                            <li>
-                                <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
-                            </li>
-                            <li>
-                                <a href="{{route('customer.register')}}" data-lng="es">{{__('Register')}}</a>
-                            </li>
+                             @php
+                                $getAdditionalPreference = getAdditionalPreference(['is_user_pre_signup']);
+                                @endphp
+                                @if(isset($getAdditionalPreference) && ($getAdditionalPreference['is_user_pre_signup'] == 1))
+                                
+                                 <li>
+                                    <a href="{{route('customer.register')}}" data-lng="es">{{__('Pre Signup')}}</a>
+                                </li>
+                               @else
+                                  
+                                <li>
+                                    <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
+                                </li>
+                                <li>
+                                    <a href="{{route('customer.register')}}" data-lng="es">{{__('Register')}}</a>
+                                </li>
+                                @endif
+                            
                         </ul>
                     </li>
                 </ul>

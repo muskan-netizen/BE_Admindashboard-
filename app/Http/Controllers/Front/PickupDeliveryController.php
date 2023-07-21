@@ -564,12 +564,6 @@ class PickupDeliveryController extends FrontController{
                      }
 
 
-                     //Send message if ride is booked for friend
-                  /*  if($request->type == 1 && isset($request->friendPhoneNumber))
-                    {
-                        $msg = "Hi ".($request->friendName??'User').", ".$user->name." has booked a ride for you. Tracking url is ".$request_to_dispatch['dispatch_traking_url'];
-                        $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
-                    }*/
                     return  $order_place;
                 }
                 else{
@@ -628,7 +622,7 @@ class PickupDeliveryController extends FrontController{
                 $payment->save();
             }
             $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
-            
+
             if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                 $user = User::find($order->user_id);
                 $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
@@ -934,7 +928,6 @@ class PickupDeliveryController extends FrontController{
                     $payable_amount = 0.00;
 
                 }
-            //   // Log::info($cash_to_be_collected);
                 $unique = $customer->code;
                 $team_tag = $unique."_".$vendor;
                 $dynamic = uniqid($order->id.$vendor);
@@ -994,9 +987,7 @@ class PickupDeliveryController extends FrontController{
 
                 $postdata =  [
                     'order_number' =>  $order->order_number,
-                    //'order_type' =>  $order->type,
-                    // 'order_friend_name' =>  $order->friend_name,
-                    // 'order_number' =>  $order->friend_phone_number,
+
                     'barcode' => '',
                     'allocation_type' => $request->unique_id ? 'notify' : 'a',
                     'task' => $request->tasks,
@@ -1335,7 +1326,6 @@ class PickupDeliveryController extends FrontController{
             return $this->successResponse(['biddata' => $biddata, 'bid_expire_time_limit_seconds' => $getAdditionalPreference['bid_expire_time_limit_seconds']], 200);
         }
         catch (\Exception $e) {
-            \Log::error($e->getMessage());
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }
@@ -1349,7 +1339,6 @@ class PickupDeliveryController extends FrontController{
             return $this->successResponse($update, "Request accepted successfully", 200);
         }
         catch (\Exception $e) {
-            \Log::error($e->getMessage());
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }

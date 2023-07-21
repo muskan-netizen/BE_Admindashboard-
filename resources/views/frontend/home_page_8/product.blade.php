@@ -7,7 +7,9 @@
         <label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
     </div>--}}
     {{-- <span class="rating-number">4.0</span> --}}
+
     <a class="common-product-box text-center" href="{{ $product->vendor_slug ?? ''}}/product/{{ $product->url_slug ?? '' }}">
+
         <div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ get_file_path($product->path ?? '','FILL_URL','260','260') }}" alt="" title="">
             <div class="pref-timing"> </div>
         </div>
@@ -19,6 +21,7 @@
                             @if($client_preference_detail && $client_preference_detail->rating_check==1) 
                                 @if($product->averageRating ?? 0 >0)
                                     <span class="rating-number">{{ $product->averageRating ?? ''}}</span>
+
                                 @endif 
                             @endif 
                         </div>
@@ -27,13 +30,17 @@
                                 <span class="flag-discount">{{$dicountPercentage}}% Off</span>
                             @endif
                             <p>
+
                                 {{ $product->vendor_name ?? ''}}
+
                             </p>
                       
                     </div>
                     @if($is_service_product_price_from_dispatch_forOnDemand!=1) 
                     <div class="d-flex align-items-center justify-content-left al_clock ">
+
                         {{-- <b>{!!$product->price_numeric ?? ''!!}</b> --}}
+
                         <b> {{ showPriceWithCurrency($product->price_numeric ?? 0) }} </b>
 
                         <!-- <p><i class="fa fa-clock-o"></i> 30-40 min</p>  -->

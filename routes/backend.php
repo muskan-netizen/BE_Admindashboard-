@@ -641,6 +641,21 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('account/usersubscriptions', [SubscriptionPlansUserController::class, 'userSubscriptionReport'])->name('account.userSubscription');
         Route::get('usersubscriptions/list/filter', [SubscriptionPlansUserController::class, 'subscriptionfilter'])->name('subscription.list.filter');
 
+        Route::group(['prefix' => '/attributes'], function () {
+            Route::get('index', 'Client\CategoryController@manageAttribute')->name('manage.attribute');
+            Route::get('add', 'Client\CategoryController@getAddAttributeForm')->name('manage.attribute.add');
+            Route::get('edit/{id}', 'Client\CategoryController@getEditAttributeForm')->name('manage.attribute.edit');
+            Route::post('store', 'Client\CategoryController@storeAttributeForm')->name('manage.attribute.store');
+            Route::put('update/{id}', 'Client\CategoryController@updateAttributeForm')->name('manage.attribute.update');
+            Route::delete('delete/{id}', 'Client\CategoryController@destroyAttribute')->name('manage.attribute.delete');
+        });
+        Route::group(['middleware' => 'onlysuperadmin', 'prefix' => '/mealSubscription'], function () {
+            Route::get('packages', 'Client\MealSubscriptionController@getMealSubscriptionPlans')->name('mealSubscription.plans');
+            Route::post('package/save/{slug?}', 'Client\MealSubscriptionController@saveSubscriptionPlan')->name('mealSubscription.plan.save');
+            Route::post('package/updateStatus/{slug}', 'Client\MealSubscriptionController@updateSubscriptionPlanStatus')->name('mealSubscription.plan.updateStatus');
+            Route::get('package/edit/{slug}', 'Client\MealSubscriptionController@editSubscriptionPlan')->name('mealSubscription.plan.edit');
+            Route::get('package/delete/user/{slug}', 'Client\MealSubscriptionController@deleteSubscriptionPlan')->name('mealSubscription.plan.delete');
+        });
     });
 });
 

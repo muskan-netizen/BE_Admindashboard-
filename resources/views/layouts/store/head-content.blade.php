@@ -95,6 +95,8 @@
 	@endif
 @endif
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/common/commonall.css')}}">
+<!-- rental p2p css -->
+<link rel="stylesheet" href="{{asset('frontend/common/rental_p2p.css')}}">
 
 
 @yield('css-links')
