@@ -22,7 +22,7 @@
 							
 							<div id="room_{{ $chatroom['_id']}}"   data-OrderID="{{ $chatroom['order_id'] }}" data-OrdervendorID="{{ $chatroom['order_vendor_id'] }}" data-id="{{$chatroom['_id']}}" data-roomID="{{$chatroom['room_id']}}" data-roomName="{{$chatroom['room_name']}}" class="chat-list-item row fetchChat">
 								
-								<div class="align-self-center col-4">
+								<div class="align-self-center col-3">
 									<div class="user_show">
 										<p class="orderNumber m-0 mb-2">#{{ $chatroom['room_id'] }}</p>
 										@if(count($chatroom['user_Data']) > 0)
@@ -36,7 +36,7 @@
 									
 									</div>
 								</div>
-								<div class="col-8 position-relative pl-0">
+								<div class="col-9 position-relative pl-0">
 									<div class="alNameTime last_message">
 									
 											<h6 id="preview_message_name_{{$chatroom['_id']}}" class="mb-1 mt-0">{{ @$chatroom['chat_Data'][0]['username'] }}</h6>

@@ -403,7 +403,7 @@ body .rating-form .btn-reset {
                     @endif
                     
                     @if($getAdditionalPreference['is_same_day_delivery'] == '1' || $getAdditionalPreference['is_next_day_delivery'] == '1')                    
-                        <div class="col-md-12" id="cutOff_timeInput">
+                        <div class="col-md-12 d-none" id="cutOff_timeInput">
                             <div class="form-group">
                                 {!! Form::label('title', __('Cut Off Time'),['class' => 'control-label']) !!}
                                 <input class="form-control timepicker" name="cutoff_time" type="text" placeholder="Cut off time" value="" min="0" {{$vendor->status == 1 ? '' : 'disabled'}} >
@@ -537,6 +537,39 @@ aria-hidden="true">
         </div>
     </div>
 </div>
+</div>
+@endif
+
+@if(@getAdditionalPreference(['is_enable_compare_product'])['is_enable_compare_product'])
+<div class="card-box">
+    <div class="row text-left">
+        <div class="col-md-12">
+            <form name="config-form" action="{{route('vendor.config.additioninfo', $vendor->id)}}" class="needs-validation" method="post">
+                @csrf
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="mb-2"> <span class="">{{ __("Compare Products") }}</span></h4>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <input type="hidden" name="compareCheck" value="1" >
+                    <div class="col-md-12 mt-2 mb-2">
+                        <label class="">{{__('Select Categories For Products Compare')}}</label>
+                        <select name="compare_product_category[]" class="form-control select2-multiple" multiple="multiple">
+                            @foreach(@$vendorCompare as $category)
+                                <option value="{{$category->category->id}}" @if(isset($vendor->VendorAdditionalInfo) && in_array($category->category->id,$vendor->VendorAdditionalInfo->CompareCategory)) selected @endif>{{$category->category->slug}}</option>
+                            @endforeach
+                        </select>
+
+                    </div>
+
+                    <div class="col-12">
+                        <button class="btn btn-info waves-effect waves-light w-100">{{ __("Save") }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 @endif
 

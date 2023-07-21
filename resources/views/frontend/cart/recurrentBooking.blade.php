@@ -21,7 +21,7 @@ if(isset($firstday[0])){
 <div class="row">
 <div class="col-lg-12 left_box new_cart mt-4 p-3">
     <h5>Recurring Booking </h5>
-    <table class="table">
+    <table class="table table-bordered">
         <thead>
             <th>Type</th>
             <th>Days</th>

@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class OrderVendor extends Model{
     use HasFactory;
     const CANCEL_STATUS = 'Cancelled';
-	protected $fillable = ['web_hook_code','payment_option_id', 'is_restricted','dispatch_traking_url','delivery_response', 'roadie_tracking_url'];
+	
+	protected $fillable = ['web_hook_code','payment_option_id', 'is_restricted','dispatch_traking_url','delivery_response', 'roadie_tracking_url','delivery_fee','waiting_price','waiting_time'];
 	
 	public function orderDetail(){
 	    return $this->hasOne('App\Models\Order' , 'id', 'order_id'); 
@@ -135,16 +136,20 @@ class OrderVendor extends Model{
         return $this->hasOne('App\Models\OrderCancelRequest', 'order_vendor_id', 'id')->select('*', 'status as status_id')->orderBy('updated_at', 'desc');
     }
     
-    
     public function getVendorAmountAttribute(){
         $vendor_amount = $this->subtotal_amount;
         $discount = 0;
         if($this->coupon_paid_by == 0){
             $discount = $this->discount_amount;
         }
+        return decimal_format($vendor_amount - $discount - $this->admin_commission_percentage_amount);
+    }
+    
+    public function getTotalPriceAttribute(){
+        $amount = $this->payable_amount;
         $tip = !empty($this->orderDetail)?number_format($this->orderDetail->tip_amount, 2):0.00;
-        $vendor_amount += $tip;
-        return number_format($vendor_amount - $discount - $this->admin_commission_percentage_amount);
+        $amount += $tip;
+        return decimal_format($amount);
     }
 
 }

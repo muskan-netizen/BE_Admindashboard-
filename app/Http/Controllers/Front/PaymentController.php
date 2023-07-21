@@ -3,14 +3,13 @@
 namespace App\Http\Controllers\Front;
 
 use Auth;
-use Omnipay\Omnipay;
-use App\Models\Payment;
 use App\Models\PaymentOption;
 use Illuminate\Http\Request;
 use App\Models\{Order, User, Cart, ClientCurrency, CartProduct};
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\Front\{FrontController, CashfreeGatewayController,EasebuzzController,VnpayController, PayUGatewayController, MyCashGatewayController,UseRedePaymentController,OpenpayPaymentController};
+
 
 class PaymentController extends FrontController{
 
@@ -110,6 +109,10 @@ class PaymentController extends FrontController{
                     $payment_option->title = __('iDEAL');
                 }elseif($payment_option->code == 'authorize_net'){
                     $payment_option->title = __('Credit/Debit Card');
+                }elseif($payment_option->code == 'obo'){
+                    $payment_option->title = __("MoMo, Airtel Money, Credit/Debit Cards by O'Pay");
+                }elseif($payment_option->code == 'livee'){
+                    $payment_option->title = __("Livees");
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);
@@ -153,7 +156,6 @@ class PaymentController extends FrontController{
     {
         if($gateway == 'mycash'){
             $data = $request->all();
-            // //\Log::info($data);
             return view('frontend.payment_gatway.mycash_otp_verify', compact('data'));
         }
     }

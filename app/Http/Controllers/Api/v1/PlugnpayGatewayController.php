@@ -148,7 +148,6 @@ class PlugnpayGatewayController extends BaseController
             }
 
         }else{
-            ////\Log::info('fail--'.$dataResponse->FinalStatus.'--');
             $returnUrl = route('order.return.success');
             $response['status'] = 'Fail';
             $response['msg'] = 'Failed.';
@@ -228,6 +227,8 @@ class PlugnpayGatewayController extends BaseController
             $wallet = $user->wallet;
             if(isset($order->wallet_amount_used)){
               $wallet->depositFloat($order->wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
+              $this->sendWalletNotification($user->id, $order->order_number);
+              
             }
             if(isset($request->auth_token) && !empty($request->auth_token))
             {

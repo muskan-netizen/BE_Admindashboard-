@@ -116,12 +116,13 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                                     <th>{{ __('Date & Time') }}</th>
                                     <th>{{ __('Customer Name') }}</th>
                                     <th>{{ __('Vendor') }}</th>
-                                    <th>{{ __('Vendor Amount') }}</th>
+                                    <th>{{ __('Vendor Earning') }}</th>
                                     <th>{{ __('Subtotal Amount') }}</th>
                                     @if(auth()->user()->is_superadmin ==1)
                                         <th>{{ __('Markup Price') }}({{ __("Visible For Admin") }})</th>
                                     @endif
                                     <th>{{ __('Promo Code Discount') }}</th>
+                                     <th>{{ __('Tax') }}</th>
                                     <th>{{ __('Delivery Fee') }}</th>
                                     <th>{{ __('Service Fee') }}</th>
                                     <th>{{ __('Fixed Fee') }}</th>
@@ -153,7 +154,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
             }
         });
-        function getPercentageAmount(percent,amount){
+       function getPercentageAmount(percent,amount){
             // var totalPercent = (percent/amount * 100);
            if(amount == 0.00){
             	return amount;
@@ -261,6 +262,10 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                                 return numberWithCommas(data);
                             }},
 
+                            {data: 'taxable_amount', name: 'action', orderable: false, searchable: false,
+                            "mRender": function(data, type, full) {
+                                return numberWithCommas(data);
+                            }},
                             {data: 'delivery_fee', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
                                 return numberWithCommas(data);
@@ -285,10 +290,16 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
 
                             {data: 'admin_commission', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
-                                return data+" ("+getPercentageAmount(data,full.subtotal_amount)+"%)";
+                            	var discount = 0.00;
+                            	var amount = full.subtotal_amount;
+                            	if(full.coupon_paid_by == 0){
+                            		discount = full.discount_amount;
+                            	}
+                            	amount = amount - discount;
+                                return data+" ("+getPercentageAmount(data,amount)+"%)";
                                 // return numberWithCommas(data)+" ("+getPercentageAmount(data,full.subtotal_amount)+"%)";
                             }},
-                            {data: 'payable_amount', name: 'action', orderable: false, searchable: false,
+                            {data: 'total_price', name: 'action', orderable: false, searchable: false,
                             "mRender": function(data, type, full) {
                                 return numberWithCommas(data);
                             }},

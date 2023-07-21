@@ -39,12 +39,14 @@ class MpesaController extends Controller
    public function credentials()
     {
          $viva = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'viva_wallet')->where('status', 1)->first();
-         $json = json_decode($viva->credentials);
-         $this->client_key = $json->client_key;
-         $this->client_id = $json->client_id;
-         $this->merchant_key = $json->merchant_key;
-         $this->merchant_id = $json->merchant_id;
-         $this->test_mode = $viva->test_mode;
+         if(@$viva->status){
+             $json = json_decode($viva->credentials);
+             $this->client_key = $json->client_key;
+             $this->client_id = $json->client_id;
+             $this->merchant_key = $json->merchant_key;
+             $this->merchant_id = $json->merchant_id;
+             $this->test_mode = $viva->test_mode;
+         }
     }
 
     //Initiate STK Push
@@ -314,6 +316,7 @@ class MpesaController extends Controller
             $wallet = $user->wallet;
             if(isset($order->wallet_amount_used)){
               $wallet->depositFloat($order->wallet_amount_used, ['Wallet has been <b>refunded</b> for cancellation of order #'. $order->order_number]);
+              $this->sendWalletNotification($user->id, $order->order_number);
             }
             if(isset($request->auth_token) && !empty($request->auth_token))
             {

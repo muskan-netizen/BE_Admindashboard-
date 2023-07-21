@@ -168,6 +168,13 @@ body .category-head {
 .dark #our_vendor_main_div button.slick-arrow {
     background-color: var(--theme-deafult) !important;
 }
+.cab-banner-area  .cab-input input.form-control::placeholder{
+    color: #000!important;
+    opacity: 0.9;
+}
+.cab-banner-area .cab-input input.form-control{
+    color: #000!important;  
+}
 @media(max-width:1440px) {
    .product-right .product-buttons button{margin-bottom: 10px;}
    .product-right .product-buttons a{margin-bottom: 10px;}
@@ -524,7 +531,6 @@ body.dark .inner_spacing{
 body.al_body_template_two .slick-track {
     margin-left: 0 !important;
 }
-
 body.al_body_template_two ul.status_box a {
     color: var(--theme-deafult);
 }

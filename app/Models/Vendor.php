@@ -22,7 +22,7 @@ class Vendor extends Model implements Auditable{
 
     public function products(){
       return $this->hasMany('App\Models\Product', 'vendor_id', 'id')->where('is_long_term_service',0);
-      return $this->hasMany('App\Models\Product', 'vendor_id', 'id');
+      // return $this->hasMany('App\Models\Product', 'vendor_id', 'id');
     }
 
     public function long_term_products(){
@@ -30,6 +30,10 @@ class Vendor extends Model implements Auditable{
     }
     public function productsLive(){ 
       return $this->hasMany('App\Models\Product', 'vendor_id', 'id')->where('is_live','1');
+    }
+
+    public function vendor_promo(){ 
+      return $this->belongsToMany('App\Models\Promocode', 'promocode_details', 'refrence_id', 'promocode_id')->where('expiry_date','>=',Carbon::now()->format('Y-m-d'))->where('promo_type_id',1)->select('amount','title');
     }
 
     public function slot(){

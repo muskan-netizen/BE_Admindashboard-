@@ -649,7 +649,7 @@
             ajax: {
                 url: "{{route('customer.filterWalletTransactions')}}",
                 data: function(d) {
-                    d.search = $('input[type="search"]').val();
+                    d.search = $('input[aria-controls="customer_wallet_transactions_datatable"]').val();
                     d.walletId = id;
                 }
             },

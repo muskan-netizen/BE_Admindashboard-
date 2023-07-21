@@ -3,7 +3,7 @@
 use App\Models\CartProduct;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
-use App\Models\{CaregoryKycDoc, Cart, CartAddon, CartCoupon, CartProductPrescription, Currency, SmsTemplate, User, TempCartProduct, Vendor, WebStylingOption};
+use App\Models\{CaregoryKycDoc, Cart, CartAddon, CartCoupon, CartProductPrescription, Currency, SmsTemplate, User, TempCartProduct, Vendor, VendorAdditionalInfo, WebStylingOption};
 use App\Models\Nomenclature;
 use App\Models\UserRefferal;
 use App\Models\ProductVariant;
@@ -72,6 +72,24 @@ if (!function_exists('getAdditionalPreference')) {
     }
 }
 
+if (!function_exists('getMapConfigrationPreference')) {
+    /**
+     * getMapConfigrationPreference
+     *
+     * @param  mixed $key
+     * @return void
+     */
+
+    function getMapConfigrationPreference(){
+        $iso3 = '';
+        $mapConfigration =  getAdditionalPreference(['is_map_search_perticular_country']);
+        if(isset($mapConfigration) && $mapConfigration['is_map_search_perticular_country'] == 1){
+            $iso3 = ClientData::first()->country->iso3 ?? '';
+        }
+        return $iso3;
+    }
+}
+
 // if (!function_exists('getAdditionalImageAttribute')) {
 //     function getAdditionalImageAttribute($value)
 //     {
@@ -89,6 +107,22 @@ if (!function_exists('getAdditionalPreference')) {
 //         return $values;
 //     }
 // }
+
+if (!function_exists('getVendorAdditionalPreference')) {
+    function getVendorAdditionalPreference($vendorId,$key = ''){
+        $vendorInfo =  VendorAdditionalInfo::where('vendor_id',$vendorId);
+        if($key){
+            $data =  $vendorInfo->value($key);
+            if($key == 'compare_categories' && !empty($data))
+                $data = explode(',',$data);
+
+        }else{
+            $data =$vendorInfo->first();
+        }   
+
+        return $data??[];
+    }
+}
 
 if (!function_exists('changeDateFormate')) {
     function changeDateFormate($date,$date_format){
@@ -171,6 +205,35 @@ if (!function_exists('sendFcmCurlRequest')) {
             return $result;
         } else {
             return false;
+        }
+    }
+}
+
+if (! function_exists('sendNotificationToCustomer')) {
+    function sendNotificationToCustomer($devices,$order_number=''){
+        $client_preferences = ClientPreference::select('fcm_server_key','favicon')->first();
+        if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
+            $data = [
+                "registration_ids" => $devices,
+                "notification" => [
+                    'title'     => 'Order Received',
+                    'body'      => 'Your order no. #'.$order_number.' has been received!',
+                    'sound' => "default",
+                    "icon"  => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                    "android_channel_id" => "default-channel-id"
+                ],
+                "data" => [
+                    'title'     => 'Order Received',
+                    'body'      => 'Your order no. #'.$order_number.' has been received!',
+                    'data'  => 'received_order',
+                    'type'  => ""
+                ],
+                "priority" => "high"
+            ];
+                    
+            $response = sendFcmCurlRequest($data,$client_preferences->fcm_server_key);
+            $result = json_decode($response); 
+            return $result;
         }
     }
 }
@@ -671,7 +734,6 @@ if (!function_exists('showSlot')) {
                     })
                     ->get();
         }
-
 
         // check if vendor has added slots. if not added then no need to execute this.
         if (isset($slots) && count($slots)>0) {
@@ -1198,6 +1260,17 @@ if (!function_exists('taxRates')) {
     }
 }
 
+if (!function_exists('getRoleId')) {
+    function getRoleId($name){
+        if($name){
+            return  \Spatie\Permission\Models\Role::where('name',$name)->value('id');
+        }else{
+            return null;
+        }
+    }
+}
+
+
 
 if (!function_exists('getServiceTypesCategory')) {
     /**
@@ -1436,8 +1509,6 @@ if (!function_exists('inventorySyncOnOff')) {
             ]);
 
             $response = json_decode($request->getBody());
-            // \Log::info('Response Data');
-            // \Log::info(json_encode($response));
             if ($response->status) {
                 return $response->msg;
             }
@@ -1814,12 +1885,21 @@ if (!function_exists('getDaysArrayBetweenTwoDates')) {
 
 if( !function_exists('get_file_path') ) {
     function get_file_path($url,$type="FILL_URL",$height="260",$width="260")  {
+        
         $img = 'default/default_image.png';
       if(!empty($url)){
         $img = $url;
       }
       $ex = checkImageExtension($img);
-      $values =  \Config::get('app.'.$type);
+      $return_url = $values =  \Config::get('app.'.$type);
+
+      $img = str_replace(' ', '', $img);
+      if (substr($img, 0, 7) == "http://" || substr($img, 0, 8) == "https://"){
+        $return_url  = $values.$height.'/'.$width.\Config::get('app.IMG_URL2').'/'.$img;
+      } else {
+        $return_url  = $values.$height.'/'.$width.\Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+      }
+   
       //pr($values);
     //   $img = 'default/default_image.png';
     //   if(!empty($value)){
@@ -1831,7 +1911,8 @@ if( !function_exists('get_file_path') ) {
     //   $values['image_path'] = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
     //   $values['image_fit'] = \Config::get('app.FIT_URl');
     //   $values['image'] = $value;
-      return $values.$height.'/'.$width.\Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+      //return $values.$height.'/'.$width.\Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url($img).$ex;
+      return   $return_url  ;
     }
 }
 
@@ -1849,5 +1930,38 @@ if (!function_exists('getUserToken')) {
             }
         } 
             return $data;
+    }
+}
+
+if (!function_exists('getOnDemandPricingRule')) {    
+    /**
+     * getOnDemandPricingRule
+     *
+     * @param  mixed $vendorType = user selected vendor mode 
+     * @param  mixed $userSelection =  user selected pricing geting from vendor or freelancer
+     * @param  mixed $is_service_product_price_from_dispatch custoom mode selecter by admin 
+     * @param  mixed $is_service_price_selection custoom mode selecter by admin  $is_service_product_price_from_dispatch = 0,$is_service_price_selection = 0,
+     * @return void
+     */
+    function getOnDemandPricingRule($vendorType = "on_demand",$userSelection = "vendor",$additionalPreference)
+    {
+       
+        $is_service_product_price_from_dispatch = @$additionalPreference['is_service_product_price_from_dispatch'] ?? 0;
+        $is_service_price_selection             = @$additionalPreference['is_service_price_selection'] ?? 0;
+        $return['is_price_from_freelancer'] = 0;
+        $return['is_ondemand_multi_pricing'] = 0;
+            $value = 0;
+            if(($vendorType == "on_demand") && ($is_service_product_price_from_dispatch ==1 )){
+                $return['is_price_from_freelancer'] =1;
+                if($is_service_price_selection ==1 ){
+                    $return['is_ondemand_multi_pricing'] = 1;
+                    if($userSelection =='freelancer'){
+                        $return['is_price_from_freelancer'] =1;
+                    }else{
+                        $return['is_price_from_freelancer'] =0;
+                    }
+                }
+            }
+            return $return;
     }
 }

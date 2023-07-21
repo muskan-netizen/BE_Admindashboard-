@@ -8,6 +8,7 @@ use Carbon\Carbon;
 // use Client;
 use Illuminate\Http\Request;
 use App\Http\Traits\{ApiResponser,VendorTrait};
+use App\Http\Traits\HomePage\HomePageTrait;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Models\{User,Cart, Product,ClientLanguage, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, VendorCategory, ProductCategory, Client, ClientPreference,CategoryKycDocuments,CaregoryKycDoc};
@@ -16,6 +17,7 @@ class CategoryController extends BaseController
 {
     private $field_status = 2;
     use ApiResponser,VendorTrait;
+    use HomePageTrait;
     /**     * Get Company ShortCode     *     */
     public function categoryData(Request $request, $cid = 0)
     {
@@ -69,6 +71,7 @@ class CategoryController extends BaseController
             $client = Client::where('code', $code)->first();
             $category->share_link = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/category/" . $category->slug;
             //return $this->listData($langId, $cid, strtolower($category->type->redirect_to), $userid, $product_list, $mod_type, $mode_of_service, $limit, $page);
+            
             $response['category'] = $category;
             $response['filterData'] = $variantSets;
             $response['listData'] = $this->listData($langId, $cid, strtolower($category->type->redirect_to), $userid, $product_list, $mod_type, $mode_of_service, $limit, $page);
@@ -96,7 +99,7 @@ class CategoryController extends BaseController
           
             //return $vendor_categories;
 
-            $vendorData = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude');
+            $vendorData = Vendor::byVendorSubscriptionRule($preferences)->with('vendor_promo')->select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude');
             
             $ses_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude, $mod_type);
 
@@ -119,10 +122,15 @@ class CategoryController extends BaseController
                 $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
                 //3961 for miles and 6371 for kilometers
                 $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
+                $distance_to_time_multiplier = $preferences->distance_to_time_multiplier;
                 $vendorData = $vendorData->select('*', DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
                         cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
                         sin( radians(' . $latitude . ') ) *
-                        sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->orderBy('vendorToUserDistance', 'ASC');
+                        sin( radians( latitude ) ) ) )  AS vendorToUserDistance'),DB::Raw("6371 * acos(cos(radians(" . $latitude . "))
+                        * cos(radians(latitude))
+                        * cos(radians(longitude) - radians(" . $longitude . "))
+                        + sin(radians(" .$latitude. "))
+                        * sin(radians(latitude))) * ".$distance_to_time_multiplier." as timeTaken"))->orderBy('vendorToUserDistance', 'ASC');
                 $vendorData = $vendorData->whereIn('id', $ses_vendors);
             }
             $vendorData = $vendorData->where($mod_type, 1)->with('slot')->where('status', 1)->whereIn('id', $vendor_ids)->withAvg('product', 'averageRating')->paginate($limit, $page);
@@ -131,8 +139,10 @@ class CategoryController extends BaseController
             //$vendorData = $vendorData->where($mod_type, 1)->where('status', 1)->whereIn('id', $vendor_ids)->with('slot')->withAvg('product', 'averageRating')->paginate($limit, $page);
             foreach ($vendorData as $vendor) {
 
+               $vendor->vendorOffer = $vendor->vendor_promo->max('amount');
+               $vendor->vendorNoOfRatings = $this->vendorNoOfRatings($vendor->products);
                 unset($vendor->products);
-                $vendor = $this->getLineOfSightDistanceAndTime($vendor, $preferences);
+                //$vendor = $this->getLineOfSightDistanceAndTime($vendor, $preferences);
                 $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4 ) ? 1 : 0;
                 $vendor->is_show_products_with_category = ($vendor->vendor_templete_id == 5) ? 1 : 0;
                 $vendorCategories = VendorCategory::with(['category.translation' => function($q) use($langId){
@@ -192,7 +202,7 @@ class CategoryController extends BaseController
                 'tags.tag.translations' => function ($q) use ($langId) {
                     $q->where('language_id', $langId);
                 }
-            ])->select('products.category_id', 'products.id', 'products.mode_of_service', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', 'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.tags')
+            ])->select('products.category_id', 'products.id', 'products.mode_of_service', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', 'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.tags','products.is_recurring_booking')
                 ->where('products.category_id', $category_id)->where('products.is_live', 1)->whereIn('products.vendor_id', $vendor_ids)->paginate($limit, $page);
                 //->where('mode_of_service', $mode_of_service)
             if (!empty($products)) {
@@ -322,7 +332,7 @@ class CategoryController extends BaseController
                 'tags.tag.translations' => function ($q) use ($langId) {
                     $q->where('language_id', $langId);
                 }
-            ])->select('products.category_id', 'mode_of_service', 'products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', 'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.tags')
+            ])->select('products.category_id', 'mode_of_service', 'products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', 'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.tags','products.is_recurring_booking')
                 ->where('products.category_id', $category_id)->where('products.is_live', 1)->where('mode_of_service', $mode_of_service)->whereIn('products.vendor_id', $vendor_ids)->paginate($limit, $page);
             if (!empty($products)) {
                 foreach ($products as $key => $product) {
@@ -486,7 +496,7 @@ class CategoryController extends BaseController
 
                     $q->groupBy('product_id');
                 },
-            ])->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', 'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.tags')
+            ])->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', 'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.tags','products.is_recurring_booking')
                 ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
                 ->join('product_translations', 'product_translations.product_id', '=', 'products.id') // Or whatever the join logic is
                 ->withCount('OrderProduct')

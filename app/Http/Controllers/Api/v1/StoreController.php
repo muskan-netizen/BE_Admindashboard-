@@ -246,7 +246,6 @@ class StoreController extends BaseController{
 			return $this->successResponse(__('Order is removed.'));
 		}catch(\Exception $e)
 		{
-			\Log::info($e->getMessage());
 		}
 	}
 
@@ -568,7 +567,7 @@ class StoreController extends BaseController{
 		try {
     		$user = Auth::user();
             $paginate = $request->has('limit') ? $request->limit : 12;
-			$order_list = Order::with(['orderStatusVendor','vendors.products','vendors.status'])->select('id','order_number','payable_amount','payment_option_id','user_id');
+			$order_list = Order::with(['orderStatusVendor','vendors.products','vendors.status'])->select('id','order_number','payable_amount','payment_option_id','user_id','created_at','scheduled_date_time','scheduled_slot');
 			if($user->is_superadmin == 1){
 				$order_list = $order_list->whereHas('vendors', function($query){
 					$query->where('order_status_option_id', 1);
@@ -592,7 +591,16 @@ class StoreController extends BaseController{
 				$order->user_name = $order->user->name;
 				$order->user_image = $order->user->image;
 				$order->date_time = dateTimeInUserTimeZone($order->created_at, $user->timezone);
-				$order->payment_option_title = $order->paymentOption->title;
+				$order->payment_option_title = $order->paymentOption->title??'';
+				if (!empty($order->scheduled_date_time)) {
+					$order->scheduled_date_time = date('d-m-Y h:i A',strtotime(dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone)));
+				}
+				if(!empty($order->scheduled_slot) ){
+					$slot_time = explode("-",$order->scheduled_slot);
+					$start_time = $slot_time[0];
+					$end_time = !empty($slot_time[1]) ? $slot_time[1]: $slot_time[0];
+					$order->schedule_slot =date('d-m-Y h:i A',strtotime( date('Y-m-d',strtotime($order->scheduled_date_time)). " " . $start_time)) . ' - ' . date('h:i A',strtotime($end_time));
+				}
 				foreach ($order->vendors as $vendor) {
 					$vendor_order_status = VendorOrderStatus::where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
 					if($vendor_order_status){
@@ -608,6 +616,7 @@ class StoreController extends BaseController{
 				foreach ($order->products as $product) {
 					$order_item_count += $product->quantity;
 					$product_details[] = array(
+						'name' => $product->product_name,
 						'image_path' => $product->media->first() ? $product->media->first()->image->path : $product->image,
 						'price' => $product->price,
 						'qty' => $product->quantity,
@@ -955,7 +964,6 @@ class StoreController extends BaseController{
                                 else {
 									$value_arr = @$value['value'];
 									
-									// //\Log::info($option['option_id']);
                                     foreach($value['option'] as $option_key => $option) {
                                         if(!empty($value['type']) && $value['type'] == 4 ) { // textbox
 											$insert_arr[$insert_count]['product_id'] = $request->product_id;
@@ -2056,7 +2064,6 @@ class StoreController extends BaseController{
 			}
 		}
 		catch(\Exception $e) {
-			//\Log::info($e);
 			return $this->errorResponse('Exception occured', 500);
 		}
 	}
@@ -2253,9 +2260,9 @@ class StoreController extends BaseController{
 						
 								$insert_arr = [];
 								$insert_count = 0;
-								// \Log::info($attribute);
+								
 								foreach($attribute as $key => $value) {
-									// \Log::info($value);
+									
 									if( !empty($value) && !empty($value['option'] && is_array($value) )) {
 										
 										if(!empty($value['type']) && $value['type'] == 1 ) { // dropdown
@@ -2279,7 +2286,6 @@ class StoreController extends BaseController{
 										else {
 											$value_arr = @$value['value'];
 											
-											// \Log::info($option['option_id']);
 											foreach($value['option'] as $option_key => $option) {
 												if(!empty($value['type']) && $value['type'] == 4 ) { // textbox
 													$insert_arr[$insert_count]['product_id'] = $product->id;
@@ -2292,7 +2298,7 @@ class StoreController extends BaseController{
 													$insert_arr[$insert_count]['is_active'] = 1;
 												}
 												elseif(!empty($value['type']) && $value['type'] == 6) {
-													\Log::info($option);
+													
 													$insert_arr[$insert_count]['product_id'] = $product->id;
 													$insert_arr[$insert_count]['attribute_id'] = $value['id'];
 													$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
@@ -2303,7 +2309,6 @@ class StoreController extends BaseController{
 													$insert_arr[$insert_count]['is_active'] = 1;
 												}
 												elseif( @in_array($option['option_id'], $value_arr) ) {
-													// \Log::info($option);
 													$insert_arr[$insert_count]['product_id'] = $product->id;
 													$insert_arr[$insert_count]['attribute_id'] = $value['id'];
 													$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
@@ -2321,7 +2326,6 @@ class StoreController extends BaseController{
 		
 								
 								}
-								\Log::info($insert_arr);
 								if( !empty($insert_arr) ) {
 									ProductAttribute::where('product_id',$request->product_id)->delete();
 									ProductAttribute::insert($insert_arr);

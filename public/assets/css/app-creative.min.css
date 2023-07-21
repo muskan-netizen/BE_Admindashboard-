@@ -847,7 +847,9 @@ body[data-sidebar-icon=twotones] #sidebar-menu > ul > li > a svg {
 }
 .nav-user img {
   height: 32px;
-  width: 32px;
+  width: auto!important;
+  max-width: 100px;
+  object-fit: contain;
 }
 
 .fullscreen-enable [data-toggle=fullscreen] .fe-maximize::before {

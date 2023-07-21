@@ -3,7 +3,7 @@
 <div class="row align-items-center">
         <div class="col-12 product-bottom-bar vendor-description pb-2">
             <div class="row vendor-details-left align-items-center">
-                <div class="vender-icon mr-sm-3">
+                <div class="col-sm-2 col-lg-1 vender-icon">
                     <div class="vendor-stories">
                         <div class="circle-wrapper"></div>
                         <a href="" data-toggle="modal" data-target="#vendorStories_">
@@ -13,19 +13,16 @@
                    
                     <!-- <img src="{{ $vendor->logo['image_fit'] . '120/120' . $vendor->logo['image_path'] }}" class="rounded-circle avatar-lg" alt="profile-image"> -->
                 </div>
-                <div class="ml-sm-1 position-relative profile_address vendor_icon-design">
+                <div class="col-sm-10 col-lg-11 position-relative profile_address vendor_icon-design">
                             <h3>{{ $vendor->name }}</h3>
                             <div class="vendor-reviwes">
-                        @if ($vendor->vendorRating > 0)
+                        @if ($vendor->vendorRating > 0 && $client_preference_detail->rating_check == 1) 
                             <div class="rating-text-box ml-sm-auto p-1">
                                 <span>{{ $vendor->vendorRating }}</span>
                                 <i class="fa fa-star" aria-hidden="true"></i>
                              
                             </div>
-                            
                         @endif
-                        
-                    
                     </div>
                                 <ul class="vendor-info customize_vendor"> <li class="d-block vendor-location">
                                         <a href="javascript:void(0)" onclick="copyToClipboard('#p1')" >
@@ -61,7 +58,7 @@
                                     </li>
                                     @if ($vendor->email)
                                         <li class="d-block vendor-email">
-                                            <i class="fa fa-envelope"></i> <p class="vendor_email">{{ $vendor->email }}</p>
+                                            <i class="fa fa-envelope"></i> <span class="vendor_email">{{ $vendor->email }}</span>
                                         </li>
                                     @endif
                                     @if ($vendor->website)
@@ -99,8 +96,6 @@
                                         </svg><a class="open-social-medialinks" href="javascript:void(0)">Social Media Links</a>
                                     </li>
                                 @endif
-
-
                                 @php
                                     $checkSlot = findSlot('', $vendor->id, '');
                                 @endphp

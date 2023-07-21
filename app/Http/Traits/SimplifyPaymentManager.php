@@ -44,7 +44,6 @@ trait SimplifyPaymentManager{
       $rakAuthCheck = Simplify::createPayment($requestData); 
       if($rakAuthCheck){
             //Success call
-       // Log::info(print_r($rakAuthCheck, true)); // Printing reponse to your log file.
         return $rakAuthCheck;
       }
     }catch(Exception $e) {

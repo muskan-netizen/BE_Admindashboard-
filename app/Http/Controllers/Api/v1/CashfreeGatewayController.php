@@ -155,7 +155,6 @@ class CashfreeGatewayController extends BaseController
             }
         }
         catch(\Exception $ex){
-          Log::info($e->getMessage());
             return $this->errorResponse('Server Error', 400);
         }
     }

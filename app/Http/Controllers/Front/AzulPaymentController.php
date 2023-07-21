@@ -87,7 +87,7 @@ class AzulPaymentController extends FrontController
         }
         return $time;
     }
-    
+
     public function getCardList(Request $request, $domain = ''){
         $cards = UserDataVault::where('user_id', Auth::user()->id)->orderBy('is_default','desc')->get();
         return view('frontend/account/card-list')->with(['cards' => $cards]);
@@ -99,14 +99,12 @@ class AzulPaymentController extends FrontController
         $number = $this->orderNumber($request);
 
         if ($request->from == 'wallet') {
-            $number = $this->orderNumber($request);
             $request->request->add([
                 'order_number' => $number,
                 'amount' => $request->amount
             ]);
         }
         if ($request->from == 'subscription') {
-            $number = $this->orderNumber($request);
             $request->request->add([
                 'order_number' => $number,
                 'amount' => $request->amount
@@ -115,12 +113,11 @@ class AzulPaymentController extends FrontController
 
         // //\Log::info(json_encode($request->all()));
         $dataResponse = $this->payWithCard($request->all());
-        //\Log::info(json_encode($dataResponse));
+       //\Log::info(json_encode($dataResponse));
         // $dataResponse = json_decode($responsePay);
-        // dd($responsePay);
         if ($dataResponse['ok'] === false && $this->mode) {
             $response['status'] = 'Fail';
-            $response['msg'] = 'Invalid Card Details.';
+            $response['msg'] = $dataResponse['message'];
             $response['payment_from'] = $request->from;
             $response['route'] = '';
             return $response;
@@ -238,6 +235,7 @@ class AzulPaymentController extends FrontController
                 $wallet->depositFloat($order->wallet_amount_used, [
                     'Wallet has been <b>refunded</b> for cancellation of order #' . $order->order_number
                 ]);
+                $this->sendWalletNotification($user->id, $order->order_number);
             }
             if (isset($request->auth_token) && ! empty($request->auth_token)) {
                 $returnUrl = route('order.return.success');
@@ -287,7 +285,7 @@ class AzulPaymentController extends FrontController
             $data['tip_amount'] = $amount;
             $data['order_number'] = $requestdata->order_number;
             $data['transaction_id'] = $payment->transaction_id;
-
+            
             $request = new \Illuminate\Http\Request($data);
 
             $orderController = new OrderController();
@@ -350,22 +348,22 @@ class AzulPaymentController extends FrontController
             return $response;
         }
     }
-    
-    public function getUserCards(Request $request){        
+
+    public function getUserCards(Request $request){
         $listData = $this->getUserCardsList();
         $returnHTML = view('frontend.card-list')->with(['cards' => $listData])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML));
     }
-    
+
     public function setDefaultCard($domain = '', $id)
     {
-       $isTrue =  UserDataVault::defaultCard($id);    
+       $isTrue =  UserDataVault::defaultCard($id);
        if($isTrue){
             return redirect()->route('payment.user.cards')->with('success', __('Default Card Has Been Changed Successfully'));
        }
-       return redirect()->route('payment.user.cards')->with('error', __('Card not exist'));   
+       return redirect()->route('payment.user.cards')->with('error', __('Card not exist'));
     }
-    
+
     /**
      * delete card of user
      *

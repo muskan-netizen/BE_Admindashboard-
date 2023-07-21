@@ -65,7 +65,6 @@ class UserhomeController extends FrontController
         $client_preferences = $this->client_preferences;
         $client_preferences = $client_preferences->makeHidden(['customer_support_key','delivery_service_key','fcm_server_key','fcm_api_key','mail_username','mail_password','sms_key','sms_secret','sms_credentials','fb_client_secret','fcm_storage_bucket','customer_support_application_id','pickup_delivery_service_key']);
         return response()->json(['success' => true, 'client_preferences' => $client_preferences]);
-
     }
 
     public function getLastMileTeams()
@@ -282,13 +281,14 @@ class UserhomeController extends FrontController
 
     public function index(Request $request, $domain='')
     {
+       // pr(Session::get('onDemandPricingSelected'));
         try {
             $home = array();
             $vendor_ids = array();
             if ($request->has('ref')) {
                 session(['referrer' => $request->query('ref')]);
             }
-            $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating', 'is_service_product_price_from_dispatch']);
+            $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating', 'is_service_product_price_from_dispatch','is_service_price_selection']);
             $latitude = Session::get('latitude') ?? null;
             $longitude = Session::get('longitude') ?? null;
             $curId = Session::get('customerCurrency');
@@ -419,10 +419,13 @@ class UserhomeController extends FrontController
             }
 
             $is_service_product_price_from_dispatch_forOnDemand = 0;
-
-            if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
-                $is_service_product_price_from_dispatch_forOnDemand =1;
-            }
+          
+            $getOnDemandPricingRule = getOnDemandPricingRule($vendor_type, Session::get('onDemandPricingSelected'),$additionalPreference);
+         
+            $is_service_product_price_from_dispatch_forOnDemand =$getOnDemandPricingRule['is_price_from_freelancer'];
+            // if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+            //     $is_service_product_price_from_dispatch_forOnDemand =1;
+            // }
             
             $homeData = ['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $client_preferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData ,'is_service_product_price_from_dispatch_forOnDemand'=> $is_service_product_price_from_dispatch_forOnDemand];
             return view('frontend.'.$view_page)->with($homeData);
@@ -458,6 +461,13 @@ class UserhomeController extends FrontController
        // }
         return redirect()->route('userHome');
     }
+    public function setondemandPricingSession(Request $request)
+    {
+        $type  =  $request->type ?? 'vendor';
+        Session::put('onDemandPricingSelected',  $type );
+        ///pr(Session::get('onDemandPricingSelected'));
+        return redirect()->route('userHome');
+    }
     /**
      * postHomePageData
      *
@@ -467,7 +477,7 @@ class UserhomeController extends FrontController
     public function postHomePageData(Request $request,$set_template,$enable_layout,$additionalPreference)
     {
      
-        //pr($enable_layout);
+        //pr($request->all());
        // $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating','is_show_vendor_on_subcription']);
         $vendor_ids = $vendors = [];
         $new_products = [];
@@ -486,7 +496,13 @@ class UserhomeController extends FrontController
         $latitude = Session::get('latitude');
         $longitude = Session::get('longitude');
         $clientdata = Session::get('clientdata');
+        $preferences = $this->client_preferences;
 
+        if( (empty($latitude)) && (empty($longitude)) ){
+            $latitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_latitude) : 0;
+            $longitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_longitude) : 0;
+        }
+        
         //pr($latitude);
         if($request->has('latitude') ){
             $latitude = $request->latitude;
@@ -496,9 +512,10 @@ class UserhomeController extends FrontController
             $longitude = $request->longitude;
             Session::put('longitude', $longitude);
         }
+       
         $selectedAddress = ($request->has('selectedAddress')) ? Session::put('selectedAddress', $request->selectedAddress) : Session::get('selectedAddress');
         $selectedPlaceId = ($request->has('selectedPlaceId')) ? Session::put('selectedPlaceId', $request->selectedPlaceId) : Session::get('selectedPlaceId');
-        $preferences = $this->client_preferences;
+       
         $currency_id = Session::get('customerCurrency');
         $language_id = Session::get('customerLanguage');
 
@@ -616,7 +633,7 @@ class UserhomeController extends FrontController
         }
         $on_sale_product_details =$on_sale_products = [];
         if (in_array('on_sale', $enable_layout)) {  # if enable new_products section in 
-            $on_sale_products = $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', 'all', $request->type,$on_sale_title, $p_dim);
+            $on_sale_products = $on_sale_product_details = $this->vendorProducts($vendor_ids, $language_id, 'USD', 'on_sale', $request->type,$on_sale_title, $p_dim);
         }
         $new_product_details =$new_products = [];
         if (in_array('new_products', $enable_layout)) {  # if enable new_products section in 
@@ -653,7 +670,7 @@ class UserhomeController extends FrontController
             // dd($single_category_products);
             //$selected_product_ids = $this->getSelectedProducts(); // get single selected category's products
             $selected_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'selected_products', $request->type, $featured_products_title,$p_dim);
-
+            
             //$popular_product_ids = $this->getMostPopularProducts();  // get selected products to display 
             $popular_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'popular_products', $request->type, $featured_products_title,$p_dim);
 

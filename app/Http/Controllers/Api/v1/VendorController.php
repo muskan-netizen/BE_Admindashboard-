@@ -560,7 +560,7 @@ class VendorController extends BaseController{
                                 $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                             },
                             'variant' => function ($q) use ($langId) {
-                                $q->select('id', 'sku', 'product_id', 'title', 'quantity', 'price','markup_price', 'barcode');
+                            $q->select('id', 'sku', 'product_id', 'title', 'quantity', 'price','markup_price', 'barcode', 'compare_at_price');
                             // $q->groupBy('product_id');
                             }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
                         ])->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
@@ -1997,7 +1997,7 @@ class VendorController extends BaseController{
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude','subscription_mode')->first();
         $latitude = $request->latitude;
         $longitude = $request->longitude;
-        $limit = $request->has('limit') ? $request->limit : 12;
+        $limit = $request->has('limit') ? $request->limit :12;
         $page = $request->has('page') ? $request->page : 1;
 
         //filter
@@ -2053,8 +2053,9 @@ class VendorController extends BaseController{
                 });
             });
         }
-        $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->paginate($limit, $page)->sortBy('vendorToUserDistance')->values();
-
+        $vendorData =  $vendorData->with('slot', 'slotDate')->where('status', 1);
+        $total = $vendorData->count();
+        $vendorData = $vendorData->paginate($limit, $page)->sortBy('vendorToUserDistance')->values();
         foreach ($vendorData as $vendor) {
             unset($vendor->products);
 
@@ -2114,6 +2115,7 @@ class VendorController extends BaseController{
         // }
 
         $newCollection = collect([
+            'total' => $total,
             'current_page' => $page,
             'per_page' => $limit,
             'data' => $vendorData
