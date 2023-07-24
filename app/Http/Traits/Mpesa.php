@@ -130,13 +130,11 @@ trait Mpesa{
        
    }
        
-   public function getWebhookUrl(){
-      // return'https://'.'192.168.102.169:8001'.'/webhook/mpesa';
-       
-      // if($this->testmode)
-           return "https://webhook.site/6f12a228-fc95-4241-8495-1ff5f41cf421"; //Your callback URL
-     //  else
-          // return route('safari.payment');
+   public function getWebhookUrl(){       
+      if($this->testmode)
+          return "https://webhook.site/6f12a228-fc95-4241-8495-1ff5f41cf421"; //Your callback URL
+     else
+          return route('safari.payment');
    }
    
    /**
@@ -460,9 +458,7 @@ trait Mpesa{
    private function lnmoQuery($checkoutRequestID = null)
    {
        $timestamp = date('YmdHis');
-       $passwd = base64_encode($this->lipa_na_mpesa.$this->lipa_na_mpesa_key.$timestamp);
-       $checkoutRequestID = 'ws_CO_17072023155438206708374149';
-       
+       $passwd = base64_encode($this->lipa_na_mpesa.$this->lipa_na_mpesa_key.$timestamp);       
        if ($checkoutRequestID == null || $checkoutRequestID == '') {
            //throw new Exception("Checkout Request ID cannot be null");
            return false;
