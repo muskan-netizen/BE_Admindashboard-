@@ -767,7 +767,8 @@ span.filter-btn.btn.btn-theme i {
 .dark.al_body_template_three nav.scrollspy-menu li:hover a {
     background: linear-gradient(-90deg, var(--theme-deafult) -540%, #2b2b2b 100%)
 }
-
+.dark .custom-container p span{color:#fff !important;}
+.dark .custom-container ul li span{color:#fff !important;}
 .dark .collection-filter-block {
     border-color: #2b2b2b
 }

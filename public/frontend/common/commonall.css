@@ -1408,6 +1408,11 @@ body.al_body_template_three .dashboard-right .profile-page .info-text label {
     }
     .al_body_template_eight .alNewSliderTopBrand .brand-img {height: 100%;min-height: 180px;}
     .al_body_template_eight .product-card-box .img-outer-box.position-relative{min-height: 230px;height: 100%;}
+
+.al_body_template_nine .home-slider-wrapper span.carousel-control-prev-icon {background-color: #000;height: 44px;display: inline-block;background-size: 18px;width: 40px;}
+.al_body_template_nine .home-slider-wrapper span.carousel-control-next-icon {background-color: #000;height: 44px;display: inline-block;background-size: 18px;width: 40px;}
+
+
     .vender-logo.deals-product.product-card-box.position-relative.text-center.al_custom_vendors_sec .suppliers-img-outer.position-relative{
         min-height: 260px;
     }
