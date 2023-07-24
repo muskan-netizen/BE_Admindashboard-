@@ -99,13 +99,11 @@ class MpesaSafariController extends Controller
     
     public function createPayment(Request $request)
     {
-        dd($this->lnmoQuery());
         $amount = $request->amt??$request->amount;
         $accountReference=$this->orderNumber($request);
         $phone = $this->formatPhone(auth()->user()->phone_number);
         $response = $this->express($amount,$phone,$accountReference,'Payment');
         $response = json_decode($response);
-        \Log::info(json_encode($response));
         if(isset($response->ResponseCode)){
             if($response->ResponseCode == 0){
                 $payment = Payment::where('transaction_id',$accountReference)->first();
@@ -170,7 +168,8 @@ class MpesaSafariController extends Controller
                     return $this->completePickupDelivery($request, $payment, $request);
                 }
          }else{
-             
+             \Log::info("webhook error");
+             \Log::info($request->all());
          }
     }
     

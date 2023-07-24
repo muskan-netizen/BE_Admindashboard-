@@ -131,12 +131,12 @@ trait Mpesa{
    }
        
    public function getWebhookUrl(){
-       return'https://'.'192.168.102.169:8001'.'/webhook/mpesa';
+      // return'https://'.'192.168.102.169:8001'.'/webhook/mpesa';
        
-       if($this->testmode)
+      // if($this->testmode)
            return "https://webhook.site/6f12a228-fc95-4241-8495-1ff5f41cf421"; //Your callback URL
-       else
-           return route('safari.payment');
+     //  else
+          // return route('safari.payment');
    }
    
    /**
@@ -178,7 +178,7 @@ trait Mpesa{
            $this->access_token = $access_token;
            return $access_token;
        } else {
-           //throw new Exception("Invalid Consumer key or secret");
+           throw new \Exception("Invalid Consumer key or secret");
            return false;
        }
    }
@@ -419,7 +419,7 @@ trait Mpesa{
    public function express($amount, $phone, $ref = "Payment", $desc="Payment")
    {
        if (!is_numeric($amount) || $amount < 1 || !is_numeric($phone)) {
-           throw new Exception("Invalid amount and/or phone number. Amount should be 10 or more, phone number should be in the format 254xxxxxxxx");
+           throw new \Exception("Invalid amount and/or phone number. Amount should be 10 or more, phone number should be in the format 254xxxxxxxx");
            return false;
        }
        if($this->testmode){

@@ -1690,6 +1690,7 @@ input[type=number]::-webkit-outer-spin-button {
         var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
         var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
         var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
+        var payment_mpesa_safari_url = "{{route('mpesasafari.pay')}}";
         var payment_obo_url = "{{route('obo.pay')}}";
         var data_trans_url = "{{route('payment.payByDataTrans')}}";
         var create_bid_url = "{{route('createBid')}}";
