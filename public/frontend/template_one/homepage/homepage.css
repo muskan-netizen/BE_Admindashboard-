@@ -5660,3 +5660,14 @@ body.al_body_template_one .slick-slider .common-product-box, .slick-slider .supp
     max-height: 66px !important;
 }
 }
+
+
+
+/*pickup and drop section rwd css */
+@media screen and (min-width:1200px) and (max-width:1317px){
+    .al_body_template_one .cab-banner-area .card-box {
+         padding: 18px;
+     }
+ }
+ 
+ /*-------end here---*/
