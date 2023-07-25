@@ -911,6 +911,7 @@ class BaseController extends Controller{
     {
         try {
             $dispatch_domain = $this->checkIfLastMileDeliveryOn();
+            \Log::info($dispatch_domain);
             if($dispatch_domain->business_type == 'taxi'){
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key, 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code]]);
