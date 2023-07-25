@@ -315,7 +315,8 @@ $order_is_long_term = $order->is_long_term;
                                     </li>
                                 </ul>
                                 <ul class="order-detail row">
-                                    <li class="col-12 payment-mode"><span>{{__('Payment Method')}}:</span>{{__($order->paymentOption->title)}}</li>
+                                    <li class="col-12 payment-mode"><span>{{__('Payment Method')}}:</span>
+                                        <span>{{__($order->paymentOption->title)}}</span></li>
                                 </ul>
                             </div>
                         </div>
