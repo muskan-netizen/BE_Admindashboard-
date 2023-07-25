@@ -911,7 +911,6 @@ class BaseController extends Controller{
     {
         try {
             $dispatch_domain = $this->checkIfLastMileDeliveryOn();
-            \Log::info($dispatch_domain);
             if($dispatch_domain->business_type == 'taxi'){
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key, 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code]]);
@@ -925,10 +924,8 @@ class BaseController extends Controller{
             $endpoint =$url . "/api/send-documents";
             $response = $client->post($endpoint);
             $response = json_decode($response->getBody(), true);
-            \Log::info($response);
             return json_encode($response['data']);
         } catch (\Exception $e) {
-            \Log::info($e->getMessage());
             $data = [];
             $data['status'] = 400;
             $data['message'] = $e->getMessage();
