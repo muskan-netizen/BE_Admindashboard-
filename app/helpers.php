@@ -39,16 +39,18 @@ if (!function_exists('checkColumnExists')) {
      * @param string @columnName
      * @return boolean true or false
      */
-    function checkColumnExists($tableName, $columnName){
-        if (Schema::hasColumn($tableName, $columnName)){
-            $cacheKey = "$tableName$columnName";
-            $columnExists = Cache::remember($cacheKey, 60 * 60, function () use($tableName, $columnName) {
-                return Schema::hasColumn($tableName, $columnName);
-            });
-        if ($columnExists){
-            return true;
-        }else{
-            return false;
+        function checkColumnExists($tableName, $columnName)
+        {
+            if (Schema::hasColumn($tableName, $columnName)){
+                $cacheKey = "$tableName$columnName";
+                $columnExists = Cache::remember($cacheKey, 60 * 60, function () use($tableName, $columnName) {
+                    return Schema::hasColumn($tableName, $columnName);
+                });
+            if ($columnExists){
+                return true;
+            }else{
+                return false;
+            }
         }
     }
 }
