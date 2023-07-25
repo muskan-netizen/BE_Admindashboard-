@@ -87,8 +87,7 @@ class MargApiOrderUpdate extends Command
 
                 $orders  = Order::where([
                     'marg_status' => null,
-                    'payment_status' => 1,
-
+                    'payment_status' => 1
                 ])->where('marg_max_attempt', '<', 3)
                     ->get();
 

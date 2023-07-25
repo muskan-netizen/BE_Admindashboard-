@@ -10,11 +10,12 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\OrderVendorListTaxExport;
+use App\Http\Traits\MargTrait;
 use App\Models\{User,Vendor,OrderVendor,OrderStatusOption,DispatcherStatusOption,OrderRefund,Payment,Order};
 use DB;
 
 class OrderController extends Controller{
-    use ApiResponser;
+    use ApiResponser,MargTrait;
     public function index(Request $request){
 
         $dispatcher_status_options = DispatcherStatusOption::get();
@@ -29,8 +30,14 @@ class OrderController extends Controller{
         $vendors = $vendors->get();
         return view('backend.accounting.order', compact('vendors','order_status_options', 'dispatcher_status_options'))->with($this->getOrderVendorCalculations($request,true));
     }
+    use ApiResponser;
+    public function getFailedMargOrders(Request $request){
 
+     
+        return view('backend.accounting.failed_marg_orders');
+    }
 
+     
     public function getOrderVendorCalculations(Request $request,$flag = false){
         $order = $this->getOrdervendors($request);
         $data['total_order_count'] = $order->count();
@@ -45,9 +52,22 @@ class OrderController extends Controller{
         }
         return response()->json(['data' => $data]);
     }
+    
 
-
-    public function getOrdervendors($request){
+    public function syncMargOrder($domain = null, $order_id)
+    {
+        $order = Order::find($order_id);
+    
+        if (!empty($order)) {
+            $this->makeInsertOrderMargApi($order);
+    
+            // Set the flash message
+            session()->flash('success', 'Order synced successfully!');
+        }
+    
+            return redirect()->route('failed-marg-orders');
+    }
+    public function getOrdervendors($request,$is_marg = null){
         $user = Auth::user();
         $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
         $search_value = $request->get('search');
@@ -87,6 +107,13 @@ class OrderController extends Controller{
         if ($user->is_superadmin == 0) {
             $vendor_orders = $vendor_orders->whereHas('vendor.permissionToUser', function ($query) use($user){
                 $query->where('user_id', $user->id);
+            });
+        }
+        if(!empty($is_marg))
+        {
+            $vendor_orders->whereHas('orderDetail', function ($query) use($user){
+                $query->where('marg_status', '=',null);
+                $query->where('marg_max_attempt', '>',2);
             });
         }
       return $vendor_orders->orderBy('id', 'DESC');
@@ -189,6 +216,38 @@ class OrderController extends Controller{
                 }
             })
             ->rawColumns(['payment_option_title'])
+            ->make(true);
+    }
+    public function margfilter(Request $request){
+        $user = Auth::user();
+        $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
+        $vendor_orders = $this->getOrdervendors($request,1);
+
+        return Datatables::of($vendor_orders)
+       
+         ->addColumn('orderId', function ($vendor_orders) {
+            return $vendor_orders->orderDetail->id; 
+        })
+         ->addColumn('order_number', function ($vendor_orders) {
+            return $vendor_orders->orderDetail->order_number; 
+        })
+            ->addColumn('created_date', function($vendor_orders) use($timezone) {
+                return dateTimeInUserTimeZone($vendor_orders->created_at, $timezone);
+            })
+            ->addColumn('user_name', function($vendor_orders) {
+                return $vendor_orders->user ? $vendor_orders->user->name : '';
+            })
+           
+            ->addColumn('sync_order', function ($vendor_orders) {
+                // Replace 'orderId' with the actual field name that holds the order ID
+                return  route('sync-marg-order', ['order_id' => $vendor_orders->orderDetail->id]);
+            })
+            ->addColumn('vendor_name',function($vendor_orders){
+                return $vendor_orders->vendor ? __($vendor_orders->vendor->name) : '';
+            })
+            
+            ->addIndexColumn()
+           
             ->make(true);
     }
 

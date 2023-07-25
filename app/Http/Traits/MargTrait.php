@@ -262,17 +262,6 @@ trait MargTrait{
             $rid  = MargProduct::first();
 		} 
 		  
-        \Log::info('rid');
-        \Log::info($rid);
-        if(isset($order->marg_max_attempt))
-        {
-
-            if($order->marg_max_attempt > 2)
-            {
-                return true;
-            }
-        }
-        
         $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code']);
 
         if($hub_key['is_marg_enable'] == 1){
