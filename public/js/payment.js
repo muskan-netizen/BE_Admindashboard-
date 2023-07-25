@@ -4297,6 +4297,11 @@ window.payWithCompany = function payWithCompany(address_id,payment_option_id,ord
     let subscriptionElement = $("input[name='subscription_amount']");
     let subscription_id = $("input[name='subscription_id']");
 
+    console.log('response.data.order');
+
+    console.log(order);
+    console.log(order.order_number);
+
     var data = {};
     if (path.indexOf("cart") !== -1) {
         total_amount = cartElement.val();
@@ -4339,14 +4344,6 @@ window.payWithCompany = function payWithCompany(address_id,payment_option_id,ord
         data: data,
         
         success: function (res) {
-
-            Datatrans.startPayment({
-                transactionId:  res.transactionId,
-                'opened': function() {console.log('payment-form opened');},
-                'loaded': function() {console.log('payment-form loaded');},
-                'closed': function() {console.log('payment-page closed');},
-                'error': function(err) {console.log({err});}
-            });
             return true;
         }
     });

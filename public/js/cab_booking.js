@@ -427,8 +427,8 @@ $(document).ready(function () {
                 $('#pickup_now').attr('disabled', false);
                 $('#pickup_later').attr('disabled', false);
                 if(response.status == '200'){
-
-                    if(response.redirect != '')
+            
+                    if(is_cab_pooling == 4 )
                     {   
                         alert(response.message);
                         window.location.href = response.redirect;
@@ -512,10 +512,11 @@ $(document).ready(function () {
                         payWithPesapal(payment_option_id,response.data);
                     }
                     else if(payment_option_id == 58){
-                        payWithPowerTrans(payment_option_id,response.data);
+                        payWithPowerTrans('',payment_option_id,response.data);
                     }
                     else if(payment_option_id == 59){
-                        payWithCompany(payment_option_id,response.data);
+                        payWithCompany('',payment_option_id,response.data);
+                        window.location.href = response.redirect;
                     }
                     cabBookingPaymentOptions(payment_option_id, response.data);
                 }

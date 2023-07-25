@@ -49,8 +49,10 @@ class PayCompanyController extends Controller
 
     public function payByCompany(Request $request)
     {   
-        $company = Company::first();
-        $order = Order::where('order_number','85222773')->first();
+        \Log::info('[$request->all()]----payByCompany');
+        \Log::info([$request->all()]);
+        $company = Company::where('id',auth()->user()->company_id)->first();
+        $order = Order::where('order_number',$request->order_number)->first();
         $data["email"] = $company->email??null;
         $data["title"] = "Its Testing email";
         $data["body"] = "This is Body part";
@@ -61,80 +63,20 @@ class PayCompanyController extends Controller
          view()->share('clientCurrency',$clientCurrency); 
          view()->share('order',$order);
          $pdf = PDF::loadView('backend.order.print');
-        //  return $pdf->download('pdfview.pdf'); 
+
   
-        Mail::send('email.verify', 
+        Mail::send('email.order-success', 
                     [
-                    'email' => $data["email"],
-                    'mail_from' => $data["email"],
-                    'client_name' => $company->name,
-                    'code' => '11111',
-                    'logo' => 'no_logo.png',
-                    'customer_name' => "Link from link not found" ,
-                    'code_text' => 'Register yourself using this referral code below to get bonus offer',
-                    'link' => "http://local.myorder.com/user/register?refferal_code=11222",
-                    'email_template_content' => 'data templates'
+                    'email_template_content' => '<h3>Thanks For Order</h3>'
             ],function($message)use($data, $pdf) {
             $message->to($data["email"], $data["email"])
             ->subject($data["title"])
             ->attachData($pdf->output(), "invoice.pdf");
         });
         
+        return true;
         
     }
-
-
-
-    protected function successMail()
-	{
-		$data = ClientPreference::select(
-			'sms_key',
-			'sms_secret',
-			'sms_from',
-			'mail_type',
-			'mail_driver',
-			'mail_host',
-			'mail_port',
-			'mail_username',
-			'sms_provider',
-			'mail_password',
-			'mail_encryption',
-			'mail_from'
-		)->where('id', '>', 0)->first();
-		$confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
-
-
-		$mail_from = $data->mail_from;
-
-		$email_template_content = '';
-		$email_template = EmailTemplate::where('id', 6)->first();
-		$address = UserAddress::where('user_id', Auth::user()->id)->first();
-		if (Auth::user()) {
-			$cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('user_id', Auth::user()->id)->first();
-		} else {
-			$cart = Cart::select('id', 'is_gift', 'item_count')->with('coupon.promo')->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
-		}
-		if ($cart) {
-			$cartDetails = $this->getCart($cart);
-		}
-		if ($email_template) {
-			$email_template_content = $email_template->content;
-
-			$returnHTML = view('email.orderProducts')->with(['cartData' => $cartDetails])->render();
-
-			$email_template_content = $email_template->content;
-			$email_template_content = str_ireplace("{name}", Auth::user()->name, $email_template_content);
-			$email_template_content = str_ireplace("{products}", $returnHTML, $email_template_content);
-			$email_template_content = str_ireplace("{address}", $address->address . ', ' . $address->state . ', ' . $address->country . ', ' . $address->pincode, $email_template_content);
-		}
-		Mail::send('frontend.successmail', compact('email_template_content'), function ($message) use ($mail_from) {
-			$message->from($mail_from);
-			$message->to(Auth::user()->email);
-			$message->subject('Payment Succesful Notification');
-		});
-	}
-
-
 
 
     

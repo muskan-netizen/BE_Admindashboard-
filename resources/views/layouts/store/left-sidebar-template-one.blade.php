@@ -7,7 +7,7 @@ if(Session::get('config_theme') == 'dark'){
 }else{
     $urlImg = $clientData ? $clientData->logo['original'] : ' ';
 }
-$compId = session()->get('company_id')??'';
+$compId = session()->get('company_id')??null;
 if($compId)
 {
     $compdata =  \App\Models\Company::where('id',base64_decode($compId))->first();
