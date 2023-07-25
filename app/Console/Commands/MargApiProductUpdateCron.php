@@ -62,7 +62,7 @@ class MargApiProductUpdateCron extends Command
         /**
          * Sycn product quantity and add new product code from marg api
          */
-
+          \Log::info('in marg product sync api');
          try {
             $clients = CP::where('status', 1)->get();
             foreach ($clients as $key => $client) {
@@ -111,6 +111,8 @@ class MargApiProductUpdateCron extends Command
                     $detail         = [];
                     $MargMST2017 = "https://corporate.margerp.com/api/eOnlineData/MargMST2017";
                     $reqData = ["CompanyCode" => $CompanyCode,"MargID" => $MargID,"Datetime" => $margDateTime, "index" => 0];
+                    \Log::info('request data');
+                    \Log::info($reqData);
                 }else{
                     continue;
                 }
@@ -125,9 +127,14 @@ class MargApiProductUpdateCron extends Command
                 // Decrypt the data using the DLL wrapper
                 $decryptedData = $this->DecryptLogic->Decrypt($encryptedData, $decryptionKey);
                 $collectionData = collect( json_decode($decryptedData));
+
+              
+                //    dd($collectionData["Details"]->pro_N);
                 if(!empty($collectionData["Details"]->pro_N)){
 
                     foreach($collectionData["Details"]->pro_N as $key => $product){
+                        // \Log::info('code--'.$product->code);
+              
                         $detail = $this->addProduct($product);
                     }
                 }

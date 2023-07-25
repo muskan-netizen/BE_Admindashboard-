@@ -2500,6 +2500,9 @@ class OrderController extends FrontController
             DB::commit();
             $this->sendSuccessSMS($request, $order);
 
+            //Create an order at margApi side also
+            // $this->makeInsertOrderMargApi($order);
+            
             return $this->successResponse($order);
         } catch (Exception $e) {
             DB::rollback();

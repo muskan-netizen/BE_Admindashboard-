@@ -31,8 +31,9 @@ trait MargTrait{
         curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
         curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
-        
+        curl_setopt($ch, CURLOPT_TIMEOUT, 20); 
         $response = curl_exec($ch);
+
         $err = curl_error($ch);
         curl_close($ch);
         $encrypted = $response;
@@ -253,12 +254,25 @@ trait MargTrait{
 		}else{
 			foreach($order->products as $product)
 			{
+            \Log::info('product');
+            \Log::info($product->product);
 				$productCode[] = $product->product->sku;
 				$productQuantity[] = $product->quantity;
 			}
             $rid  = MargProduct::first();
 		} 
-		
+		  
+        \Log::info('rid');
+        \Log::info($rid);
+        if(isset($order->marg_max_attempt))
+        {
+
+            if($order->marg_max_attempt > 2)
+            {
+                return true;
+            }
+        }
+        
         $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code']);
 
         if($hub_key['is_marg_enable'] == 1){
@@ -267,7 +281,7 @@ trait MargTrait{
             $CompanyCode  = $hub_key['marg_company_code'];
             $detail         = [];
             $MargMST2017 = "https://corporate.margerp.com/api/eOnlineData/InsertOrderDetail";
-            $detail = ["OrderID"=>"", "OrderNo"=> $order->order_number, "CustomerID"=> $rid->id, "MargID"=> $MargID, "Type"=> "S", "Sid"=> "194130", "ProductCode"=> implode(',',$productCode), "Quantity"=>  implode(',',$productQuantity), "Free"=> "0,0", "Lat"=> "", "Lng"=> "", "Address"=> "", "GpsID"=> "0", "UserType"=> "1", "Points"=> "0.00", "Discounts"=> "0", "Transport"=> "", "Delivery"=> "", "Bankname"=> "", "BankAdd1"=> "", "BankAdd2"=> "", "shipname"=> "", "shipAdd1"=> "", "shipAdd2"=> "", "shipAdd3"=> "", "paymentmode"=> "1", "paymentmodeAmount"=> "0", "payment_remarks"=> "", "order_remarks"=> "","CustName"=>"ramU" ,"CustMobile"=> "9289757820", "CompanyCode"=> $CompanyCode, "OrderFrom"=> $CompanyCode];
+            $detail = ["OrderID"=>"", "OrderNo"=> $order->order_number, "CustomerID"=> $rid->id ?? '', "MargID"=> $MargID, "Type"=> "S", "Sid"=> "194130", "ProductCode"=> implode(',',$productCode), "Quantity"=>  implode(',',$productQuantity), "Free"=> "0,0", "Lat"=> "", "Lng"=> "", "Address"=> "", "GpsID"=> "0", "UserType"=> "1", "Points"=> "0.00", "Discounts"=> "0", "Transport"=> "", "Delivery"=> "", "Bankname"=> "", "BankAdd1"=> "", "BankAdd2"=> "", "shipname"=> "", "shipAdd1"=> "", "shipAdd2"=> "", "shipAdd3"=> "", "paymentmode"=> "1", "paymentmodeAmount"=> "0", "payment_remarks"=> "", "order_remarks"=> "","CustName"=>"ramU" ,"CustMobile"=> "9289757820", "CompanyCode"=> $CompanyCode, "OrderFrom"=> $CompanyCode];
 
 
              // Get the encrypted data from the request
@@ -279,6 +293,7 @@ trait MargTrait{
             {
 				$updateOrder = Order::findOrFail($order->id);
 				$updateOrder->marg_status = $encryptedData??1;
+				$updateOrder->marg_max_attempt =$updateOrder->marg_max_attempt + 1;
 				$updateOrder->save();
 
                 return true;
