@@ -924,8 +924,10 @@ class BaseController extends Controller{
             $endpoint =$url . "/api/send-documents";
             $response = $client->post($endpoint);
             $response = json_decode($response->getBody(), true);
+            \Log::info($response);
             return json_encode($response['data']);
         } catch (\Exception $e) {
+            \Log::info($e->getMessage());
             $data = [];
             $data['status'] = 400;
             $data['message'] = $e->getMessage();
