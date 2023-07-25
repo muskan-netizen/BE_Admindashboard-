@@ -24,18 +24,7 @@
                     <div class="card-body">
                         <div class="row mb-2">
                             <div class="col-sm-8">
-                                <div class="text-sm-left">
-                                    @if (\Session::has('success'))
-                                        <div class="alert alert-success">
-                                            <span>{!! \Session::get('success') !!}</span>
-                                        </div>
-                                    @endif
-                                    @if (\Session::has('error_delete'))
-                                        <div class="alert alert-danger">
-                                            <span>{!! \Session::get('error_delete') !!}</span>
-                                        </div>
-                                    @endif
-                                </div>
+                               @include('alert')
                             </div>
                             <div class="col-sm-4 text-right">
                                 <button class="btn btn-info openServiceModal"> {{ __('Add New Company') }}</button>
@@ -58,7 +47,7 @@
                                     @forelse ($company as $geo)
                                         <tr>
                                             <td class="table-user">
-                                                <a href="javascript:void(0);" class="text-body">{{ $geo->logo }}</a>
+                                               <a href="javascript:void(0);" class="text-body"><img src="{{get_file_path($geo->logo,'FILL_URL','40','40')}}"></a>
                                             </td>
                                             <td class="table-user">
                                                 <a href="javascript:void(0);" class="text-body">{{ $geo->name }}</a>
@@ -81,12 +70,12 @@
                                                     area_id="{{ $geo->id }}"><i
                                                         class="mdi mdi-square-edit-outline"></i></button>
 
-                                                <form action="{{ route('admin.serviceArea.delete') }}" method="POST"
+                                                <form action="{{ route('company.delete') }}" method="POST"
                                                     class="action-icon">
                                                     @csrf
                                                     <input type="hidden" value="{{ $geo->id }}" name="area_id">
                                                     <button type="submit"
-                                                        onclick="return confirm('Are you sure? You want to delete the service area.')"
+                                                        onclick="return confirm('Are you sure? You want to delete.')"
                                                         class="btn btn-primary-outline action-icon"><i
                                                             class="mdi mdi-delete"></i></button>
 
@@ -153,14 +142,11 @@
                     </div>
                     <div class="modal-footer">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <button type="submit"
                                     class="btn btn-block btn-blue waves-effect waves-light w-100">{{ __('Save') }}</button>
                             </div>
-                            <div class="col-md-6 p-0">
-                                <input id="remove-line" class="btn btn-block btn-blue waves-effect waves-light w-100"
-                                    type="button" value="Remove" />
-                            </div>
+                          
                         </div>
                     </div>
                 </form>
@@ -175,7 +161,7 @@
                     <h4 class="modal-title">{{ __('Add Service Area') }}</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 </div>
-                <form id="edit-area-form" action="" method="POST">
+                <form id="edit-area-form" enctype="multipart/form-data" action="" method="POST">
                     @csrf
                     <div class="modal-body" id="editAreaBox">
                         

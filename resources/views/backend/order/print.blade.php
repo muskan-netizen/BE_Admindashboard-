@@ -4,8 +4,7 @@
             <td>
                 <div class="al_print_header" style="width: 100%;">
                     <h5 style="color: #000;margin: 0px;font-family: Lato,sans-serif;display: inline-block;vertical-align: middle;">
-                        <img style="margin-right: 10px;" src="{{@$vendor_data->logo['image_fit'].'32/32'.@$vendor_data->logo['image_path']}}" alt="product-img" height="20">
-                        <span style="color: #000;margin: 0px;margin-bottom: 10px; font-family: Lato,sans-serif;display: inline-block;vertical-align: middle;">{{ $vendor_data->name }}</span>
+                      
                         </h5>
                         <ul style="padding: 0; margin: 0;">
                             @if($order->luxury_option_name != '')

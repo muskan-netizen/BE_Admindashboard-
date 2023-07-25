@@ -1890,6 +1890,7 @@ if( !function_exists('get_file_path') ) {
       if(!empty($url)){
         $img = $url;
       }
+
       $ex = checkImageExtension($img);
       $return_url = $values =  \Config::get('app.'.$type);
 

@@ -3,6 +3,7 @@
     <div class="col-lg-12 mb-2">
         {!! Form::label('title', __('Logo'), ['class' => 'control-label']) !!}
         <input type="file" name="logo" >
+        <a href="{{get_file_path($area->logo,'FILL_URL')}}" target="_blank" class="text-body"><img src="{{get_file_path($area->logo,'FILL_URL','60','60')}}"></a>
     </div>
 
     <div class="col-lg-12 mb-2">
@@ -28,10 +29,4 @@
         {!! Form::textarea('address', $area->address,['class' => 'form-control', 'rows' => '3', 'placeholder' => 'Address']) !!}
     </div>
     
-
-    <div class="col-lg-12">
-        <div class="" style="height:96%;">
-            <div id="edit_map-canvas" style="min-width: 300px; width:100%; height: 600px;"></div>
-        </div>
-    </div>
 </div>

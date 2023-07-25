@@ -1801,6 +1801,7 @@ input[type=number]::-webkit-outer-spin-button {
         var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
         var payment_obo_url = "{{route('obo.pay')}}";
         var data_trans_url = "{{route('payment.payByDataTrans')}}";
+        var data_company_url = "{{route('payment.payByCompany')}}";
         var create_bid_url = "{{route('createBid')}}";
         var driver_biding_list_url = "{{route('getBidsRelatedToOrderRide')}}";
         var accept_bid_by_customer = "{{route('acceptBidByCustomer')}}";

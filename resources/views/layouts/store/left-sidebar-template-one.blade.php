@@ -7,6 +7,12 @@ if(Session::get('config_theme') == 'dark'){
 }else{
     $urlImg = $clientData ? $clientData->logo['original'] : ' ';
 }
+$compId = session()->get('company_id')??'';
+if($compId)
+{
+    $compdata =  \App\Models\Company::where('id',base64_decode($compId))->first();
+    $urlImg = get_file_path($compdata->logo,'FILL_URL');
+}
 
 $languageList = \App\Models\ClientLanguage::with('language')
 ->where('is_active', 1)

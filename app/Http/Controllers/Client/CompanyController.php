@@ -33,11 +33,12 @@ class CompanyController extends BaseController{
     public function store(Request $request, $domain = ''){
         $rules = array(
             'name' => 'required',
-            'email' => 'required'
+            'email' => 'required|email|unique:companies,email',
+            'phone_number' => 'required|numeric|unique:companies,phone_number'
         );
         $messages = array(
             'name.required' => 'Area name is required',
-            'email.required' => 'Email is required',
+            'email.required' => 'Email is required and Unique',
         );
         $validation  = Validator::make($request->all(), $rules, $messages);
 
@@ -71,6 +72,7 @@ class CompanyController extends BaseController{
      */
     public function edit(Request $request, $domain = ''){
         $area = Company::where('id', $request->data)->first();
+        // dd($area->logo);
         $returnHTML = view('backend.company.editArea')->with(['area' => $area])->render();
         return response()->json(array('success' => true, 'html' => $returnHTML));
     }
@@ -85,11 +87,12 @@ class CompanyController extends BaseController{
     public function update(Request $request, $domain = '', $id){
         $rules = array(
             'name' => 'required',
-            'email' => 'required'
+            'email' => 'required|email|unique:companies,email,'.$id,
+            'phone_number' => 'required|numeric|unique:companies,phone_number,'.$id
         );
         $messages = array(
             'name.required' => 'Area name is required',
-            'email.required' => 'Email is required',
+            'email.required' => 'Email is required and unique',
         );
         $validation  = Validator::make($request->all(), $rules, $messages);
 
@@ -120,8 +123,8 @@ class CompanyController extends BaseController{
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request, $domain = ''){
-        $area = ServiceArea::where('id', $request->area_id)->delete();
-        return redirect()->back()->with('success', 'Service area deleted successfully!');
+        $area = Company::where('id', $request->area_id)->delete();
+        return redirect()->back()->with('success', 'Company deleted successfully!');
     }
 
    
