@@ -87,11 +87,11 @@ class MargApiOrderUpdate extends Command
 
                 $orders  = Order::where([
                     'marg_status' => null,
-                    'payment_status' => 1
-                ])->limit(25)->get();
+                    'payment_status' => 1,
 
-                \Log::info('orders count');
-                \Log::info(count($orders));
+                ])->where('marg_max_attempt', '<', 3)
+                    ->get();
+
                 if (count($orders) > 0) {
 
                     foreach ($orders as $order) {
