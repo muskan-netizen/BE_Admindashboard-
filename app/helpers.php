@@ -18,6 +18,7 @@ use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Cache;
 
 if (!function_exists('setUserCode')) {
     function setUserCode(){
@@ -40,6 +41,11 @@ if (!function_exists('checkColumnExists')) {
      */
     function checkColumnExists($tableName, $columnName){
         if (Schema::hasColumn($tableName, $columnName)){
+            $cacheKey = "$tableName$columnName";
+            $columnExists = Cache::remember($cacheKey, 60 * 60, function () use($tableName, $columnName) {
+                return Schema::hasColumn($tableName, $columnName);
+            });
+        if ($columnExists){
             return true;
         }else{
             return false;
@@ -59,7 +65,11 @@ if (!function_exists('getAdditionalPreference')) {
         $return = [];
         $dbreturn= [];
         if(sizeof($key)){
-            $result = ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
+            // $result = ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
+            $cacheKey = 'client_preferences_additional_'.json_encode($key);
+            $result = Cache::remember($cacheKey, 60, function () use ($key) {
+                return ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
+            });
             $return = array_column($result->toArray(), 'key_value', 'key_name');
             if (sizeof($result)) {
                 $dbreturn = array_column($result->toArray(), 'key_value', 'key_name');
