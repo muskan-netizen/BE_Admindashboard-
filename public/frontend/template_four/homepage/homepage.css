@@ -3484,6 +3484,9 @@ body[dir=rtl] .alFourThLogo {
     .product-m .slick-slide {
         margin: 0;
     }
+    .al_clock b{
+        padding: 6px 20px;
+    }
 }
 
 @media(max-width:1400px) {
@@ -3876,7 +3879,7 @@ body[dir=rtl] .alFourThLogo {
         margin-right: 5px
     }
     .footer-title {
-        border: none
+        border: none;padding: 6px 0px;
     }
     .footer-mobile-contant {
         text-align: left;
@@ -4056,6 +4059,7 @@ body[dir=rtl] .alFourThLogo {
     body.al_body_template_four.p2p-module .tab-product {
         margin-top: 30px !important;
     }
+    .vendors h2.h2-heading.mb-3{font-size: 20px;}
     
 }
 
@@ -4078,6 +4082,8 @@ body[dir=rtl] .alFourThLogo {
     .age-restriction {
         padding-right: 0px !important;
     }
+    .payment-card .payment-card-bottom { margin: 10px 0px;}
+    .payment-card .payment-card-bottom ul li a img {width: 40px;height: auto !important;}
 }
 
 .side-menu-open {
