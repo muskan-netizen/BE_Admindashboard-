@@ -129,14 +129,6 @@ trait ReturnExchangeTrait{
                 ]
             ]);
 
-            //\Log::info("header", [
-            //     'personaltoken' => $dispatch_domain->delivery_service_key,
-            //     'shortcode' => $dispatch_domain->delivery_service_key_code,
-            //     'content-type' => 'application/json'
-            // ]);
-
-            //\Log::info("header", $postdata);
-
             $url = $dispatch_domain->delivery_service_key_url;
 
             $res = $client->post(
@@ -144,7 +136,7 @@ trait ReturnExchangeTrait{
                 ['form_params' => ($postdata)]
             );
             $response = json_decode($res->getBody(), true);
-            //\Log::info("asdfasdfasd". $res->getBody());
+            
             if ($response && $response['task_id'] > 0) {
                 $dispatch_traking_url = $response['dispatch_traking_url'] ?? '';
                 $up_web_hook_code = OrderVendor::where(['order_id' => $order->id, 'vendor_id' => $vendor])
@@ -154,12 +146,8 @@ trait ReturnExchangeTrait{
             }
             return 2;
         } catch (\Exception $e) {
-           // Log::info($e->getMessage());
+           Log::info($e->getMessage());
             return 2;
-            // return response()->json([
-            //     'status' => 'error',
-            //     'message' => $e->getMessage()
-            // ]);
         }
     }
 
@@ -244,9 +232,7 @@ trait ReturnExchangeTrait{
         $order_product->schedule_type =  null;
         $order_product->scheduled_date_time =  null;
         $order_product->schedule_slot =  '';
-        if(checkColumnExists('order_vendor_products', 'dispatch_agent_id')){
         $order_product->dispatch_agent_id =  null;
-        }
         if ($product_category->pimage) {
             $order_product->image = $product_category->pimage->first() ? $product_category->pimage->first()->path : '';
         }
@@ -282,9 +268,7 @@ trait ReturnExchangeTrait{
         $OrderVendor->vendor_dinein_table_id = null;
         $OrderVendor->order_status_option_id = $orderStatusPlaced;
        
-        if(checkColumnExists('order_vendors','exchange_order_vendor_id')){
-            $OrderVendor->exchange_order_vendor_id = $orderVendorProductOld->order_vendor_id;
-        }
+        $OrderVendor->exchange_order_vendor_id = $orderVendorProductOld->order_vendor_id;
         $OrderVendor->save();
 
         return $OrderVendor;
@@ -347,9 +331,7 @@ trait ReturnExchangeTrait{
     {
         $replace_pending = 9;
         $updateData = ['order_status_option_id' => $replace_pending, 'dispatcher_status_option_id' => null ];
-        if(checkColumnExists('order_vendors','exchange_order_vendor_id')){
-            $updateData['is_exchanged_or_returned'] = 1;
-        }
+        $updateData['is_exchanged_or_returned'] = 1;
         OrderVendor::where('id', $orderVendorProduct->order_vendor_id)
         ->update($updateData);
         return true;
@@ -359,9 +341,7 @@ trait ReturnExchangeTrait{
     {
         
         $updateData = [ 'dispatcher_status_option_id' => null ];
-        if(checkColumnExists('order_vendors','exchange_order_vendor_id')){
-            $updateData['is_exchanged_or_returned'] = 2;
-        }
+        $updateData['is_exchanged_or_returned'] = 2;
         OrderVendor::where('id', $orderVendorProduct->order_vendor_id)
         ->update($updateData);
         return true;

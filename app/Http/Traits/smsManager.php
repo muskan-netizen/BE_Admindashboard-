@@ -4,17 +4,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
-use AfricasTalking\SDK\AfricasTalking;  
+use AfricasTalking\SDK\AfricasTalking;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Http;
 use Log;
 use Unifonic;
 trait smsManager{
-
-  public function __construct()
-  {
-    //
-  }
-
 
     public function mTalkz_sms($to,$message,$crendentials,$templates_id = '')
     {
@@ -47,7 +42,6 @@ trait smsManager{
         $response = curl_exec($curl);
 
         curl_close($curl);
-       // Log::info(print_r($response, true));
         return $response;
 
         // $api_url = " https://mazinhost.com/smsv1/sms/api";
@@ -79,9 +73,9 @@ trait smsManager{
         $to_number = substr($to, 1);
         $api_url = "https://sms.arkesel.com/sms/api?action=send-sms&";
         $endpoint = $api_url.'api_key='.$crendentials->api_key.'&to='.$to_number.'&from='.$crendentials->sender_id.'&sms='.urlencode($message);
-    
-     
-       $curl = curl_init();
+
+
+        $curl = curl_init();
         curl_setopt_array($curl, array(
         CURLOPT_URL => $endpoint,
         CURLOPT_RETURNTRANSFER => true,
@@ -158,7 +152,6 @@ trait smsManager{
                 'to'      => $to,
                 'message' => $message
             ]);
-            \Log::info(json_encode($result));
             return $result;
         }catch(\Exception $e) {
             return response()->json(['data' => $e->getMessage()]);
@@ -173,11 +166,10 @@ trait smsManager{
             $response = $client->sms()->send(
                 new \Vonage\SMS\Message\SMS($to, BRAND_NAME, $message)
             );
-            
+
             $resmessage = $response->current();
-            
+
             if ($resmessage->getStatus() == 0) {
-                Log::info("Vonage The message was sent successfully");
                 return "The message was sent successfully\n";
             } else {
                 return "The message failed with status: " . $resmessage->getStatus() . "\n";
@@ -211,19 +203,36 @@ trait smsManager{
             }
 
             $result = curl_exec($curl);
-            Log::info("SMS Partner");
-            Log::info($result);
             if ($result === false)
             return curl_error($curl);
             else
                 curl_close($curl);
 
             return $result;
-            
-           
+
+
         }catch(\Exception $e) {
             return response()->json(['data' => $e->getMessage()]);
         }
     }
+
+
+    public function ethiopia($to, $message, $crendentials){
+        $to_number = substr($to, 1);
+        try{
+            $apiurl = 'http://197.156.70.196:9095/api/send_sms';
+            $rawData = json_encode([
+                    "username" => $crendentials->sms_username,
+                    "password" => $crendentials->sms_password,
+                    "to"=> $to_number,
+                    "text"=> $message,
+            ]);
+            $response = Http::withBody($rawData, 'application/json')->post($apiurl);
+            return $response;
+        }catch(\Exception $e) {
+            return response()->json(['data' => $e->getMessage()]);
+        }
+    }
+
 
 }

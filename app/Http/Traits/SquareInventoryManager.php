@@ -202,7 +202,6 @@ trait SquareInventoryManager{
           {
             DB::rollback();
             $errors = $api_response->getErrors();
-            Log::info($errors);
             return response()->json([
               'status'  => 'error',
               'result'  => '',
@@ -224,7 +223,6 @@ trait SquareInventoryManager{
       catch (ApiException $e) 
       {
         DB::rollback();
-        Log::info($e->getMessage());
         return response()->json([
           'status'  => 'error',
           'result'  => [],
@@ -325,7 +323,6 @@ trait SquareInventoryManager{
           } else {
               DB::rollback();
               $errors = $api_response->getErrors();
-              Log::info($errors);
               return response()->json([
                 'status'  => 'error',
                 'result'  => '',
@@ -398,7 +395,6 @@ trait SquareInventoryManager{
         }
       } else {
           $errors = $api_response->getErrors();
-          Log::info($errors);
           return response()->json([
             'status'  => 'error',
             'result'  => '',
@@ -431,7 +427,6 @@ trait SquareInventoryManager{
           ]);
       } else {
           $errors = $api_response->getErrors();
-          Log::info($errors);
           return response()->json([
             'status'  => 'error',
             'result'  => '',
@@ -480,7 +475,6 @@ trait SquareInventoryManager{
           ]);
       } else {
           $errors = $api_response->getErrors();
-          Log::info($errors);
           return response()->json([
             'status'  => 'error',
             'result'  => '',
@@ -541,7 +535,8 @@ trait SquareInventoryManager{
       $body = new \Square\Models\SearchCatalogObjectsRequest();
       $body->setObjectTypes($object_types);
       $body->setIncludeDeletedObjects(true);
-      $body->setBeginTime(Carbon::parse($last_begin_timestamp->created_at)->toIso8601ZuluString());
+      $last_timestamp = (!empty($last_begin_timestamp) && isset($last_begin_timestamp->created_at)) ? Carbon::parse($last_begin_timestamp->created_at)->toIso8601ZuluString() : Carbon::now()->subDays(1)->toIso8601ZuluString();
+      $body->setBeginTime($last_timestamp);
 
       $api_response = $client->getCatalogApi()->searchCatalogObjects($body);
       if ($api_response->isSuccess()) {

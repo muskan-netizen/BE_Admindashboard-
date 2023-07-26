@@ -143,7 +143,7 @@
                                                             </td>
                                                             <td><a href="javascript:void(0)" class="editSubscriptionPlanBtn" data-id="{{$plan->slug}}">{{$plan->title}}</a></td>
                                                             <td>{{$plan->Description}}</td>
-                                                            <td>${{decimal_format($plan->price)}}</td>
+                                                            <td>{{ isset($clientCurrency->currency)?$clientCurrency->currency->symbol:'$' }}{{decimal_format($plan->price)}}</td>
                                                             <td>{{__($plan->features)}}</td>
                                                             <td>{{__(ucfirst($plan->frequency))}}</td>
                                                             <td>
@@ -317,6 +317,14 @@
                                         <input class="form-control" type="number" name="price" min="0" required="required">
                                     </div>
                                 </div>
+                                @if(@getAdditionalPreference(['is_show_vendor_on_subcription'])['is_show_vendor_on_subcription'] == 1)
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="">{{ __("Order Count") }}</label>
+                                        <input class="form-control" type="number" name="order_count" min="0" required="required">
+                                    </div>
+                                </div>
+                                @endif
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="">{{ __("Frequency") }}</label>

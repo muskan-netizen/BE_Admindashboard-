@@ -86,9 +86,12 @@
         if (method == 4) {
             $("#subscription_payment_methods .stripe_element_wrapper").removeClass('d-none');
             $("#subscription_payment_methods .plugnpay_element_wrapper").addClass('d-none');
-        }
-        } else if(method == 49){
+        }else if(method == 49){
             $("#subscription_payment_methods .plugnpay_element_wrapper").removeClass('d-none');
+            $("#subscription_payment_methods .stripe_element_wrapper").addClass('d-none');
+        }
+        else if(method == 58){
+            $("#subscription_payment_methods .powertrans_element_wrapper").removeClass('d-none');
             $("#subscription_payment_methods .stripe_element_wrapper").addClass('d-none');
         }
         else {
@@ -117,7 +120,7 @@
                         success: function(response) {
                             if (response.status == "Success") {
                                 $("#subscription_payment #subscription_title").html(response.sub_plan.title);
-                                $("#subscription_payment #subscription_price").html(currencySymbol + response.sub_plan.price);
+                                $("#subscription_payment #subscription_price").html(currencySymbol +NumberFormatHelper.formatPrice(response.sub_plan.price));
                                 $("#subscription_payment #subscription_frequency").html(response.sub_plan.frequency);
                                 $("#subscription_payment #features_list").html(response.sub_plan.features);
                                 $("#subscription_payment #subscription_id").val(sub_id);

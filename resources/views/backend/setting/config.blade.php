@@ -1,4 +1,3 @@
-
 @extends('layouts.vertical', ['demo' => 'creative', 'title' => 'Configurations'])
 @section('css')
 @endsection
@@ -259,169 +258,20 @@
             </div>
         </div>
 
-        {{-- @if ($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry')
-        <div class="row">
-            @if ($client_preference_detail->business_type != 'taxi')
-                <div class="col-lg-4 col-md-6 mb-3">
-                    <div class="row h-100">
-                        <div class="col-12">
-                            <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
-                                @csrf
-                                <!-- Hyperlocal start -->
-                                <div class="card-box h-100">
-                                    <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <h4 class="header-title mb-0">{{ __('Hyperlocal') }}</h4>
-                                        <button class="btn btn-info d-block" type="submit"> {{ __('Save') }} </button>
-                                    </div>
-                                    <p class="sub-header">
-                                        {{ __('Enable location based visibility of Vendors and set the Default Location.') }}
-                                    </p>
-                                    <input type="hidden" name="hyperlocals" id="hyperlocals" value="1">
-
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <div class="form-group mb-0">
-                                                <label for="is_hyperlocal" class="mr-3">{{ __('Enable') }}</label>
-                                                <input type="checkbox" data-plugin="switchery" name="is_hyperlocal"
-                                                    id="is_hyperlocal" class="form-control" data-color="#43bee1"
-                                                    @if (isset($preference) && $preference->is_hyperlocal == '1') checked @endif>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-12 mt-3 disableHyperLocal"
-                                                    style="{{ isset($preference) && $preference->is_hyperlocal == '1' ? '' : 'display:none;' }}">
-                                                    <div class="row">
-                                                        <div class="col-12">
-                                                            <div class="form-group mb-0">
-                                                                <label
-                                                                    for="Default_location_name">{{ __('Default Location') }}</label>
-                                                                <div class="input-group">
-                                                                    <input type="text" name="Default_location_name"
-                                                                        id="Default_location_name"
-                                                                        placeholder="Delhi, India" class="form-control"
-                                                                        value="{{ old('Default_location_name', $preference->Default_location_name ?? '') }}">
-                                                                    <div class="input-group-append">
-                                                                        <button
-                                                                            class="btn btn-xs btn-dark waves-effect waves-light showMap"
-                                                                            type="button" num="add1"> <i
-                                                                                class="mdi mdi-map-marker-radius"></i></button>
-                                                                    </div>
-                                                                </div>
-                                                                @if ($errors->has('Default_location_name'))
-                                                                    <span class="text-danger" role="alert">
-                                                                        <strong>{{ $errors->first('Default_location_name') }}</strong>
-                                                                    </span>
-                                                                @endif
-                                                            </div>
-                                                            <div class="form-group mt-3 mb-0">
-                                                                <label for="Default_latitude">{{ __('Latitude') }}</label>
-                                                                <input type="text" name="Default_latitude"
-                                                                    id="Default_latitude" placeholder="24.9876755"
-                                                                    class="form-control"
-                                                                    value="{{ old('Default_latitude', $preference->Default_latitude ?? '') }}">
-                                                                @if ($errors->has('Default_latitude'))
-                                                                    <span class="text-danger" role="alert">
-                                                                        <strong>{{ $errors->first('Default_latitude') }}</strong>
-                                                                    </span>
-                                                                @endif
-                                                            </div>
-                                                            <div class="form-group mt-3 mb-0">
-                                                                <label
-                                                                    for="Default_longitude">{{ __('Longitude') }}</label>
-                                                                <input type="text" name="Default_longitude"
-                                                                    id="Default_longitude" placeholder="11.9871371723"
-                                                                    class="form-control"
-                                                                    value="{{ old('Default_longitude', $preference->Default_longitude ?? '') }}">
-                                                                @if ($errors->has('Default_longitude'))
-                                                                    <span class="text-danger" role="alert">
-                                                                        <strong>{{ $errors->first('Default_longitude') }}</strong>
-                                                                    </span>
-                                                                @endif
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div><!-- Hyperlocal end -->
-                            </form>
+        @if ($client_preference_detail->enable_inventory_service == 1)
+            <div class="col-lg-3 col-md-6 mb-3">
+                <!-- Order Panel section start -->
+                <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
+                    @csrf
+                    <div class="card-box h-100">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h4 class="header-title mb-0">{{ __('Inventory Service') }}</h4>
+                            <button class="btn btn-info d-block" type="submit" name="need_inventory_service_submit_btn"
+                                value="1"> {{ __('Save') }} </button>
                         </div>
-                    </div>
-                </div>
-            @endif
-
-            {{-- @if ($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'food_grocery_ecommerce' && $client_preference_detail->business_type != 'laundry')
-
-            <div class="col-lg-4 col-md-6 mb-3">
-               <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
-      @csrf
-      <!-- On Demand Services section start -->
-      <div class="card-box h-100">
-         <div class="d-flex align-items-center justify-content-between mb-2">
-            <h4 class="header-title mb-0">{{ __('On Demand Services') }}</h4>
-            <button class="btn btn-info d-block" type="submit" name="need_dispacher_home_other_service_submit_btn" value="1"> {{ __("Save") }} </button>
-         </div>
-         <p class="sub-header">{{ __('Offer On Demand Services with Dispatcher.') }}</p>
-         <div class="row">
-            <div class="col-12">
-               <div class="form-group mb-0">
-                  <div class="form-group mb-0 switchery-demo">
-                     <label for="need_dispacher_home_other_service" class="mr-3">{{ __('Enable') }}</label>
-                     <input type="checkbox" data-plugin="switchery" name="need_dispacher_home_other_service" id="need_dispacher_home_other_service" class="form-control" data-color="#43bee1" @if (isset($preference) && $preference->need_dispacher_home_other_service == '1') checked='checked' @endif>
-                  </div>
-               </div>
-
-               <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
-                  <label for="dispacher_home_other_service_key_url">{{ __('Dispatcher URL') }} *(https://www.abc.com)</label>
-                  <input type="text" name="dispacher_home_other_service_key_url" id="dispacher_home_other_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('dispacher_home_other_service_key_url', $preference->dispacher_home_other_service_key_url ?? '')}}">
-                  @if ($errors->has('dispacher_home_other_service_key_url'))
-                  <span class="text-danger" role="alert">
-                     <strong>{{ $errors->first('dispacher_home_other_service_key_url') }}</strong>
-                  </span>
-                  @endif
-               </div>
-
-               <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
-                  <label for="dispacher_home_other_service_key_code">{{ __('Dispatcher Short code') }}</label>
-                  <input type="text" name="dispacher_home_other_service_key_code" id="dispacher_home_other_service_key_code" placeholder="" class="form-control" value="{{ old('dispacher_home_other_service_key_code', $preference->dispacher_home_other_service_key_code ?? '')}}">
-                  @if ($errors->has('dispacher_home_other_service_key_code'))
-                  <span class="text-danger" role="alert">
-                     <strong>{{ $errors->first('dispacher_home_other_service_key_code') }}</strong>
-                  </span>
-                  @endif
-               </div>
-
-               <div class="form-group mt-3 mb-0 home_other_dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_home_other_service == '1')) ? '' : 'display:none;'}}">
-                  <label for="dispacher_home_other_service_key">{{ __('Dispatcher API key') }}</label>
-                  <input type="text" name="dispacher_home_other_service_key" id="dispacher_home_other_service_key" placeholder="" class="form-control" value="{{ old('dispacher_home_other_service_key', $preference->dispacher_home_other_service_key ?? '')}}">
-                  @if ($errors->has('dispacher_home_other_service_key'))
-                  <span class="text-danger" role="alert">
-                     <strong>{{ $errors->first('dispacher_home_other_service_key') }}</strong>
-                  </span>
-                  @endif
-               </div>
-
-            </div>
-         </div>
-      </div><!-- On Demand Services section end -->
-      </form>
-   </div>
-   @endif --}}
-
-            @if ($client_preference_detail->enable_inventory_service == 1)
-                <div class="col-lg-3 col-md-6 mb-3">
-                    <!-- Order Panel section start -->
-                    <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
-                        @csrf
-                        <div class="card-box h-100">
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <h4 class="header-title mb-0">{{ __('Inventory Service') }}</h4>
-                                <button class="btn btn-info d-block" type="submit" name="need_inventory_service_submit_btn"
-                                    value="1"> {{ __('Save') }} </button>
-                            </div>
-                            <p class="sub-header">{{ __('Offer Inventory Services with Order.') }}</p>
-                            <div class="row">
-                                <div class="col-12">
+                        <p class="sub-header">{{ __('Offer Inventory Services with Order.') }}</p>
+                        <div class="row">
+                            <div class="col-12">
                                 <div class="form-group mb-0">
                                     <div class="form-group mb-0 switchery-demo">
                                         <label for="need_inventory_service" class="mr-3">{{ __('Enable') }}</label>
@@ -476,154 +326,9 @@
                             </div>
 
                         </div><!-- On Demand Services section end -->
-                    </form>
-                </div>
-            @endif
-
-            {{-- @if ($client_preference_detail->business_type == 'taxi' || $client_preference_detail->business_type == '' || $client_preference_detail->business_type == 'super_app')
-
-
-            <div class="col-lg-3 col-md-6 mb-3">
-               <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
-   @csrf
-   <!-- Pickup & Delivery section start -->
-   <div class="card-box h-100">
-      <div class="d-flex align-items-center justify-content-between mb-2">
-         <h4 class="header-title mb-0">{{ __("Pickup & Delivery") }}</h4>
-         <button class="btn btn-info d-block" type="submit" name="need_dispacher_ride_submit_btn" value="1"> {{ __("Save") }} </button>
-      </div>
-      <p class="sub-header">{{ __("Offer Pickup & Delivery with Dispatcher.") }}</p>
-      <div class="row">
-         <div class="col-12">
-            <div class="form-group mb-0">
-               <div class="form-group mb-0 switchery-demo">
-                  <label for="need_dispacher_ride" class="mr-3">{{ __("Enable") }}</label>
-                  <input type="checkbox" data-plugin="switchery" name="need_dispacher_ride" id="need_dispacher_ride" class="form-control" data-color="#43bee1" @if (isset($preference) && $preference->need_dispacher_ride == '1') checked='checked' @endif>
-               </div>
+                </form>
             </div>
-
-            <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
-               <label for="pickup_delivery_service_key_url">{{ __("Dispatcher URL") }} * ( https://www.abc.com )</label>
-               <input type="text" name="pickup_delivery_service_key_url" id="pickup_delivery_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('pickup_delivery_service_key_url', $preference->pickup_delivery_service_key_url ?? '')}}">
-               @if ($errors->has('pickup_delivery_service_key_url'))
-               <span class="text-danger" role="alert">
-                  <strong>{{ $errors->first('pickup_delivery_service_key_url') }}</strong>
-               </span>
-               @endif
-            </div>
-
-            <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
-               <label for="delivery_service_key_code">{{ __("Dispatcher Short code") }}</label>
-               <input type="text" name="pickup_delivery_service_key_code" id="pickup_delivery_service_key_code" placeholder="" class="form-control" value="{{ old('pickup_delivery_service_key_code', $preference->pickup_delivery_service_key_code ?? '')}}">
-               @if ($errors->has('pickup_delivery_service_key_code'))
-               <span class="text-danger" role="alert">
-                  <strong>{{ $errors->first('pickup_delivery_service_key_code') }}</strong>
-               </span>
-               @endif
-            </div>
-
-            <div class="form-group mt-3 mb-0 dispatcherFields" style="{{((isset($preference) && $preference->need_dispacher_ride == '1')) ? '' : 'display:none;'}}">
-               <label for="pickup_delivery_service_key">{{ __("Dispatcher API key") }}</label>
-               <input type="text" name="pickup_delivery_service_key" id="pickup_delivery_service_key" placeholder="" class="form-control" value="{{ old('pickup_delivery_service_key', $preference->pickup_delivery_service_key ?? '')}}">
-               @if ($errors->has('pickup_delivery_service_key'))
-               <span class="text-danger" role="alert">
-                  <strong>{{ $errors->first('pickup_delivery_service_key') }}</strong>
-               </span>
-               @endif
-            </div>
-
-         </div>
-      </div>
-   </div><!-- Pickup & Delivery section end -->
-   </form>
-</div>
-@endif --}}
-
-
-
-        {{-- @if ($client_preference_detail->business_type == 'laundry')
-            <div class="col-lg-3 col-md-6 mb-3">
-               <!-- laundry section start -->
-               <form method="POST" action="{{route('configure.update', Auth::user()->code)}}">
-@csrf
-<div class="card-box h-100">
-   <div class="d-flex align-items-center justify-content-between mb-2">
-      <h4 class="header-title mb-0">{{ __("Laundry") }}</h4>
-      <button class="btn btn-info d-block" type="submit" name="laundry_submit_btn" value="1"> {{ __("Save") }} </button>
-   </div>
-   <p class="sub-header">{{ __("Offer laundry with Dispatcher.") }}</p>
-   <div class="row">
-      <div class="col-12">
-         <div class="form-group mb-0">
-            <div class="form-group mb-0 switchery-demo">
-               <label for="need_laundry_service" class="mr-3">{{ __("Enable") }}</label>
-               <input data-plugin="switchery" name="need_laundry_service" id="need_laundry_service" class="form-control" data-color="#43bee1" type="checkbox" @if (isset($preference) && $preference->need_laundry_service == '1') checked @endif >
-            </div>
-         </div>
-
-         <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{((isset($preference) && $preference->need_laundry_service == '1')) ? '' : 'display:none;'}}">
-            <label for="laundry_service_key_url">{{ __("Dispatcher URL") }} * ( https://www.abc.com )</label>
-            <input type="text" name="laundry_service_key_url" id="laundry_service_key_url" placeholder="https://www.abc.com" class="form-control" value="{{ old('laundry_service_key_url', $preference->laundry_service_key_url ?? '')}}">
-            @if ($errors->has('laundry_service_key_url'))
-            <span class="text-danger" role="alert">
-               <strong>{{ $errors->first('laundry_service_key_url') }}</strong>
-            </span>
-            @endif
-         </div>
-         <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{((isset($preference) && $preference->need_laundry_service == '1')) ? '' : 'display:none;'}}">
-            <label for="laundry_service_key_code">{{ __("Dispatcher Short code") }}</label>
-            <input type="text" name="laundry_service_key_code" id="laundry_service_key_code" placeholder="" class="form-control" value="{{ old('laundry_service_key_code', $preference->laundry_service_key_code ?? '')}}">
-            @if ($errors->has('laundry_service_key_code'))
-            <span class="text-danger" role="alert">
-               <strong>{{ $errors->first('laundry_service_key_code') }}</strong>
-            </span>
-            @endif
-         </div>
-         <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{((isset($preference) && $preference->need_laundry_service == '1')) ? '' : 'display:none;'}}">
-            <label for="laundry_service_key">{{ __("Dispatcher API key") }}</label>
-            <input type="text" name="laundry_service_key" id="laundry_service_key" placeholder="" class="form-control" value="{{ old('laundry_service_key', $preference->laundry_service_key ?? '')}}">
-            @if ($errors->has('laundry_service_key'))
-            <span class="text-danger" role="alert">
-               <strong>{{ $errors->first('laundry_service_key') }}</strong>
-            </span>
-            @endif
-         </div>
-
-         @if ($laundry_teams != null && count($laundry_teams))
-         <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{(isset($preference) && $preference->need_laundry_service == '1') ? '' : 'display: none;'}}" id="laundryPickupTeamListDiv">
-            <div class="form-group">
-               {!! Form::label('title', __('Team Tag For Laundry Pickup'),['class' => 'control-label']) !!}
-               <select class="form-control" id="laundryPickupTeamList" name="laundry_pickup_team" data-toggle="select2">
-                  <option value="0">{{__('Select Team Tag')}}</option>
-                  @foreach ($laundry_teams as $nm)
-                  <option value="{{$nm['name']}}" @if ($preference->laundry_pickup_team == $nm['name']) selected="selected" @endif>{{$nm['name']}}</option>
-                  @endforeach
-
-               </select>
-            </div>
-         </div>
-
-         <div class="form-group mt-3 mb-0 laundryServiceFields" style="{{(isset($preference) && $preference->need_laundry_service == '1') ? '' : 'display: none;'}}" id="laundryDropoffTeamListDiv">
-            <div class="form-group">
-               {!! Form::label('title', __('Team Tag For Laundry Dropoff'),['class' => 'control-label']) !!}
-               <select class="form-control" id="laundryDropoffTeamList" name="laundry_dropoff_team" data-toggle="select2">
-                  <option value="0">{{__('Select Team Tag')}}</option>
-                  @foreach ($laundry_teams as $nm)
-                  <option value="{{$nm['name']}}" @if ($preference->laundry_dropoff_team == $nm['name']) selected="selected" @endif>{{$nm['name']}}</option>
-                  @endforeach
-
-               </select>
-            </div>
-         </div>
-         @endif
-
-
-      </div>
-   </div>
-</div>
-</form>
-</div>
-@endif --}}
+        @endif
 
 
     </div>
@@ -636,7 +341,7 @@
             </div><!-- Social Logins title end -->
         </div>
     </div>
-    
+
     <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
         <input type="hidden" name="social_login" id="social_login" value="1">
         @csrf
@@ -649,7 +354,8 @@
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="fb_login" class="d-flex align-items-center justify-content-between">
                                     <h5 class="social_head"><i class="fab fa-facebook-f"></i>
-                                        <span>{{ __('Facebook') }}</span></h5>
+                                        <span>{{ __('Facebook') }}</span>
+                                    </h5>
                                     <button class="btn btn-info btn-block save_btn" type="submit">
                                         {{ __('Save') }} </button>
                                 </label>
@@ -712,13 +418,14 @@
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="twitter_login" class="d-flex align-items-center justify-content-between">
                                     <h5 class="social_head"><i class="fab fa-twitter"></i>
-                                        <span>{{ __('Twitter') }}</span></h5>
+                                        <span>{{ __('Twitter') }}</span>
+                                    </h5>
                                     <button class="btn btn-info btn-block save_btn" type="submit">
                                         {{ __('Save') }} </button>
                                 </label>
                                 <label for="" class="mr-3">{{ __('Enable') }}</label>
-                                <input type="checkbox" data-plugin="switchery" name="twitter_login"
-                                    id="twitter_login" class="form-control" data-color="#43bee1"
+                                <input type="checkbox" data-plugin="switchery" name="twitter_login" id="twitter_login"
+                                    class="form-control" data-color="#43bee1"
                                     @if (isset($preference) && $preference->twitter_login == '1') checked='checked' @endif>
                             </div>
                         </div>
@@ -755,8 +462,8 @@
                         <div class="col-12">
                             <div class="form-group mb-0">
                                 <label for="twitter_client_url">{{ __('Twitter Redirect URL') }}</label>
-                                <input type="text" name="twitter_client_url" id="twitter_client_url"
-                                    placeholder="" class="form-control"
+                                <input type="text" name="twitter_client_url" id="twitter_client_url" placeholder=""
+                                    class="form-control"
                                     value="{{ old('twitter_client_url', $preference->twitter_client_url ?? '') }}">
                                 @if ($errors->has('twitter_client_url'))
                                     <span class="text-danger" role="alert">
@@ -776,7 +483,8 @@
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="google_login" class="d-flex align-items-center justify-content-between">
                                     <h5 class="social_head"><i class="fab fa-google"></i>
-                                        <span>{{ __('Google') }}</span></h5>
+                                        <span>{{ __('Google') }}</span>
+                                    </h5>
                                     <button class="btn btn-info btn-block save_btn" type="submit">
                                         {{ __('Save') }} </button>
                                 </label>
@@ -840,7 +548,8 @@
                             <div class="form-group mb-0 switchery-demo">
                                 <label for="apple_login" class="d-flex align-items-center justify-content-between">
                                     <h5 class="social_head"><i class="fab fa-apple"></i>
-                                        <span>{{ __('Apple') }}</span></h5>
+                                        <span>{{ __('Apple') }}</span>
+                                    </h5>
                                     <button class="btn btn-info btn-block save_btn" type="submit">
                                         {{ __('Save') }} </button>
                                 </label>
@@ -979,6 +688,15 @@
                         <button class="btn btn-info d-block" type="submit"> {{ __('Save') }} </button>
                     </div>
                     <p class="sub-header">{{ __("View and update your SMS Gateway and it's API keys.") }}</p>
+                    <div class="d-flex align-items-center justify-content-between mt-3 mb-2">
+                        <h5 class="font-weight-normal m-0">{{ __('Send Static Otp ') }}</h5>
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="cancelOrderCustomSwitch_static_otp"
+                                name="static_otp"
+                                {{ isset($sms_crendential->static_otp) && $sms_crendential->static_otp == 1 ? 'checked' : '' }}>
+                            <label class="custom-control-label" for="cancelOrderCustomSwitch_static_otp"></label>
+                        </div>
+                    </div>
                     <div class="row mb-0">
                         <div class="col-12">
                             <div class="form-group mb-2">
@@ -1188,6 +906,71 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- For Ethiopia -->
+                        <div class="sms_fields row mx-0" id="ethiopia_fields"
+                            style="display : {{ $preference->sms_provider == 9 ? 'flex' : 'none' }};">
+                            <div class="col-12">
+                                <span
+                                    class="text-danger">{{ __('Only Available For +251, +09 And +9 Country Code') }}</span>
+                                <div class="form-group mb-2">
+                                    <label for="sms_username">{{ __('Username') }}</label>
+                                    <input type="text" name="sms_username" id="sms_username" placeholder=""
+                                        class="form-control"
+                                        value="{{ old('sms_username', $sms_crendential->sms_username ?? '') }}">
+                                    @if ($errors->has('sms_username'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('sms_username') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="sms_secret">{{ __('Password') }}</label>
+                                    <input type="password" name="sms_password" id="sms_password" placeholder=""
+                                        class="form-control"
+                                        value="{{ old('sms_password', $sms_crendential->sms_password ?? '') }}">
+                                    @if ($errors->has('sms_password'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('sms_password') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- For afrTalk -->
+                        <div class="row sms_fields mx-0" id="afrTalk_fields"
+                            style="display : {{ $preference->sms_provider == 6 ? 'flex' : 'none' }};">
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="afrTalk_api_key">{{ __('API Key') }}</label>
+                                    <input type="text" name="afrTalk_api_key" id="afrTalk_api_key" placeholder=""
+                                        class="form-control"
+                                        value="{{ old('afrTalk_api_key', $sms_crendential->api_key ?? '') }}">
+                                    @if ($errors->has('afrTalk_api_key'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('afrTalk_api_key') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group mb-2">
+                                    <label for="afrTalk_sender_id">{{ __('Sender ID') }}</label>
+                                    <input type="text" name="afrTalk_sender_id" id="afrTalk_sender_id" placeholder=""
+                                        class="form-control"
+                                        value="{{ old('afrTalk_sender_id', $sms_crendential->sender_id ?? '') }}">
+                                    @if ($errors->has('afrTalk_sender_id'))
+                                        <span class="text-danger" role="alert">
+                                            <strong>{{ $errors->first('afrTalk_sender_id') }}</strong>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </form><!-- SMS Configuration end -->
@@ -1536,8 +1319,8 @@
                         <div class="col-12">
                             <div class="form-group mb-2 mt-2">
                                 <label for="sos_police_contact"></label>{{ __('Police Number') }}</label>
-                                <input type="text" name="sos_police_contact" id="sos_police_contact" placeholder=""
-                                    class="form-control"
+                                <input type="text" name="sos_police_contact" id="sos_police_contact"
+                                    placeholder="" class="form-control"
                                     value="{{ old('twitter_client_id', $preference->sos_police_contact ?? '') }}">
                                 @if ($errors->has('sos_police_contact'))
                                     <span class="text-danger" role="alert">
@@ -1568,7 +1351,7 @@
 
     </div>
 
-   
+
     <div class="row">
         {{-- hubspot form --}}
         <div class="col-xl-4 col-lg-4 mb-3">
@@ -1591,7 +1374,8 @@
                                         <span>{{ __('Hubspot') }}</span>
                                     </h5>
 
-                                    <button class="btn btn-info btn-block save_btn" name="hubspot_submit" type="submit">
+                                    <button class="btn btn-info btn-block save_btn" name="hubspot_submit"
+                                        type="submit">
                                         {{ __('Save') }} </button>
                                 </label>
                                 <label for="" class="mr-3">{{ __('Enable') }}</label>
@@ -1668,62 +1452,60 @@
                     </div>
 
                     <hr>
-                        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                            <label for="add_to_cart_btn_switch"
-                                class="mr-2 mb-0">{{ __('Add to Cart') }}<small
-                                    class="d-block pr-5">{{ __('Enable to allow customers to add to cart.') }}</small></label>
-                            <span> <input type="checkbox" data-plugin="switchery"
-                                    name="add_to_cart_btn_switch" id="add_to_cart_btn_switch"
-                                    class="form-control checkbox_change" data-className="add_to_cart_btn"
-                                    data-color="#43bee1"
-                                    @if ($getAdditionalPreference['add_to_cart_btn'] == 1) checked='checked' @endif>
-                            </span>
-                            <input type="hidden"
-                                @if ($getAdditionalPreference['add_to_cart_btn'] == 1) value="1" @else value="0" @endif
-                                name="add_to_cart_btn" id="add_to_cart_btn" />
-                        </div>
-                        
-                        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                            <label for="chat_button_switch" class="mr-2 mb-0">{{ __('Chat Button') }}<small
-                                    class="d-block pr-5">{{ __('Enable to allow customers to chat button.') }}</small></label>
-                            <span> <input type="checkbox" data-plugin="switchery" name="chat_button_switch"
-                                    id="chat_button_switch" class="form-control checkbox_change"
-                                    data-className="chat_button" data-color="#43bee1"
-                                    @if ($getAdditionalPreference['chat_button'] == 1) checked='checked' @endif>
-                            </span>
-                            <input type="hidden"
-                                @if ($getAdditionalPreference['chat_button'] == 1) value="1" @else value="0" @endif
-                                name="chat_button" id="chat_button" />
-                        </div>
-                        
-                        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                            <label for="call_button_switch" class="mr-2 mb-0">{{ __('Call Button') }}<small
-                                    class="d-block pr-5">{{ __('Enable to allow customers to chat button.') }}</small></label>
-                            <span> <input type="checkbox" data-plugin="switchery" name="call_button_switch"
-                                    id="call_button_switch" class="form-control checkbox_change"
-                                    data-className="call_button" data-color="#43bee1"
-                                    @if ($getAdditionalPreference['call_button'] == 1) checked='checked' @endif>
-                            </span>
-                            <input type="hidden"
-                                @if ($getAdditionalPreference['call_button'] == 1) value="1" @else value="0" @endif
-                                name="call_button" id="call_button" />
-                        </div>
+                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                        <label for="add_to_cart_btn_switch" class="mr-2 mb-0">{{ __('Add to Cart') }}<small
+                                class="d-block pr-5">{{ __('Enable to allow customers to add to cart.') }}</small></label>
+                        <span> <input type="checkbox" data-plugin="switchery" name="add_to_cart_btn_switch"
+                                id="add_to_cart_btn_switch" class="form-control checkbox_change"
+                                data-className="add_to_cart_btn" data-color="#43bee1"
+                                @if ($getAdditionalPreference['add_to_cart_btn'] == 1) checked='checked' @endif>
+                        </span>
+                        <input type="hidden" @if ($getAdditionalPreference['add_to_cart_btn'] == 1) value="1" @else value="0" @endif
+                            name="add_to_cart_btn" id="add_to_cart_btn" />
+                    </div>
 
-                        <hr />
+                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                        <label for="chat_button_switch" class="mr-2 mb-0">{{ __('Chat Button') }}<small
+                                class="d-block pr-5">{{ __('Enable to allow customers to chat button.') }}</small></label>
+                        <span> <input type="checkbox" data-plugin="switchery" name="chat_button_switch"
+                                id="chat_button_switch" class="form-control checkbox_change"
+                                data-className="chat_button" data-color="#43bee1"
+                                @if ($getAdditionalPreference['chat_button'] == 1) checked='checked' @endif>
+                        </span>
+                        <input type="hidden" @if ($getAdditionalPreference['chat_button'] == 1) value="1" @else value="0" @endif
+                            name="chat_button" id="chat_button" />
+                    </div>
+
+                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                        <label for="call_button_switch" class="mr-2 mb-0">{{ __('Call Button') }}<small
+                                class="d-block pr-5">{{ __('Enable to allow customers to chat button.') }}</small></label>
+                        <span> <input type="checkbox" data-plugin="switchery" name="call_button_switch"
+                                id="call_button_switch" class="form-control checkbox_change"
+                                data-className="call_button" data-color="#43bee1"
+                                @if ($getAdditionalPreference['call_button'] == 1) checked='checked' @endif>
+                        </span>
+                        <input type="hidden" @if ($getAdditionalPreference['call_button'] == 1) value="1" @else value="0" @endif
+                            name="call_button" id="call_button" />
+                    </div>
+
+                    <hr />
                     <div class="row hub_row alCustomToggleColor"
                         style="{{ isset($getAdditionalPreference['is_free_delivery_by_roles']) && $getAdditionalPreference['is_free_delivery_by_roles'] == 1 ? '' : 'display:none;' }}">
                         <div class="col-12">
-                            <label class="mr-2 mb-0">{{__('Apply free delivery to these roles on all products')}}</label>
-                            <select name="apply_free_del[]" class="form-control select2-multiple" id="apply_free_delivery" multiple="multiple">
-                                @foreach($allRoles as $allRole)
-                                {{-- $getAdditionalPreference['is_free_delivery_by_roles'] --}}
-                                    <option value="{{$allRole->id}}" @if (in_array($allRole->id, $productDeliveryFeeByRole)) selected @endif >{{$allRole->name}}</option>
+                            <label
+                                class="mr-2 mb-0">{{ __('Apply free delivery to these roles on all products') }}</label>
+                            <select name="apply_free_del[]" class="form-control select2-multiple"
+                                id="apply_free_delivery" multiple="multiple">
+                                @foreach ($allRoles as $allRole)
+                                    {{-- $getAdditionalPreference['is_free_delivery_by_roles'] --}}
+                                    <option value="{{ $allRole->id }}"
+                                        @if (in_array($allRole->id, $productDeliveryFeeByRole)) selected @endif>{{ $allRole->name }}</option>
                                 @endforeach
                             </select>
 
                         </div>
                     </div>
-                       
+
 
 
                 </div><!-- HubSpot card end -->
@@ -1734,7 +1516,9 @@
         <div class="col-xl-4 col-lg-4 mb-3">
             <!-- Social Logins title start -->
             <div class="page-title-box">
-                <h4 class="page-title text-uppercase">{{ __('Edit Order, Instant Booking and Bid & Ride') }} <!-- {{ __('Post Pay & Edit Order') }} --></h4>
+                <h4 class="page-title text-uppercase">{{ __('Edit Order, Instant Booking and Bid & Ride') }}
+                    <!-- {{ __('Post Pay & Edit Order') }} -->
+                </h4>
             </div><!-- Social Logins title end -->
 
             <form method="POST" action="{{ route('additional.update') }}">
@@ -1747,7 +1531,8 @@
                         <div class="col-12">
                             <div class="form-group mb-0 switchery-demo">
                                 <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <h4 class="header-title text-uppercase mb-0">{{ __('Edit Order') }}<!-- {{ __('Post Pay & Edit Order') }} -->
+                                    <h4 class="header-title text-uppercase mb-0">{{ __('Edit Order') }}
+                                        <!-- {{ __('Post Pay & Edit Order') }} -->
                                     </h4>
                                     <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
                                     </button>
@@ -1757,14 +1542,14 @@
                                     <!-- {{ __('Post Pay allows customers to pay after placing order. Edit order facility allows customer to edit till timelimit does not exceeded and payment not done.') }} -->
                                 </p>
                                 <!-- <label for="" class="mr-3">{{ __('Post Pay Enable') }}</label>
-                                <input type="checkbox" data-plugin="switchery" name="is_postpay_enable_switch"
-                                    id="is_postpay_enable_switch" class="form-control checkbox_change"
-                                    data-className="is_postpay_enable" data-color="#43bee1"
-                                    @if ($getAdditionalPreference['is_postpay_enable'] == 1) checked='checked' @endif>
-                                <input type="hidden"
-                                    @if (@$getAdditionalPreference['is_postpay_enable'] == 1) value="1" @else value="0" @endif
-                                    name="is_postpay_enable" id="is_postpay_enable" /> -->
-                            </div>  
+                                    <input type="checkbox" data-plugin="switchery" name="is_postpay_enable_switch"
+                                        id="is_postpay_enable_switch" class="form-control checkbox_change"
+                                        data-className="is_postpay_enable" data-color="#43bee1"
+                                        @if ($getAdditionalPreference['is_postpay_enable'] == 1) checked='checked' @endif>
+                                    <input type="hidden"
+                                        @if (@$getAdditionalPreference['is_postpay_enable'] == 1) value="1" @else value="0" @endif
+                                        name="is_postpay_enable" id="is_postpay_enable" /> -->
+                            </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group mb-0 d-flex switchery-demo">
@@ -1773,27 +1558,29 @@
                                     id="is_order_edit_enable_switch" class="form-control checkbox_change"
                                     data-className="is_order_edit_enable" data-color="#43bee1"
                                     @if (@$getAdditionalPreference['is_order_edit_enable'] == 1) checked='checked' @endif>
-                                <input type="hidden"
-                                    @if (@$getAdditionalPreference['is_order_edit_enable'] == 1) value="1" @else value="0" @endif
+                                <input type="hidden" @if (@$getAdditionalPreference['is_order_edit_enable'] == 1) value="1" @else value="0" @endif
                                     name="is_order_edit_enable" id="is_order_edit_enable" />
-                            </div>  
-                        
-                            <div class="row mt-2" id="edit_order_time_limit_div" style="display:@if (@$getAdditionalPreference['is_order_edit_enable'] == 1) @else none @endif;">
+                            </div>
+
+                            <div class="row mt-2" id="edit_order_time_limit_div"
+                                style="display:@if (@$getAdditionalPreference['is_order_edit_enable'] == 1) @else none @endif;">
                                 <div class="col-8">
-                                    <label for="" class="mr-3">{{ __('Disable Order Edit before (Hours)') }}</label>
+                                    <label for=""
+                                        class="mr-3">{{ __('Disable Order Edit before (Hours)') }}</label>
                                 </div>
                                 <div class="col-4">
                                     <input type="number" name="order_edit_before_hours" id="order_edit_before_hours"
                                         placeholder="" class="form-control"
                                         value="{{ old('order_edit_before_hours', @$getAdditionalPreference['order_edit_before_hours'] ?? '') }}">
                                 </div>
-                                <hr/>
+                                <hr />
                             </div>
                         </div>
 
                         <div class="col-12 mt-2">
                             <div class="form-group mt-2 d-flex switchery-demo">
-                                <label for="" class="mr-3">{{ __('One Push Button For Booking (Pick & Drop) Enable') }}</label>
+                                <label for=""
+                                    class="mr-3">{{ __('One Push Button For Booking (Pick & Drop) Enable') }}</label>
                                 <input type="checkbox" data-plugin="switchery" name="is_one_push_book_enable_switch"
                                     id="is_one_push_book_enable_switch" class="form-control checkbox_change"
                                     data-className="is_one_push_book_enable" data-color="#43bee1"
@@ -1827,7 +1614,7 @@
                         </div>
                     </div>
                 </div>
-            
+
             </form>
         </div><!-- Post Pay Card end -->
     </div>
@@ -1843,7 +1630,8 @@
 
             <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
                 @csrf
-                <input type="hidden" name="third_party_accounting_config" id="third_party_accounting_config" value="1">
+                <input type="hidden" name="third_party_accounting_config" id="third_party_accounting_config"
+                    value="1">
                 <!-- HubSpot card start -->
                 <div class="card-box h-100">
                     <div class="row">
@@ -1862,7 +1650,8 @@
                                     {{ __('Enable to use third party Accounting.') }}
                                 </p>
                                 <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                    <label for="third_party_accounting" class="mr-2 mb-0">{{ __('Third party Accounting') }}</label>
+                                    <label for="third_party_accounting"
+                                        class="mr-2 mb-0">{{ __('Third party Accounting') }}</label>
                                     <span> <input type="checkbox" data-plugin="switchery"
                                             name="third_party_accounting" id="third_party_accounting"
                                             class="form-control" data-color="#43bee1"
@@ -1871,35 +1660,45 @@
                                 </div>
                             </div>
 
-                            <div class="form-group mb-0" id="xero_config_div" style="@if (isset($preference) && $preference->third_party_accounting == 1) '' @else display:none; @endif">
-                                <hr/>
+                            <div class="form-group mb-0" id="xero_config_div"
+                                style="@if (isset($preference) && $preference->third_party_accounting == 1) '' @else display:none; @endif">
+                                <hr />
                                 @php
-                                    $accounting_status = (isset($accounting) && !empty($accounting)) ? $accounting->status : 0;
-                                    $creds = (isset($accounting) && !empty($accounting)) ? json_decode($accounting->credentials, true) : [];
+                                    $accounting_status = isset($accounting) && !empty($accounting) ? $accounting->status : 0;
+                                    $creds = isset($accounting) && !empty($accounting) ? json_decode($accounting->credentials, true) : [];
                                 @endphp
-                                
+
                                 <div class="row">
                                     <div class="col-12">
-                                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                        <label for="xero_enable_switch" class="mr-3">{{ __("Xero Configuration") }} <br/><small>{{__('View and update your Xero Keys')}}</small></label>
-                                        <input type="checkbox" data-plugin="switchery" name="xero_status" id="xero_enable_switch" class="form-control" data-color="#43bee1" @if(($accounting_status == '1')) checked='checked' @endif>
-                                    </div>
-                                        
-                                        <div class="mt-2 xeroFields" @if( $accounting_status != 1) style="display:none" @endif>
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <div class="form-group mb-2">
-                                                    <label for="xero_client_id">{{ __("Client ID") }}</label>
-                                                    <input type="text" name="xero_client_id" id="xero_client_id" placeholder="" class="form-control" value="{{ old('xero_client_id', $creds->client_id ?? '')}}">
-                                                </div>
-                                            </div>
-                                            <div class="col-12">
-                                                <div class="form-group mb-2">
-                                                    <label for="xero_secret_id">{{ __("Secret ID") }}</label>
-                                                    <input type="text" name="xero_secret_id" id="xero_secret_id" placeholder="" class="form-control" value="{{ old('xero_secret_id', $creds->secret_id ?? '')}}">
-                                                </div>
-                                            </div>
+                                        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                            <label for="xero_enable_switch"
+                                                class="mr-3">{{ __('Xero Configuration') }}
+                                                <br /><small>{{ __('View and update your Xero Keys') }}</small></label>
+                                            <input type="checkbox" data-plugin="switchery" name="xero_status"
+                                                id="xero_enable_switch" class="form-control" data-color="#43bee1"
+                                                @if ($accounting_status == '1') checked='checked' @endif>
                                         </div>
+
+                                        <div class="mt-2 xeroFields"
+                                            @if ($accounting_status != 1) style="display:none" @endif>
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <div class="form-group mb-2">
+                                                        <label for="xero_client_id">{{ __('Client ID') }}</label>
+                                                        <input type="text" name="xero_client_id"
+                                                            id="xero_client_id" placeholder="" class="form-control"
+                                                            value="{{ old('xero_client_id', $creds->client_id ?? '') }}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="form-group mb-2">
+                                                        <label for="xero_secret_id">{{ __('Secret ID') }}</label>
+                                                        <input type="text" name="xero_secret_id"
+                                                            id="xero_secret_id" placeholder="" class="form-control"
+                                                            value="{{ old('xero_secret_id', $creds->secret_id ?? '') }}">
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1915,7 +1714,7 @@
         {{-- starts square POS integration --}}
         <div class="col-xl-4 col-lg-4 h-100">
             <div class="page-title-box">
-                <h4 class="page-title text-uppercase">Square POS integration</h4>
+                <h4 class="page-title text-uppercase">{{ __('Square POS integration') }}</h4>
             </div>
 
             <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
@@ -1941,43 +1740,77 @@
                             <div class="form-group mb-0">
                                 <div class="row">
                                     <div class="col-12">
-                                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                        <label for="square_enable_status_switch" class="mr-3">{{ __("Enable") }} <br/></label>
-                                        <input type="checkbox" data-plugin="switchery" name="square_enable_status_switch" id="square_enable_status_switch" class="form-control checkbox_change" data-className="square_enable_status" data-color="#43bee1" @if($getAdditionalPreference['square_enable_status'] == 1) checked @endif>
-                                        <input type="hidden" @if($getAdditionalPreference['square_enable_status'] == 1) value="1" @else value="0" @endif name="square_enable_status" id="square_enable_status" />
-                                    </div>
-                                    @php
-                                        $square_credentials = json_decode($getAdditionalPreference['square_credentials'], true);
-                                        $square_sandbox_enable_status = isset($square_credentials['sandbox_enable_status']) ? $square_credentials['sandbox_enable_status'] : '';
-                                        $square_application_id = isset($square_credentials['application_id']) ? $square_credentials['application_id'] : '';
-                                        $square_access_token = isset($square_credentials['access_token']) ? $square_credentials['access_token'] : '';
-                                        $square_location_id = isset($square_credentials['location_id']) ? $square_credentials['location_id'] : '';
-                                    @endphp
-                                        <div class="mt-2 squareFields" @if($getAdditionalPreference['square_enable_status'] != 1) style="display:none;" @endif>
+                                        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                            <label for="square_enable_status_switch"
+                                                class="mr-3">{{ __('Enable') }} <br /></label>
+                                            <input type="checkbox" data-plugin="switchery"
+                                                name="square_enable_status_switch" id="square_enable_status_switch"
+                                                class="form-control checkbox_change"
+                                                data-className="square_enable_status" data-color="#43bee1"
+                                                @if ($getAdditionalPreference['square_enable_status'] == 1) checked @endif>
+                                            <input type="hidden"
+                                                @if ($getAdditionalPreference['square_enable_status'] == 1) value="1" @else value="0" @endif
+                                                name="square_enable_status" id="square_enable_status" />
+                                        </div>
+                                        @php
+                                            $square_credentials = json_decode($getAdditionalPreference['square_credentials'], true);
+                                            $square_sandbox_enable_status = isset($square_credentials['sandbox_enable_status']) ? $square_credentials['sandbox_enable_status'] : '';
+                                            $square_application_id = isset($square_credentials['application_id']) ? $square_credentials['application_id'] : '';
+                                            $square_access_token = isset($square_credentials['access_token']) ? $square_credentials['access_token'] : '';
+                                            $square_location_id = isset($square_credentials['location_id']) ? $square_credentials['location_id'] : '';
+                                        @endphp
+                                        <div class="mt-2 squareFields"
+                                            @if ($getAdditionalPreference['square_enable_status'] != 1) style="display:none;" @endif>
                                             <div class="row">
                                                 <div class="col-12">
-                                                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-                                                        <label for="square_sandbox_enable_status_switch" class="mr-3">{{ __("Sandbox") }} <br/><small>{{__('Update Sandbox Application ID and Access Token')}}</small></label>
-                                                        <input type="checkbox" data-plugin="switchery" name="square_sandbox_enable_status_switch" id="square_sandbox_enable_status_switch" class="form-control checkbox_change" data-className="square_sandbox_enable_status" data-color="#43bee1" @if($square_sandbox_enable_status == 1) checked @endif>
-                                                        <input type="hidden" @if($square_sandbox_enable_status == 1) value="1" @else value="0" @endif name="square_sandbox_enable_status" id="square_sandbox_enable_status" />
+                                                    <div
+                                                        class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                                        <label for="square_sandbox_enable_status_switch"
+                                                            class="mr-3">{{ __('Sandbox') }}
+                                                            <br /><small>{{ __('Update Sandbox Application ID and Access Token') }}</small></label>
+                                                        <input type="checkbox" data-plugin="switchery"
+                                                            name="square_sandbox_enable_status_switch"
+                                                            id="square_sandbox_enable_status_switch"
+                                                            class="form-control checkbox_change"
+                                                            data-className="square_sandbox_enable_status"
+                                                            data-color="#43bee1"
+                                                            @if ($square_sandbox_enable_status == 1) checked @endif>
+                                                        <input type="hidden"
+                                                            @if ($square_sandbox_enable_status == 1) value="1" @else value="0" @endif
+                                                            name="square_sandbox_enable_status"
+                                                            id="square_sandbox_enable_status" />
                                                     </div>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="form-group mb-2">
-                                                        <label for="square_location_id">{{ __("Location ID") }}</label>
-                                                        <input type="text" name="square_location_id" id="square_location_id" placeholder="" class="form-control" value="{{ old('square_location_id', $square_location_id)}}" autocomplete="off">
+                                                        <label for="square_location_id">{{ __('Location ID') }}</label>
+                                                        <input type="text" name="square_location_id"
+                                                            id="square_location_id" placeholder=""
+                                                            class="form-control"
+                                                            value="{{ old('square_location_id', $square_location_id) }}"
+                                                            autocomplete="off">
                                                     </div>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="form-group mb-2">
-                                                        <label for="square_application_id">{{ __("Application ID") }}</label>
-                                                        <input type="text" name="square_application_id" id="square_application_id" placeholder="" class="form-control" value="{{ old('square_application_id', $square_application_id)}}" autocomplete="off">
+                                                        <label
+                                                            for="square_application_id">{{ __('Application ID') }}</label>
+                                                        <input type="text" name="square_application_id"
+                                                            id="square_application_id" placeholder=""
+                                                            class="form-control"
+                                                            value="{{ old('square_application_id', $square_application_id) }}"
+                                                            autocomplete="off">
                                                     </div>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="form-group mb-2">
-                                                        <label for="square_access_token">{{ __("Access Token") }}</label>
-                                                        <input type="password" name="square_access_token" id="square_access_token" placeholder="" class="form-control" value="{{ old('square_access_token', $square_access_token)}}" autocomplete="off">
+                                                        <label
+                                                            for="square_access_token">{{ __('Access Token') }}</label>
+                                                        <input type="password" name="square_access_token"
+                                                            id="square_access_token" placeholder=""
+                                                            class="form-control"
+                                                            value="{{ old('square_access_token', $square_access_token) }}"
+                                                            autocomplete="off">
                                                     </div>
                                                 </div>
                                             </div>
@@ -1991,13 +1824,360 @@
                 </div>
             </form>
         </div>
+        @if (isset($preference) && $preference->subscription_mode == '1')
+            <div class="col-xl-4 col-lg-4 h-100">
+                <div class="page-title-box">
+                    <h4 class="page-title text-uppercase">
+                        {{ getNomenclatureName('Vendors', true) . __(' Subscription rule') }}</h4>
+                </div>
+
+                <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
+                    @csrf
+                    <input type="hidden" name="vendor_subcription_rule" id="vendor_subcription_rule"
+                        value="1">
+                    <!-- HubSpot card start -->
+                    <div class="card-box h-100">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-0 switchery-demo">
+                                    <label class="d-flex align-items-center justify-content-between">
+                                        <h5 class="social_head text-uppercase">
+                                            <span>{{ __('Subscription rule') }}</span>
+                                        </h5>
+
+                                        <button class="btn btn-info btn-block save_btn" type="submit">
+                                            {{ __('Save') }} </button>
+                                    </label>
+                                    <p class="sub-header">
+                                        {{ __('vendor not showing in if thay dont have any Subscription') }}
+                                    </p>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div
+                                                class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                                <label for="is_show_vendor_on_subcription_switch"
+                                                    class="mr-3">{{ __('Enable') }} <br /></label>
+                                                <input type="checkbox" data-plugin="switchery"
+                                                    name="is_show_vendor_on_subcription_switch"
+                                                    id="is_show_vendor_on_subcription_switch"
+                                                    class="form-control checkbox_change"
+                                                    data-className="is_show_vendor_on_subcription" data-color="#43bee1"
+                                                    @if ($getAdditionalPreference['is_show_vendor_on_subcription'] == 1) checked @endif>
+                                                <input type="hidden"
+                                                    @if ($getAdditionalPreference['is_show_vendor_on_subcription'] == 1) value="1" @else value="0" @endif
+                                                    name="is_show_vendor_on_subcription"
+                                                    id="is_show_vendor_on_subcription" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        @endif
+
+        <div class="col-xl-4 col-lg-4 h-100">
+            <div class="page-title-box">
+                <h4 class="page-title text-uppercase">Influencer Module</h4>
+            </div>
+
+            <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
+                @csrf
+                <input type="hidden" name="influencer_mode" value="1">
+                <div class="card-box h-100">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label class="d-flex align-items-center justify-content-between">
+                                    <h5 class="social_head text-uppercase">
+                                        <span>{{ __('Manage Influencer') }}</span>
+                                    </h5>
+                                    <button class="btn btn-info btn-block save_btn" type="submit">
+                                        {{ __('Save') }} </button>
+                                </label>
+                            </div>
+
+                            @if ($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry')
+                                <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                    <label for="is_influencer_refer_and_earn_switch"
+                                        class="mr-2 mb-0">{{ __('Influencer Module') }}<small
+                                            class="d-block pr-5">{{ __('Enable to allow influencer module.') }}</small></label>
+                                    <span> <input type="checkbox" data-plugin="switchery"
+                                            name="is_influencer_refer_and_earn_switch"
+                                            id="is_influencer_refer_and_earn_switch"
+                                            class="form-control checkbox_change"
+                                            data-className="is_influencer_refer_and_earn" data-color="#43bee1"
+                                            @if ($getAdditionalPreference['is_influencer_refer_and_earn'] == 1) checked='checked' @endif>
+                                    </span>
+                                    <input type="hidden"
+                                        @if ($getAdditionalPreference['is_influencer_refer_and_earn'] == 1) value="1" @else value="0" @endif
+                                        name="is_influencer_refer_and_earn" id="is_influencer_refer_and_earn" />
+                                </div>
+
+
+                                <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                    <label for="celebrity_check" class="mr-2 mb-0">
+                                        {{ __('Refer and Earn by Influencer') }}
+                                        <small
+                                            class="d-block pr-5">{{ __('Leverage the Influencer era by adding Influencers and associate product with them to create curated lists of products') }}.</small></label>
+                                    <span> <input type="checkbox" data-plugin="switchery" name="celebrity_check"
+                                            id="celebrity_check" class="form-control" data-color="#43bee1"
+                                            @if (isset($preference) && $preference->celebrity_check == '1') checked='checked' @endif></span>
+
+                                </div>
+                            @endif
+
+                        </div>
+                    </div>
+                </div>
+
+
+            </form>
+        </div>
+
+        <div class="col-xl-4 col-lg-4 mb-3">
+            <div class="page-title-box">
+                <h4 class="page-title text-uppercase">{{ __('Notification for Pickup Delivery') }}</h4>
+            </div>
+
+            <form method="POST" action="{{ route('additional.update') }}">
+                <input type="hidden" name="crm" id="crm" value="1">
+                <input type="hidden" name="send_to" id="send_to" value="configure">
+                @csrf
+                <!-- HubSpot card start -->
+                <div class="card-box h-100">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group mb-0 switchery-demo">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <h4 class="header-title text-uppercase mb-0">{{ __('Custom Notification') }}
+                                    </h4>
+                                    <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
+                                    </button>
+                                </div>
+                                <p class="sub-header">
+                                    {{ __('Change Notification time for scheduled pickup delivery order.') }}
+                                </p>
+
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+
+                            <div class="form-group mb-0 d-flex switchery-demo">
+                                <label for="" class="mr-3">{{ __('Cron Notification Enable') }}</label>
+                                <input type="checkbox" data-plugin="switchery" name="pickup_notification_switch"
+                                    id="pickup_notification_switch" class="form-control checkbox_change"
+                                    data-className="pickup_notification_before" data-color="#43bee1"
+                                    @if (@$getAdditionalPreference['pickup_notification_before'] == 1) checked='checked' @endif>
+                                <input type="hidden"
+                                    @if (@$getAdditionalPreference['pickup_notification_before'] == 1) value="1" @else value="0" @endif
+                                    name="pickup_notification_before" id="pickup_notification_before" />
+                            </div>
+
+                            <div class="row mt-2" id="pickup_notification_div"
+                                style="display:@if (@$getAdditionalPreference['pickup_notification_before'] == 1) @else none @endif;">
+                                <div class="col-8">
+                                    <label for=""
+                                        class="mr-3">{{ __('Accept Reject Notification (Minutes)') }}</label>
+                                </div>
+                                <div class="col-4">
+                                    <input type="number" name="pickup_notification_before_hours"
+                                        id="pickup_notification_before_hours" placeholder="" class="form-control"
+                                        value="{{ old('pickup_notification_before_hours', @$getAdditionalPreference['pickup_notification_before_hours'] ?? '') }}">
+                                </div>
+                                <hr />
+
+                                <div class="col-8">
+                                    <label for=""
+                                        class="mr-3">{{ __('Reminder Notification (Minutes)') }}</label>
+                                </div>
+                                <div class="col-4">
+                                    <input type="number" name="pickup_notification_before2_hours"
+                                        id="pickup_notification_before2_hours" placeholder="" class="form-control"
+                                        value="{{ old('pickup_notification_before2_hours', @$getAdditionalPreference['pickup_notification_before2_hours'] ?? '') }}">
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+
+        {{-- marg form --}}
+        <div class="col-xl-4 col-lg-4 mb-3">
+            <!-- Social Logins title start -->
+            <div class="page-title-box">
+                <h4 class="page-title text-uppercase">Marg</h4>
+            </div><!-- Social Logins title end -->
+
+            <form method="POST" action="{{ route('additional.update') }}">
+                @csrf
+                <!-- marg card start -->
+                <div class="card-box h-100">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label for="fb_login" class="d-flex align-items-center justify-content-between">
+                                    <h5 class="social_head"><i style="font-size: 24px;" class="mdi mdi-marg"></i>
+                                        <span>{{ __('Marg') }}</span>
+                                    </h5>
+
+                                    <button class="btn btn-info btn-block save_btn" name="marg_submit"
+                                        type="submit">{{ __('Save') }} </button>
+                                </label>
+                                <label for="" class="mr-3">{{ __('Enable') }}</label>
+                                <input type="checkbox" data-plugin="switchery" id="is_marg_enable"
+                                    class="form-control checkbox_change" data-className="is_marg_enable_hidden"
+                                    data-color="#43bee1"
+                                    @if (@$getAdditionalPreference['is_marg_enable'] == '1') checked='checked' value="1" @endif>
+                                <input type="hidden"
+                                    @if (isset($getAdditionalPreference['is_marg_enable']) == 1) value="1" @else value="0" @endif
+                                    name="is_marg_enable" id="is_marg_enable_hidden" />
+
+                                @if (isset($getAdditionalPreference['is_marg_enable']) == 1 && $getAdditionalPreference['marg_date_time'])
+                                    <label for="" class="ml-3">{{ __('Last Sync Date & Time :') }}
+                                    </label>{{ convertDateTimeInClientTimeZone($getAdditionalPreference['marg_date_time'], 'd-m-Y h:i:s') }}
+                                @endif
+
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="row marg_row"
+                        style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
+                        <div class="col-12">
+                            <div class="form-group mb-2 mt-2">
+                                <label for="marg_company_code">{{ __('Company Code') }}</label>
+                                <input type="password" name="marg_company_code" id="marg_company_code"
+                                    placeholder="" class="form-control"
+                                    value="{{ old('marg_company_code', $getAdditionalPreference['marg_company_code'] ?? '') }}">
+                                @if ($errors->has('marg_company_code'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('marg_company_code') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row marg_row"
+                        style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
+                        <div class="col-12">
+                            <div class="form-group mb-2 mt-2">
+                                <label for="marg_access_token">{{ __('Marg ID') }}</label>
+                                <input type="password" name="marg_access_token" id="marg_access_token"
+                                    placeholder="" class="form-control"
+                                    value="{{ old('marg_access_token', $getAdditionalPreference['marg_access_token'] ?? '') }}">
+                                @if ($errors->has('marg_access_token'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('marg_access_token') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row marg_row"
+                        style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
+                        <div class="col-12">
+                            <div class="form-group mb-2 mt-2">
+                                <label for="marg_decrypt_key">{{ __('Decrypt Key') }}</label>
+                                <input type="password" name="marg_decrypt_key" id="marg_decrypt_key" placeholder=""
+                                    class="form-control"
+                                    value="{{ old('marg_decrypt_key', $getAdditionalPreference['marg_decrypt_key'] ?? '') }}">
+                                @if ($errors->has('marg_decrypt_key'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('marg_decrypt_key') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+            </form>
+            <div class="row marg_row"
+                style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
+                <div class="col-12">
+                    <button class="btn btn-info btn-block" id="sync_marg_btn">{{ __('Sync Data') }} </button>
+                </div>
+            </div>
+        </div><!-- marg card end -->
+    </div>
+     <div class="col-xl-4 col-lg-4 mb-3">
+        <div class="page-title-box">
+            <h4 class="page-title text-uppercase">{{ __('Vendor Notification Product Stock') }}</h4>
+        </div>
+        <div class="card-box">
+        <form method="POST" action="{{ route('additional.update') }}">
+            <input type="hidden" name="crm" id="crm" value="1">
+            <input type="hidden" name="send_to" id="send_to" value="configure">
+            @csrf
+
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <h4 class="header-title text-uppercase mb-0">{{ __('Custom Notification') }}
+                </h4>
+                <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
+                </button>
+            </div>
+            <p class="sub-header">
+                {{ __('Send Vendor Notification when Product Stock Out.') }}
+            </p>
+
+            <div class="col-12">
+
+                <div class="form-group mb-0 d-flex switchery-demo">
+                    <label for="" class="mr-3">{{ __('Notification Enable') }}</label>
+                    <input type="checkbox" data-plugin="switchery" name="stock_notification_switch"
+                        id="stock_notification_switch" class="form-control checkbox_change"
+                        data-className="stock_notification_before" data-color="#43bee1"
+                        @if (@$getAdditionalPreference['stock_notification_before'] == 1) checked='checked' @endif>
+                    <input type="hidden" @if (@$getAdditionalPreference['stock_notification_before'] == 1) value="1" @else value="0" @endif
+                        name="stock_notification_before" id="stock_notification_before" />
+                </div>
+        
+                <div class="row mt-2" id="stock_notification_div"
+                    style="display:@if (@$getAdditionalPreference['stock_notification_before'] == 1) @else none @endif;">
+                    <div class="col-8">
+                        <label for="" class="mr-3">{{ __('Reminder For Minimum Product Quantity') }}</label>
+                    </div>
+                    <div class="col-4">
+                        <input type="number" name="stock_notification_qunatity" id="stock_notification_qunatity"
+                            placeholder="" class="form-control"
+                            value="{{ old('stock_notification_qunatity', @$getAdditionalPreference['stock_notification_qunatity'] ?? '') }}">
+                    </div>
+                    <hr />
+                </div>
+        
+                </form>
+            </div>
+        </div>
 
     </div>
+    {{-- ends here marg form --}}
+    </div>
+
+   
+    </div>
+
+    
+
+
+
+
+
 
 
 
     <div class="row">
-            
+
         <div class="col-md-12">
             <!-- Custom Mods start -->
             <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
@@ -2009,75 +2189,21 @@
                     </div>
                     <input type="hidden" name="custom_mods_config" id="custom_mods_config" value="1">
 
-                        <div class="row align-items-start">
-                          @include('backend.setting.customMode')
-                        </div>
-                       
-
+                    <div class="row align-items-start">
+                        @include('backend.setting.customMode')
                     </div>
+
+
                 </div>
-            </form>
-            <!-- Custom Mods end -->
         </div>
+        </form>
+        <!-- Custom Mods end -->
+    </div>
     </div>
 
-    <div class="row">
-        {{-- <div class="col-lg-6">
-         <div class="page-title-box">
-            <h4 class="page-title text-uppercase">{{ __("Driver") }}</h4>
-</div>
-<div class="card-box pb-2">
-   <h4 class="header-title text-uppercase">{{ __("Driver Registration Documents") }}</h4>
-   <div class="d-flex align-items-center justify-content-end mt-2">
-      <a class="btn btn-info d-block" id="add_driver_registration_document_modal_btn">
-         <i class="mdi mdi-plus-circle mr-1"></i>{{ __("Add") }}
-      </a>
-   </div>
-   <div class="table-responsive mt-3 mb-1">
-      <table class="table table-centered table-nowrap table-striped" id="promo-datatable">
-         <thead>
-            <tr>
-               <th>{{ __("Name") }}</th>
-               <th>{{ __("Type") }}</th>
-               <th>{{ __("Action") }}</th>
-            </tr>
-         </thead>
-         <tbody id="post_list">
-            @forelse($driver_registration_documents as $driver_registration_document)
-            <tr>
-               <td>
-                  <a class="edit_driver_registration_document_btn" data-driver_registration_document_id="{{$driver_registration_document->id}}" href="javascript:void(0)">
-                     {{$driver_registration_document->primary ? $driver_registration_document->primary->name : ''}}
-                  </a>
-               </td>
-               <td>{{$driver_registration_document->file_type}}</td>
-               <td>
-                  <div>
-                     <div class="inner-div" style="float: left;">
-                        <a class="action-icon edit_driver_registration_document_btn" data-driver_registration_document_id="{{$driver_registration_document->id}}" href="javascript:void(0)">
-                           <i class="mdi mdi-square-edit-outline"></i>
-                        </a>
-                     </div>
-                     <div class="inner-div">
-                        <button type="button" class="btn btn-primary-outline action-icon delete_driver_registration_document_btn" data-driver_registration_document_id="{{$driver_registration_document->id}}">
-                           <i class="mdi mdi-delete"></i>
-                        </button>
-                     </div>
-                  </div>
-               </td>
-            </tr>
-            @empty
-            <tr align="center">
-               <td colspan="4" style="padding: 20px 0">{{ __("Result not found.") }}</td>
-            </tr>
-            @endforelse
-         </tbody>
-      </table>
-   </div>
-</div>
-</div> --}}
 
-    </div>
+
+
 
     <div style="display:none;">
         <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
@@ -2158,7 +2284,7 @@
                                                 <p class="mb-2"><span
                                                         class="font-weight-semibold mr-2">{{ __('From') }}:</span>
                                                     johndoe<span>
-                                                        < /span>contact@royodispatcher.com<span>></span>
+                                                    </span>contact@royodispatcher.com<span> ></span>
                                                 </p>
                                                 <p class="mb-2"><span
                                                         class="font-weight-semibold mr-2">{{ __('Reply To') }}:</span>
@@ -2373,6 +2499,20 @@
             let vendor_registration_document_id = $('input[name="vendor_registration_document_id"]').val();
             editVendorRegistrationForm(vendor_registration_document_id);
         });
+
+        var is_marg_enable = $('#is_marg_enable');
+
+        if (is_marg_enable.length > 0) {
+            is_marg_enable[0].onchange = function() {
+
+                if ($('#is_marg_enable:checked').length != 1) {
+                    $('.marg_row').hide();
+                } else {
+                    $('.marg_row').show();
+                }
+            }
+        }
+
         $(document).on('click', '.addOptionRow-Add', function(e) {
             var d = new Date();
             var n = d.getTime();
@@ -2392,6 +2532,25 @@
             $('#add_slot_modal').modal('show');
             $('#add_slot__modal #standard-modalLabel').html('Add Slot');
         });
+
+
+        $(document).on("click", "#sync_marg_btn", function() {
+            $.ajax({
+                type: "GET",
+                dataType: 'json',
+                url: "{{ route('sync.marg') }}",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                },
+                success: function(response) {
+                    dd(response);
+                    if (response.status == "Success") {
+
+                    }
+                }
+            });
+        });
+
 
         // Start Slot ////
 
@@ -2709,6 +2868,11 @@
                 autocomplete[name] = new google.maps.places.Autocomplete(document.getElementById(name), {
                     types: ['geocode']
                 });
+                if (is_map_search_perticular_country) {
+                    autocomplete[name].setComponentRestrictions({
+                        'country': [is_map_search_perticular_country]
+                    });
+                }
                 google.maps.event.addListener(autocomplete[name], 'place_changed', function() {
                     var place = autocomplete[name].getPlace();
                     geocoder.geocode({
@@ -2859,8 +3023,7 @@
 
         if (need_inventory_service.length > 0) {
             need_inventory_service[0].onchange = function() {
-                if ($('#need_inventory_service:checked').length != 1) 
-                {
+                if ($('#need_inventory_service:checked').length != 1) {
                     $('.inventoryFields').hide();
                     var is_order_edit_enable = $('#is_order_edit_enable_switch');
 
@@ -2887,11 +3050,12 @@
         }
 
         var is_one_push_book_enable = $('#is_one_push_book_enable_switch');
-        var is_bid_ride_enable      = $('#is_bid_ride_enable_switch');
+        var is_bid_ride_enable = $('#is_bid_ride_enable_switch');
 
 
         is_one_push_book_enable[0].onchange = function() {
-            if ($('#is_one_push_book_enable_switch:checked').length != 1 && $('#is_bid_ride_enable_switch:checked').length != 1) {
+            if ($('#is_one_push_book_enable_switch:checked').length != 1 && $('#is_bid_ride_enable_switch:checked')
+                .length != 1) {
                 $('#bid_expire_time_limit_div').hide();
                 $('#bid_expire_time_limit_seconds').val(0);
             } else {
@@ -2900,7 +3064,8 @@
         }
 
         is_bid_ride_enable[0].onchange = function() {
-            if ($('#is_one_push_book_enable_switch:checked').length != 1 && $('#is_bid_ride_enable_switch:checked').length != 1) {
+            if ($('#is_one_push_book_enable_switch:checked').length != 1 && $('#is_bid_ride_enable_switch:checked')
+                .length != 1) {
                 $('#bid_expire_time_limit_div').hide();
                 $('#bid_expire_time_limit_seconds').val(0);
             } else {
@@ -2966,6 +3131,31 @@
             }
         }
 
+        $('#pickup_notification_switch')[0].onchange = function() {
+            if ($('#pickup_notification_switch:checked').length != 1) {
+                $('#pickup_notification_div').hide();
+                // $('#pickup_notification_before_hours').val(0);
+            } else {
+                $('#pickup_notification_div').show();
+            }
+        }
+
+        $('#stock_notification_switch')[0].onchange = function() {
+            if ($('#stock_notification_switch:checked').length != 1) {
+                $('#stock_notification_div').hide();
+                // $('#pickup_notification_before_hours').val(0);
+            } else {
+                $('#stock_notification_div').show();
+            }
+        }
+
+        $('#pickup_notification_switch2')[0].onchange = function() {
+            if ($('#pickup_notification_switch2:checked').length != 1) {
+                $('#pickup_notification_div2').hide();
+            } else {
+                $('#pickup_notification_div2').show();
+            }
+        }
         var dinein_option = $('#dinein_check');
         if (dinein_option.length > 0) {
             dinein_option[0].onchange = function() {
@@ -2992,7 +3182,7 @@
         third_party_accounting[0].onchange = function() {
             if ($('#third_party_accounting:checked').length != 1) {
                 $('#xero_config_div').hide();
-                if($('#xero_enable_switch').is(':checked')==1){
+                if ($('#xero_enable_switch').is(':checked') == 1) {
                     $('#xero_enable_switch').trigger("click");
                 }
             } else {
@@ -3001,12 +3191,12 @@
         }
 
         var xero_enable_switch = $('#xero_enable_switch');
-        if(xero_enable_switch.length > 0){
+        if (xero_enable_switch.length > 0) {
             xero_enable_switch[0].onchange = function() {
 
-                if ($('#xero_enable_switch:checked').length != 1) 
-                {
-                    $("#xero_client_id").val('');$("#xero_secret_id").val('');
+                if ($('#xero_enable_switch:checked').length != 1) {
+                    $("#xero_client_id").val('');
+                    $("#xero_secret_id").val('');
                     $('.xeroFields').hide();
                 } else {
                     $('.xeroFields').show();
@@ -3016,12 +3206,12 @@
 
 
         var square_enable_status_switch = $('#square_enable_status_switch');
-        if(square_enable_status_switch.length > 0){
+        if (square_enable_status_switch.length > 0) {
             square_enable_status_switch[0].onchange = function() {
 
-                if ($('#square_enable_status_switch:checked').length != 1) 
-                {
-                    $("#xero_client_id").val('');$("#xero_secret_id").val('');
+                if ($('#square_enable_status_switch:checked').length != 1) {
+                    $("#xero_client_id").val('');
+                    $("#xero_secret_id").val('');
                     $('.squareFields').hide();
                 } else {
                     $('.squareFields').show();

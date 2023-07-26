@@ -376,14 +376,8 @@ class CustomerAuthController extends FrontController
                     $vendor->phone_no = $user->phone_number ?? '';
                     $vendor->slug = Str::slug($user->name, "-");
                     $vendor->save();
-
-                    $permission_details = PermissionsOld::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
-
                     UserVendor::create(['user_id' => $user->id, 'vendor_id' => $vendor->id]);
-
-                    foreach ($permission_details as $permission_detail) {
-                        UserPermissions::create(['user_id' => $user->id, 'permission_id' => $permission_detail->id]);
-                    }
+                    $user->createPermissionsUser();
                     $p2p_type = Type::where('service_type', 'p2p')->first();
                     if( !empty($p2p_type) ) {
                         $category_id = Category::where('type_id', $p2p_type->id)->get();
@@ -581,16 +575,16 @@ class CustomerAuthController extends FrontController
                 $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
                 if(!$user){
                     if(session()->get("locale") == "ar"){
-                        return $this->errorResponse(__('أنت غير مسجل معنا. يرجى الاشتراك.'), 404);
+                        return $this->errorResponse(__('أنت غير مسجل معنا. يرجى الاشتراك'), 404);
                     }
-                   // return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404, ['user_exists' => false]);
+                    return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404);
 
-                    $registerUser = $this->registerViaPhone($request)->getData();
+                  /*  $registerUser = $this->registerViaPhone($request)->getData();
                     if($registerUser->status == 'Success'){
                         $user = $registerUser->data;
                     }else{
                         return $this->errorResponse(__('Invalid data'), 404);
-                    }
+                    }*/
                 }else{
                     $user->phone_token = $phoneCode;
                     $user->phone_token_valid_till = $sendTime;

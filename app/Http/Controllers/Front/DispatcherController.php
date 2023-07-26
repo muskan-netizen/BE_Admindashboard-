@@ -11,6 +11,7 @@ use Session;
 use DB;
 use App\Http\Traits\{ApiResponser,OrderTrait};
 use App\Models\{Order, OrderProduct, OrderTax, OrderCancelRequest, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, OrderQrcodeLinks, ProductVariantSet, QrcodeImport,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus,OrderLongTermServiceSchedule,PickDropDriverBid,VendorOrderProductStatus,UserBidRideRequest};
+use Illuminate\Support\Facades\Log;
 
 class DispatcherController extends FrontController
 {
@@ -59,7 +60,6 @@ class DispatcherController extends FrontController
                     $this->sendOrderNotification($update->id);
                     $type = $request->task_type??1;
                    $dispatch_status = $request->dispatcher_status_option_id;
-
                     switch ($dispatch_status) {
                         case 2:
                             $request->status_option_id = 2;
@@ -73,13 +73,16 @@ class DispatcherController extends FrontController
                       case 5:
                         $request->status_option_id = 6;
                         break;
+                      case 6: //order rejected by driver
+                          $request->status_option_id = 3;
+                          break;
                       default:
                        $request->status_option_id = null;
                     }
 
                     # vendor status update
 
-                    if(isset($request->status_option_id) && !empty($request->status_option_id) && $request->status_option_id == 6 && $type == 2){
+                    if(isset($request->status_option_id) && !empty($request->status_option_id) && (in_array($request->status_option_id ,[6,3])) && $type == 2){
 
                         $checkif= VendorOrderStatus::where(['order_id' =>  $checkiftokenExist->order_id,
                         'order_status_option_id' =>  $request->status_option_id,
@@ -94,11 +97,29 @@ class DispatcherController extends FrontController
                                 'order_vendor_id' =>  $checkiftokenExist->id ]);
 
                                 OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['order_status_option_id' => $request->status_option_id]);
+                                // if driver is reject order
+                                if($request->status_option_id == 3 ){
+                                    $this->cancelOrderByDriver($checkiftokenExist);
+                                }
                         }
 
 
                     }
+                 
 
+                if($request->waiting_price && $request->waiting_price>0)
+                {   
+                    OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['waiting_price' => $request->waiting_price??0,'waiting_time'=>$request->waiting_time]);
+                 
+                    $orderVendDetail = OrderVendor::where('order_id', $checkiftokenExist->order_id);
+                    $total_waiting_price = $orderVendDetail->sum('waiting_price');
+                    $total_waiting_time = $orderVendDetail->sum('waiting_time');
+                   
+                    $payable_amount =  Order::where('id', $checkiftokenExist->order_id)->value('payable_amount');
+                    $old_payable_amount =  Order::where('id', $checkiftokenExist->order_id)->value('old_payable_amount');
+                    $payable_amount = (($old_payable_amount>0)?$old_payable_amount:$payable_amount);
+                    Order::where('id', $checkiftokenExist->order_id)->update(['total_waiting_price' => $total_waiting_price??0 ,'total_waiting_time'=>$total_waiting_time,'payable_amount'=>$payable_amount+$total_waiting_price,'old_payable_amount'=>$payable_amount]);
+                }
 
 
             if(isset($request->dispatch_traking_url) && !empty($request->dispatch_traking_url))
@@ -435,9 +456,7 @@ class DispatcherController extends FrontController
             $type = $request->task_type??1;
 
             if($checkiftokenExist){
-
-                $dispatch_status = $request->dispatcher_status_option_id;
-
+                $dispatch_status = $request->dispatcher_status_option_id;                
                 switch ($dispatch_status) {
                   case 2:
                         // $request->status_option_id = 2;
@@ -455,10 +474,14 @@ class DispatcherController extends FrontController
                     // $request->status_option_id = 6;
                     $request->request->add(['status_option_id'=> '6']);
                     break;
+                  case 6: //order rejected by driver
+                      $request->request->add(['status_option_id'=> '3']);
+                      break; 
                   default:
                    $request->status_option_id = null;
                 }
-                if(isset($request->status_option_id) && !empty($request->status_option_id) && $request->status_option_id == 6 && $type == 2){
+
+                if(isset($request->status_option_id) && !empty($request->status_option_id) &&  (in_array($request->status_option_id ,[6,3])) && $type == 2){
                     $checkif= VendorOrderStatus::where(['order_id' =>  $checkiftokenExist->order_id,
                     'order_status_option_id' =>  $request->status_option_id,
                     'vendor_id' =>  $checkiftokenExist->vendor_id,
@@ -471,7 +494,10 @@ class DispatcherController extends FrontController
                             'order_vendor_id' =>  $checkiftokenExist->id ]);
 
                             OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['order_status_option_id' => $request->status_option_id]);
-
+                            // if driver is reject order
+                            if($request->status_option_id == 3 ){
+                                $this->cancelOrderByDriver($checkiftokenExist);
+                            }
                     }
                 }
 
@@ -480,6 +506,7 @@ class DispatcherController extends FrontController
                     'dispatcher_status_option_id' =>  $request->dispatcher_status_option_id,
                     'vendor_id' =>  $checkiftokenExist->vendor_id,
                     'type' =>  $request->task_type??1]);
+                  
                 $this->sendOrderNotification($update->id);
 
             if(isset($request->dispatch_traking_url) && !empty($request->dispatch_traking_url))
@@ -488,6 +515,23 @@ class DispatcherController extends FrontController
             }
 
             OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['dispatcher_status_option_id' => $request->dispatcher_status_option_id]);
+
+            if($request->waiting_price && $request->waiting_price>0)
+                {   
+                    OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['waiting_price' => $request->waiting_price??0,'waiting_time'=>$request->waiting_time]);
+                 
+                    $orderVendDetail = OrderVendor::where('order_id', $checkiftokenExist->order_id);
+                    $total_waiting_price = $orderVendDetail->sum('waiting_price');
+                    $total_waiting_time = $orderVendDetail->sum('waiting_time');
+                   
+                   // \Log::info('total_waiting_price : '.$total_waiting_price.' -- total_waiting_time ='.$total_waiting_time);
+                    $payable_amount =  Order::where('id', $checkiftokenExist->order_id)->value('payable_amount');
+                    $old_payable_amount =  Order::where('id', $checkiftokenExist->order_id)->value('old_payable_amount');
+                    $payable_amount = (($old_payable_amount>0)?$old_payable_amount:$payable_amount);
+                    Order::where('id', $checkiftokenExist->order_id)->update(['total_waiting_price' => $total_waiting_price??0 ,'total_waiting_time'=>$total_waiting_time,'payable_amount'=>$payable_amount+$total_waiting_price,'old_payable_amount'=>$payable_amount]);
+                }
+
+
               DB::commit();
                     $message = "Order status updated.";
                     return $this->successResponse($update, $message);
@@ -848,7 +892,6 @@ class DispatcherController extends FrontController
     /******************    ---- send notification to user -----   ******************/
     public function sendOrderNotification( $vendor_order_status_id )
     {
-         //pr($vendor_order_status_id);
 
         $OrderStatus = VendorOrderDispatcherStatus::select('*','dispatcher_status_option_id as status_data')->find($vendor_order_status_id);
 
@@ -859,12 +902,15 @@ class DispatcherController extends FrontController
             // $checkuservendor = UserVendor::where('user_id',$user_id)->first();
             // $sound = ($checkuservendor)?"notification.wav":"default";
             $devices = UserDevice::whereNotNull('device_token')->where('user_id', $user_id)->pluck('device_token');
-
+        
             $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
-
             if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
                     $title = __('Order Status : #').($orderNumber ?  $orderNumber->order_number : '');
-                    $body =  $OrderStatus ? ($OrderStatus->status_data ? $OrderStatus->status_data['driver_status'] : '') : '';
+                    $notification_content = NotificationTemplate::where('slug', 'order-cancelled')->first();
+                    $body_content =  $OrderStatus ? ($OrderStatus->status_data ? $OrderStatus->status_data['driver_status'] : '') : '';
+                    if($OrderStatus->status_data['driver_status'] == ''){
+                        $body_content = str_ireplace("{order_id}", "#" . $orderNumber->order_number, $notification_content->content);
+                    }
                     
                     //pr($title);
                     //pr($body);
@@ -872,7 +918,7 @@ class DispatcherController extends FrontController
                         "registration_ids" => $devices,
                         "notification" => [
                             'title' => $title,
-                            'body'  => $body,
+                            'body'  => $body_content,
                             'sound' => "default",
                             "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                             'click_action' => route('order.index'),
@@ -880,14 +926,14 @@ class DispatcherController extends FrontController
                         ],
                         "data" => [
                             'title' => $title,
-                            'body'  => $body,
+                            'body'  => $body_content,
                             'data' => '',
                             'type' => ""
                         ],
                         "priority" => "high"
                     ];
-                    //   // Log::info(json_encode($data));
-                    sendFcmCurlRequest($data);
+                    // Log::info(json_encode($data));
+                $result = sendFcmCurlRequest($data);
             }
         }
 
@@ -1218,6 +1264,26 @@ class DispatcherController extends FrontController
             // $order->loyalty_points_earned  =  $order->loyalty_points_earned - $return_response['vendor_loyalty_points_earned'];
             // $order->save();
 
+        }
+    }
+    
+    /******************    ---- cancel order vendor product  -----   ******************/
+    public function cancelOrderByDriver($order_vendor){
+        if($order_vendor ){
+            $order = Order::with(array(
+                'vendors' => function ($query) use ($order_vendor) {
+                $query->where('vendor_id', $order_vendor->vendor_id);
+                }
+                ))->find($order_vendor->order_id);
+                $return_response =  $this->GetVendorReturnAmount([], $order);
+                //return amount to user wallet
+                if ($return_response['vendor_return_amount'] > 0) {
+                    $user = User::find($order_vendor->user_id);
+                    $wallet = $user->wallet;
+                    $credit_amount = $return_response['vendor_return_amount'];//$currentOrderStatus->payable_amount;
+                    $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #' . $order_vendor->orderDetail->order_number . ' (' . $order_vendor->vendor->name . ')']);
+                    $this->sendWalletNotification($user->id,  $order_vendor->orderDetail->order_number);
+                }
         }
     }
 

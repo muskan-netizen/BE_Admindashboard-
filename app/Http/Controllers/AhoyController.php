@@ -140,9 +140,7 @@ class AhoyController extends Controller
                 "temperatureTypeId"=> 0
             );
 
-            ////\Log::info(json_encode($data));
     	    $orderSuc = $this->createPreOrder($data);
-            ////\Log::info(json_encode($orderSuc));
             if(isset($orderSuc->preOrderId) && !empty($orderSuc->preOrderId)){
                 return $this->confirmOrderPreRequestAhoy($orderSuc);
             }else{
@@ -226,9 +224,7 @@ class AhoyController extends Controller
                 "unit"=> null,
                 "temperatureTypeId"=> 0
             );
-            //\Log::info(json_encode($data));
             $orderSuc = $this->createPreOrder($data);
-            //\Log::info(json_encode($orderSuc));
             if($orderSuc->preOrderId != ''){
                // $this->confirmOrderPreRequestAhoy($orderSuc);
                 return $orderSuc->onDemand->price;
@@ -342,7 +338,6 @@ class AhoyController extends Controller
         }
             
         }catch(\Exception $e){
-            \Log::info($e->getMessage());
             return response([],200);
         }
         return response([],200);

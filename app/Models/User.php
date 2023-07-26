@@ -29,7 +29,7 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'description', 'phone_number','dial_code', 'image', 'is_email_verified','email_verified_at', 'is_phone_verified', 'type', 'status', 'device_type', 'device_token', 'country_id', 'role_id', 'auth_token', 'remember_token', 'timezone','import_user_id','last_login_at', 'is_admin'
+        'name', 'email', 'password', 'description', 'phone_number','dial_code', 'image', 'is_email_verified','email_verified_at', 'is_phone_verified', 'type', 'status', 'device_type', 'device_token', 'country_id', 'role_id', 'auth_token', 'remember_token', 'timezone','import_user_id','last_login_at', 'is_admin','geo_ids'
     ];
     protected $appends = ['loyalty_name'];
     /**
@@ -172,6 +172,12 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
     public function authentication_logs(){
         return $this->hasMany('Yadahan\AuthenticationLog\AuthenticationLog', 'authenticatable_id');
     }
+    
+    public function createPermissionsUser(){
+        $id = $this->id;
+        $permission_details = PermissionsOld::select('id as permission_id',\DB::raw("$id as user_id"))->whereIn('id', [1,2,3,12,17,18,19,20,21])->get()->toArray();
+        UserPermissions::insert($permission_details);
+    }
 
     public function bidRequests()
     {
@@ -181,5 +187,10 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
     public function manager()
     {
         return $this->hasOne(Role::class, 'id');
+    }
+
+    public function userVendor()
+    {
+        return $this->hasMany(UserVendor::class);
     }
 }

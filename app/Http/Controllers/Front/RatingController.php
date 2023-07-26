@@ -86,24 +86,30 @@ class RatingController extends FrontController{
                 $rating_type = [];
                 $rating['rating'] = $request->rating;
                 $rating['review'] = $request->review;
-                foreach($request->question_id as $key => $value){
-                    $option_name = 'option_id_'.$value;
-                    $attribute[$key]['question_id']=$value;
-                    $attribute[$key]['option_id']=$request->$option_name;
+                if(@$request->question_id){
+                    foreach($request->question_id as $key => $value){
+                        $option_name = 'option_id_'.$value;
+                        $attribute[$key]['question_id']=$value;
+                        $attribute[$key]['option_id']=$request->$option_name;
+                    }
                 }
                 $max = $n = 0;
-                foreach($request->rating_type_id as $key => $value){
-                    $rating_name = $value.'_rating';
-                    $rating_type[$key]['rating_type_id']= $value;
-                    $rating_type[$key]['rating']       = $request->$rating_name;
-                    $max = $max+$request->$rating_name;
-                    $n++;
+                if(@$request->rating_type_id){
+                    foreach($request->rating_type_id as $key => $value){
+                        $rating_name = $value.'_rating';
+                        $rating_type[$key]['rating_type_id']= $value;
+                        $rating_type[$key]['rating']       = $request->$rating_name;
+                        $max = $max+$request->$rating_name;
+                        $n++;
+                    }
                 }
                 $Average_rating =0;
                 if($n != 0 && $max != 0 ){
                     $Average_rating = $max / $n;
                 }
-             
+                if(@$request->question_id){
+                    $rating['rating'] =  $Average_rating;
+                }
                 $postdata['attribute']  = $attribute;
                 $postdata['Rating_types']  =$rating_type;
                 $postdata['Rating']  = $rating;
@@ -114,7 +120,7 @@ class RatingController extends FrontController{
                 if($order_details){
                     $ratings = OrderDriverRating::updateOrCreate([
                         'order_id' => $order_details->order_id,                 
-                        'user_id' => Auth::id()],['rating' => $Average_rating,'review' => $request->review??$request->hidden_review]);
+                        'user_id' => Auth::id()],['rating' => $request->rating,'review' => $request->review??$request->hidden_review]);
                       
                 }
              
@@ -243,10 +249,11 @@ class RatingController extends FrontController{
     */
     public function getDriverRating(Request $request){
         try {
-            //dd($request->all());
+            // dd($request->all());
             $dispatch_rating_ques = [];
             $dispatch_rating_types = [];
             $rating_details = OrderDriverRating::where('id',$request->id)->first();
+            // dd($rating_details);
             if($request->has('dispatch_traking_url') && !empty($request->dispatch_traking_url)){
                // $traking_url = 'http://192.168.102.65:8001/order/tracking/745e3f/YUCmbs';
                 $rating_response = $this->getRatingQuestingDispatcher($request->dispatch_traking_url); //$request->dispatch_traking_url / change dynamic url
@@ -265,6 +272,7 @@ class RatingController extends FrontController{
 
             if(isset($rating_details)){
                 $withArray['rating'] = $rating_details->rating;
+                // dd($withArray['rating']);
                 if ($request->ajax()) {
                  return \Response::json(\View::make('frontend.modals.update-driver-rating',  $withArray)->render());
                 }

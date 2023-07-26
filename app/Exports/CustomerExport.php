@@ -23,16 +23,14 @@ class CustomerExport implements FromCollection, WithHeadings, WithMapping
 
     public function collection(){
 
-       
-       
         if(!empty($this->start_date) && !empty($this->end_date)){
             $e_day      = date('Y-m-d', strtotime($this->end_date. ' + 1 day'));
             $start_date = Carbon::parse($this->start_date)->format('Y-m-d');
             $end_date   = Carbon::parse($e_day)->format('Y-m-d');
             $start_date = $start_date . ' 00:00:00';
             $end_date   = $end_date . ' 00:00:00';
-            $query      = 'SELECT * FROM users WHERE EXISTS (SELECT 1 FROM orders WHERE orders.user_id = users.id AND orders.created_at >= "'.$start_date.'" AND orders.created_at <= "'.$end_date.'")';
-            $user_ids    = DB::select($query); 
+            $query      = 'SELECT * FROM users WHERE EXISTS (SELECT 1 FROM orders WHERE orders.user_id = users.id AND orders.created_at >= ? AND orders.created_at <= ?)';
+            $user_ids    = DB::select($query, [$start_date, $end_date]); 
             $user_ids    = array_column($user_ids, 'id');
             $users = User::with('orders')->withCount(['orders', 'currentlyWorkingOrders'])->whereNotIn('id',$user_ids)->where('is_superadmin', '!=', 1)->where('created_at', '<=', $end_date )
                 ->orderBy('id', 'desc');

@@ -16,9 +16,11 @@
               </div>
 
               <div class="form-group">
-
+                
+                  <input class="form-control" name="wallet_amount" id="wallet_amount" type="hidden" placeholder="Enter Amount">
                   <input class="form-control" name="pending_amount" id="pending_amount" type="hidden" placeholder="Enter Amount">
                   <input class="form-control" name="tip_for_past_order" id="tip_for_past_order" type="hidden" value="1">
+                  <input class="form-control" name="wallet_amount" id="wallet_amount" type="hidden">
                   <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="0">
                   <input type="hidden" name="order_number" id="order_number" value="0">
                   <span class="error-msg" id="wallet_amount_error"></span>
@@ -154,7 +156,7 @@
                             </div>
                         </div>
 <div class="row">
-<div class="col-md-4">
+<div class="col-md-4 save-card-custom">
                      <input type="checkbox" name="save_card" class="form-check-input" id="azul-save_card" value="1">
                                     <label for="azul-save_card" class="">{{ __('Save Card') }}</label>
             </div>
@@ -163,6 +165,26 @@
   </div>
   <div id="Card-List" class="tabcontent">
   </div>
+                    </div>
+                <% } %>
+
+                <% if(payment_option.slug == 'powertrans') { %>
+                    <div class="col-md-12 mt-3 mb-3 powertrans_element_wrapper option-wrapper d-none">
+                        <div class="row no-gutters">
+                            <div class="col-6">
+                                <input type="number" min="16" maxlength="16" style=" border-right: none;" class="form-control" id="card-element-powertrans" placeholder="Enter card Number" required 
+                                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
+                            </div>
+                            <div class="col-3">
+                                <input type="number" style=" border-left: none; border-right: none;" class="form-control" maxLength="4"  id="date-element-powertrans" placeholder="YYMM" required 
+                                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
+                            </div>
+                            <div class="col-3">
+                                <input type="password" maxLength="4" style=" border-left: none;"  class="form-control" id="cvv-element-powertrans" placeholder="CVV" required />
+                            </div>
+                        </div>
+
+                        <span class="text-danger" id="card_error_powertrans"></span>
                     </div>
                 <% } %>
 

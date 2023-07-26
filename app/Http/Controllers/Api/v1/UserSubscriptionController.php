@@ -6,7 +6,7 @@ use DB;
 use Validation;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,PaymentTrait};
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +17,7 @@ use App\Models\{User, UserAddress, ClientPreference, Client, ClientCurrency, Sub
 
 class UserSubscriptionController extends BaseController
 {
-    use ApiResponser;
+    use ApiResponser,PaymentTrait;
 
     /**
      * get user subscriptions.
@@ -87,7 +87,7 @@ class UserSubscriptionController extends BaseController
             else{
                 return response()->json(["status"=>"Error", "message" => "Invalid Data"]);
             }
-            $code = array('stripe','azul', 'stripe_fpx', 'dpo', 'paystack', 'payfast', 'yoco', 'paylink', 'checkout','kongapay','ccavenue', 'cashfree','easebuzz','vnpay','paytab','toyyibpay','flutterwave','mvodafone','windcave','payphone','stripe_oxxo','viva_wallet', 'mycash','stripe_ideal','openpay','userede','khalti','plugnpay','razorpay');
+            $code = $this->paymentOptionArray('Subscription');
             $ex_codes = array('cod');
             $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereIn('code', $code)->where('status', 1)->get();
             foreach ($payment_options as $k => $payment_option) {
@@ -112,6 +112,11 @@ class UserSubscriptionController extends BaseController
                         $payment_option->title = __('iDEAL');
                     }elseif($payment_option->code == 'authorize_net'){
                         $payment_option->title = __('Credit/Debit Card');
+                    }elseif($payment_option->code == 'obo'){
+                        $payment_option->title = __("MoMo, Airtel Money, Credit/Debit Cards by O'Pay");
+                        $payment_option->title = __("O'Pay");
+                    }elseif($payment_option->code == 'livee'){
+                        $payment_option->title = __("Livees");
                     }
                     $payment_option->title = __($payment_option->title);
                     unset($payment_option->credentials);
@@ -164,8 +169,9 @@ class UserSubscriptionController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function purchaseSubscriptionPlan(Request $request, $slug = '')
+    public function purchaseSubscriptionPlan(Request $request, $slug)
     {
+        
 
         try{
             $validator = Validator::make($request->all(), [
@@ -224,7 +230,10 @@ class UserSubscriptionController extends BaseController
                 $subscription_invoice->save();
                 $subscription_invoice_id = $subscription_invoice->id;
                 if($subscription_invoice_id){
-                    $payment = new Payment;
+                    $payment = Payment::where('transaction_id',$request->transaction_id)->first();
+                    if(!$payment){
+                        $payment = new Payment();
+                    }
                     $payment->balance_transaction = $subscription_plan->price;
                     $payment->transaction_id = $request->transaction_id;
                     $payment->user_subscription_invoice_id = $subscription_invoice_id;

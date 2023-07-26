@@ -89,7 +89,7 @@ $timezone = @$user->timezone;
                   @endif
                   {{-- <p style="font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0 0 3px;color: #777777;">$90.00</p>
                   <p style="font-size: 15px;letter-spacing: 0;line-height: 18px;margin: 0 0 3px;color: #777777;">$90.00</p> --}}
-                  <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;margin: 5px 0 0;padding: 5px 0 0;color: #000000;display: inline-block;border-top: 1px solid #ddd;min-width: 80px;">{{ $currencySymbol . decimal_format(($vendor_product['pvariant']['price']*$vendor_product['quantity']))}}</h3>
+                  <!-- <h3 style="color: #000000;font-size: 15px;letter-spacing: 0;line-height: 19px;margin: 5px 0 0;padding: 5px 0 0;color: #000000;display: inline-block;border-top: 1px solid #ddd;min-width: 80px;">{{ $currencySymbol . decimal_format(($vendor_product['pvariant']['price']*$vendor_product['quantity']))}}</h3> -->
                </td>
             </tr>
 
@@ -124,10 +124,12 @@ $timezone = @$user->timezone;
                 <td style="text-align: left;"><b>{{__('Tax')}}:</b></td>
                 <td style="text-align: right;">{{$currencySymbol . decimal_format($order->taxable_amount)}}</td>
              </tr>
+            @if(!in_array($order->luxury_option_id,[2,3]))
              <tr>
                <td style="text-align: left;"><b>{{__('Delivery Fee')}}:</b></td>
                <td style="text-align: right;">{{$currencySymbol . decimal_format($order->total_delivery_fee)}}</td>
             </tr>
+            @endif
             <tr>
                <td style="text-align: left;"><b>{{__('Service fee')}}:</b></td>
                <td style="text-align: right;">{{$currencySymbol . decimal_format($order->total_service_fee)}}</td>

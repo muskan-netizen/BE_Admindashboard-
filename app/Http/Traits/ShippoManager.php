@@ -168,11 +168,9 @@ trait ShippoManager{
                  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
                 $result = curl_exec($ch);
                 if (curl_errno($ch)) {
-                    // echo 'Error:' . curl_error($ch);
-                    ////\Log::info(curl_error($ch));
                 }
                 curl_close($ch);
-                //\Log::info($result);
+                
                 return json_decode($result); 
     }
 
@@ -199,7 +197,6 @@ trait ShippoManager{
 
             $result = curl_exec($ch);
             if (curl_errno($ch)) {
-                //\Log::info(curl_error($ch));
             }
             curl_close($ch);
             return json_decode($result); 

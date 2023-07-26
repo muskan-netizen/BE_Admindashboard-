@@ -500,6 +500,61 @@ div.dataTables_wrapper div.dataTables_processing {
     color: #000;
     background-color: #f8ecec
 }
+.role_table_per .table-responsive {
+    height: 680px;
+    min-height: 680px;
+    overflow-y: auto;
+}
+.role-left h4 {
+    font-size: 16px;
+}
+.role-left a {
+    display: block;
+    background: #44bee1;
+    margin-bottom: 10px;
+    color: #fff;
+    text-align: center;
+    padding:4px 0px;
+    border-radius: 16px;
+}
+
+.role-left ul li a {
+    background: transparent;
+    border-radius: 0px;
+    font-size: 14px;
+    color: #6e768e;
+    text-align: left;
+    padding: 10px 8px;
+    margin: 0px !important;
+}
+
+.role-left ul li {
+    list-style: none;
+    padding: 0px;
+    line-height: 10px;
+}
+.role-left ul li:nth-child(even){
+    background-color: #efefef;
+}
+.role-left ul li:nth-child(odd){
+    background-color: #fff;
+}
+.role_table_per .table-responsive tbody tr, td span {
+    vertical-align: top;padding-left:2px;font-size: 13px;
+}
+.role-left ul li a:hover{
+    color:#44bee1;
+}
+.role-left ul {
+    background: #fff;
+    padding: 8px 8px !important;
+    box-shadow: 2px 2px 8px 4px #a3a1a124;
+    height: 290px;
+    min-height: 290px;
+    overflow-y: auto;
+}
+
+
 
 .upload-img-btn {
     background-color: #f8ecec;
@@ -541,6 +596,17 @@ div.dataTables_wrapper div.dataTables_processing {
     align-items: flex-end;
     justify-content: center
 }
+
+
+.module-role tr, td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.module-role tr:nth-child(even) {
+    background-color: #f7f7f7;
+}
+
 
 .tutorial_main_div .radio_new:hover .btn.btn-danger {
     opacity: 1
@@ -597,6 +663,13 @@ span.inner-div {
 .vendor-category .dd3-content {
     padding: 8px 16px
 }
+
+.dataTables_length select {
+    width: 100% !important;
+    padding: 2px 4px !important;
+    height: auto !important;
+}
+
 
 .table-borderless td,
 .table-borderless th {
@@ -753,6 +826,9 @@ body .switchery>small {
     width: auto
 }
 
+.delay_time .modal-footer .buffer_time_btn {
+    font-size: 14px;padding: 0.45rem 0.9rem;
+}
 input#is_hyperlocal {
     display: none !important
 }
@@ -1383,6 +1459,7 @@ td.lasttd.d-flex.align-items-center.justify-content-center {
     margin-bottom: 10px !important
 }
 
+
 .order_detail:before {
     content: "";
     border-left: 1px solid #43bee1e8;
@@ -1590,27 +1667,27 @@ i.mdi.mdi-exclamation-thick {
 }
 
 .tooltip_error {
-    position: absolute;
-    right: -87px;
-    background: #fff;
-    box-shadow: 0 0 5px #ddd;
+    /* position: absolute; */
+    /* right: -87px; */
+    background: #FFF;
+    box-shadow: 0 0 5px #DDD;
     padding: 10px 15px 10px 30px;
     margin: 0;
     border-radius: 5px;
     opacity: 0;
     top: -100%;
-    transform: translateY(-100%);
-    -webkit-transform: translateY(-100%);
-    max-height: 200px;
-    overflow-x: auto;
-    -webkit-transition: all .5s;
-    transition: all .5s;
-    color: rgb(255 0 0 / 80%);
-    line-height: 20px;
-    width: 260px;
-    text-align: left;
-    z-index: -1
-}
+    /* transform: translateY(-100%); */
+    /* -webkit-transform: translateY(-100%); */
+    /* max-height: 200px; */
+    /* overflow-x: auto; */
+    /* -webkit-transition: all .5s; */
+    /* transition: all .5s; */
+    /* color: rgb(255 0 0 / 80%); */
+    /* line-height: 20px; */
+    width: 661px;
+    /* text-align: left; */
+    /* z-index: -1; */
+    }
 
 .tooltip_error li {
     white-space: normal;
@@ -1847,9 +1924,14 @@ i.mdi.mdi-exclamation-thick {
 }
 
 .nav-second-level li a {
-    position: relative
+    position: relative;
 }
-
+/*dashboard pagination hover css remove */
+.content-page li.paginate_button.page-item.active:hover {
+    background: inherit !important;
+    border: 1px solid #fff0;
+}
+/*end here*/
 .nav-second-level li .collapse li a:before {
     content: "";
     width: 6px;
@@ -1870,7 +1952,7 @@ i.mdi.mdi-exclamation-thick {
 }
 
 .nav-user img {
-    border-radius: 50%;
+    border-radius: 0%;
     margin-right: 5px
 }
 
@@ -2227,6 +2309,33 @@ button.add_edit_driver_review {
   padding: 5px;
   font-weight: 600;
 }
+
+
+
+
+
+/*================== Order page pending order list Style 15/05/2023 ===================== */
+#pending_orders_row .order-hover-btn .order_detail .col-4 {
+    width: 100%!important;
+    max-width: 100%!important;
+    text-align: left!important;
+    display: flex;
+    flex-wrap: wrap;
+        flex: unset;
+    align-items: center;
+}
+#pending_orders_row .order-hover-btn .order_detail .col-4 .list-img {
+    width: 25%;
+    margin: 0;
+}
+#pending_orders_row .order-hover-btn .order_detail .col-4 label.items_price {
+    width: 75%;
+    padding-left: 10px;
+}
+#pending_orders_row .order-hover-btn .order_detail .col-4 .list-img img {
+    width: 50px;
+}
+
 /*============================================= dashboard page responsive css start here ======================================= */
 @media(max-width:1600px) {
 .card-box {padding: 20px;}
@@ -3214,7 +3323,9 @@ body .page-title-box .page-title {
 .order_head h4 {
     opacity: 0
 }
-
+.order_received1 .order_head h4{
+    opacity: inherit;
+}
 .al_box_height {
     height: 40px!important;
     padding-left: 4px!important
@@ -4586,7 +4697,7 @@ body[dir=rtl] .modal-header .close {
 .dark .flatpickr-day.notAllowed.nextMonthDay {
     color: #6d767f;
 }
-
+.site_link a {display: inline-block;width: 100%;max-width: 700px;}
 .dark .form-control-light {
     background-color: #3b4651 !important;
     border-color: #3b4651!important;
@@ -4669,8 +4780,43 @@ body[dir=rtl] .modal-header .close {
 /* dark dashboard css end */
 
 
+/* Order page new order reject order popup css */
+div#addRejectmodal {
+    z-index: 1051;
+    background: #0000003d;
+}
+
+
+/*================== Order page pending order list Style 15/05/2023 ===================== */
+#pending_orders_row .order-hover-btn .order_detail .col-4 {
+    width: 100%!important;
+    max-width: 100%!important;
+    text-align: left!important;
+    display: flex;
+    flex-wrap: wrap;
+        flex: unset;
+    align-items: center;
+}
+#pending_orders_row .order-hover-btn .order_detail .col-4 .list-img {
+    width: 25%;
+    margin: 0;
+}
+#pending_orders_row .order-hover-btn .order_detail .col-4 label.items_price {
+    width: 75%;
+    padding-left: 10px;
+}
+#pending_orders_row .order-hover-btn .order_detail .col-4 .list-img img {
+    width: 50px;
+}
+
+
 /*============================================= dashboard page responsive css start here ======================================= */
 
+@media(min-width:576px) {
+    .custom-cols>.col {flex: 0 0 50%;max-width: 50%;}
+    .received-orders .modal-dialog.modal-dialog-centered {max-width: 600px;}
+    .add_product .modal-dialog {max-width: 650px;}
+}
 @media(max-width:1600px) {
     .card-box {
         padding: 20px;
@@ -4995,6 +5141,9 @@ body[dir=rtl] .modal-header .close {
     }
     .received-orders .modal-dialog.modal-dialog-centered {
         max-width: 600px;
+    }
+    .order_received1 .modal-dialog.modal-dialog-centered {
+        max-width: 940px;
     }
     .add_product .modal-dialog {
         max-width: 650px;

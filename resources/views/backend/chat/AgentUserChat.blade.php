@@ -42,6 +42,8 @@
 
                                 @include('backend.chat.agentpart.left')
                                 @include('backend.chat.agentpart.right')
+                                @include('backend.chat.mediaUpload.index')
+
                             </div>
 
 

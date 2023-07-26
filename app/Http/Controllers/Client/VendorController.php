@@ -41,6 +41,7 @@ class VendorController extends BaseController
     use VendorTrait;
     public $is_payout_enabled;
     private $folderName = '/vendor/extra_docs';
+    public $roleId;
 
     public function __construct(){
         $code = Client::orderBy('id','asc')->value('code');
@@ -51,6 +52,7 @@ class VendorController extends BaseController
         }else{
             $this->is_payout_enabled = 0;
         }
+        $this->roleId = (@auth()->user()) ? getRoleId(@auth()->user()->getRoleNames()[0]) : null;
     }
 
     /**
@@ -67,7 +69,7 @@ class VendorController extends BaseController
             $vendors = $vendors->whereHas('permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
             });
-            if(@auth()->user()->getRoleNames()[0]=='Manager')
+            if(@$this->roleId=='5')
             {
                 $vendors = $vendors->where('refference_id',auth()->id());
             }
@@ -104,15 +106,15 @@ class VendorController extends BaseController
                 }
                 return $show_slot_option;
             })
-            ->addColumn('manager', function ($row) use ($users) {
-                $select = '<select name="manager_id" id="select_manager" data-id="'.$row->id.'" class="form-control select_manager"><option>Select Manager</option>';
-                foreach($users as $item){
-                    $selected = (($item->id==$row->refference_id)?'Selected':'');
-                    $select .= '<option value="'.$item->id.'" '.$selected.'>'.$item->name.'</option>';
-                }
-                $select .= '</select>';
-                return $select;
-            })
+            // ->addColumn('manager', function ($row) use ($users) {
+            //     $select = '<select name="manager_id" id="select_manager" data-id="'.$row->id.'" class="form-control select_manager"><option>Select Manager</option>';
+            //     foreach($users as $item){
+            //         $selected = (($item->id==$row->refference_id)?'Selected':'');
+            //         $select .= '<option value="'.$item->id.'" '.$selected.'>'.$item->name.'</option>';
+            //     }
+            //     $select .= '</select>';
+            //     return $select;
+            // })
             ->addColumn('show_slot_label', function ($row) {
                 if($row->show_slot == 1){
                     $show_slot_label ="success";
@@ -137,11 +139,10 @@ class VendorController extends BaseController
                 return $offers ;
             })
             ->addColumn('instant_booking_level', function ($row) use ($getAdditionalPreference) {
-                if(checkColumnExists('vendors', 'is_vendor_instant_booking')){
-                    if($getAdditionalPreference['is_one_push_book_enable'] == 1 && $row->is_vendor_instant_booking == 1){
-                        return __("Instant Booking");
-                    }
+                if($getAdditionalPreference['is_one_push_book_enable'] == 1 && $row->is_vendor_instant_booking == 1){
+                    return __("Instant Booking");
                 }
+            
                 return '';
             })
             ->addIndexColumn()
@@ -189,7 +190,7 @@ class VendorController extends BaseController
                 $query->where('user_id', $user->id);
             });
         }
-        if(@auth()->user()->getRoleNames()[0]=='Manager')
+        if(@$this->roleId=='5')
         {
             $vendors = $vendors->where('refference_id',auth()->id());
         }
@@ -216,9 +217,10 @@ class VendorController extends BaseController
 
         $vendor_for_pickup_delivery = null;
         $vendor_for_ondemand = null;
+        $vendor_category = VendorCategory::where('vendor_id',$vendors->first()->id);
         if($vendors->isNotEmpty()){
-            $vendor_for_pickup_delivery = VendorCategory::where('vendor_id',$vendors->first()->id)->whereHas('category',function($q){$q->where('type_id',7);})->count();
-            $vendor_for_ondemand = VendorCategory::where('vendor_id',$vendors->first()->id)->whereHas('category',function($q){$q->where('type_id',8);})->count();
+            $vendor_for_pickup_delivery = $vendor_category->whereHas('category',function($q){$q->where('type_id',7);})->count();
+            $vendor_for_ondemand = $vendor_category->whereHas('category',function($q){$q->where('type_id',8);})->count();
         }
 
         if(count($vendors) == 1 && $user->is_superadmin == 0){
@@ -414,7 +416,7 @@ class VendorController extends BaseController
         $vendor->city = $request->city;
         $vendor->state = $request->state;
         $vendor->country = $request->country;
-        if(@auth()->user()->getRoleNames()[0]=='Manager')
+        if(@$this->roleId=='5')
         {
             $vendor->refference_id = auth()->id();
         }
@@ -423,7 +425,7 @@ class VendorController extends BaseController
         $vendor->slug = Str::slug($request->name, "-");
         $vendor->save();
 
-        if(@auth()->user()->getRoleNames()[0]=='Manager')
+        if(@$this->roleId=='5')
         {
             UserVendor::updateOrCreate(['user_id' =>  auth()->id(),'vendor_id' => $vendor->id]);
         }
@@ -608,7 +610,7 @@ class VendorController extends BaseController
             $vendor_table->qr_url = url('/vendor/'.$vendor->slug.'/?id='.$vendor->id.'&name='.$vendor->name.'&table='.$vendor_table->id);
         }
         $co_ordinates = $all_coordinates = array();
-        $areas = ServiceArea::where('vendor_id', $id)->orderBy('created_at', 'DESC')->get();
+        $areas = ServiceArea::where('vendor_id', $id)->where('area_type', 1)->orderBy('created_at', 'DESC')->get();
         $VendorCategory = VendorCategory::where('vendor_id', $id)->where('status', 1)->pluck('category_id')->toArray();
         $zz = 1;
         $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
@@ -638,7 +640,7 @@ class VendorController extends BaseController
             $center['lat'] = $all_coordinates[0]['coordinates'][0]['lat'];
             $center['lng'] = $all_coordinates[0]['coordinates'][0]['lng'];
         }
-        $area1 = ServiceArea::where('vendor_id', $id)->orderBy('created_at', 'DESC')->first();
+        $area1 = ServiceArea::where('vendor_id', $id)->where('area_type', 1)->orderBy('created_at', 'DESC')->first();
         if (isset($area1)) {
             $co_ordinates = $area1->geo_coordinates[0];
         } else {
@@ -675,9 +677,6 @@ class VendorController extends BaseController
             unset($da->SectionTranslation);
             return $da;
         });
-        $vendorMultiBanner = $this->getMultiBanner($vendor->id);
-        $socialMediaUrls = VendorSocialMediaUrls::where('vendor_id', $vendor->id)->get();
-        //pr($vendorMultiBanner);
         $templetes = \DB::table('vendor_templetes')->where('status', 1)->get();
         $returnData = array();
         $returnData['client_preferences'] = $client_preferences;
@@ -696,27 +695,22 @@ class VendorController extends BaseController
         $returnData['templetes'] = $templetes;
         $returnData['builds'] = $build;
         $returnData['vendorSection'] = $vendorSection;
-        $returnData['vendorMultiBanner'] = $vendorMultiBanner;
         $returnData['is_payout_enabled'] = $this->is_payout_enabled;
-        $returnData['socialMediaUrls'] = $socialMediaUrls;
+
         if((isset($preferences['subscription_mode'])) && ($preferences['subscription_mode'] == 1)){
             $subscriptions_data = $this->getSubscriptionPlans($id);
             $returnData['subscription_plans'] = $subscriptions_data['sub_plans'];
             $returnData['subscription'] = $subscriptions_data['active_sub'];
         }
-        $vendor_for_pickup_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',7);})->count();
-        $vendor_for_ondemand = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',8);})->count();
-        $vendor_for_appointment_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',12);})->count();
+
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
         $facilties = Facilty::with(['primary'])->get();
-        $vendor_facilty_ids = VendorFacilty::where('vendor_id',$vendor->id)->pluck('facilty_id')->toArray();
 
+        $data = $this->SettingFunction($vendor,$id);
+        $dataMerge = array_merge($data,['clientCurrency'=>$clientCurrency,
+        'facilties'=>$facilties]);
         return view('backend/vendor/show')->with($returnData)
-                ->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,
-                    'clientCurrency'=>$clientCurrency,'vendor_for_ondemand' => $vendor_for_ondemand,
-                    'vendor_for_appointment_delivery' => $vendor_for_appointment_delivery,
-                    'facilties'=>$facilties,'vendor_facilty_ids'=> $vendor_facilty_ids
-                ]);
+                ->with($dataMerge);
     }
 
     /**   show vendor page - category tab      */
@@ -762,17 +756,14 @@ class VendorController extends BaseController
         $templetes = \DB::table('vendor_templetes')->where('status', 1)->get();
         $vendor_registration_documents = VendorRegistrationDocument::get();
         $clientCurrency = ClientCurrency::select('currency_id')->where('is_primary', 1)->with('currency')->first();
-        $vendor_for_pickup_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',7);})->count();
-        $vendor_for_appointment_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',12);})->count();
-        $vendor_for_ondemand = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',8);})->count();
+
         $facilties = Facilty::with(['primary'])->get();
-        $vendor_facilty_ids = VendorFacilty::where('vendor_id',$vendor->id)->pluck('facilty_id')->toArray();
-        $vendorMultiBanner = $this->getMultiBanner($vendor->id);
-        $socialMediaUrls = VendorSocialMediaUrls::where('vendor_id', $vendor->id)->get();
-
         $roles = RoleOld::where('status',1)->get();
+        $data = $this->SettingFunction($vendor,$id);
 
-        return view('backend.vendor.vendorCategory')->with(['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_appointment_delivery' => $vendor_for_appointment_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'client_preferences' => $client_preferences, 'vendor' => $vendor, 'tab' => 'category', 'html' => $tree, 'languages' => $langs, 'addon_sets' => $addons, 'VendorCategory' => $VendorCategory, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'builds' => $build,'csvVendors'=> $csvVendors, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'clientCurrency'=>$clientCurrency,'facilties'=>$facilties,'vendor_facilty_ids'=> $vendor_facilty_ids,'vendorMultiBanner'=>$vendorMultiBanner,'socialMediaUrls'=>$socialMediaUrls,'roles' => $roles]);
+        $dataMerge = array_merge($data,['client_preferences' => $client_preferences, 'vendor' => $vendor, 'tab' => 'category', 'html' => $tree, 'languages' => $langs, 'addon_sets' => $addons, 'VendorCategory' => $VendorCategory, 'categoryToggle' => $categoryToggle, 'templetes' => $templetes, 'builds' => $build,'csvVendors'=> $csvVendors, 'is_payout_enabled'=>$this->is_payout_enabled, 'vendor_registration_documents' => $vendor_registration_documents,'clientCurrency'=>$clientCurrency,'facilties'=>$facilties,'roles' => $roles]);
+
+        return view('backend.vendor.vendorCategory')->with($dataMerge);
     }
 
     /**   show vendor page - catalog tab      */
@@ -903,7 +894,7 @@ class VendorController extends BaseController
         $taxRates=TaxRate::all();
         $files = CsvQrcodeImport::latest()->get();
         $facilties = Facilty::with(['primary'])->get();
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role','is_one_push_book_enable']);
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role','is_one_push_book_enable','is_long_term_service']);
         $roles = RoleOld::get();
         if($getAdditionalPreference['is_price_by_role'] == 1){
             if($roles){
@@ -944,14 +935,22 @@ class VendorController extends BaseController
 
         $socialMediaUrls = VendorSocialMediaUrls::where('vendor_id', $vendor->id)->get();
         $live_status=([0=>'Draft',1=>'Published',2=>'Blocked']);
-        $vendor_for_pickup_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',7);})->count();
-        $vendor_for_ondemand = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',8);})->count();
-        $vendor_for_appointment_delivery = VendorCategory::where('vendor_id',$id)->whereHas('category',function($q){$q->where('type_id',12);})->count();
-        $reqBidCnt = Bid::where('vendor_id','!=',$id)->groupBy('bid_req_id')->count();
 
+        $vendor_category = VendorCategory::where('vendor_id',$id);   
+        $vcompare = clone $vendor_category;
+        $vendor_for_pickup_delivery = clone $vendor_category;
+        $vendor_for_appointment_delivery = clone $vendor_category;
+        $vendor_for_ondemand = clone $vendor_category;
+        $vendor_for_pickup_delivery = $vendor_for_pickup_delivery->whereHas('category',function($q){$q->where('type_id',7);})->count();
+        $vendor_for_ondemand = $vendor_for_ondemand->whereHas('category',function($q){$q->where('type_id',8);})->count();
+        $vendor_for_appointment_delivery = $vendor_for_appointment_delivery->whereHas('category',function($q){$q->where('type_id',12);})->count();
+        
+        $vendorCompare = $vcompare->whereHas('categoryDetail')->select('vendor_id','category_id')->get();
+        
+        $reqBidCnt = Bid::where('vendor_id','!=',$id)->groupBy('bid_req_id')->count();
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role','is_admin_vendor_rating']);
 
-        return ['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_appointment_delivery' => $vendor_for_appointment_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'typeArray' => $type, 'checkShip'=>$checkShip,'checkAhoyShip'=>$checkAhoyShip,'live_status'=>$live_status,'vendor_facilty_ids'=> $vendor_facilty_ids,'vendorMultiBanner'=>$vendorMultiBanner,'socialMediaUrls'=>$socialMediaUrls,'client_languages'=>$client_languages, 'reqBidCnt'=>$reqBidCnt];
+        return ['vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,'vendor_for_appointment_delivery' => $vendor_for_appointment_delivery,'vendor_for_ondemand' => $vendor_for_ondemand,'typeArray' => $type, 'checkShip'=>$checkShip,'checkAhoyShip'=>$checkAhoyShip,'live_status'=>$live_status,'vendor_facilty_ids'=> $vendor_facilty_ids,'vendorMultiBanner'=>$vendorMultiBanner,'socialMediaUrls'=>$socialMediaUrls,'client_languages'=>$client_languages, 'reqBidCnt'=>$reqBidCnt,'vendorCompare'=>$vendorCompare];
     }
 
 
@@ -977,9 +976,7 @@ class VendorController extends BaseController
         ->groupBy('products.id')
         ->where('vendor_id', $vendor_id); //->get()->sortBy('primary.title', SORT_REGULAR, false);
          $need_sync_with_order = 0;
-        if(checkColumnExists('vendors', 'need_sync_with_order')){
-            $need_sync_with_order = Vendor::where('id', $vendor_id)->value('need_sync_with_order');
-        }
+        $need_sync_with_order = Vendor::where('id', $vendor_id)->value('need_sync_with_order');
 
         // pr($product->get()->toArray());
         $datatable = Datatables::of($product)
@@ -1007,11 +1004,10 @@ class VendorController extends BaseController
                     $live_status = __('Blocked');
                 }
                 
-                if(checkColumnExists('vendors', 'is_vendor_instant_booking') && checkColumnExists('products', 'is_product_instant_booking')){
-                    if($getAdditionalPreference['is_one_push_book_enable'] == 1 && $product->is_product_instant_booking == 1 && $product->vendor->is_vendor_instant_booking == 1){
-                        $live_status.= "<br/><span class='badge bg-success text-white'>".__('Instant Booking')."</span>";
-                    }
+                if($getAdditionalPreference['is_one_push_book_enable'] == 1 && $product->is_product_instant_booking == 1 && $product->vendor->is_vendor_instant_booking == 1){
+                    $live_status.= "<br/><span class='badge bg-success text-white'>".__('Instant Booking')."</span>";
                 }
+                
                 return $live_status;
             })
             ->addColumn('action', function ($product) use ($request) {
@@ -1192,7 +1188,7 @@ class VendorController extends BaseController
             $sku_url = $sku_url.".".$vendor_name;
         }
 
-        $total_delivery_fees = OrderVendor::where('vendor_id', $id)->orderBy('id','desc');
+        $total_delivery_fees = OrderVendor::where('vendor_id', $id)->orderBy('id','desc')->where('order_status_option_id','!=',3);
         if ($user->is_superadmin == 0) {
             $total_delivery_fees = $total_delivery_fees->whereHas('vendor.permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
@@ -1200,7 +1196,7 @@ class VendorController extends BaseController
         }
         $total_delivery_fees = $total_delivery_fees->sum('delivery_fee');
 
-        $total_promo_amount = OrderVendor::where('vendor_id', $id)->orderBy('id','desc');
+        $total_promo_amount = OrderVendor::where('vendor_id', $id)->orderBy('id','desc')->where('order_status_option_id','!=',3);
         if ($user->is_superadmin == 0) {
             $total_promo_amount = $total_promo_amount->whereHas('vendor.permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
@@ -1208,7 +1204,7 @@ class VendorController extends BaseController
         }
         $total_promo_amount = $total_promo_amount->where('coupon_paid_by', 0)->sum('discount_amount');
 
-        $total_admin_commissions = OrderVendor::where('vendor_id', $id)->orderBy('id','desc');
+        $total_admin_commissions = OrderVendor::where('vendor_id', $id)->orderBy('id','desc')->where('order_status_option_id','!=',3);
         if ($user->is_superadmin == 0) {
             $total_admin_commissions = $total_admin_commissions->whereHas('vendor.permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
@@ -1216,7 +1212,7 @@ class VendorController extends BaseController
         }
         $total_admin_commissions = $total_admin_commissions->sum(DB::raw('admin_commission_percentage_amount + admin_commission_fixed_amount'));
 
-        $total_order_value = OrderVendor::where('vendor_id', $id)->orderBy('id','desc');
+        $total_order_value = OrderVendor::where('vendor_id', $id)->orderBy('id','desc')->where('order_status_option_id','!=',3);
         if ($user->is_superadmin == 0) {
             $total_order_value = $total_order_value->whereHas('vendor.permissionToUser', function ($query) use($user) {
                 $query->where('user_id', $user->id);
@@ -1409,6 +1405,26 @@ class VendorController extends BaseController
         return redirect()->back()->with('success', $msg . ' updated successfully!');
     }
 
+     /**     update vendor configuration data     */
+     public function updateVendorInfo(Request $request, $domain = '',  $id)
+     {
+         $msg = 'Order configuration';
+         if ($request->has('compareCheck'))
+         {
+            $cateComp = [];
+            if ($request->has('compare_product_category')){
+                $cateComp = implode(',',$request->compare_product_category);
+            }
+
+            $arrayData = ['compare_categories'=>$cateComp];
+            $this->updateVendorAdditionalPreference($id,$arrayData);
+         }
+
+         return redirect()->back()->with('success', $msg . ' updated successfully!');
+    }
+
+
+
     /**     update vendor configuration data     */
     public function updateConfig(Request $request, $domain = '',  $id)
     {
@@ -1465,19 +1481,14 @@ class VendorController extends BaseController
 
 
         // Set order limit - By Ovi
-        if(checkColumnExists('vendors', 'same_day_delivery')){
-            $vendor->same_day_delivery   = ($request->has('same_day_delivery') && $request->same_day_delivery == 'on') ? 1 : 0;
-        }
+        $vendor->same_day_delivery   = ($request->has('same_day_delivery') && $request->same_day_delivery == 'on') ? 1 : 0;
+        
+        $vendor->next_day_delivery   = ($request->has('next_day_delivery') && $request->next_day_delivery == 'on') ? 1 : 0;
+        
+        $vendor->hyper_local_delivery = ($request->has('hyper_local_delivery') && $request->hyper_local_delivery == 'on') ? 1 : 0;
 
-        if(checkColumnExists('vendors', 'next_day_delivery')){
-            $vendor->next_day_delivery   = ($request->has('next_day_delivery') && $request->next_day_delivery == 'on') ? 1 : 0;
-        }
 
-        if (checkColumnExists('vendors', 'hyper_local_delivery')) {
-            $vendor->hyper_local_delivery = ($request->has('hyper_local_delivery') && $request->hyper_local_delivery == 'on') ? 1 : 0;
-        }
-
-        if (checkColumnExists('vendors', 'cutOff_time') && $request->has('cutoff_time') && $request->cutoff_time != '') {
+        if ($request->has('cutoff_time') && $request->cutoff_time != '') {
             $vendor->cutoff_time = $request->cutoff_time;
         }
 
@@ -1934,6 +1945,13 @@ class VendorController extends BaseController
             'is_superadmin' => 0
         ];
         $client = User::where('id', $id)->update($data);
+        $user = User::where('id', $id)->first();
+
+         //Assign user to role for permission
+         if($user){
+            DB::table('model_has_roles')->where('model_id',$user->id)->delete();
+            $user->assignRole(4);
+        }
 
         if(UserPermissions::where('user_id', $id)->count() == 0){
             //for updating permissions
@@ -2058,8 +2076,11 @@ class VendorController extends BaseController
      */
     public function userVendorPermissionDestroy($domain = '', $id)
     {
-        $del_price_rule = UserVendor::where('id', $id);
-         $del_price_rule = $del_price_rule->delete();
+        $del_price_rule = UserVendor::where('id', $id)->first();
+        // dd($id);
+        $id = $del_price_rule->user_id;
+        $del_price_rule = $del_price_rule->delete();
+        $this->removeVendorPermissionAndRole($id);
 
         return redirect()->back()->with('success', 'Permission deleted successfully!');
     }

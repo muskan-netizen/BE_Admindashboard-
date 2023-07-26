@@ -55,14 +55,13 @@ trait WebStylingTrait
     }
     public function updateSelectedProductstoDb($id, $request,$type='')
     {
-        if (checkColumnExists('home_products','product_id')) {
-            $delete = HomeProduct::where('layout_id', $id);
-            
-            if(!empty($type))
-            $delete = $delete->where('type',$type);
+        $delete = HomeProduct::where('layout_id', $id);
+        
+        if(!empty($type))
+        $delete = $delete->where('type',$type);
 
-            $delete = $delete->delete();
-            foreach($request->selected_products as $products){
+        $delete = $delete->delete();
+        foreach($request->selected_products as $products){
             $relatedArray[] = [
                 'slug' => 'selected_products',
                 'product_id' => $products,
@@ -70,8 +69,7 @@ trait WebStylingTrait
                 'type'      => $type??0
             ];
         }
-            HomeProduct::insert($relatedArray);
-        }
+        HomeProduct::insert($relatedArray);
         return true;
     }
 
@@ -87,25 +85,22 @@ trait WebStylingTrait
     public function getSelectedProducts()
     {
         $product_ids = [];
-        if (checkColumnExists('home_products', 'slug')) {
-            $single_category_products = HomeProduct::whereSlug('selected_products')->first();
-            if (!empty($single_category_products->products)) {
+        
+        $single_category_products = HomeProduct::whereSlug('selected_products')->first();
+        if (!empty($single_category_products->products)) {
 
-                $product_ids = json_decode($single_category_products->products);
-            } else {
-                $product_ids = [];
-            }
+            $product_ids = json_decode($single_category_products->products);
+        } else {
+            $product_ids = [];
         }
+        
         return $product_ids;
     }
 
     public function getHomePageSelectedProducts($type=0)
     {
         //0 for web and 1 for App type
-        $selected_ids = [];
-        if (checkColumnExists('home_products', 'type')) {
-            $selected_ids= HomeProduct::where('type',$type)->pluck('product_id')->toArray();
-        }
+        $selected_ids= HomeProduct::where('type',$type)->pluck('product_id')->toArray();
         return $selected_ids;
     }
 

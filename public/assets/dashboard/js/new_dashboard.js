@@ -1,6 +1,8 @@
 $(document).ready(function () {
+    
     const $flatpickr = $("#range-datepicker").flatpickr({
         mode: "range",
+        dateFormat: "d M Y",
         onClose: function (selectedDates, dateStr, instance) {
             getDashboardData(dashboard_filter_url);
         }
@@ -14,8 +16,7 @@ $(document).ready(function () {
     });
 
     $("#dashboard_refresh_btn").click(function () {
-        $flatpickr.clear();
-        getDashboardData(dashboard_filter_url);
+        window.location.reload();
     });
     getDashboardData(dashboard_filter_url);
 
@@ -26,6 +27,7 @@ $(document).ready(function () {
 
         $.getJSON(dashboard_filter_url, { manager_id : manager_id ,date_filter: date_filter,reportType:reportType}, function (response) {
             if (response.status == 'Success') {
+                //$('#range-datepicker').val(response.data.setWeekDate);
                 $('#total_products').html('+ ' + response.data.total_products);
                 $('#notification_counts').html(response.data.orderNotificationCnt);
                 $('#total_revenue').html(response.data.currencySymbol + response.data.total_revenue);
@@ -79,15 +81,38 @@ $(document).ready(function () {
                 Worldmap(response.data.markers);
                 updateRevenue(response.data.monthwise_revenue, response.data.currencySymbol);
                 updateRevenueLineChart(response.data.currentweek_revenue_daywise, response.data.previousweek_revenue_daywise, response.data.currencySymbol);
+                // if (response.data.locationwise_revenue) {
+                //     $('#revenue_locations').html('');
+                //     if (response.data.locationwise_revenue != '') {
+                //         response.data.locationwise_revenue.forEach(el => {
+                //             var sum = Math.round(el.sum);
+                //             var orderCount = response.data.currentyear_ordercount;
+                //             var percent = Math.round((el.addressCount / orderCount) * 100);
+                //             $('#revenue_locations').append('<h5 class="mb-1 mt-0 fw-normal">' + el.address.city + '</h5><div class="progress-w-percent"><span class="progress-value fw-bold">' + response.data.currencySymbol + sum + "</span><div class='progress progress-sm'><div class='progress-bar' role='progressbar' style='width:" + percent + "%;' aria-valuenow='72' aria-valuemin='0' aria-valuemax='100'></div></div></div>");
+                //         });
+                //     } else {
+                //         $('#revenue_locations').append('<h5 class="mb-1 mt-0 fw-normal text-center">No data found</h5>');
+                //     }
+                // }
                 if (response.data.locationwise_revenue) {
+                    var sum = 0;
+                    var orderCount = 0;
+                    var percent = 0;
+                    var city = '';
+                    var addressCount =0;
                     $('#revenue_locations').html('');
                     if (response.data.locationwise_revenue != '') {
-                        response.data.locationwise_revenue.forEach(el => {
-                            var sum = Math.round(el.sum);
-                            var orderCount = response.data.currentyear_ordercount;
-                            var percent = Math.round((el.addressCount / orderCount) * 100);
-                            $('#revenue_locations').append('<h5 class="mb-1 mt-0 fw-normal">' + el.address.city + '</h5><div class="progress-w-percent"><span class="progress-value fw-bold">' + response.data.currencySymbol + sum + "</span><div class='progress progress-sm'><div class='progress-bar' role='progressbar' style='width:" + percent + "%;' aria-valuenow='72' aria-valuemin='0' aria-valuemax='100'></div></div></div>");
-                        });
+                        var html = '';                        
+                        var arr = response.data.locationwise_revenue;
+                        for (const property in arr) {
+                            console.log(arr[property]);
+                            var data = arr[property];
+                            var  orderCount = response.data.currentyear_ordercount;
+                            var percent = Math.round((data.addressCount / orderCount) * 100);
+                            var html = '<span id="'+data.city+'"><h5 class="mb-1 mt-0 fw-normal">' + data.city  + '</h5><div class="progress-w-percent"><span class="progress-value fw-bold">' + Math.round( data.sum)+ "</span><div class='progress progress-sm'><div class='progress-bar' role='progressbar' style='width:" + percent + "%;' aria-valuenow='72' aria-valuemin='0' aria-valuemax='100'></div></div></div></span>";
+                            $('#revenue_locations').append(html);
+                
+                          }
                     } else {
                         $('#revenue_locations').append('<h5 class="mb-1 mt-0 fw-normal text-center">No data found</h5>');
                     }

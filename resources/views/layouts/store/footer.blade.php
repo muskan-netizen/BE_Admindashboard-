@@ -14,11 +14,12 @@
   </div>
 @php
     $mapKey = '1234';
-    $theme = \App\Models\ClientPreference::where(['id' => 1])->first();
-    $analytics = getAdditionalPreference(['gtag_id', 'fpixel_id']);
+    $theme = Session::get('preferences');
+    
     if($theme && !empty($theme->map_key)){
         $mapKey = $theme->map_key;
     }
+   
     $webColor = '#ff4c3b';
     \Session::forget('success');
 @endphp
@@ -38,7 +39,9 @@
         </div>
     </div>
 </div>
-
+@if($is_ondemand_multi_pricing ==1)
+@include('layouts.store.ondemand_price_selection_model')
+@endif
 <!-- spinner Start -->
 
 <div class="nb-spinner-main">
@@ -50,13 +53,19 @@
     <!-- spinner End -->
 @php
 $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
+$is_map_search_perticular_country = getMapConfigrationPreference();
 @endphp
 <script>
     var setShowSubscriptionPlan = '';
+    var showOndemandPricing = '';
+    let is_map_search_perticular_country = '';
+
     @if($showSubscriptionPlanPopUp == 1)
         setShowSubscriptionPlan = "showed";
     @endif
-
+    var is_ondemand_multi_pricing = '{{ $is_ondemand_multi_pricing }}';
+     is_map_search_perticular_country = '{{ $is_map_search_perticular_country }}';
+    var ondemand_selected_price = "{{ Session::get('onDemandPricingSelected')?? 'vendor' }}";
 </script>
 @yield('pre-custom-script')
 <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
@@ -79,6 +88,7 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{$mapKey}}&v=3.exp&libraries=places,drawing"></script>
 <script type="text/javascript" src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('js/spinner.js')}}"></script>
+<script defer type="text/javascript" src="{{asset('js/image_blur.js')}}"></script>
 
 @yield('custom-js')
 <script defer type="text/javascript" src="{{asset('js/custom.js')}}"></script>
@@ -161,7 +171,7 @@ $showSubscriptionPlanPopUp = checkShowSubscriptionPlanOnSignup();
     @if(empty(Session::get('current_fcm_token')))
     initFirebaseMessagingRegistration();
     @endif
-    messaging.onMessage(function(payload) {
+    messaging.onMessage(async function(payload) {
         console.log(payload);
         if (!("Notification" in window)) {
             console.log("This browser does not support system notifications.");
@@ -273,10 +283,13 @@ if($showSubscriptionPlanPopUp == 1){
     @if(Session::has('vendorType') && (Session::get('vendorType') != '') )
         vendor_type = "{{Session::get('vendorType')}}";
     @endif
-    @if((getAdditionalPreference(['is_service_product_price_from_dispatch'])['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand'))
-        is_service_product_price_from_dispatch_forOnDemand =1;
-    @endif
-
+    @php 
+        $additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch','is_service_price_selection']);
+        $getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'), (@Session::get('onDemandPricingSelected') ?? ''),$additionalPreference);
+        $is_service_product_price_from_dispatch_forOnDemand =$getOnDemandPricingRule['is_price_from_freelancer'] ?? 0;
+    @endphp
+   
+     is_service_product_price_from_dispatch_forOnDemand ="{{ $is_service_product_price_from_dispatch_forOnDemand  }}";
     var autocomplete_url = "{{ route('autocomplete') }}";
     let stripe_publishable_key = '{{ $stripe_publishable_key }}';
     let stripe_fpx_publishable_key = '{{ $stripe_fpx_publishable_key }}';
@@ -377,13 +390,13 @@ if($showSubscriptionPlanPopUp == 1){
     var khalti_api_key = "{{getKhaltiPayApiKey()??''}}";
 
 // Client Perference  Detail
-    var client_preference_web_color = "{{getClientPreferenceDetail()->web_color}}";
-    var client_preference_web_rgb_color = "{{getClientPreferenceDetail()->wb_color_rgb}}";
-    var stop_accepting_orders = "{{getClientPreferenceDetail()->stop_order_acceptance_for_users ?? 0}}";
+    var client_preference_web_color = "{{Session::get('preferences')->web_color ?? ''  }}";
+    var client_preference_web_rgb_color = "{{Session::get('preferences')->wb_color_rgb  ?? ''}}";
+    var stop_accepting_orders = "{{Session::get('preferences')->stop_order_acceptance_for_users ?? 0}}";
 
 // Client Detail
-    var client_company_name = "{{getClientDetail()->company_name}}";
-    var client_logo_url = "{{getClientDetail()->logo_image_url}}";
+    var client_company_name = "{{Session::get('clientdata')->company_name}}";
+    var client_logo_url = "{{Session::get('clientdata')->logo_image_url}}";
     var digit_count = "{{$client_preference_detail->digit_after_decimal}}";
 
 //////////////Telr payment Routes

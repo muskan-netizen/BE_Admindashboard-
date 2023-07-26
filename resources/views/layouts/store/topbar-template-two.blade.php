@@ -51,13 +51,17 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     <ul class="header-dropdown">
                         <!-- <li class="mobile-wishlist d-inline d-sm-none">
                             <a href="{{route('user.wishlists')}}">
-                                <i class="fa fa-heart" aria-hidden="true"></i>
+                                <i class="fa fa-heart-o wishListCount" aria-hidden="true"></i>
                             </a>
                         </li> -->
-                        @if($client_preference_detail->header_quick_link == 1)
+                       
                         @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
                             <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
                         @endif
+                        @if( $is_ondemand_multi_pricing ==1 )
+                            @include('layouts.store.onDemandTopBarli')
+                        @endif
+                        @if($client_preference_detail->header_quick_link == 1)
                         <li class="onhover-dropdown quick-links quick-links">
 
                             <span class="quick-links ml-1 align-middle">{{ __('Quick Links') }}</span>
@@ -200,7 +204,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     @if($client_preference_detail->show_wishlist == 1)
                     <li class="mobile-wishlist d-inline d-sm-none">
                         <a href="{{route('user.wishlists')}}">
-                            <i class="fa fa-heart" aria-hidden="true"></i>
+                            <i class="fa fa-heart-o wishListCount"  aria-hidden="true"></i>
                         </a>
                     </li>
                     @endif

@@ -79,5 +79,11 @@ return [
     '5' => "Thursday",
     '6' => "Friday",
     '7' => "Saturday",
-  ]
+  ],
+  'onDemandPricingType' => [
+    'vendor'     => 'Vendor Service',           // Delivery of the order will be sent to the ccustomer.
+    'freelancer' => 'Freelancer Service',             // Customer can order and dine in the restaurant.
+    
+
+  ],
 ];

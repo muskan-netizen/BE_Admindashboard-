@@ -293,7 +293,6 @@ class ReturnOrderController extends BaseController{
         try {
             $user = Auth::user();
             DB::beginTransaction();
-            //\Log::info("asdfasd", $request->all());
            
             $orderVendorProductOld = OrderProduct::find($request->order_vendor_product_id); // get exchanged order product
             
@@ -340,36 +339,36 @@ class ReturnOrderController extends BaseController{
             return false;
     }
 
-    public function sendSuccessNotification($id, $vendorId){
-        $super_admin = User::where('is_superadmin', 1)->pluck('id');
-        $user_vendors = UserVendor::where('vendor_id', $vendorId)->pluck('user_id');
-        $devices = UserDevice::whereNotNull('device_token')->where('user_id', $id)->pluck('device_token');
-        foreach($devices as $device){
-            $token[] = $device;
-        }
-        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_vendors)->pluck('device_token');
-        foreach($devices as $device){
-            $token[] = $device;
-        }
-        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $super_admin)->pluck('device_token');
-        foreach($devices as $device){
-            $token[] = $device;
-        }
-        //$token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
-        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
-        $notification_content = NotificationTemplate::where('id', 3)->first();
-         if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
+    // public function sendSuccessNotification($id, $vendorId){
+    //     $super_admin = User::where('is_superadmin', 1)->pluck('id');
+    //     $user_vendors = UserVendor::where('vendor_id', $vendorId)->pluck('user_id');
+    //     $devices = UserDevice::whereNotNull('device_token')->where('user_id', $id)->pluck('device_token');
+    //     foreach($devices as $device){
+    //         $token[] = $device;
+    //     }
+    //     $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_vendors)->pluck('device_token');
+    //     foreach($devices as $device){
+    //         $token[] = $device;
+    //     }
+    //     $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $super_admin)->pluck('device_token');
+    //     foreach($devices as $device){
+    //         $token[] = $device;
+    //     }
+    //     //$token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
+    //     $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+    //     $notification_content = NotificationTemplate::where('id', 3)->first();
+    //      if ($notification_content && !empty($token) && !empty($client_preferences->fcm_server_key)) {
             
-            $data = [
-                "registration_ids" => $token,
-                "notification" => [
-                    'title' => $notification_content->label,
-                    'body'  => $notification_content->content,
-                ]
-            ];
-            sendFcmCurlRequest($data);
-        }
-    }
+    //         $data = [
+    //             "registration_ids" => $token,
+    //             "notification" => [
+    //                 'title' => $notification_content->label,
+    //                 'body'  => $notification_content->content,
+    //             ]
+    //         ];
+    //         sendFcmCurlRequest($data);
+    //     }
+    // }
 
     public function sendSuccessEmail($request){
         if( (isset($request->auth_token)) && (!empty($request->auth_token)) ){
@@ -515,13 +514,13 @@ class ReturnOrderController extends BaseController{
 
                     if (!empty($currentOrderStatus->dispatch_traking_url) && ($request->status_option_id == 3)) {
                         if (isset($orderData->luxury_option->title) && $orderData->luxury_option->title == "pick_drop") {
-                            $new_dispatch_traking_url = str_replace('/order/', '/order-details/', $currentOrderStatus->dispatch_traking_url);
+                            $new_dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
                             $tracking_response = Http::get($new_dispatch_traking_url);
                             if ($tracking_response->status() == 200) {
                                 if (!empty($tracking_response['tasks'])) {
                                     foreach ($tracking_response['tasks'] as $order_tasks) {
                                         if ($order_tasks['task_status'] > 0 && $order_tasks['task_status'] < 5) {
-                                            return response()->json(['status' => '403', 'message' => __('Order initiated, you can not cancel this order !!!')]);
+                                            return response()->json(['status' => '403', 'message' => __('Your Order Has Been Cancelled!!!')]);
                                         }
                                     }
                                 }

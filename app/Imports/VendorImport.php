@@ -9,10 +9,15 @@ use Maatwebsite\Excel\Concerns\ToCollection;
 
 class VendorImport implements ToCollection
 {
+    public $roleId;
+    public $csv_vendor_import_id;
+    
     public function  __construct($csv_vendor_import_id)
     {
         $this->csv_vendor_import_id = $csv_vendor_import_id;
-    }
+        $this->roleId = (@auth()->user()) ? getRoleId(@auth()->user()->getRoleNames()[0]) : null;
+        }
+
     public function collection(Collection $rows)
     {
         try {
@@ -172,7 +177,7 @@ class VendorImport implements ToCollection
                             'longitude' => $longitude,
                         );
 
-                        if(@auth()->user()->getRoleNames()[0]=='Manager')
+                        if(@$this->roleId=='5')
                         {
                             $insert_vendor_details['refference_id'] = auth()->id()??null;
                         }
@@ -180,7 +185,7 @@ class VendorImport implements ToCollection
                         $vendorID  =  Vendor::insertGetId($insert_vendor_details);
                         $vendorData = Vendor::where('id', $vendorID)->first();
 
-                        if(@auth()->user()->getRoleNames()[0]=='Manager')
+                        if(@$this->roleId=='5')
                         {
                             UserVendor::updateOrCreate(['user_id' =>  auth()->id(),'vendor_id' => $vendorID]);
                         }
@@ -234,7 +239,7 @@ class VendorImport implements ToCollection
                 }
             } catch (\Exception $ex) {
                 $error[] = "Other: " . $ex->getMessage();
-                //\Log::info($ex->getMessage() . "" . $ex->getLine());
+                \Log::info($ex->getMessage() . "" . $ex->getLine());
             }
             $csv_vendor_import = CsvVendorImport::where('id', $this->csv_vendor_import_id)->first();
             if (!empty($error)) {

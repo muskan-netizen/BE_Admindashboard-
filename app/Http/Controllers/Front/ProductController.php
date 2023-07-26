@@ -12,10 +12,10 @@ use App\Http\Controllers\Front\FrontController;
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCurrency, ProductVariant, ProductVariantSet,OrderProduct,VendorOrderStatus,OrderProductRating,Category, Vendor,ProductFaq,ClientLanguage, ProductFaqSelectOption, WebStylingOption,ProductRecentlyViewed, Attribute, ProductAttribute,DeliverySlotProduct, UserVendor, DeliverySlot,UserAddress,ProcessorProduct};
 
 use Carbon\Carbon;
-use App\Http\Traits\{ProductActionTrait, ProductTrait};
+use App\Http\Traits\{ProductActionTrait, ProductTrait,ProductVariantActionTrait};
 class ProductController extends FrontController{
     private $field_status = 2;
-    use ProductActionTrait,ProductTrait;
+    use ProductActionTrait,ProductTrait,ProductVariantActionTrait;
 
     public function __construct()
     {
@@ -77,6 +77,7 @@ class ProductController extends FrontController{
         $p_id = $product->id;
         $product =  $this->getProduct($p_id,$vendor,$url_slug,$user,$langId);
 
+
         if($this->checkTemplateForAction(8)){
             $this->RecentView($p_id);
         }
@@ -99,6 +100,7 @@ class ProductController extends FrontController{
          /**
           * long_term service product
           * */
+
         if($product->is_long_term_service == 1){
             $product_id = $product->LongTermProducts->product_id;
             $url_slug   = $product->LongTermProducts->product->url_slug;
@@ -246,10 +248,9 @@ class ProductController extends FrontController{
             }
             $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = [];
 
-            $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant', 'productVariantByRoles']);
+            $suggested_product = Product::with(['vendor', 'translation', 'variant', 'productVariantByRoles']);
             if( !empty($product->category->category_id) ) {
-                $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);
-                $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)->orderby('id', 'desc')->limit(20)->get();
+                $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)->groupBy('id')->orderby('id', 'desc')->limit(20)->get();
             }
 
 
@@ -260,7 +261,6 @@ class ProductController extends FrontController{
                     }
                 }
             }
-
 
             if( !empty($product->brand_id) ) {
                 $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);
@@ -353,6 +353,8 @@ class ProductController extends FrontController{
             if( $parsed_cutoff_time->gt($current_time) ) {
                 $current_time_response = true;
             }
+
+            
             return view('frontend.'.$product_page)->with(['user_vendor' => $user_vendor, 'shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference, 'suggested_category_products' => $suggested_category_products, 'suggested_brand_products'=> $suggested_brand_products, 'suggested_vendor_products'=>$suggested_vendor_products, 'coupon_list' => $coupon_list, 'attr_array' => $attr_array, 'set_template' => $set_template, 'current_time_response' => $current_time_response, 'processorProduct'=> $processorProduct]);
         }
    }
@@ -395,12 +397,15 @@ class ProductController extends FrontController{
                             ->where('product_variant_id', $variant->product_variant_id)
                             ->whereHas('productVariants', function($q){
                                 $q->where('status', '=', 1);
+                                $q->where('quantity', '>', 0);
+
                             })->get();
-                            if(count($variantSet) == count($request->variants)){
+                           // pr($variantSet->toArray());
+                           // if(count($variantSet) == count($request->variants)){
                                 // if(!in_array($variantSet->product_variant_id, $pv_ids)){
                                     $pv_ids[] = $variant->product_variant_id;
                                 // }
-                            }
+                            //}
                         }
                     }
                 }
@@ -419,9 +424,10 @@ class ProductController extends FrontController{
             }
         }
         $sets = array();
+        //pr($pv_ids);
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
         $availableSets = Product::with(['variantSet.variantDetail','variantSet.option2'=>function($q)use($product, $pv_ids){
-            $q->where('product_variant_sets.product_id', $product->id); //->whereIn('product_variant_id', $pv_ids);
+            $q->where('product_variant_sets.product_id', $product->id)->whereIn('product_variant_id', $pv_ids);
         }])
         //return $product;
         ->select('id')
@@ -472,6 +478,7 @@ class ProductController extends FrontController{
                 if($is_token_enable){
                     $tokenAmount = getJsToken();
                 }
+                
 
                 $data['variant'] = $variantData;
                 $data['tokenAmount'] = $tokenAmount;
@@ -481,11 +488,12 @@ class ProductController extends FrontController{
             }
 
         }
+        //pr($data['availableSets']->toArray());
         return response()->json(array('status' => 'Error', 'message' => 'This option is currenty not available', 'data' => $data));
     }
 
       # get product faq
-      public function getProductCompare(Request $request){
+    public function getProductCompare(Request $request){
         $comIds = [];
         $idsUnque = $request->compareItems;
         $productId[] = $request->productId;
@@ -505,7 +513,7 @@ class ProductController extends FrontController{
             $html = view('frontend.compare-product-table')->with(['compareProducts'=>$compareProducts,'ajax'=>1])->render();
         }     
         return response()->json(['ids'=>$idsmerge??$request->compareItems,'html'=>$html]);
-}
+    }
 
     # get product faq
     public function getProductFaq(Request $request,$domain = '',$product_id){
