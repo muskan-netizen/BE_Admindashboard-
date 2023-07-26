@@ -41,10 +41,10 @@ class RoadieController extends Controller
         $items = [];
         foreach($vendorData->vendorProducts as $vendorProduct){
             $items[] = [
-                'weight' => $vendorProduct->product->weight,
-                'length' => $vendorProduct->product->length,
-                'width' => $vendorProduct->product->breadth,
-                'height' => $vendorProduct->product->height,
+                'weight' => $vendorProduct->product->weight??1.0,
+                'length' => $vendorProduct->product->length??"10.0",
+                'width' => $vendorProduct->product->breadth??"12.0",
+                'height' => $vendorProduct->product->height??"8.0",
                 'quantity' => $vendorProduct->quantity
             ];
         }
