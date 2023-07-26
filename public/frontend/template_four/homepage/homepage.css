@@ -3480,7 +3480,6 @@ body[dir=rtl] .alFourThLogo {
 
 }
 
-
 @media(max-width:1450px) {
     .product-m .slick-slide {
         margin: 0;
@@ -3512,6 +3511,11 @@ body[dir=rtl] .alFourThLogo {
     }
     .alFourTemplateCartButtons a span {
         padding-right: 25px;
+    }
+    .box-account button.btn.btn-solid {
+        font-size: 10px;
+        text-transform: capitalize !important;
+        padding: 8px 4px !important;
     }
 }
 
