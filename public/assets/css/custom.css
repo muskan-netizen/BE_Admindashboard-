@@ -2479,7 +2479,9 @@ label.logo-size {
     overflow: hidden;
     text-overflow: ellipsis
 }
-
+.custom-dd-empty .ellips{
+    width: 80%;
+}
 #promo-datatable .ellips {
     width: 50%
 }

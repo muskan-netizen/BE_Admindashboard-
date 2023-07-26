@@ -3047,6 +3047,16 @@ body.al_body_template_eight.homeHeader .main-fillter .side_fillter .range-slider
 }
 /*----------laptop view----------*/
 
+@media screen and (min-width:768px) and (max-width:1392px){
+    /*---user wallet btn rwd css--*/
+    body.al_body_template_eight .box-account.box-info .btn-solid {
+        padding: 8px 8px !important;
+        font-size: 10px;
+    }
+    }
+
+
+
 @media(max-width:1440px) {
     body.al_body_template_eight section.section-b-space.new-pages .custom-container {
         max-width: 1170px;
@@ -3060,6 +3070,11 @@ body.al_body_template_eight.homeHeader .main-fillter .side_fillter .range-slider
 @media(max-width:1199px) {
     .al_body_template_eight .cardbanner, .al_body_template_eight .al_desktop_banner{
         height: auto!important;
+    }
+    body.al_body_template_eight .box-account.box-info .btn-solid {
+        padding: 6px 2px !important;
+        font-size: 10px;
+        text-transform: capitalize;
     }
 }
 
@@ -3859,6 +3874,7 @@ body.al_body_template_eight.homeHeader .main-fillter .side_fillter .range-slider
     .al_body_template_eight .eccomerce-temp .top-heading h2{font-size: 14px !important;display: inline-block;}
     .al_body_template_eight .alNewSliderTopBrand .brand-img{height: auto !important;}
     section.suppliers-section.container.vender_slider .top-heading.mt-5.pt-5{display: flex;align-items: center;}
+ .box-account.box-info .btn-solid {padding: 6px 10px !important;font-size: 10px;text-transform: capitalize;    }
 }
 
 
