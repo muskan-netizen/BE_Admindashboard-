@@ -939,7 +939,7 @@ class OrderController extends BaseController
         if(!empty($order->recurring_booking_time)){
             $recurring_booking = OrderLongTermServiceSchedule::where(['order_number'=>$order->order_number])->get();
         }
-        //    pr( $order['total_other_taxes'][14]);
+        //    pr($recurring_booking);
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id,
             'order' => $order,

@@ -570,9 +570,8 @@ $timezone = Auth::user()->timezone;
                                         <td></td>
                                     </tr>
                                     @endif
-                                    {{-- {{dd($recurring_booking)}} --}}
 
-                                    @if( isset($recurring_booking))
+                                    @if(isset($recurring_booking) && !empty($recurring_booking))
                                         <tr class="route">
                                             <th scope="row" colspan="4" class="text-end">
                                                 <div class="outer_div p-2 mb-2">

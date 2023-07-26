@@ -51,6 +51,14 @@
                                             </td>
                                             <td class="table-user">
                                                 <a href="javascript:void(0);" class="text-body">{{ $geo->name }}</a>
+
+                                                <sup class="position-relative">
+                                                    <a class="copy-icon ml-2" id="copy_icon" data-url="{{url('company').'/'.base64_encode($geo->id)}}" style="cursor:pointer;">
+                                                        <i class="fa fa-copy"></i>
+                                                    </a>
+                                                    <h6 id="copy_message" class="copy-message mt-2"></h6>
+                                                </sup>
+                
                                             </td>
                                             <td class="table-user">
                                                 <a href="javascript:void(0);" class="text-body">{{ $geo->email }}</a>
@@ -217,12 +225,21 @@
             });
         });
         
-    </script>
-    <script type="text/javascript">
         $('.openServiceModal').click(function() {
             $('#service-area-form').modal({
                 keyboard: false
             });
         });
+
+        $(".copy-icon").click(function(){
+            var url = $(this).attr('data-url');
+            var temp = $("<input>");
+            $("body").append(temp);
+            temp.val(url).select();
+            document.execCommand("copy");
+            temp.remove();
+            sweetAlert.success('URL Copied!')
+        });
+
     </script>
 @endsection

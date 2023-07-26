@@ -516,7 +516,7 @@ $(document).ready(function () {
                     }
                     else if(payment_option_id == 59){
                         payWithCompany('',payment_option_id,response.data);
-                        window.location.href = response.redirect;
+                        window.location.replace(response.data.route);
                     }
                     cabBookingPaymentOptions(payment_option_id, response.data);
                 }

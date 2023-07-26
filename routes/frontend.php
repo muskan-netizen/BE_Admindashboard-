@@ -475,7 +475,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('userAddress', 'Front\UserController@getUserAddress')->name('getUserAddress');
 	
 	//Route For company
-	Route::get('company/{id}/{slug?}', 'Front\CategoryController@companyCategoryProduct')->name('companyWiseCategoryDetail');
+	Route::get('company/{id}', 'Front\CategoryController@companyCategoryProduct')->name('companyWiseCategoryDetail');
 	
 
 

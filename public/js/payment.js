@@ -101,9 +101,6 @@ $(document).ready(function() {
         ajaxData.returnUrl = path;
         ajaxData.cancelUrl = path;
 
-        // console.log(ajaxData);
-        // return false;
-
 
         $.ajax({
             type: "POST",
@@ -4296,11 +4293,6 @@ window.payWithCompany = function payWithCompany(address_id,payment_option_id,ord
     let cabElement = $("#pickup_now");
     let subscriptionElement = $("input[name='subscription_amount']");
     let subscription_id = $("input[name='subscription_id']");
-
-    console.log('response.data.order');
-
-    console.log(order);
-    console.log(order.order_number);
 
     var data = {};
     if (path.indexOf("cart") !== -1) {

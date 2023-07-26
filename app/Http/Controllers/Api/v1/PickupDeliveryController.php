@@ -561,17 +561,12 @@ class PickupDeliveryController extends BaseController{
                         DB::rollback();
                         return $request_to_dispatch;
                     }
-                }else{
-                    DB::commit();
-                    return $order_place;
                 }
             }
             else{
                 DB::rollback();
                 return $order_place;
             }
-
-            \Log::info(json_encode($request->share_ride_users));
                 
             DB::commit();
             // if(@$order_place['data']['recurring_booking_time']!=null)
@@ -587,8 +582,6 @@ class PickupDeliveryController extends BaseController{
                         $phone = $dialCode.$share_ride_users->phone_number;
                         $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name." has booked a ride. Tracking url is ".$request_to_dispatch['dispatch_traking_url']??null;
                         $send = $this->sendSms('', '', '', '', $phone, $msg);
-                        \Log::info(json_encode($send));
-                        \Log::info(json_encode($msg));
                     }
                 }
             // }

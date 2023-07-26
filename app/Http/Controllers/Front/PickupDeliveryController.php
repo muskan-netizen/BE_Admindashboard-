@@ -571,7 +571,6 @@ class PickupDeliveryController extends FrontController{
      * create order for booking
     */
      public function createOrder(Request $request){
-       \Log::info(json_encode($request->all()));
         try {
             DB::beginTransaction();
             if(isset($request->schedule_datetime) && !empty($request->schedule_datetime))
@@ -595,7 +594,7 @@ class PickupDeliveryController extends FrontController{
                 ]);
             }
 
-
+           
             if( ( $order_place && $order_place['status'] == 200 && ($request->payment_option_id == 1) ) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
                 $data = [];
                 $order = $order_place['data'];
@@ -613,7 +612,7 @@ class PickupDeliveryController extends FrontController{
                     DB::rollback();
                     return $request_to_dispatch;
                 }
-            }else if($order_place && $order_place['status'] == 200 &&$request->payment_option_id == 48){
+            }else if($order_place && $order_place['status'] == 200 && ($request->payment_option_id == 48 || $request->payment_option_id == 59 ) ){
                 $data = [];
                 $order = $order_place['data'];
                 $request_to_dispatch = $this->placeRequestToDispatch($request, $order, $request->vendor_id);
@@ -630,14 +629,8 @@ class PickupDeliveryController extends FrontController{
                     return $request_to_dispatch;
                 }
             }
-            else{
-               DB::commit();
-                //DB::rollback();
-                return $order_place;
-            }
 
             DB::commit();
-
             //Send message if ride is booked for friend
                 if(@$request->share_ride_users && count($request->share_ride_users)>0)
                 {
@@ -711,8 +704,6 @@ class PickupDeliveryController extends FrontController{
                 $payment->save();
             }
             $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
-            //Log::info("Request To Dispatch");
-           //// Log::info($request_to_dispatch);
 
             if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                 $user = User::find($order->user_id);
@@ -782,7 +773,7 @@ class PickupDeliveryController extends FrontController{
                     }
                 }
 
-                if($request->payment_option_id == 2){
+                if($request->payment_option_id == 2 || $request->payment_option_id == 59){
                     $payment_option = 1;
                 }
                 else{

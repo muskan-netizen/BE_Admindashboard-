@@ -36,7 +36,7 @@ class CategoryController extends FrontController{
             session()->put('company_id', $id);
         }
 
-
+        return redirect()->to('/');
 
         $vendorType = Session::get('vendorType');
         $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'):  getClientPreferenceDetail();

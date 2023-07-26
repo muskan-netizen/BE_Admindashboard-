@@ -8,9 +8,10 @@ if(Session::get('config_theme') == 'dark'){
     $urlImg = $clientData ? $clientData->logo['original'] : ' ';
 }
 $compId = session()->get('company_id')??null;
-if($compId)
+if(!empty($compId) ||  @auth()->user()->company_id)
 {
-    $compdata =  \App\Models\Company::where('id',base64_decode($compId))->first();
+    $compId = (($compId)?base64_decode($compId):auth()->user()->company_id);
+    $compdata =  \App\Models\Company::where('id',$compId)->first();
     $urlImg = get_file_path($compdata->logo,'FILL_URL');
 }
 

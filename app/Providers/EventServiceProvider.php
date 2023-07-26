@@ -3,12 +3,16 @@
 namespace App\Providers;
 
 use App\Jobs\SyncToDispatcher;
+use App\Models\Order;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
 use App\Observers\OrderVendorObserver;
 use App\Models\OrderVendor;
+use App\Models\User;
+use App\Observers\OrderObserver;
+use App\Observers\UserObserver;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -38,5 +42,7 @@ class EventServiceProvider extends ServiceProvider
 
         //
         OrderVendor::observe(OrderVendorObserver::class);
+        User::observe(UserObserver::class);
+        Order::observe(OrderObserver::class);
     }
 }
