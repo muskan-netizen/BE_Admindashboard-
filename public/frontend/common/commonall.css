@@ -1420,6 +1420,23 @@ body.al_body_template_three .dashboard-right .profile-page .info-text label {
     max-height: 550px;
     overflow-y: auto;
 }
+/*----for all slider arrow background css start from here-----*/
+.home-slider-wrapper a .carousel-control-prev-icon {
+    background-color: #000;
+    height: 40px !important;
+    width: 40px !important;
+    background-size: 14px;
+    border-radius: 2px;
+}
+.home-slider-wrapper a .carousel-control-next-icon {
+    background-color: #000;
+    height: 40px !important;
+    width: 40px !important;
+    background-size: 14px;
+    border-radius: 2px;
+}
+/*-------end here----*/
+
 
 
 
