@@ -83,10 +83,11 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\LalaMovesController;
 use Illuminate\Support\Facades\Http;
+use App\Http\Traits\MargTrait;
 
 class OrderController extends FrontController
 {
-    use ApiResponser, CartManager, SquareInventoryManager,VendorTrait,OrderTrait;
+    use ApiResponser, CartManager, SquareInventoryManager,VendorTrait,OrderTrait,MargTrait;
 
     /**
      * Display a listing of the resource.
