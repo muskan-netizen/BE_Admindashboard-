@@ -3856,7 +3856,8 @@ body.al_body_template_eight.homeHeader .main-fillter .side_fillter .range-slider
         justify-content: inherit;
     }
     .al_body_template_eight #our_vendor_main_div .vendors section .top-heading h2.h2-heading {
-        font-size: 18px !important;width:100% !important;
+        font-size: 18px !important;
+        /* width:100% !important; */
     }
     .vender-logo.deals-product.product-card-box.position-relative.text-center.al_custom_vendors_sec{
         height: auto !important;
@@ -3874,9 +3875,15 @@ body.al_body_template_eight.homeHeader .main-fillter .side_fillter .range-slider
     .al_body_template_eight .eccomerce-temp .top-heading h2{font-size: 14px !important;display: inline-block;}
     .al_body_template_eight .alNewSliderTopBrand .brand-img{height: auto !important;}
     section.suppliers-section.container.vender_slider .top-heading.mt-5.pt-5{display: flex;align-items: center;}
- .box-account.box-info .btn-solid {padding: 6px 10px !important;font-size: 10px;text-transform: capitalize;    }
+ .box-account.box-info .btn-solid {padding: 6px 10px !important;font-size: 10px;text-transform: capitalize;}
+ .al_body_template_eight article#page-container section .vendors section h2.h2-heading{font-size: 14px !important;}
 }
 
+
+@media screen and (max-width:375px){
+    .al_body_template_eight #our_vendor_main_div .vendors section .top-heading h2.h2-heading{font-size: 14px !important;}
+    .al_body_template_eight article#page-container section .vendors section a{font-size: 14px !important;}
+}
 
 .alSpaCityBox{position: relative;padding-bottom: 100%;overflow: hidden;border-radius: 15px 15px 0 0;margin-bottom: 10px;}
 .alSpaCityBox a.cities.updateLocationByCity img{position: absolute;height: 100%;width: 100%;}
