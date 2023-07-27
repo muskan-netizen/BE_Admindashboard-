@@ -12,6 +12,7 @@ use App\Http\Controllers\Client\BaseController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
+use App\Http\Controllers\Front\RoadieController;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Models\RescheduleOrder;
@@ -1116,6 +1117,9 @@ class OrderController extends BaseController
                     } elseif ($orderData->shipping_delivery_type == 'SH') {
                         //Create Shipping place order request for Shippo Masa
                         $orderPlaced = $this->placeOrderRequestShippo($request);
+                    }elseif ($orderData->shipping_delivery_type == 'RO') {
+                        //Create Roadies place order request for Roadies
+                        $orderPlaced = $this->placeOrderRequestRoadies($request);
                     }
                     $orderData->accepted_by = Auth::user()->id;
                     $orderData->save();
@@ -1352,6 +1356,18 @@ class OrderController extends BaseController
         }
 
         return 2;
+    }
+
+    public function placeOrderRequestRoadies($request){
+        $roadie = new RoadieController();
+        $checkdeliveryFeeAdded = OrderVendor::with(['vendor', 'products.product', 'orderDetail'])->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        // dd($checkdeliveryFeeAdded);
+        $checkOrderData = Order::with(['vendors.products.product', 'user', 'address'])->findOrFail($request->order_id);
+        if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 )) {
+            $order_ship_roadie = $roadie->createShipmentRequestRoadie($checkdeliveryFeeAdded, $checkOrderData);
+            return $order_ship_roadie;
+        }
+        return false;
     }
 
     public function placeOrderRequestKwikApi($request)

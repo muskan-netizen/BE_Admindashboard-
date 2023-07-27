@@ -185,7 +185,7 @@ class ProductController extends BaseController
      */
     public function edit($domain = '', $id)
     {
-        // $this->searchCatalogObjects();
+        // $this->testfun1();
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module', 'is_cab_pooling', 'is_one_push_book_enable','is_service_product_price_from_dispatch']);
 
         $with_array = ['brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles'];
@@ -417,7 +417,11 @@ class ProductController extends BaseController
             if ($product->is_live == 0) {
                 $product->publish_at = ($request->is_live == 1) ? date('Y-m-d H:i:s') : '';
             }
-            foreach ($request->only('country_origin_id', 'weight', 'weight_unit', 'is_live', 'brand_id') as $k => $val) {
+            // dd($request->all());
+            // foreach ($request->only('country_origin_id', 'weight', 'weight_unit', 'is_live', 'brand_id', 'length', 'breadth', 'height', 'packaging_weight', 'packaging_weight_unit', 'packaging_length', 'packaging_breadth', 'packaging_height') as $k => $val) {
+            //     $product->{$k} = $val;
+            // }
+            foreach ($request->only('country_origin_id', 'weight', 'weight_unit', 'is_live', 'brand_id', 'length', 'breadth', 'height') as $k => $val) {
                 $product->{$k} = $val;
             }
             if( clientPrefrenceModuleStatus('p2p_check') || is_attribute_enabled() ) {

@@ -1153,7 +1153,7 @@ class OrderController extends FrontController
     public function orderSave($request, $paymentStatus)
     {
 
-
+        // dd($request->all());
         try {
             $latitude = '';
             $longitude = '';
