@@ -53,7 +53,6 @@ class MargApiOrderUpdate extends Command
      */
     public function handle()
     {
-        \Log::info('in marg cron job every minute');
         try {
 
 
@@ -63,6 +62,13 @@ class MargApiOrderUpdate extends Command
                 //Connect client connection
                 $database_name  = 'royo_' . $client->database_name;
                 $header         = $client->database_name;
+
+                $result = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", [$database_name]);
+                if (empty($result)) {
+                    \Log::info($client->database_name);
+                    \Log::info($client);
+                    continue;
+                }
 
                 $default = [
                     'driver' => env('DB_CONNECTION', 'mysql'),
@@ -84,11 +90,28 @@ class MargApiOrderUpdate extends Command
                 $preference = ClientPreference::first();
 
 
+                $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code','marg_date_time']);
+
+                if(isset($hub_key) && $hub_key['is_marg_enable'] == 1){
+                    $decryptionKey  = $hub_key['marg_decrypt_key'];
+                    $MargID  = $hub_key['marg_access_token'];
+                    $CompanyCode  = $hub_key['marg_company_code'];
+                    $margDateTime = $hub_key['marg_date_time']??date('Y-m-d H:i:s');
+
+                    $detail         = [];
+                    $MargMST2017 = "https://corporate.margerp.com/api/eOnlineData/MargMST2017";
+                    $reqData = ["CompanyCode" => $CompanyCode,"MargID" => $MargID,"Datetime" => $margDateTime, "index" => 0];
+                    \Log::info('request data');
+                    \Log::info($reqData);
+                }else{
+                    continue;
+                }
+
 
                 $orders  = Order::where([
-                    'marg_status' => null,
-                    'payment_status' => 1
-                ])->where('marg_max_attempt', '<', 3)
+                    'marg_status' => null
+                    ])
+                ->where('marg_max_attempt', '<', 3)
                     ->get();
 
                 if (count($orders) > 0) {

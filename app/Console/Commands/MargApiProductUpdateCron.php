@@ -62,7 +62,7 @@ class MargApiProductUpdateCron extends Command
         /**
          * Sycn product quantity and add new product code from marg api
          */
-          \Log::info('in marg product sync api');
+          \Log::info('in marg product sync api at 5 min');
          try {
             $clients = CP::where('status', 1)->get();
             foreach ($clients as $key => $client) {
