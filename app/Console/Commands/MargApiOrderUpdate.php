@@ -53,7 +53,6 @@ class MargApiOrderUpdate extends Command
      */
     public function handle()
     {
-        \Log::info('in marg cron job every minute');
         try {
 
 

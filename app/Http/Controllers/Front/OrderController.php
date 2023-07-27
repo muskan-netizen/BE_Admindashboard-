@@ -2295,6 +2295,9 @@ class OrderController extends FrontController
             $order->is_long_term            = $is_long_term_order;
             if (($payable_amount == 0) || (($request->has('transaction_id')) && (!empty($request->transaction_id)))) {
                 $order->payment_status  = 1;
+            }elseif($request->payment_option_id == '1')
+            {
+                $order->payment_status  = 1;
             }
             $order->bid_discount        = $Order_bid_discount??0;
 

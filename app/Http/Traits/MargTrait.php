@@ -254,8 +254,6 @@ trait MargTrait{
 		}else{
 			foreach($order->products as $product)
 			{
-            \Log::info('product');
-            \Log::info($product->product);
 				$productCode[] = $product->product->sku;
 				$productQuantity[] = $product->quantity;
 			}
@@ -270,7 +268,7 @@ trait MargTrait{
             $CompanyCode  = $hub_key['marg_company_code'];
             $detail         = [];
             $MargMST2017 = "https://corporate.margerp.com/api/eOnlineData/InsertOrderDetail";
-            $detail = ["OrderID"=>"", "OrderNo"=> $order->order_number, "CustomerID"=> $rid->id ?? '', "MargID"=> $MargID, "Type"=> "S", "Sid"=> "194130", "ProductCode"=> implode(',',$productCode), "Quantity"=>  implode(',',$productQuantity), "Free"=> "0,0", "Lat"=> "", "Lng"=> "", "Address"=> "", "GpsID"=> "0", "UserType"=> "1", "Points"=> "0.00", "Discounts"=> "0", "Transport"=> "", "Delivery"=> "", "Bankname"=> "", "BankAdd1"=> "", "BankAdd2"=> "", "shipname"=> "", "shipAdd1"=> "", "shipAdd2"=> "", "shipAdd3"=> "", "paymentmode"=> "1", "paymentmodeAmount"=> "0", "payment_remarks"=> "", "order_remarks"=> "","CustName"=>"ramU" ,"CustMobile"=> "9289757820", "CompanyCode"=> $CompanyCode, "OrderFrom"=> $CompanyCode];
+            $detail = ["OrderID"=>"", "OrderNo"=> $order->order_number, "CustomerID"=> '7532253', "MargID"=> $MargID, "Type"=> "S", "Sid"=> "194130", "ProductCode"=> implode(',',$productCode), "Quantity"=>  implode(',',$productQuantity), "Free"=> "0,0", "Lat"=> "", "Lng"=> "", "Address"=> "", "GpsID"=> "0", "UserType"=> "1", "Points"=> "0.00", "Discounts"=> "0", "Transport"=> "", "Delivery"=> "", "Bankname"=> "", "BankAdd1"=> "", "BankAdd2"=> "", "shipname"=> "", "shipAdd1"=> "", "shipAdd2"=> "", "shipAdd3"=> "", "paymentmode"=> "1", "paymentmodeAmount"=> "0", "payment_remarks"=> "", "order_remarks"=> "","CustName"=>"ramU" ,"CustMobile"=> "9289757820", "CompanyCode"=> $CompanyCode, "OrderFrom"=> $CompanyCode];
 
 
              // Get the encrypted data from the request
