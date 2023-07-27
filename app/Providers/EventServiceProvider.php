@@ -10,9 +10,13 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use Illuminate\Support\Facades\Event;
 use App\Observers\OrderVendorObserver;
 use App\Models\OrderVendor;
+use App\Models\Payment;
 use App\Models\User;
+use App\Models\Wallet;
 use App\Observers\OrderObserver;
+use App\Observers\PaymentObserver;
 use App\Observers\UserObserver;
+use App\Observers\WalletObserver;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -44,5 +48,7 @@ class EventServiceProvider extends ServiceProvider
         OrderVendor::observe(OrderVendorObserver::class);
         User::observe(UserObserver::class);
         Order::observe(OrderObserver::class);
+        Payment::observe(PaymentObserver::class);
+        Wallet::observe(WalletObserver::class);
     }
 }

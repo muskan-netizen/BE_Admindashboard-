@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Models\TrackEvent;
 use App\Models\User;
 
 class UserObserver
@@ -14,7 +15,11 @@ class UserObserver
      */
     public function created(User $user)
     {
-       \Log::info('created');
+        $data = array(
+            'location' => 'signUp',
+            'details' => 'Id : '.$user->id.', Name : '.$user->name.', Date : '.date('d-m-Y H:i:a'),
+        );
+       TrackEvent::create($data);
     }
 
     /**
@@ -25,7 +30,7 @@ class UserObserver
      */
     public function updated(User $user)
     {
-       \Log::info('updated');
+    //    \Log::info('updated');
     }
 
     /**
@@ -36,7 +41,7 @@ class UserObserver
      */
     public function deleted(User $user)
     {
-        \Log::info('deleted');
+        // \Log::info('deleted');
     }
 
     /**
@@ -47,7 +52,7 @@ class UserObserver
      */
     public function restored(User $user)
     {
-        \Log::info('restored');
+        // \Log::info('restored');
     }
 
     /**
@@ -58,12 +63,16 @@ class UserObserver
      */
     public function forceDeleted(User $user)
     {
-       \Log::info('forceDeleted');
+
     }
 
     public function signIn(User $user)
     {
-       \Log::info('signIn');
+        $data = array(
+            'location' => 'signIn',
+            'details' => 'Id : '.$user->id.', Name : '.$user->name.', Date : '.date('d-m-Y H:i:a'),
+        );
+       TrackEvent::create($data);
     }
 
 }

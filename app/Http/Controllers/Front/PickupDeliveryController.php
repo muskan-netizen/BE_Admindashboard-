@@ -791,6 +791,12 @@ class PickupDeliveryController extends FrontController{
                     $schedule_datetime_del  =$request->schedule_time ;// Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
 
+                if(@$request->payment_option_id == '59')
+                {
+
+                    $order->company_id          = auth()->user()->company_id;
+                }
+
                 $recurringformPost = '';
                 if(isset($request->recurringformPost) && !empty($request->recurringformPost))
                 {

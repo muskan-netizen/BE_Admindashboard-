@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Order;
+use App\Models\TrackEvent;
 
 class OrderObserver
 {
@@ -14,7 +15,11 @@ class OrderObserver
      */
     public function created(Order $order)
     {
-        //
+        $data = array(
+            'location' => 'order-created',
+            'details' => $order->id.', '.$order->order_number.', '.date('d-m-Y H:i:a'),
+        );
+       TrackEvent::create($data);
     }
 
     /**
@@ -60,4 +65,5 @@ class OrderObserver
     {
         //
     }
+   
 }
