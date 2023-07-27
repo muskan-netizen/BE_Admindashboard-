@@ -2501,7 +2501,7 @@ class OrderController extends FrontController
             $this->sendSuccessSMS($request, $order);
 
             //Create an order at margApi side also
-            // $this->makeInsertOrderMargApi($order);
+            $this->makeInsertOrderMargApi($order);
             
             return $this->successResponse($order);
         } catch (Exception $e) {
