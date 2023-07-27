@@ -1147,6 +1147,10 @@ class OrderController extends BaseController
 
                         $autoaccept = $this->autoAcceptOrderIfOn($order->id);
                     }
+
+                    //Create an order at margApi side also
+                    // $this->makeInsertOrderMargApi($order);
+                    
                     return $this->successResponse($order, __('Order placed successfully.'), 201);
 
                 }

@@ -137,7 +137,17 @@
                                     </a>
                                 </li>
                             @endif
+                            <li>
+                                    <a href="{{route('failed-marg-orders')}}">
+                                    <span class="icon-vendor"></span>
+                                    @php
+                                        $vendormenu = getNomenclatureName('Marg Failed Orders', true);
 
+                                    @endphp
+                                        {{-- <span>{{getNomenclatureName('Vendors', true)}}</span> --}}
+                                        <span>{{ __('Marg Failed Orders') }}</span>
+                                    </a>
+                                </li>
                             @if(@$getAdditionalPreference['is_seller_module'] == '1')
                                 <li>
                                     <a href="{{route('seller.index')}}">
