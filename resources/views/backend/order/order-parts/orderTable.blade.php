@@ -24,7 +24,7 @@
                 </div>
                 <div class="col-md-3 alOrderStatus">
                     <h4>{{ __('Customer') }}</h4>
-                    <span>{{ $order['user']['name'] }}</span>
+                    <span>{{ @$order['user']['name']??'' }}</span>
                 </div>
                 @if (Auth::user()->is_superadmin || $client_preference_detail->hide_order_address == 0)
                     <div class="col-md-3">
