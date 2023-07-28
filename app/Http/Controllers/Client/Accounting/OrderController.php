@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\OrderVendorListTaxExport;
-use App\Models\{User,Vendor,OrderVendor,OrderStatusOption,DispatcherStatusOption,OrderRefund,Payment,Order};
+use App\Models\{Company, User,Vendor,OrderVendor,OrderStatusOption,DispatcherStatusOption,OrderRefund,Payment,Order};
 use DB;
 
 class OrderController extends Controller{
@@ -27,7 +27,8 @@ class OrderController extends Controller{
             });
         }
         $vendors = $vendors->get();
-        return view('backend.accounting.order', compact('vendors','order_status_options', 'dispatcher_status_options'))->with($this->getOrderVendorCalculations($request,true));
+        $companies = Company::get();
+        return view('backend.accounting.order', compact('vendors','order_status_options', 'dispatcher_status_options','companies'))->with($this->getOrderVendorCalculations($request,true));
     }
 
 
@@ -75,6 +76,11 @@ class OrderController extends Controller{
         if (!empty($request->get('status_filter'))) {
             $status_filter = $request->get('status_filter');
             $vendor_orders = $vendor_orders->where('order_status_option_id', $status_filter);
+        }
+        if (!empty($request->get('company_filter'))) {
+            $vendor_orders = $vendor_orders->whereHas('orderDetail',function ($query)use($request){
+                $query->where('company_id', $request->get('company_filter'));
+            }); 
         }
         
         $vendor_orders = $vendor_orders->whereHas('orderDetail',function ($query){

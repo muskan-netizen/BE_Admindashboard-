@@ -52,7 +52,11 @@
 
 
 .table_customber_add.royo_customber_btn div.dataTables_wrapper div.dataTables_filter {position: inherit;top: 0px !important;}
-
+.company-address {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+}
 @media  screen and (max-width:1800px){
 .royo_customber_btn .position-absolute {
     left: 35%;
@@ -188,6 +192,9 @@
                 @endphp
                 <div class="al_new_export_table royo_customber_btn table_customber_add">
                     <div class="position-absolute mb-2">
+
+                        
+                        
                         @if($hub_key==1)
                             <button class="btn btn-info waves-effect waves-light text-sm-right sync_hubspot" userId="0"><i class="mdi mdi-sync mr-1"></i>{{ __('Sync with hubspot') }}
                             </button>
@@ -201,6 +208,16 @@
                         <button class="btn btn-info waves-effect waves-light text-sm-right addUserModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
                         </button>
                         <button type="button" class="btn btn-info waves-effect waves-light" data-toggle="modal" data-target="#pay-receive-modal" data-backdrop="static" data-keyboard="false">{{__("Edit Wallet")}}</button>
+
+                        <div class="col-sm-3 mb-1">
+                            <select class="form-control al_box_height company-address" id="company_option_select_box" name="company_id" >
+                                <option value="">{{ __('Select Company') }}</option>
+                                @forelse($companies as $company)
+                                    <option value="{{$company->id}}">{{$company->name}}</option>
+                                @empty
+                                @endforelse
+                            </select>
+                        </div>
                     </div>
 
 
@@ -343,6 +360,11 @@
         $(document).on("click","#active-user",function() {
             initDataTable('user_datatable','active');
         });
+
+        $(document).on("change","#company_option_select_box",function() {
+            initDataTable('user_datatable','active');
+        });
+
         $(document).on("click", ".delete-vendor", function() {
             var destroy_url = $(this).data('destroy_url');
             var id = $(this).data('rel');
@@ -419,6 +441,7 @@
                             d.date_filter = $('#range-datepicker').val();
                             d.payment_option = $('#payment_option_select_box option:selected').val();
                             d.tax_type_filter = $('#tax_type_select_box option:selected').val();
+                            d.company_filter = $('#company_option_select_box option:selected').val();
                             d.type = type;
                         }
                     },

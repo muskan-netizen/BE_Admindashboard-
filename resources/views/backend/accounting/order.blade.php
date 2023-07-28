@@ -100,6 +100,15 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                                         </select>
                                     </div>
                                     <div class="col-sm-3 mb-1">
+                                        <select class="form-control al_box_height" id="company_option_select_box" name="company_id" >
+                                            <option value="">{{ __('Select Company') }}</option>
+                                            @forelse($companies as $company)
+                                                <option value="{{$company->id}}">{{$company->name}}</option>
+                                            @empty
+                                            @endforelse
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-3 mb-1">
                                         <button type="button" class="btn btn-danger al_box_height waves-effect waves-light" id="clear_filter_btn_icon">
                                             <i class="mdi mdi-close"></i>
                                         </button>
@@ -204,6 +213,10 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                     initDataTable();
                     getOrderCalculations();
                 });
+                $("#vendor_select_box, #company_option_select_box").change(function() {
+                    initDataTable();
+                    getOrderCalculations();
+                });
                 function initDataTable() {
                     $('#accounting_vendor_datatable').DataTable({
                         "dom": '<"toolbar">Bfrtip',
@@ -253,6 +266,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                             d.date_filter = $('#range-datepicker').val();
                             d.vendor_id = $('#vendor_select_box option:selected').val();
                             d.status_filter = $('#order_status_option_select_box option:selected').val();
+                            d.company_filter = $('#company_option_select_box option:selected').val();
                           }
                         },
                         columns: [

@@ -773,7 +773,7 @@ class PickupDeliveryController extends FrontController{
                     }
                 }
 
-                if($request->payment_option_id == 2 || $request->payment_option_id == 59){
+                if($request->payment_option_id == 2){
                     $payment_option = 1;
                 }
                 else{
@@ -793,7 +793,6 @@ class PickupDeliveryController extends FrontController{
 
                 if(@$request->payment_option_id == '59')
                 {
-
                     $order->company_id          = auth()->user()->company_id;
                 }
 
