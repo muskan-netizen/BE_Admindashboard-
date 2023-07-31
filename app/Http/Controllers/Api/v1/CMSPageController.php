@@ -48,15 +48,21 @@ class CMSPageController extends BaseController
         $code = $request->header('code');
         $client = Client::where('code',$code)->first();
         $server_url = "https://".$client->sub_domain.env('SUBMAINDOMAIN')."/";
+        $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module']);
+        $getAdditionalPreference = collect($getAdditionalPreference);
+        $getAdditionalPreference = $getAdditionalPreference->map(function($val, $key) {
+             return (int) $val;
+        });
+    
+          
+        $data['is_gst_required_for_vendor_registration'] =(int) $getAdditionalPreference['is_gst_required_for_vendor_registration'] ?? 0;
+        $data['is_baking_required_for_vendor_registration'] = (int) $getAdditionalPreference['is_baking_details_required_for_vendor_registration'] ?? 0;
+        $data['is_advance_details_required_for_vendor_registration'] = (int) $getAdditionalPreference['is_advance_details_required_for_vendor_registration'] ?? 0;
+        $data['is_vendor_category_required_for_vendor_registration'] = (int) $getAdditionalPreference['is_vendor_category_required_for_vendor_registration'] ?? 0;
+
         $data['terms_and_conditions'] = $server_url . 'page/terms-conditions';
         $data['privacy_policy'] = $server_url . 'page/privacy-policy';
 
-        $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module']);
-
-        $data['is_gst_required_for_vendor_registration'] = $getAdditionalPreference['is_gst_required_for_vendor_registration']??0;
-        $data['is_baking_required_for_vendor_registration'] = $getAdditionalPreference['is_baking_details_required_for_vendor_registration']??0;
-        $data['is_advance_details_required_for_vendor_registration'] = $getAdditionalPreference['is_advance_details_required_for_vendor_registration']??0;
-        $data['is_vendor_category_required_for_vendor_registration'] = $getAdditionalPreference['is_vendor_category_required_for_vendor_registration']??0;
         $data['is_seller_module'] = $getAdditionalPreference['is_seller_module']??0;
 
         $user = Auth::user();
