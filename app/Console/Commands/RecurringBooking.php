@@ -111,7 +111,6 @@ class RecurringBooking extends Command
                             $requestData['type'] = $order->type;
                             $requestData['task_type'] = 'now';
                             $requestData['schedule_time'] = $recurring_data->schedule_date;
-                            // $requestData['unique_id'] = $order->unique_id;
 
                             $tasks = OrderLocations::where('order_id',$order->id)->value('tasks');
                             $requestData['tasks'] = json_decode($tasks);
@@ -119,8 +118,7 @@ class RecurringBooking extends Command
                             $request = (object)$requestData;
                             $call = new PickupDeliveryController();
                             $call =  $call->placeRequestToDispatch($request,$order,$vendor);
-                            // \Log::info($call);
-                            if ($call && $call['task_id'] > 0) {
+                            if ($call) {
                                 $dispatch_traking_url                   = $call['dispatch_traking_url'] ?? '';
                                 $recurring_data->web_hook_code          = $web_hook_code;
                                 $recurring_data->dispatch_traking_url   = $dispatch_traking_url;
