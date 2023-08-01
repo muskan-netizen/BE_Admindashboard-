@@ -130,6 +130,11 @@ trait MargTrait{
 
                 }
             }else{
+                $log = [
+                    'stock'=>$request->stock,
+                    'name'=>$request->name
+                ];
+                \Log::info([$log]);
                 //Update Stock Details
                 $this->updateProduct($request,$is_exist);
             }
@@ -150,16 +155,19 @@ trait MargTrait{
 			// DB::beginTransaction();
             $url_slug = $this->validateSlug($request->name);
             $product = Product::findOrFail($product->id);           
+            \Log::info('exist update product');
+            \Log::info([$product]);
 
             if($product->id){
                 $product->sku = $request->code;      // $request->sku;
                 $product->url_slug = $url_slug;             // $request->url_slug;
                 $product->title = $request->name;           // $request->product_name;        
+                $product->quantity = $request->stock;           // $request->stock;        
                 $client_lang = ClientLanguage::where('is_primary', 1)->first();
                 if (!$client_lang) {
                     $client_lang = ClientLanguage::where('is_active', 1)->first();
                 }
-
+                \Log::info('save upddate prod');
                 $product->save();
 
             }
@@ -175,6 +183,7 @@ trait MargTrait{
                         $marg_product->stock        =       $request->stock;
                         $marg_product->MRP          =       $request->MRP;
                         $marg_product->save();
+                        \Log::info('marg save upddate prod');
 
                     }
 
@@ -184,6 +193,7 @@ trait MargTrait{
                     $proVariant->price = $request->MRP;            
                     $proVariant->quantity = $request->stock;            
                     $proVariant->save();
+                    \Log::info('proVariant save upddate prod');
 
                 }
 
