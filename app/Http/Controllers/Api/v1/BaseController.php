@@ -347,6 +347,7 @@ class BaseController extends Controller{
         if($celebrity_check == 0){
             $categories = $categories->where('categories.type_id', '!=', 5);
         }
+        
         $categories = $categories->where('categories.is_visible', 1)
                         ->where('categories.status', '!=', $status)
                         ->where('categories.is_core', 1)
@@ -359,6 +360,57 @@ class BaseController extends Controller{
                         ->groupBy('id')->get();
         if($categories){
             $categories = $this->buildTree($categories->toArray());
+        }
+        return $categories;
+    }
+
+    public function subCategoryNav($lang_id, $vends=[],$type = 'delivery', $cid) {
+
+        $categoryTypes = getServiceTypesCategory($type);
+
+        $preferences = ClientPreference::select('is_hyperlocal', 'client_code', 'language_id', 'celebrity_check')->first();
+        $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
+                    ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to')
+                    ->whereIn('categories.type_id',$categoryTypes )
+                    ->distinct('categories.slug');
+
+        $status = $this->field_status;
+        $include_categories = [4,8]; // type 4 for brands
+        $celebrity_check = 0;
+        if ($preferences) {
+            if((isset($preferences->celebrity_check)) && ($preferences->celebrity_check == 1)){
+                $celebrity_check = 1;
+                $include_categories[] = 5; // type 5 for celebrity
+            }
+            if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
+                $categories = $categories->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
+                    ->where(function ($q1) use ($vends, $include_categories) {
+                        $q1->whereIn('vct.vendor_id', $vends)
+                            ->where('vct.status', 1)
+                            ->orWhere(function ($q2) use($include_categories) {
+                                $q2->whereIn('categories.type_id', $include_categories);
+                            });
+                    });
+            }
+        }
+        $categories = $categories->leftjoin('types', 'types.id', 'categories.type_id')
+                        ->where('categories.id', '>', '1')
+                        ->whereNotNull('categories.type_id');
+        if($celebrity_check == 0){
+            $categories = $categories->where('categories.type_id', '!=', 5);
+        }
+        $categories = $categories->where('categories.is_visible', 1)
+                        ->where('categories.status', '!=', $status)
+                        ->where('categories.is_core', 1)
+                        ->where('categories.is_visible', 1)
+                        ->where('cts.language_id', $lang_id)
+                        ->orderBy('categories.parent_id', 'asc')
+                        ->whereNull('categories.vendor_id')
+                        ->withCount('products')
+                        ->orderBy('categories.position', 'asc')
+                        ->groupBy('id')->get();
+        if($categories){
+            $categories = $this->buildTree($categories->toArray(), $cid);
         }
         return $categories;
     }
@@ -827,34 +879,56 @@ class BaseController extends Controller{
         return $amount;
     }
 
+   
     public function checkIfLastMileDeliveryOn()
     {
+
         $preference = ClientPreference::first();
-        if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url)) {
-            return $preference;
-        } else {
-            return false;
+     
+        if( isset($preference)  && $preference->business_type == 'taxi'){
+        
+                if($preference->need_dispacher_ride == 1 && !empty($preference->pickup_delivery_service_key) && !empty($preference->pickup_delivery_service_key_code) && !empty($preference->pickup_delivery_service_key_url))
+                return $preference;
+                else
+                return false;
+        }elseif(  isset($preference)  &&  $preference->business_type == 'laundry'){
+                if($preference->need_laundry_service == 1 && !empty($preference->laundry_service_key) && !empty($preference->laundry_service_key_code) && !empty($preference->laundry_service_key_url))
+                return $preference;
+                else
+                return false;
+        } else{
+            if (isset($preference)  ) {
+                if($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+                return $preference;
+                else
+                return false;
+            }
         }
+        return false;
     }
 
     public function driverDocuments()
     {
         try {
             $dispatch_domain = $this->checkIfLastMileDeliveryOn();
-            $url = $dispatch_domain->delivery_service_key_url;
-            $endpoint = $url . "/api/send-documents";
-            // $dispatch_domain->delivery_service_key_code = '649a9a';
-            // $dispatch_domain->delivery_service_key = 'icDerSAVT4Fd795DgPsPfONXahhTOA';
-            $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
-
+            if($dispatch_domain->business_type == 'taxi'){
+                $url = $dispatch_domain->pickup_delivery_service_key_url;
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key, 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code]]);
+            } elseif($dispatch_domain->business_type == 'laundry'){
+                $url = $dispatch_domain->laundry_service_key_url;
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->laundry_service_key, 'shortcode' => $dispatch_domain->laundry_service_key_code]]);
+            } else{
+                $url = $dispatch_domain->delivery_service_key_url;
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
+            }
+            $endpoint =$url . "/api/send-documents";
             $response = $client->post($endpoint);
             $response = json_decode($response->getBody(), true);
-
             return json_encode($response['data']);
         } catch (\Exception $e) {
             $data = [];
             $data['status'] = 400;
-            $data['message'] =  $e->getMessage();
+            $data['message'] = $e->getMessage();
             return $data;
         }
     }

@@ -592,7 +592,7 @@ class StoreController extends BaseController{
 				$order->user_name = $order->user->name;
 				$order->user_image = $order->user->image;
 				$order->date_time = dateTimeInUserTimeZone($order->created_at, $user->timezone);
-				$order->payment_option_title = $order->paymentOption->title;
+				$order->payment_option_title = $order->paymentOption->title??'';
 				if (!empty($order->scheduled_date_time)) {
 					$order->scheduled_date_time = date('d-m-Y h:i A',strtotime(dateTimeInUserTimeZone($order->scheduled_date_time, $user->timezone)));
 				}
@@ -2331,7 +2331,6 @@ class StoreController extends BaseController{
 		
 								
 								}
-								\Log::info($insert_arr);
 								if( !empty($insert_arr) ) {
 									ProductAttribute::where('product_id',$request->product_id)->delete();
 									ProductAttribute::insert($insert_arr);

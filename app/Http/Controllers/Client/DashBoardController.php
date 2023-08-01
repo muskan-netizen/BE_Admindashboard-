@@ -380,7 +380,7 @@ class DashBoardController extends BaseController
                 }
             }
 
-            $vendorCounts = $vendors->count();
+            $vendorCounts = $vendors->where('status', 1)->count();
             $managersCount = User::whereHas('roles',function($q){
                 $q->where('name','Manager');
             })->count();
@@ -454,7 +454,10 @@ class DashBoardController extends BaseController
             if($date_filter)
             $total_revenue = $total_revenue->whereBetween('created_at', [$from_date, $end_date]);
 
-            $total_revenue = $total_revenue->sum('payable_amount');
+            $total_revenue = $total_revenue->whereHas('orderStatusVendor', function ($q) {
+                return $q->where('order_status_option_id', 5);
+            })->sum('payable_amount');
+            // $total_revenue = $total_revenue->sum('payable_amount');
             # Customers count
             $users = new User;
             $total_customers = $users->where(['status' => 1, 'is_superadmin' => 0]);
@@ -486,8 +489,7 @@ class DashBoardController extends BaseController
                     $vendor_orders = $vendor_orders->whereIn('vendor_id',$vendorIds);
                 }
 
-            $total_orders = $vendor_orders->count();
-
+                $total_orders = $vendor_orders->count();
 
             }else{
                   # Orders count

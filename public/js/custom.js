@@ -22,7 +22,6 @@ $(function () {
     var header_height = jQuery('.site-header').height();
     var window_height = jQuery(window).height();
     var header_content_width = jQuery('#content-wrap').height();
-
     // console.log('header_height',header_height,'footer_height',footer_height);
     jQuery(".al_offset-top-home, .inner-pages-offset").css('margin-top', header_height+'px');
     jQuery("#content-wrap").css('padding-bottom', footer_height);
@@ -451,13 +450,21 @@ $(document).ready(function () {
                 "variant_id": $('#prod_variant_id').val()
             },
             success: function (res) {
+                $('.wishListCount').removeClass('fa-heart');
+                $('.wishListCount').removeClass('fa-heart-o');
                 if (res.status == "success") {
                     if (_this.hasClass('btn-solid')) {
                         if (res.message.indexOf('added') !== -1) {
                             _this.text(remveFrmWishlist);
                         } else {
                             _this.text(addWishlist);
+
                         }
+                    }
+                    if(res.wishListCount > 0){
+                        $('.wishListCount').addClass('fa-heart');
+                    }else{
+                        $('.wishListCount').addClass('fa-heart-o');
                     }
                 } else {
                     location.reload();
@@ -969,7 +976,7 @@ $(document).ready(function () {
 
     }
     $(document).on("click", "#order_placed_btn", async function () {
-
+        
         if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val()!=$("#schedule_datetime").val())){
             success_error_alert('error', error_unchanged_schedule_date, ".cart_response");
             $("#schedule_datetime").val($("#edit_order_schedule_datetime").val());
@@ -982,6 +989,7 @@ $(document).ready(function () {
                 $(this).addClass('has_error');
             }
         });
+
         if($(".prescription_btn").hasClass('has_error')){
             Swal.fire({
                 icon: 'error',
@@ -989,6 +997,18 @@ $(document).ready(function () {
                 text: 'kindly select a prescription!',
                 //footer: '<a href="">Why do I have this issue?</a>'
             })
+            return false;
+        }
+
+        var checkboxes = $('.checked-cart-product');
+        var checkedCheckboxes = checkboxes.filter(':checked');
+        if (checkedCheckboxes.length === 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Please select at least one product.',
+                //footer: '<a href="">Why do I have this issue?</a>'
+            });
             return false;
         }
 
@@ -1849,6 +1869,7 @@ $(document).ready(function () {
         var task_type = $("input[name='task_type']").val();
         var schedule_dt = $("#schedule_datetime").val();
         var slot = $("#slot").val();
+        var other_taxes_string = $("#other_taxes_string").val();
         var is_gift = $('#is_gift:checked').val() ?? 0;
         // place_order_url=domain+/user/
         if ((task_type == 'schedule') && (schedule_dt == '')) {
@@ -1864,7 +1885,7 @@ $(document).ready(function () {
             dataType: 'json',
             async: false,
             url: place_order_url,
-            data: { address_id: address_id, payment_option_id: payment_option_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, slot: slot },
+            data: { address_id: address_id, payment_option_id: payment_option_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, slot: slot,other_taxes_string:other_taxes_string },
             success: function (response) {
                 if (response.status == "Success") {
                     orderResponse = response.data;
@@ -2360,7 +2381,15 @@ $(document).ready(function () {
             dataType: 'json',
             url: cart_product_url,
             success: function (response) {
+                console.log(response);
                 if (response.status == "success") {
+                    if(response.wishListCount > 0){
+                        $('.wishListCount').removeClass('fa-heart-o');
+                        $('.wishListCount').addClass('fa-heart');
+                    }else{
+                        $('.wishListCount').removeClass('fa-heart');
+                        $('.wishListCount').addClass('fa-heart-o');
+                    }
                     $("#cart_table").html('');
                     $(".spinner-box").hide();
                     $("#mycart").html(response.mycart);
@@ -2372,7 +2401,6 @@ $(document).ready(function () {
                     var token_val = response.token_val;
                     // console.log(cart_details);
                     if (cart_details!= undefined) {
-
                         // if((response.is_token_enable == 1) && (response.token_val > 0) ){
                         //     response.token_val;
                         // }
@@ -2667,6 +2695,7 @@ $(document).ready(function () {
             let elemClasses = $(iconElem).attr("class");
             $(iconElem).removeAttr("class").addClass("fa fa-spinner fa-pulse");
         }
+
         ajaxCall = $.ajax({
             type: "post",
             dataType: "json",
@@ -2703,6 +2732,30 @@ $(document).ready(function () {
             }
         });
     }
+
+    function updateCartProductStatus(cartproduct_id, is_cart_checked) {
+        ajaxCall = $.ajax({
+            type: "post",
+            dataType: "json",
+            url: update_cart_product_status,
+            data: { "cartproduct_id": cartproduct_id, "is_cart_checked": is_cart_checked },
+            success: function (response) {
+                if(response.status == "error")
+                {
+                    Swal.fire({
+                        title: "Warning!",
+                        text: response.message,
+                        icon: "warning",
+                        button: "OK",
+                    });
+                }else{
+                    cartHeader();
+                }
+            },
+            error: function (err) { }
+        });
+    }
+
     $(document).on('click', '.tip_radio_controls .tip_radio', function () {
         var tip = $(this).val();
         var amount_payable = parseFloat($("#cart_payable_amount_original").val());
@@ -2867,6 +2920,20 @@ $(document).ready(function () {
             $('#remove_item_modal #cartproduct_id').val(cartproduct_id);
         }
     });
+
+    $(document).on('click', '.checked-cart-product', function () {
+        if ($(this).is(':checked')) {
+            var cart_product_id = $(this).val();
+            var is_cart_checked = 1;
+        } else {
+            var cart_product_id = $(this).val();
+            var is_cart_checked = 0;
+        }
+        $('#fa_spinner_'+cart_product_id).removeClass("d-none");
+        $(this).addClass("d-none");
+        updateCartProductStatus(cart_product_id, is_cart_checked);
+    });
+
     $(document).on('click', '.qty-plus', function () {
         $('.qty-plus').prop('disabled', true);
         $('.qty-minus').prop('disabled', true);
@@ -3094,7 +3161,17 @@ $(document).ready(function () {
         var addLongTerm = 0;
         var addRecurringBooking = 0;
         vendor_id = (vendor_id == undefined || vendor_id =='') ?  document.querySelector('input[name=vendor_id]').value : vendor_id;
-
+        if($('#is_recurring_booking').length > 0){
+            // var booking_type   = $('input[name="booking_type"]:checked').val();
+            // recurringformPost
+            if(product_id == OrderStorage.getStorage('cartFirstProductId')){
+                var message  = _language.getLanString('Product Already added in cart');
+                sweetAlert.error('',message);
+                return false;
+            }
+        }else{
+            recurringformPost = {};
+        }
         if (Product_quantity <= 0) {
             Swal.fire({
                 // title: "Warning!",
@@ -3164,17 +3241,7 @@ $(document).ready(function () {
 
 
        // Recuring booking code
-        if($('#is_recurring_booking').length > 0){
-            // var booking_type   = $('input[name="booking_type"]:checked').val();
-            // recurringformPost
-            if(product_id == OrderStorage.getStorage('cartFirstProductId')){
-                var message  = _language.getLanString('Product Already added in cart');
-                sweetAlert.error('',message);
-                return false;
-            }
-        }else{
-            var recurringformPost = {};
-        }
+        
 
 
         // if($('#is_recurring_bookingss').val() > 0){
@@ -3273,7 +3340,6 @@ $(document).ready(function () {
                     var sele_slot_id = $("#sele_slot_id").val();
                     var sele_slot_price = $("#sele_slot_price").val();
                     var delivery_date = $("#date_input").val();
-
                     submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date, sele_slot_id, sele_slot_price, delivery_date,recurringformPost);
                 }
             }
@@ -3577,6 +3643,7 @@ $(document).ready(function () {
     });
 
     function updateProductQuantity(product_id, cartproduct_id, quantity, base_price = 0, iconElem = '') {
+
         ajaxCall = $.ajax({
             type: "post",
             dataType: "json",
@@ -3916,6 +3983,7 @@ $(document).ready(function () {
 
 
 
+
     $(document).on("click", ".add_on_demand", function () {
         let that = $(this);
 
@@ -3938,7 +4006,6 @@ $(document).ready(function () {
     });
 
     $(document).on("click", ".productAddonOption", function () {
-
         var cart_id = '';
         var cart_product_id = '';
         let that = $(this);

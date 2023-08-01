@@ -7,6 +7,7 @@ use Session;
 use Carbon\Carbon;
 use DB;
 use Grimzy\LaravelMysqlSpatial\Types\Point;
+use App\Http\Controllers\Front\FrontController;
 
 
 trait ProductActionTrait{
@@ -399,17 +400,18 @@ trait ProductActionTrait{
         }
     }
 
-    public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type = '',$Products_title = '', $p_dim = '', $preferences = NULL, $categoryTypes = NULL)
+    public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type = '',$Products_title = '', $p_dim = '',$getSubCatIds='', $preferences = NULL, $categoryTypes = NULL)
     {
         try 
         {
            // pr($venderIds);
             $vendorWhereIN = ' ';
+            $getSubCatIdsIn = ' ';
             $completeWhere = ' ';
             $whereProductType = ' ';
             if(!empty($venderIds)){
                 $venid = implode(',',$venderIds);
-
+                $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
             } else{
                 $venid = '0';
             }
@@ -446,6 +448,11 @@ trait ProductActionTrait{
             if(!empty($categoryTypesArray)){
                 $categoryTypesArray = implode(',',$categoryTypesArray);
                 $whereProductType = ' and `categories`.`type_id`  IN ('.$categoryTypesArray.') ';
+            }
+            
+            if (is_array($getSubCatIds) && count($getSubCatIds) > 0) {
+                $subCatIdsArray = implode(',',$getSubCatIds);
+                $getSubCatIdsIn = " AND `products`.`category_id` IN ($subCatIdsArray)";
             }
 
             
@@ -519,7 +526,9 @@ trait ProductActionTrait{
                         $whereComparePriceNotNull
                         $completeWhere
                                     
-                        $vendorWhereIN 
+                        $vendorWhereIN
+
+                        $getSubCatIdsIn 
 
                         $whereProductType 
                         GROUP BY `products`.`id`
@@ -703,7 +712,10 @@ trait ProductActionTrait{
     public function getBrandsForHomePage($language_id, $field_status)
     {
         try 
-        {
+        {            
+            $frontController = new FrontController();
+            $navCategories = $frontController->categoryNav($language_id,true);         
+            $category_ids = implode(",", $navCategories);            
             $redirect_url = route('brandDetail', "brands_id");
             $mainQuery = "SELECT `br`.`id`,
             `br`.`image`, 
@@ -711,10 +723,10 @@ trait ProductActionTrait{
             REPLACE('".$redirect_url."', 'brands_id', `br`.`id`) AS `redirect_url`,
             (CASE WHEN `bt`.`title` IS NULL THEN `br`.`title` ELSE `bt`.`title` END) AS `translation_title`
             FROM `brands` AS `br` 
-
+            LEFT JOIN `brand_categories` AS `bc` on `bc`.`brand_id` = `br`.id
             LEFT JOIN `brand_translations` AS `bt` ON `bt`.`brand_id` = `br`.`id` AND `bt`.`language_id` = $language_id 
 
-            WHERE `br`.`status` !=$field_status
+            WHERE `br`.`status` !=$field_status AND `bc`.`category_id` in ($category_ids)
             GROUP BY `br`.`id`";
         
             $brands = DB::select( DB::raw($mainQuery));
@@ -762,7 +774,7 @@ trait ProductActionTrait{
 
                 $point = new Point($longitude, $latitude);
                 //$mainQuery .= " HAVING (SELECT `id` FROM `$banner_service_areas_table` AS `bsa` where `ba`.`id` = `bsa`.`banner_id` AND EXISTS (select `id` from `$service_area_for_banners_table` AS `safb` WHERE `bsa`.`service_area_id` = `safb`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)')) and `type` = $type) > 0) > 0 ";
-                $mainQuery .= " HAVING (SELECT `id` FROM `$banner_service_areas_table` AS `bsa` where `ba`.`id` = `bsa`.`banner_id` AND EXISTS (select `id` from `$service_area_for_banners_table` AS `safb` WHERE `bsa`.`service_area_id` = `safb`.`id` AND ST_Contains(service_areas.polygon, ST_GeomFromText($point->toWKT())) and `type` = $type) > 0) > 0 ";
+                $mainQuery .= " HAVING (SELECT `id` FROM `$banner_service_areas_table` AS `bsa` where `ba`.`id` = `bsa`.`banner_id` AND EXISTS (select `id`,'polygon' from `$service_area_for_banners_table` AS `safb` WHERE `bsa`.`service_area_id` = `safb`.`id` AND ST_Contains(safb.polygon, ST_GeomFromText('".$point->toWKT()."')) and `type` = $type) > 0) > 0 ";
             }
             
             $mainQuery.= " ORDER BY `ba`.`sorting` ASC";

@@ -174,12 +174,12 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                               <input type="input" class="form-control" value="{{session('selectedDate') ?? ''}}"
                                id="inputDate" placeholder="{{session('selectedDate') ? session('selectedDate') : __('Choose Date') }} ">
                            </div>
-                        </li> --}}
+                        </li> 
                         <li class="pr-0">
                            <div class="alFindGo">
                               <button class="btn">{{__('Go')}}</button>
                            </div>
-                        </li>
+                        </li>--}}
                      </ul>
                   </div>
                   <!-- alFindSec end -->
@@ -227,7 +227,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                      @if($client_preference_detail)
                      @if($client_preference_detail->cart_enable==1)
                      <li class="alShoppingBag mx-md-4 mx-2 dropdown">
-                        <a href="#" class="alShopIcon" href="{{route('showCart')}}">
+                        <a class="alShopIcon" href="{{route('showCart')}}">
                            <span class="navbar-tool-label" id="cart_qty_span"> </span>
                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                               <g clip-path="url(#clip0_160_410)">

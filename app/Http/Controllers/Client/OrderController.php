@@ -1844,19 +1844,18 @@ class OrderController extends BaseController
             
             if ($order->payment_option_id == 1 && ($order->payable_amount >0)) {
                 $cash_to_be_collected = 'Yes';
-                $payable_amount = $orderVendorDetails->payable_amount ;
+                $payable_amount = $orderVendorDetails->payable_amount - $order->loyalty_amount_saved - $order->wallet_amount_used;
             } else {
 
                 if($order->is_postpay==1 && $order->payment_status == 0)
                 {
                     $cash_to_be_collected = 'Yes';
-                    $payable_amount = $orderVendorDetails->payable_amount;
+                    $payable_amount = $orderVendorDetails->payable_amount- $order->loyalty_amount_saved - $order->wallet_amount_used;
                 }else{
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
                 }
             }
-
             if(!empty($orderVendorDetails->web_hook_code))
             {
                 $dynamic = $orderVendorDetails->web_hook_code;
@@ -1977,8 +1976,8 @@ class OrderController extends BaseController
                             'vendor_name' => $vendor_details->name ?? null,
                             'tip_amount' => $order->tip_amount,
                             'payment_method' => $order->payment_method,
-                            'order_pre_time'=>$vendor_details->order_pre_time
-
+                            'order_pre_time'=>$vendor_details->order_pre_time,
+                            'app_call' => 0,
                         ];
                         //pr($postdata);
                         if ($orderVendorDetails->is_restricted == 1) {
@@ -2135,13 +2134,13 @@ class OrderController extends BaseController
             $tasks = array();
             if ($order->payment_option_id == 1) {
                 $cash_to_be_collected = 'Yes';
-                $payable_amount = $order->payable_amount;
+                $payable_amount = $order->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
             } else {
                 
                     if($order->is_postpay==1 && $order->payment_status == 0)
                     {
                         $cash_to_be_collected = 'Yes';
-                        $payable_amount = $order->payable_amount;
+                        $payable_amount = $order->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
                     }else{
                         $cash_to_be_collected = 'No';
                         $payable_amount = 0.00;
@@ -2267,13 +2266,13 @@ class OrderController extends BaseController
             $tasks = array();
             if ($order->payment_option_id == 1) {
                 $cash_to_be_collected = 'Yes';
-                $payable_amount = $order->payable_amount;
+                $payable_amount = $order->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
             } else {
                 
                     if($order->is_postpay==1 && $order->payment_status == 0)
                     {
                         $cash_to_be_collected = 'Yes';
-                        $payable_amount = $order->payable_amount;
+                        $payable_amount = $order->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
                     }else{
                         $cash_to_be_collected = 'No';
                         $payable_amount = 0.00;
@@ -2909,12 +2908,19 @@ class OrderController extends BaseController
             } elseif ($order_status_id == 4) {
                 $notification_content = NotificationTemplate::where('id', 7)->first();
             } elseif ($order_status_id == 5) {
-                $notification_content = NotificationTemplate::where('id', 8)->first();
+                //Check for order is takeaway
+                if(@$orderData->luxury_option_id == 3)
+                {
+                    $notification_content = NotificationTemplate::where('slug', 'order-out-for-takeaway-delivery')->first();
+                }else{
+                    $notification_content = NotificationTemplate::where('id', 8)->first();
+                }
             } elseif ($order_status_id == 6) {
                 $notification_content = NotificationTemplate::where('id', 9)->first();
             }
             if ($notification_content) {
                 $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
+                $redirect_URL['type'] = 4;
                 $data = [
                     "registration_ids" => $devices,
                     "notification" => [
@@ -2922,13 +2928,18 @@ class OrderController extends BaseController
                         'body'  => $body_content,
                         'sound' => "default",
                         "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
-                        'click_action' => route('user.orders'),
-                        "android_channel_id" => "default-channel-id"
+                        'click_action' => '',
+                        "android_channel_id" => "default-channel-id",
+                        "redirect_type" => $redirect_URL['type'] 
                     ],
                     "data" => [
                         'title' => $notification_content->subject,
                         'body'  => $body_content,
-                        "type" => "order_status_change"
+                        "type" => "order_status_change",
+                        "order_id" =>$orderData->id,
+                        "vendor_id" =>$orderData->ordervendor->vendor_id,
+                        "order_status" =>$order_status_id,
+                        "redirect_type" => $redirect_URL['type'] 
                     ],
                     "priority" => "high"
                 ];

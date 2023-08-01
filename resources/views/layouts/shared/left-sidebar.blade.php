@@ -279,6 +279,14 @@
 
 
                             @endif
+
+                            <li>
+                                <a href="{{route('admin.serviceArea.index')}}">
+                                    <span class="icon-customer-2"></span>
+                                    <span> {{ __('Admin Service Area') }} </span>
+                                </a>
+                            </li>
+
                             @if((@auth()->user()->can('chat-view') || Auth::user()->is_superadmin == 1) && @$clientData->socket_url)
                                 <li>
                                     <a href="#chat" data-toggle="collapse">

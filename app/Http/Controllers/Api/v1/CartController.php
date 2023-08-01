@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\v1;
 
 use DB;
-use Client;
 use Carbon\Carbon;
 use App\Models\Order;
 use App\Models\Country;
@@ -29,6 +28,7 @@ use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, 
 
 use GuzzleHttp\Client as GCLIENT;
 use Log;
+use App\Models\Client;
 //use App\Http\Traits\MpesaStkpush;
 
 class CartController extends BaseController
@@ -40,26 +40,6 @@ class CartController extends BaseController
     public function index(Request $request)
     {
         try {
-
-            // if(($request->has('gateway')) && ($request->gateway != '')){
-            //     if($request->has('order')){
-            //         $order = Order::where('order_number', $request->order)->first();
-            //         if($order){
-            //             if($request->status == 0){
-            //                 $order_products = OrderProduct::select('id')->where('order_id', $order->id)->get();
-            //                 foreach($order_products as $order_prod){
-            //                     OrderProductAddon::where('order_product_id', $order_prod->id)->delete();
-            //                 }
-            //                 OrderProduct::where('order_id', $order->id)->delete();
-            //                 OrderProductPrescription::where('order_id', $order->id)->delete();
-            //                 VendorOrderStatus::where('order_id', $order->id)->delete();
-            //                 OrderVendor::where('order_id', $order->id)->delete();
-            //                 OrderTax::where('order_id', $order->id)->delete();
-            //                 $order->delete();
-            //             }
-            //         }
-            //     }
-            // }
             $user = Auth::user();
             if (!$user->id) {
                 $cart = Cart::where('unique_identifier', $user->system_user)->with(['editingOrder','OrderFiles']);
@@ -148,22 +128,21 @@ class CartController extends BaseController
 
         try {
             $preference = ClientPreference::first();
-            $luxury_option = LuxuryOption::where('title', $request->type)->first();
+            $luxury_option = LuxuryOption::where('title', $request->type)->first();            
             $user = Auth::user();
             $langId = $user->language;
             $user_id = $user->id;
             $client_timezone = DB::table('clients')->first('timezone');
-            $timezone        = $user->timezone ? $user->timezone :  ($client_timezone->timezone ?? 'Asia/Kolkata' );
+            $timezone = $user->timezone ? $user->timezone :  ($client_timezone->timezone ?? 'Asia/Kolkata' );           
             $unique_identifier = '';
-            if (@$user_id) {
+            if (!$user_id) {
                 if (empty($user->system_user)) {
                     return $this->errorResponse(__('System id should not be empty.'), 404);
                 }
+                $unique_identifier = $user->system_user;
             }
-            $unique_identifier = $user->system_user;
-
             $product = Product::where('sku', $request->sku)->first();
-
+            
             if (!$product) {
                 return $this->errorResponse(__('Invalid product.'), 404);
             }
@@ -173,7 +152,7 @@ class CartController extends BaseController
                 return $this->errorResponse(__('Invalid product variant.'), 404);
             }
 
-
+            
             $client_currency = ClientCurrency::where('is_primary', '=', 1)->first();
             $cart_detail = [
                 'is_gift' => 0,
@@ -207,15 +186,15 @@ class CartController extends BaseController
                 }
             }
 
-            if($luxury_option->id == 4) {
-           
-              if($already_added_product_variant_in_cart)
+            if(@$luxury_option->id == 4)
             {
-                return response()->json([
-                    "status" => "Error",
-                    'message' => 'Product already exists in the cart',
-                ], 404);
-                }
+                if($already_added_product_variant_in_cart)
+                    {
+                        return response()->json([
+                            "status" => "Error",
+                            'message' => 'Product already exists in the cart',
+                        ], 404);
+                    }
              }
             
             $order_edit_qty = (!empty($already_added_product_in_cart) && !empty($already_added_product_in_cart->order_quantity))?$already_added_product_in_cart->order_quantity:0;
@@ -398,7 +377,6 @@ class CartController extends BaseController
                 $cartProduct = CartProduct::where('cart_id', $cart_detail->id)
                     ->where('product_id', $product->id)
                     ->where('variant_id', $productVariant->id)->first();
-
                 if (!$cartProduct) {
                     $isnew = 1;
                 } else {
@@ -442,7 +420,6 @@ class CartController extends BaseController
                 $cartData->cart_product_id = $cartProduct->id;
                 $product_total_quantity_in_cart = CartProduct::where(['cart_id'=>$cartProduct->cart_id,'product_id'=> $product->id])->sum('quantity');
                 $cartData->product_total_qty_in_cart = intval($product_total_quantity_in_cart);
-                // dd($cartData-);
                 return $this->successResponse($cartData);
             } else {
                 return $this->successResponse($cartData);
@@ -572,6 +549,28 @@ class CartController extends BaseController
         $totalProducts = CartProduct::where('cart_id', $cart->id)->sum('quantity');
         $cart->item_count = $totalProducts;
         $cart->save();
+        $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type);
+        return response()->json([
+            'data' => $cartData,
+        ]);
+    }
+
+    /**
+     *    update cart product checked/unchecked in cart
+     **/
+    public function updateCartCheckedStatus(Request $request)
+    {
+        $user = Auth::user();
+        $cart = Cart::where('user_id', $user->id)->where('id', $request->cart_id)->first();
+        if (!$cart) {
+            return response()->json(['error' => __('User cart not exist.')], 404);
+        }
+        $cartProduct = CartProduct::where('cart_id', $request->cart_id)->where('id', $request->cart_product_id)->first();
+        if (!$cartProduct) {
+            return response()->json(['error' => __('Product not exist in cart.')], 404);
+        }
+        $cartProduct->is_cart_checked = $request->is_cart_checked;
+        $cartProduct->save();
         $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type);
         return response()->json([
             'data' => $cartData,
@@ -732,8 +731,8 @@ class CartController extends BaseController
             }, 'vendorProducts.product.taxCategory.taxRate',
         ]);
 
-        $cartData = $cartData->select('vendor_id', 'vendor_dinein_table_id','dispatch_agent_id')->where('status', [0, 1])->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
-
+        $cartData = $cartData->select('vendor_id', 'vendor_dinein_table_id','dispatch_agent_id', 'is_cart_checked')->where('status', [0, 1])->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+        
         $taxes=TaxRate::all();
         $taxRates=array();
         foreach($taxes as $tax){
@@ -813,7 +812,7 @@ class CartController extends BaseController
 
             $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user_timezone);
             $vendorData->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime));
-            $slotsRes = getShowSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery');
+            $slotsRes = getShowSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery',"60",0,'',$cartID);
 
             $slots = (array)$slotsRes['slots'];
             // this variable for get slot from dispatc
@@ -839,7 +838,7 @@ class CartController extends BaseController
                 $vendor_latitude = $vendorData->vendor->latitude ?? 30.71728880;
                 $vendor_longitude =  $vendorData->vendor->longitude ?? 76.80350870;
 
-                $slotsDate = findSlot('',$vendorData->vendor->id,$type,'webFormet');
+                $slotsDate = findSlot('',$vendorData->vendor->id,$type,'webFormet',$cartID);
                 // $vendorData->delaySlot = $slotsDate;
                 $vendorData->delaySlot = (($slotsDate)? ( $slotsDate['datetime']?  $slotsDate['datetime'] : '' ):'');
                 $vendorStartDate =  (($slotsDate)? ( $slotsDate['date'] ?  $slotsDate['date'] : '' ):'');
@@ -895,9 +894,9 @@ class CartController extends BaseController
                 $if_previousdeliveryfee_added = 0;
                 $vendorTotalDeliveryFee = 0;
                 $previousdeliveryfee = 0;
-
+                
                 foreach ($vendorData->vendorProducts as $pkey => $prod) {
-
+                    
                     //mohit sir branch code updated by sohail farm meat
                     if ($action == 'takeaway') {
                         $processorProduct = ProcessorProduct::where('product_id', $prod->product_id)->first();
@@ -1016,17 +1015,22 @@ class CartController extends BaseController
                         $price_in_doller_compare = $price_in_currency * $clientCurrency->doller_compare;
                         $container_charges_in_currency = $prod->pvariant->container_charges??0.00;
                         $container_charges_in_doller_compare = $prod->pvariant->container_charges??0.00;
+                        
                         $quantity_price = $price_in_doller_compare * $prod->quantity;
 
                         $quantity_price =  (($quantity_price)*($prod->recurring_date_count));
-
-
+                        
                         $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
                         $quantity_container_charges = decimal_format($quantity_container_charges);
                         $item_count = $item_count + $prod->quantity;
-                        $proSum = $proSum + $quantity_price + $quantity_container_charges;
 
-                        $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
+                        // Check if is_cart_checked is 1 then add $vendor_products_total_amount
+                        if($prod->is_cart_checked == 1){
+                            $proSum = $proSum + $quantity_price + $quantity_container_charges;
+
+                            $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
+                        }
+                        
                         $total_container_charges = $total_container_charges + $quantity_container_charges;
                         $prod->luxury_option_id= $prod->luxury_option_id??'';
                         if (isset($prod->pvariant->image->imagedata) && !empty($prod->pvariant->image->imagedata)) {
@@ -1106,10 +1110,12 @@ class CartController extends BaseController
                             $variantsData['quantity_price'] = $quantity_price;
                             $variantsData['quantity_container_charges'] = $quantity_container_charges;
 
-
                             $only_products_amount += $quantity_price;
-                            $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
 
+                            // Check if is_cart_checked is 1 then add $quantity_price in payable amount
+                            if($prod->is_cart_checked == 1){
+                                $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
+                            }
 
                             if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
                                 foreach ($prod->product->taxCategory->taxRate as $tckey => $tax_value) {
@@ -1366,9 +1372,16 @@ class CartController extends BaseController
                 }
                 $vendor_service_fee_percentage_amount = 0;
                 if($vendorData->vendor->service_fee_percent > 0){
-                    $vendor_service_fee_percentage_amount = (($vendor_products_total_amount+$opt_quantity_price_new) * $vendorData->vendor->service_fee_percent) / 100 ;
+                     $amount_for_service = $opt_quantity_price_new + $vendor_products_total_amount;
+                    $vendor_service_fee_percentage_amount = (($amount_for_service) * $vendorData->vendor->service_fee_percent) / 100 ;
                     $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
-                }
+                 }
+                 if($vendorData->vendor->service_charge_amount > 0){
+                     $amount_for_service = $opt_quantity_price_new + $vendor_products_total_amount;
+                     $vendor_service_fee_percentage_amount = $vendorData->vendor->service_charge_amount;
+                     $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
+                 }
+                //end applying service fee on vendor products total
                 $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
                 $vendorData->service_fee_percentage_amount = number_format($vendor_service_fee_percentage_amount, 2, '.', '');
                 $vendorData->vendor_gross_total = $payable_amount;
@@ -1415,9 +1428,9 @@ class CartController extends BaseController
                         }
                     }
                 }
-
+                
                 $order_sub_total = $order_sub_total + $vendor_products_total_amount;
-
+                
                 $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
 
                 if($getAdditionalPreference['is_price_by_role'] == 1){
@@ -1571,10 +1584,10 @@ class CartController extends BaseController
             //type must be a : delivery , takeaway,dine_in
             $duration = Vendor::where('id',$vendorId)->select('slot_minutes','closed_store_order_scheduled')->first();
             $slotsDate = findSlot('',$vendorId,$type,'api');
-            $slots = showSlot($slotsDate,$vendorId,$type,$duration->slot_minutes, 1);
+            $slots = showSlot($slotsDate,$vendorId,$type,$duration->slot_minutes, 1,'',$cartID);
             $cart->slots = $slots;
             if($preferences->business_type == 'laundry'){
-                $dropoff_slots = showSlot($slotsDate,$vendorId,$type,$duration->slot_minutes, 2);
+                $dropoff_slots = showSlot($slotsDate,$vendorId,$type,$duration->slot_minutes, 2,'',$cartID);
                 $cart->dropoff_slots = $dropoff_slots;
             }else{
                 $cart->dropoff_slots = [];
@@ -1717,7 +1730,7 @@ class CartController extends BaseController
 
 
         if (isset($cart_product_luxury_id) && isset($cart_product_luxury_id->luxury_option_id) && $cart_product_luxury_id->luxury_option_id ==4) {
-        $additional_price=($cart_product_luxury_id->additional_increments_hrs_min/$prod->pvariant->incremental_price_per_min);
+        $additional_price= isset($prod->pvariant)  && $prod->pvariant->incremental_price_per_min > 0 ? ($cart_product_luxury_id->additional_increments_hrs_min/$prod->pvariant->incremental_price_per_min) : 0;
         $cart->total_payable_amount= number_format((float)$cart->total_payable_amount+$additional_price, 2, '.', '');
         $cart->additional_price=$additional_price;
         }
@@ -1803,10 +1816,11 @@ class CartController extends BaseController
         $slot = [];
         $vendorId = $request->vendor_id??0;
         $delivery = $request->delivery??'delivery';
+        $cartId = $request->cart_id??0;
         //type must be a : delivery , takeaway,dine_in
         $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
         $duration = $duration->slot_minutes??'';
-        $slots = showSlot($request->date,$vendorId,$delivery,$duration, 1, 'pickup'); // Added 1 for pickup
+        $slots = showSlot($request->date,$vendorId,$delivery,$duration, 1, 'pickup',$cartId); // Added 1 for pickup
         if(count($slots)<=0){
             $slot = [];
         }else{
@@ -2078,11 +2092,11 @@ class CartController extends BaseController
         }
 
         foreach($getallproduct as $data){
-            $request->vendor_id = $data->vendor_id;
-            $request->sku = $data->product->sku;
-            $request->quantity = $data->quantity;
-            $request->product_variant_id = $data->variant_id;
-
+            $request->request->add(['vendor_id' => $data->vendor_id,
+                'sku' => $data->product->sku,
+                'quantity' => $data->quantity,
+                'product_variant_id' => $data->variant_id
+            ]);
             if(isset($getallproduct->order) && !empty($getallproduct->order))
             $type = LuxuryOption::where('id',$getallproduct->order->luxury_option_id)->value('title');
 
@@ -2102,7 +2116,7 @@ class CartController extends BaseController
 
         }
 
-        return response()->json(['status' => 'success', 'message' => 'Order added to cart.']);
+       return response()->json(['status' => 'success', 'message' => 'Order added to cart.']);
 
 
     }

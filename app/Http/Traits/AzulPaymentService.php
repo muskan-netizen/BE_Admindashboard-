@@ -126,10 +126,6 @@ trait AzulPaymentService
         }
         $response = $this->sendRequest($request);
        if ($response['code'] != 200) {
-            Log::info([
-                'error http payWithCard',
-                'order_id: ' . json_encode($response['message'])
-            ]);
             return [
                 'message' => $response['message'],
                 'ok' => false,
@@ -138,10 +134,6 @@ trait AzulPaymentService
         }
 
         if ($response['data']->ResponseCode !== $this->AZUL_OK_RESPONSE_CODE) {
-            Log::info([
-                'error on payWithCard',
-                'order_id: ' . json_encode($response['data'])
-            ]);
             return [
                 'message' => $response['data']->ErrorDescription,
                  'ok' => false,
@@ -150,10 +142,6 @@ trait AzulPaymentService
         }
 
         if ($response['data']->IsoCode !== $this->OK_RESPONSE_CODE) {
-            Log::info([
-                'error on payWithCard',
-                'order_id: ' . json_encode($response['data'])
-            ]);
             return [
                 'message' => $response['data']->ResponseMessage,
                 'ok' => false,
@@ -161,10 +149,6 @@ trait AzulPaymentService
             ];
         }
 
-        Log::info([
-            'payWithCard OK',
-            json_encode($response['data'])
-        ]);
         return [
             'message' => 'ok',
             'ok' => true,

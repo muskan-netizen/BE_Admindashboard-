@@ -634,11 +634,20 @@ div.dataTables_wrapper div.dataTables_processing {
 .outer_box {
     border: 2px dashed #d2d0cd
 }
-
+/*add font size for selected product text*/
 .select2-container--default .select2-selection--multiple .select2-selection__choice {
-    color: rgba(0, 0, 0, .514)
+    color: rgba(0, 0, 0, .514);
+    font-size:14px;
 }
-
+/*end here*/
+.cate-vendor .form-group input.form-control {
+    background-size: 15px;
+    background-position: 80%;
+}
+.cate-vendor .form-group select.form-control{
+    background-size: 15px;
+    background-position: 80%;
+}
 span.inner-div {
     float: right
 }
@@ -1667,27 +1676,27 @@ i.mdi.mdi-exclamation-thick {
 }
 
 .tooltip_error {
-    position: absolute;
-    right: -87px;
-    background: #fff;
-    box-shadow: 0 0 5px #ddd;
+    /* position: absolute; */
+    /* right: -87px; */
+    background: #FFF;
+    box-shadow: 0 0 5px #DDD;
     padding: 10px 15px 10px 30px;
     margin: 0;
     border-radius: 5px;
     opacity: 0;
     top: -100%;
-    transform: translateY(-100%);
-    -webkit-transform: translateY(-100%);
-    max-height: 200px;
-    overflow-x: auto;
-    -webkit-transition: all .5s;
-    transition: all .5s;
-    color: rgb(255 0 0 / 80%);
-    line-height: 20px;
-    width: 260px;
-    text-align: left;
-    z-index: -1
-}
+    /* transform: translateY(-100%); */
+    /* -webkit-transform: translateY(-100%); */
+    /* max-height: 200px; */
+    /* overflow-x: auto; */
+    /* -webkit-transition: all .5s; */
+    /* transition: all .5s; */
+    /* color: rgb(255 0 0 / 80%); */
+    /* line-height: 20px; */
+    width: 661px;
+    /* text-align: left; */
+    /* z-index: -1; */
+    }
 
 .tooltip_error li {
     white-space: normal;
@@ -2339,6 +2348,15 @@ button.add_edit_driver_review {
 /*============================================= dashboard page responsive css start here ======================================= */
 @media(max-width:1600px) {
 .card-box {padding: 20px;}
+.cate-vendor .form-group input.form-control {
+    background-size: 15px;
+    background-position: 75%;
+}
+.cate-vendor .form-group select.form-control{
+    background-size: 15px;
+    background-position: 75%;
+}
+
 }
 
 .file .update_pic {
@@ -2461,7 +2479,9 @@ label.logo-size {
     overflow: hidden;
     text-overflow: ellipsis
 }
-
+.custom-dd-empty .ellips{
+    width: 80%;
+}
 #promo-datatable .ellips {
     width: 50%
 }
@@ -2968,6 +2988,14 @@ button.update-status {
     border-radius: 50px;
     padding: 2px 8px
 }
+
+button.update-status-ar {
+    border: 0;
+    border-radius: 50px;
+    padding: 2px 8px;
+}
+
+
 
 .btn-danger.focus,
 .btn-danger:focus {
@@ -4883,6 +4911,7 @@ div#addRejectmodal {
     .al_new_export_table .sync_hubspot {
         max-width: 150px !important;
     }
+    
 }
 
 @media(min-width:1367px) {

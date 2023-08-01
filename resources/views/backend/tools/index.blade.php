@@ -42,7 +42,7 @@
     <div class="row">
         @if(Auth::user()->is_superadmin == 1)
         <div class="col-md-3">
-            <form method="POST" id="catalog_copy_tools" action="{{route('tools.store')}}">
+            <form method="POST" id="catalog_copy_tools" action="{{route('tools.storeData')}}">
             @csrf
             @method('POST')
                 <div class="card-box h-100 mb-0">
@@ -64,7 +64,7 @@
                         <div class="col-12">
                             <div class="form-group mb-2">
                                 <label for="copy_to" class="mr-3">{{ __("Copy To") }}</label>
-                                <select class="form-control select2-multiple" id="copy_to" name="copy_to[]" data-toggle="select2" multiple="multiple" data-placeholder="Choose ..." required>
+                                <select class="form-control" id="copy_to" name="copy_to" data-placeholder="Choose ..." required>
                                     @foreach($vendors as $vendor)
                                     <option value="{{$vendor->id}}">{{@$vendor->name}}</option>
                                     @endforeach
@@ -214,21 +214,27 @@
     });
 $(document).ready(function() {
     $('#catalog_copy_tools').submit(function(e) {
-        e.preventDefault();
-        Swal.fire({
-            title: "{{__('Are you sure?')}}",
-            text:"{{__('This will delete and overwrite all menu items.')}}",
-                // icon: 'info',
-            showCancelButton: true,
-            confirmButtonText: 'Copy',
-        }).then((result) => {
-            if(result.value)
-            {
-                $("#catalog_copy_tools").off("submit").submit();
-            }else{
-                return false;
-            }
-        });
+        var copy_to = $("#copy_to").val();
+    	var copy_from = $("#copy_from").val();
+    	e.preventDefault();
+    	if(copy_from != copy_to){
+            Swal.fire({
+                title: "{{__('Are you sure?')}}",
+                text:"{{__('This will delete and overwrite all menu items.')}}",
+                    // icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Copy',
+            }).then((result) => {
+                if(result.value)
+                {
+                    $("#catalog_copy_tools").off("submit").submit();
+                }else{
+                    return false;
+                }
+            });
+        }else{
+        	 Swal.fire ('Both vendors cannot be same', '', 'error');
+        }
     });
     $('#tax_copy_tools').submit(function(e) {
         e.preventDefault();

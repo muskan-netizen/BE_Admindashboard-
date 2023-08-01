@@ -1222,7 +1222,6 @@ class OrderController extends FrontController
                     'editingOrder.orderStatusVendor',
                     'cartvendor'
                 ])->first();
-
             /* Get Currencies of client and customer */
             $customerCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
             $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
@@ -1318,7 +1317,6 @@ class OrderController extends FrontController
                 $latitude = '';
                 $longitude = '';
             }
-
             /* Uodating client other details in order object */
             $order->payment_option_id = $request->payment_option_id;
             $order->total_other_taxes = $request->other_taxes_string;
@@ -1381,13 +1379,14 @@ class OrderController extends FrontController
                 'LongTermProducts.addons'
             ])
                 ->where('cart_id', $cart->id)
+                ->where('is_cart_checked', 1)
                 ->where('status', [
                 0,
                 1
             ])
                 ->orderBy('created_at', 'asc')
                 ->get();
-
+            
             /* Initialize empty data */
             $total_amount = 0;
             $total_discount = 0;
@@ -1415,11 +1414,9 @@ class OrderController extends FrontController
 
             /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
             if (! empty($request->other_taxes_string)) {
-                foreach (explode(":", $request->other_taxes_string) as $row) {
-                    $total_other_taxes += (float) $row;
-                }
-            }
-
+                $total_other_taxes = array_sum(explode(":", $request->other_taxes_string));
+                $total_other_taxes = decimal_format($total_other_taxes);
+            }  
             /* Loop through evey cart product to get desired data for order */
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
 
@@ -2132,7 +2129,7 @@ class OrderController extends FrontController
             $order->total_amount = $total_amount - $Order_bid_discount??0;
 
 
-            if($vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
+            if(@$vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
                 $date       = explode(",",$vendor_cart_product->recurring_day_data);
                 if($vendor_cart_product->recurring_booking_type == 1 ||$vendor_cart_product->recurring_booking_type == 2 || $vendor_cart_product->recurring_booking_type == 3 || $vendor_cart_product->recurring_booking_type == 4){
                     $days_count                         =  count($date);
@@ -2227,9 +2224,18 @@ class OrderController extends FrontController
             $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
             // echo " total_service_fee=".$total_service_fee." total_delivery_fee=".$total_delivery_fee;
             // echo " Total payable_amount 3=".$payable_amount."; <br>";
-
             $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
+
             $order->scheduled_slot = (($cart->scheduled_slot) ? $cart->scheduled_slot : null);
+            if($order->scheduled_slot){   
+                $scheduled_time =    explode("-",$order->scheduled_slot);
+                // dd($scheduled_time);
+                $schedule_dt =  date('Y-m-d',strtotime($order->scheduled_date_time));
+                $schedule_dt = date('Y-m-d H:i:s',strtotime( $schedule_dt." ".$scheduled_time[0]));
+                $order->scheduled_date_time = Carbon::parse($schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+          
+            }
+
             $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot) ? $cart->dropoff_scheduled_slot : null);
             $order->luxury_option_id = $luxury_option->id;
             $payable_amount = $payable_amount - $Order_bid_discount ?? 0;
@@ -2306,7 +2312,6 @@ class OrderController extends FrontController
                 $order->recurring_day_data      = $vendor_cart_product->recurring_day_data;
                 $order->recurring_booking_time  = $recurring_booking_time;
             }
-
 
 
             $order->save();
@@ -2387,7 +2392,9 @@ class OrderController extends FrontController
 
                 CartAddon::where('cart_id', $cart->id)->delete();
                 CartCoupon::where('cart_id', $cart->id)->delete();
-                CartProduct::where('cart_id', $cart->id)->delete();
+                // CartProduct::where('cart_id', $cart->id)->delete();
+                $cart_product_ids = $cart_products->pluck('id');
+                CartProduct::query()->whereIn('id', $cart_product_ids)->delete();
                 CartProductPrescription::where('cart_id', $cart->id)->delete();
                 CartDeliveryFee::where('cart_id', $cart->id)->delete();
                 // send sms
@@ -2528,8 +2535,6 @@ class OrderController extends FrontController
 
     public function sendOrderPushNotificationVendors($user_ids, $orderData)
     {
-
-        \Log::info($user_ids);
         $devices = UserDevice::where('is_vendor_app', 0)->whereNotNull('device_token')
             ->whereIn('user_id', $user_ids)
             ->pluck('device_token')
@@ -3024,11 +3029,11 @@ class OrderController extends FrontController
 
             if ($order->payment_option_id == 1) {
                 $cash_to_be_collected = 'Yes';
-                $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
+                $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
             } else {
                 if ($order->is_postpay == 1 && $order->payment_status == 0) {
                     $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
+                    $payable_amount = $order_vendor->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
                 } else {
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -3105,7 +3110,8 @@ class OrderController extends FrontController
                 'order_id' => $order->id,
                 'customer_id' => $order->user_id,
                 'user_icon' => $customer->image,
-                'order_pre_time'=>$vendor_details->order_pre_time
+                'order_pre_time'=>$vendor_details->order_pre_time,
+                'app_call' => 0,
             ];
             if ($order_vendor->is_restricted == 1) {
                 $postdata['user_verification_type'] = isset($customer->passbase_verification) && ! is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
@@ -3156,11 +3162,11 @@ class OrderController extends FrontController
             $tasks = array();
             if ($order->payment_option_id == 1) {
                 $cash_to_be_collected = 'Yes';
-                $payable_amount = $order->payable_amount;
+                $payable_amount = $order->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
             } else {
                 if ($order->is_postpay == 1 && $order->payment_status == 0) {
                     $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order->payable_amount;
+                    $payable_amount = $order->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
                 } else {
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;
@@ -3287,11 +3293,11 @@ class OrderController extends FrontController
             $tasks = array();
             if ($order->payment_option_id == 1) {
                 $cash_to_be_collected = 'Yes';
-                $payable_amount = $order->payable_amount;
+                $payable_amount = $order->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
             } else {
                 if ($order->is_postpay == 1 && $order->payment_status == 0) {
                     $cash_to_be_collected = 'Yes';
-                    $payable_amount = $order->payable_amount;
+                    $payable_amount = $order->payable_amount -  $order->loyalty_amount_saved - $order->wallet_amount_used;
                 } else {
                     $cash_to_be_collected = 'No';
                     $payable_amount = 0.00;

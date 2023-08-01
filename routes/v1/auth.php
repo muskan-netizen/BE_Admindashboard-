@@ -162,6 +162,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('cart/checkSlotOrders', 'Api\v1\CartController@checkSlotOrders'); //Added by Surendra
         Route::post('user/editorder', 'Api\v1\OrderController@editOrderByUser');
 	    Route::post('user/discardeditorder', 'Api\v1\OrderController@discardEditOrderByUser');
+        Route::post('order/vendorReached', 'Api\v1\OrderController@sendVendorReachedLocation');
 
         // Rating & review
         Route::group(['prefix' => 'rating'], function () {

@@ -38,8 +38,6 @@ trait Dispatcher{
                 ['form_params' => ($postdata)]
             );
             $response = json_decode($res->getBody(), true);
-            \Log::info('setDriverRatingDispatcher');
-            \Log::info( $response);
          return $response ;
         }catch(\Exception $e){
             return $e->getMessage();

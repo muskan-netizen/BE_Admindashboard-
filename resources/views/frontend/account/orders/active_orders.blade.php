@@ -180,7 +180,7 @@
                                                                                                     @if(@$order->reqCancelOrder->status == 'Pending')
                                                                                                         {{__('Cancel Order Pending')}}
                                                                                                     @else
-                                                                                                        @if ($luxury_option_name == 'Dine-In' && $vendor->order_status == 'out for delivery')
+                                                                                                        @if (@$luxury_option_name == 'Dine-In' && @$vendor->order_status == 'out for delivery')
                                                                                                         {{__( ucfirst('Ready for Delivery')) }}
                                                                                                         @else
                                                                                                         {{__( ucfirst( $vendor->order_status)) }}

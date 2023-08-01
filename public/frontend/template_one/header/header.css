@@ -844,8 +844,9 @@ body.al_body_template_two {
 @media (max-width:991px) {
     .al_body_template_one ul.exzoom_img_ul img {
         width: 100%;
-        height: 300px;
+        height: auto;
         object-fit: cover;
+        max-height: 500px;
     }
     .al_body_template_one .img-zoom-result {
         display: none;

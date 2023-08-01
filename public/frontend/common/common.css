@@ -4799,6 +4799,9 @@ body.al_body_template_eight .outter-fillter-data .flag-discount::before {
     border-width: 22px 15px 0 0;
     border-color: #E09378 transparent transparent transparent;
 }
+.al_body_template_three .flag-discount::after{
+    content: unset;
+}
 body.al_body_template_eight .outter-fillter-data .flag-discount::before, .flag-discount::after {
     content: "";
     position: absolute;
@@ -5314,9 +5317,12 @@ body.al_body_template_three .main-fillter .side_fillter .collection-collapse-blo
 }
 
 body.al_body_template_three .main-fillter .side_fillter .irs {
-    width: 90%;
+    width: 100%;
 }
-
+body.al_body_template_three .main-fillter .side_fillter .irs span.irs-to {
+    left: unset!important;
+    right: 0px;
+}
 body.al_body_template_four .collection-filter-block {
     padding: 20px !important;
     background-color: #f5f5f5 !important;
@@ -5350,7 +5356,7 @@ body.al_body_template_four .main-fillter .side_fillter .collection-collapse-bloc
 }
 
 body.al_body_template_four .main-fillter .side_fillter .irs {
-    width: 90%;
+    width: 100%;
 }
 
 body.al_body_template_four .displayProducts a.product-box.scale-effect span.rating {
@@ -5886,8 +5892,24 @@ img.update_pic {width: 100%;background-color: #efefef;border-radius: 10px;box-sh
 ul.productVariants li.row.otherSize .checkround{opacity: 0;}
 
 .size-box ul.productVariants li.row.otherSize label .var-active{border: 2px solid#4c4a4a !important;}
-.size-box ul.productVariants li.row.otherSize label .radio-active{border: 2px solid#4c4a4a !important;background:#000 !important;}
-
+.size-box ul.productVariants li.row.otherSize label .radio-active{
+    border: 2px solid#4c4a4a !important;
+    /* background:#000 !important; */
+}
+.size-box ul.productVariants li.row.otherSize label span.color_var:after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 10px;
+    height: 6px;
+    border-left: 2px solid transparent;
+    border-bottom: 2px solid transparent;
+    transform: rotate(-45deg);
+}   
+.size-box ul.productVariants li.row.otherSize label span.color_var.radio-active:after {
+    border-color: black;
+}
 .pac-container{
     z-index: 9999 !important;
 }

@@ -41,7 +41,20 @@ a.common-product-box.text-center {
     height: 100%;
     min-height: 1px
 }
-
+.home-slider-wrapper span.carousel-control-prev-icon {
+    background-color: #000;
+    width: 40px !important;
+    height: 40px !important;
+    background-size: 12px;
+    border-radius: 2px;
+}
+.home-slider-wrapper span.carousel-control-next-icon {
+    background-color: #000;
+    width: 40px !important;
+    height: 40px !important;
+    background-size: 12px;
+    border-radius: 2px;
+}
 
 /*css here----*/
 
@@ -4388,7 +4401,7 @@ body.al_body_template_one #page-container .footer-theme .sub-title .contact-list
 }
 
 body.al_body_template_one ul.exzoom_img_ul{
-    height: 550px;
+    height: auto;
     object-fit: cover;
 }
 .al_body_template_one .offer-slider .img-outer-box {
@@ -4694,6 +4707,11 @@ body.al_body_template_one .top-banner-wrapper {
 .al_body_template_one .alRentalSinglePageView .single_product-input {
     width: 80% !important;
 }
+
+
+
+
+
 @media(max-width:1100px) {
     .cab-banner-area .card-box {
         padding: 48px 25px;
@@ -5237,6 +5255,10 @@ body.dark.al_body_template_one table.table.wishlist-table.border {
 }
 
 @media (max-width: 767px) {
+    .al_custom_brand .brand-box h6{
+        font-size: 16px;
+        line-height: 1.5;
+    }
     .col-md-3.alOrderStatus {
         display: flex;
         justify-content: space-between;
@@ -5278,6 +5300,7 @@ body.dark.al_body_template_one table.table.wishlist-table.border {
     }
     .al_body_template_one .col-lg-12.cw.top-heading.pr-0.text-center.text-lg-left.mb-3.mb-lg-0 {
         margin: 0 !important;
+        text-align: left!important;
     }
     .al_body_template_one section.popular-brands.left-shape_.position-relative {
         padding-top: 0 !important;
@@ -5296,6 +5319,23 @@ body.dark.al_body_template_one table.table.wishlist-table.border {
 
     a.carousel-control-next {
         display: none;
+    }
+}
+@media (max-width: 576px) {
+    .al_body_template_one .custom_banner img{
+        object-fit: contain!important;
+        min-height: inherit!important;
+        max-height: 300px;
+        border-radius: 0;
+    }
+    .al_body_template_one .custom_banner .container{
+        padding: 0!important;
+    }
+    .al_body_template_one .slick-slider .d-flex.align-items-center.justify-content-between.al_clock b {
+        font-size: 13px!important;
+    }
+    .al_body_template_one .slick-slider .d-flex.align-items-center.justify-content-between.al_clock del{
+        font-size: 12px;
     }
 }
 
@@ -5638,3 +5678,14 @@ body.al_body_template_one .slick-slider .common-product-box, .slick-slider .supp
     max-height: 66px !important;
 }
 }
+
+
+
+/*pickup and drop section rwd css */
+@media screen and (min-width:1200px) and (max-width:1317px){
+    .al_body_template_one .cab-banner-area .card-box {
+         padding: 18px;
+     }
+ }
+ 
+ /*-------end here---*/

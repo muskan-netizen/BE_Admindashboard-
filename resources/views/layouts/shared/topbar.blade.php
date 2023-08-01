@@ -245,7 +245,7 @@ $is_map_search_perticular_country = getMapConfigrationPreference();
                         <span>{{ __("Change Password") }}</span>
                     </a>
 
-                    <a class="dropdown-item notify-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"> <i class="fe-log-out"></i> <span>Logout</span>
+                    <a class="dropdown-item notify-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"> <i class="fe-log-out"></i> <span>{{ __("Logout") }}</span>
                     </a>
 
                     <form id="logout-form" action="{{route('client.logout')}}" method="POST">

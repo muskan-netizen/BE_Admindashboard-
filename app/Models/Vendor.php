@@ -22,7 +22,7 @@ class Vendor extends Model implements Auditable{
 
     public function products(){
       return $this->hasMany('App\Models\Product', 'vendor_id', 'id')->where('is_long_term_service',0);
-      return $this->hasMany('App\Models\Product', 'vendor_id', 'id');
+      // return $this->hasMany('App\Models\Product', 'vendor_id', 'id');
     }
 
     public function long_term_products(){

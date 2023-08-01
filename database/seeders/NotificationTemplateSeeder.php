@@ -106,6 +106,27 @@ class NotificationTemplateSeeder extends Seeder
                 "tags" => "{order_id}",
                 "content" => "Your order ({order_id}) has been Delayed",
                 "slug" => "order-delayed-customer"
+            ],
+            [
+                "label" => "Pickup Delivery Reminder",
+                "subject" => "Pickup Delivery",
+                "tags" => "{order_id}",
+                "content" => "Your order ({order_id}) has been reached to you soon",
+                "slug" => "pickup-delivery-customer"
+            ],
+            [
+                "label" => "Reached Vendor Location",
+                "subject" => "Reached Vendor Location",
+                "tags" => "{order_id}",
+                "content" => "Location reached",
+                "slug" => "reached-vendor-location"
+            ],
+            [
+                'label' =>'Out of takeaway-delivery (Customer)',
+                'subject' => 'Out of takeaway-delivery',
+                'tags' => '{order_id}',
+                'content' => 'Your order ({order_id}) is ready for pickup',
+                'slug' => 'order-out-for-takeaway-delivery'
             ]
         ];
         NotificationTemplate::truncate();

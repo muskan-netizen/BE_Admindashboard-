@@ -196,7 +196,7 @@ class FrontController extends Controller
         $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
         pr($send);
     }
-    public function categoryNav($lang_id)
+    public function categoryNav($lang_id,$only_id = false)
     {
         $preferences = Session::get('preferences');
         // get selected vendor type
@@ -238,7 +238,7 @@ class FrontController extends Controller
          if($celebrity_check == 0){
             $categories = $categories->where('categories.type_id', '!=', 5);
         }
-
+        
         $categories = $categories->where('categories.id', '>', '1')
                                // ->whereNotNull('categories.type_id')
                                 //->whereNotIn('categories.type_id', [7])
@@ -248,11 +248,14 @@ class FrontController extends Controller
                                 ->where('cts.language_id', $lang_id)
                                 ->where(function ($qrt) use($lang_id,$primary){
                                     $qrt->where('cts.language_id', $lang_id)->orWhere('cts.language_id',$primary->language_id);
-                                })
-                                ->whereNull('categories.vendor_id')
+                                })->whereNull('categories.vendor_id')
                               //  ->orderBy('categories.position', 'asc')
-                                ->orderBy('categories.parent_id', 'asc')->groupBy('categories.id')->get();
-
+                                ->orderBy('categories.parent_id', 'asc')->groupBy('categories.id');
+        if($only_id){
+           return $categories = $categories->select('categories.id')->pluck('id')->toArray();
+        }else{
+            $categories = $categories->get();
+        }
         if ($categories) {
             $categories = $this->buildTree($categories);
         }
@@ -460,7 +463,7 @@ class FrontController extends Controller
         return $products;
     }
 
-    public function metaProduct($langId, $multiplier, $for = 'related', $productArray = []){
+    public function metaProduct($langId, $multiplier = 1, $for = 'related', $productArray = []){
         if(empty($productArray)){
             return $productArray;
         }
@@ -891,7 +894,7 @@ class FrontController extends Controller
                             $curr_time = date('Y-m-d 00:00');
                         }else{
                             $daten = new DateTime("now", new DateTimeZone($timezone) );
-                            $curr_time = $daten->format('Y-m-d h:i');
+                            $curr_time = $daten->format('Y-m-d H:i');
                         }
                         $start_time = $start_time->format('Y-m-d H:m');
                         $end_time = date('Y-m-d 23:59');
