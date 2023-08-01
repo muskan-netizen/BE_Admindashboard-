@@ -1223,7 +1223,6 @@ class OrderController extends FrontController
                     'editingOrder.orderStatusVendor',
                     'cartvendor'
                 ])->first();
-
             /* Get Currencies of client and customer */
             $customerCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
             $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
@@ -1319,7 +1318,6 @@ class OrderController extends FrontController
                 $latitude = '';
                 $longitude = '';
             }
-
             /* Uodating client other details in order object */
             $order->payment_option_id = $request->payment_option_id;
             $order->total_other_taxes = $request->other_taxes_string;
@@ -1418,11 +1416,9 @@ class OrderController extends FrontController
 
             /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
             if (! empty($request->other_taxes_string)) {
-                foreach (explode(":", $request->other_taxes_string) as $row) {
-                    $total_other_taxes += (float) $row;
-                }
-            }
-
+                $total_other_taxes = array_sum(explode(":", $request->other_taxes_string));
+                $total_other_taxes = decimal_format($total_other_taxes);
+            }  
             /* Loop through evey cart product to get desired data for order */
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
 
@@ -2230,9 +2226,18 @@ class OrderController extends FrontController
             $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
             // echo " total_service_fee=".$total_service_fee." total_delivery_fee=".$total_delivery_fee;
             // echo " Total payable_amount 3=".$payable_amount."; <br>";
-
             $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
+
             $order->scheduled_slot = (($cart->scheduled_slot) ? $cart->scheduled_slot : null);
+            if($order->scheduled_slot){   
+                $scheduled_time =    explode("-",$order->scheduled_slot);
+                // dd($scheduled_time);
+                $schedule_dt =  date('Y-m-d',strtotime($order->scheduled_date_time));
+                $schedule_dt = date('Y-m-d H:i:s',strtotime( $schedule_dt." ".$scheduled_time[0]));
+                $order->scheduled_date_time = Carbon::parse($schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+          
+            }
+
             $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot) ? $cart->dropoff_scheduled_slot : null);
             $order->luxury_option_id = $luxury_option->id;
             $payable_amount = $payable_amount - $Order_bid_discount ?? 0;
@@ -2309,7 +2314,6 @@ class OrderController extends FrontController
                 $order->recurring_day_data      = $vendor_cart_product->recurring_day_data;
                 $order->recurring_booking_time  = $recurring_booking_time;
             }
-
 
 
             $order->save();

@@ -1371,6 +1371,7 @@ trait OrderTrait
 
         // $from = env('FIREBASE_SERVER_KEY');
 
+
         $notification_content = NotificationTemplate::where('id', 2)->first();
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if ($notification_content && ! empty($token) && ! empty($client_preferences->fcm_server_key)) {
@@ -1379,7 +1380,8 @@ trait OrderTrait
                 "registration_ids" => $token,
                 "notification" => [
                     'title' => $notification_content->label,
-                    'body' => $notification_content->content
+                    'body' => $notification_content->content,
+                    'sound' => 'default',
                 ]
             ];
             $dataString = $data;

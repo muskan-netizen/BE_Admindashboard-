@@ -86,6 +86,7 @@ class OrderController extends BaseController
     {
        try {
             $action = ($request->has('type')) ? $request->type : 'delivery';
+          
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
             if(isset($set_template)  && $set_template->template_id == 9){
                 $action = 'delivery';
@@ -197,6 +198,7 @@ class OrderController extends BaseController
                 if(isset($client_preference->stop_order_acceptance_for_users) && ($client_preference->stop_order_acceptance_for_users == 1)){
                     return $this->errorResponse(__('Sorry! We are not accepting orders right now.'), 400);
                 }
+             
                 $luxury_option = LuxuryOption::where('title', $action)->first();
                 $cart = Cart::where('user_id', $user->id)->with(['editingOrder.orderStatusVendor', 'cartvendor'])->first();
                 if ($cart) {
@@ -222,9 +224,8 @@ class OrderController extends BaseController
                     $total_subscription_discount = 0;
 
                     if($cart_products[0]->luxury_option_id=="4"){
-                        $additional_price=($cart_products[0]->additional_increments_hrs_min/$cart_products[0]['product']['variants'][0]->incremental_price_per_min);
+                      $additional_price= isset($cart_products[0]['product']['variants'][0])  && $cart_products[0]['product']['variants'][0]->incremental_price_per_min > 0 ? ($cart_products[0]->additional_increments_hrs_min/$cart_products[0]['product']['variants'][0]->incremental_price_per_min) : 0;
                     }
-
                     /* calculate total fixed fee amount */
                     // pr($cart_products[0]->additional_increments_hrs_min);
                 //    pr($additional_price);
@@ -1013,9 +1014,14 @@ class OrderController extends BaseController
                     $order->scheduled_slot = $cart->scheduled_slot ?? null;
                     $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot)?$cart->dropoff_scheduled_slot:null);
                     $order->subscription_discount = $total_subscription_discount;
-                    $order->luxury_option_id = $luxury_option->id;
+                    $order->luxury_option_id = $luxury_option->id ?? '';
                     $payable_amount = $payable_amount - $Order_bid_discount??0;
-
+                    if($order->scheduled_slot){   
+                         $scheduled_time =    explode("-",$order->scheduled_slot);
+                         $schedule_dt =  date('Y-m-d',strtotime($order->scheduled_date_time));
+                         $schedule_dt = date('Y-m-d H:i:s',strtotime( $schedule_dt." ".$scheduled_time[0]));
+                         $order->scheduled_date_time = Carbon::parse($schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                     }
                     if (!$additionalPreferences->is_tax_price_inclusive) {
                         $order->payable_amount = $payable_amount;
                     }else{
@@ -3693,7 +3699,7 @@ class OrderController extends BaseController
 
 
 
-                    if ($request->status_option_id == 3) {
+                    if ($order_status_option_id == 3) {
                         if ($orderData->shipping_delivery_type=='D' && !empty($currentOrderStatus->dispatch_traking_url)) {
                             $dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
                             $response = Http::get($dispatch_traking_url);

@@ -6,7 +6,7 @@ body.al_body_template_eight .category-related-product.suggested-product.slick-in
     padding: 5px 10px;
     background: var(--theme-deafult);
     font-size: 14px;
-    font-weight: 400;
+    font-weight: 400; 
     position: absolute;
     top: 10px;
     left: 0;
@@ -22,6 +22,20 @@ body.al_body_template_eight .category-related-product.suggested-product.slick-in
     bottom: 0;
     border-width: 0 15px 22px 0;
     border-color: transparent transparent var(--theme-deafult) transparent;
+}
+.home-slider-wrapper span.carousel-control-prev-icon {
+    background-color: #000;
+    width: 40px !important;
+    height: 40px !important;
+    background-size: 12px;
+    border-radius: 2px;
+}
+.home-slider-wrapper span.carousel-control-next-icon {
+    background-color: #000;
+    width: 40px !important;
+    height: 40px !important;
+    background-size: 12px;
+    border-radius: 2px;
 }
 
 body.al_body_template_eight .category-related-product.suggested-product.slick-initialized.slick-slider .flag-discount::before,
@@ -1749,8 +1763,8 @@ body.al_body_template_eight .custom-vender-card .suppliers-img-outer {
 }
 
 body.al_body_template_eight .custom-vender-card .suppliers-img-outer img {
-    height: 300px;
-    object-fit: cover;
+    height: 220px;
+    object-fit: contain;
 }
 
 body.al_body_template_eight .custom-vender-card .supplier-rating {
@@ -1852,9 +1866,9 @@ body.al_body_template_eight .suppliers-box .suppliers-img-outer {
     height: 100%;
     background-color: #f9f9f9;
     padding: 0;
-    min-height: 188px;
+    min-height: 220px;
     object-fit: fill;
-    max-height: 300px;
+    max-height: 220px;
 }
 .al_body_template_eight .render_full_spotlight_deals .deals-product {
     min-height: 266px;
@@ -3042,6 +3056,16 @@ body.al_body_template_eight.homeHeader .main-fillter .side_fillter .range-slider
 
 /*----------laptop view----------*/
 
+@media screen and (min-width:768px) and (max-width:1392px){
+    /*---user wallet btn rwd css--*/
+    body.al_body_template_eight .box-account.box-info .btn-solid {
+        padding: 8px 8px !important;
+        font-size: 10px;
+    }
+    }
+
+
+
 @media(max-width:1440px) {
     body.al_body_template_eight section.section-b-space.new-pages .custom-container {
         max-width: 1170px;
@@ -3055,6 +3079,11 @@ body.al_body_template_eight.homeHeader .main-fillter .side_fillter .range-slider
 @media(max-width:1199px) {
     .al_body_template_eight .cardbanner, .al_body_template_eight .al_desktop_banner{
         height: auto!important;
+    }
+    body.al_body_template_eight .box-account.box-info .btn-solid {
+        padding: 6px 2px !important;
+        font-size: 10px;
+        text-transform: capitalize;
     }
 }
 
@@ -3836,7 +3865,8 @@ body.al_body_template_eight.homeHeader .main-fillter .side_fillter .range-slider
         justify-content: inherit;
     }
     .al_body_template_eight #our_vendor_main_div .vendors section .top-heading h2.h2-heading {
-        font-size: 18px !important;width:100% !important;
+        font-size: 18px !important;
+        /* width:100% !important; */
     }
     .vender-logo.deals-product.product-card-box.position-relative.text-center.al_custom_vendors_sec{
         height: auto !important;
@@ -3854,8 +3884,15 @@ body.al_body_template_eight.homeHeader .main-fillter .side_fillter .range-slider
     .al_body_template_eight .eccomerce-temp .top-heading h2{font-size: 14px !important;display: inline-block;}
     .al_body_template_eight .alNewSliderTopBrand .brand-img{height: auto !important;}
     section.suppliers-section.container.vender_slider .top-heading.mt-5.pt-5{display: flex;align-items: center;}
+ .box-account.box-info .btn-solid {padding: 6px 10px !important;font-size: 10px;text-transform: capitalize;}
+ .al_body_template_eight article#page-container section .vendors section h2.h2-heading{font-size: 14px !important;}
 }
 
+
+@media screen and (max-width:375px){
+    .al_body_template_eight #our_vendor_main_div .vendors section .top-heading h2.h2-heading{font-size: 14px !important;}
+    .al_body_template_eight article#page-container section .vendors section a{font-size: 14px !important;}
+}
 
 .alSpaCityBox{position: relative;padding-bottom: 100%;overflow: hidden;border-radius: 15px 15px 0 0;margin-bottom: 10px;}
 .alSpaCityBox a.cities.updateLocationByCity img{position: absolute;height: 100%;width: 100%;}

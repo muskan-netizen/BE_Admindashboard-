@@ -15,22 +15,22 @@ class OrderVendorListExport implements FromCollection,WithHeadings,WithMapping
      */
     public function collection()
     {
-        $vendors = Vendor::with(['orders'])->where('status', '!=', '2')->orderBy('id', 'desc');
+
+        $vendors = Vendor::with(['orders' => fn($query) => $query->where('order_status_option_id', '!=', 3)])->where('status', '!=', '2')->where('is_seller', 0);
         
         if (Auth::user()->is_superadmin == 0) {
             $vendors = $vendors->whereHas('permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
             });
         }
-        
-        $vendors = $vendors->get();
+        $vendors = $vendors->orderBy('id', 'desc')->get();
         foreach ($vendors as $vendor) {
             $vendor->total_paid = 0.00;
             $vendor->delivery_fee = decimal_format($vendor->orders->sum('delivery_fee'));
             $vendor->service_fee = decimal_format($vendor->orders->sum('service_fee_percentage_amount'));
             $vendor->fixed_fee = decimal_format($vendor->orders->sum('fixed_fee'));
             $vendor->order_value = decimal_format($vendor->orders->sum('payable_amount'));
-            $vendor->payment_method = decimal_format($vendor->orders->where('order_status_option_id', '!=', 3)->whereNotIn('payment_option_id', [1,2])->sum('payable_amount'));
+            $vendor->payment_method = decimal_format($vendor->orders->whereNotIn('payment_option_id', [1,2])->sum('payable_amount'));
             $vendor->promo_admin_amount = decimal_format($vendor->orders->where('coupon_paid_by', 1)->sum('discount_amount'));
             $vendor->promo_vendor_amount = decimal_format($vendor->orders->where('coupon_paid_by', 0)->sum('discount_amount'));
             $vendor->cash_collected_amount = decimal_format($vendor->orders->where('payment_option_id', 1)->sum('payable_amount') + $vendor->orders->sum('taxable_amount') + $vendor->orders->sum('service_fee_percentage_amount'));

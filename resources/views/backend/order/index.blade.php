@@ -585,7 +585,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         }
 
         // update status
-        $(document).on("click", ".update-status", function() {
+        $(document).on("click", ".update-status-ar", function() {
 
             let that = $(this);
             var count = that.data("count");
@@ -675,7 +675,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         }else{
                                             var next_status = "{{ __('Delivered') }}";
                                         }
-                                        that.replaceWith("<button class='update-status btn-warning' data-full_div='" + full_div + "' data-single_div='" + single_div + "'  data-count='" + count + "'  data-order_id='" + order_id + "'  data-vendor_id='" + vendor_id + "'  data-status_option_id='" + status_option_id_next + "' data-order_vendor_id=" + order_vendor_id + ">" + next_status + "</button>");
+                                        that.replaceWith("<button class='update-status-ar btn-warning' data-full_div='" + full_div + "' data-single_div='" + single_div + "'  data-count='" + count + "'  data-order_id='" + order_id + "'  data-vendor_id='" + vendor_id + "'  data-status_option_id='" + status_option_id_next + "' data-order_vendor_id=" + order_vendor_id + ">" + next_status + "</button>");
                                         return false;
                                     } else {
 

@@ -28,6 +28,7 @@ class CategoryController extends FrontController{
      */
     public function categoryProduct(Request $request, $domain = '', $slug = 0)
     {        
+        
         //$preferences = Session::get('preferences');
         $vendorType = Session::get('vendorType');
         $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'):  getClientPreferenceDetail();
@@ -264,7 +265,7 @@ class CategoryController extends FrontController{
                 $value->vendorRating = $this->vendorRating($value->products);
                 $vendorCategories = VendorCategory::with(['category.translation' => function($q) use($langId){
                     $q->where('category_translations.language_id', $langId);
-                }])->where('vendor_id', $value->id)->where('status', 1)->get();
+                }])->where('vendor_id', $value->id)->groupBy('category_id')->where('status', 1)->get();
                 $categoriesList = '';
                 foreach ($vendorCategories as $key => $category) {
                     if ($category->category) {
@@ -365,6 +366,7 @@ class CategoryController extends FrontController{
      */
     public function categoryVendorProducts(Request $request, $domain = '', $slug1 = 0, $slug2 = 0)
     {
+        
         // slug1 => category slug
         // slug2 => vendor slug
         $maxPrice = 0;
