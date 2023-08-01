@@ -2110,15 +2110,19 @@
         {
             
                 $marg_order =  App\Models\Order::where('marg_status', '=',null)->
-                where('marg_max_attempt', '>',2)->first();
-                 
+                  where('marg_max_attempt', '>',2)->first();
+                 $class= "";
+                 if($marg_order){
+                    $class= "disabled";
+                 }
             
+                 
         }    
         @endphp
-        @if(empty($marg_order))
         
-                <button class="btn btn-info btn-block" id="sync_marg_btn">{{ __('Sync Data') }} </button>
-        @endif
+        
+                <button class="btn btn-info btn-block" id="sync_marg_btn" {{$class }}>{{ __('Sync Data') }} </button>
+      
                 </div>
             </div>
         </div><!-- marg card end -->
