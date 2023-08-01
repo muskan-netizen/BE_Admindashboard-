@@ -221,7 +221,7 @@ class OrderController extends BaseController
                     $total_subscription_discount = $total_delivery_fee = $total_service_fee = 0;
                     $total_subscription_discount = 0;
 
-                    if($cart_products[0]->luxury_option_id=="4"){
+                    if(!empty($cart_products[0]) && $cart_products[0]->luxury_option_id=="4"){
                         $additional_price=($cart_products[0]->additional_increments_hrs_min/$cart_products[0]['product']['variants'][0]->incremental_price_per_min);
                     }
 
