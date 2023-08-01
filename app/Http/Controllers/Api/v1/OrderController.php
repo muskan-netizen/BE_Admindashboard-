@@ -2410,16 +2410,25 @@ class OrderController extends BaseController
                     'schedule_slot' => $product->schedule_slot
                 );
 
-                    if ($luxury_option->title == 'takeaway') {
-                        $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
-                    } elseif ($luxury_option->title == 'dine_in') {
-                        $luxury_option_name = __('Dine-In');
-                    }elseif ($luxury_option->title == 'on_demand') {
-                        $luxury_option_name = $this->getNomenclatureName('Services', $user->language, false);
-                    } else {
-                        //$luxury_option_name = __('Delivery');
+                $luxury_option_name = '';
+                if ($order->orderDetail->luxury_option_id > 0) {
+                    $luxury_option = LuxuryOption::where('id', $order->orderDetail->luxury_option_id)->first();
+
+                    switch($luxury_option->title){
+                        case "takeaway":
+                            $luxury_option_name = $this->getNomenclatureName('Takeaway', $user->language, false);
+                        break;
+                        case "dine_in":
+                            $luxury_option_name = __('Dine-In');
+                        break;
+                        case "on_demand":
+                            $luxury_option_name = $this->getNomenclatureName('Services', $user->language, false);
+                            break;
+                        default:
                         $luxury_option_name = getNomenclatureName($luxury_option->title);
+                        break;
                     }
+                }             
                 }
                 $order->is_long_term  =0;
 
