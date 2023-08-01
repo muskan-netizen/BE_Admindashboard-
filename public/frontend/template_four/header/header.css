@@ -15,7 +15,7 @@ body, html {
 /* address-map-container css start */
 
 .al_body_template_four .al_addCart li.onhover-div a span#cart_qty_span:empty{display:none;}
-.al_body_template_four .al_addCart li.onhover-div a span#cart_qty_span{background-color: var(--top-header-color);width: 25px;border-radius: 50%;height:25px;margin: 0px;padding: 0px;color: #fff;position: absolute;right: 0px;top: 0px;font-size: 12px;display: flex;align-items: center;justify-content: center;}
+.al_body_template_four .al_addCart li.onhover-div a span#cart_qty_span{background-color: var(--top-header-color);width: 25px;border-radius: 50%;height:25px;margin: 0px;padding: 0px;color: #fff;position: absolute;right: -6px;top: 0px;font-size: 12px;display: flex;align-items: center;justify-content: center;}
 
 .ellips{text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
 

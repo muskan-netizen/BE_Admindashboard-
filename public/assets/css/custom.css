@@ -634,11 +634,20 @@ div.dataTables_wrapper div.dataTables_processing {
 .outer_box {
     border: 2px dashed #d2d0cd
 }
-
+/*add font size for selected product text*/
 .select2-container--default .select2-selection--multiple .select2-selection__choice {
-    color: rgba(0, 0, 0, .514)
+    color: rgba(0, 0, 0, .514);
+    font-size:14px;
 }
-
+/*end here*/
+.cate-vendor .form-group input.form-control {
+    background-size: 15px;
+    background-position: 80%;
+}
+.cate-vendor .form-group select.form-control{
+    background-size: 15px;
+    background-position: 80%;
+}
 span.inner-div {
     float: right
 }
@@ -2339,6 +2348,15 @@ button.add_edit_driver_review {
 /*============================================= dashboard page responsive css start here ======================================= */
 @media(max-width:1600px) {
 .card-box {padding: 20px;}
+.cate-vendor .form-group input.form-control {
+    background-size: 15px;
+    background-position: 75%;
+}
+.cate-vendor .form-group select.form-control{
+    background-size: 15px;
+    background-position: 75%;
+}
+
 }
 
 .file .update_pic {
@@ -2461,7 +2479,9 @@ label.logo-size {
     overflow: hidden;
     text-overflow: ellipsis
 }
-
+.custom-dd-empty .ellips{
+    width: 80%;
+}
 #promo-datatable .ellips {
     width: 50%
 }
@@ -2968,6 +2988,14 @@ button.update-status {
     border-radius: 50px;
     padding: 2px 8px
 }
+
+button.update-status-ar {
+    border: 0;
+    border-radius: 50px;
+    padding: 2px 8px;
+}
+
+
 
 .btn-danger.focus,
 .btn-danger:focus {
@@ -4888,6 +4916,7 @@ div#addRejectmodal {
     .al_new_export_table .sync_hubspot {
         max-width: 150px !important;
     }
+    
 }
 
 @media(min-width:1367px) {
