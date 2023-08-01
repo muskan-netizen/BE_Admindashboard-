@@ -25,6 +25,9 @@ class DispatcherController extends FrontController
             DB::beginTransaction();
             $checkiftokenExist = OrderVendor::where('web_hook_code',$web_hook_code)->first();
 
+
+            \Log::info('request data');
+            \Log::info($request->all());
             if($checkiftokenExist){
             
                  //Checking Bag QrCode imported in order panel only if qrcheck parameter is came from dispatcher
@@ -60,6 +63,9 @@ class DispatcherController extends FrontController
                     $this->sendOrderNotification($update->id);
                     $type = $request->task_type??1;
                    $dispatch_status = $request->dispatcher_status_option_id;
+
+                   \Log::info('dispatch_status data');
+                   \Log::info($dispatch_status);
                     switch ($dispatch_status) {
                         case 2:
                             $request->status_option_id = 2;
@@ -127,7 +133,7 @@ class DispatcherController extends FrontController
                 $update_tr = OrderVendor::where('web_hook_code',$web_hook_code)->update(['dispatch_traking_url' =>  $request->dispatch_traking_url]);
             }
             OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['dispatcher_status_option_id' => $request->dispatcher_status_option_id]);
-
+            \Log::info('update order data');
              $data = ['order'=>$update,'vendor_detail'=>$code->vendorDetail??[]];
             DB::commit();
                     $message = "Order status updated.";
