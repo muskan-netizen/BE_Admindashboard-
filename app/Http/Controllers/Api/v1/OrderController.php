@@ -4755,6 +4755,13 @@ class OrderController extends BaseController
                 }
                 $order->luxury_option_name = $luxury_option_name;
                 $order->order_item_count = $order_item_count;
+                if(auth()->user()->is_admin){
+                    $order['total_amount'] = $order->total_amount  - $total_markup_Price;
+                    $order['payable_amount'] = $order->payable_amount  - $total_markup_Price;
+                }else{
+                    $order['total_amount'] = $order->total_amount;
+                    $order['payable_amount'] = decimal_format($order->payable_amount);
+                }
             }
             // 12345
             if (isset($request->new_dispatch_traking_url) && !empty($request->new_dispatch_traking_url)) {
@@ -4795,13 +4802,7 @@ class OrderController extends BaseController
 
 
         //   // Log::info('order'.json_encode($order));
-            if(auth()->user()->is_admin){
-                $order['total_amount'] = $order->total_amount  - $total_markup_Price;
-                $order['payable_amount'] = $order->payable_amount  - $total_markup_Price;
-            }else{
-                $order['total_amount'] = $order->total_amount;
-                $order['payable_amount'] = decimal_format($order->payable_amount);
-            }
+            
             //mohit sir branch code added by sohail
             $advancePayableAmount = 0;
             $pendingAmount = 0;
