@@ -106,8 +106,6 @@ class MargApiOrderUpdate extends Command
                     continue;
                 }
 
-                \Log::info('connected db');
-                \Log::info(DB::connection()->getDatabaseName());
                 $orders  = Order::where([
                     'marg_status' => null
                     ])
