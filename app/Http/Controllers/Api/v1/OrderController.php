@@ -4762,6 +4762,28 @@ class OrderController extends BaseController
                     $order['total_amount'] = $order->total_amount;
                     $order['payable_amount'] = decimal_format($order->payable_amount);
                 }
+                $user_id = $order->user_id ?? '';
+
+                //$user_docs = UserDocs::where('user_id', $order->user_id)->get();
+                $user_registration_documents = UserRegistrationDocuments::with('user_document','primary')
+                ->whereHas('user_document', function($q) use($user_id){
+                    $q->where('user_id', $user_id);
+                })->get();
+
+                $total_other_taxes = 0;
+                if($order->total_other_taxes!=''){
+                    foreach(explode(",",$order->total_other_taxes) as $row){
+                    $row1 = explode(":",$row);
+                        $total_other_taxes+=(float)$row1[1];
+                    }
+                }
+
+                // $order['user_document_value'] =  $user_docs;
+                $order->taxable_amount =  decimal_format($total_other_taxes??0);
+                $order->total_other_taxes =  decimal_format($total_other_taxes??0);
+                $order['user_document_list'] =  $user_registration_documents;
+                $order['category_KYC_document'] = $category_KYC_document??null;
+                $order->slot_based_Price =  $slot_based_Price??0;
             }
             // 12345
             if (isset($request->new_dispatch_traking_url) && !empty($request->new_dispatch_traking_url)) {
@@ -4782,13 +4804,7 @@ class OrderController extends BaseController
                     $order['order_data'] = $response;
                 }
             }
-            $user_id = $order->user_id ?? '';
-
-            //$user_docs = UserDocs::where('user_id', $order->user_id)->get();
-            $user_registration_documents = UserRegistrationDocuments::with('user_document','primary')
-            ->whereHas('user_document', function($q) use($user_id){
-                $q->where('user_id', $user_id);
-            })->get();
+            
 
             if(isset($order)){
              $category_KYC_document =  CaregoryKycDoc::where('ordre_id',$order->id)->with('category_document.primary')->groupBy('category_kyc_document_id')->get();
@@ -4817,20 +4833,7 @@ class OrderController extends BaseController
             //till here
 
            /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
-           $total_other_taxes = 0;
-           if($order->total_other_taxes!=''){
-               foreach(explode(",",$order->total_other_taxes) as $row){
-               $row1 = explode(":",$row);
-                   $total_other_taxes+=(float)$row1[1];
-               }
-           }
-
-            // $order['user_document_value'] =  $user_docs;
-           $order->taxable_amount =  decimal_format($total_other_taxes??0);
-           $order->total_other_taxes =  decimal_format($total_other_taxes??0);
-            $order['user_document_list'] =  $user_registration_documents;
-            $order['category_KYC_document'] = $category_KYC_document??null;
-            $order->slot_based_Price =  $slot_based_Price??0;
+           
 
             return $this->successResponse($order, null, 201);
         } catch (Exception $e) {
