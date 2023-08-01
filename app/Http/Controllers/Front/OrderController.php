@@ -2500,10 +2500,12 @@ class OrderController extends FrontController
 
             DB::commit();
             $this->sendSuccessSMS($request, $order);
+            $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code','marg_date_time']);
 
+            if(isset($hub_key) && $hub_key['is_marg_enable'] == 1){
             //Create an order at margApi side also
-            $this->makeInsertOrderMargApi($order);
-            
+             $this->makeInsertOrderMargApi($order);
+            }
             return $this->successResponse($order);
         } catch (Exception $e) {
             DB::rollback();
