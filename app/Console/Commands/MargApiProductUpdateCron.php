@@ -62,8 +62,20 @@ class MargApiProductUpdateCron extends Command
         /**
          * Sycn product quantity and add new product code from marg api
          */
-          \Log::info('in marg product sync api at 5 min');
+        
          try {
+
+         
+            
+                $marg_order =  Order::where('marg_status', '=',null)->
+                where('marg_max_attempt', '>',2)->first();
+                 
+            
+        
+            if(!empty($marg_order))
+            { 
+                return 0;
+            }
             $clients = CP::where('status', 1)->get();
             foreach ($clients as $key => $client) {
                
@@ -111,8 +123,7 @@ class MargApiProductUpdateCron extends Command
                     $detail         = [];
                     $MargMST2017 = "https://corporate.margerp.com/api/eOnlineData/MargMST2017";
                     $reqData = ["CompanyCode" => $CompanyCode,"MargID" => $MargID,"Datetime" => $margDateTime, "index" => 0];
-                    \Log::info('request data');
-                    \Log::info($reqData);
+                  
                 }else{
                     continue;
                 }

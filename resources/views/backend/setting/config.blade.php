@@ -2106,7 +2106,23 @@
             <div class="row marg_row"
                 style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
                 <div class="col-12">
-                    <button class="btn btn-info btn-block" id="sync_marg_btn">{{ __('Sync Data') }} </button>
+            @php
+        {
+            
+                $marg_order =  App\Models\Order::where('marg_status', '=',null)->
+                  where('marg_max_attempt', '>',2)->first();
+                 $class= "";
+                 if($marg_order){
+                    $class= "disabled";
+                 }
+            
+                 
+        }    
+        @endphp
+        
+        
+                <button class="btn btn-info btn-block" id="sync_marg_btn" {{$class }}>{{ __('Sync Data') }} </button>
+      
                 </div>
             </div>
         </div><!-- marg card end -->
