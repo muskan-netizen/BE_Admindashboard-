@@ -27,7 +27,7 @@ class DispatcherController extends FrontController
 
 
             \Log::info('request data');
-            \Log::info($request->all());
+            \Log::info([$request->all()]);
             if($checkiftokenExist){
             
                  //Checking Bag QrCode imported in order panel only if qrcheck parameter is came from dispatcher
@@ -65,7 +65,7 @@ class DispatcherController extends FrontController
                    $dispatch_status = $request->dispatcher_status_option_id;
 
                    \Log::info('dispatch_status data');
-                   \Log::info($dispatch_status);
+                   \Log::info([$dispatch_status]);
                     switch ($dispatch_status) {
                         case 2:
                             $request->status_option_id = 2;
