@@ -3,6 +3,7 @@
 use App\Http\Controllers\BidController;
 use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\LiveePaymentController;
+use App\Http\Controllers\MargController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('ajaxGetScheduleDateDetails', 'Front\CartController@ajaxGetScheduleDateDetails')->name('ajaxGetScheduleDateDetails');

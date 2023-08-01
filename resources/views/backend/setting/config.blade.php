@@ -2559,7 +2559,6 @@
                     _token: "{{ csrf_token() }}",
                 },
                 success: function(response) {
-                    dd(response);
                     if (response.status == "Success") {
 
                     }
