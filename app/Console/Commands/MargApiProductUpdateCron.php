@@ -64,6 +64,18 @@ class MargApiProductUpdateCron extends Command
          */
           \Log::info('in marg product sync api at 5 min');
          try {
+
+         
+            
+                $marg_order =  Order::where('marg_status', '=',null)->
+                where('marg_max_attempt', '>',2)->first();
+                 
+            
+        
+            if(!empty($marg_order))
+            { 
+                return 0;
+            }
             $clients = CP::where('status', 1)->get();
             foreach ($clients as $key => $client) {
                
