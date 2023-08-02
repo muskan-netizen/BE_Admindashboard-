@@ -202,7 +202,6 @@ class OrderController extends BaseController
                 $cart = Cart::where('user_id', $user->id)->with(['editingOrder.orderStatusVendor', 'cartvendor'])->first();
                 
 
-                // pr('hee');
                 if ($cart) {
 
                     // $loyalty_points_used=0;
@@ -2301,9 +2300,6 @@ class OrderController extends BaseController
         foreach ($orders as $order) {
 
 
-
-             \Log::info('order list loop');
-             \Log::info($order->orderDetail);
             if(@$order->order_id){
                 $order_item_count = 0;
                 $order->user_name = $user->name;
@@ -4345,10 +4341,7 @@ class OrderController extends BaseController
             // })
             ->paginate($paginate);
            
-       
-      
-        \Log::info('order count');
-        \Log::info(count($orders));
+
         $orders = $this->orderlistLoop($orders, $user ,$request);
         return $this->successResponse($orders, '', 201);
     }

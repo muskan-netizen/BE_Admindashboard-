@@ -707,7 +707,7 @@ class StoreController extends BaseController
 	{
 
 
-		\Log::info('here');
+		
 		//return $product = Product::with('brand', 'variant.set', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSet', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities')->where('id', 232)->firstOrFail();
 		try {
 			$validator = Validator::make($request->all(), [
