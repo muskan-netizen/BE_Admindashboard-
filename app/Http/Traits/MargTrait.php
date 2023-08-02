@@ -244,7 +244,10 @@ trait MargTrait{
 
 	public function makeInsertOrderMargApi($order)
 	{
-		$productCode = [];
+        
+    try{
+            
+        $productCode = [];
 		$productQuantity = [];
 		$rid = [];
 
@@ -275,21 +278,29 @@ trait MargTrait{
             $encryptedData = $this->getData($MargMST2017, $detail);
 
             $encryptedData = json_decode($encryptedData);
-
+            
             if(isset($encryptedData) && !isset($encryptedData->Message))
             {
 				$updateOrder = Order::findOrFail($order->id);
 				$updateOrder->marg_status = $encryptedData??1;
 				$updateOrder->marg_max_attempt =$updateOrder->marg_max_attempt + 1;
 				$updateOrder->save();
-
+                session()->flash('success', 'Order synced successfully!');
                 return true;
                 
+            }else{
+                session()->flash('success',$encryptedData->Message);
+                return false;
             }
             return true;
 
         }else{
             return false;
+        }
+        }catch(\Exception $e)
+        {
+            \Log::info($e->getMessage());
+            return true;
         }
 		
 	}
