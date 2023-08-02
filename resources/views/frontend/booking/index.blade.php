@@ -617,6 +617,45 @@ input[type=number]::-webkit-outer-spin-button {
                             </div>
                         @endif
 
+                        <!-- Company details  -->
+                        @if(@$companies && @auth()->user()->is_superadmin)
+                        <button class="btn btn-solid m-2 share_ride_btn" ><i class="fa fa-share"></i>
+                            {{ __('Share Ride') }}</button>
+
+                            <div class="share_ride_div" id="rider_section_user" style="display: none">
+                                <div class="col-12 d-flex justify-content-between align-items-center">
+                                    @if (count($riders) > 0)
+                                        <p class="m-0">Share Rider Details : <span id="rider_count">{{ count($riders) }}</span></p>
+                                    @endif
+                                    <button class="btn rounded {{ count($riders) == 0 ? 'w-100' : '' }}  add_share_rider_button" ><i class="fa fa-plus"></i>
+                                        {{ __('Add Share Ride Details') }}</button>
+                                </div>
+                                <div class="col-12 mt-2">
+                                    <div class="row alRiderImgBox">
+                                        @foreach ($riders as $key => $rider)
+                                            <div class="col-3 text-center alHoverRiderBox">
+
+                                                <input class="alCheckMark" type="checkbox" name="share_ride_users[]"
+                                                    id="share_ride_users-{{ $key }}" {{ $key == 0 ? 'checked' : '' }}
+                                                    value="{{ $rider->id }}">
+                                                <label for="share_ride_users-{{ $key }}"
+                                                    class="share_ride_users-{{ $key }}" title="{{$rider->phone_number}}">
+
+                                                    <div class="alRiderImg mb-1" style="background-color:<?php printf("#%06X\n", mt_rand(0, 0xffffff)); ?>">
+                                                        {{ substr($rider->first_name, 0, 1) }}</div>
+                                                    <div class="dalRiderInfo">
+                                                        <p class="alRiderName mb-0">{{ $rider->first_name }}</p>
+                                                    </div>
+
+                                                </label>
+                                                <span class="alCloseBtn deleteRider" data-id="{{ $rider->id }}">X</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
                         <div class="col-md-12" id="product_rider_div" style="display:none;">
                             <button class="btn btn-solid w-100"
                                 id="submit_product_rider_button">{{ __('Next') }}</button>
