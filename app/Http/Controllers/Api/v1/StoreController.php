@@ -705,6 +705,9 @@ class StoreController extends BaseController
 
 	public function addProduct(Request $request)
 	{
+
+
+		\Log::info('here');
 		//return $product = Product::with('brand', 'variant.set', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSet', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities')->where('id', 232)->firstOrFail();
 		try {
 			$validator = Validator::make($request->all(), [
@@ -1312,7 +1315,7 @@ class StoreController extends BaseController
 
 	public function productImages(Request $request)
 	{
-
+		
 		try {
 			$validator = Validator::make($request->all(), [
 				'product_id' => 'required',
@@ -2076,6 +2079,8 @@ class StoreController extends BaseController
 
 	function addProductWithAttribute(Request $request)
 	{
+		
+		
 		try {
 			$validator = Validator::make($request->all(), [
 				// 'sku' => 'required|unique:products',
@@ -2238,7 +2243,7 @@ class StoreController extends BaseController
 							}
 						}
 
-
+                    
 						if ($request->has('file_360')) {
 							$imageId = '';
 							$files = $request->file('file_360');

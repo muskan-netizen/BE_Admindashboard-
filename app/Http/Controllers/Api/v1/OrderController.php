@@ -84,6 +84,7 @@ class OrderController extends BaseController
     }
     public function postPlaceOrder(Request $request)
     {
+        
        try {
             $action = ($request->has('type')) ? $request->type : 'delivery';
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
@@ -199,6 +200,9 @@ class OrderController extends BaseController
                 }
                 $luxury_option = LuxuryOption::where('title', $action)->first();
                 $cart = Cart::where('user_id', $user->id)->with(['editingOrder.orderStatusVendor', 'cartvendor'])->first();
+                
+
+                // pr('hee');
                 if ($cart) {
 
                     // $loyalty_points_used=0;
@@ -232,7 +236,8 @@ class OrderController extends BaseController
                     $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
                     $loyalty_points_used =  $loyaltyCheck->loyalty_points_used;
 
-
+               
+                   
                     if(isset($cart->editingOrder) && !empty($cart->editingOrder))
                     {
                         $order = Order::where('id', $cart->editingOrder->id)->first();
@@ -309,7 +314,7 @@ class OrderController extends BaseController
                     $order->save();
 
                     $is_long_term_order = 0;
-
+                   
                     /* Updating order prescription if any */
                     $cart_prescriptions = CartProductPrescription::where('cart_id', $cart->id)->get();
                     foreach ($cart_prescriptions as $cart_prescription) {
@@ -333,7 +338,7 @@ class OrderController extends BaseController
                     $total_container_charges = 0;
                     $fixed_fee_amount = 0.00;
                     $vendor_total_container_charges = 0;
-
+            
                     $slot_based_price = 0;
                     $deliveryfeeOnCoupon = 0;
                     foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
@@ -1179,10 +1184,13 @@ class OrderController extends BaseController
 
                         $autoaccept = $this->autoAcceptOrderIfOn($order->id);
                     }
+                    $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code','marg_date_time']);
 
+                    if(isset($hub_key) && $hub_key['is_marg_enable'] == 1){
+    
                     //Create an order at margApi side also
                     $this->makeInsertOrderMargApi($order);
-                    
+                    }
                     return $this->successResponse($order, __('Order placed successfully.'), 201);
 
                 }
@@ -2291,6 +2299,11 @@ class OrderController extends BaseController
             ];
         }
         foreach ($orders as $order) {
+
+
+
+             \Log::info('order list loop');
+             \Log::info($order->orderDetail);
             if(@$order->order_id){
                 $order_item_count = 0;
                 $order->user_name = $user->name;
@@ -4077,6 +4090,13 @@ class OrderController extends BaseController
         try {
 
             $order      = Order::with('ordervendor','orderStatusVendor','address','orderLocation')->where('order_number',$request->order_number)->first();
+            
+
+            if(empty($order))
+            
+            {
+                return $this->errorResponse('Order not found', 400);
+            }
             $customer   = User::find($order->user_id);
             if (isset($order->ordervendor->dispatch_traking_url) && !empty($order->ordervendor->dispatch_traking_url)) {
                 try {
@@ -4230,7 +4250,7 @@ class OrderController extends BaseController
     {
         try
         {
-            \Log::info($request->all());
+      
             $response = OrderVendor::where('id', $request->order_vendor_id)->update(['order_status_option_id' => $request->order_status_option_id]);
             $response = OrderVendor::where('id', $request->order_vendor_id)->first();
             return $response;
@@ -4243,7 +4263,8 @@ class OrderController extends BaseController
 
     public function getOrdersListLenderBorrower(Request $request)
     {
-        \Log::info($request->all());
+        
+       
         $user = Auth::user();
         $order_status_options = [];
         $paginate = $request->has('limit') ? $request->limit : 12;
@@ -4261,6 +4282,7 @@ class OrderController extends BaseController
                 $q->where('vendor_id',  $vendorUser->vendor_id)->orWhere('user_id', $user->id) ;
             });
         }
+   
         switch ($type) {
             case 'all': // which order not assign yet indriver
         
@@ -4324,7 +4346,9 @@ class OrderController extends BaseController
             ->paginate($paginate);
            
        
-        \Log::info($orders);
+      
+        \Log::info('order count');
+        \Log::info(count($orders));
         $orders = $this->orderlistLoop($orders, $user ,$request);
         return $this->successResponse($orders, '', 201);
     }
