@@ -25,9 +25,6 @@ class DispatcherController extends FrontController
             DB::beginTransaction();
             $checkiftokenExist = OrderVendor::where('web_hook_code',$web_hook_code)->first();
 
-
-            \Log::info('request data');
-            \Log::info([$request->all()]);
             if($checkiftokenExist){
             
                  //Checking Bag QrCode imported in order panel only if qrcheck parameter is came from dispatcher
@@ -43,8 +40,6 @@ class DispatcherController extends FrontController
                      }
                  }
                 
-
-                //  //\Log::info('hi');
                  if($request->check_qr=='5' && isset($request->qr_code))
                  {
                     $order = Order::where('order_number',$request->order_number)->first();
@@ -64,8 +59,6 @@ class DispatcherController extends FrontController
                     $type = $request->task_type??1;
                    $dispatch_status = $request->dispatcher_status_option_id;
 
-                   \Log::info('dispatch_status data');
-                   \Log::info([$dispatch_status]);
                     switch ($dispatch_status) {
                         case 2:
                             $request->status_option_id = 2;
@@ -133,7 +126,6 @@ class DispatcherController extends FrontController
                 $update_tr = OrderVendor::where('web_hook_code',$web_hook_code)->update(['dispatch_traking_url' =>  $request->dispatch_traking_url]);
             }
             OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['dispatcher_status_option_id' => $request->dispatcher_status_option_id]);
-            \Log::info('update order data');
              $data = ['order'=>$update,'vendor_detail'=>$code->vendorDetail??[]];
             DB::commit();
                     $message = "Order status updated.";
@@ -176,7 +168,6 @@ class DispatcherController extends FrontController
                 }
                 
 
-                //  //\Log::info('hi');
                 if($request->check_qr=='5' && isset($request->qr_code))
                 {
                     $order = Order::where('order_number',$request->order_number)->first();
@@ -198,8 +189,7 @@ class DispatcherController extends FrontController
                 //$this->sendOrderProductNotification($update->id);
                 $type = $request->task_type??1;
                 $dispatch_status = $request->dispatcher_status_option_id;
-                //\Log::info('dispatcher_status_option_id');
-                //\Log::info($dispatch_status );
+
                 switch ($dispatch_status) {
                     case 2:
                         $request->status_option_id = 2;
@@ -251,11 +241,9 @@ class DispatcherController extends FrontController
                     $total_route_query = OrderProductDispatchRoute::where('order_vendor_id', $checkiftokenExist->order_vendor_id);
                     $total_route = $total_route_query->count();
                     $total_complet_route = $total_route_query->where('dispatcher_status_option_id', '5')->count(); // dispatch complet task
-                    //\Log::info('total_route '. $total_route );
-                    //\Log::info('total_complet_route '. $total_complet_route );
+                   
                     // update order status
                     if($total_route == ($total_complet_route +1 )){
-                    //\Log::info('complelete order vendor');
                         $OrderVendor = OrderVendor::where('id', $checkiftokenExist->order_vendor_id)->select('vendor_id','id','order_status_option_id')->first();
                     
                         if( $OrderVendor ){
@@ -337,7 +325,6 @@ class DispatcherController extends FrontController
                 }
                 
 
-                //  //\Log::info('hi');
                 if($request->check_qr=='5' && isset($request->qr_code))
                 {
                     $order = Order::where('order_number',$request->order_number)->first();
@@ -891,7 +878,6 @@ class DispatcherController extends FrontController
                     ],
                     "priority" => "high"
                 ];
-                //   // Log::info(json_encode($data));
                 sendFcmCurlRequest($data);
         }
     }
@@ -934,7 +920,6 @@ class DispatcherController extends FrontController
                         ],
                         "priority" => "high"
                     ];
-                    // Log::info(json_encode($data));
                 $result = sendFcmCurlRequest($data);
             }
         }
@@ -1043,7 +1028,6 @@ class DispatcherController extends FrontController
     public function sendOrderCancelRequestNotification($user_ids, $orderData)
     {
         $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
-        //   // Log::info($devices);
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             $notification_content = NotificationTemplate::where('id', 13)->first();
@@ -1108,7 +1092,6 @@ class DispatcherController extends FrontController
                     //CURL request to route notification to FCM connection server (provided by Google)
                     $result=sendFcmCurlRequest($data);
 
-                    //\Log::info($result);
             }
         }
     }
