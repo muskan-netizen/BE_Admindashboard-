@@ -2079,8 +2079,6 @@ class StoreController extends BaseController
 
 	function addProductWithAttribute(Request $request)
 	{
-		\Log::info('request data');
-		\Log::info($request->all());
 		
 		try {
 			$validator = Validator::make($request->all(), [
