@@ -279,7 +279,7 @@ trait MargTrait{
             $encryptedData = $this->getData($MargMST2017, $detail);
 
             $encryptedData = json_decode($encryptedData);
-            
+
             if(isset($encryptedData) && !isset($encryptedData->Message))
             {
 				$updateOrder = Order::findOrFail($order->id);
@@ -290,7 +290,7 @@ trait MargTrait{
                 return true;
                 
             }else{
-                session()->flash('success',$encryptedData->Message);
+                session()->flash('success',$encryptedData->Message??'Somthing Went Wrong!');
                 return false;
             }
             return true;
