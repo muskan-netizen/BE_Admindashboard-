@@ -2579,6 +2579,9 @@
                 success: function(response) {
                     $('#sycn_time').html(response.time);
                     sweetAlert.success('Data Sycn Successfully!');
+                },
+                error: function(response) {
+                    sweetAlert.error('Error!');
                 }
             });
         });
