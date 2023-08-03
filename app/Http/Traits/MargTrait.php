@@ -290,6 +290,9 @@ trait MargTrait{
                 return true;
                 
             }else{
+                $updateOrder = Order::findOrFail($order->id);
+				$updateOrder->marg_max_attempt =$updateOrder->marg_max_attempt + 1;
+				$updateOrder->save();
                 session()->flash('success',$encryptedData->Message??'Somthing Went Wrong!');
                 return false;
             }
