@@ -884,6 +884,7 @@ class BaseController extends Controller{
     {
 
         $preference = ClientPreference::first();
+     
         if( isset($preference)  && $preference->business_type == 'taxi'){
         
                 if($preference->need_dispacher_ride == 1 && !empty($preference->pickup_delivery_service_key) && !empty($preference->pickup_delivery_service_key_code) && !empty($preference->pickup_delivery_service_key_url))
@@ -910,20 +911,24 @@ class BaseController extends Controller{
     {
         try {
             $dispatch_domain = $this->checkIfLastMileDeliveryOn();
-            $url = $dispatch_domain->delivery_service_key_url;
-            $endpoint = $url . "/api/send-documents";
-            // $dispatch_domain->delivery_service_key_code = '649a9a';
-            // $dispatch_domain->delivery_service_key = 'icDerSAVT4Fd795DgPsPfONXahhTOA';
-            $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
-
+            if($dispatch_domain->business_type == 'taxi'){
+                $url = $dispatch_domain->pickup_delivery_service_key_url;
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key, 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code]]);
+            } elseif($dispatch_domain->business_type == 'laundry'){
+                $url = $dispatch_domain->laundry_service_key_url;
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->laundry_service_key, 'shortcode' => $dispatch_domain->laundry_service_key_code]]);
+            } else{
+                $url = $dispatch_domain->delivery_service_key_url;
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
+            }
+            $endpoint =$url . "/api/send-documents";
             $response = $client->post($endpoint);
             $response = json_decode($response->getBody(), true);
-
             return json_encode($response['data']);
         } catch (\Exception $e) {
             $data = [];
             $data['status'] = 400;
-            $data['message'] =  $e->getMessage();
+            $data['message'] = $e->getMessage();
             return $data;
         }
     }
