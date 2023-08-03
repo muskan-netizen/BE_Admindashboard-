@@ -87,7 +87,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
     display: block;
     width: 200px !important;
 }
-
+.menu-navigation_al .pixelstrap li.al_main_category:hover ul.al_main_category_list li a:hover{padding:10px !important;letter-spacing: 0px;}
 .al_body_template_six .product-card-box.position-relative.al_box_third_template.al h6.card_title.ellips {
     color: #000;
     font-size: 14px;
@@ -310,7 +310,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
     width: 50px;
     border-radius: 50px;
     z-index: 1;
-    right: 0px !important;
+    /* right: 0px !important; */
 }
 
 .al_body_template_six .alSixMainMenu .slick-next:before,
@@ -649,9 +649,9 @@ body.al_body_template_six.dark h6.card_title.ellips {
 .al_body_template_six .alSixMainMenu .pixelstrap a:hover,
 .al_body_template_six .alSixMainMenu .pixelstrap li>a {
     width: 100%;
-    -webkit-transform: scale(1);
+    /* -webkit-transform: scale(1);
     transform: scale(1);
-    padding: 0;
+    padding: 0; */
     font-size: 12px;
 }
 
@@ -735,9 +735,9 @@ body.al_body_template_six.dark h6.card_title.ellips {
 .al_body_template_six .vendors .brand-ing,
 .al_body_template_six .alSixMainMenu .pixelstrap li>a {
     width: 100%;
-    -webkit-transform: scale(1);
+    /* -webkit-transform: scale(1);
     transform: scale(1);
-    padding: 0;
+    padding: 0; */
     font-size: 12px;
 }
 
@@ -781,7 +781,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
     text-transform: uppercase;
     max-width: 120px;
     width: 100%;
-    display: block;
+    display: block;font-size: 14px;
     margin: 0 auto;
 }
 
@@ -810,7 +810,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
 }
 
 .al_body_template_six .vendors .top-heading {
-    margin-bottom: 20px;
+    margin:40px 0px 0px 0px;
 }
 
 .al_body_template_six .vendors .slick-list.draggable {

@@ -1169,6 +1169,7 @@ body .royo_whatsapp_img {
     .al_body_template_six .cart-price .tip_label {
         padding: 5px 8px;
     }
+   
 
 }
 
@@ -1176,7 +1177,8 @@ body .royo_whatsapp_img {
 @media (max-width:767px){
     body.al_body_template_six .logo a.navbar-brand img {
         width: 100px;
-        height: 40px !important;
+        /* height: 40px !important; */
+        height: auto !important;
     }
     body.al_body_template_six .alTesimonialsText, .alLgFontSize {
         text-align: left;
