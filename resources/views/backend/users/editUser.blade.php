@@ -384,6 +384,15 @@
                         </div>
                         @endif
 
+                        @if (count($subadmin->allergicItems))
+                           <b> {{ __('Customer Allergic Items')}} </b> <br>
+                        @endif
+                        @forelse ($subadmin->allergicItems as $item)
+                            {{ $item->title }}@if(!$loop->last),@endif
+                        @empty
+                            <b>{{ __('No Allergic Item Found')}}</b><br>
+                        @endforelse
+                        
                         <div class="row mb-2 mt-4">
                             <div class="col-12">
                                 <div class="form-group mb-0 text-center">
