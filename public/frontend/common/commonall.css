@@ -1441,7 +1441,11 @@ body.al_body_template_three .dashboard-right .profile-page .info-text label {
     font-weight: 600;
 }
 
+/* multiple select item */
 
+.multipleItems > span {
+    width: 100%!important;
+}
 
 
 @media (max-width:1440px){
