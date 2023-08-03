@@ -2505,7 +2505,7 @@ class OrderController extends FrontController
 
             DB::commit();
             $this->sendSuccessSMS($request, $order);
-            $hub_key = @getAdditionalPreference(['is_marg_enable','marg_decrypt_key', 'marg_company_code','marg_date_time']);
+            $hub_key = @getAdditionalPreference(['is_marg_enable']);
 
             if(isset($hub_key) && $hub_key['is_marg_enable'] == 1){
          

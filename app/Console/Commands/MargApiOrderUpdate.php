@@ -90,17 +90,18 @@ class MargApiOrderUpdate extends Command
                 $preference = ClientPreference::first();
 
 
-                $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code','marg_date_time']);
+                $hub_key = @getAdditionalPreference(['is_marg_enable']);
 
                 if(isset($hub_key) && $hub_key['is_marg_enable'] == 1){
-                    $decryptionKey  = $hub_key['marg_decrypt_key'];
-                    $MargID  = $hub_key['marg_access_token'];
-                    $CompanyCode  = $hub_key['marg_company_code'];
-                    $margDateTime = $hub_key['marg_date_time']??date('Y-m-d H:i:s');
+                    // $decryptionKey  = $hub_key['marg_decrypt_key'];
+                    // $MargID  = $hub_key['marg_access_token'];
+                    // $CompanyCode  = $hub_key['marg_company_code'];
+                    // $margDateTime = $hub_key['marg_date_time']??date('Y-m-d H:i:s');
 
-                    $detail         = [];
-                    $MargMST2017 = "https://corporate.margerp.com/api/eOnlineData/MargMST2017";
-                    $reqData = ["CompanyCode" => $CompanyCode,"MargID" => $MargID,"Datetime" => $margDateTime, "index" => 0];
+                    // $url  = $hub_key['marg_company_url'];
+                    // $detail         = [];
+                    // $MargMST2017 = $url."/api/eOnlineData/MargMST2017";
+                    // $reqData = ["CompanyCode" => $CompanyCode,"MargID" => $MargID,"Datetime" => $margDateTime, "index" => 0];
                    
                 }else{
                     continue;
