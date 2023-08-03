@@ -39,11 +39,11 @@
                                             @php  $icon = $category['icon']['proxy_url'] . '200/200' . $category['icon']['image_path'];  @endphp
                                             <li class="px-1 category-list" id="category_{{ $category->id }}">
                                                 <a class="cate-item text-center w-100 py-3 mb-0 rounded select-category"
-                                                    data-name="{{ $category['translation_one']['name'] }}"
+                                                    data-name="{{@$category['translation_one']['name'] }}"
                                                     data-id="{{ $category['id'] }}" data-type-id="{{$category->type_id}}" href="javascript:void(0);">
                                                     <div class="alCategoryItems">
                                                         <img class="" src="{{ $icon }}">                                                                                                              
-                                                        <h3>{{ $category['translation_one']['name'] }}</h3>
+                                                        <h3>{{ @$category['translation_one']['name'] }}</h3>
                                                     </div>
                                                 </a>
                                             </li>
@@ -57,11 +57,11 @@
                                             @if ($category->type_id == 10)
                                                 <li class="px-1 category-list" id="category_{{ $category->id }}">
                                                     <a class="cate-item text-center w-100 py-3 mb-0 rounded select-category"
-                                                        data-name="{{ $category['translation_one']['name'] }}"
+                                                        data-name="{{ @$category['translation_one']['name'] }}"
                                                         data-id="{{ $category['id'] }}" data-type-id="{{$category->type_id}}" href="javascript:void(0);">
                                                         <div class="alCategoryItems">
                                                             <img class="" src="{{ $icon }}">                                                                                                              
-                                                            <h3>{{ $category['translation_one']['name'] }}</h3>
+                                                            <h3>{{ @$category['translation_one']['name'] }}</h3>
                                                         </div>
                                                     </a>
                                                 </li>
@@ -76,11 +76,11 @@
                                             @if ($category->type_id == 13)
                                                 <li class="px-1 category-list" id="category_{{ $category->id }}">
                                                     <a class="cate-item text-center w-100 py-3 mb-0 rounded select-category"
-                                                        data-name="{{ $category['translation_one']['name'] }}"
+                                                        data-name="{{ @$category['translation_one']['name'] }}"
                                                         data-id="{{ $category['id'] }}" data-type-id="{{$category->type_id}}" href="javascript:void(0);">
                                                         <div class="alCategoryItems">
                                                             <img class="" src="{{ $icon }}">                                                                                                              
-                                                            <h3>{{ $category['translation_one']['name'] }}</h3>
+                                                            <h3>{{ @$category['translation_one']['name'] }}</h3>
                                                         </div>
                                                     </a>
                                                 </li>
