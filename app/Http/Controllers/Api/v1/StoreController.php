@@ -2079,7 +2079,8 @@ class StoreController extends BaseController
 
 	function addProductWithAttribute(Request $request)
 	{
-		
+		\Log::info('request data');
+		\Log::info($request->all());
 		
 		try {
 			$validator = Validator::make($request->all(), [
@@ -2409,6 +2410,7 @@ class StoreController extends BaseController
 		}
 		} catch (\Exception $e) {
 			\Log::info($e->getLine());
+			\Log::info($e);
 			\Log::info($e->getMessage());
 			return $this->errorResponse('Exception occured', 500);
 		}

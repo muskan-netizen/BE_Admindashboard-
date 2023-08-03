@@ -4091,7 +4091,11 @@ class OrderController extends BaseController
             if(empty($order))
             
             {
-                return $this->errorResponse('Order not found', 400);
+                return response()->json([
+                    'status' => 400,
+                    'message' => 'Order Not Found',
+                    'data' => null
+                ], 400);
             }
             $customer   = User::find($order->user_id);
             if (isset($order->ordervendor->dispatch_traking_url) && !empty($order->ordervendor->dispatch_traking_url)) {
