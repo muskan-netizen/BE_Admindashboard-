@@ -58,7 +58,7 @@ class StoreController extends BaseController{
 					'is_selected' => $is_selected_category_id == $vendor_category->category_id ? true : false
 				);
 			}
-			$products = Product::select('id', 'sku', 'url_slug','is_live','category_id')->has('vendor')
+			$products = Product::select('id', 'sku', 'url_slug','is_live','category_id','calories')->has('vendor')
 						->with(['media.image', 'translation' => function($q) use($langId){
                         	$q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                     	},'variant' => function($q) use($langId){
@@ -1041,6 +1041,7 @@ class StoreController extends BaseController{
 			$product->dropoff_delay_order_min        = $request->dropoff_delay_order_min??0;
 			$product->minimum_order_count        = $request->minimum_order_count??0;
 			$product->batch_count        = $request->batch_count??1;
+			$product->calories        = $request->calories;
 			if (empty($product->publish_at)) {
 				$product->publish_at = ($request->is_live == 1) ? date('Y-m-d H:i:s') : '';
 			}
@@ -1532,7 +1533,7 @@ class StoreController extends BaseController{
 					'is_selected' => $is_selected_category_id == $vendor_category->category_id ? true : false
 				);
 			}
-			$products = Product::select('id', 'sku', 'url_slug','is_live','category_id')->has('vendor')
+			$products = Product::select('id', 'sku', 'url_slug','is_live','category_id','calories')->has('vendor')
 						->with(['media.image', 'categoryName', 'translation' => function($q) use($langId){
                         	$q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                     	},'variant' => function($q) use($langId){
@@ -1630,7 +1631,7 @@ class StoreController extends BaseController{
 			$client_currency_detail = ClientCurrency::where('currency_id', $user->currency)->first();
             $selected_category_id = $request->has('selected_category_id') ? $request->selected_category_id : '';
 			
-			$products = Product::select('id', 'sku', 'url_slug','is_live','category_id')->has('vendor')
+			$products = Product::select('id', 'sku', 'url_slug','is_live','category_id','calories')->has('vendor')
 						->with(['media.image', 'categoryName', 'translation' => function($q) use($langId){
                         	$q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                     	},'variant' => function($q) use($langId){
