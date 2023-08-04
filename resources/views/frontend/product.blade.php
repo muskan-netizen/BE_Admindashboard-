@@ -309,6 +309,17 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                     @endif
                                                 </h3>
                                             @endif
+                                            <div class="m-1">
+                                                <p><b>Engine :</b> {{$product->engine}}</p>
+                                                <p><b>Mileage :</b> {{$product->mileage}}</p>
+                                                <p><b>Boot Space :</b> {{$product->boot_space}}</p>
+                                                <p><b>Body Type :</b> {{$product->body_type}}</p>
+                                                <p><b>Number of Cylinder :</b> {{$product->no_of_cylinder}}</p>
+                                                <p><b>Max Torque :</b> {{$product->max_torque}}</p>
+                                                <p><b>Fuel Tank Capacity :</b> {{$product->fuel_tank_capacity}}</p>
+                                                <p><b>Ground Clearence :</b> {{$product->ground_clearence}}</p>
+                                                <p><b>BHP :</b> {{$product->bhp}}</p>
+                                            </div>
                                         </div>
                                         
                                     @if(!empty($product->translation) && isset($product->translation->first()->body_html))
@@ -664,7 +675,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
 
                                                 @if(!$product->has_inventory || $product->variant[0]->quantity > 0  || $product->sell_when_out_of_stock == 1)
                                                 @if($is_inwishlist_btn && $is_available)
-                                                <button type="button" class="btn btn-solid addWishList mr-2" proSku="{{$product->sku}}" remWishlist="{{ __('Remove From Wishlist') }}" addWishlist="{{ __('Add To Wishlist') }}">
+                                                <button type="button" class="btn btn-solid addWishList mr-2 d-none" proSku="{{$product->sku}}" remWishlist="{{ __('Remove From Wishlist') }}" addWishlist="{{ __('Add To Wishlist') }}">
                                                     {{ (isset($product->inwishlist) && (!empty($product->inwishlist))) ? __('Remove From Wishlist') : __('Add To Wishlist') }}
                                                 </button>
                                                 @endif

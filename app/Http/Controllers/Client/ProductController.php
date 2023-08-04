@@ -186,7 +186,8 @@ class ProductController extends BaseController
     public function edit($domain = '', $id)
     {
         // $this->searchCatalogObjects();
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module', 'is_cab_pooling', 'is_one_push_book_enable','is_service_product_price_from_dispatch']);
+
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module', 'is_cab_pooling', 'is_one_push_book_enable','is_service_product_price_from_dispatch', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery']);
 
         $with_array = ['brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles'];
 
@@ -294,34 +295,30 @@ class ProductController extends BaseController
         $agent_dispatcher_tags = [];
         $agent_dispatcher_on_demand_tags = [];
         $pro_tags = [];
-
-         if(isset($product->category->categoryDetail) && $product->category->categoryDetail->type_id == 7) # if type is pickup delivery then get dispatcher tags
-        {
-            $vendor_id = $product->vendor_id;
-            $agent_dispatcher_tags = $this->getDispatcherTags($vendor_id);
-        }
-        if(isset($product->category->categoryDetail) && $product->category->categoryDetail->type_id == 1) # if type is pickup delivery then get dispatcher tags
-        {
-            $vendor_id = $product->vendor_id;
-            $agent_dispatcher_tags = $this->getDeliveryDispatcherTags($vendor_id);
-        }
-        if(isset($product->category->categoryDetail) && $product->category->categoryDetail->type_id == 8) # if type is on demand
-        {
-            $vendor_id = $product->vendor_id;
-            $onDemandRes = $this->getDispatcherOnDemandTags($vendor_id);
-            if(  $getAdditionalPreference['is_service_product_price_from_dispatch'] ==1){
-                $product->is_onDemand_on = isset($onDemandRes['is_onDemand_enable']) ?  $onDemandRes['is_onDemand_enable'] : 0;
+        
+        if(isset($product->category->categoryDetail)){
+            switch($product->category->categoryDetail->type_id){
+                case 7:
+                    $vendor_id = $product->vendor_id;
+                    $agent_dispatcher_tags = $this->getDispatcherTags($vendor_id);
+                    break;
+                case 1:
+                    $vendor_id = $product->vendor_id;
+                    $agent_dispatcher_tags = $this->getDeliveryDispatcherTags($vendor_id);
+                    break;
+                case 8:
+                    $vendor_id = $product->vendor_id;
+                    $onDemandRes = $this->getDispatcherOnDemandTags($vendor_id);
+                    if(  $getAdditionalPreference['is_service_product_price_from_dispatch'] ==1){
+                        $product->is_onDemand_on = isset($onDemandRes['is_onDemand_enable']) ?  $onDemandRes['is_onDemand_enable'] : 0;
+                    }
+                    $agent_dispatcher_on_demand_tags = isset($onDemandRes['tags']) ?  $onDemandRes['tags'] : '';// $this->getDispatcherOnDemandTags($vendor_id);
+                    break;
+                case 12:
+                    $vendor_id = $product->vendor_id;
+                    $agent_dispatcher_on_demand_tags = $this->getDispatcherAppointmentTags($vendor_id);
+                    break;
             }
-
-           // pr($this->getDispatcherOnDemandTags($vendor_id));
-            $agent_dispatcher_on_demand_tags = isset($onDemandRes['tags']) ?  $onDemandRes['tags'] : '';// $this->getDispatcherOnDemandTags($vendor_id);
-
-        }
-        if(isset($product->category->categoryDetail) && $product->category->categoryDetail->type_id == 12) # if type is on demand
-        {
-            $vendor_id = $product->vendor_id;
-            $agent_dispatcher_on_demand_tags = $this->getDispatcherAppointmentTags($vendor_id);
-
         }
 
         $pro_tags = Tag::with('primary')->whereHas('primary')->get();
@@ -341,12 +338,10 @@ class ProductController extends BaseController
             }
         }
 
-        $roles = Role::where('status',1)->where('is_enable_pricing',1)->get();
+        $allRoles = Role::where('status',1);
+        $roles = $allRoles->where('is_enable_pricing',1)->get();
+        $allRoles = $allRoles->get();
         
-
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role',  'is_free_delivery_by_roles', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery']);
-
-        $allRoles = Role::where('status',1)->get();
 
         $selectedRoles = [];
         if($getAdditionalPreference['is_free_delivery_by_roles'] == 1){
@@ -387,8 +382,6 @@ class ProductController extends BaseController
     {
         DB::beginTransaction();
         try {
-            $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
-
             //ProductVariant::where('product_id',$id)->update(['status'=>0]);
             $product = Product::where('id', $id)->firstOrFail();
             $rule = array(
@@ -402,6 +395,10 @@ class ProductController extends BaseController
             if ($validation->fails()) {
                 return redirect()->back()->withInput()->withErrors($validation);
             }
+            
+            $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+
+
             $check_url_slug = Product::where('id','!=',$id)->where('vendor_id',$request->vendor_id)->where('url_slug',$request->url_slug)->first();
             if(!is_null($check_url_slug))
             {
@@ -576,6 +573,15 @@ class ProductController extends BaseController
             $product->extra_time = ($request->has('extra_time')) ? $request->extra_time : null;
             $product->transmission = ($request->has('transmission')) ? $request->transmission : null;
             $product->fuel_type = ($request->has('fuel_type')) ? $request->fuel_type : null;
+            $product->engine = ($request->has('engine')) ? $request->engine : null;
+            $product->boot_space = ($request->has('boot_space')) ? $request->boot_space : null;
+            $product->mileage = ($request->has('mileage')) ? $request->mileage : null;
+            $product->body_type = ($request->has('body_type')) ? $request->body_type : null;
+            $product->no_of_cylinder = ($request->has('no_of_cylinder')) ? $request->no_of_cylinder : null;
+            $product->max_torque = ($request->has('max_torque')) ? $request->max_torque : null;
+            $product->fuel_tank_capacity = ($request->has('fuel_tank_capacity')) ? $request->fuel_tank_capacity : null;
+            $product->ground_clearence = ($request->has('ground_clearence')) ? $request->ground_clearence : null;
+            $product->bhp = ($request->has('bhp')) ? $request->bhp : null;
 
             $product->save();
             if($request->has('slot_ids') && $request->slot_ids != ''){

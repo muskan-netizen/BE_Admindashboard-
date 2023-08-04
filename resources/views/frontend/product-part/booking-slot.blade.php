@@ -53,7 +53,7 @@
 
   </div>
   
-  <div id="product_variant_additional_increment_wrapper" >
+  <div id="product_variant_additional_increment_wrapper">
     <div class="product-description border-product pb-0">
         {{-- <h6 class="product-title mt-0">{{__('Extended duration By('.@$product->additional_increments.'hr:'.@$product->additional_increments_min.'min/'.Session::get('currencySymbol').number_format(@$product->variant[0]->incremental_price * @$product->variant[0]->multiplier,2,".",",").')')}}:
       </h6> --}}
@@ -152,6 +152,7 @@
         $checkoutInput = $('#blocktime2');
         $checkinInput.val( moment().format("M/DD/YY hh:mm A"));
         $checkoutInput.val(moment().add(min_dur_hrs,'hours').add(min_dur_min,'minutes').format("M/DD/YY hh:mm A"));
+        
         $(".incremental-left-minus").on("click", function() {
             document.getElementById('incremental_hrs').stepDown();
             var incremental_hrs = document.getElementById('incremental_hrs').value;
@@ -240,7 +241,7 @@
         });
 
 
-        $('#blocktime, #blocktime2').daterangepicker({
+        /*$('#blocktime, #blocktime2').daterangepicker({
             locale: {
                   format: 'M/DD/YY hh:mm A'
             },
@@ -284,7 +285,7 @@
            check_product_availibility(formData);
 
 
-        });
+        });*/
 
         async function check_product_availibility(formData){
           if(formData.variant_option_id == undefined){

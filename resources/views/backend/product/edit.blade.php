@@ -1141,12 +1141,41 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::number('seats', $product->seats ?? '', ['class'=>'form-control', 'id' => 'seats', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
                         <div class="col-md-6 mb-2">
-                            <label for="title" class="control-label">{{ __("Pickup Date") }}</label>
-                            <input class="form-control" id="pickup_time" name="pickup_time" type="datetime-local" value="{{ $product->pickup_time ?? ''}}">
+                            <label for="title" class="control-label">{{ __("Engine") }}</label>
+                            <input class="form-control" id="engine" name="engine" type="text" value="{{ $product->engine ?? ''}}">
                         </div>
                         <div class="col-md-6 mb-2">
-                            <label for="title" class="control-label">{{ __("Drop Date") }}</label>
-                            <input class="form-control" id="drop_time" name="drop_time" type="datetime-local" value="{{ $product->drop_time ?? ''}}">
+                            <label for="title" class="control-label">{{ __("Boot Space") }}</label>
+                            <input class="form-control" id="boot_space" name="boot_space" type="text" value="{{ $product->boot_space ?? ''}}">
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="title" class="control-label">{{ __("Mileage") }}</label>
+                            <input class="form-control" id="mileage" name="mileage" type="text" value="{{ $product->mileage ?? ''}}">
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="title" class="control-label">{{ __("Body Type") }}</label>
+                            <input class="form-control" id="body_type" name="body_type" type="text" value="{{ $product->body_type ?? ''}}">
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="title" class="control-label">{{ __("Number of Cylinder") }}</label>
+                            <input class="form-control" id="no_of_cylinder" name="no_of_cylinder" type="number" value="{{ $product->no_of_cylinder ?? ''}}">
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="title" class="control-label">{{ __("Max Torque") }}</label>
+                            <input class="form-control" id="max_torque" name="max_torque" type="text" value="{{ $product->max_torque ?? ''}}">
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="title" class="control-label">{{ __("Fuel Tank Capacity") }}</label>
+                            <input class="form-control" id="fuel_tank_capacity" name="fuel_tank_capacity" type="text" value="{{ $product->fuel_tank_capacity ?? ''}}">
+                        </div>
+
+                        <div class="col-md-6 mb-2">
+                            <label for="title" class="control-label">{{ __("Ground Clearence") }}</label>
+                            <input class="form-control" id="ground_clearence" name="ground_clearence" type="text" value="{{ $product->ground_clearence ?? ''}}">
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="title" class="control-label">{{ __("BHP") }}</label>
+                            <input class="form-control" id="bhp" name="bhp" type="text" value="{{ $product->bhp ?? ''}}">
                         </div>
                         <div class="col-md-6 mb-2">
                             <label for="title" class="control-label">{{ __("Extra Time (min)") }}</label>
