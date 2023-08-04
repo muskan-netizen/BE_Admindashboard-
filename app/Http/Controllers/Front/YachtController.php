@@ -376,13 +376,7 @@ class YachtController extends FrontController
 
     public function productsSearchResult(Request $request)
     {
-        \Log::info(['request' => $request->all()]);
-        // $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
-        $category = Category::where('slug',$request->service)->first();
-        // $vendor_ids = Vendor::with(['categories'])->whereHas('categories', function($q)use($request){
-        //     $q->where('slug', $request->service);
-        // })->pluck('id');
-        \Log::info(['category' => $category]);
+        // pr($request->all());
 
         if($request->service == 'airport'){
             $mapKey = '1234';
@@ -401,7 +395,10 @@ class YachtController extends FrontController
                 ];
             });
         }
-        else if($category){
+
+        $category = Category::where('slug',$request->service)->first();
+        
+        if($category){
             $data['products'] = Product::with(['variant','media.image'])->where(function($q) use ($request){
                 if(isset($request->pickup_time) && isset($request->drop_time)){
                     $q->where('pickup_time', '<=', $request->pickup_time)

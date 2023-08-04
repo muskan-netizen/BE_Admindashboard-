@@ -38,9 +38,9 @@
 					<nav class="menu">
 						<ul class="d-flex  align-items-center">
 							<li><a href="" title="">Home</a></li>
-							<li><a href="{{ route('productSearch',['service' => 'rental']) }}" title="">Car Rental</a></li>
+							<li><a href="{{ route('productSearch',['service' => 'carrental']) }}" title="">Car Rental</a></li>
 							<li><a href="{{ route('productSearch',['service' => 'airport']) }}" title="">Airport Pickup and Drop</a></li>
-							<li><a href="{{ route('productSearch',['service' => 'yacht']) }}" title="">Yacht</a></li>
+							<li><a href="{{ route('productSearch',['service' => 'yatchrental']) }}" title="">Yacht</a></li>
 							@if (Auth::guest())
 								<li><a href="user/login" title="">Sign in / Login</a></li>
 							@else	
@@ -94,7 +94,7 @@
 					<div class="tab">
 						<div class="d-flex align-items-center">
 							<div class="form-group">
-								<input type="radio" value="rental" name="service" placeholder="" id="car" checked>
+								<input type="radio" value="carrental" name="service" placeholder="" id="car" checked>
 								<label for="car">
 									<img src="yacht-images/icons/1.png" alt="">
 									Car Rental
@@ -110,7 +110,7 @@
 								<span></span>
 							</div>
 							<div class="form-group">
-								<input type="radio" value="yacht" name="service" placeholder="" id="Yacht">
+								<input type="radio" value="yatchrental" name="service" placeholder="" id="Yacht">
 								<label for="Yacht">
 									<img src="yacht-images/icons/2.png" alt="">
 									Yacht Pick and Drop
