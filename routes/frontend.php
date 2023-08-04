@@ -547,8 +547,8 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::get('user/my-ads', 'Front\ProfileController@getMyAds')->name('user.productList');
 	Route::post('user/update-post-status', 'Front\ProfileController@updatePostStatus')->name('user.updatePostStatus');
 	Route::get('user/notification', 'Front\ProfileController@getNotification')->name('user.notification');
-	Route::resource('user/allergic-items', 'Front\AllergicItemController');
-	Route::post('user/add-allergic-items', 'Front\AllergicItemController@addAllergicItems')->name('add.allergic_items');
+	Route::get('user/allergic-items', 'Front\AllergicItemController@index')->name('list.allergicItems');
+	Route::post('user/add-allergic-items', 'Front\AllergicItemController@addUpdateAllergicItems')->name('add.allergicItems');
 	Route::get('user/removeItem/{id}', 'Front\AllergicItemController@destroy')->name('removeItem');
 	Route::get('user/logout', 'Front\CustomerAuthController@logout')->name('user.logout');
 	Route::get('verifyAccountProcess', 'Front\UserController@sendToken')->name('email.send');

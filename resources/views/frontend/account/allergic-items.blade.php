@@ -188,7 +188,7 @@ $applocale = session()->get('applocale');
                         <span aria-hidden="true">&times;</span>
                       </button>
                     </div>
-                    <form action="{{ route('add.allergic_items')}}" method="POST">
+                    <form action="{{ route('add.allergicItems')}}" method="POST">
                         @csrf
                         <div class="modal-body">
                             <div class="col pl-1 multipleItems">

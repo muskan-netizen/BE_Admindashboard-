@@ -23,7 +23,7 @@ class AllergicItemController extends Controller
         return view('frontend.account.allergic-items',$data);
     }
 
-    public function addAllergicItems(Request $request)
+    public function addUpdateAllergicItems(Request $request)
     {
         foreach($request->allergic_item_ids as $id){
             UserAllergicItem::updateOrCreate([
