@@ -1335,6 +1335,7 @@ class OrderController extends FrontController
             /* Save initial details of order */
             $order->save();
 
+        
             /* Updating order prescription if any */
             $cart_prescriptions = CartProductPrescription::where('cart_id', $cart->id)->get();
             foreach ($cart_prescriptions as $cart_prescription) {
@@ -2504,10 +2505,14 @@ class OrderController extends FrontController
 
             DB::commit();
             $this->sendSuccessSMS($request, $order);
+            $hub_key = @getAdditionalPreference(['is_marg_enable']);
 
-            //Create an order at margApi side also
-            $this->makeInsertOrderMargApi($order);
-            
+            if(isset($hub_key) && $hub_key['is_marg_enable'] == 1){
+         
+              $this->ProductVariantStock($order->id);
+          
+              $this->makeInsertOrderMargApi($order);
+            }
             return $this->successResponse($order);
         } catch (Exception $e) {
             DB::rollback();

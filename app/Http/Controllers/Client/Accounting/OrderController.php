@@ -59,10 +59,10 @@ class OrderController extends Controller{
         $order = Order::find($order_id);
     
         if (!empty($order)) {
-            $this->makeInsertOrderMargApi($order);
+           $data = $this->makeInsertOrderMargApi($order);
     
             // Set the flash message
-            session()->flash('success', 'Order synced successfully!');
+            // session()->flash('success', 'Order synced successfully!');
         }
     
             return redirect()->route('failed-marg-orders');

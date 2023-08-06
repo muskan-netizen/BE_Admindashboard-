@@ -28,16 +28,17 @@ class MargController extends Controller
 
     public function syncmarg()
     {
-        $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code']);
+        $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code','marg_company_url']);
 
         if($hub_key['is_marg_enable'] == 1){
             $decryptionKey  = $hub_key['marg_decrypt_key'];
             $MargID  = $hub_key['marg_access_token'];
             $CompanyCode  = $hub_key['marg_company_code'];
             $margDateTime = $hub_key['marg_date_time']??date('Y-m-d H:i:s');
+            $url  = $hub_key['marg_company_url'];
 
             $detail         = [];
-            $MargMST2017 = "https://corporate.margerp.com/api/eOnlineData/MargMST2017";
+            $MargMST2017 = $url."/api/eOnlineData/MargMST2017";
             $reqData = ["CompanyCode" => $CompanyCode,"MargID" => $MargID,"Datetime" =>'', "index" => 0];
         }else{
             return false;
@@ -68,8 +69,10 @@ class MargController extends Controller
             }
         }
 
-        // Return the decrypted data in the API response
-        return response()->json(['massage' => "Work in porgress."]);
+        $time = '';
+        $time = convertDateTimeInClientTimeZone(date('Y-m-d H:i:s'), 'd-m-Y h:i:s');
+        // // Return the decrypted data in the API response
+        return response()->json(['time' =>__('Last Sync Date & Time : ').$time]);
 
         // $resp =  $this->makeInsertOrderMargApi();
         // dd($resp);

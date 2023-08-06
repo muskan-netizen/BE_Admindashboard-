@@ -2044,14 +2044,31 @@
                                     name="is_marg_enable" id="is_marg_enable_hidden" />
 
                                 @if (isset($getAdditionalPreference['is_marg_enable']) == 1 && $getAdditionalPreference['marg_date_time'])
-                                    <label for="" class="ml-3">{{ __('Last Sync Date & Time :') }}
-                                    </label>{{ convertDateTimeInClientTimeZone($getAdditionalPreference['marg_date_time'], 'd-m-Y h:i:s') }}
+                                    <label for="" id="sycn_time" class="ml-3">{{ __('Last Sync Date & Time :') }}
+                                    {{ convertDateTimeInClientTimeZone($getAdditionalPreference['marg_date_time'], 'd-m-Y h:i:s') }}</label >
                                 @endif
 
                             </div>
                         </div>
                     </div>
 
+
+                    <div class="row marg_row"
+                        style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
+                        <div class="col-12">
+                            <div class="form-group mb-2 mt-2">
+                                <label for="marg_company_url">{{ __('Marg Company Url') }}</label>
+                                <input type="text" name="marg_company_url" id="marg_company_url"
+                                    placeholder="" class="form-control"
+                                    value="{{ old('marg_company_url', $getAdditionalPreference['marg_company_url'] ?? '') }}">
+                                @if ($errors->has('marg_company_url'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('marg_company_url') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
 
 
                     <div class="row marg_row"
@@ -2106,7 +2123,23 @@
             <div class="row marg_row"
                 style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
                 <div class="col-12">
-                    <button class="btn btn-info btn-block" id="sync_marg_btn">{{ __('Sync Data') }} </button>
+            @php
+        {
+            
+                $marg_order =  App\Models\Order::where('marg_status', '=',null)->
+                  where('marg_max_attempt', '>',2)->first();
+                 $class= "";
+                 if($marg_order){
+                    $class= "disabled";
+                 }
+            
+                 
+        }    
+        @endphp
+        
+        
+                <button class="btn btn-info btn-block" id="sync_marg_btn" {{$class }}>{{ __('Sync Data') }} </button>
+      
                 </div>
             </div>
         </div><!-- marg card end -->
@@ -2534,7 +2567,8 @@
         });
 
 
-        $(document).on("click", "#sync_marg_btn", function() {
+        $(document).on("click", "#sync_marg_btn", function(e) {
+            e.preventDefault();
             $.ajax({
                 type: "GET",
                 dataType: 'json',
@@ -2543,10 +2577,11 @@
                     _token: "{{ csrf_token() }}",
                 },
                 success: function(response) {
-                    dd(response);
-                    if (response.status == "Success") {
-
-                    }
+                    $('#sycn_time').html(response.time);
+                    sweetAlert.success('Data Sycn Successfully!');
+                },
+                error: function(response) {
+                    sweetAlert.error('Error!');
                 }
             });
         });

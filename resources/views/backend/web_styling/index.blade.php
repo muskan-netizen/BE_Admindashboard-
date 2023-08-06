@@ -144,21 +144,23 @@
                                 <h4 class="header-title">{{ __("Home Page Style") }}</h4>
                                 <div class="row mt-3">
                                     @foreach($homepage_style_options as $homepage_style)
-                                    <div class="col-xl-4 col-lg-6 col-md-6 mb-3 alThemeDemoSec">
-                                        <div class="card mb-0">
-                                            <div class="card-body p-0">
-                                                <div class="col-sm-12 custom-control custom-radio radio_new p-0">
-                                                    <input type="radio" {{$homepage_style->is_selected == 1 ? 'checked' : ''}} value="{{$homepage_style->id}}" onchange="submitHomePageForm(this.id)" id="{{$homepage_style->id}}" name="home_styles" class="custom-control-input " }}>
-                                                    <label class="custom-control-label" for="{{$homepage_style->id}}">
-                                                        <span class="card-img-top img-fluid" style="background-image: url( {{('../images/'.$homepage_style->image)}})"></span>
-                                                        <!-- <img  src="{{url('images/'.$homepage_style->image)}}" alt="Card image cap"> -->
-
-                                                    </label>
+                                        @if (!($client_preference_detail->business_type == "emart" && ($homepage_style->name == "On Demand Service" || $homepage_style->name == "p2p")))
+                                            <div class="col-xl-4 col-lg-6 col-md-6 mb-3 alThemeDemoSec">
+                                                <div class="card mb-0">
+                                                    <div class="card-body p-0">
+                                                        <div class="col-sm-12 custom-control custom-radio radio_new p-0">
+                                                            <input type="radio" {{$homepage_style->is_selected == 1 ? 'checked' : ''}} value="{{$homepage_style->id}}" onchange="submitHomePageForm(this.id)" id="{{$homepage_style->id}}" name="home_styles" class="custom-control-input " }}>
+                                                            <label class="custom-control-label" for="{{$homepage_style->id}}">
+                                                                <span class="card-img-top img-fluid" style="background-image: url( {{('../images/'.$homepage_style->image)}})"></span>
+                                                                <!-- <img  src="{{url('images/'.$homepage_style->image)}}" alt="Card image cap"> -->
+                        
+                                                            </label>
+                                                        </div>
+                                                    </div>
                                                 </div>
+                                                <span class="alTemplateName mt-3 w-100">{{$homepage_style->name}}</span>
                                             </div>
-                                        </div>
-                                        <span class="alTemplateName mt-3 w-100">{{$homepage_style->name}}</span>
-                                    </div>
+                                        @endif
                                     @endforeach
                                 </div>
                             </div>
