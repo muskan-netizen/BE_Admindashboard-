@@ -151,7 +151,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link active" id="pending_order-tab" data-toggle="tab" href="#pending_orders" role="tab" aria-selected="false" data-rel="pending_orders">
-                        <i class="icofont icofont-man-in-glasses"></i>{{ __('Pending Orders') }} <sup class="total-items" id="pending-orders">({{$pending_order_count}})</sup>
+                        <i class="icofont icofont-man-in-glasses"></i>{{ __('Pending Orders') }} <sup class="total-items" id="pending-orders" data-count="{{$pending_order_count}}">({{$pending_order_count}})</sup>
                     </a>
                     <div class="material-border"></div>
                 </li>
@@ -160,7 +160,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 @if ($client_preferences->business_type == 'rental')
                     <li class="nav-item">
                         <a class="nav-link" id="rental_pending_delivery-tab" data-toggle="tab" href="#rental_pending_delivery" role="tab" aria-selected="true" data-rel="rental_pending_delivery">
-                            <i class="icofont icofont-ui-home"></i>{{ __('Active Orders') }} <sup class="total-items" id="active-orders">({{$active_order_count}})</sup>
+                            <i class="icofont icofont-ui-home"></i>{{ __('Active Orders') }} <sup class="total-items" id="active-orders" data-count="{{$active_order_count}}">({{$active_order_count}})</sup>
                         </a>
                         <div class="material-border"></div>
                         <ul class="nav nav-tabs nav-material rental_filter_tab" id="top-tab" role="tablist" style="display:none;">
@@ -187,14 +187,14 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 @else
                     <li class="nav-item">
                         <a class="nav-link" id="active_orders_tab" data-toggle="tab" href="#active_orders" role="tab" aria-selected="true" data-rel="active_orders">
-                            <i class="icofont icofont-ui-home"></i>{{ __('Active Orders') }} <sup class="total-items" id="active-orders">({{$active_order_count}})</sup>
+                            <i class="icofont icofont-ui-home"></i>{{ __('Active Orders') }} <sup class="total-items" id="active-orders" data-count="{{$active_order_count}}">({{$active_order_count}})</sup>
                         </a>
                         <div class="material-border"></div>
                     </li> 
                 @endif
                 <li class="nav-item">
                     <a class="nav-link" id="orders_history_tab" data-toggle="tab" href="#orders_history" role="tab" aria-selected="false" data-rel="orders_history">
-                        <i class="icofont icofont-man-in-glasses"></i>{{ __('Orders History') }} <sup class="total-items" id="history-orders">({{$past_order_count}})</sup>
+                        <i class="icofont icofont-man-in-glasses"></i>{{ __('Orders History') }} <sup class="total-items" id="history-orders" data-count="{{$past_order_count}}">({{$past_order_count}})</sup>
                     </a>
                     <div class="material-border"></div>
                 </li>
@@ -586,8 +586,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
         // update status
         $(document).on("click", ".update-status-ar", function() {
-
+			
             let that = $(this);
+            that.prop("disabled",true);
             var count = that.data("count");
             var full_div = that.data("full_div");
             var single_div = that.data("single_div");
@@ -623,6 +624,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     showCancelButton: true,
                     confirmButtonText: 'Ok',
                     });
+                    that.prop("disabled",false);
                 }else{
                     Swal.fire({
                     title: "{{__('Are you Sure?')}}",
@@ -646,8 +648,9 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                     order_luxury_option_id: order_luxury_option_id
                                 },
                                 success: function(response) {
+                                	that.prop("disabled",false);
                                     if($('#received_new_orders').hasClass('show')){
-                                            $("#received_new_orders").modal('hide');
+                                        $("#received_new_orders").modal('hide');
                                     }
                                     if(response.status=='error'){
                                         if (count == 0) {
@@ -691,15 +694,33 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
                                         }
                                     }
-                                    if (status_option_id == 2)
+                                    if (status_option_id == 2){
+                                    	getOrderCount("pending-orders","active-orders");
                                         $.NotificationApp.send('{{__("Success")}}', response.message, "top-right", "#5ba035", "success");
+                                    }
+                                    if (status_option_id == 6){
+                                    	getOrderCount("active-orders","history-orders");
+                                    	$.NotificationApp.send('{{__("Success")}}', response.message, "top-right", "#5ba035", "success");                                 	
+                                    }
                                 },
                             });
                         }
-                    });       
+                    });  
+                    that.prop("disabled",false);    
                 }
             }
         });
+
+		function getOrderCount(id_1,id_2){
+			var pending_count = parseInt($("#"+id_1).attr("data-count"));
+        	var active_count = parseInt($("#"+id_2).attr("data-count"));
+        	pending_count = pending_count-1;
+        	$("#"+id_1).attr("data-count",pending_count);
+        	$("#"+id_1).html("("+pending_count+")");
+        	active_count = active_count+1;
+        	$("#"+id_2).attr("data-count",active_count)
+        	$("#"+id_2).html("("+active_count+")");
+		}
 
         // update vendor Product status
         $(document).on("click", ".updateVendorProdStatus", function(e) {
