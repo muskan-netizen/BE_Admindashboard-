@@ -192,7 +192,7 @@ $(document).ready(function() {
 function initDataTable(table, status) {
             $('#'+table).DataTable({
                 "destroy": true,
-                "scrollX": true,
+                // "scrollX": true,
                 "processing": true,
                 "serverSide": true,
                 "iDisplayLength": 20,

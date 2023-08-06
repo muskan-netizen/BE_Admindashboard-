@@ -167,7 +167,7 @@ class ProductVariant extends Model
             $checkMarkup = Cache::remember($cacheKey, 60, function () use($vendor) {
                 return Vendor::where('id',$vendor->vendor_id)->value('add_markup_price');
             });
-            }
+        }
         //if vendor price add with markup price
         $user = auth()->user();
         if($user !=null && $user->is_admin == 1 ){
@@ -178,21 +178,19 @@ class ProductVariant extends Model
             if($userVendor){
                 return decimal_format($value);
             }
-        }
-        if($checkMarkup){
-            return decimal_format($value + $this->markup_price??0);
-        }
+       }
+       if($checkMarkup){
+           return decimal_format($value + $this->markup_price??0);
+       }
 
-        
-        //  price based on role
-        if(auth()->user() !=null){
-            $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
-            if($getAdditionalPreference['is_price_by_role'] == 1 && $this->productVariantByRole){
-                return decimal_format($this->productVariantByRole->amount);
-            }
-        }
-        return decimal_format($value);
-
+       //  price based on role
+       if(auth()->user() !=null){
+         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+         if($getAdditionalPreference['is_price_by_role'] == 1 && $this->productVariantByRole){
+            return decimal_format($this->productVariantByRole->amount);
+         }
+       }
+       return decimal_format($value);
     }
 
     public function getCompareAtPriceAttribute($value)

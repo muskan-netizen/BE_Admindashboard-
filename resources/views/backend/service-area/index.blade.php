@@ -58,7 +58,7 @@
                                             </td>
 
                                             <td>
-                                                @if ($client_preference_detail->slots_with_service_area == 1 && $vendor->show_slot == 0)
+                                                @if ($client_preference_detail->slots_with_service_area == 1 && isset($vendor) && $vendor->show_slot == 0)
                                                     <input type="checkbox" data-plugin="switchery"
                                                         name="is_active_for_vendor_slot"
                                                         class="form-control is_active_for_vendor_slot" data-color="#43bee1"

@@ -274,7 +274,12 @@ body .rating-form .btn-reset {
 @php
     $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery']);
 @endphp
+<<<<<<< HEAD
 <div class="card-box">
+=======
+@if( !p2p_module_status() )
+<div class="card-box cate-vendor">
+>>>>>>> pre_stage
     <div class="row text-left">
         <div class="col-md-12">
             <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" id="slot-configs" method="post">

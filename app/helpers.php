@@ -717,7 +717,7 @@ if (!function_exists('SplitTime')) {
 }
 
 if (!function_exists('showSlot')) {
-    function showSlot($myDate = null, $vid, $type = 'delivery', $duration="60", $slot_type=0, $request_from='')
+    function showSlot($myDate = null, $vid, $type = 'delivery', $duration="60", $slot_type=0, $request_from='',$cart_id = 0)
     {
         $type = empty($type)? "delivery": $type;
         $slotDuration = Vendor::select('slot_minutes')->where('id', $vid)->first();
@@ -750,7 +750,11 @@ if (!function_exists('showSlot')) {
         // check if vendor has added slots. if not added then no need to execute this.
         if (isset($slots) && count($slots)>0) {
             $min[] = '';
-            $cart = CartProduct::where('vendor_id', $vid)->get();
+            $cart = CartProduct::where('vendor_id', $vid);
+            if(!empty($cart_id)){
+                $cart->where('cart_id',$cart_id);
+            }
+            $cart = $cart->get();
             if (isset($cart) && $cart->count()>0) {
                 foreach ($cart as $product) {
                     $delayHr= isset($product->product->delay_order_hrs) ? ($product->product->delay_order_hrs) : 0;
@@ -758,7 +762,6 @@ if (!function_exists('showSlot')) {
                     $min[] = (($delayHr * 60) + $delayMin);
                 }
             }
-
             if (isset($slots) && count($slots)>0) {
                 $slotss = [];
                 foreach ($slots as $slott) {
@@ -845,21 +848,21 @@ if (!function_exists('showNumericPrice')) {
     }
 
 if (!function_exists('getShowSlot')) {
-    function getShowSlot($myDate = null, $vid, $type = 'delivery', $duration="60", $slot_type=0, $request_from='')
+    function getShowSlot($myDate = null, $vid, $type = 'delivery', $duration="60", $slot_type=0, $request_from='',$cart_id = 0)
     {
-        $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+        $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type,'', $cart_id);
         if(count((array)$slots) == 0){
             $myDate  = date('Y-m-d',strtotime('+1 day'));
-            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type,'', $cart_id);
         }
         if(count((array)$slots) == 0){
             $myDate  = date('Y-m-d',strtotime('+2 day'));
-            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type,'', $cart_id);
         }
 
         if(count((array)$slots) == 0){
             $myDate  = date('Y-m-d',strtotime('+3 day'));
-            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type,'', $cart_id);
         }
         $response['slots']=$slots;
         $response['date']=$myDate;
@@ -985,26 +988,26 @@ if (!function_exists('SplitTimeTemp')) {
 
 
 if (!function_exists('findSlot')) {
-    function findSlot($myDate = null, $vid, $type = 'delivery', $api = null)
+    function findSlot($myDate = null, $vid, $type = 'delivery', $api = null,$cart_id = 0)
     {
         $type = empty($type) ? 'delivery' :$type;
         $myDate  = date('Y-m-d');
         $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
-        $slots = showSlot($myDate, $vid,  $type);
+        $slots = showSlot($myDate, $vid,  $type,"60",0,'',$cart_id);
 
         if (count((array)$slots) == 0) {
             $myDate  = date('Y-m-d', strtotime('+1 day'));
-            $slots = showSlot($myDate, $vid, $type);
+            $slots = showSlot($myDate, $vid, $type,"60",0,'',$cart_id);
         }
 
         if (count((array)$slots) == 0) {
             $myDate  = date('Y-m-d', strtotime('+2 day'));
-            $slots = showSlot($myDate, $vid, $type);
+            $slots = showSlot($myDate, $vid, $type,"60",0,'',$cart_id);
         }
 
         if (count((array)$slots) == 0) {
             $myDate  = date('Y-m-d', strtotime('+3 day'));
-            $slots = showSlot($myDate, $vid, $type);
+            $slots = showSlot($myDate, $vid, $type,"60",0,'',$cart_id);
         }
         if (isset($slots) && count((array)$slots)>0) {
             $time = explode(' - ', $slots[0]['value']);
@@ -1398,6 +1401,9 @@ if (!function_exists('getCategoryTypes')) {
             case "p2p":
                 $typeArray = ['p2p'];
                 break;
+            case "emart":
+                $typeArray = ['delivery'];
+                break;
             case "super_app":
                 $typeArray = ['delivery', 'dinein', 'takeaway', 'rental', 'pick_drop', 'on_demand', 'appointment', 'p2p' ];
                 break;
@@ -1407,6 +1413,7 @@ if (!function_exists('getCategoryTypes')) {
         return $typeArray;
     }
 }
+
 if (!function_exists('getCategoryTypesServices')) {
     /**
      * config('constants.ServiceTypes')

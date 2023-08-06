@@ -468,9 +468,9 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
                     @if(  in_array( $product->category->categoryDetail->type_id , [10]) )
                         <div class="row col-md-12 mb-2">
-                            <div class="col-4 mb-2 row">
+                            <div class="col-12 mb-2 row">
                                 <div class="col-12">
-                                    {!! Form::label('title', __('Minimum Duration'), ['class' => 'control-label']) !!}
+                                    {!! Form::label('title', __('Minimum Duration'), ['class' => 'control-label ml-2']) !!}
                                 </div>
                                 <div class="col-6 pl-3">
                                     {!! Form::label('title', __('hrs:'), ['class' => 'control-label']) !!}
@@ -482,46 +482,46 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                     {!!Form::input('number','minimum_duration_min', $product->minimum_duration_min, ['min' => '00','max' => '59','class'=>'form-control', 'id' => 'minimum_duration_min', 'placeholder' => '00', 'onkeyup' => 'return isNumberKeyMax(event)']) !!}
                                 </div>
                             </div>
-                            <div class="col-4 mb-2 row">
+                            <div class="col-12 mb-2 row">
                                 <div class="col-12">
-                                    {!! Form::label('title', __('Additional Increment Duration'), ['class' => 'control-label']) !!}
+                                    {!! Form::label('title', __('Additional Increment Duration'), ['class' => 'control-label ml-2']) !!}
                                 </div>
                                 <div class="col-6 pl-3">
                                     {!! Form::label('title', __('hrs:'), ['class' => 'control-label']) !!}
                                     {!! Form::input('number','additional_increments', $product->additional_increments, ['min' => '0','max' => '59','class'=>'form-control', 'id' => 'additional_increments', 'placeholder' => '0', 'onkeyup' => 'return isNumberKey(event)']) !!}
                                 </div>
-                                <div class="col-6 pl-3">
+                                <div class="col-6 pr-3">
                                     {!! Form::label('title', __('min:'), ['class' => 'control-label']) !!}
                                     {!! Form::input('number','additional_increments_min', $product->additional_increments_min, ['min' => '0','max' => '59','class'=>'form-control', 'id' => 'additional_increments_min', 'placeholder' => '0', 'onkeyup' => 'return isNumberKeyMax(event)']) !!}
                                 </div>
 
                             </div>
-                            <div class="col-4 mb-2 row">
+                            <div class="col-12 mb-2 row">
                                 <div class="col-12">
-                                    {!! Form::label('title', __('Buffer time Duration'), ['class' => 'control-label']) !!}
+                                    {!! Form::label('title', __('Buffer time Duration'), ['class' => 'control-label ml-2']) !!}
                                 </div>
                                 <div class="col-6 pl-3">
                                     {!! Form::label('title', __('hrs:'), ['class' => 'control-label']) !!}
                                     {!! Form::input('number','buffer_time_duration', $product->buffer_time_duration, ['min' => '0','class'=>'form-control', 'id' => 'buffer_time_duration', 'placeholder' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
                                 </div>
-                                <div class="col-6 pl-3">
+                                <div class="col-6 pr-3">
                                     {!! Form::label('title', __('min:'), ['class' => 'control-label']) !!}
                                     {!! Form::input('number','buffer_time_duration_min', $product->buffer_time_duration_min, ['min' => '0','class'=>'form-control', 'id' => 'buffer_time_duration_min', 'placeholder' => '0', 'onkeypress' => 'return isNumberKeyMax(event)']) !!}
                                 </div>
 
                             </div>
-
-                            <div class="col-4 mb-2">
+  						<div class="col-12 mb-2 row">
+                            <div class="col-6 pl-3">
                                 {!! Form::label('title', __('Security Amount'), ['class' => 'control-label']) !!}
                                 @include('backend.primary_currency')
                                 {!! Form::text('security_amount', decimal_format($product->security_amount), ['class'=>'form-control', 'id' => 'security_amount', 'placeholder' => '200', 'onkeypress' => 'return isNumberKey(event)']) !!}
                             </div>
 
-                            <div class="col-sm-4">
+                            <div class="col-6 pr-3">
                                 {!! Form::label('title', __('Quantity'),['class' => 'control-label']) !!}
                                 {!! Form::number('variant_quantity[]', $product->variant[0]->quantity, ['class'=>'form-control', 'id' => 'quantity', 'placeholder' => '0', 'min' => '0', 'onkeypress' => 'return isNumberKey(event)']) !!}
                             </div>
-
+							</div>
                         </div>
                         {{-- <div class="row mb-2">
 

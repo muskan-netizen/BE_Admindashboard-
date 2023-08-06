@@ -24,7 +24,9 @@ class VendorController extends Controller{
     public function getOrderVendorCalculations(Request $request,$flag = false){
         $from_date = "";
         $to_date = "";
-        $vendors = OrderVendor::with('orderDetail')->orderBy('id','desc');
+        $vendors = OrderVendor::with('orderDetail')->whereHas('vendor',function($q) {
+            $q->where('status', '!=', '2')->where('is_seller', 0);
+        })->orderBy('id','desc');
         if (Auth::user()->is_superadmin == 0) {
             $vendors = $vendors->whereHas('vendor.permissionToUser', function ($query) {
                 $query->where('user_id', Auth::user()->id);
@@ -42,7 +44,9 @@ class VendorController extends Controller{
         });
             $data['total_order_value'] = decimal_format($vendors->where('order_status_option_id', '!=', 3)->sum('payable_amount'));
             $data['total_delivery_fees'] = decimal_format($vendors->where('order_status_option_id', '!=', 3)->sum('delivery_fee'));
-            $data['total_admin_commissions'] = decimal_format($vendors->where('order_status_option_id', '!=', 3)->sum(DB::raw('admin_commission_percentage_amount + admin_commission_fixed_amount')));           
+            $admin_commission_percentage_amount =  decimal_format($vendors->where('order_status_option_id', '!=', 3)->sum('admin_commission_percentage_amount'));
+            $admin_commission_fixed_amount =  decimal_format($vendors->where('order_status_option_id', '!=', 3)->sum('admin_commission_fixed_amount'));
+            $data['total_admin_commissions'] = $admin_commission_fixed_amount + $admin_commission_percentage_amount;           
         if($flag){
             return $data;
         }

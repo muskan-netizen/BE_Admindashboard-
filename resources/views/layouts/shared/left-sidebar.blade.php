@@ -1,5 +1,5 @@
 @php
-    $getAdditionalPreference = getAdditionalPreference(['is_seller_module','is_gift_card']);
+    $getAdditionalPreference = getAdditionalPreference(['is_seller_module','is_gift_card','is_marg_enable']);
 @endphp
 <div class="left-side-menu">
     <div class="logo-box m-hide d-lg-block">
@@ -137,7 +137,19 @@
                                     </a>
                                 </li>
                             @endif
+                            @if(@$getAdditionalPreference['is_marg_enable'] == '1')
+                            <li>
+                                    <a href="{{route('failed-marg-orders')}}">
+                                    <span class="icon-vendor"></span>
+                                    @php
+                                        $vendormenu = getNomenclatureName('Marg Failed Orders', true);
 
+                                    @endphp
+                                        {{-- <span>{{getNomenclatureName('Vendors', true)}}</span> --}}
+                                        <span>{{ __('Marg Failed Orders') }}</span>
+                                    </a>
+                         </li>
+                         @endif
                             @if(@$getAdditionalPreference['is_seller_module'] == '1')
                                 <li>
                                     <a href="{{route('seller.index')}}">

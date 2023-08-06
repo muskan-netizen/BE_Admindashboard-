@@ -50,6 +50,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::any('/logout', 'Auth\LoginController@logout')->name('client.logout');
         Route::get('profile', 'Client\UserController@profile')->name('client.profile');
         
+        
         Route::get('notifications/list', 'Client\DashBoardController@notificationList')->name('noti.list');
         Route::get('role/add', 'Client\RolePermissionController@indexRole')->name('roles');
         Route::post('role/save', 'Client\RolePermissionController@saveRole')->name('save.roles');
@@ -124,6 +125,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         Route::get('backend/order/refund', [OrderController::class, 'backendOrderRefund'])->name('backend.order.refund');
         Route::get('backend/order/refund/filter', [OrderController::class, 'backendOrderRefundFilter'])->name('backend.order.refund.filter');
+        Route::get('failed-marg-orders', [OrderController::class, 'getFailedMargOrders'])->name('failed-marg-orders');
 
         Route::post('account/vendor/payout/request/complete', [VendorPayoutController::class, 'vendorPayoutRequestComplete'])->name('account.vendor.payout.request.complete');
         Route::get('account/tax/filter', [TaxController::class, 'filter'])->name('account.tax.filter');
@@ -132,6 +134,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('account/vendor/getVendorCalculations', [VendorController::class, 'getOrderVendorCalculations'])->name('account.vendor.calculations');
         Route::get('account/vendor/export', [VendorController::class, 'export'])->name('account.vendor.export');
         Route::get('account/order/filter', [OrderController::class, 'filter'])->name('account.order.filter');
+        Route::get('account/order/margfilter', [OrderController::class, 'margFilter'])->name('account.order.margFilter');
+        Route::get('sync-marg-order/{order_id}', [OrderController::class, 'syncMargOrder'])->name('sync-marg-order');
+
         Route::get('account/order/getOrderCalculations', [OrderController::class, 'getOrderVendorCalculations'])->name('account.order.calculations');
         Route::get('account/loyalty/filter', [LoyaltyController::class, 'filter'])->name('account.loyalty.filter');
         Route::get('account/loyalty/export', [LoyaltyController::class, 'export'])->name('account.loyalty.export');

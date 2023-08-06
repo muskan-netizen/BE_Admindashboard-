@@ -174,12 +174,12 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                               <input type="input" class="form-control" value="{{session('selectedDate') ?? ''}}"
                                id="inputDate" placeholder="{{session('selectedDate') ? session('selectedDate') : __('Choose Date') }} ">
                            </div>
-                        </li> --}}
+                        </li> 
                         <li class="pr-0">
                            <div class="alFindGo">
                               <button class="btn">{{__('Go')}}</button>
                            </div>
-                        </li>
+                        </li>--}}
                      </ul>
                   </div>
                   <!-- alFindSec end -->
