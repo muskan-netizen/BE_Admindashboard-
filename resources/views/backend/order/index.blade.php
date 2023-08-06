@@ -648,7 +648,6 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                     order_luxury_option_id: order_luxury_option_id
                                 },
                                 success: function(response) {
-                                	that.prop("disabled",false);
                                     if($('#received_new_orders').hasClass('show')){
                                         $("#received_new_orders").modal('hide');
                                     }
@@ -664,6 +663,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                             });
 
                                         }
+                                        that.prop("disabled",false);
                                         $.NotificationApp.send('{{__("Error")}}', response.message, "top-right", "#ff0808", "error");
                                         return 0;
                                     }
@@ -678,6 +678,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         }else{
                                             var next_status = "{{ __('Delivered') }}";
                                         }
+                                        that.prop("disabled",false);
                                         that.replaceWith("<button class='update-status-ar btn-warning' data-full_div='" + full_div + "' data-single_div='" + single_div + "'  data-count='" + count + "'  data-order_id='" + order_id + "'  data-vendor_id='" + vendor_id + "'  data-status_option_id='" + status_option_id_next + "' data-order_vendor_id=" + order_vendor_id + ">" + next_status + "</button>");
                                         return false;
                                     } else {
@@ -693,20 +694,24 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                             });
 
                                         }
+                                        that.prop("disabled",false);
                                     }
                                     if (status_option_id == 2){
+                                        that.prop("disabled",false);
                                     	getOrderCount("pending-orders","active-orders");
                                         $.NotificationApp.send('{{__("Success")}}', response.message, "top-right", "#5ba035", "success");
                                     }
                                     if (status_option_id == 6){
+                                        that.prop("disabled",false);
                                     	getOrderCount("active-orders","history-orders");
                                     	$.NotificationApp.send('{{__("Success")}}', response.message, "top-right", "#5ba035", "success");                                 	
                                     }
                                 },
                             });
+                        }else{
+                        	that.prop("disabled",false);    
                         }
                     });  
-                    that.prop("disabled",false);    
                 }
             }
         });
