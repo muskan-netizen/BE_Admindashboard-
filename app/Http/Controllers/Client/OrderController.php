@@ -129,8 +129,6 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                 ->orWhere(function($q3) {
-                    
-                    
                         $q3->where('is_postpay', 1) // 1 for order is post pay.
                             ->whereNotIn('payment_option_id', [1, 38]);
                     
