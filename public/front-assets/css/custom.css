@@ -16,6 +16,7 @@
     ul.exzoom_img_ul img {
         width: 100%;
     }
+<<<<<<< HEAD
     .step-order p {
         font-size: 9px;
         bottom: -20px
@@ -2193,6 +2194,7 @@ body .inner_spacing .rating {
 @-webkit-keyframes gradient {
     0% {
         left: 0
+=======
 
     .al_body_template_one,
     .al_body_template_two,
@@ -2226,6 +2228,7 @@ body .inner_spacing .rating {
         overflow-x: hidden;
         font-size: 16px;
         position: initial;
+>>>>>>> pre_stage
     }
 
     a {
@@ -2240,6 +2243,7 @@ body .inner_spacing .rating {
     .slick-slider {
         visibility: hidden
     }
+<<<<<<< HEAD
 }
 
 .dark .common-product-box,
@@ -2645,9 +2649,11 @@ body .status_box label {
     body .suppliers-img-outer,
     body .img-outer-box {
         height: 150px
+=======
 
     .slick-slider.slick-initialized {
         visibility: visible
+>>>>>>> pre_stage
     }
 
     .onhover-dropdown .onhover-show-div {
@@ -13764,6 +13770,7 @@ body .status_box label {
     .inner_spacing .border-product .product-icon #social-links ul li a {
         font-size: 20px;
     }
+<<<<<<< HEAD
 }
 
 .al_body_template_two .footer-theme .sub-title .contact-list li {
@@ -14339,3 +14346,5 @@ section#alTaxiBookingWrapper .address-form .pool_radio_controls.text-center labe
 .inner_spacing .border-product .product-icon #social-links ul li a {
     font-size: 20px;
 }
+=======
+>>>>>>> pre_stage
