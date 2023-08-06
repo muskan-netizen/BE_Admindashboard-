@@ -59,7 +59,7 @@ trait MargTrait{
                 $product->title = $request->name;           // $request->product_name;        
                 $product->category_id = $request->catcode;  // $request->category_id;
                 $product->type_id = 1;
-                $product->vendor_id = 64;                    //$request->vendor_id;
+                $product->vendor_id = 8;                    //$request->vendor_id;
                 $client_lang = ClientLanguage::where('is_primary', 1)->first();
                 if (!$client_lang) {
                     $client_lang = ClientLanguage::where('is_active', 1)->first();
