@@ -834,7 +834,7 @@
                                         <div class="row mb-1 d-flex align-items-center">
                                             <div class="col-5 text-lg-right">
                                                 <label class="m-0 radio">
-                                                    {{ __('Fixed Fee') }} :</label>
+                                                    {{getDynamicTypeName('Fixed Fee')}} :</label>
                                             </div>
                                             <div class="col-7">
                                                 @if ($additionalPreference['is_token_currency_enable'])

@@ -270,7 +270,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                 </div>
 
                                 <div class="@php if(is_category_p2p($product->category)){ echo 'col-lg-6'; }elseif(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-4'; } else { echo 'col-lg-4'; } @endphp rtl-text p-0">
-                                    <div class="product-right inner_spacing pl-sm-3 p-0">
+                                    <div class="product-right inner_spacing pl-sm-3 p-0 third-temp-lan">
                                         <h2 class="mb-0">
                                             {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
                                         </h2>

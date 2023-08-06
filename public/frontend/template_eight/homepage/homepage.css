@@ -48,7 +48,7 @@ article#page-container {
 .home-slider-wrapper .banner-img-outer img {
     max-width: 100%;
     border-radius: 0px;
-    height: 500px;
+    height: 450px;
     object-fit: cover;
     width: 100% !important;
 }
@@ -1514,9 +1514,9 @@ section.suppliers-section.container.vender_slider .supplier-rating h5 {
 
 .vender-logo.deals-product.product-card-box.position-relative.text-center.al_custom_vendors_sec .suppliers-img-outer.position-relative {
     border-radius: 10px 10px 0 0;
-    min-height: 360px;
+    min-height: 300px;
     height: 100%;
-    max-height: 360px;
+    max-height: 300px;
 }
 
 /* .render_full_spotlight_deals .supplier-rating {

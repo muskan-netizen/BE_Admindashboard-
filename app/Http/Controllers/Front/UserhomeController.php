@@ -637,7 +637,17 @@ class UserhomeController extends FrontController
                 //pr($html);
                 return view('frontend.'.$view_page)->with($homeData);
             }
-            
+
+            $is_service_product_price_from_dispatch_forOnDemand = 0;
+          
+            $getOnDemandPricingRule = getOnDemandPricingRule($vendor_type, Session::get('onDemandPricingSelected'),$additionalPreference);
+         
+            $is_service_product_price_from_dispatch_forOnDemand =$getOnDemandPricingRule['is_price_from_freelancer'];
+            // if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+            //     $is_service_product_price_from_dispatch_forOnDemand =1;
+            // }
+            $homeData = ['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $client_preferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData ,'is_service_product_price_from_dispatch_forOnDemand'=> $is_service_product_price_from_dispatch_forOnDemand];
+            return view('frontend.'.$view_page)->with($homeData);
 
         } catch (Exception $e) {
             pr($e->getCode());
@@ -705,7 +715,10 @@ class UserhomeController extends FrontController
         $longitude = Session::get('longitude');
         $clientdata = Session::get('clientdata');
 
-        //pr($latitude);
+        if( (empty($latitude)) && (empty($longitude)) ){
+            $latitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_latitude) : 0;
+            $longitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_longitude) : 0;
+        }
         if($request->has('latitude') ){
             $latitude = $request->latitude;
             Session::put('latitude', $latitude);
@@ -780,28 +793,24 @@ class UserhomeController extends FrontController
       
         if ($preferences) {
             // check vendor Subscription0
-           
-            if ((empty($latitude)) && (empty($longitude)) && (empty($selectedAddress))) {
+            if ((empty($latitude)) || (empty($longitude)) || (empty($selectedAddress))) {
                 $selectedAddress = $preferences->Default_location_name;
                 $latitude = $preferences->Default_latitude??null;
                 $longitude = $preferences->Default_longitude??null;
-                Session::put('latitude', $latitude);
-                Session::put('longitude', $longitude);
-                Session::put('selectedAddress', $selectedAddress);
             } else {
                 if ($preferences && ($latitude == $preferences->Default_latitude) && ($longitude == $preferences->Default_longitude)) {
-                    Session::put('selectedAddress', $preferences->Default_location_name);
+                  $selectedAddress =  $preferences->Default_location_name;
                 }
+               
             }
+            Session::put('latitude', $latitude);
+            Session::put('longitude', $longitude);
+            Session::put('selectedAddress', $selectedAddress);
         }
-
-        
+  
         if(count($vendor_ids) > 0){
             $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $clientdata->timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids);
         }
-        
-       
-        
         $trendingVendors = [];
         if (in_array('trending_vendors', $enable_layout)) {  # if enable trending_vendors section in 
             $now = Carbon::now()->toDateTimeString();

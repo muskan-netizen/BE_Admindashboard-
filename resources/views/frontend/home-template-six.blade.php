@@ -594,7 +594,7 @@
          </div>
       </section>
       @elseif($homePageLabel->slug == 'vendors')
-      <section class="suppliers-section container ">
+      <section class="suppliers-section container  mt-4">
          <div class=" top-heading d-flex justify-content-between align-self-center">
             <h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2>
             <a class="" href="{{route('vendor.all')}}">{{__("See all")}}</a>

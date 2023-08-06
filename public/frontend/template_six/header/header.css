@@ -59,6 +59,15 @@ body.al_body_template_six span.rating.main-rating {
 }
 
 
+.third-temp-lan .container-badge div {
+    display: inline-block;
+    margin: 4px 0px;
+}
+.third-temp-lan .container-badge .value-badge {
+    margin-right: 40px;
+}
+
+
 .al_body_template_six .col-md-12.text-left.vender-peragraph.mt-3.mb-2 {
     padding-left: 58px;
     margin-top: 0 !important;

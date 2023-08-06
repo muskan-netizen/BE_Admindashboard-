@@ -5317,9 +5317,12 @@ body.al_body_template_three .main-fillter .side_fillter .collection-collapse-blo
 }
 
 body.al_body_template_three .main-fillter .side_fillter .irs {
-    width: 90%;
+    width: 100%;
 }
-
+body.al_body_template_three .main-fillter .side_fillter .irs span.irs-to {
+    left: unset!important;
+    right: 0px;
+}
 body.al_body_template_four .collection-filter-block {
     padding: 20px !important;
     background-color: #f5f5f5 !important;
@@ -5353,7 +5356,7 @@ body.al_body_template_four .main-fillter .side_fillter .collection-collapse-bloc
 }
 
 body.al_body_template_four .main-fillter .side_fillter .irs {
-    width: 90%;
+    width: 100%;
 }
 
 body.al_body_template_four .displayProducts a.product-box.scale-effect span.rating {

@@ -2044,14 +2044,31 @@
                                     name="is_marg_enable" id="is_marg_enable_hidden" />
 
                                 @if (isset($getAdditionalPreference['is_marg_enable']) == 1 && $getAdditionalPreference['marg_date_time'])
-                                    <label for="" class="ml-3">{{ __('Last Sync Date & Time :') }}
-                                    </label>{{ convertDateTimeInClientTimeZone($getAdditionalPreference['marg_date_time'], 'd-m-Y h:i:s') }}
+                                    <label for="" id="sycn_time" class="ml-3">{{ __('Last Sync Date & Time :') }}
+                                    {{ convertDateTimeInClientTimeZone($getAdditionalPreference['marg_date_time'], 'd-m-Y h:i:s') }}</label >
                                 @endif
 
                             </div>
                         </div>
                     </div>
 
+
+                    <div class="row marg_row"
+                        style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
+                        <div class="col-12">
+                            <div class="form-group mb-2 mt-2">
+                                <label for="marg_company_url">{{ __('Marg Company Url') }}</label>
+                                <input type="text" name="marg_company_url" id="marg_company_url"
+                                    placeholder="" class="form-control"
+                                    value="{{ old('marg_company_url', $getAdditionalPreference['marg_company_url'] ?? '') }}">
+                                @if ($errors->has('marg_company_url'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('marg_company_url') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
 
 
                     <div class="row marg_row"
@@ -2106,7 +2123,23 @@
             <div class="row marg_row"
                 style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
                 <div class="col-12">
-                    <button class="btn btn-info btn-block" id="sync_marg_btn">{{ __('Sync Data') }} </button>
+            @php
+        {
+            
+                $marg_order =  App\Models\Order::where('marg_status', '=',null)->
+                  where('marg_max_attempt', '>',2)->first();
+                 $class= "";
+                 if($marg_order){
+                    $class= "disabled";
+                 }
+            
+                 
+        }    
+        @endphp
+        
+        
+                <button class="btn btn-info btn-block" id="sync_marg_btn" {{$class }}>{{ __('Sync Data') }} </button>
+      
                 </div>
             </div>
         </div><!-- marg card end -->
@@ -2163,115 +2196,7 @@
     </div>
     {{-- ends here marg form --}}
     </div>
-
-   
     </div>
-
-    
-
-
-
-
-
-
-    <div class="row">
-        {{-- marg form --}}
-        <div class="col-xl-4 col-lg-4 mb-3">
-            <!-- Social Logins title start -->
-            <div class="page-title-box">
-                <h4 class="page-title text-uppercase">Marg</h4>
-            </div><!-- Social Logins title end -->
-
-            <form method="POST" action="{{ route('additional.update') }}">
-                @csrf
-                <!-- marg card start -->
-                <div class="card-box h-100">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="form-group mb-0 switchery-demo">
-                                <label for="fb_login" class="d-flex align-items-center justify-content-between">
-                                    <h5 class="social_head"><i style="font-size: 24px;" class="mdi mdi-marg"></i>
-                                        <span>{{ __('Marg') }}</span>
-                                    </h5>
-
-                                    <button class="btn btn-info btn-block save_btn" name="marg_submit" type="submit">{{ __('Save') }} </button>
-                                </label>
-                                <label for="" class="mr-3">{{ __('Enable') }}</label>
-                                <input type="checkbox" data-plugin="switchery" id="is_marg_enable"
-                                    class="form-control checkbox_change" data-className="is_marg_enable_hidden"
-                                    data-color="#43bee1"
-                                    @if (@$getAdditionalPreference['is_marg_enable'] == '1') checked='checked' value="1" @endif>
-                                <input type="hidden" @if (isset($getAdditionalPreference['is_marg_enable']) == 1) value="1" @else value="0" @endif
-                                    name="is_marg_enable" id="is_marg_enable_hidden" />
-                            
-                                @if (isset($getAdditionalPreference['is_marg_enable']) == 1 && $getAdditionalPreference['marg_date_time'])
-                                    <label for="" class="ml-3">{{ __('Last Sync Date & Time :') }} 
-                                    </label>{{ convertDateTimeInClientTimeZone($getAdditionalPreference['marg_date_time'],'d-m-Y h:i:s') }} 
-                                @endif
-
-                            </div>
-                        </div>
-                    </div>
-                    
-                    @if(isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1)
-                    
-                        <div class="row marg_row">
-                            <div class="col-12">
-                                <div class="form-group mb-2 mt-2">
-                                    <label for="marg_company_code">{{ __('Company Code') }}</label>
-                                    <input type="password" name="marg_company_code" id="marg_company_code"
-                                        placeholder="" class="form-control"
-                                        value="{{ old('marg_company_code', $getAdditionalPreference['marg_company_code'] ?? '') }}">
-                                    @if ($errors->has('marg_company_code'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('marg_company_code') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row marg_row">
-                            <div class="col-12">
-                                <div class="form-group mb-2 mt-2">
-                                    <label for="marg_access_token">{{ __('Marg ID') }}</label>
-                                    <input type="password" name="marg_access_token" id="marg_access_token"
-                                        placeholder="" class="form-control"
-                                        value="{{ old('marg_access_token', $getAdditionalPreference['marg_access_token'] ?? '') }}">
-                                    @if ($errors->has('marg_access_token'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('marg_access_token') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row marg_row">
-                            <div class="col-12">
-                                <div class="form-group mb-2 mt-2">
-                                    <label for="marg_decrypt_key">{{ __('Decrypt Key') }}</label>
-                                    <input type="password" name="marg_decrypt_key" id="marg_decrypt_key"
-                                        placeholder="" class="form-control"
-                                        value="{{ old('marg_decrypt_key', $getAdditionalPreference['marg_decrypt_key'] ?? '') }}">
-                                    @if ($errors->has('marg_decrypt_key'))
-                                        <span class="text-danger" role="alert">
-                                            <strong>{{ $errors->first('marg_decrypt_key') }}</strong>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                </form>
-                <div class="row marg_row" style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
-                    <div class="col-12">
-                        <button class="btn btn-info btn-block" id="sync_marg_btn">{{ __('Sync Data') }} </button>
-                    </div>
-                </div>
-            </div><!-- marg card end -->
-        </div>
-        {{-- ends here marg form --}}
-    </div>
-
 
     <div class="row">
 
@@ -2297,10 +2222,6 @@
         <!-- Custom Mods end -->
     </div>
     </div>
-
-
-
-
 
     <div style="display:none;">
         <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
@@ -2631,7 +2552,8 @@
         });
 
 
-        $(document).on("click", "#sync_marg_btn", function() {
+        $(document).on("click", "#sync_marg_btn", function(e) {
+            e.preventDefault();
             $.ajax({
                 type: "GET",
                 dataType: 'json',
@@ -2640,10 +2562,11 @@
                     _token: "{{ csrf_token() }}",
                 },
                 success: function(response) {
-                    dd(response);
-                    if (response.status == "Success") {
-
-                    }
+                    $('#sycn_time').html(response.time);
+                    sweetAlert.success('Data Sycn Successfully!');
+                },
+                error: function(response) {
+                    sweetAlert.error('Error!');
                 }
             });
         });
