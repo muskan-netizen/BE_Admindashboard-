@@ -378,7 +378,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                                                                         @if($is_service_product_price_from_dispatch_forOnDemand !=1) 
                                                                         {{-- price  not showing in vencor type in on demand and get price from dispatche--}}
                                                                             {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier,',') }}
-                                                                            @if ($prod->variant[0]->compare_at_price > 0)
+                                                                            @if (@$prod->variant[0]->compare_at_price > 0)
                                                                                 <span
                                                                                     class="org_price ml-1  font-14">{{ Session::get('currencySymbol') .decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
                                                                             @endif
