@@ -1,4 +1,4 @@
-@if ($client_preference_detail->business_type != 'laundry' || $client_preference_detail->business_type != 'taxi')
+@if ($client_preference_detail->business_type != 'laundry' && $client_preference_detail->business_type != 'taxi')
         <div class="col-md-4">
             <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                 <label for="pharmacy_check" class="mr-2 mb-0">{{ __('Pharmacy Mod') }}
