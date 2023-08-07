@@ -416,7 +416,6 @@ class UserhomeController extends FrontController
             elseif(isset($set_template)  && $set_template->template_id == 9){
                 $view_page = "home-template-test-nine";
             }
-
             $is_service_product_price_from_dispatch_forOnDemand = 0;
           
             $getOnDemandPricingRule = getOnDemandPricingRule($vendor_type, Session::get('onDemandPricingSelected'),$additionalPreference);

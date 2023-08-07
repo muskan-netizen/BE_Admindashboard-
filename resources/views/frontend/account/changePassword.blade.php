@@ -79,7 +79,7 @@
                         <span>{!! \Session::get('error') !!}</span>
                     </div>
                 @endif
-                    @if ( ($errors) && (count($errors) > 0) )
+                {{--  @if ( ($errors) && (count($errors) > 0) )
                         <div class="alert alert-danger">
                             <ul class="m-0">
                                 @foreach ($errors->all() as $error)
@@ -87,7 +87,7 @@
                                 @endforeach
                             </ul>
                         </div>
-                    @endif
+                    @endif--}}
                 </div>
             </div>
         </div>
