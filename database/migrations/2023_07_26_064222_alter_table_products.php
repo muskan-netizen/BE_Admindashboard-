@@ -14,9 +14,9 @@ class AlterTableProducts extends Migration
     public function up()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->decimal('height', 10, 4)->nullable();
-            $table->decimal('breadth', 10, 4)->nullable();
-            $table->decimal('length', 10, 4)->nullable();
+            // $table->decimal('height', 10, 4)->nullable();
+            // $table->decimal('breadth', 10, 4)->nullable();
+            // $table->decimal('length', 10, 4)->nullable();
         });
     }
 
