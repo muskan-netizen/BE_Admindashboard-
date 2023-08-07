@@ -1,5 +1,4 @@
-    @if ($client_preference_detail->business_type != 'taxi')
-    @if ($client_preference_detail->business_type != 'laundry')
+@if ($client_preference_detail->business_type != 'laundry' || $client_preference_detail->business_type != 'taxi')
         <div class="col-md-4">
             <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                 <label for="pharmacy_check" class="mr-2 mb-0">{{ __('Pharmacy Mod') }}
@@ -21,6 +20,7 @@
             </div>
         </div>
     @endif
+
     {{-- <div class="col-md-4">
         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                     <label for="off_scheduling_at_cart" class="mr-2 mb-0">{{__('Disable Scheduling Orders')}}<small class="d-block pr-5">Disable Order Scheduling across the platform to limit only to Instant Orders.</small></label>
@@ -687,4 +687,3 @@
             name="is_enable_curb_side" id="is_enable_curb_side" />
     </div>
 </div>
-@endif
