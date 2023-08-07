@@ -409,7 +409,7 @@ class HomeController extends BaseController
 
             $vendorData = Vendor::byVendorSubscriptionRule($preferences)->whereHas('getAllCategory.category',function($q)use ($categoryTypes){
                 $q->whereIn('type_id',$categoryTypes);
-            })->with(['minimumPromo'])->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
+            })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
 
 
 
@@ -1047,7 +1047,7 @@ class HomeController extends BaseController
                 foreach ($value->variant as $k => $v) {
                     $value->variant[$k]->multiplier = $currency ? $currency->doller_compare : 1;
                 }
-                if(isset($value->variant) && $value->variant->first()->compare_at_price > 0){
+                if(count($value->variant) && $value->variant->first()->compare_at_price > 0){
                     $value->offers = ($value->variant->first()->compare_at_price - $value->variant->first()->price) / $value->variant->first()->compare_at_price * 100;
                 }else{
                     $value->offers = 0;
