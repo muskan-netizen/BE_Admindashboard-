@@ -359,6 +359,7 @@ if (Session::has('toaster')) {
 
     });
     @endif
+    @if(\Request::route()->getName() != 'order.index')
     $(document).on("click", ".update-status-ar", function() {
         Swal.fire({
             title: "{{__('Are you Sure?')}}",
@@ -434,6 +435,7 @@ if (Session::has('toaster')) {
             }
         });
     });
+    @endif
 </script>
 @endif
 
