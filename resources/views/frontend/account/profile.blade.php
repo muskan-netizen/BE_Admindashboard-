@@ -50,7 +50,10 @@
     .login-page .theme-card .theme-form input {
         margin-bottom: 5px;
     }
-
+    .errors {
+        color: #F00;
+        background-color: #FFF;
+    }
     .invalid-feedback {
         display: block;
     }
@@ -195,6 +198,7 @@
 <script src="{{asset('assets/libs/dropify/dropify.min.js')}}"></script>
 <script src="{{asset('assets/js/pages/form-fileuploads.init.js')}}"></script>
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js"></script>
 <script type="text/javascript">
     var ajaxCall = 'ToCancelPrevReq';
     $('.verifyEmail').click(function() {
@@ -223,6 +227,52 @@
             error: function(data) {},
         });
     }
+
+    $(document).ready(function() {
+            $("#editProfileForm").validate({
+                errorClass: 'errors',
+                rules: {
+                    name : {
+                        required: true,
+                        minlength: 3
+                    },
+                    phone_number: {
+                        required: true,
+                        number: true
+                    },
+                    email: {
+                        required: true,
+                        email: true
+                    }
+                },
+                onfocusout: function(element) {
+                    this.element(element); // triggers validation
+                },
+                onkeyup: function(element, event) {
+                    this.element(element); // triggers validation
+                },
+                messages : {
+                    name: {
+                        required:"{{ __('Please enter your name')}}",
+                        minlength:"{{__('The name must be at least 3 characters.')}}"
+                    },
+                    phone_number: {
+                        required: "{{ __('Please enter your phone')}}",
+                        number: "{{ __('Please enter a numerical value')}}"
+                    },
+                    email: "{{ __('The email should be in the format:')}} abc@domain.tld",
+                }
+            });
+
+            $("#editProfileForm").submit(function() {
+                if($("#phone").hasClass("is-invalid")){
+                    $("#phone").focus();
+                    return false;
+                }
+            });
+        });
+
+
     $(".openProfileModal").click(function (e) {
         e.preventDefault();
         var uri = "{{route('user.editAccount')}}";
