@@ -449,7 +449,6 @@
         let latitude = $('#add_edit_address_form #latitude').val();
         let longitude = $('#add_edit_address_form #longitude').val();
         let address_id = $('#add_edit_address_form #address_id').val();
-        alert(type);
         $.ajax({
             type: "post",
             url: update_address_url.replace(':id', address_id),
