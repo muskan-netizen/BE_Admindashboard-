@@ -149,7 +149,6 @@ class CategoryController extends FrontController{
           
             
             if( $category->type_id == 13 && $getAdditionalPreference['is_attribute'] ) {
-
                 $productAttributes = Attribute::with('option', 'varcategory.cate.primary')
                     ->select('attributes.*')
                     ->join('attribute_categories', 'attribute_categories.attribute_id', 'attributes.id')

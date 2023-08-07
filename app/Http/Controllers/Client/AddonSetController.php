@@ -33,7 +33,8 @@ class AddonSetController extends BaseController
         $addOn->min_select = $min;
         $addOn->max_select = $max;
         $addOn->position = 1;
-        $addOn->vendor_id = $request->vendor_id;
+        $addOn->vendor_id = $request->vendor_id ?? '';
+        $addOn->icon = $request->icon;
         $addOn->save();
         if($addOn->id > 0){
             $setTrans = $optTrans = array();
@@ -116,6 +117,8 @@ class AddonSetController extends BaseController
         $addon->title = $request->title[0];
         $addon->min_select = $min;
         $addon->max_select = $max;
+        $addon->vendor_id = $request->vendor_id ?? '';
+        $addon->icon = $request->icon;
         $addon->save();
 
         foreach ($request->language_id as $key => $value) {

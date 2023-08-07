@@ -463,7 +463,6 @@
 
     // Attribute script
     $(".addAttributbtn").click(function(e) {
-        console.log('click function called');
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')

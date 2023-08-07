@@ -70,6 +70,7 @@ class AttributeController extends BaseController
             $variant->user_id = Auth::id();
             $variant->type = $request->type;
             $variant->position = 1;
+            $variant->icon = $request->icon;
             if($v_pos){
                 $variant->position = $v_pos->position + 1;
             }

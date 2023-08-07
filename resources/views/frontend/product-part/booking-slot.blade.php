@@ -133,7 +133,17 @@
     var default_minutes = incremental_price = actual_price = default_currency = default_step = base_hours_min ='' ;
     var min_dur_hrs = min_dur_min = additional_base_hr = additional_base_min =  total_min = '';
     $(function(e) {
-        total_min = default_minutes =  timeConvertCal('{{$product->minimum_duration}}','{{$product->minimum_duration_min}}');
+        //total_min = default_minutes =  timeConvertCal('{{$pickup_time}}','{{$drop_time}}');
+        var startTime = moment('{{$pickup_time}}');
+        var endTime = moment('{{$drop_time}}');
+        var duration = moment.duration(endTime.diff(startTime));
+        // duration in hours
+        var hours = parseInt(duration.asHours());
+
+        // duration in minutes
+        var minutes = parseInt(duration.asMinutes()) % 60;
+        total_min = default_minutes = hours * parseInt(60) + minutes;
+
         base_hours_min = timeToHrMinConvertCal(default_minutes);
         incremental_price = '{{@$product->variant[0]->incremental_price}}';
        actual_price = '{{@$product->variant[0]->actual_price}}';
@@ -150,8 +160,9 @@
         var currentDate = moment().format("M/DD/YY hh:mm A");
         $checkinInput = $('#blocktime');
         $checkoutInput = $('#blocktime2');
-        $checkinInput.val( moment().format("M/DD/YY hh:mm A"));
-        $checkoutInput.val(moment().add(min_dur_hrs,'hours').add(min_dur_min,'minutes').format("M/DD/YY hh:mm A"));
+        $checkinInput.val( moment('{{$pickup_time}}').format("M/DD/YY hh:mm A"));
+        $checkoutInput.val( moment('{{$drop_time}}').format("M/DD/YY hh:mm A"));
+        //$checkoutInput.val(moment().add(min_dur_hrs,'hours').add(min_dur_min,'minutes').format("M/DD/YY hh:mm A"));
         
         $(".incremental-left-minus").on("click", function() {
             document.getElementById('incremental_hrs').stepDown();
@@ -288,6 +299,7 @@
         });*/
 
         async function check_product_availibility(formData){
+          console.warn(formData);
           if(formData.variant_option_id == undefined){
             formData.variant_option_id = '';
           }
@@ -309,7 +321,6 @@
                   var start_time = data.start_time;
                   if(available_product_variant) {
                     $("a#add_to_cart_btn").addClass("addToCart");
-                    //console.log( data);
                     $('#available_product_variant').val(available_product_variant);
                     $('#start_time').val(start_time);
                     $('#end_time').val(end_time);
@@ -406,7 +417,6 @@
         }
         function calculateExtraTimeforproduct(selectedStartDate,selectedEndDate){
           var total_sel_min = diff_minutes(selectedStartDate,selectedEndDate);
-          console.log("asdfasdfasdf");
           // console.log(parseInt(default_minutes));
           //console.log(parseFloat(total_sel_min) - Number(default_minutes));
           var remaining = parseFloat(total_sel_min) - Number(default_minutes);
