@@ -1463,13 +1463,18 @@ body.al_body_template_three .dashboard-right .profile-page .info-text label {
     }  
     .al_body_template_eight .single_category_products .suppliers-img-outer{
         height: 100%;
-    min-height: 240px !important;
-    max-height: 240px !important;
+        min-height: 240px !important;
+        max-height: 240px !important;
     }
 
 }
 
-
+.al_body_template_three .vendor_onetem{margin-bottom:0px !important;}
+.al_body_template_three .margin-res .product-card-box .supplier-rating h6 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #000;
+}
 
 @media screen and (max-width:1366px){
 .al_body_template_eight .product-card-box .img-outer-box.position-relative{min-height: 250px;height: 100%;}
