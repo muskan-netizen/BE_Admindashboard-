@@ -207,6 +207,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::group(['prefix' => 'pickup-delivery'], function () {
             Route::post('get-list-of-vehicles-old/{id}', 'Api\v1\PickupDeliveryController@getListOfVehicles');
             Route::post('get-list-of-vehicles/{vid}/{cid?}', 'Api\v1\PickupDeliveryController@productsByVendorInPickupDelivery');
+		    Route::post('product-detail', 'Api\v1\PickupDeliveryController@postCabProductById');
             Route::post('create-order', 'Api\v1\PickupDeliveryController@createOrder');
             Route::post('create-order-notifications', 'Api\v1\PickupDeliveryController@createOrderNotification');
             Route::post('cart/updateQuantity', 'Api\v1\CartController@updateQuantity');

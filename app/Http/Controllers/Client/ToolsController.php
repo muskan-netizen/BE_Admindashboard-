@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use OwenIt\Auditing\Models\Audit;
 use Yadahan\AuthenticationLog\AuthenticationLog;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Vendor, Product, Client, AddonSet, Category, ProductVariant, CartProduct, UserWishlist, TaxCategory, VendorCategory, VendorSlot, VendorSlotDate, VendorDineinCategory, VendorDineinTable};
+use App\Models\{Vendor, Product, Client, AddonSet, Category, ProductVariant, CartProduct, UserWishlist, TaxCategory, TrackEvent, VendorCategory, VendorSlot, VendorSlotDate, VendorDineinCategory, VendorDineinTable};
 use Auth, Carbon, DB, Storage, Session;
 use Illuminate\Support\Facades\Validator;
 use App\Models\CopyTool;
@@ -538,9 +538,19 @@ class ToolsController extends BaseController
         $audits = Audit::orderBy('id', 'ASC')->groupBy('auditable_type')->get();
         $authenticationLogs = AuthenticationLog::where('authenticatable_id', '!=', '')->orderBy('id', 'DESC')->paginate(500);
         AuthenticationLog::where('authenticatable_id', NULL)->delete();
+
+        $logsignIn = TrackEvent::where('location','signIn')->count();
+        $logsignUp = TrackEvent::where('location','signUp')->count();
+        $paymentCall = TrackEvent::where('location','payment-call')->count();
+        $orderCreated = TrackEvent::where('location','order-created')->count();
+
         return view('backend.tools.db_audit_log')->with([
             'audits' => $audits,
-            'authenticationLogs' => $authenticationLogs
+            'authenticationLogs' => $authenticationLogs,
+            'logsignIn' => $logsignIn,
+            'logsignUp' => $logsignUp,
+            'paymentCall' => $paymentCall,
+            'orderCreated' => $orderCreated,
         ]);
     }
 
@@ -548,9 +558,17 @@ class ToolsController extends BaseController
     {
         $auditable_type = ucfirst($request->table_name);
         $audits = Audit::orderBy('id', 'DESC')->where('auditable_type', "App\\Models\\" . $auditable_type)->paginate(500);
+        $logsignIn = TrackEvent::where('location','signIn')->count();
+        $logsignUp = TrackEvent::where('location','signUp')->count();
+        $paymentCall = TrackEvent::where('location','payment-call')->count();
+        $orderCreated = TrackEvent::where('location','order-created')->count();
         return view('backend.tools.single_db_audit_log')->with([
             'audits' => $audits,
-            'auditable_type' => $auditable_type
+            'auditable_type' => $auditable_type,
+            'logsignIn' => $logsignIn,
+            'logsignUp' => $logsignUp,
+            'paymentCall' => $paymentCall,
+            'orderCreated' => $orderCreated,
         ]);
     }
 }

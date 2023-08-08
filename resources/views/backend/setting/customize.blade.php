@@ -1762,6 +1762,30 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             </div>
                             @endforeach
                         </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="agree_term">{{ __("Recurring") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="recurring_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="recurring[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Recurring')}}">
+                                    @if($k == 0)
+                                        @if($errors->has('recurring.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
                     </div>
                 </div>
             </form>
@@ -2593,7 +2617,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                   <div id="save_social_media">
                      <input type="hidden" name="vendor_registration_document_id" value="">
                      <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                            <div class="form-group position-relative">
                               <label for="">Type</label>
                               <div class="input-group mb-2">
@@ -2606,7 +2630,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                               </div>
                            </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                            <div class="form-group position-relative">
                               <label for="">Is Required?</label>
                               <div class="input-group mb-2">
@@ -2617,6 +2641,17 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                               </div>
                            </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="form-group position-relative">
+                               <label for="">Need Expiration Date</label>
+                               <div class="input-group mb-2">
+                                <select class="form-control" name="need_expiration_date">
+                                   <option value="1">{{__('Yes')}}</option>
+                                   <option value="0">{{__('No')}}</option>
+                                </select>
+                             </div>
+                            </div>
+                         </div>
                         <div class="col-md-12 selector-option-al ">
                             <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="selector-datatable">
                                 <tr class="trForClone">

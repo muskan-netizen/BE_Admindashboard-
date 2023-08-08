@@ -299,6 +299,13 @@
                                 </a>
                             </li>
 
+                            <li>
+                                <a href="{{route('company.getList')}}">
+                                    <span class="icon-customer-2"></span>
+                                    <span> {{ __('Companies') }} </span>
+                                </a>
+                            </li>
+
                             @if((@auth()->user()->can('chat-view') || Auth::user()->is_superadmin == 1) && @$clientData->socket_url)
                                 <li>
                                     <a href="#chat" data-toggle="collapse">

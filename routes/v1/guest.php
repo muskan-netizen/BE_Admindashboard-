@@ -149,6 +149,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('cart/productfaq/update', 'Api\v1\CartController@updateCartProductFaq');
         Route::post('dropoff-location', 'Api\v1\StaticDropoffController@getStaticLocation');
 
+        //Make Event for tracking
+        Route::post('track-event', 'TrackEventController@saveEvents');
+
         Route::post('cart/updateCartCheckedStatus', 'Api\v1\CartController@updateCartCheckedStatus');
     });
     Route::group(['middleware' => ['dbCheck']], function () {
