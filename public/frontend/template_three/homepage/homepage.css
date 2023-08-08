@@ -9,11 +9,9 @@
     margin-right: 0;
     padding-left: 0;
 }
-
 .al_body_template_three .product-card-box.position-relative.al_box_third_template.al .al_clock b {
-    color: var(--theme-deafult);
+    color: var(--theme-deafult);font-size: 14px;
 }
-
 .al_body_template_three .slick-track {
     margin-left: 0 !important;
 }
@@ -283,7 +281,7 @@ article#page-container section .vendors section {
     color: #000;
     margin-top: 10px;
     margin-bottom: 3px!important;
-    font-size: 16px
+    font-size: 14px
 }
 
 .al_body_template_three .product-description {

@@ -30,7 +30,7 @@ body.al_body_template_six.light {
 
 .carousel-inner a.banner-img-outer {
     display: block;
-    height: 350px;
+    height: 500px;
     overflow: hidden;
 }
 
@@ -64,6 +64,16 @@ body.al_body_template_six.dark h6.card_title.ellips {
     height: 130px;
 }
 
+.pixelstrap li>a,
+    .pixelstrap a,
+    .pixelstrap a:hover,
+    .pixelstrap a:active {
+        padding: 0px 0px 0px 0px !important;
+        text-align: center;
+        width: 100px;
+        white-space: normal
+    }
+
 .al_body_template_six .alSixMainMenu .slick-slide .al_main_category a .alCategoryName {
     max-width: 180px;
     width: 100%;
@@ -71,7 +81,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
     margin: 0 auto;
     letter-spacing: 0;
     text-transform: capitalize !important;
-    height: 45px;
+    /* height: 45px; */
     overflow: hidden;
     overflow-wrap: break-word;
 }
@@ -87,7 +97,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
     display: block;
     width: 200px !important;
 }
-
+.menu-navigation_al .pixelstrap li.al_main_category:hover ul.al_main_category_list li a:hover{padding:10px !important;letter-spacing: 0px;}
 .al_body_template_six .product-card-box.position-relative.al_box_third_template.al h6.card_title.ellips {
     color: #000;
     font-size: 14px;
@@ -104,7 +114,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
 }
 .slick-slider .d-flex.align-items-center.justify-content-between.al_clock b{
     font-weight: 200;
-    font-size: 14px
+    font-size: 14px !important;
 }
 .al_body_template_six ul#main-menu {
     /* flex-wrap: wrap; */
@@ -310,7 +320,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
     width: 50px;
     border-radius: 50px;
     z-index: 1;
-    right: 0px !important;
+    /* right: 0px !important; */
 }
 
 .al_body_template_six .alSixMainMenu .slick-next:before,
@@ -366,9 +376,9 @@ body.al_body_template_six.dark h6.card_title.ellips {
 
 /*================== Wrapper home page css ==========================*/
 
-.al_body_template_six .img-outer-box {
+/* .al_body_template_six .img-outer-box {
     margin-top: -26px;
-}
+} */
 
 .alSpaListBox p {
     margin-top: 10px;
@@ -649,9 +659,9 @@ body.al_body_template_six.dark h6.card_title.ellips {
 .al_body_template_six .alSixMainMenu .pixelstrap a:hover,
 .al_body_template_six .alSixMainMenu .pixelstrap li>a {
     width: 100%;
-    -webkit-transform: scale(1);
+    /* -webkit-transform: scale(1);
     transform: scale(1);
-    padding: 0;
+    padding: 0; */
     font-size: 12px;
 }
 
@@ -668,7 +678,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
 }
 
 .al_body_template_six .alSixMainMenu {
-    margin-top: -120px;
+    /* margin-top: -120px; */
     display: flex;
     justify-content: center;
     position: relative;
@@ -677,7 +687,6 @@ body.al_body_template_six.dark h6.card_title.ellips {
 
 .al_body_template_six .alSixMainMenu .slick-slide .al_main_category a .alCategoryName {
     text-transform: uppercase;
-    max-width: 120px;
     width: 100%;
     display: block;
     margin: 0 auto;
@@ -715,7 +724,9 @@ body.al_body_template_six.dark h6.card_title.ellips {
     padding: 15px 0 !important;
     margin: 0 40px !important;
 }
-
+.suppliers-slider-vendors .slick-slide .product-card-box h6{
+    color:#000;font-weight: 600;
+}
 .al_body_template_six .vendors .product-card-box {
     overflow: hidden;
     padding: 0 0 10px;
@@ -735,9 +746,9 @@ body.al_body_template_six.dark h6.card_title.ellips {
 .al_body_template_six .vendors .brand-ing,
 .al_body_template_six .alSixMainMenu .pixelstrap li>a {
     width: 100%;
-    -webkit-transform: scale(1);
+    /* -webkit-transform: scale(1);
     transform: scale(1);
-    padding: 0;
+    padding: 0; */
     font-size: 12px;
 }
 
@@ -760,8 +771,6 @@ body.al_body_template_six.dark h6.card_title.ellips {
 }
 
 .al_body_template_six .alSixMainMenu {
-    margin-top: -120px;
-    /* display: flex; */
     display: block;
     justify-content: center;
     position: relative;
@@ -779,9 +788,8 @@ body.al_body_template_six.dark h6.card_title.ellips {
 }
 .al_body_template_six .alSixMainMenu .slick-slide .al_main_category a .alCategoryName {
     text-transform: uppercase;
-    max-width: 120px;
     width: 100%;
-    display: block;
+    display: block;font-size: 14px;
     margin: 0 auto;
 }
 
@@ -810,7 +818,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
 }
 
 .al_body_template_six .vendors .top-heading {
-    margin-bottom: 20px;
+    margin:40px 0px 0px 0px;
 }
 
 .al_body_template_six .vendors .slick-list.draggable {
@@ -820,7 +828,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
 
 .al_body_template_six .vendors .product-card-box {
     overflow: hidden;
-    padding: 0 0 10px;
+    padding: 0 0 10px 0px;
     background-color: #fff;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     border-radius: 15px;
@@ -832,7 +840,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
 }
 
 .al_body_template_six .vendors .media-body {
-    padding: 0 20px 10px;
+    padding: 0 10px 0px 10px;
 }
 
 .al_body_template_six .vendors .brand-ing,

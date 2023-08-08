@@ -41,11 +41,24 @@
 .al_body_template_three .add-to-fav {
     display: none
 }
-
+.al_body_template_three .scale-effect .inner_spacing p {
+    font-size: 14px;
+}
 .al_body_template_three .supplier-rating p.vendor-cate.ellips {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap
+}
+.al_body_template_three.homeHeader .outter-fillter-data .product-wrapper-grid.card-product h3 label{
+    font-size: 14px;   
+    font-weight: 600;
+    color: #000;
+    letter-spacing: 0px;
+}
+.side_fillter .collapse-block-title {
+    font-size: 14px;
+    text-transform: capitalize;
+    letter-spacing: 0px;
 }
 body[dir=rtl] .third-temp-lan {
     padding-left: 10px !important;
@@ -256,7 +269,7 @@ body .create_box a.btn.btn-solid.mt-2 {
 }
 
 .al_body_template_three .btn.btn-solid {
-    border-radius: 30px
+    border-radius: 30px;border:none;
 }
 
 .al_body_template_three .address-btn .btn.btn-solid {
@@ -1035,13 +1048,18 @@ h2.homepage-address {
 .al_custom_head .al_z_index {
     z-index: 999
 }
-
+.al_body_template_three .scale-effect .inner_spacing h6 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #000;
+    text-transform: capitalize;
+}
 .al_body_template_three h2.h2-heading {
     text-transform: uppercase!important;
-    font-size: 26px;
-    letter-spacing: -1px;
-    font-weight: 500;
-    color: #777
+    font-size: 22px;
+    letter-spacing: 0px;
+    color: #000;
+    font-weight: 600;
 }
 
 .footer-theme .sub-title li a:before {
@@ -3927,7 +3945,7 @@ a.morelink.less {
     font-size: 20px;
 }
 .al_body_template_three .vendor-design_new {
-    margin-top: -18%!important;
+    margin-top: -22%!important;
     display: flex;
     align-items: center;
     justify-content: center;

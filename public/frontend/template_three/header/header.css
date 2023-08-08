@@ -1,7 +1,10 @@
 /* @import url('https://fonts.googleapis.com/css2?family=Alata&family=Jost:wght@400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap'); */
- :root{--alBodyTemplateThreeFont: 'Jost', sans-serif;}
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;400;500;600;700;800&display=swap');
 
- .al_body_template_three,a,b,body,div,h1,h2,h3,h4,h5,h6,html,label,p,section,span,strong{font-family:var(--alBodyTemplateThreeFont)!important}body,html{scroll-behavior:smooth}
+:root{font-family: 'Montserrat', sans-serif !important;}
+
+ .al_body_template_three,a,b,body,div,h1,h2,h3,h4,h5,h6,html,label,p,section,span,strong{font-family: 'Montserrat', sans-serif !important;
+ }body,html{scroll-behavior:smooth}
 /* custom scrollbar */
 ::-webkit-scrollbar{
     width: 6px;
@@ -33,6 +36,7 @@ header#al_new_design .main-menu .al_count_tabs_new_design.d-none.d-sm-block ul#t
 .al_count_tabs_new_design li a.nav-link.al_delivery:hover .al_tabsIcons{background-color:#fef4a5}
 .al_count_tabs_new_design li a.nav-link.active img,.al_count_tabs_new_design li a.nav-link:hover img{filter:grayscale(0)}.al_count_tabs_new_design li a.nav-link img{filter:grayscale(1)}
 .dark .al_count_tabs_new_design li a.nav-link .al_tabsIcons{background-color: #232323;}
+.custom-vender-outter .main-top-heading h2 {font-size: 28px;text-transform: capitalize;}
 .al_count_tabs_new_design li a.nav-link .al_tabsIcons{position:relative;width:50px;height:50px;text-align:center;line-height:50px;background-color:#eee;display:inline-block;margin-right:10px;border-radius:50%;margin-bottom:10px}
 .al_count_tabs_new_design li a.nav-link{display:flex;align-items:center;font-size:18px;color:#888;border-bottom:2px solid transparent!important;font-weight:400;border-top:0;border-left:0;border-radius:0;border-right:0}
 .al_count_tabs_new_design li a.nav-link.active,.al_count_tabs_new_design li a.nav-link:hover{
@@ -42,8 +46,8 @@ header#al_new_design .main-menu .al_count_tabs_new_design.d-none.d-sm-block ul#t
 .al_count_tabs_new_design li a.nav-link.al_delivery:hover .al_tabsIcons{background-color:#fef4a5}
 .al_count_tabs_new_design li a.nav-link.active.al_dinein .al_tabsIcons,
 .al_count_tabs_new_design li a.nav-link.al_dinein:hover .al_tabsIcons{background-color:#f5f5ff}
-#al_new_design .pixelstrap a,#al_new_design .pixelstrap a:active,#al_new_design .pixelstrap a:hover,#al_new_design .pixelstrap li a{padding:0;font-size:14px}
-.pixelstrap ul.al_main_category_list li a span.new-tag{font-size: 14px;}
+#al_new_design .pixelstrap a,#al_new_design .pixelstrap a:active,#al_new_design .pixelstrap a:hover,#al_new_design .pixelstrap li a{padding:0;font-size:12px;font-weight: 600;}
+.pixelstrap ul.al_main_category_list li a span.new-tag{font-size: 12px;text-transform: capitalize;}
 .menu-navigation.al li.al_main_category a .nav-cate-img{border-radius:50%;height:100px;width:100px;margin:2px auto}.al_new_wrapper_design .site-header .nav-cate-img{-webkit-transition:.5s;transition:.5s}
 .menu-navigation.al li.al_main_category a .nav-cate-img img{margin:0 auto;border-radius:50%}.onhover-dropdown{position:relative}li{display:inline-block}.onhover-dropdown:before{content:"\f107";font-family:FontAwesome;position:absolute;right:3px}.onhover-dropdown:hover .onhover-show-div{display:block;opacity:1;-webkit-transform:translateY(10px);transform:translateY(10px);visibility:visible}.category-list li.active a,.category-list li:hover a,.top-header .header-dropdown .onhover-dropdown .onhover-show-div li:hover a{border-color:var(--theme-deafult);background:linear-gradient(90deg,#f7ebec 0,rgba(251,246,247,0) 92.47%)}.al_mobile_menu{display:none;position:absolute;top:0;right:0}
 .al_toggle-menu{width:50px;height:40px;display:inline-block;position:relative;top:0px;z-index:1000}.al_toggle-menu i{margin:0 auto;right:0;position:absolute;display:block;height:2px;background:#777;width:24px;left:0;-webkit-transition:all .3s;transition:all .3s}
@@ -119,7 +123,11 @@ body.al_body_template_three .al_custom_head_map_box {
 .al_body_template_three .categories_img .col-grid-box .media-body .inner_spacing {
     padding: 0 !important;
 }
-
+.wrapper-main h3 {font-size: 22px;font-weight: 600;letter-spacing: 0px;}
+.al_new_wrapper_design .alSingleProducts .buy_details .product-right h2{
+    font-size: 22px;
+    text-transform: capitalize;
+}
 /* .al_body_template_three .categories_img .col-grid-box .media-body .inner_spacing h3 {
     margin: 0 !important;
     padding: 0 !important;
