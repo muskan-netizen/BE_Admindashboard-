@@ -299,8 +299,8 @@
       @if($homePageLabel->slug == 'pickup_delivery') @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories)) @include('frontend.booking.cabbooking-single-module') @endif
       @elseif($homePageLabel->slug == 'dynamic_page') @include('frontend.included_files.dynamic_page')
       @elseif($homePageLabel->slug == 'brands')
-         <section class="container popular-brands left-shape_ position-relative "  >
-            <div class="al_top_heading d-flex justify-content-between">
+         <section class="container-fluid popular-brands  left-shape_ position-relative "  >
+            <div class="al_top_heading brand-heading d-flex justify-content-between">
                <h2 class="h2-heading text-capitalize">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
                {{-- <a class="" href="">See All</a> --}}
             </div>
@@ -322,8 +322,8 @@
             </div>
          </section>
       @elseif($homePageLabel->slug == 'vendors' && (count($homePageData['vendors']) != 0))
-         <section class="suppliers-section container ">
-            <div class=" top-heading d-flex justify-content-between align-self-center">
+         <section class="suppliers-section container-fluid">
+            <div class=" top-heading mt-4 d-flex justify-content-between align-self-center">
                <h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2>
                <a class="" href="{{route('vendor.all')}}">{{__("See all")}}</a>
             </div>
@@ -351,7 +351,7 @@
             </div>
          </section>
       @elseif($homePageLabel->slug == 'best_sellers' && (count($homePageData['best_sellers']) != 0))
-         <section class="suppliers-section container ">
+         <section class="suppliers-section container-fluid">
             <div class=" top-heading d-flex justify-content-between align-self-center">
                <h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('Best sellers', true)}}</h2>
             </div>
@@ -364,7 +364,7 @@
             </div>
          </section>
       @elseif($homePageLabel->slug == 'recent_orders' && count($homePageData['recent_orders']) != 0)
-         <section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
+         <section class="container-fluid mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
             <div class="top-heading d-flex justify-content-between">
                <h2 class="h2-heading"> @php echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders"); @endphp </h2>
             </div>
@@ -432,7 +432,7 @@
 			@endif
       @else
          @if(@$homePageData[$homePageLabel->slug] && count($homePageData[$homePageLabel->slug]) != 0)
-         <section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
+         <section class="container-fluid mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
             <div class="top-heading d-flex justify-content-between">
                <h2 class="h2-heading"> @php echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);@endphp </h2>
             </div>

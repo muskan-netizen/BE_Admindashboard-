@@ -1196,7 +1196,7 @@ body.al_body_template_two .vendor-design_new  .product-bottom-bar {
 .al_body_template_six .slick-slide .inner_spacing p {
     display: block;
     text-align: left;
-    margin-bottom: 10px;
+    margin-bottom: 0px;
 }
 .al_body_template_three .al_new_wrapper_design .alSingleProducts .buy_details .product-right  span.rating {
     right: 0;
