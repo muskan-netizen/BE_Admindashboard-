@@ -3686,12 +3686,22 @@ span.registerLink {
 .alFourTemplateOrderSucces .order-success-sec .order-detail li {
     color: #777;
     font-weight: 400;
+    width: 100%;
+    max-width: 100%;
+    flex:100%;
+    justify-content: space-between;
+    display: flex!important
 }
-
+.alFourTemplateOrderSucces .order-success-sec .order-detail li span:first-child {
+    margin-left: 0;
+    width: 230px;
+}
 .alFourTemplateOrderSucces .order-success-sec .order-detail li span {
-    color: var(--theme-deafult);
+    /* color: var(--theme-deafult); */
     font-weight: 400;
-    margin-left: 15px;
+    margin-left: 0;
+    display: inline-block;
+    width: 100%;
 }
 
 .al_body_template_six .categories-product-list .search_form {

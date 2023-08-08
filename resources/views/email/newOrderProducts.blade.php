@@ -130,13 +130,19 @@ $timezone = @$user->timezone;
                <td style="text-align: right;">{{$currencySymbol . decimal_format($order->total_delivery_fee)}}</td>
             </tr>
             @endif
+            @if($order->tip_amount > 0)
+            <tr>
+               <td style="text-align: left;"><b>{{__('Tip')}} :</b></td>
+               <td style="text-align: right;">{{$currencySymbol . decimal_format($order->tip_amount)}}</td>
+            </tr>
+            @endif
             <tr>
                <td style="text-align: left;"><b>{{__('Service fee')}}:</b></td>
                <td style="text-align: right;">{{$currencySymbol . decimal_format($order->total_service_fee)}}</td>
             </tr>
              <tr>
                 <td style="text-align: left;"><b>{{__('Total')}}:</b></td>
-                <td style="text-align: right;"><b>{{$currencySymbol . decimal_format($order->payable_amount)}}</b></td>
+                <td style="text-align: right;"><b>{{$currencySymbol . decimal_format($order->payable_amount + $order->loyalty_amount_saved + $order->total_discount)}}</b></td>
              </tr>
           </tbody>
        </table>
@@ -149,10 +155,6 @@ $timezone = @$user->timezone;
   <td colspan="2" style="padding-top: 0;">
       <table class="order-total-price" style="width: 100%;background-color: rgba(216,215,215,0.2);padding: 10px;">
          <tbody>
-            <tr>
-               <td style="text-align: left;"><b>{{__('Taxes and fees')}} :</b></td>
-               <td style="text-align: right;">{{$currencySymbol . decimal_format($order->taxable_amount)}}</td>
-            </tr>
             @if($order->loyalty_amount_saved > 0)
             <tr>
                <td style="text-align: left;"><b>{{__('Loyalty')}} :</b></td>

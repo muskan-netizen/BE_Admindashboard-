@@ -2989,6 +2989,14 @@ button.update-status {
     padding: 2px 8px
 }
 
+button.update-status-ar {
+    border: 0;
+    border-radius: 50px;
+    padding: 2px 8px;
+}
+
+
+
 .btn-danger.focus,
 .btn-danger:focus {
     box-shadow: none
