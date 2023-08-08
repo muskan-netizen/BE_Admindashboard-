@@ -1386,7 +1386,10 @@ body.al_body_template_three .dashboard-right .profile-page .info-text label {
 .al_body_template_eight  form#register .form-check label a {
     font-weight: 600;
 }
-
+.item_password .fa.fa-eye-slash.toggle-password {
+	right: 15px;
+	padding-top: 22px;
+} 
 
 
 

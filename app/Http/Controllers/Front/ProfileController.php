@@ -111,7 +111,7 @@ class ProfileController extends FrontController
         $user = User::where('id', Auth::user()->id)->first();
 
         $rules = [
-            'name' => 'required|string|min:3|max:80',
+            'name' => 'required|string|min:3|max:80|alpha_num',
             'phone_number' => 'required|unique:users',
         ];
 
@@ -221,8 +221,13 @@ class ProfileController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function submitChangePassword(Request $request, $domain = ''){
+        $user = User::where('id', Auth::user()->id)->first();
         $request->validate([
-            'old_password' => 'required',
+            'old_password' => ['required', function ($attribute, $value, $fail) use ($user) {
+            if (!Hash::check($value, $user->password)) {
+                $fail('Your old password does not match.');
+            }
+            }],
             'new_password' => 'required|string|min:6',
             'confirm_password' => 'required|same:new_password',
         ],[
@@ -232,7 +237,6 @@ class ProfileController extends FrontController
             'confirm_password.required' => __('The confirm password field is required.'),
             'confirm_password.same' => __('The confirm password and new password must match.'),
         ]);
-        $user = User::where('id', Auth::user()->id)->first();
         if ($user){
             if (Hash::check($request['old_password'], $user->password)) {
                 $user->password = Hash::make($request['new_password']);
