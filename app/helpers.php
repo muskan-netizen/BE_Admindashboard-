@@ -1262,9 +1262,13 @@ if (!function_exists('decimal_format')) {
     // Number Format according to Client preferences
     function decimal_format($number,$format="")
     {
+        if(is_numeric($number)){
         $preference = session()->get('preferences');
         $digits = $preference['digit_after_decimal'] ?? 2;
         return number_format($number,$digits,'.',$format);
+        }else{
+            return 0.00 ;
+        }
     }
 }
 
