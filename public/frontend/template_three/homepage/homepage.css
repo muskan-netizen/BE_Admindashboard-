@@ -754,8 +754,6 @@ footer#footer {
     -webkit-transform: scale(1);
     transform: scale(1);
 }
-
-
 /* shimmer_effect end */
 
 @media(max-width: 1400px) {

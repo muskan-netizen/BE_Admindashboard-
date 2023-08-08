@@ -323,8 +323,8 @@
          </section>
       @elseif($homePageLabel->slug == 'vendors' && (count($homePageData['vendors']) != 0))
          <section class="suppliers-section container-fluid">
-            <div class=" top-heading mt-3 d-flex justify-content-between align-self-center">
-               <h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2>
+            <div class=" top-heading  d-flex justify-content-between align-self-center">
+               <h2 class="h2-heading mt-4">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2>
                <a class="" href="{{route('vendor.all')}}">{{__("See all")}}</a>
             </div>
             <div class="col-12 p-0">
@@ -433,7 +433,7 @@
       @else
          @if(@$homePageData[$homePageLabel->slug] && count($homePageData[$homePageLabel->slug]) != 0)
          <section class="container-fluid mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
-            <div class="top-heading mt-3 d-flex justify-content-between">
+            <div class="top-heading  d-flex justify-content-between">
                <h2 class="h2-heading"> @php echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);@endphp </h2>
             </div>
             <div class="row">

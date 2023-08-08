@@ -1450,11 +1450,11 @@ body.al_body_template_three .dashboard-right .profile-page .info-text label {
         width: 100%;
         max-width: 100%;
     }
-    .render_featured_products .product-card-box.position-relative.al_box_third_template.al {
+    /* .render_featured_products .product-card-box.position-relative.al_box_third_template.al {
         min-height: 310px;
         max-height: 310px;
         height: 100%;
-    }
+    } */
     .al_body_template_eight .render_full_on_sale .img-outer-box{
         height: 100%;
     min-height: 260px !important;
@@ -1466,13 +1466,18 @@ body.al_body_template_three .dashboard-right .profile-page .info-text label {
     }  
     .al_body_template_eight .single_category_products .suppliers-img-outer{
         height: 100%;
-    min-height: 240px !important;
-    max-height: 240px !important;
+        min-height: 240px !important;
+        max-height: 240px !important;
     }
 
 }
 
-
+.al_body_template_three .vendor_onetem{margin-bottom:0px !important;}
+.al_body_template_three .margin-res .product-card-box .supplier-rating h6 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #000;
+}
 
 @media screen and (max-width:1366px){
 .al_body_template_eight .product-card-box .img-outer-box.position-relative{min-height: 250px;height: 100%;}
