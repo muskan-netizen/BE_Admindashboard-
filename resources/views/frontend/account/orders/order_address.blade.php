@@ -1,6 +1,6 @@
 @php
 $orderAddress  = __('NA');
-if($order->luxury_option_id == 3){
+if(in_array($order->luxury_option_id,[2,3])){
     if ( count($order->vendors) >0)
     {
         $orderAddress  = $order->vendors->first() ? ($order->vendors->first()->vendor ? ($order->vendors->first()->vendor->address) : __('NA')) : __('NA') ;
