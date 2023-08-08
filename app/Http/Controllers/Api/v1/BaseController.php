@@ -373,9 +373,9 @@ class BaseController extends Controller{
             $categories = $categories->get();
         }
         // dd($categories);
-        // if($categories){
-        //     $categories = $this->buildTree($categories->toArray());
-        // }
+        if($categories){
+            $categories = $this->buildTree($categories->toArray());
+        }
         return $categories;
     }
 
