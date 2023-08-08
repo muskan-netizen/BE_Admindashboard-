@@ -1021,7 +1021,7 @@ class HomeController extends BaseController
             ->whereHas('category.categoryDetail', function ($q) {
                 $q->whereNull('categories.deleted_at');
             })
-            ->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','category_id','title');
+            ->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','category_id','title','calories');
         if ($where !== '') {
             $products = $products->where($where, 1);
         }
@@ -1073,7 +1073,7 @@ class HomeController extends BaseController
                 $q->select('sku', 'product_id', 'quantity', 'price', 'markup_price','barcode','compare_at_price');
                 $q->groupBy('product_id');
             },
-        ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating')
+        ])->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','calories')
             ->where('is_live', 1);
         if ($where !== '') {
             $products = $products->where($where, 1);

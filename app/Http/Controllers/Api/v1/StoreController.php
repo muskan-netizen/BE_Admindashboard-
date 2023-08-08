@@ -61,18 +61,15 @@ class StoreController extends BaseController
 					'is_selected' => $is_selected_category_id == $vendor_category->category_id ? true : false
 				);
 			}
-			$products = Product::select('id', 'sku', 'url_slug', 'is_live', 'category_id')->has('vendor')
-				->with([
-					'media.image',
-					'translation' => function ($q) use ($langId) {
-						$q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
-					},
-					'variant' => function ($q) use ($langId) {
-						$q->select('sku', 'product_id', 'quantity', 'price', 'markup_price', 'barcode');
-						$q->groupBy('product_id');
-					},
-				])->where('category_id', $is_selected_category_id);
-			if ($selected_vendor_id > 0) {
+			$products = Product::select('id', 'sku', 'url_slug','is_live','category_id','calories')->has('vendor')
+						->with(['media.image', 'translation' => function($q) use($langId){
+                        	$q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                    	},'variant' => function($q) use($langId){
+                            $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
+                            $q->groupBy('product_id');
+                    	},
+                    ])->where('category_id', $is_selected_category_id);
+			if($selected_vendor_id > 0){
 				$products = $products->where('vendor_id', $selected_vendor_id);
 			}
 			$products = $products->where('is_live', 1)->paginate($paginate);
@@ -1036,15 +1033,16 @@ class StoreController extends BaseController
 			$product->requires_shipping = $request->require_ship ?? 0;
 			$product->Requires_last_mile = $request->last_mile ?? 0;
 			$product->need_price_from_dispatcher = $request->need_price_from_dispatcher ?? 0;
-			$product->mode_of_service = $request->mode_of_service ?? null;
-			$product->delay_order_hrs = $request->delay_order_hrs ?? 0;
-			$product->delay_order_min = $request->delay_order_min ?? 0;
-			$product->pickup_delay_order_hrs = $request->pickup_delay_order_hrs ?? 0;
-			$product->pickup_delay_order_min = $request->pickup_delay_order_min ?? 0;
-			$product->dropoff_delay_order_hrs = $request->dropoff_delay_order_hrs ?? 0;
-			$product->dropoff_delay_order_min = $request->dropoff_delay_order_min ?? 0;
-			$product->minimum_order_count = $request->minimum_order_count ?? 0;
-			$product->batch_count = $request->batch_count ?? 1;
+			$product->mode_of_service        = $request->mode_of_service??null;
+			$product->delay_order_hrs        = $request->delay_order_hrs??0;
+			$product->delay_order_min        = $request->delay_order_min??0;
+			$product->pickup_delay_order_hrs        = $request->pickup_delay_order_hrs??0;
+			$product->pickup_delay_order_min        = $request->pickup_delay_order_min??0;
+			$product->dropoff_delay_order_hrs        = $request->dropoff_delay_order_hrs??0;
+			$product->dropoff_delay_order_min        = $request->dropoff_delay_order_min??0;
+			$product->minimum_order_count        = $request->minimum_order_count??0;
+			$product->batch_count        = $request->batch_count??1;
+			$product->calories        = $request->calories;
 			if (empty($product->publish_at)) {
 				$product->publish_at = ($request->is_live == 1) ? date('Y-m-d H:i:s') : '';
 			}
@@ -1530,18 +1528,14 @@ class StoreController extends BaseController
 					'is_selected' => $is_selected_category_id == $vendor_category->category_id ? true : false
 				);
 			}
-			$products = Product::select('id', 'sku', 'url_slug', 'is_live', 'category_id')->has('vendor')
-				->with([
-					'media.image',
-					'categoryName',
-					'translation' => function ($q) use ($langId) {
-						$q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
-					},
-					'variant' => function ($q) use ($langId) {
-						$q->select('sku', 'product_id', 'quantity', 'price', 'markup_price', 'barcode');
-						$q->groupBy('product_id');
-					},
-				])->orderBy('id', 'DESC');
+			$products = Product::select('id', 'sku', 'url_slug','is_live','category_id','calories')->has('vendor')
+						->with(['media.image', 'categoryName', 'translation' => function($q) use($langId){
+                        	$q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
+                    	},'variant' => function($q) use($langId){
+                            $q->select('sku', 'product_id', 'quantity', 'price','markup_price', 'barcode');
+                            $q->groupBy('product_id');
+                    	},
+                    ])->orderBy('id', 'DESC');
 
 			if ($selected_category_id) {
 				$products = $products->where('category_id', $selected_category_id);

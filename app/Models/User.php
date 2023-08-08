@@ -195,4 +195,10 @@ class User extends Authenticatable implements Wallet, WalletFloat, Auditable
     {
         return $this->hasMany(UserVendor::class);
     }
+
+    public function allergicItems()
+    {
+        return $this->belongsToMany(AllergicItem::class, 'user_allergic_items','user_id','allergic_item_id');
+    }
+
 }
