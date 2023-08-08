@@ -2791,7 +2791,6 @@ section.home-serivces .card-box {
     transition: .3s ease-in-out;
     display: block
 }
-
 .al_body_template_six .displayProducts .product-box:hover {
     -webkit-transform: scale(1);
     transform: scale(1)
@@ -2872,7 +2871,7 @@ section.home-serivces .card-box {
 }
 
 .al_body_template_six .collection-collapse-block .collapse-block-title {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 400
 }
 

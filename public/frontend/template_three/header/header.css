@@ -74,7 +74,7 @@ li.onhover-dropdown.change-language{display: inline-block;}
 .al_body_template_three .sm-horizontal .slick-track{padding: 10px 0;}
 .menu-navigation.alThreeMenu{width: 100%;z-index: 0;background-color: #f5f5f5;padding-top: 0;padding-bottom: 0;border-top: 1px solid #ddd;-webkit-transition: .5s;transition: .5s;}
 .menu-navigation.alThreeMenu li.al_main_category:hover ul.al_main_category_list{display:block}
-.menu-navigation.alThreeMenu li.al_main_category a .nav-cate-img.activ_nav{height:50px;width:50px}
+.menu-navigation.alThreeMenu li.al_main_category a .nav-cate-img.activ_nav{height:80px;width:80px}
 .menu-navigation.alThreeMenu li.al_main_category a .nav-cate-img.activ_nav img{height:50px!important;width:50px!important}
 .no-category-image .menu-navigation.alThreeMenu{padding:0}
 .menu-navigation.alThreeMenu li.al_main_category a .nav-cate-img img{margin:0 auto;border-radius:50%;height:100%;width:auto;-webkit-transition:.1s;transition:.1s}
