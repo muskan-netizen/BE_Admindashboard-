@@ -1071,6 +1071,16 @@ $timezone = Auth::user()->timezone;
 
             </div>
 
+            <div class="card-body">
+                @if (count($order->user->allergicItems))
+                    <h4 class="header-title mb-3 "> {{ __('Customer Allergic Items')}} </h4>
+                @endif
+                @forelse ($order->user->allergicItems as $item)
+                    {{ $item->title }}@if(!$loop->last),@endif
+                @empty
+                    <b>{{ __('No Allergic Item Found')}}</b><br>
+                @endforelse
+            </div>
 
         </div>
     </div>
