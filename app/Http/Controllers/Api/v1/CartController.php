@@ -1814,7 +1814,7 @@ class CartController extends BaseController
 
         $total_payable_amount_calc_tip = $cart->total_payable_amount - $total_taxable_amount;
         
-        if($rental_price > 0){
+        if(@$rental_price > 0){
             $cart->total_payable_amount = $rental_price;
         }
         $cart->tip = array(
