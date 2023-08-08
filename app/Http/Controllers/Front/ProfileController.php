@@ -200,7 +200,6 @@ class ProfileController extends FrontController
         ]);
         $user_docs = UserDocs::where('user_id', Auth::user()->id)->get();
         $user_registration_documents = UserRegistrationDocuments::get();
-//pr( $user_docs->toArray());
         $returnHTML = view('frontend.account.edit-profile')->with(['user' => $user,'user_docs'=>$user_docs,'user_registration_documents'=>$user_registration_documents , 'userAddresses' => $user_addresses, 'timezone_list' => $timezone_list])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML));
     }
