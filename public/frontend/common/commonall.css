@@ -1450,11 +1450,11 @@ body.al_body_template_three .dashboard-right .profile-page .info-text label {
         width: 100%;
         max-width: 100%;
     }
-    .render_featured_products .product-card-box.position-relative.al_box_third_template.al {
+    /* .render_featured_products .product-card-box.position-relative.al_box_third_template.al {
         min-height: 310px;
         max-height: 310px;
         height: 100%;
-    }
+    } */
     .al_body_template_eight .render_full_on_sale .img-outer-box{
         height: 100%;
     min-height: 260px !important;
