@@ -111,7 +111,7 @@ class ProfileController extends FrontController
         $user = User::where('id', Auth::user()->id)->first();
 
         $rules = [
-            'name' => 'required|string|min:3|max:80',
+            'name' => 'required|string|min:3|max:80|alpha_num',
             'phone_number' => 'required|unique:users',
         ];
 
