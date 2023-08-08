@@ -230,7 +230,7 @@
 
     $(document).ready(function() {
         jQuery.validator.addMethod("alphanumeric", function(value, element) {
-                return this.optional(element) || /^[a-zA-Z]+$/i.test(value);
+                return this.optional(element) || /^[a-zA-Z0-9 ]+$/i.test(value);
             }, "Name should contains alphanumeric data.");
             $("#editProfileForm").validate({
                 errorClass: 'errors',
