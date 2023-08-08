@@ -177,7 +177,7 @@
             data: $("#register").serialize(),
             success: function(response) {
                  $('#register')[0].reset();    
-                 toastr.options.timeOut = 10000;
+                 toastr.options.timeOut = 3000;
                  toastr.success('{{__('Your Password has been changed successfully')}}');
             },
             error: function (reject) {
