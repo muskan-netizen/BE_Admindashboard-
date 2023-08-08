@@ -662,7 +662,7 @@ class CartController extends BaseController
     {
            \Log::info('here');
            \Log::info($cart);
-        try{
+        // try{
         $container_charges_tax = 0;
         $deliver_fee_charges_tax = 0;
         $total_service_fee_tax = 0;
@@ -1825,10 +1825,10 @@ class CartController extends BaseController
         return $cart;
 
 
-        }catch(\Exception $ex)
-        {
-            return [];
-        }
+        // }catch(\Exception $ex)
+        // {
+        //     return [];
+        // }
     }
 
     public function uploadPrescriptions(Request $request){
