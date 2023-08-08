@@ -300,7 +300,7 @@
       @elseif($homePageLabel->slug == 'dynamic_page') @include('frontend.included_files.dynamic_page')
       @elseif($homePageLabel->slug == 'brands')
          <section class="container-fluid popular-brands  left-shape_ position-relative "  >
-            <div class="al_top_heading brand-heading d-flex justify-content-between">
+            <div class="al_top_heading d-flex justify-content-between">
                <h2 class="h2-heading text-capitalize">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
                {{-- <a class="" href="">See All</a> --}}
             </div>
@@ -365,7 +365,7 @@
          </section>
       @elseif($homePageLabel->slug == 'recent_orders' && count($homePageData['recent_orders']) != 0)
          <section class="container-fluid mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
-            <div class="top-heading d-flex justify-content-between">
+            <div class="top-heading test d-flex justify-content-between">
                <h2 class="h2-heading"> @php echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __("Your Recent Orders"); @endphp </h2>
             </div>
             <div class="row">
@@ -433,7 +433,7 @@
       @else
          @if(@$homePageData[$homePageLabel->slug] && count($homePageData[$homePageLabel->slug]) != 0)
          <section class="container-fluid mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
-            <div class="top-heading d-flex justify-content-between">
+            <div class="top-heading mt-4 d-flex justify-content-between">
                <h2 class="h2-heading"> @php echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);@endphp </h2>
             </div>
             <div class="row">

@@ -56,7 +56,8 @@ body.al_body_template_six.dark h6.card_title.ellips {
 .render_full_on_sale h2{ font-size: 22px;}
 .cab-banner-area h2{font-size: 22px;}
 .render_full_recent_orders h2{font-size: 22px;}
-.popular-brands h2{font-size: 22px;text-transform: uppercase !important;}
+.popular-brands h2{font-size: 22px;text-transform: uppercase !important;padding: 0px 40px;
+    padding-bottom: 16px;}
 .render_full_recent_orders {margin-top: 20px;}
 .al_body_template_six .nav-cate-img img {
     width: 100%;
@@ -686,7 +687,12 @@ body.al_body_template_six.dark h6.card_title.ellips {
     position: relative;
     z-index: 9;
 }
-
+.order_detail.order_detail_data {
+    background-color: #cccccc17;height:100%;
+}
+.order_detail.order_detail_data .price_box_bottom li {
+    padding: 2px 0px;
+}
 .al_body_template_six .alSixMainMenu .slick-slide .al_main_category a .alCategoryName {
     text-transform: uppercase;
     width: 100%;
@@ -800,7 +806,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
 
 .al_body_template_six .al_custom_brand .brand-box {
     overflow: hidden;
-    background-color: #fff;
+    background-color: #eee;
     padding: 0 0 0px 0px;
     border-radius: 15px;
     /* box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25); */
@@ -811,9 +817,14 @@ body.al_body_template_six.dark h6.card_title.ellips {
     margin: 0 10px;
     padding: 10px;
     border-radius: 15px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
+    box-shadow: 0px 4px 10px rgb(0 0 0 / 5%);
 }
-
+.slick-slider {
+    margin-bottom: 10px;
+}
+.suppliers-slider-vendors {
+    margin-bottom: 0px;
+}
 .al_body_template_six .alSixMainMenu .slick-list {
     overflow: visible;
 }
