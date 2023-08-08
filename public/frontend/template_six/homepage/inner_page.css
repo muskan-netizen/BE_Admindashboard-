@@ -2791,9 +2791,6 @@ section.home-serivces .card-box {
     transition: .3s ease-in-out;
     display: block
 }
-.order_detail.order_detail_data {
-    background-color: #cccccc0d;
-}
 .al_body_template_six .displayProducts .product-box:hover {
     -webkit-transform: scale(1);
     transform: scale(1)
