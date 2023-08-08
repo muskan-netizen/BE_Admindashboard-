@@ -1,5 +1,6 @@
 @extends('layouts.store', ['title' => __('My Wishlist')])
 @section('css')
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet" />
 <style type="text/css">
     .main-menu .brand-logo {
         display: inline-block;
@@ -186,6 +187,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
 </section>
 @endsection
 @section('script')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
 <script type="text/javascript">
     var add_wishlist_to_cart_url = "{{ route('addWishlistToCart') }}";
     var ajaxCall = 'ToCancelPrevReq';
@@ -208,13 +210,18 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
     $(document).ready(function(){
         $(document).on("click",".addWishlistToCart",function() {
             let wishlist_products = [];
-            $(".wishlist-row .custom-control-input:checked").each(function(i, obj){
-                var id = $(obj).attr('id');
-                var product_id = id.replace('wp-', '');
-                var product_variant_id = $(obj).attr('data-variant');
-                wishlist_products.push({'product_id':product_id, 'variant_id':product_variant_id});
-            });
-            addWishlistToCart(wishlist_products);
+            if($('.wishlist-row .custom-control-input:checked').length > 0){
+                $(".wishlist-row .custom-control-input:checked").each(function(i, obj){
+                    var id = $(obj).attr('id');
+                    var product_id = id.replace('wp-', '');
+                    var product_variant_id = $(obj).attr('data-variant');
+                    wishlist_products.push({'product_id':product_id, 'variant_id':product_variant_id});
+                });
+                addWishlistToCart(wishlist_products);
+            }else{
+             	 toastr.options.timeOut = 3000;
+                 toastr.error('{{__('Please select at least one product to add in cart.')}}');
+            }
         });
         function addWishlistToCart(wishlist_products) {
             $.ajax({

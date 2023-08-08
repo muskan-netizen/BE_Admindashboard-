@@ -329,11 +329,16 @@
                     });
                 @endif
             @endif
+            jQuery.validator.addMethod("alphanumeric", function(value, element) {
+                return this.optional(element) || /^[a-zA-Z0-9 ]+$/i.test(value);
+            }, "Name should contains alphanumeric data.");
             $("#register").validate({
                 errorClass: 'errors',
                 rules: {
                     name : {
                         required: true,
+                        minlength: 3,
+                        alphanumeric: true
                     },
                     phone_number: {
                         required: true,
@@ -354,7 +359,11 @@
                     this.element(element); // triggers validation
                 },
                 messages : {
-                    name: "{{ __('Please enter your name')}}",
+                    name: {
+                        required:"{{ __('Please enter your name')}}",
+                        minlength:"{{__('The name must be at least 3 characters.')}}",
+                        alphanumeric:"{{ __('Name should contains alphanumeric data')}}"
+                    },
                     phone_number: {
                         required: "{{ __('Please enter your phone')}}",
                         number: "{{ __('Please enter a numerical value')}}"
