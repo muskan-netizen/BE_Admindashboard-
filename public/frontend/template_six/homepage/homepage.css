@@ -7,7 +7,9 @@ body.al_body_template_six.dark,
 body.al_body_template_six.light {
     visibility: visible;
 }
-
+section {
+    padding-bottom: 10px;
+}
 .no-store-wrapper {
     display: none;
 }
@@ -54,7 +56,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
 .render_full_on_sale h2{ font-size: 22px;}
 .cab-banner-area h2{font-size: 22px;}
 .render_full_recent_orders h2{font-size: 22px;}
-.popular-brands h2{font-size: 22px;}
+.popular-brands h2{font-size: 22px;text-transform: uppercase !important;}
 .render_full_recent_orders {margin-top: 20px;}
 .al_body_template_six .nav-cate-img img {
     width: 100%;
@@ -697,7 +699,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
     background-color: #fff;
     padding: 0 0 10px;
     border-radius: 15px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
+    /* box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25); */
 }
 
 .al_body_template_six .alSixMainMenu .slick-slide {
@@ -725,7 +727,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
     margin: 0 40px !important;
 }
 .suppliers-slider-vendors .slick-slide .product-card-box h6{
-    color:#000;font-weight: 600;
+    color:#000;font-weight: 600;padding-bottom:10px;
 }
 .al_body_template_six .vendors .product-card-box {
     overflow: hidden;
@@ -791,14 +793,17 @@ body.al_body_template_six.dark h6.card_title.ellips {
     width: 100%;
     display: block;font-size: 14px;
     margin: 0 auto;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .al_body_template_six .al_custom_brand .brand-box {
     overflow: hidden;
     background-color: #fff;
-    padding: 0 0 10px;
+    padding: 0 0 0px 0px;
     border-radius: 15px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
+    /* box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25); */
 }
 
 .al_body_template_six .alSixMainMenu .slick-slide {
@@ -818,17 +823,26 @@ body.al_body_template_six.dark h6.card_title.ellips {
 }
 
 .al_body_template_six .vendors .top-heading {
-    margin:40px 0px 0px 0px;
+    margin:0px 60px;
 }
-
+.popular-brands .brand-heading{
+    margin:0px 60px;
+}
+.suppliers-slider-best_sellers .supplier-rating h6 {
+    padding-bottom: 10px;
+    color: #000c;
+}
+.slick-slide .inner_spacing p{
+    margin-bottom:0px;
+}
 .al_body_template_six .vendors .slick-list.draggable {
-    padding: 15px 0 !important;
+    padding: 0px 0 !important;
     margin: 0 40px !important;
 }
 
 .al_body_template_six .vendors .product-card-box {
     overflow: hidden;
-    padding: 0 0 10px 0px;
+    padding: 0 0 0px 0px;
     background-color: #fff;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     border-radius: 15px;
