@@ -41,14 +41,11 @@
 <div class="alRentalSinglePageView">
   <div class="addManualTime">
     <div class="addManualTimeGroup" style="text-align:left;">
-      <div class="single_cart-temp_label">
-        <label class="text-left mb-0">Start/Date Time</label>
-        <label class="text-left mb-0">End/Date Time</label>
+      <div class="">
+        <label class="text-left mb-0">Rental Start Time : <span id="blocktime"></span></label>
+        <label class="text-left mb-0">Rental End Time : <span id="blocktime2"></span></label>
       </div>
-        <div class="single_product-input mb-2">
-          <input id="blocktime" class="form-control" autofocus>
-          <input id="blocktime2" class="form-control">
-        </div>
+        
     </div>
 
   </div>
@@ -160,8 +157,8 @@
         var currentDate = moment().format("M/DD/YY hh:mm A");
         $checkinInput = $('#blocktime');
         $checkoutInput = $('#blocktime2');
-        $checkinInput.val( moment('{{$pickup_time}}').format("M/DD/YY hh:mm A"));
-        $checkoutInput.val( moment('{{$drop_time}}').format("M/DD/YY hh:mm A"));
+        $checkinInput.html( moment('{{$pickup_time}}').format("M/DD/YY hh:mm A"));
+        $checkoutInput.html( moment('{{$drop_time}}').format("M/DD/YY hh:mm A"));
         //$checkoutInput.val(moment().add(min_dur_hrs,'hours').add(min_dur_min,'minutes').format("M/DD/YY hh:mm A"));
         
         $(".incremental-left-minus").on("click", function() {
@@ -398,8 +395,8 @@
           var formData = {
             variant_option_id:$('.changeVariant:checked').val(),
             product_id:$("input[name='product_id']").val(),
-            selectedStartDate:$('#blocktime').val(),
-            selectedEndDate:$('#blocktime2').val()
+            selectedStartDate:$('#blocktime').html(),
+            selectedEndDate:$('#blocktime2').html()
           }
           check_product_availibility(formData);
         }

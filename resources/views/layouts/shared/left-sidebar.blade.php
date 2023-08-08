@@ -471,6 +471,14 @@
                                 </a>
                             </li>
                         @endif
+                        
+                        <li>  
+                            <a href="{{route('rental.protection')}}">
+                                <i class="icon-profile"></i>
+                                <span>{{ __("Rental Protection") }}</span>
+                            </a>
+                        </li>
+                        
                         {{-- @if(Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="{{route('verifyoption.index')}}">
