@@ -229,16 +229,23 @@
     }
 
     $(document).ready(function() {
+        jQuery.validator.addMethod("alphanumeric", function(value, element) {
+                return this.optional(element) || /^[a-zA-Z0-9 ]+$/i.test(value);
+            }, "Name should contains alphanumeric data.");
             $("#editProfileForm").validate({
                 errorClass: 'errors',
                 rules: {
                     name : {
                         required: true,
-                        minlength: 3
+                        minlength: 3,
+                        alphanumeric: true
                     },
                     phone_number: {
                         required: true,
-                        number: true
+                        number: true,
+                        minlength: 7,
+                        maxlength: 15,
+                        regex: /^[1-9][0-9]*$/
                     },
                     email: {
                         required: true,
@@ -254,11 +261,14 @@
                 messages : {
                     name: {
                         required:"{{ __('Please enter your name')}}",
-                        minlength:"{{__('The name must be at least 3 characters.')}}"
+                        minlength:"{{__('The name must be at least 3 characters.')}}",
+                        alphanumeric:"{{ __('Name should contains alphanumeric data')}}"
                     },
                     phone_number: {
                         required: "{{ __('Please enter your phone')}}",
-                        number: "{{ __('Please enter a numerical value')}}"
+                        number: "{{ __('Please enter a numerical value')}}",
+                        minlength:"{{ __('minimum 7 digits allowed')}}",
+                        maxlength:"{{ __('maximum 15 digits required')}}"
                     },
                     email: "{{ __('The email should be in the format:')}} abc@domain.tld",
                 }
