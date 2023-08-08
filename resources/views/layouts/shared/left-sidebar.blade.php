@@ -478,6 +478,12 @@
                                 <span>{{ __("Rental Protection") }}</span>
                             </a>
                         </li>
+                        <li>  
+                            <a href="{{route('booking.option')}}">
+                                <i class="icon-profile"></i>
+                                <span>{{ __("Booking Option") }}</span>
+                            </a>
+                        </li>
                         
                         {{-- @if(Auth::user()->is_superadmin == 1)
                             <li>

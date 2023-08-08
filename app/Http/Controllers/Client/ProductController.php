@@ -9,7 +9,7 @@ use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, RoleOld as Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole, TollPassOrigin, TravelMode, VehicleEmissionType, Attribute, ProductAttribute,LongTermServiceProductAddons, ProcessorProduct, OrderProduct,DeliverySlot, MargProduct, Pincode};
+use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, RoleOld as Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole, TollPassOrigin, TravelMode, VehicleEmissionType, Attribute, BookingOption, ProductAttribute,LongTermServiceProductAddons, ProcessorProduct, OrderProduct,DeliverySlot, MargProduct, Pincode, ProductBookingOption, ProductRentalProtection, RentalProtection};
 
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
@@ -189,7 +189,7 @@ class ProductController extends BaseController
 
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module', 'is_cab_pooling', 'is_one_push_book_enable','is_service_product_price_from_dispatch', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_attribute']);
 
-        $with_array = ['brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles'];
+        $with_array = ['brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles', 'bookingOptions', 'rentalProtections'];
 
         if( checkTableExists('product_attributes') ) {
             $with_array[] = 'ProductAttribute';
@@ -200,7 +200,6 @@ class ProductController extends BaseController
         }
 
         $product = Product::with($with_array)->where('id', $id)->firstOrFail();
-
 
         $type = Type::all();
         $countries = Country::all();
@@ -367,7 +366,12 @@ class ProductController extends BaseController
         {
             $margProduct = $margProduct->toArray()??[];
         }
-        return view('backend/product/edit', ['delivery_slots'=> $delivery_slots, 'product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'processorProduct' => $processorProduct,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value, 'attribute_latitude' => $attribute_latitude, 'attribute_longitude' => $attribute_longitude,'margProduct' => $margProduct??[], 'productAttributes' => $productAttributes]);
+        $rentalProtection = RentalProtection::get();
+        $bookingOption = BookingOption::get();
+        $productBookingOption = $product->bookingOptions()->pluck('booking_option_id')->toArray();
+        $productRentalProtection = $product->rentalProtections()->where('type_id', 2)->pluck('rental_proctection_id')->toArray();
+        $inlcudedProductRentalProtection = $product->rentalProtections()->where('type_id', 2)->pluck('rental_proctection_id')->toArray();
+        return view('backend/product/edit', ['delivery_slots'=> $delivery_slots, 'product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'processorProduct' => $processorProduct,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value, 'attribute_latitude' => $attribute_latitude, 'attribute_longitude' => $attribute_longitude,'margProduct' => $margProduct??[], 'productAttributes' => $productAttributes, 'rentalProtection' => $rentalProtection, 'bookingOption' => $bookingOption, 'productBookingOption' => $productBookingOption, 'productRentalProtection' => $productRentalProtection, 'inlcudedProductRentalProtection' => $inlcudedProductRentalProtection]);
     }
 
     /**
@@ -568,17 +572,6 @@ class ProductController extends BaseController
             $product->pickup_time = ($request->has('pickup_time')) ? $request->pickup_time : null;
             $product->drop_time = ($request->has('drop_time')) ? $request->drop_time : null;
             $product->extra_time = ($request->has('extra_time')) ? $request->extra_time : null;
-            $product->transmission = ($request->has('transmission')) ? $request->transmission : null;
-            $product->fuel_type = ($request->has('fuel_type')) ? $request->fuel_type : null;
-            $product->engine = ($request->has('engine')) ? $request->engine : null;
-            $product->boot_space = ($request->has('boot_space')) ? $request->boot_space : null;
-            $product->mileage = ($request->has('mileage')) ? $request->mileage : null;
-            $product->body_type = ($request->has('body_type')) ? $request->body_type : null;
-            $product->no_of_cylinder = ($request->has('no_of_cylinder')) ? $request->no_of_cylinder : null;
-            $product->max_torque = ($request->has('max_torque')) ? $request->max_torque : null;
-            $product->fuel_tank_capacity = ($request->has('fuel_tank_capacity')) ? $request->fuel_tank_capacity : null;
-            $product->ground_clearence = ($request->has('ground_clearence')) ? $request->ground_clearence : null;
-            $product->bhp = ($request->has('bhp')) ? $request->bhp : null;
 
             $product->save();
             if($request->has('slot_ids') && $request->slot_ids != ''){
@@ -810,7 +803,26 @@ class ProductController extends BaseController
                 }
 
             }
+            
 
+            if(!empty($request->rental_protection)){
+                foreach($request->rental_protection as $rentalId){
+                    $rentalProtection = [
+                        'product_id' => $product->id,
+                        'rental_proctection_id' => $rentalId
+                    ];
+                    ProductRentalProtection::updateOrCreate($rentalProtection,$rentalProtection);
+                }
+            }
+            if(!empty($request->booking_option)){
+                foreach($request->booking_option as $optionId){
+                    $bookingOption = [
+                        'product_id' => $product->id,
+                        'booking_option_id' => $optionId
+                    ];
+                    ProductBookingOption::updateOrCreate($bookingOption,$bookingOption);
+                }
+            }
             
             DB::commit();
             $this->createOrUpdateProductInSquarePos($id);

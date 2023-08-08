@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BookingOptionController;
 use App\Http\Controllers\Front\SearchController;
 use App\Http\Controllers\Client\CMS\PageController;
 use App\Http\Controllers\Client\CMS\EmailController;
@@ -639,8 +640,18 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         Route::get('account/usersubscriptions', [SubscriptionPlansUserController::class, 'userSubscriptionReport'])->name('account.userSubscription');
         Route::get('usersubscriptions/list/filter', [SubscriptionPlansUserController::class, 'subscriptionfilter'])->name('subscription.list.filter');
-        Route::get('rental-protection', [RentalProtectionController::class, 'index'])->name('rental.protection');
-
+        Route::group(['prefix' => 'rental-protection/'], function () {        
+            Route::get('', [RentalProtectionController::class, 'index'])->name('rental.protection');
+            Route::match(['put', 'post'],'store/{id?}', [RentalProtectionController::class, 'store'])->name('rental.protection.store');
+            Route::get('{id}/edit', [RentalProtectionController::class, 'edit'])->name('rental.protection.edit');
+            Route::delete('delete/{id}', [RentalProtectionController::class, 'delete'])->name('rental.protection.delete');
+        });
+        Route::group(['prefix' => 'booking-option/'], function () {     
+            Route::get('', [BookingOptionController::class, 'index'])->name('booking.option');
+            Route::match(['put', 'post'],'store/{id?}', [BookingOptionController::class, 'store'])->name('booking.option.store');
+            Route::get('{id}/edit', [BookingOptionController::class, 'edit'])->name('booking.option.edit');
+            Route::delete('delete/{id}', [BookingOptionController::class, 'delete'])->name('booking.option.delete');
+        });
     });
 });
 

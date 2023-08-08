@@ -531,4 +531,12 @@ class Product extends Model implements Auditable
     }
     return 0;
   }
+
+  public function bookingOptions(){
+    return $this->hasMany('App\Models\ProductBookingOption', 'product_id', 'id');
+  }
+
+  public function rentalProtections(){
+    return $this->hasMany('App\Models\ProductRentalProtection', 'product_id', 'id');
+  }
 }

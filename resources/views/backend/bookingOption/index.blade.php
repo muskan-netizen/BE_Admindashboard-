@@ -1,4 +1,4 @@
-@extends('layouts.vertical', ['title' => 'Rental Protection'])
+@extends('layouts.vertical', ['title' => 'Booking Option'])
 @section('css')
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
 <link href="{{asset('assets/libs/nestable2/nestable2.min.css')}}" rel="stylesheet" type="text/css" />
@@ -166,7 +166,7 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <h4 class="page-title">{{ __('Rental Protection') }}</h4>
+                <h4 class="page-title">{{ __('Booking Option') }}</h4>
             </div>
         </div>
         <div class="col-sm-12 text-sm-left">
@@ -190,7 +190,7 @@
             <div class="card-box">
                 <div class="row" style="max-height: 600px; overflow-x: auto">
                     <div class="col-sm-12 mb-2 d-flex justify-content-between align-items-center">
-                        <h4 class=""> {{ __("Rental Protection") }}</h4>
+                        <h4 class=""> {{ __("Booking Option") }}</h4>
                         <button class="btn btn-info waves-effect waves-light text-sm-right openAddonModal" dataid="0">
                             <i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
                         </button>
@@ -211,17 +211,17 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($rentalProtection as $set)
+                                        @foreach($bookingOption as $set)
                                         <tr>
                                             <td>{{$set->id}}</td>
                                             <td>{{$set->title}}</td>
                                             <td>
-                                                <a class="action-icon editProtection" dataid="{{$set->id}}" href="javascript:void(0);">
+                                                <a class="action-icon editBookingOption" dataid="{{$set->id}}" href="javascript:void(0);">
                                                     <h3> <i class="mdi mdi-square-edit-outline"></i> </h3>
                                                 </a>
 
-                                                <a class="action-icon deleteProtection" dataid="{{$set->id}}" href="javascript:void(0);"> <i class="mdi mdi-delete"></i></a>
-                                                <form action="{{route('rental.protection.delete', $set->id)}}" method="POST" style="display: none;" id="protectionDeleteForm{{$set->id}}">
+                                                <a class="action-icon deleteBookingOption" dataid="{{$set->id}}" href="javascript:void(0);"> <i class="mdi mdi-delete"></i></a>
+                                                <form action="{{route('booking.option.delete', $set->id)}}" method="POST" style="display: none;" id="bookingOptionDeleteForm{{$set->id}}">
                                                     @csrf
                                                     @method('DELETE')
 
@@ -262,10 +262,10 @@
             <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content">
                     <div class="modal-header border-bottom">
-                        <h4 class="modal-title">{{ __("Create Rental Protection") }}</h4>
+                        <h4 class="modal-title">{{ __("Create Booking Option") }}</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                     </div>
-                    <form id="addAddonForm" method="post" enctype="multipart/form-data" action="{{route('rental.protection.store')}}">
+                    <form id="addAddonForm" method="post" enctype="multipart/form-data" action="{{route('booking.option.store')}}">
                         @csrf
                         <div class="modal-body" id="AddAddonBox">
                             <div class="row">
@@ -276,18 +276,6 @@
                                     <div class="col-6 mb-2">
                                         {!! Form::label('price', __('Price('.$clientCurrency->currency->symbol.')'),['class' => 'control-label']) !!}
                                         {!! Form::text('price', '', ['class'=>'form-control', 'id' => 'price']) !!}
-                                    </div>
-                                     <div class="col-12 mb-2">
-                                            {!! Form::label('validity', __('Validity'),['class' => 'control-label']) !!}
-                                            @php
-                                                $validity = [
-                                                    1 => 'Day',
-                                                    2 => 'Week',
-                                                    3 => 'Month'
-                                                ];
-                                        @endphp
-                                        {!! Form::select('validity', $validity,'', ['class'=>'form-control ', 'id' => 'validity']) !!}
-                                        
                                     </div>
                                     <div class="col-12 mb-2">
                                         {!! Form::label('description', __('Description'),['class' => 'control-label']) !!}
