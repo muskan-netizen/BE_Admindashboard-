@@ -572,6 +572,7 @@ trait ProductActionTrait{
                 `vendors`.`address`, 
                 `vendors`.`order_pre_time`, 
                 `vendors`.`logo`, 
+                `vendors`.`banner`, 
                 `vendors`.`slug`, 
                 `vendors`.`show_slot`,
                 `vendors`.`admin_rating`,
