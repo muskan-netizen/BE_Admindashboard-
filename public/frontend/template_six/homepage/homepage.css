@@ -82,6 +82,8 @@ section {
 } */
 /*-------------homepage 6 css custom-----*/
 
+
+
 .al_body_template_six .slick-track {
     margin-left: 0 !important;
 }
@@ -118,7 +120,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
     }
 
 .al_body_template_six .alSixMainMenu .slick-slide .al_main_category a .alCategoryName {
-    max-width: 180px;
+    max-width: 150px;
     width: 100%;
     display: block;
     margin: 0 auto;
@@ -749,8 +751,8 @@ body.al_body_template_six.dark h6.card_title.ellips {
 }
 
 .al_body_template_six .nav-cate-img img {
-    height: 150px;
-    width: 150px;
+    height: 130px;
+    width: 130px;
     object-fit: fill;
     margin-bottom: 10px;
     border-radius: 10px 10px 0 0;
@@ -875,7 +877,12 @@ body.al_body_template_six.dark h6.card_title.ellips {
 }
 .al_body_template_six .alSixMainMenu .slick-list.draggable {
     margin: 0 auto;
+    width: 100%;
+    max-width: 100%;
+    position: relative;
 }
+
+
 .al_body_template_six .alSixMainMenu .slick-slide .al_main_category a .alCategoryName {
     text-transform: uppercase;
     width: 100%;
@@ -896,8 +903,8 @@ body.al_body_template_six.dark h6.card_title.ellips {
 
 .al_body_template_six .alSixMainMenu .slick-slide {
     background-color: #fff;
-    margin: 0 10px;
-    padding: 10px;
+    margin: 0 5px;
+    padding: 6px;
     border-radius: 15px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
 }
