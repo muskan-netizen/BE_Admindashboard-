@@ -918,6 +918,20 @@ article#page-container section .vendors section {
     .al_body_template_three .tip_radio_controls {
         text-align: left;
     }
+.menu-navigation.alThreeMenu .menu-slider button.slick-prev.slick-arrow {
+    position: absolute;
+    left: -14px;
+    height: 100%;
+    background-color: #cccccc4f;
+    padding: 0px 2px;
+}
+.menu-navigation.alThreeMenu .menu-slider button.slick-next.slick-arrow {
+    position: absolute;
+    right: -14px;
+    height: 100%;
+    background-color: #cccccc4f;
+    padding: 0px 2px;
+}
 }
 
 body.dark.al_body_template_three .al_box_third_template {
@@ -966,6 +980,7 @@ body.al_body_template_three .al_box_third_template {
     .al_body_template_three .cab-footer button {
         width: auto !important;
     }
+
 }
 
 .al_body_template_three .al_custom_brand .barnd-img-outer img{
