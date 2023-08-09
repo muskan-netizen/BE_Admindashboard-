@@ -1077,6 +1077,10 @@ a.brand-box.d-block.black-box {
     .al_body_template_six .vendor_mods_section {
         margin-top: 10px;
     }
+    .carousel-inner a.banner-img-outer{height: 220px;}
+    .al_body_template_six .vendors .top-heading{margin: 0px 20px;}
+    .menu-navigation_al {margin: 20px 10px;}
+    .al_body_template_six .al_custom_brand .brand-box{background-color: #eee;}
 }
 
 
