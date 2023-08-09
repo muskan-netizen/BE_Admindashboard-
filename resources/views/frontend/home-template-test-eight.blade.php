@@ -572,7 +572,7 @@
 					</div>
 				</div>
 
-				<div class=" col-md-10 al_custom_brand">
+				<div class=" col-md-10 al_custom_brand mt-3">
 					<div class="alNewSliderTopBrand render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 						@foreach ($homePageData[$homePageLabel->slug] as $brand )
 						@include('frontend.home_page_8.brands')
@@ -677,7 +677,7 @@
 			</div>
 		</section>
 		@elseif($homePageLabel->slug == 'top_rated' && (count($homePageData['top_rated']) != 0))
-		<section class="main-pro-slider suppliers-section  mb-4" id="homepage_top_rated">
+		<section class="main-pro-slider suppliers-section  mb-0" id="homepage_top_rated">
 			<div class="container p2p-full-width">
 				<div class="row ">
 					<div class="col-md-12">
@@ -737,7 +737,7 @@
 			</div>
 		</section>
 		@elseif($homePageLabel->slug == 'best_sellers' && (count($homePageData['best_sellers']) != 0))
-		<section class="container best-seller-eccomerce mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+		<section class="container best-seller-eccomerce mb-0 pb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 			<div class="top-heading d-flex justify-content-between">
 				<h2 class="col h2-heading"> @php
 					echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
@@ -755,9 +755,9 @@
 		</section>
 		@elseif($homePageLabel->slug == 'single_category_products' && (count($homePageData[$homePageLabel->slug]) != 0))
 		<section class="main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-			<div class="container p2p-full-width">
+			<div class="container p2p-full-width pt-3">
 			<div class="top-heading d-flex justify-content-between">
-			<h2 class="col h2-heading mb-3"> @php
+			<h2 class="col h2-heading mb-2"> @php
 				echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 				@endphp </h2>
 					<!-- <a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>  -->
@@ -780,7 +780,7 @@
 		<section class="main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}} bg-light-gray" id="{{$homePageLabel->slug.$key}}">
 			<div class="container p2p-full-width">
 				<div class="top-heading d-flex justify-content-between">
-					<h2 class="col h2-heading mb-3"> @php
+					<h2 class="col h2-heading mb-0 mt-3"> @php
 						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 						@endphp </h2>
 						<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>
@@ -866,7 +866,7 @@
 		<section class="main-product mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 			<div class="container p2p-full-width">
 				<div class="row ">
-					<div class="col-md-12 pl-0 text-center">
+					<div class="col-md-12 pl-0 pt-4 text-center">
 						<div class="top-heading d-flex justify-content-between">
 							<h2 class="h2-heading"> @php
 								echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);

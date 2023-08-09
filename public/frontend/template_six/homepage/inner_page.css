@@ -1260,7 +1260,7 @@ tr.wishlist-row {
 }
 
 .al_body_template_six .irs {
-    width: 90%;
+    width: 96%;
 }
 
 .al_body_template_six .displayProducts .product-box .media-body {
@@ -1297,7 +1297,7 @@ tr.wishlist-row {
 }
 
 .al_body_template_six .collection-filter-block {
-    padding: 20px !important;
+    padding:10px !important;
     background-color: #f5f5f5 !important;
     border-radius: 15px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
@@ -2271,7 +2271,7 @@ ol.breadcrumb {
 }
 
 .radio-btns.long-radio input[type="radio"]+label .customCheckbox {
-    width: auto;
+    width:100%;
     vertical-align: middle;
     white-space: nowrap;
     border-radius: 50px;
@@ -2774,9 +2774,14 @@ section.home-serivces .card-box {
 }
 
 .al_body_template_six .al_new_wrapper_design .vendor-description {
-    padding: 10px 0px !important;
+    padding: 10px 0px !important;position: relative;
+    z-index: 9;border: 1px solid#cccccc3d;
+    border-radius: 10px;
 }
-
+.al_body_template_six .alVender .col-md-3.col-6.col-grid-box.mt-4 {
+    margin-top: 0px !important;
+    margin-bottom: 20px;
+}
 .al_body_template_six .displayProducts .product-box {
     overflow: hidden;
     padding: 0 0 10px;
@@ -2791,7 +2796,6 @@ section.home-serivces .card-box {
     transition: .3s ease-in-out;
     display: block
 }
-
 .al_body_template_six .displayProducts .product-box:hover {
     -webkit-transform: scale(1);
     transform: scale(1)
@@ -2822,7 +2826,7 @@ section.home-serivces .card-box {
 }
 
 .al_body_template_six .displayProducts .product-box .media-body {
-    padding: 0 10px
+    padding: 0 10px;
 }
 
 .al_body_template_six .displayProducts .product-box .media-body h6 b {
@@ -2872,7 +2876,7 @@ section.home-serivces .card-box {
 }
 
 .al_body_template_six .collection-collapse-block .collapse-block-title {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 400
 }
 

@@ -3839,12 +3839,12 @@ body.al_body_template_one .row.mobile-header.align-items-center.justify-content-
 body.al_body_template_one .footer-theme .sub-title li {
     padding-top: 0 !important;
 }
-.al_body_template_six .footer-theme .sub-title .contact-list li {   
+/* .al_body_template_six .footer-theme .sub-title .contact-list li {   
     display: flex;
     align-items: center;
     justify-content: center;
     padding-top: 0;
-}
+} */
 
 .al_body_template_six .col-sm-12.text-center.position-relative.vendor-page-copy {
     text-align: left !important;
