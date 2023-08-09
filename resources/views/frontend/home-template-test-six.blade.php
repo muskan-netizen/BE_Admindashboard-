@@ -325,7 +325,7 @@
          <section class="suppliers-section container-fluid">
             <div class=" top-heading  d-flex justify-content-between align-self-center">
                <h2 class="h2-heading mt-4">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2>
-               <a class="" href="{{route('vendor.all')}}">{{__("See all")}}</a>
+               <a class="mt-4" href="{{route('vendor.all')}}">{{__("See all")}}</a>
             </div>
             <div class="col-12 p-0">
                <div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
@@ -434,7 +434,7 @@
          @if(@$homePageData[$homePageLabel->slug] && count($homePageData[$homePageLabel->slug]) != 0)
          <section class="container-fluid mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
             <div class="top-heading  d-flex justify-content-between">
-               <h2 class="h2-heading"> @php echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);@endphp </h2>
+               <h2 class="h2-heading mt-4"> @php echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);@endphp </h2>
             </div>
             <div class="row">
                <div class="col-12">

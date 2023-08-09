@@ -40,6 +40,9 @@ section {
     height: 100%;
     object-fit: cover;
 }
+.render_featured_products {
+    margin-bottom: 0px;
+}
 /*-------------homepage 6 css custom-----*/
 
 .al_body_template_six .slick-track {
