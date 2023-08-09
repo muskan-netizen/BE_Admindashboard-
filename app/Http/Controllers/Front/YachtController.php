@@ -25,6 +25,7 @@ use App\Http\Traits\ProductActionTrait;
 use App\Http\Traits\VendorTrait;
 use App\Models\ClientCurrency;
 use App\Models\Product;
+use App\Models\ProductAttribute;
 use App\Models\ProductTag;
 use App\Models\Tag;
 use App\Models\Vendor;
@@ -382,7 +383,7 @@ class YachtController extends FrontController
             if($theme && !empty($theme->map_key)){
                 $mapKey = $theme->map_key;
             }
-            $response = \Http::get("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$request->location_latitude,$request->location_longitude&rankby=distance&type=airport&key=$mapKey")['results'];
+            $response = \Http::get("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$request->latitude,$request->longitude&rankby=distance&type=airport&key=$mapKey")['results'];
             $data['products'] = collect($response)->map(function($result){
                 return [
                     'title' => $result['name'],
@@ -393,36 +394,46 @@ class YachtController extends FrontController
                 ];
             });
         }
+        $time = explode('to',$request->pick_drop_time);
+        $pickup_time = date('Y-m-d H:i',strtotime($time[0]));
+        $drop_time = date('Y-m-d H:i',strtotime($time[1]));
 
         $category = Category::where('slug',$request->service)->first();
-        
+        $data['products'] = [];
         if($category){
-            $data['products'] = Product::with(['variant','media.image'])->where(function($q) use ($request){
-                if(isset($request->pickup_time) && isset($request->drop_time)){
-                    $q->where('pickup_time', '<=', $request->pickup_time)
-                    ->where('drop_time', '>=', $request->drop_time);
+            $data['products'] = Product::with(['variant','media.image',
+            'ProductAttribute' => function($q){
+                $q->whereIn('key_name', ['Transmission', 'Fuel Type', 'Seats']);
+            }, 
+            'ProductAttribute.attributeOption:id,title'])->where(function($q) use ($pickup_time, $drop_time){
+                if(!empty($pickup_time) && !empty($drop_time)){
+                    // $q->where('pickup_time', '<=', $pickup_time)
+                    // ->where('drop_time', '>=', $drop_time);
                 }
             })->where(function($q) use ($request){
                 if($request->seats){
                     $q->where('seats','>=', $request->seats);
                 }
             })->where( function($q) use ($request){
-                if(isset($request->location_latitude) && isset($request->location_longitude)){
+                if(isset($request->latitude) && isset($request->longitude)){
                     $q->whereHas('vendor.serviceArea',function($q) use ($request){
-                        $q->select('id','vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $request->location_latitude . " " . $request->location_longitude . ")'))");
+                        $q->select('id','vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $request->latitude . " " . $request->longitude . ")'))");
                     });
                 }
             })
             ->with('vendor',function($q) use ($request){
-                $q->distanceInMeters($request->location_latitude,$request->location_longitude);
+                $q->distanceInMeters($request->latitude,$request->longitude);
             })
             ->where('category_id',$category->id)->get();
-        }else{
-            $data['products'] = [];
         }
         $data['service'] = $request->service;
-        $data['pickup_time'] = $request->pickup_time;
-        $data['drop_time'] = $request->drop_time;
-        return view('frontend.yacht.products',$data);
+        $data['pick_drop_time'] = $request->pick_drop_time;
+        $data['pickup_time'] = $pickup_time;
+        $data['drop_time'] = $drop_time;
+        $data['location'] = $request->location;
+        $data['location_latitude'] = $request->latitude;
+        $data['location_longitude'] = $request->longitude;
+        $data['category'] = $category;
+        return view('frontend.yacht.car-rental',$data);
     }
 }

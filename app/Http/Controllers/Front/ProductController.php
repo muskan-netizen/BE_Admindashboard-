@@ -49,7 +49,9 @@ class ProductController extends FrontController{
         $product = Product::select('id', 'vendor_id')->where('url_slug', $url_slug)
             ->whereHas('vendor',function($q) use($vendor){
                 $q->where('slug',$vendor);
-            })->firstOrFail();
+            })->with(['ProductAttribute' => function($q){
+                $q->whereIn('key_name', ['Transmission', 'Fuel Type', 'Seats']);
+            }, 'ProductAttribute.attributeOption'])->firstOrFail();
         $product_in_cart = CartProduct::where(["product_id" => $product->id]);
         $processorProduct = ProcessorProduct::where('product_id', $product->id)->first();
         if ($user) {
@@ -377,8 +379,7 @@ class ProductController extends FrontController{
                     }
                 }
             }
-
-            return view('frontend.'.$product_page)->with(['productAttributes' => $productAttributes, 'pickup_time' => $pickup_time,'drop_time' => $drop_time,'user_vendor' => $user_vendor, 'shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference, 'suggested_category_products' => $suggested_category_products, 'suggested_brand_products'=> $suggested_brand_products, 'suggested_vendor_products'=>$suggested_vendor_products, 'coupon_list' => $coupon_list, 'attr_array' => $attr_array, 'set_template' => $set_template, 'current_time_response' => $current_time_response, 'processorProduct'=> $processorProduct]);
+            return view('frontend.yacht.'.$product_page)->with(['productAttributes' => $productAttributes, 'pickup_time' => $pickup_time,'drop_time' => $drop_time,'user_vendor' => $user_vendor, 'shareComponent' => $shareComponent, 'sets' => $sets, 'vendor_info' => $vendor, 'product' => $product, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'rating_details' => $rating_details, 'is_inwishlist_btn' => $is_inwishlist_btn, 'category' => $category, 'product_in_cart' => $product_in_cart,'is_available'=>$is_available, 'getAdditionalPreference' => $getAdditionalPreference, 'suggested_category_products' => $suggested_category_products, 'suggested_brand_products'=> $suggested_brand_products, 'suggested_vendor_products'=>$suggested_vendor_products, 'coupon_list' => $coupon_list, 'attr_array' => $attr_array, 'set_template' => $set_template, 'current_time_response' => $current_time_response, 'processorProduct'=> $processorProduct]);
         }
    }
 

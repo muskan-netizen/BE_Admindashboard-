@@ -498,9 +498,7 @@ class Product extends Model implements Auditable
 
   public function ProductAttribute()
   {
-    if (checkTableExists('product_attributes')) {
       return $this->hasMany('App\Models\ProductAttribute', 'product_id', 'id');
-    }
   }
 
   public function tollpass()
