@@ -871,6 +871,10 @@ body.al_body_template_six.dark h6.card_title.ellips {
 .al_body_template_six .alSixMainMenu .slick-disabled {
     display: none!important;
 }
+.alVender .inner_spacing h4 {
+    font-size: 14px;
+    padding-top: 2px;
+}
 .al_body_template_six .common-product-box , .al_body_template_six .common-product-box{
     display: block;
     border-bottom: unset;

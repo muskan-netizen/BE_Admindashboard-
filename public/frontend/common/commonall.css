@@ -709,13 +709,17 @@ content: inherit;
 .al_body_template_one .brand_one .col-md-3.col-6.col-grid-box {
     padding-bottom: 0px;
 }
-
+.al_body_template_six .buy_details .product-right h2 {
+    font-size: 18px;
+    line-height: 30px;
+    letter-spacing: 0px;
+}
 .al_body_template_one .displayProducts .brand_one .inner_spacing h6 {
     margin-bottom: 0px !important;
 }
 
-.filter_brand .collection-filter-block.bg-transparent {
-    padding: 0px 20px !important;
+.al_body_template_six .filter_brand .collection-filter-block.bg-transparent {
+    padding: 10px 10px !important;
 }
 
 .outer-categories .filter_brand aside.side_fillter {
@@ -934,7 +938,7 @@ position: relative;
 .al_body_template_six .common-banner:after{
     position:absolute;
     background:#000000c7;border-radius: 0px;
-    z-index: -1;
+    /* z-index: -1; */
 }
 
 .top-banner-content.small-section h4 {
