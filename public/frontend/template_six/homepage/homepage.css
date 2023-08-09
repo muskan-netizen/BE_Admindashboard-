@@ -815,7 +815,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
 }
 
 .al_body_template_six .alSixMainMenu {
-    margin-top: 60px;
+    margin-top: 40px;
     margin-bottom: 60px;
     display: flex;
     justify-content: center;
@@ -941,7 +941,9 @@ body.al_body_template_six.dark h6.card_title.ellips {
     max-width: 100%;
     position: relative;
 }
-
+.al_body_template_six .alSixMainMenu #main-menu .slick-list.draggable{
+    max-width: 95%;
+}
 
 .al_body_template_six .alSixMainMenu .slick-slide .al_main_category a .alCategoryName {
     text-transform: uppercase;
@@ -1178,7 +1180,9 @@ a.brand-box.d-block.black-box {
     font-size: 16px
 }
 
-
+.popular-brands {
+    padding: 0 30px;
+}
 /* car bar css end */
 
 
