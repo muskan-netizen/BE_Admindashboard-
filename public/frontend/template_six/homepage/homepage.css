@@ -1123,7 +1123,15 @@ a.brand-box.d-block.black-box {
 
 
 /*responsive css add */
-
+@media (max-width:1500px) {
+    .al_body_template_six  h2.h2-heading.mt-4, .al_body_template_six  .h2-heading {
+        margin-bottom: 20px;
+        margin-top: 0!important;
+    }
+    .al_body_template_six .alSixMainMenu{
+        margin-top: 40px;
+    }
+}   
 @media (max-width:576px) {
     html,
     body {
