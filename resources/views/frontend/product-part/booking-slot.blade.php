@@ -279,7 +279,7 @@
             selectedStartDate:selectedStartDate,
             selectedEndDate:selectedEndDate
           }
-          await calculateExtraTimeforproduct(selectedStartDate,selectedEndDate);
+          //await calculateExtraTimeforproduct(selectedStartDate,selectedEndDate);
 
            check_product_availibility(formData);
 
@@ -420,9 +420,10 @@
             divide = parseInt(divide) + 1;
           }
           var extra_t_min = parseInt(default_step)*parseInt(divide);
-
+          //console.log("extra_t_min"), extra_t_min;
           $('#incremental_hrs').val(extra_t_min);
           var t_min_hr_min = parseInt(extra_t_min)+parseInt(default_minutes);
+           console.log("t_min_hr_min"), t_min_hr_min;
           if(t_min_hr_min< default_minutes){
             t_min_hr_min = default_minutes;
             // $checkoutInput = $('#blocktime2');

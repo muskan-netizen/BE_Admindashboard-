@@ -10,7 +10,7 @@ use App\Http\Traits\GlobalFunction;
 use Illuminate\Support\Facades\Http;
 
 
-use App\Models\{Client, Product, UserVendor, Vendor};
+use App\Models\{Client, Product, UserVendor, Vendor, User, OrderVendor, OrderVendorProduct};
 
 class ChatController extends BaseController
 {
@@ -172,13 +172,16 @@ class ChatController extends BaseController
             $order_id = $data['order_id'] ?? '';
             $server_name = $_SERVER['SERVER_NAME'];
             $product_id = $data['product_id'] ?? null;
-
+            $agent_db = '';
+            $agent_id = '';
             $socket_url = $this->client_data->socket_url;
             $c_type = $data['type'] ?? null;
             $p2p_id = null;
             $vendor_name = null;
             $product_name = null;
             $product_price = null;
+            $product = [];
+            $vendorImage = [];
             // dd(is_null($order_id));
             // check order_vendor_id and order_id is empty then it is called for p2p chat
             if( $c_type == 'user_to_user' ) {
@@ -186,6 +189,12 @@ class ChatController extends BaseController
                 $orderby_user_id = Auth::id();
                 $p2p_id = $vendor_id;
                 $vendor = Vendor::where('id', $vendor_id)->first();
+                if(@$vendor){
+                    $user_vendor = UserVendor::where('vendor_id', $vendor_id)->first();
+                    if(@$user_vendor->user_id){
+                        $vendorImage = User::where('id', $user_vendor->user_id)->first();
+                    }
+                }
                 $vendor_name = $vendor->name;
                 $product = Product::with('variant')->where('id', $product_id)->first();
                 $product_name = $product->title;
@@ -239,7 +248,7 @@ class ChatController extends BaseController
             $statusCode = $response->getStatusCode();
             if($statusCode == 200) {
                 $roomData = $response['roomData'];
-                return response()->json(['status' => true, 'roomData' => $roomData , 'message' => __('Room created successfully !!!')]);
+                return response()->json(['status' => true, 'roomData' => $roomData , 'product' => $product,'vendorImage' => $vendorImage, 'message' => __('Room created successfully !!!')]);
             } else {
 
                 return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
@@ -259,12 +268,29 @@ class ChatController extends BaseController
      */
     public function fetchOrderDetail(Request $request){
         try {
+            $vendorImage = [];
+            $order_vendor = [];
+            if(@$request->product_id){
+                $order_vendor_id = OrderVendorProduct::select('order_vendor_id')->where('product_id', $request->product_id)->orderBy('id', 'Desc')->first();
+                $order_vendor = OrderVendor::select('order_status_option_id', 'vendor_id', 'user_id', 'id')->where('id',  $order_vendor_id->order_vendor_id)->first();
+                
+                $user_vendor = UserVendor::where('vendor_id', $order_vendor->vendor_id)->first();
+                $order_vendor->vendor_user_id = $user_vendor->user_id ?? 0;
+            }
             if($request->product_id != 'undefined' && $request->product_id != ''){
                 $orderData = $this->ProductDetail($request);
+               
+                if(@$orderData){
+                    $user_vendor = UserVendor::where('vendor_id', $orderData->vendor_id)->first();
+                    if(@$user_vendor->user_id){
+                        $vendorImage = User::where('id', $user_vendor->user_id)->first();
+                    }
+                   
+                }
             }else{
                 $orderData = $this->OrderVendorDetail($request);
             }
-            return response()->json(['status' => true, 'orderData' => $orderData , 'message' => __('Data fetched !!!')]);
+            return response()->json(['status' => true, 'orderData' => $orderData ,'vendorData' => $vendorImage ,'order_vendor'=>  $order_vendor, 'message' => __('Data fetched !!!')]);
             
             //code...
         } catch (\Throwable $th) {

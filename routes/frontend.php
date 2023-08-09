@@ -5,6 +5,7 @@ use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\LiveePaymentController;
 use App\Http\Controllers\MargController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\RoadieController;
 
 Route::post('ajaxGetScheduleDateDetails', 'Front\CartController@ajaxGetScheduleDateDetails')->name('ajaxGetScheduleDateDetails');
 Route::get('confirmation', 'Front\UserhomeController@confirmation')->name('confirmation');
@@ -14,6 +15,9 @@ Route::get('auth/xero', 'Front\XeroController@index')->name('xero_auth');
 Route::any('auth/callback/xero', 'Front\XeroController@xero_callback')->name('callback_xero');
 Route::any('payment/paytab/callback', 'Front\PaytabController@callback')->name('payment.paytab.callback');
 Route::match(['get', 'post'], 'payment/paytab/return', 'Front\PaytabController@returnBack')->name('payment.paytab.return');
+Route::get('/sync-marg', [MargController::class, 'syncmarg'])->name('sync.marg');
+Route::get('/order-marg', [MargController::class, 'makeInsertOrderMargApi']);
+// Route::get('/margcmd', [MargController::class, 'margcmd'])->name('sync.marg');
 Route::match(['get','post'],'payment/payByDataTrans','Front\DataTransController@payByDataTrans')->name('payment.payByDataTrans');
 Route::get('/sync-marg', [MargController::class, 'syncmarg'])->name('sync.marg');
 Route::get('/order-marg', [MargController::class, 'makeInsertOrderMargApi']);
@@ -32,6 +36,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::any('webhook/ship-rocket', 'ShiprocketController@shiprocketWebhook')->name('webshiprocket');
 	Route::any('webhook/dunzo', 'DunzoController@dunzoWebhook')->name('dunzoWebhook');
 	Route::any('webhook/ahoy', 'AhoyController@ahoyWebhook')->name('ahoyWebhook');
+	Route::any('webhook/roadie', [RoadieController::class, 'roadieWebhook'])->name('roadieWebhook');
 	Route::get('webhook/user_rating', 'Front\UserRatingController@userRatingWebhook')->name('user_rating_webhook');
     Route::any('livee/success','LiveePaymentController@afterPayment')->name('livee.payment');
 
@@ -538,6 +543,11 @@ Route::group(['middleware' => ['domain']], function () {
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
 
 	Route::get('user/orders', 'Front\OrderController@orders')->name('user.orders');
+	Route::get('user/lander-orders', 'Front\OrderController@lenderOrders')->name('user.lander-orders');
+	Route::get('user/borrower-orders', 'Front\OrderController@borrowerOrders')->name('user.borrower-orders');
+	Route::post('user/orderVenderStatusUpdate', 'Front\OrderController@orderVenderStatusUpdate')->name('user.orderVenderStatusUpdate');
+
+	Route::get('user/rental-orders', 'Front\RentalOrderController@rentalOrders')->name('user.rental-orders');
 	Route::post('user/orders/tip-after-order', 'Front\OrderController@tipAfterOrder')->name('user.tip_after_order');
 	Route::post('user/store', 'Front\AddressController@store')->name('address.store');
 	Route::get('user/addAddress', 'Front\AddressController@add')->name('addNewAddress');
@@ -601,6 +611,8 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('user/subscription/purchase/{slug}', 'Front\UserSubscriptionController@purchaseSubscriptionPlan')->name('user.subscription.plan.purchase');
 	Route::post('user/subscription/cancel/{slug}', 'Front\UserSubscriptionController@cancelSubscriptionPlan')->name('user.subscription.plan.cancel');
 	Route::get('user/subscription/checkActive/{slug}', 'Front\UserSubscriptionController@checkActiveSubscription')->name('user.subscription.plan.checkActive');
+	Route::get('user/mealSubscription/{slug}', 'Front\UserSubscriptionController@mealSubscription')->name('user.mealSubscription');
+	Route::get('user/subscription-credit', 'Front\UserSubscriptionController@subscriptionCredit')->name('user.mealSubscription.credit');
 
 	// Refer and Earn Module
 	Route::name('refer-earn.')->group(function () {
@@ -709,9 +721,10 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	Route::post('remove/giftCard', 'Front\giftCard\GiftcardController@RemoveGiftCardCode')->name('remove.giftCard');
 	Route::get('user/giftCard/mailTest', 'Front\giftCard\GiftcardController@textGiftMail')->name('giftCard.mail');
 
-
+	
 	Route::resource('posts', 'Front\PostController');
 	Route::get('get-attributes', 'Front\PostController@getCategoryAttributes')->name("category.attributes");
+	Route::post('addProductWithAttribute', 'Front\PostController@addProductWithAttribute')->name("posts.addProductWithAttribute");
 	/**
 	 * booking routes
 	 */

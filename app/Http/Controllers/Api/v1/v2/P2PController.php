@@ -285,17 +285,14 @@ class P2PController extends BaseController
                
             if( clientPrefrenceModuleStatus('p2p_check') && $request->has('attributes') && count($request['attributes']) > 0) {
                 $attributes = $request['attributes'];
-               
+                
                 $products = $products->whereHas('ProductAttribute', function($q) use($attributes){
-                    
                     foreach($attributes as $key=>$attribute){
-                        foreach($attribute['options'] as $option){
-                        $q->where('attribute_id', $attribute['attribute_id'])->where('attribute_option_id' , $option);
+                        foreach($attribute['options'] as $key=>$option){
+                            $q->where('attribute_id', $attribute['attribute_id'])->where('attribute_option_id' , $option)->orWhere('key_value', $option);
+                        }
                     }
-                }
-                   
                 });
-
             }
 
 
@@ -385,6 +382,25 @@ class P2PController extends BaseController
             $categories = $categories->where('type_id', '!=', 5);   # if celebrity mod off .
 
         $categories = $categories->get();
+
+        return $this->successResponse($categories);
+    }
+
+    public function getRentalCategories()
+    {
+
+        $celebrity_check = ClientPreference::first()->value('celebrity_check');
+        $categories = Category::with('translation_one','type')->where('id', '>', '1')
+        ->whereHas('type', function($q){
+            $q->where('service_type', 'rental_service');
+        })
+        ->where('is_core', 1)->orderBy('parent_id', 'asc')->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1);
+
+        if ($celebrity_check == 0)
+            $categories = $categories->where('type_id', '!=', 5);   # if celebrity mod off .
+
+        $categories = $categories->paginate();
+
 
         return $this->successResponse($categories);
     }

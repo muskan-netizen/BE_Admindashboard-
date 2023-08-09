@@ -2196,18 +2196,7 @@
     </div>
     {{-- ends here marg form --}}
     </div>
-
-   
     </div>
-
-    
-
-
-
-
-
-
-
 
     <div class="row">
 
@@ -2233,10 +2222,6 @@
         <!-- Custom Mods end -->
     </div>
     </div>
-
-
-
-
 
     <div style="display:none;">
         <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
@@ -2579,6 +2564,9 @@
                 success: function(response) {
                     $('#sycn_time').html(response.time);
                     sweetAlert.success('Data Sycn Successfully!');
+                },
+                error: function(response) {
+                    sweetAlert.error('Error!');
                 }
             });
         });
@@ -2608,6 +2596,25 @@
                     }
                 });
             }
+        });
+
+        // Mark ////
+
+        $(document).on("click", "#sync_marg_btn", function() {
+                $.ajax({
+                    type: "GET",
+                    dataType: 'json',
+                    url: "{{ route('sync.marg') }}",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                    },
+                    success: function(response) {
+                        dd(response);
+                        if (response.status == "Success") {
+                           
+                        }
+                    }
+                });
         });
 
         $(document).on('click', '.show-custom-mods-btn', function(e) {
@@ -3009,6 +3016,7 @@
         var laundry_service = $('#need_laundry_service');
 
         var is_hubspot_enable = $('#is_hubspot_enable');
+        var is_marg_enable = $('#is_marg_enable');
 
         if (laundry_service.length > 0) {
             laundry_service[0].onchange = function() {
@@ -3027,6 +3035,16 @@
                     $('.hub_row').hide();
                 } else {
                     $('.hub_row').show();
+                }
+            }
+        }
+        if (is_marg_enable.length > 0) {
+            is_marg_enable[0].onchange = function() {
+
+                if ($('#is_marg_enable:checked').length != 1) {
+                    $('.marg_row').hide();
+                } else {
+                    $('.marg_row').show();
                 }
             }
         }

@@ -49,7 +49,6 @@ trait MargTrait{
             $is_exist = Product::where('sku', $request->code)->first();
 
 			if(isset($request->ProductCode) && isset($request->name) && is_null($is_exist)){
-
                 $url_slug = $this->validateSlug($request->name);
                 $request->catcode = 5;
 
@@ -279,7 +278,7 @@ trait MargTrait{
             $encryptedData = $this->getData($MargMST2017, $detail);
 
             $encryptedData = json_decode($encryptedData);
-            
+
             if(isset($encryptedData) && !isset($encryptedData->Message))
             {
 				$updateOrder = Order::findOrFail($order->id);
@@ -290,7 +289,10 @@ trait MargTrait{
                 return true;
                 
             }else{
-                session()->flash('success',$encryptedData->Message);
+                $updateOrder = Order::findOrFail($order->id);
+				$updateOrder->marg_max_attempt =$updateOrder->marg_max_attempt + 1;
+				$updateOrder->save();
+                session()->flash('success',$encryptedData->Message??'Somthing Went Wrong!');
                 return false;
             }
             return true;

@@ -112,7 +112,7 @@ class MargApiOrderUpdate extends Command
                     ])
                 ->where('marg_max_attempt', '<', 3)
                     ->get();
-
+                    // dd($orders);
                 if (count($orders) > 0) {
 
                     foreach ($orders as $order) {

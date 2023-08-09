@@ -53,7 +53,6 @@ $(document).ready(function () {
             }
 
         }
-        // paymentSuccessViaPaystack(urlParams.get('amount'), urlParams.get('trxref'), path, tipAmount, order_number);
     }
 
 
@@ -100,9 +99,6 @@ $(document).ready(function () {
         ajaxData.amount = total_amount;
         ajaxData.returnUrl = path;
         ajaxData.cancelUrl = path;
-
-        // console.log(ajaxData);
-        // return false;
 
 
         $.ajax({
@@ -349,10 +345,9 @@ $(document).ready(function () {
                 { name: 'cart_id', value: cart_id },
                 { name: 'order_number', value: order.order_number }
             );
-            
+
         } else if (path.indexOf("wallet") !== -1) {
             total_amount = walletElement.val();
-            // ajaxData.payment_form = 'wallet';
             ajaxData.push({ name: 'payment_form', value: 'wallet' });
         } else if (path.indexOf("subscription") !== -1) {
             total_amount = subscriptionElement.val();
@@ -364,17 +359,14 @@ $(document).ready(function () {
                 { name: 'payment_form', value: 'tip' },
                 { name: 'order_number', value: $("#order_number").val() }
             );
-            // ajaxData.payment_form = 'tip';
-            // ajaxData.order_number = $("#order_number").val();
+
         }
         ajaxData.push(
             { name: 'token', value: token },
             { name: 'amount', value: total_amount },
             { name: 'returnUrl', value: path }
         );
-        // ajaxData.token = token;
-        // ajaxData.amount = total_amount;
-        // ajaxData.returnUrl = path;
+
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -4315,10 +4307,7 @@ $(document).ready(function () {
             var rowData = 'amt='+ total_amount + '&order_number=' + order_number + '&payment_from=' + payment_from+'&subscription_id=' +subscription_id.val();
 
         }
-
         window.location = livee_payment_url + '?' + rowData;
-
-
     }
 
 

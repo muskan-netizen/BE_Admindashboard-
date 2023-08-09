@@ -306,7 +306,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 @if($product->category->categoryDetail->type_id != 7)
                 <div class="card-box">
                     {{-- @dd($product->vendor) --}}
-                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Pricing Information") }}</h5>
+                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2 def">{{ __("Pricing Information") }}</h5>
                     @if($product->has_variant == 0)
                     <div class="row mb-2">
                         @if(@$product->vendor->is_seller == 1 && Auth::user()->is_superadmin == 1)

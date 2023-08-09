@@ -3790,9 +3790,9 @@ body[dir="rtl"] .product-description {
 }
 
 .start_chat {
-    float: right;
+    /* float: right;
     margin: -15px;
-    padding: 0px 132px 0px 0px;
+    padding: 0px 132px 0px 0px; */
 }
 
 
@@ -4043,6 +4043,28 @@ a.morelink.less {
 }
 
 .al_body_template_three .product-description_list.border-bottom {
-    height: 60px;
+    min-height: inherit;
     overflow-y: auto;
+}
+.al_body_template_three .product-description_list.border-bottom span.flag-discount {
+    position: absolute;
+    top: 11px;
+    left: 10px;
+    background: #fff;
+    box-shadow: 0 0 10px #ccc;
+    font-size: 14px;
+    padding: 5px;
+    border-radius: 5px;
+}
+.al_body_template_three .product-description_list.border-bottom span.flag-discount:after{
+    content: unset;
+}
+.al_body_template_three .product-description_list.border-bottom {
+    min-height: inherit;
+    overflow-y: auto;
+    display: flex;
+    justify-content: space-between;
+}
+.al_body_template_three .product-description_list.border-bottom .prod-details .chat-button button {
+    padding: 5px 2px!important;
 }
