@@ -660,7 +660,7 @@ class DispatcherController extends FrontController
                                     $product_addons[$k]['addon_id'] = $addon->addon_id;
                                     $product_addons[$k]['option_id'] = $addon->option_id;
                                     $product_addons[$k]['price'] = $opt_price_in_currency;
-                                    $product_addons[$k]['addon_title'] = ($addon->set)?$addon->set->title:0;
+                                    $product_addons[$k]['addon_title'] = $addon->set->title;
                                     $product_addons[$k]['quantity_price'] = $opt_quantity_price;
                                     $product_addons[$k]['option_title'] = $addon->option ? $addon->option->title : 0;
                                     // $product_addons[$k]['multiplier'] = $clientCurrency->doller_compare;
