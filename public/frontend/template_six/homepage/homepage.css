@@ -16,20 +16,61 @@ section {
 
 
 .home-slider-wrapper span.carousel-control-prev-icon {
-    background-color: #000;
+    background-color: var(--theme-deafult);
     width: 40px !important;
     height: 40px !important;
     background-size: 12px;
     border-radius: 2px;
+    background-image: unset!important;
+    position: relative;
 }
 .home-slider-wrapper span.carousel-control-next-icon {
-    background-color: #000;
+    background-color: var(--theme-deafult);
     width: 40px !important;
     height: 40px !important;
     background-size: 12px;
     border-radius: 2px;
+    background-image: unset!important;
+    position: relative;
 }
-
+.home-slider-wrapper span.carousel-control-prev-icon:before {
+    position: absolute;
+    content: "";
+    width: 12px;
+    height: 12px;
+    border-top: 3px solid #fff;
+    opacity: 1;
+    border-left: 3px solid #fff;
+    transform: rotate(-46deg);
+    top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left: 17px;
+}
+.home-slider-wrapper span.carousel-control-next-icon:after {
+    position: absolute;
+    content: "";
+    width: 12px;
+    height: 12px;
+    border-bottom: 3px solid #fff;
+    opacity: 1;
+    border-left: 3px solid #fff;
+    transform: rotate(-134deg);
+    top: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    right: 16px;
+}
+.home-slider-wrapper  .carousel-control-next, .home-slider-wrapper  .carousel-control-prev {
+    opacity: 1;
+}
+.render_on_sale  .product-description ,
+.render_new_products  .product-description,
+.render_featured_products   .product-description{
+    min-height: 93px;
+}
 .carousel-inner a.banner-img-outer {
     display: block;
     height: 500px;
@@ -40,9 +81,9 @@ section {
     height: 100%;
     object-fit: cover;
 }
-.render_featured_products {
+/* .render_featured_products {
     margin-bottom: 0px;
-}
+} */
 /*-------------homepage 6 css custom-----*/
 
 .al_body_template_six .slick-track {
@@ -309,7 +350,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
 
 .al_body_template_six .alSixMainMenu .slick-next.slick-arrow,
 .al_body_template_six .vendors .slick-next.slick-arrow {
-    right: 10px;
+    right: 5px;
 }
 
 .al_body_template_six .alSixMainMenu .slick-prev.slick-arrow,
@@ -322,14 +363,49 @@ body.al_body_template_six.dark h6.card_title.ellips {
     font-size: 0;
     border: 0;
     background-color: var(--theme-deafult);
-    height: 50px;
-    width: 50px;
-    border-radius: 50px;
+    height: 40px;
+    width: 40px;
+    border-radius: 2px;
     z-index: 1;
+    background-image: unset;
     /* right: 0px !important; */
 }
+.al_body_template_six .alSixMainMenu .slick-prev:before, .al_body_template_six .vendors .slick-prev:before {
+    position: absolute;
+    content: "";
+    width: 12px;
+    height: 12px;
+    border-top: 3px solid #fff;
+    opacity: 1;
+    border-left: 3px solid #fff;
+    transform: rotate(-46deg);
+    top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left: 17px;
+}
+.al_body_template_six .alSixMainMenu .slick-next:before, .al_body_template_six .vendors .slick-next:before {
+    position: absolute;
+    content: "";
+    width: 12px;
+    height: 12px;
+    border-bottom: 3px solid #fff;
+    opacity: 1;
+    border-left: 3px solid #fff;
+    transform: rotate(-136deg);
+    top: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    right: 16px;
+}
 
-.al_body_template_six .alSixMainMenu .slick-next:before,
+.al_body_template_six  h2.h2-heading.mt-4, .al_body_template_six  .h2-heading {
+    margin-bottom: 35px;
+    margin-top: 0!important;
+}
+/* .al_body_template_six .alSixMainMenu .slick-next:before,
 .al_body_template_six .vendors .slick-next:before {
     border: solid #fff;
     border-width: 0 2px 2px 0;
@@ -341,12 +417,13 @@ body.al_body_template_six.dark h6.card_title.ellips {
     content: "";
     right: 15px;
     top: 19px;
-}
+} */
 
 .al_body_template_six .alSixMainMenu .slick-next:after,
 .al_body_template_six .vendors .slick-next:after {
     position: absolute;
-    content: "";
+    /* content: ""; */
+    content: unset;
     right: 15px;
     top: 25px;
     height: 2px;
@@ -354,7 +431,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
     background-color: #fff;
 }
 
-.al_body_template_six .alSixMainMenu .slick-prev:before,
+/* .al_body_template_six .alSixMainMenu .slick-prev:before,
 .al_body_template_six .vendors .slick-prev:before {
     border: solid #fff;
     border-width: 0 2px 2px 0;
@@ -366,12 +443,13 @@ body.al_body_template_six.dark h6.card_title.ellips {
     content: "";
     right: 25px;
     top: 30%;
-}
+} */
 
 .al_body_template_six .alSixMainMenu .slick-prev:after,
 .al_body_template_six .vendors .slick-prev:after {
     position: absolute;
-    content: "";
+    /* content: ""; */
+    content: unset;
     right: 15px;
     top: 26px;
     height: 2px;
@@ -684,7 +762,8 @@ body.al_body_template_six.dark h6.card_title.ellips {
 }
 
 .al_body_template_six .alSixMainMenu {
-    /* margin-top: -120px; */
+    margin-top: 60px;
+    margin-bottom: 60px;
     display: flex;
     justify-content: center;
     position: relative;
@@ -1042,6 +1121,17 @@ a.brand-box.d-block.black-box {
 
 /*responsive css add */
 
+@media (max-width:1500px) {
+    .al_body_template_six  h2.h2-heading.mt-4, .al_body_template_six  .h2-heading {
+        margin-bottom: 20px;        
+    }
+    .al_body_template_six .alSixMainMenu{
+        margin: 50px 0px    ;
+    }
+    section {
+        padding-bottom: 0px;
+    }
+}
 @media (max-width:576px) {
     html,
     body {
