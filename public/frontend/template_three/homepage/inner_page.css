@@ -1075,6 +1075,7 @@ h2.homepage-address {
     border-radius: 12px!important;
     background-color: transparent!important;
     border: 1px solid transparent!important;
+    padding-bottom:8px !important;
 }
 
 .al_box_third_template .product-image {
@@ -3563,12 +3564,16 @@ footer#footer {
 .alProductCategories .collection-wrapper .container.p-0 {
     padding: 0 10px!important;
 }
-
+.buy_details .discriptions h3 {
+    font-size: 18px;
+    letter-spacing: 0px;
+    font-weight: 600;
+}
 @media (min-width: 1300px) {
     .fillter_product .product-image {
-        min-height: 250px;
-        min-width: 200px;
-        max-height: 250px;
+        min-height: 200px;
+        min-width: 100%;
+        max-height: 200px;
     }
 }
 
@@ -4055,8 +4060,14 @@ a.morelink.less {
     margin-left: 0 !important;
     margin-right: 0 !important;
 }
-
+.order_detail.order_detail_data.card-box h5 {
+    font-size: 14px;
+    letter-spacing: 0px;
+    font-weight: 500;
+}
 .al_body_template_three .product-description_list.border-bottom {
-    height: 60px;
-    overflow-y: auto;
+    height: 100%;
+    max-height: 80px;
+    min-height: 80px;
+    overflow: hidden;
 }
