@@ -8,7 +8,13 @@
     border-bottom: 1px solid #e8e8e8!important;
     border-radius: 12px !important;
 }
-
+.al_template_two_menu {
+    padding: 12px 0px;
+}
+.al_template_two_menu .pixelstrap li a img{
+    width: 44px;
+    height: 44px;
+}
 .home-slider-wrapper span.carousel-control-prev-icon {
     background-color: #000;
     width: 40px !important;
