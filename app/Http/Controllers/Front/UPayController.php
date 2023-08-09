@@ -15,10 +15,12 @@ class UPayController extends FrontController
 	public function __construct()
   	{
 		$this->upay_creds = PaymentOption::select('credentials','test_mode')->where('code', 'upay')->where('status', 1)->first();
+        if(@$this->upay_creds && !empty($this->upay_creds)){
 	    $this->creds_arr = json_decode($this->upay_creds->credentials);
 	    $this->uidd = $this->creds_arr->uuid_key ?? '';
 	    $this->aes_key = $this->creds_arr->aes_key ?? '';
 	    $this->endpoint = $this->upay_creds->test_mode ? "https://ubotpsentry-tst1.outsystemsenterprise.com/UPAY" : "https://sith.unionbankph.com/UPAY";
+        }
 	}
 	public function beforePayment(Request $request)
     {

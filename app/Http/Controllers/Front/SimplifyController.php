@@ -18,9 +18,11 @@ class SimplifyController extends FrontController
 	public function __construct()
   	{
 		$simp_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'simplify')->where('status', 1)->first();
+        if(@$simp_creds && !empty($simp_creds)){
 	    $creds_arr = json_decode($simp_creds->credentials);
 	    $this->public_key = $creds_arr->public_key??'';
 	    $this->private_key = $creds_arr->private_key??'';
+        }
 	}
 
     public function beforePayment(Request $request)
