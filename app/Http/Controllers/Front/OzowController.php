@@ -18,7 +18,7 @@ class OzowController extends FrontController
 	public function __construct()
   	{
 		$this->ozow_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'ozow')->where('status', 1)->first();
-        if(@$this->ozow_creds && !empty($this->ozow_creds)){
+        if(@$this->ozow_creds && !empty($this->ozow_creds->credentials)){
 	    $this->creds_arr = json_decode($this->ozow_creds->credentials);
 	    $this->application_id = $this->creds_arr->application_id??'';
 	    $this->access_token = $this->creds_arr->api_access_token??'';

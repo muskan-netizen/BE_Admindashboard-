@@ -7,7 +7,7 @@ trait PaytabPaymentManager{
   public function __construct()
     {
       $this->paytab_creds = PaymentOption::select('credentials')->where('code', 'paytab')->where('status', 1)->first();
-      if(@$this->paytab_creds && !empty($this->paytab_creds)){
+      if(@$this->paytab_creds && !empty($this->paytab_creds->credentials)){
       $this->creds_arr = json_decode($this->paytab_creds->credentials);
       $this->profile_id = $this->creds_arr->profile_id ?? '';
       $this->client_key = $this->creds_arr->client_key ?? '';

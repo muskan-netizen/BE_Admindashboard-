@@ -37,7 +37,7 @@ class OpenpayPaymentController extends FrontController
     {
       
         $openpay = PaymentOption::select('credentials', 'test_mode')->where('code', 'openpay')->where('status', 1)->first();
-        if(@$openpay && !empty($openpay)){
+        if(@$openpay && !empty($openpay->credentials)){
         $creds_arr = json_decode($openpay->credentials);
         $this->openpay_merchant_id = (isset($creds_arr->openpay_merchant_id)) ? $creds_arr->openpay_merchant_id : '';
         $this->openpay_private_key = (isset($creds_arr->openpay_private_key)) ? $creds_arr->openpay_private_key : '';

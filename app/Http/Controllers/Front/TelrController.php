@@ -15,7 +15,7 @@ class TelrController extends Controller
 	public function __construct()
   	{
 		$this->telr_creds = PaymentOption::select('credentials','test_mode')->where('code', 'telr')->where('status', 1)->first();
-        if(@$this->telr_creds && !empty($this->telr_creds)){ 
+        if(@$this->telr_creds && !empty($this->telr_creds->credentials)){ 
 	    $this->creds_arr = json_decode($this->telr_creds->credentials);
 	    $this->merchant_id = $this->creds_arr->merchant_id ?? '';
 	    $this->api_key = $this->creds_arr->api_key ?? '';
