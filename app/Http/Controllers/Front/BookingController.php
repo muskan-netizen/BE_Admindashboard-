@@ -40,6 +40,7 @@ class BookingController extends FrontController
         $order['dispatch_traking_url'] = $order->vendors->first()->dispatch_traking_url ?? null;
         //dd($order);
         $order['dispatch_traking_url'] = str_replace("/order/","/order-details/",$order['dispatch_traking_url']);
+        $order['dispatch_traking_url'] =  str_replace("http://http://192.168.102.169:8000:8000","http://192.168.102.169:8000",$order['dispatch_traking_url']);
         if($order['dispatch_traking_url'] != null){
             $response = Http::get($order['dispatch_traking_url']);
             $tasks = array();

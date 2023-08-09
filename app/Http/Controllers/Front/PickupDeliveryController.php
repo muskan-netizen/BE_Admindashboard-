@@ -991,7 +991,7 @@ class PickupDeliveryController extends FrontController{
                     $notify_hour = $client_preferences_addional['pickup_notification_before_hours'] ?? 1;
                     $reminder_hour = $client_preferences_addional['pickup_notification_before2_hours'] ?? 1;
                 }
-
+\Log::info("driver_id".$request->driver_id );
                 $postdata =  [
                     'order_number' =>  $order->order_number,
                     //'order_type' =>  $order->type,
