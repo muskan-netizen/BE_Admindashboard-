@@ -199,7 +199,7 @@ body.al_body_template_six.login.light {
 body.al_body_template_six .menu-slider .slick-track {
     max-width: 100% !important;
     width: 100% !important;
-    display: block;
+    display: flex;
     justify-content: flex-start;
     margin: 0 auto !important;
 }
