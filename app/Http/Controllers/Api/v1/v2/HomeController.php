@@ -1460,7 +1460,7 @@ class HomeController extends BaseController
         //get Most Selling Vendors
         $mostSellingVendors = []; //best_sellers
         if (in_array('best_sellers', $enable_layout)) {
-            if(!empty($vendors) && count($vendor_ids) > 0){
+            if(count($vendor_ids) > 0){
                 $dataMo = $this->getVendorForHomePage($preferences, "best_sellers", $timezone, 0, $request->type, $language_id, $latitude, $longitude, $vendor_ids);
                 if(sizeof($dataMo)){
                     $mostSellingVendors = $dataMo;
