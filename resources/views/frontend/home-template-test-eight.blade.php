@@ -777,13 +777,13 @@
 		</section>
 		</section>
 		@elseif(@$homePageLabel->slug == 'selected_products' && (@count(@$homePageData[@$homePageLabel->slug]) != 0))
-		<section class="main-product single_category_products mb-0 render_full_{{$homePageLabel->slug}} bg-light-gray" id="{{$homePageLabel->slug.$key}}">
+		<section class="main-product single_category_products mb-2 render_full_{{$homePageLabel->slug}} bg-light-gray" id="{{$homePageLabel->slug.$key}}">
 			<div class="container p2p-full-width">
 				<div class="top-heading d-flex justify-content-between">
 					<h2 class="col h2-heading mb-0 mt-3"> @php
 						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 						@endphp </h2>
-						<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>
+						<a class="mt-3" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>
 				</div>
 				<div class="row">
 					<div class="col-12">
