@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Support\Facades\Storage;
 class AttributeController extends BaseController
 {
     private $blockdata = 2;
@@ -70,7 +70,14 @@ class AttributeController extends BaseController
             $variant->user_id = Auth::id();
             $variant->type = $request->type;
             $variant->position = 1;
-            $variant->icon = $request->icon;
+            if ($request->hasFile('icon')) {
+                $filePath = 'attributes/' . \Str::random(40);
+                $file = $request->file('icon');
+                $orignal_name = $request->file('icon')->getClientOriginalName();
+                $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                $url = Storage::disk('s3')->url($file_name);
+                $variant->icon = $url;
+            }
             if($v_pos){
                 $variant->position = $v_pos->position + 1;
             }
@@ -185,6 +192,14 @@ class AttributeController extends BaseController
             $variant->title = $request->title[0];
             $variant->type = $request->type;
             $variant->user_id = Auth::id();
+            if ($request->hasFile('icon')) {
+                $filePath = 'attributes/' . \Str::random(40);
+                $file = $request->file('icon');
+                $orignal_name = $request->file('icon')->getClientOriginalName();
+                $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                $url = Storage::disk('s3')->url($file_name);
+                $variant->icon = $url;
+            }
             $variant->save();
 
             $VariantCategory = AttributeCategory::where('attribute_id', $variant->id)->first();

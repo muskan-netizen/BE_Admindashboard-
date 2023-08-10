@@ -122,8 +122,8 @@
                             @endforeach
 
                             <td>
-                                <input type="hidden" name="opt_id[{{$langs->language_id}}][]" class="form-control" value="{{$optDataId}}" @if($langs->is_primary == 1) required @endif>
-                                <input type="text" name="opt_title[{{$langs->language_id}}][]" class="form-control" value="{{$optData}}" @if($langs->is_primary == 1) required @endif>
+                                <input type="hidden" name="opt_id[{{$langs->language_id}}][]" class="form-control" value="{{$optDataId}}" @if($variant->type <= 3) required @endif>
+                                <input type="text" name="opt_title[{{$langs->language_id}}][]" class="form-control" value="{{$optData}}" @if($variant->type <= 3) required @endif>
                             </td>
                         @endforeach
 

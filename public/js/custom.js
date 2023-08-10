@@ -1,4 +1,4 @@
-
+  
 $(function () {
     $(".al_main_category").hover(
         function () {
@@ -2393,7 +2393,6 @@ $(document).ready(function () {
             dataType: 'json',
             url: cart_product_url,
             success: function (response) {
-                console.log(response);
                 if (response.status == "success") {
                     if(response.wishListCount > 0){
                         $('.wishListCount').removeClass('fa-heart-o');
@@ -2411,7 +2410,6 @@ $(document).ready(function () {
                     var client_preference_detail = response.client_preference_detail;
                     var is_token_enable = response.is_token_enable;
                     var token_val = response.token_val;
-                    // console.log(cart_details);
                     if (cart_details!= undefined) {
                         // if((response.is_token_enable == 1) && (response.token_val > 0) ){
                         //     response.token_val;
@@ -2430,9 +2428,9 @@ $(document).ready(function () {
                             //map array  cart_details.products.map(checkIfInCart);
                             var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail, is_token_enable:is_token_enable, token_val:token_val });
 
-                             let header_cart_template = _.template($('#header_cart_template').html());
+                            //  let header_cart_template = _.template($('#header_cart_template').html());
 
-                             $("#header_cart_main_ul").append(header_cart_template(headerCartData));
+                            //  $("#header_cart_main_ul").append(header_cart_template(headerCartData));
                             if (response.cart_details.totalQuantity>0) {
                                 $('#expected_vendors').html('');
                                 $('#expected_vendors').html(response.expected_vendor_html);
@@ -2444,7 +2442,7 @@ $(document).ready(function () {
                                        displayMapLocation(latitude, longitude, 'vendor-address-map');
                                     }
                                 }
-                                initialize();
+                                //initialize();
                                 if (cart_details.deliver_status == 0) {
                                     $("#order_placed_btn").attr("disabled", true);
                                     $("#order_placed_btn").addClass("d-none");
@@ -2485,7 +2483,6 @@ $(document).ready(function () {
 
                             }
                             cartTotalProductCount();
-
                             if ($("#header_cart_template_ondemand").length != 0) {
                                 $("#header_cart_main_ul_ondemand").html('');
                                 let header_cart_template_ondemand = _.template($('#header_cart_template_ondemand').html());
@@ -2553,6 +2550,7 @@ $(document).ready(function () {
                         }
 
                     }
+                    
                     $.each($('.vendor_schedule_slot'), function() {
                         if($(this).val()!=''){
                             $responst = checkSlotAvailability(this);
@@ -2634,9 +2632,10 @@ $(document).ready(function () {
                                 }
                             }
                             cartTotalProductCount();
-
+                            
                             if ($("#header_cart_template_ondemand").length != 0) {
                                 $("#header_cart_main_ul_ondemand").html('');
+                                
                                 let header_cart_template_ondemand = _.template($('#header_cart_template_ondemand').html());
                                 var CartTemplateOndemandData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url });
 
@@ -3218,15 +3217,15 @@ $(document).ready(function () {
             return false;
         }
 
-        if($('#sele_slot_id').val() == ''){
+        // if($('#sele_slot_id').val() == ''){
 
-            Swal.fire({
-                text: _language.getLanString('Please select delivery slot to continue'),
-                icon: "warning",
-                button: "OK",
-            });
-            return false;
-        }
+        //     Swal.fire({
+        //         text: _language.getLanString('Please select delivery slot to continue'),
+        //         icon: "warning",
+        //         button: "OK",
+        //     });
+        //     return false;
+        // }
 
         if($('#is_long_term_service').length > 0){
             addLongTerm =1;
@@ -3387,7 +3386,7 @@ $(document).ready(function () {
             },
             success: function (response) {
                 if (response.status == 'success') {
-                    $(".shake-effect").effect("shake", { times: 3 }, 1200);
+                    //$(".shake-effect").effect("shake", { times: 3 }, 1200);
                     returnResponse = true;
                     cartHeader();
                     if($("#pickup_service").is(":checked")){

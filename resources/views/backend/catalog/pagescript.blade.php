@@ -559,7 +559,6 @@
     $("#editAttributemodal").on('click', '.deleteCurRow', function() {
         var delete_attr_id = $(this).data('delete_attr_id');
         var closet_tr = $(this).closest('tr');
-
         if( delete_attr_id != 'undefined' && delete_attr_id != undefined ) {
             $.ajax({
                 type: "POST",
@@ -586,6 +585,8 @@
                     $(".editAttributeSubmit").attr("disabled", false);
                 }
             });
+        }else{
+            closet_tr.remove();
         }
     });
 
@@ -613,7 +614,7 @@
         if (did == 1) {
             $('#' + dataFor + 'Attributemodal .hexacodeClass-' + dataFor).hide();
         } else if(did == 2){
-            $('#' + dataFor + 'Attributemodal .hexacodeClass-' + dataFor).show();
+                $('#' + dataFor + 'Attributemodal .hexacodeClass-' + dataFor).show();
         }else if(did == 3) {
             $('#' + dataFor + 'Attributemodal .hexacodeClass-' + dataFor).hide();
             $('.radio-div').removeClass('d-none');

@@ -36,47 +36,65 @@
                 <div class="text">
                     <h2>{{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}</h2>
                     <h6 class="sold-by mt-2">
-                        <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
+                        <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}100/100{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
                     </h6>
                     <div class="product_price">
                         <p>{{Session::get('currencySymbol')}}{{decimal_format($product->variant[0]->price)}}</p>
                         {{-- <p>AED<span> 599.00/day</span></p> --}}
                     </div>
                     <div class="productList">
-                        <ul>
-                            <li><a href="">{{$fields['Transmission'] ?? 'Manual'}}</a></li>
-                            <li><a href="">{{$fields['Fuel Type'] ?? 'Petrol'}}</a></li>
-                            <li><a href="">{{$fields['Seats'] ?? ''}} Seats</a></li>
-                        </ul>
-                    </div>
+                        @php
 
-                    <div class="product_location">
-                        <p><img src=""> 84746 O'Connell Station</p>
+                        $fields = [];
+                        $desc = [];
+                        $detail = [
+                        'Mileage',
+                        'Engine',
+                        'Transmission',
+                        'BHP',
+                        'Seats',
+                        'Boot Space',
+                        'Fuel Type'
+                        ];
+                        foreach ($product->ProductAttribute as $productAttribute) {
+                        $attribute = $productAttribute->attribute;
+                        $img = $attribute->icon['proxy_url'] . '100/100' . $attribute->icon['image_path'];
+                        if ($productAttribute->attributeOption()->exists()) {
+                        $title = $productAttribute->attributeOption->title ?? $productAttribute->key_value;
+                        if(in_array($productAttribute->key_name, $detail)){
+                        $fields[$productAttribute->key_name]['title'] = $title;
+                        $fields[$productAttribute->key_name]['img'] = $img;
+                        }else{
+                        $desc[$productAttribute->key_name]['title'] = $title;
+                        $desc[$productAttribute->key_name]['img'] = $img;
+                        }
+                        }
+                        }
+                        @endphp
+                        <ul>
+                            <li><a href="">{{$fields['Transmission']['title'] ?? ''}}</a></li>
+                            <li><a href="">{{$fields['Fuel Type']['title'] ?? ''}}</a></li>
+                            <li><a href="">{{$fields['Seats']['title'] ?? ''}} Seats</a></li>
+                        </ul>
                     </div>
 
                     <div class="product_iteslist">
                         <ul>
-                            
-                            @foreach ($product->ProductAttribute as $productAttribute)
-								@php
-									$attribute = $productAttribute->attribute;
-									$img = $attribute->icon['proxy_url'] . '100/100' . $attribute->icon['image_path']
-								@endphp
-
-								<li><img src="/yacht-images/download-speed.png"> <span>{{$productAttribute->key_name}} <b>{{$productAttribute->key_value}}</b> </span></li>
+                            @foreach ($fields as $key => $productAttribute)
+                            <li><img src="{{$productAttribute['img']}}"> <span>{{$key}} <b>{{$productAttribute['title']}}</b> </span></li>
                             @endforeach
-                            
-                            
-                            {{-- <li><img src="/yacht-images/download-speed.png"> <span>Mileage (upto) <b>18.97 kmpl</b> </span></li>
-                            <li><img src="/yacht-images/download-speed.png"> <span>Mileage (upto) <b>18.97 kmpl</b> </span></li>
-                            <li><img src="/yacht-images/download-speed.png"> <span>Mileage (upto) <b>18.97 kmpl</b> </span></li>
-                            <li><img src="/yacht-images/download-speed.png"> <span>Mileage (upto) <b>18.97 kmpl</b> </span></li>
-                            <li><img src="/yacht-images/download-speed.png"> <span>Mileage (upto) <b>18.97 kmpl</b> </span></li> --}}
-
                         </ul>
+                        <div>
+                            <p><b>Rental Start Time:-</b> <span>{{$pickup_time}}</span></p>
+                            <p><b>Rental End Time:- </b>{{$drop_time}}</p>
+                        </div>
                     </div>
                     <div class="product_cta">
-                        <a href="">Next</a>
+                    @php
+                        /*$newRequest->merge(['product_id'=> $product->product_id, 'quantity'=>$product->quantity, 'variant_id'=>$product->product->variant[0]->id, 'vendor_id'=>$product->product->vendor_id,'bid_number'=>(($is_bid_enable)?$id:null),'bid_discount'=>(($is_bid_enable)?$product->bids->discount:null)]);
+                        $data = $CartController->postAddToCart($newRequest);*/
+                    @endphp
+                        <a href="javascript:void(0);" class="addToCart">Next</a>
                     </div>
                 </div>
             </div>
@@ -87,13 +105,20 @@
 <section class="single_product_description">
     <div class="container">
         <h3>Description</h3>
-        <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publis packages and web page editors now use Lorem Ipsum as their default .</p>
-        <p> a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publis packages and web page editors now use Lorem Ipsum as their default .</p>
+        {{strip_tags($product->translation_one->body_html)}}
     </div>
 </section>
 
-<section class="product_dis_list">
+<section class="product_dis_list d-none">
     <div class="container">
+    <input type="hidden" name="available_product_variant" id="available_product_variant" value="{{$product->variant[0]->id}}">
+    <input type="hidden" name="start_time" id="start_time" value="">
+    <input type="hidden" name="end_time" id="end_time" value="">
+    <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
+    <input type="hidden" name="sele_slot_id" id="sele_slot_id" value="" />
+    <input type="hidden" name="sele_slot_price" id="sele_slot_price" value="" />
+    <div id="selected_slot"></div>
+    @include('frontend.product-part.booking-slot')
         <h3>Car specifications</h3>
         <ul class="specifications_list">
             <li>Stunning swimming pool and Gym access</li>
@@ -112,12 +137,20 @@
     <div class="container">
         <h3>Additional Features</h3>
         <ul class="specifications_list additional_list">
-            <li>Body Type <span>Sedan</span></li>
-            <li>No. of cylinders <span>12</span></li>
-            <li>max Torque (nm@rpm) <span>900Nm@1700pm</span></li>
-            <li>Fuel Tank Capacity <span>100.0</span></li>
-            <li>Ground Clearance <span>164mm</span></li>
+            @foreach($desc as $key => $value)
+            <li>{{$key}} <span>{{$value['title']}}</span></li>
+            @endforeach
         </ul>
     </div>
 </section>
 @endsection
+@section('script')
+<script>
+    var addonids = [];
+    var addonoptids = [];
+    var ajaxCall = 'ToCancelPrevReq';
+    let vendor_id = "{{ $product->vendor_id }}";
+    let product_id = "{{ $product->id }}";
+    var add_to_cart_url = "{{ route('addToCart') }}";
+</script>
+

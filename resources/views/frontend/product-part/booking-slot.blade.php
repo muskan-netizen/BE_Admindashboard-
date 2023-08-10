@@ -108,7 +108,6 @@
 
 
 @section('script-bottom-js')
-
     {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" ></script> --}}
   {{-- <script src="{{ asset('assets/js/backend/product/productSchedule.js')}}"></script> --}}
 
@@ -130,6 +129,7 @@
     var default_minutes = incremental_price = actual_price = default_currency = default_step = base_hours_min ='' ;
     var min_dur_hrs = min_dur_min = additional_base_hr = additional_base_min =  total_min = '';
     $(function(e) {
+      vendor_id = '{{$product->vendor_id}}';
         //total_min = default_minutes =  timeConvertCal('{{$pickup_time}}','{{$drop_time}}');
         var startTime = moment('{{$pickup_time}}');
         var endTime = moment('{{$drop_time}}');

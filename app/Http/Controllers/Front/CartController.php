@@ -159,8 +159,9 @@ class CartController extends FrontController
             }
         }
 
-        return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data,$nomenclatureProductOrderForm,$client_preference_detail,$client_detail);
-       // return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
+        return view('frontend.yacht.summary',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data,$nomenclatureProductOrderForm,$client_preference_detail,$client_detail);
+        // return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data,$nomenclatureProductOrderForm,$client_preference_detail,$client_detail);
+        // return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
         // return view('frontend.cartnew')->with(['navCategories' => $navCategories, 'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user]);
     }
 
@@ -300,7 +301,6 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
-        
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
         $vendor = Vendor::find($request->vendor_id);
@@ -2190,7 +2190,7 @@ class CartController extends FrontController
 
            
 
-            $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message])->render();
+            $mycartView = view('frontend.yacht.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message])->render();
         }
        
         $tokenAmount = 1;
