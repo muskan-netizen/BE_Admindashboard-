@@ -1876,9 +1876,9 @@ section.main-product.single_category_products.mb-0.render_full_selected_products
     .al_clock b{
         font-size: 14px;
     }
-    .render_full_featured_products .col-md-12.pl-0.pt-4.text-center {
+    /* .render_full_featured_products .col-md-12.pl-0.pt-4.text-center {
         padding-top: 0px !important;
-    }
+    } */
 }
 
 
