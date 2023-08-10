@@ -1496,7 +1496,7 @@ body.al_body_template_three .dashboard-right .profile-page .info-text label {
 
 @media screen and (max-width:1366px){
 .al_body_template_eight .product-card-box .img-outer-box.position-relative{min-height: 250px;height: 100%;}
-.al_body_template_eight .render_full_new_products .col-md-12.pl-0.pt-4.text-center {padding-top: 0px !important;}
+/* .al_body_template_eight .render_full_new_products .col-md-12.pl-0.pt-4.text-center {padding-top: 0px !important;} */
 section#our_vendor_main_div .render_full_best_sellers {padding: 20px 0 !important;}
 
 
