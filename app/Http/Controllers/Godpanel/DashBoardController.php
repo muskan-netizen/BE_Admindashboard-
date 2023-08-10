@@ -42,7 +42,7 @@ class DashBoardController extends Controller
                                             ->where('billing_plans.plan_type', 1);
                                             if(@$allclients && !empty($allclients)){
                                                 \Log::info('sadas 1');
-                                                $expSofSubs = $expSofSubs->whereRaw("client_id in (".$allclients.") and billing_subscriptions.id in (select MAX(id) from billing_subscriptions GROUP BY client_id) and date(end_date)< date(NOW())");
+                                                $expSofSubs = $expSofSubs->whereRaw("client_id in ('".$allclients."') and billing_subscriptions.id in (select MAX(id) from billing_subscriptions GROUP BY client_id) and date(end_date)< date(NOW())");
                                             }
                                             $expSofSubs = $expSofSubs->count();
 
@@ -51,7 +51,7 @@ class DashBoardController extends Controller
                                             ->where('billing_plans.plan_type', 2);
                                             if(@$allclients && !empty($allclients)){
                                                 \Log::info('sadas 2');
-                                                $expHosSubs = $expHosSubs->whereRaw("client_id in (".$allclients.") and billing_subscriptions.id in (select MAX(id) from billing_subscriptions GROUP BY client_id) and date(end_date)< date(NOW())");
+                                                $expHosSubs = $expHosSubs->whereRaw("client_id in ('".$allclients."') and billing_subscriptions.id in (select MAX(id) from billing_subscriptions GROUP BY client_id) and date(end_date)< date(NOW())");
                                                 }
                                             $expHosSubs = $expHosSubs->count();
 
