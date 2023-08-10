@@ -2548,7 +2548,8 @@ class OrderController extends BaseController
                     },
                     'vendors.tempCart.cartProducts.addon.option' => function ($qry) use ($language_id) {
                         $qry->where('language_id', $language_id);
-                    }
+                    },
+                    'user.allergicItems'
                 ]);
 
                 $order = $order->with(['OrderFiles']);
@@ -2588,7 +2589,8 @@ class OrderController extends BaseController
                         },
                         'vendors.tempCart.cartProducts.addon.option' => function ($qry) use ($language_id) {
                             $qry->where('language_id', $language_id);
-                        }
+                        },
+                        'user.allergicItems'
                     ]
                 );
 
