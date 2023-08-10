@@ -22,7 +22,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Front\CustomerAuthController;
 use App\Http\Requests\{LoginRequest, SignupRequest};
 use App\Http\Controllers\Client\VendorController;
-use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate, SmsTemplate, UserRegistrationDocuments,UserDocs, Vendor, PermissionsOld, UserPermissions, Type, Category, VendorCategory,UserAddress,UserPaymentCards};
+use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate, SmsTemplate, UserRegistrationDocuments,UserDocs, Vendor, PermissionsOld, UserPermissions, Type, Category, SubscriptionInvoicesUser, VendorCategory,UserAddress,UserPaymentCards};
 use Log;
 use App\Http\Traits\CustomerSignupSuccessEmailTrait;
 use App\Http\Traits\InfluencerTrait;
@@ -1358,6 +1358,7 @@ class AuthController extends BaseController
                 $data['callingCode'] = $user->country ? $user->country->phonecode : '';
                 $data['refferal_code'] = $user_refferal ? $user_refferal->refferal_code : '';
                 $data['user_document'] = $user_registration_documents;
+                $data['user_subscription'] = SubscriptionInvoicesUser::where('status_id',1)->where('end_date','>=',now()->format('Y-m-d'))->count();
                 return response()->json(['data' => $data]);
             }
             else {
