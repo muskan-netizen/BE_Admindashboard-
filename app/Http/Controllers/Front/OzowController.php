@@ -18,11 +18,13 @@ class OzowController extends FrontController
 	public function __construct()
   	{
 		$this->ozow_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'ozow')->where('status', 1)->first();
+        if(@$this->ozow_creds && !empty($this->ozow_creds->credentials)){
 	    $this->creds_arr = json_decode($this->ozow_creds->credentials);
 	    $this->application_id = $this->creds_arr->application_id??'';
 	    $this->access_token = $this->creds_arr->api_access_token??'';
 	    $this->location_id = $this->creds_arr->location_id??'';
 	    $this->square_url = $this->ozow_creds->test_mode ? "https://sandbox.web.squarecdn.com/v1/square.js" : "https://web.squarecdn.com/v1/square.js";
+        }
 	}
 	public function beforePayment(Request $request)
     {
