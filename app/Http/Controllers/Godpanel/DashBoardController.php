@@ -26,7 +26,7 @@ class DashBoardController extends Controller
     public function dashboard()
     {
         $onboardclients = Client::where('status', 1)->where('is_deleted',0)->where('is_blocked', 0)->count();
-        $allclients = Client::select(DB::Raw("GROUP_CONCAT(id) as ids"))->where('status', 1)->where('is_deleted',0)->where('is_blocked', 0)->first()->ids;
+        $allclients = Client::select(DB::Raw("GROUP_CONCAT(id) as ids"))->where('status', 1)->where('is_deleted',0)->where('is_blocked', 0)->first()->ids??0;
         
         $activeSubs  = BillingSubscription::join('clients', 'clients.id', '=', 'billing_subscriptions.client_id')
                                                     ->where('clients.status', 1)->where('clients.is_deleted',0)->where('clients.is_blocked', 0)
@@ -48,7 +48,7 @@ class DashBoardController extends Controller
                                             ->count();
         $clientwithnosubs = Client::where('status', 1)->where('is_deleted',0)->where('is_blocked', 0)->whereRaw("(select count(*) from billing_subscriptions where billing_subscriptions.client_id = clients.id)=0")->count();
         
-        return view('godpanel/dashboard')->with(['onboardclients'=>$onboardclients, 'activeSubs'=>$activeSubs, 'expSofSubs'=>$expSofSubs, 'expHosSubs'=>$expHosSubs, 'clientwithnosubs'=>$clientwithnosubs]);;
+        return view('godpanel/dashboard')->with(['onboardclients'=>$onboardclients, 'activeSubs'=>$activeSubs, 'expSofSubs'=>$expSofSubs, 'expHosSubs'=>$expHosSubs, 'clientwithnosubs'=>$clientwithnosubs]);
         
     }
 
