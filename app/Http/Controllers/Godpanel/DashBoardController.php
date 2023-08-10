@@ -27,8 +27,6 @@ class DashBoardController extends Controller
     {
         $onboardclients = Client::where('status', 1)->where('is_deleted',0)->where('is_blocked', 0)->count();
         $allclients = Client::select(DB::Raw("GROUP_CONCAT(id) as ids"))->where('status', 1)->where('is_deleted',0)->where('is_blocked', 0)->first()->ids??0;
-        
-        \Log::info($allclients);
 
         $activeSubs  = BillingSubscription::join('clients', 'clients.id', '=', 'billing_subscriptions.client_id')
                                                     ->where('clients.status', 1)->where('clients.is_deleted',0)->where('clients.is_blocked', 0)
@@ -41,7 +39,6 @@ class DashBoardController extends Controller
                                             ->join('billing_plans', 'billing_plans.id', '=', 'billing_pricings.billing_plan_id')
                                             ->where('billing_plans.plan_type', 1);
                                             if(@$allclients && !empty($allclients)){
-                                                \Log::info('sadas 1');
                                                 $expSofSubs = $expSofSubs->whereRaw("client_id in ('".$allclients."') and billing_subscriptions.id in (select MAX(id) from billing_subscriptions GROUP BY client_id) and date(end_date)< date(NOW())");
                                             }
                                             $expSofSubs = $expSofSubs->count();
@@ -50,7 +47,6 @@ class DashBoardController extends Controller
                                             ->join('billing_plans', 'billing_plans.id', '=', 'billing_pricings.billing_plan_id')
                                             ->where('billing_plans.plan_type', 2);
                                             if(@$allclients && !empty($allclients)){
-                                                \Log::info('sadas 2');
                                                 $expHosSubs = $expHosSubs->whereRaw("client_id in ('".$allclients."') and billing_subscriptions.id in (select MAX(id) from billing_subscriptions GROUP BY client_id) and date(end_date)< date(NOW())");
                                                 }
                                             $expHosSubs = $expHosSubs->count();
