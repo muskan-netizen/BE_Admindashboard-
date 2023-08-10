@@ -2050,7 +2050,7 @@ class CartController extends BaseController
                 $delivery_duration = (!empty($deliver_response_array[0]['total_duration']))?number_format($deliver_response_array[0]['total_duration'], 0, '.', ''):'0.00';
                 $option[] = array(
                     'type'=>'D',
-                    'courier_name'=>getNomenclatureName('Royo Dispatcher'),
+                    'courier_name'=>__('Dispatcher'),
                     'rate' => $deliver_charge,
                     'courier_company_id' => 0,
                     'etd' => 0,
