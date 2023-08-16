@@ -2152,12 +2152,12 @@ class OrderController extends FrontController
 
             $payable_amount = $payable_amount + $total_delivery_fee - $total_discount;
 
-            if ($loyalty_amount_saved > 0) {
-                if ($loyalty_amount_saved > $payable_amount) {
-                    $loyalty_amount_saved = $payable_amount;
-                    $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
-                }
-            }
+            // if ($loyalty_amount_saved > 0) {
+            //     if ($loyalty_amount_saved > $payable_amount) {
+            //         $loyalty_amount_saved = $payable_amount;
+            //         $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
+            //     }
+            // }
             // ------------ move up
             $tip_amount = 0;
             if (isset($request->tip)) {
@@ -2169,12 +2169,13 @@ class OrderController extends FrontController
                 }
             }
             $payable_amount = $payable_amount + $tip_amount + $total_other_taxes + $security_amount;
+            $payable_amount += $order->taxable_amount;
             // ---------------------------------------
-            $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
+            // $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
 
-            if(!empty($vendor_cart_product->recurring_booking_time)){
-                $payable_amount = ($request->total_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
-            }
+            // if(!empty($vendor_cart_product->recurring_booking_time)){
+            //     $payable_amount = ($request->total_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
+            // }
 
             $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
 
@@ -2195,24 +2196,24 @@ class OrderController extends FrontController
             // $payable_amount = $payable_amount + $tip_amount + $total_other_taxes;
 
             $wallet_amount_used = 0;
-            if ($user) {
-                if ($user->balanceFloat > 0) {
-                    $wallet = $user->wallet;
-                    $wallet_amount_used = $user->balanceFloat;
-                    if ($wallet_amount_used > $payable_amount) {
-                        $wallet_amount_used = $payable_amount;
-                    }
-                    $order->wallet_amount_used = $wallet_amount_used;
-                    // Deduct wallet amount if payable amount is successfully done on gateway
-                    if (($wallet_amount_used > 0) && (! in_array($request->payment_option_id, $ex_gateways_wallet))) {
-                        $wallet->withdrawFloat($order->wallet_amount_used, [
-                            'Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>'
-                        ]);
-                    }
-                }
-            }
+            // if ($user) {
+            //     if ($user->balanceFloat > 0) {
+            //         $wallet = $user->wallet;
+            //         $wallet_amount_used = $user->balanceFloat;
+            //         if ($wallet_amount_used > $payable_amount) {
+            //             $wallet_amount_used = $payable_amount;
+            //         }
+            //         $order->wallet_amount_used = $wallet_amount_used;
+            //         // Deduct wallet amount if payable amount is successfully done on gateway
+            //         if (($wallet_amount_used > 0) && (! in_array($request->payment_option_id, $ex_gateways_wallet))) {
+            //             $wallet->withdrawFloat($order->wallet_amount_used, [
+            //                 'Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>'
+            //             ]);
+            //         }
+            //     }
+            // }
 
-            $payable_amount = $payable_amount - $wallet_amount_used;
+            // $payable_amount = $payable_amount - $wallet_amount_used;
 
             if(!empty($vendor_cart_product->recurring_booking_time)){
                 $payable_amount =  $request->total_amount - $wallet_amount_used;
@@ -2221,12 +2222,12 @@ class OrderController extends FrontController
             //echo  " Total payable_amount2=".$payable_amount."; <br>";
             $order->total_service_fee = $total_service_fee;
             $order->total_delivery_fee = $total_delivery_fee;
-            $order->loyalty_points_used = $loyalty_points_used;
-            $order->loyalty_amount_saved = $loyalty_amount_saved;
+            $order->loyalty_points_used = $loyalty_points_used ?? 0;
+            $order->loyalty_amount_saved = $loyalty_amount_saved ?? 0;
             $order->subscription_discount = $total_subscription_discount;
             // echo " total_subscription_discount=".$total_subscription_discount."; <br>";
-            $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
-            $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
+            $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'] ?? 0;
+            $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'] ?? 0;
             // echo " total_service_fee=".$total_service_fee." total_delivery_fee=".$total_delivery_fee;
             // echo " Total payable_amount 3=".$payable_amount."; <br>";
 

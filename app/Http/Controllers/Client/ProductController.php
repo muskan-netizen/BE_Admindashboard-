@@ -370,7 +370,7 @@ class ProductController extends BaseController
         $bookingOption = BookingOption::get();
         $productBookingOption = $product->bookingOptions()->pluck('booking_option_id')->toArray();
         $productRentalProtection = $product->rentalProtections()->where('type_id', 2)->pluck('rental_proctection_id')->toArray();
-        $inlcudedProductRentalProtection = $product->rentalProtections()->where('type_id', 2)->pluck('rental_proctection_id')->toArray();
+        $inlcudedProductRentalProtection = $product->rentalProtections()->where('type_id', 1)->pluck('rental_proctection_id')->toArray();
         return view('backend/product/edit', ['delivery_slots'=> $delivery_slots, 'product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'processorProduct' => $processorProduct,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value, 'attribute_latitude' => $attribute_latitude, 'attribute_longitude' => $attribute_longitude,'margProduct' => $margProduct??[], 'productAttributes' => $productAttributes, 'rentalProtection' => $rentalProtection, 'bookingOption' => $bookingOption, 'productBookingOption' => $productBookingOption, 'productRentalProtection' => $productRentalProtection, 'inlcudedProductRentalProtection' => $inlcudedProductRentalProtection]);
     }
 
@@ -809,11 +809,24 @@ class ProductController extends BaseController
                 foreach($request->rental_protection as $rentalId){
                     $rentalProtection = [
                         'product_id' => $product->id,
-                        'rental_proctection_id' => $rentalId
+                        'rental_proctection_id' => $rentalId,
+                        'type_id' => 2
                     ];
                     ProductRentalProtection::updateOrCreate($rentalProtection,$rentalProtection);
                 }
             }
+
+            if(!empty($request->included_rental_protection)){
+                foreach($request->included_rental_protection as $rentalId){
+                    $includedRentalProtection = [
+                        'product_id' => $product->id,
+                        'rental_proctection_id' => $rentalId,
+                        'type_id' => 1
+                    ];
+                    ProductRentalProtection::updateOrCreate($includedRentalProtection,$includedRentalProtection);
+                }
+            }
+
             if(!empty($request->booking_option)){
                 foreach($request->booking_option as $optionId){
                     $bookingOption = [

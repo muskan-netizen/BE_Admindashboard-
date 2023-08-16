@@ -1239,24 +1239,28 @@ line-height: 21px;
     transform: translateY(-50%);
     left: 12px;
 }
-.rentalcharges{
-    padding: 30px;
+.rental_item{
     border-top:1px solid #B3B3B3;
     border-bottom:1px solid #B3B3B3;
+    padding:10px 0;
+}
+.rentalcharges{
+    padding: 5px 30px 5px;
+    
 }
 .taxes_fees{
     padding: 30px 30px 0;
 }
 .product_cart .right .item .rentalcharges h3 , .taxes_fees h3   {
-    font-size: 19px;
+    font-size: 16px;
     line-height: 1.4;
     font-weight: 700;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 .rentalcharges p, .rentalcharges span{
     margin-bottom: 0;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 400;
 }
 .taxes_fees ul li{
     display: flex;
@@ -1270,7 +1274,7 @@ line-height: 21px;
     border-top: 1px solid #DFDFDF;
     padding-top: 10px;
 }
-.confirm_cta a {
+.confirm_cta button {
     display: block;
     background: #028402;
     text-align: center;
@@ -1282,11 +1286,11 @@ line-height: 21px;
     border-radius: 4px;
     border:1px solid #028402;
 }
-.confirm_cta a i{
+.confirm_cta button i{
     padding-left: 5px;
     font-size: 20px;
 }
-.confirm_cta a:hover{
+.confirm_cta button:hover{
     color: #028402!important;
     background: transparent;
 }

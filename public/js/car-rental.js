@@ -134,3 +134,12 @@ $(document).on('paste input focus', '#range-datepicker', function() {
 function readonlyElement(element, action = true){
   element.prop('readonly', action);
 }
+
+$(document).ready(function(){
+  $(".filter_cta").click(function(){
+    $("body").addClass("filter_open");    
+  });
+  $(".close_filter").click(function(){
+    $("body").removeClass("filter_open");    
+  });
+});

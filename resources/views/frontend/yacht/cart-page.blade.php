@@ -1,3 +1,6 @@
+<?php
+use Carbon\Carbon;
+?>
 <style>
     .alInfoIocn .tooltiptext {
         visibility: hidden;
@@ -85,6 +88,18 @@ $getOnDemandPricingRule = getOnDemandPricingRule($serviceType, (@Session::get('o
 // }
 $is_service_product_price_from_dispatch_forOnDemand = $getOnDemandPricingRule['is_price_from_freelancer'] ?? 0;
 
+$cartProduct = $cart_details->products[0] ?? null;
+if($cartProduct){
+$vendorProduct = $cartProduct->vendor_products[0] ?? null;
+$product = $vendorProduct->product ?? null;
+$rentalProtection = $product->rental_protections ?? null;
+$bookingOptions = $product->booking_options ?? null;
+$translation = $vendorProduct->product ? $vendorProduct->product->translation : null;
+$startDate = Carbon::parse($vendorProduct->start_date_time);
+$endDate = Carbon::parse($vendorProduct->end_date_time);
+
+$difference = $startDate->diffInDays($endDate);
+}
 @endphp
 
 @if ($cart_details->totalQuantity <= 0) <div class="container">
@@ -105,37 +120,56 @@ $is_service_product_price_from_dispatch_forOnDemand = $getOnDemandPricingRule['i
             <div class="item">
                 <div class="select_product">
                     <h2>Select Protection</h2>
+                    @foreach($rentalProtection as $key => $protection)
+                    @if($protection->type_id == 1)
                     <h5>Included in your booking</h5>
+                    <h5>{{$protection->rental_protection->title}}</h5>
                     <ul class="d-flex">
-                        <li><img src="/yacht-images/check.png" alt="">Unlimited kilometers.</li>
-                        <li><img src="/yacht-images/check.png" alt="">Included 24/7 breakdown assistance.</li>
-                        <li><img src="/yacht-images/check.png" alt="">Included Third party insurance.</li>
+                        <li><img src="/yacht-images/check.png" alt="">{{$protection->rental_protection->description}}</li>
+                        {{-- <li><img src="/yacht-images/check.png" alt="">Included 24/7 breakdown assistance.</li>
+                                <li><img src="/yacht-images/check.png" alt="">Included Third party insurance.</li> --}}
                     </ul>
+                    @endif
+                    @endforeach
                     <div class="select_product_form">
                         <form>
+                            @foreach($rentalProtection as $key => $protection)
+                            @if($protection->type_id == 2)
                             <div class="form-group">
-                                <input type="radio" name="product_select" checked name="" id="inclusive">
+                                <input type="radio" name="product_select" class="protection-box" id="inclusive" data-id="{{$protection->rental_protection->id}}" data-amount="{{$protection->rental_protection->price}}" data-title="{{$protection->rental_protection->title}}">
                                 <label for="inclusive">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <h3><img src="/yacht-images/inclusive.png" alt="">All Inclusive</h3>
+                                        <h3><img src="/yacht-images/inclusive.png" alt="">{{$protection->rental_protection->title}}</h3>
                                         <div class="price">
-                                            <p><span>AED</span> 59.01 /day</p>
+                                            @php
+                                            switch($protection->rental_protection->validity){
+                                            case 1:
+                                            $per = 'day';
+                                            break;
+                                            case 2:
+                                            $per = 'week';
+                                            break;
+                                            case 3:
+                                            $per = 'month';
+                                            break;
+                                            default:
+                                            $per = 'day';
+                                            }
+                                            @endphp
+                                            <p><span>{{$cart_details->currency_code}}</span> {{$protection->rental_protection->price}} /{{$per}}</p>
                                         </div>
                                     </div>
-                                    <p>Financial Responsibility:<span> $0.00</span></p>
+                                    <p class="d-none">Financial Responsibility:<span> $0.00</span></p>
+
                                     <ul>
-                                        <li><img src="/yacht-images/check.png" alt="">Loss damage waiver for collision damages, scratches, bumps and theft.</li>
-                                        <li><img src="/yacht-images/check.png" alt="">Tire and Windshield Protection.</li>
-                                        <li><img src="/yacht-images/check.png" alt="">Interior Protection.</li>
-                                        <li><img src="/yacht-images/check.png" alt="">Personal accident protection.</li>
-                                        <li><img src="/yacht-images/check.png" alt="">Mobility service.</li>
-                                        <li><img src="/yacht-images/check.png" alt="">24/7 breakdown assistance.</li>
+                                        <li><img src="/yacht-images/check.png" alt="">{{$protection->rental_protection->description}}</li>
                                     </ul>
                                 </label>
                                 <span></span>
                             </div>
-
-                            <div class="form-group">
+                            @endif
+                            @endforeach
+                            <div class="form-group d-none">
                                 <input type="radio" name="product_select" name="" id="smart">
                                 <label for="smart">
                                     <div class="d-flex justify-content-between align-items-center">
@@ -164,114 +198,28 @@ $is_service_product_price_from_dispatch_forOnDemand = $getOnDemandPricingRule['i
                     <h2>Choose Ad-Ons</h2>
                     <div class="grid">
                         <!-- 1 -->
+                        @foreach($addons as $key => $addon)
+
                         <div class="item">
                             <div class="image">
                                 <img src="/yacht-images/adone/1.png" alt="">
                             </div>
                             <div class="text">
-                                <h6>Additional Driver</h6>
-                                <p>Booking for 2 days</p>
+                                <h6>{{ucfirst($addon->title)}}</h6>
+                                @foreach($addon->option as $key => $option)
+                                <p>{{$option->title}}</p>
                                 <div class="d-flex justify-content-between">
-                                    <span>AED 11.42 /day & driver</span>
-                                    <div class="addcart_cta">
-                                        <span class="minus">-</span>
-                                        <span class="num"></span>
-                                        <span class="plus" id="cart_plus">+</span>
+                                    <span>{{$cart_details->currency_code}} {{number_format($option->price, 2)}}</span>
+                                    <div class="addcart_cta addon" data-id="{{$addon->id}}" data-option-id="{{$option->id}}" data-amount="{{number_format($option->price, 2)}}" data-days="{{$difference}}" data-title="{{$option->title}}">
+                                        <span class="minus" data-min={{$addon->min_select}}>-</span>
+                                        <span class="num">0</span>
+                                        <span class="plus" data-max={{$addon->max_select}} id="cart_plus">+</span>
                                     </div>
                                 </div>
+                                @endforeach
                             </div>
                         </div>
-                        <!-- 2 -->
-                        <div class="item">
-                            <div class="image">
-                                <img src="/yacht-images/adone/2.png" alt="">
-                            </div>
-                            <div class="text">
-                                <h6>Refueling/Recharging service</h6>
-                                <p>Save time when you return your vehicle. Drop it off and we'll refuel (or recharge) for you and add the cost to your total.</p>
-                                <div class="d-flex justify-content-between">
-                                    <span>AED 20.77/one-time</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- 3 -->
-                        <div class="item">
-                            <div class="image">
-                                <img src="/yacht-images/adone/3.png" alt="">
-                            </div>
-                            <div class="text">
-                                <h6>Interior protection</h6>
-                                <p>Zero financial responsibility for damage to the Interiors</p>
-                                <div class="d-flex justify-content-between">
-                                    <span>$5.47/day</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- 4 -->
-                        <div class="item">
-                            <div class="image">
-                                <img src="/yacht-images/adone/4.png" alt="">
-                            </div>
-                            <div class="text">
-                                <h6>Roadside Assistance</h6>
-                                <p>Driving somewhere new? Guaranteed GPS navigation in your vehicle.</p>
-                                <div class="d-flex justify-content-between">
-                                    <!-- <span>AED 11.42 /day & driver</span> -->
-                                </div>
-                            </div>
-                        </div>
-                        <!-- 5 -->
-                        <div class="item">
-                            <div class="image">
-                                <img src="/yacht-images/adone/5.png" alt="">
-                            </div>
-                            <div class="text">
-                                <h6>Infant seat</h6>
-                                <p>Infant seat protection and safety for infants and young children while traveling.</p>
-                                <div class="d-flex justify-content-between">
-                                    <span>$15 /day</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- 6 -->
-                        <div class="item">
-                            <div class="image">
-                                <img src="/yacht-images/adone/6.png" alt="">
-                            </div>
-                            <div class="text">
-                                <h6>Toddler seat</h6>
-                                <p>Toddler seat protection and safety for your older children while traveling.</p>
-                                <div class="d-flex justify-content-between">
-                                    <span>$26 /day</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- 7 -->
-                        <div class="item">
-                            <div class="image">
-                                <img src="/yacht-images/adone/7.png" alt="">
-                            </div>
-                            <div class="text">
-                                <h6>Personal Accident Protection</h6>
-                                <p>This insurance coverage that provides financial compensation.</p>
-                                <div class="d-flex justify-content-between">
-                                    <span>$50 /day</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- 8 -->
-                        <div class="item">
-                            <div class="image">
-                                <img src="/yacht-images/adone/8.png" alt="">
-                            </div>
-                            <div class="text">
-                                <h6>Pick up and drop off</h6>
-                                <p>The customer has the option to request for their car to be picked up at their location and reserved for drop off at the airport.</p>
-                                <div class="d-flex justify-content-between">
-                                    <span>$50 /day</span>
-                                </div>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
 
@@ -279,26 +227,27 @@ $is_service_product_price_from_dispatch_forOnDemand = $getOnDemandPricingRule['i
                     <h2>Booking Option</h2>
                     <div class="bokking_form">
                         <form>
+                            @foreach($bookingOptions as $key => $option)
                             <div class="form-group">
-                                <input type="radio" name="booking" value="" class="Booking" id="bestproce">
+                                <input type="radio" name="booking" value="" class="booking-options" id="bestproce" data-id="{{$option->booking_option->id}}" data-title="{{$option->booking_option->title}}" data-amount="{{$option->booking_option->price}}">
                                 <label for="bestproce">
                                     <div class="image">
                                         <img src="/yacht-images/aed.png" alt="">
                                     </div>
                                     <div class="text">
-                                        <h3>Best Price</h3>
-                                        <p>Save money by paying now. Cancellation charges apply:</p>
-                                        <ul>
-                                            <li><img src="/yacht-images/check.png" alt="">Before scheduled pick-up time: AED 99</li>
+                                        <h3>{{$option->booking_option->title}}</h3>
+                                        <p>{{$option->booking_option->description}}</p>
+                                        <ul class="d-none">
+                                            <li><img src="/yacht-images/check.png" alt="">Before scheduled pick-up time: {{$cart_details->currency_code}} {{$option->booking_option->price}}</li>
                                             <li><img src="/yacht-images/check.png" alt="">After scheduled pick-up time: No refund</li>
                                         </ul>
-                                        <span>Included</span>
+                                        <span class="">Included</span>
                                     </div>
                                 </label>
                                 <span></span>
                             </div>
-
-                            <div class="form-group">
+                            @endforeach
+                            {{-- <div class="form-group d-none">
                                 <input type="radio" name="booking" value="" id="flexible">
                                 <label for="flexible">
                                     <div class="image">
@@ -315,7 +264,7 @@ $is_service_product_price_from_dispatch_forOnDemand = $getOnDemandPricingRule['i
                                     </div>
                                 </label>
                                 <span></span>
-                            </div>
+                            </div> --}}
 
                         </form>
                     </div>
@@ -323,84 +272,276 @@ $is_service_product_price_from_dispatch_forOnDemand = $getOnDemandPricingRule['i
 
             </div>
         </div>
+        @php
+        $product = $cartProduct->vendor_products[0]->product;
+        $fields = [];
+        $desc = [];
+        $detail = [
+        'Mileage',
+        'Engine',
+        'Transmission',
+        'BHP',
+        'Seats',
+        'Boot Space',
+        'Fuel Type'
+        ];
+    
+        foreach ($product->product_attribute as $productAttribute) {
+            //$attribute = $productAttribute->attribute;
+            //$img = $attribute->icon['proxy_url'] . '100/100' . $attribute->icon['image_path'];
+            if ($productAttribute->attribute_option) {
+                $title = $productAttribute->attribute_option->title ?? $productAttribute->key_value;
+            if(in_array($productAttribute->key_name, $detail)){
+                $fields[$productAttribute->key_name]['title'] = $title;
+                //$fields[$productAttribute->key_name]['img'] = $img;
+            }else{
+                $desc[$productAttribute->key_name]['title'] = $title;
+                //$desc[$productAttribute->key_name]['img'] = $img;
+            }
+            }
+        }
+        @endphp
         <div class="col-md-4 right">
             <div class="item ">
                 <div class="booking_day">
                     <div class="text">
                         <div class="">
-                            <h3>Ford Endeavour</h3>
+                            <span class="d-none">
+                                <input type="checkbox" name="checked_cart_product" class="checked-cart-product" id="checked_cart_product" value="{{$vendorProduct->id}}" {{ $vendorProduct->is_cart_checked ? 'checked' : '' }}>
+                                <input type="hidden" name="without_category_kyc" value="{{ $cart_details->without_category_kyc }}">
+                                {!! $cart_details->left_section !!}
+                            </span>
+                            <h3>{{$product->translation_one->title}}</h3>
                             <div class="productList">
                                 <ul>
-                                    <li><a href="">Manual</a></li>
-                                    <li><a href="">Petrol</a></li>
-                                    <li><a href="">5 Seats</a></li>
+                                    <li><a href="javscript:void(0);">{{$fields['Transmission']['title'] ?? ''}}</a></li>
+                                    <li><a href="javscript:void(0);">{{$fields['Fuel Type']['title'] ?? ''}}</a></li>
+                                    <li><a href="javscript:void(0);">{{$fields['Seats']['title'] ?? ''}} Seats</a></li>
                                 </ul>
                             </div>
-                            <span>Booking for 2 days <i class="fa fa-angle-up	"></i></span>
+                            <span>Booking for {{$difference}} days <i class="fa fa-angle-up	"></i></span>
                         </div>
                     </div>
                     <div class="image">
-                        <img src="/yacht-images/product-cart.png" alt="">
+                    @php
+                        $media = $product->media[0] ?? null;
+                        if($media){
+                            if(isset($media->pimage)){
+                                $img = $media->pimage->image;
+                            }else{
+                                $img = $media->image;
+                            }
+                        }else{
+                            $img = $vendorProduct->image_url;
+                        }
+                    @endphp
+                        <img src="{{@$img->path->image_fit.'1000/1000'.@$img->path->image_path}}" src="{{@$img->path->image_fit.'100/100'.@$img->path->image_path}}" alt="">
                     </div>
                 </div>
                 <div class="booking_date">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="start_time inner_item">
-                            <h6>Start :<span>2 PM</span></h6>
-                            <h6>28 Nov’22</h6>
-                            <p>28 Nov’22</p>
+                            <h6>Start :<span>{{date('H:i',strtotime($vendorProduct->start_date_time))}}</span></h6>
+                            <h6>{{date('d M y',strtotime($vendorProduct->start_date_time))}}</h6>
                         </div>
                         <div class="seleed_date">
-                            <span>1 day</span>
+                            <span>{{$difference}} Day(s)</span>
                         </div>
                         <div class="end_time inner_item">
-                            <h6>End :<span>2 PM</span></h6>
-                            <h6>29 Nov’22</h6>
-                            <p>29 Nov’22</p>
+                            <h6>End :<span>{{date('H:i',strtotime($vendorProduct->end_date_time))}}</span></h6>
+                            <h6>{{date('d M y',strtotime($vendorProduct->end_date_time))}}</h6>
                         </div>
                     </div>
                     <ul>
                         <img src="/yacht-images/6.png">
-                        <li><img src="/yacht-images/4.png" alt=""><span>Cheese Avenue, Chandigarh</span> Pickup</li>
-                        <li><img src="/yacht-images/5.png" alt=""><span>CDCL, sector 28b, Chandigarh </span>DROP</li>
+                        <li><img src="/yacht-images/4.png" alt=""><span>{{$cart_details->vendor_detail->vendor_address->address}}</span> Pickup</li>
+                        <li><img src="/yacht-images/5.png" alt=""><span>{{$cart_details->vendor_detail->vendor_address->address}} </span>DROP</li>
                     </ul>
                 </div>
-                <div class="rentalcharges Booking">
-                    <h3>Booking Option</h3>
-                    <div class="inner_item d-flex justify-content-between align-items-center">
-                        <p>3 Rental Days > AED 90</p>
-                        <span>AED 90</span>
+                <div class="rental_item">
+                    <div class="rentalcharges rental-box">
+                        <h3>Rental Charges</h3>
+                        <div class="inner_item d-flex justify-content-between align-items-center">
+                                <p>{{$difference}} Rental Days</p>
+                                <span>{{$cart_details->currency_code}} {{$cart_details->sub_total}}</span>
+                        </div>
+                        <div class="inner_item d-flex justify-content-between align-items-center mt-2">
+                                <p>Security Amount</p>
+                                <span>{{$cart_details->currency_code}} {{$cart_details->security_amount}}</span>
+                        </div>
                     </div>
-                </div>
-                <div class="rentalcharges rental border-0 protection d-none">
-                    <h3>Select Protection</h3>
-                    <div class="inner_item d-flex justify-content-between align-items-center">
-                        <p>3 Rental Days > AED 90</p>
-                        <span>AED 90</span>
+                    <div class="rentalcharges" id="protection-amount-box" style="display:none;">
+                        <h3>Select Protection</h3>
+                        <div class="inner_item d-flex justify-content-between align-items-center">
+                            <p></p>
+                            <span></span>
+                        </div>
                     </div>
-                </div>
-                <div class="rentalcharges d-none">
-                    <h3>Rental Charges</h3>
-                    <div class="inner_item d-flex justify-content-between align-items-center">
-                        <p>3 Rental Days > AED 90</p>
-                        <span>AED 90</span>
+                    <div class="rentalcharges Booking" id="booking-box" style="display:none;">
+                        <h3>Booking Option</h3>
+                        <div class="inner_item d-flex justify-content-between align-items-center">
+                            <p></p>
+                            <span></span>
+                        </div>
+                    </div>
+                    <div class="rentalcharges" id="addon-box" style="display:none;">
+                        <h3>Addons</h3>
+                        <div class="inner_item d-flex justify-content-between align-items-center">
+                            <p></p>
+                            <span></span>
+                        </div>
                     </div>
                 </div>
 
                 <div class="taxes_fees">
                     <h3>Taxes and Fees</h3>
                     <ul>
-                        <li>WLTP Supplement <span>AED 1.96</span></li>
-                        <li>Premium Location Fee <span>AED 48.18</span></li>
-                        <li>Taxes <span>AED 45.92</span></li>
-                        <li>Total(incl.tax) <span>AED 90</span></li>
+                        <li>Discount Amount <span>{{$cart_details->currency_code}} {{$cart_details->total_discount_amount}}</span></li>
+                        <li>Taxes <span>{{$cart_details->currency_code}} {{$cart_details->total_taxable_amount}}</span></li>
+                        <li>Total(incl.tax) <span id="gross-total" data-amount="{{$cart_details->new_gross_amount}}">{{$cart_details->currency_code}} {{$cart_details->new_gross_amount}}</span></li>
                     </ul>
                 </div>
 
 
             </div>
             <div class="confirm_cta">
-                <a href="" title="">Confirm and Pay <i class="fa fa-angle-right"></i></a>
+                    <button type="button" style="width:100%;" class="btn btn-solid ml-1" id="order_placed_btn">{{__('Confirm and Pay')}}<i class="fa fa-angle-right"></i>
+                        <img style="width:5%; display:none;" id="proceed_to_pay_loader" src="{{asset('assets/images/loader.gif')}}"/>
+                    </button>
             </div>
         </div>
-   @endif
+        @endif
+
+        <script>
+            const plus = document.querySelector(".plus")
+                , minus = document.querySelector(".minus")
+                protectionBox = document.querySelector(".protection-box"),
+                protectionAmountBox = document.querySelector("#protection-amount-box"),
+                totalAmount = document.querySelector('#gross-total'),
+                bookingBox = document.querySelector('#booking-box'),
+                bookingOption = document.querySelector('.booking-options'),
+                addonBox = document.querySelector('#addon-box'),
+                addAddonButtons = document.querySelectorAll(".add-addon");
+
+            window.addEventListener("load", function() {
+                /*addon.forEach(button => {
+                    let id = button.getAttribute('data-id');
+                    if (localStorage[`num${id}`]) {
+                        num.innerText = localStorage.getItem(`num${id}`);
+                    } else {
+                        let a = "01";
+                        num.innerText = a;
+                    }
+                })*/
+            });
+
+            plus.addEventListener("click", function(e) {
+                let parent = this.parentNode;
+                let id = parent.getAttribute('data-id');
+                let optionId = parent.getAttribute('data-option-id');
+                let amount = parseFloat(parent.getAttribute('data-amount')).toFixed(2);
+                let days = parent.getAttribute('data-days');
+                num = parent.querySelector('.num');
+                a = num.innerText;
+                let maxLimit = this.getAttribute('data-max')
+                if (a == maxLimit || a > maxLimit)
+                    return false;
+                a++;
+                totalPrice = amount * a;
+                addonBox.querySelector('p').textContent = parent.getAttribute('data-title')+' x '+ days +' days';
+                addonBox.querySelector('span').textContent = `{{$cart_details->currency_code}} ${totalPrice.toFixed(2)}`;
+                localStorage.setItem(`num${id}`, a);
+                let totalAmountData = parseFloat(totalAmount.getAttribute('data-amount'));
+                totalAmountData += totalPrice;
+                totalAmount.textContent = `{{$cart_details->currency_code}} ${totalAmountData.toFixed(2)}`;
+                num.innerText = localStorage.getItem(`num${id}`);
+                addonBox.style.display = 'block';
+                
+                addonsId.push(id)
+                addonsOptionId.push(optionId)
+            });
+
+            minus.addEventListener("click", function(e) {
+                let parent = this.parentNode;
+                let id = parent.getAttribute('data-id');
+                let amount = parseFloat(parent.getAttribute('data-amount')).toFixed(2);
+                let days = parent.getAttribute('data-days');
+                num = parent.querySelector('.num');
+                a = num.innerText;
+                let minLimit = this.getAttribute('data-min')
+                if (a == minLimit || a < minLimit)
+                    return false;
+                if (a > 0) {
+                    a--;
+                    totalPrice = amount * a;
+                    addonBox.querySelector('p').textContent = parent.getAttribute('data-title')+' x '+ days +' days';
+                    addonBox.querySelector('span').textContent = `{{$cart_details->currency_code}} ${totalPrice.toFixed(2)}`;
+                    localStorage.setItem(`num${id}`, a);
+                    let totalAmountData = parseFloat(totalAmount.getAttribute('data-amount'));
+                    totalAmountData += totalPrice;
+                    totalAmount.textContent = `{{$cart_details->currency_code}} ${totalAmountData.toFixed(2)}`;
+                    localStorage.setItem(`num${id}`, a);
+                    num.innerText = localStorage.getItem(`num${id}`);
+                    addonBox.style.display = 'block';
+                }
+
+                if(a < 1){
+                    var indexToRemove = addonsId.filter(obj => Object.keys(obj)[0] !== id);
+                    var indexRemove = addonsOptionId.filter(obj => Object.keys(obj)[0] !== id);
+                    
+                    if (indexToRemove !== -1) {
+                        addonsId.splice(indexToRemove, 1);
+                        addonsOptionId.splice(indexRemove, 1);
+                    }
+                    addonBox.style.display = 'none';
+                }
+            });
+
+            
+            var states = {
+                'booking' : false,
+                'rentalProtection' : false
+            };
+
+            var bookingOptionId = [];
+            var rentalProtectionId = [];
+            var addonsId = [];
+            var addonsOptionId = [];
+
+            [bookingOption, protectionBox].forEach(element => {
+                element.addEventListener("click", function(e) {
+                    let box = this.getAttribute('name');
+                    const id = this.getAttribute('data-id');
+                    if(box == 'booking'){
+                        if(states.booking){
+                            return false;
+                        }
+                        states.booking = true;
+                        box = bookingBox;
+                        bookingOptionId.push(id);
+                    }else{
+                        if(states.rentalProtection){
+                            return false;
+                        }
+                        states.rentalProtection = true;
+                        box = protectionAmountBox;
+                        rentalProtectionId.push(id);
+                    }
+                    const amount = parseFloat(this.getAttribute('data-amount'));
+                    const title = this.getAttribute('data-title');
+                   
+                    const protectionAmountParagraph = box.querySelector('p');
+                    const protectionAmountSpan = box.querySelector('span');
+
+                    protectionAmountParagraph.textContent = title;
+                    protectionAmountSpan.textContent = `{{$cart_details->currency_code}} ${amount.toFixed(2)}`;
+
+                    const totalAmountData = parseFloat(totalAmount.getAttribute('data-amount'));
+                    const newTotalAmount = totalAmountData + amount;
+                    totalAmount.setAttribute('data-amount', newTotalAmount);
+                    totalAmount.textContent = `{{$cart_details->currency_code}} ${newTotalAmount.toFixed(2)}`;
+                    box.style.pointerEvents = 'none';
+                    box.style.display = 'block';
+                });
+            });
+        </script>

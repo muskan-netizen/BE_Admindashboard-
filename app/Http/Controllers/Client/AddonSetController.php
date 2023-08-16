@@ -12,6 +12,8 @@ use App\Http\Traits\SquareInventoryManager;
 class AddonSetController extends BaseController
 {
     use SquareInventoryManager;
+
+    private $folderName = 'addon/icon';
     /**
      * Store a newly created resource in storage.
      *
@@ -33,8 +35,11 @@ class AddonSetController extends BaseController
         $addOn->min_select = $min;
         $addOn->max_select = $max;
         $addOn->position = 1;
-        $addOn->vendor_id = $request->vendor_id ?? '';
-        $addOn->icon = $request->icon;
+        $addOn->vendor_id = $request->vendor_id;
+        if ($request->hasFile('icon')) {
+            $file = $request->file('icon');
+            $addOn->icon = Storage::disk('s3')->put($this->folderName, $file, 'public');
+        }
         $addOn->save();
         if($addOn->id > 0){
             $setTrans = $optTrans = array();

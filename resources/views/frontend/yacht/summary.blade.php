@@ -319,6 +319,19 @@
 			</div> --}}
 		</div>
 	</section>
+	<div class="modal fade" id="proceed_to_pay_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="pay-billLabel">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title" id="pay-billLabel">{{__('Total Amount')}}: <span id="total_amt"></span></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="v_pills_tabContent"></div>
+        </div>
+    </div>
+</div>
 @endsection
 <script>
 var guest_cart = {{ $guest_user ? 1 : 0 }};
@@ -327,6 +340,13 @@ var business_type = "<?= $client_preference_detail->business_type; ?>";
     var off_scheduling_at_cart = "<?= $client_preference_detail->off_scheduling_at_cart; ?>";
 	var update_cart_schedule = "{{route('cart.updateSchedule')}}";
 	var payment_option_list_url = "{{route('payment.option.list')}}";
+	var place_order_url = "{{route('user.placeorder')}}";
+	var base_url = "{{url('/')}}";
+	@if(!empty($client_preference_detail->is_postpay_enable))
+        var post_pay_edit_order = "{{$client_preference_detail->is_postpay_enable}}";
+    @else
+        var post_pay_edit_order = 0;
+    @endif
 </script>
 
 <script type="text/template" id="payment_method_tab_pane_template">

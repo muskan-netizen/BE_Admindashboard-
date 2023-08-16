@@ -1042,6 +1042,7 @@ $(document).ready(function () {
 
 
         //$("input[name='category_kyc_ids']").length > 0 ||
+        
         if( ($("input[name='without_category_kyc']").val() !=1 ) ){
             success_error_alert('error', 'User Place Order is required! kindly fill the details.', ".cart_response");
             return false;
@@ -1058,7 +1059,6 @@ $(document).ready(function () {
             })
             return false;
         }
-
 
         var vendorScheduleDatetime = $('.vendor_schedule_datetime').length
         if(vendorScheduleDatetime > 0){
@@ -1077,6 +1077,7 @@ $(document).ready(function () {
             $("#login_modal").modal("show");
             return false;
         }
+            
         var address = $("input[name='address_id']").val();
         if ((vendor_type == 'delivery' || vendor_type == 'on_demand' || vendor_type == 'rental') && ((address == '') || (address < 1) || ($("input[name='address_id']").length < 1))) {
             success_error_alert('error', 'Please add a valid address to continue', ".cart_response");
@@ -1181,6 +1182,7 @@ $(document).ready(function () {
                 return false;
             }
         }
+        
         if (cartAmount == 0) {
             var params = [specific_instructions, task_type, schedule_dropoff, schedule_pickup, schedule_dt, comment_for_pickup_driver, comment_for_dropoff_driver, comment_for_vendor, delivery_type, slot, address];
             // Save Cart Page Detail Forcely If user is paying from his cart.
@@ -1194,7 +1196,7 @@ $(document).ready(function () {
                 type: "POST",
                 dataType: 'json',
                 url: update_cart_schedule,
-                data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, dropoff_scheduled_slot : slot_dropoff, address: address,payable_amount : cartAmount },
+                data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, dropoff_scheduled_slot : slot_dropoff, address: address,payable_amount : cartAmount,bookingOptions : bookingOptionId, rental_protection : rentalProtectionId, addonID : addonsId, addonoptID : addonsOptionId },
                 success: function (response) {
                     $(".error_prescription").attr("style", "display:none");
                     if(response.status == "passbase_submitted"){

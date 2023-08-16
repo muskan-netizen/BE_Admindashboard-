@@ -2188,9 +2188,8 @@ class CartController extends FrontController
             }
             $cart_details->currency_code=$currency_code;
 
-           
-
-            $mycartView = view('frontend.yacht.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message])->render();
+            $addon = AddonSet::with('option', 'translation')->where('vendor_id', $cart_details->vendor_id)->where('status',1)->get();
+            $mycartView = view('frontend.yacht.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message, 'addons' => $addon])->render();
         }
        
         $tokenAmount = 1;
@@ -2200,6 +2199,7 @@ class CartController extends FrontController
             $cart_details->is_token_enable = $is_token_enable;
             $cart_details->tokenAmount = $tokenAmount;
         }
+        
         // till here
         return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'', 'cart_error_message' => $error_message,'wishListCount'=>$wishListCount]);//'token_val' => $tokenAmount , 'is_token_enable' => $is_token_enable
     }
@@ -2587,6 +2587,7 @@ class CartController extends FrontController
             $client_timezone = DB::table('clients')->first('timezone');
             $user->timezone = $client_timezone->timezone ?? $user->timezone;
             $new_session_token = session()->get('_token');
+            $langId = Session::get('customerLanguage')??'1';
             if ($user) {
                 $cart_detail = Cart::where('user_id', $user->id)->first();
             } else {
@@ -2610,7 +2611,71 @@ class CartController extends FrontController
                 if(count($presciptionProducts)){
                     return response()->json(['status'=>'error_prescription', 'presciptionProducts'=>$presciptionProducts]);
                 }
+
+            }
+
+            if($request->has('addonID')){
+                $addon_ids = $request->addonID;
+            }
+
+            if($request->has('addonoptID')){
+                $addon_options = $request->addonoptID;
+            }
+
+            foreach($addon_options as $key => $opt){
+                if(isset($addon_ids[$key])){
+                    $addonSets[$addon_ids[$key]][] = $opt;
                 }
+            }
+
+            foreach($addonSets as $key => $value){
+                $addon = AddonSet::join('addon_set_translations as ast', 'ast.addon_id', 'addon_sets.id')
+                            ->select('addon_sets.id', 'addon_sets.min_select', 'addon_sets.max_select', 'ast.title')
+                            ->where('ast.language_id', $langId)
+                            ->where('addon_sets.status', '!=', '2')
+                            ->where('addon_sets.id', $key)->first();
+                if(!$addon){
+                    return response()->json(["status" => "error", 'message' => 'Invalid addon or delete by admin. Try again with remove some.'], 404);
+                }
+            }
+            $cartProduct = CartProduct::where('cart_id', $cart_detail->id)->first();
+            if(!$cartProduct){
+                $isnew = 1;
+            }else{
+                $checkaddonCount = CartAddon::where('cart_product_id', $cartProduct->id)->count();
+                if(count($addon_ids) != $checkaddonCount){
+                    $isnew = 1;
+                }else{
+                    foreach ($addon_options as $key => $opts) {
+                        $cart_addon = CartAddon::where('cart_product_id', $cartProduct->id)
+                                    ->where('addon_id', $addon_ids[$key])
+                                    ->where('option_id', $opts)->first();
+
+                        if(!$cart_addon){
+                            $isnew = 1;
+                        }
+                    }
+                }
+            }
+            
+            if($isnew){
+                if(!empty($addon_ids) && !empty($addon_options)){
+                    $saveAddons = array();
+                    foreach ($addon_options as $key => $opts) {
+                        if(isset($addon_ids[$key])){
+                            $saveAddons[] = [
+                                'option_id' => $opts,
+                                'cart_id' => $cart_detail->id,
+                                'addon_id' => $addon_ids[$key],
+                                'cart_product_id' => $cartProduct->id,
+                            ];
+                        }
+                    }
+                    if(!empty($saveAddons)){
+                        CartAddon::insert($saveAddons);
+                    }
+                }
+            }
 
             if ($user || $new_session_token) {
                 if($request->task_type == 'now'){
