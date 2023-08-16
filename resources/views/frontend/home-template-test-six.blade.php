@@ -171,7 +171,7 @@
 @if(count($navCategories))
    <section class="alSixMainMenu p-0">
       <div class="menu-navigation_al">
-      <div class="container-fulid">
+      <div class="container-fulid space-slider-homeric">
          <div class="row">
             <div class="col-12">
                <ul id="main-menu" class="sm pixelstrap sm-horizontal menu-slider" >
@@ -353,7 +353,7 @@
       @elseif($homePageLabel->slug == 'best_sellers' && (count($homePageData['best_sellers']) != 0))
          <section class="suppliers-section container-fluid">
             <div class=" top-heading d-flex justify-content-between align-self-center">
-               <h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('Best sellers', true)}}</h2>
+               <h2 class="h2-heading mt-4">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('Best sellers', true)}}</h2>
             </div>
             <div class="col-12 p-0">
                <div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
