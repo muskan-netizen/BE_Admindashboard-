@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Redirect;
 use Log;
 use Illuminate\Support\Str;
 use App\Http\Traits\OrderTrait;
+use App\Models\Client;
 
 class MpesaSafariController extends Controller
 {
@@ -101,6 +102,18 @@ class MpesaSafariController extends Controller
     {
         $amount = $request->amt??$request->amount;
         $accountReference=$this->orderNumber($request);
+     /*   if($request->come_from == 'app'){
+            $code = $request->header('code');
+            $client = Client::where('code',$code)->first();
+            $domain = '';
+            if(!empty($client->custom_domain)){
+                $domain = $client->custom_domain;
+            }else{
+                $domain = $client->sub_domain.env('SUBMAINDOMAIN');
+            }
+            $this->lnmocallback =  'https://'.$domain.'/webhook/mpesa';
+        }*/
+
         $phone = $this->formatPhone(auth()->user()->phone_number);
         $response = $this->express($amount,$phone,$accountReference,'Payment');
         $response = json_decode($response);
@@ -157,7 +170,7 @@ class MpesaSafariController extends Controller
         return $phone;
     }
 
-    public function successPage(Request $request)
+    public function successPage(Request $request,$domain = '')
     { 
          if (isset($request->Body) && isset($request->Body['stkCallback']) && isset($request->Body['stkCallback']['ResultCode']) && $request->Body['stkCallback']['ResultCode'] == 0) {
              $payment = Payment::where('viva_order_id', $request->Body['stkCallback']['CheckoutRequestID'])->first();

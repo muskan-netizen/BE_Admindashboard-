@@ -3863,11 +3863,11 @@ $(document).ready(function () {
             payment_from = 'tip';
             orderNumber  = $("#order_number").val();
         }
-        ajaxData.action         = 'web';
+        ajaxData.action   = payment_from;
+        ajaxData.come_from   = 'web';
         ajaxData.order_id       = orderId;
         ajaxData.amount         = total_amount;
         ajaxData.order_number   = orderNumber;
-        ajaxData.payment_from   = payment_from;
 
         $.ajax({
             type: "POST",
