@@ -94,14 +94,23 @@ $('#tabs-nav li').click(function () {
   return false;
 });
 
-var input = document.getElementById('location');
-var autocomplete = new google.maps.places.Autocomplete(input);
-google.maps.event.addListener(autocomplete, 'place_changed', function () {
-  var place = autocomplete.getPlace();
-  document.getElementById('location_longitude').value = place.geometry.location.lng();
-  document.getElementById('location_latitude').value = place.geometry.location.lat();
+const pickup = document.getElementById('pickup_location');
+const dropoff = document.getElementById('drop_location');
+var pickupautocomplete = new google.maps.places.Autocomplete(pickup);
+var dropoffautocomplete = new google.maps.places.Autocomplete(dropoff);
+// Pickup Address
+google.maps.event.addListener(pickupautocomplete, 'place_changed', function () {
+  let place = pickupautocomplete.getPlace();
+  document.getElementById('pickup_longitude').value = place.geometry.location.lng();
+  document.getElementById('pickup_latitude').value = place.geometry.location.lat();
 });
 
+// Drop Off Address
+google.maps.event.addListener(dropoffautocomplete, 'place_changed', function () {
+  let place = dropoffautocomplete.getPlace();
+  document.getElementById('drop_longitude').value = place.geometry.location.lng();
+  document.getElementById('drop_latitude').value = place.geometry.location.lat();
+});
 
 $("input[name='service']").click(function () {
   if ($(this).val() == 'yacht') {
@@ -137,9 +146,19 @@ function readonlyElement(element, action = true){
 
 $(document).ready(function(){
   $(".filter_cta").click(function(){
-    $("body").addClass("filter_open");    
+    $("body").addClass("filter_open");
   });
   $(".close_filter").click(function(){
     $("body").removeClass("filter_open");    
   });
+
+  $(document).on('change' ,'#diff-location' , function(e){
+    if($(this).is(':checked')){
+      $('#dropoff-box').show();
+      $('#dropoff-box').find('input').attr('required', true).val('')
+    }else{
+      $('#dropoff-box').hide();
+      $('#dropoff-box').find('input').attr('required', false).val('')
+    }
+  })
 });

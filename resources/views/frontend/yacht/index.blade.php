@@ -80,11 +80,25 @@
                             <div class="row align-items-center">
                                 <div class="col">
                                     <div class="item">
-                                        <h5>Location</h5>
+                                        <h5>Pickup Location</h5>
                                         <p><img src="yacht-images/icons/3.png" alt="">
-                                            <input class="" type="text" name="location" id="location" value="" placeholder="1801 Oak Ridge Ln" required>
-                                            <input type="hidden" name="longitude" id="location_longitude" value="">
-                                            <input type="hidden" name="latitude" id="location_latitude" value="">
+                                            <input class="" type="text" name="pickup_location" id="pickup_location" value="" placeholder="1801 Oak Ridge Ln" required>
+                                            <input type="hidden" name="pickup_longitude" id="pickup_longitude" value="">
+                                            <input type="hidden" name="pickup_latitude" id="pickup_latitude" value="">
+                                        </p>
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="checkbox" name="diff_location" id="diff-location" />
+                                        <label for="diff-location">Different Return Location</label>
+                                    </div>
+                                </div>
+                                <div class="col" id="dropoff-box" style="display:none;">
+                                    <div class="item">
+                                        <h5>Return Location</h5>
+                                        <p><img src="yacht-images/icons/3.png" alt="">
+                                            <input type="text" name="drop_location" id="drop_location" value="" placeholder="1801 Oak Ridge Ln">
+                                            <input type="hidden" name="drop_longitude" id="drop_longitude" value="">
+                                            <input type="hidden" name="drop_latitude" id="drop_latitude" value="">
                                         </p>
                                     </div>
                                 </div>

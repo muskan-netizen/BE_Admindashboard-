@@ -6,8 +6,7 @@
     <div class="container">
         <div class="serch_result_heading">
             <div class="item">
-                {{-- <h3>Current Location CDCL, Sector 28</h3> --}}
-                <h3>{{$location}}</h3>
+                <h3>{{$pickup->address}}</h3>
                 <span><i class="fa fa-pencil filter_cta"></i></span>
             </div>
             <div class="result_date">
@@ -24,7 +23,7 @@
 <section class="result_item">
     <div class="container">
         <div class="heading d-flex align-items-center justify-content-between">
-        @if(!empty($products))
+        @if($products->count())
             <h2>Available Cars</h2>
         @else
             <h2>No Available Cars</h2>
@@ -115,11 +114,21 @@
         <form action="" method="GET">
             @csrf
             <div class="form-group">
-                <label>Location</label>
-                <input type="text" value="{{$location}}" name="location">
-                <input type="hidden" value="{{$location_latitude}}" name="latitude">
-                <input type="hidden" value="{{$location_longitude}}" name="longitude">
+                <label>Pickup Location</label>
+                <input type="text" value="{{$pickup->address}}" name="pickup_location" id="pickup_location">
+                <input type="hidden" value="{{$pickup->latitude}}" name="pickup_longitude" id="pickup_longitude">
+                <input type="hidden" value="{{$pickup->longitude}}" name="pickup_latitude" id="pickup_latitude">
                 <input type="hidden" value="{{$service}}" name="service">
+            </div>
+            <div class="form-group" id="dropoff-box" @if(!$diff_location) style="display:none;" @endif>
+                <label>Return Location</label>
+                <input type="text" value="{{$dropoff->address}}" name="drop_location" id="drop_location" placeholder="1801 Oak Ridge Ln">
+                <input type="hidden" value="{{$dropoff->latitude}}" name="drop_latitude" id="drop_latitude">
+                <input type="hidden" value="{{$dropoff->longitude}}" name="drop_longitude" id="drop_longitude">
+            </div>
+            <div class="form-group">
+                <input type="checkbox" name="diff_location" id="diff-location" @if($diff_location) checked @endif/>
+                <label for="diff-location">Different Return Location</label>
             </div>
             <div class="form-group d-none">
                 <label>Pick Date</label>

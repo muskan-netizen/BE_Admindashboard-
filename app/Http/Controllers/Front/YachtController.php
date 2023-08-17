@@ -23,6 +23,7 @@ use App\Http\Traits\HomePage\HomePageTrait;
 use App\Http\Traits\OrderTrait;
 use App\Http\Traits\ProductActionTrait;
 use App\Http\Traits\VendorTrait;
+use App\Http\Traits\YachtTrait;
 use App\Models\ClientCurrency;
 use App\Models\Product;
 use App\Models\ProductAttribute;
@@ -33,7 +34,7 @@ use App\Models\VendorCategory;
 
 class YachtController extends FrontController
 {
-    use ApiResponser, OrderTrait,ProductActionTrait, HomePageTrait,VendorTrait;
+    use ApiResponser, OrderTrait,ProductActionTrait, HomePageTrait,VendorTrait, YachtTrait;
     private $field_status = 2;
     public $cities = [];
     public $additionalPreference =[];
@@ -146,8 +147,7 @@ class YachtController extends FrontController
             if(isset($set_template)  && ($set_template->template_id == 8 || $set_template->template_id == 9)){
                 $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
                 ->where('id', '>', '1')
-                
-                ->whereNotIn('type_id', [4, 5])
+                ->whereIn('type_id', [7, 10])
                 ->where(function ($q) {
                     $q->whereNull('vendor_id');
                 })->orderBy('position', 'asc')
@@ -377,63 +377,30 @@ class YachtController extends FrontController
 
     public function productsSearchResult(Request $request)
     {
-        if($request->service == 'airport'){
-            $mapKey = '1234';
-            $theme = \App\Models\ClientPreference::where(['id' => 1])->first();
-            if($theme && !empty($theme->map_key)){
-                $mapKey = $theme->map_key;
-            }
-            $response = \Http::get("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$request->latitude,$request->longitude&rankby=distance&type=airport&key=$mapKey")['results'];
-            $data['products'] = collect($response)->map(function($result){
-                return [
-                    'title' => $result['name'],
-                    'path' => $result['icon'],
-                    'location' => $result['vicinity'],
-                    'latitude' => $result['geometry']['location']['lat'],
-                    'longitude' => $result['geometry']['location']['lng'],
-                ];
-            });
-        }
-        $time = explode('to',$request->pick_drop_time);
-        $pickup_time = date('Y-m-d H:i',strtotime($time[0]));
-        $drop_time = date('Y-m-d H:i',strtotime($time[1]));
+        $data = [];
+        $pickup_time = null;
+        $drop_time = null;
 
-        $category = Category::where('slug',$request->service)->first();
-        $data['products'] = [];
-        if($category){
-            $data['products'] = Product::with(['variant','media.image',
-            'ProductAttribute' => function($q){
-                $q->whereIn('key_name', ['Transmission', 'Fuel Type', 'Seats']);
-            }, 
-            'ProductAttribute.attributeOption:id,title'])->where(function($q) use ($pickup_time, $drop_time){
-                if(!empty($pickup_time) && !empty($drop_time)){
-                    // $q->where('pickup_time', '<=', $pickup_time)
-                    // ->where('drop_time', '>=', $drop_time);
-                }
-            })->where(function($q) use ($request){
-                if($request->seats){
-                    $q->where('seats','>=', $request->seats);
-                }
-            })->where( function($q) use ($request){
-                if(isset($request->latitude) && isset($request->longitude)){
-                    $q->whereHas('vendor.serviceArea',function($q) use ($request){
-                        $q->select('id','vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $request->latitude . " " . $request->longitude . ")'))");
-                    });
-                }
-            })
-            ->with('vendor',function($q) use ($request){
-                $q->distanceInMeters($request->latitude,$request->longitude);
-            })
-            ->where('category_id',$category->id)->get();
+        if($request->has('pick_drop_time')){
+            $time = explode('to',$request->pick_drop_time);
+            $pickup_time = date('Y-m-d H:i',strtotime($time[0]));
+            $drop_time = date('Y-m-d H:i',strtotime($time[1]));
         }
-        $data['service'] = $request->service;
-        $data['pick_drop_time'] = $request->pick_drop_time;
-        $data['pickup_time'] = $pickup_time;
-        $data['drop_time'] = $drop_time;
-        $data['location'] = $request->location;
-        $data['location_latitude'] = $request->latitude;
-        $data['location_longitude'] = $request->longitude;
-        $data['category'] = $category;
+        $pickup = (object) [
+            'time' => $pickup_time,
+            'latitude' =>  $request->pickup_latitude,
+            'longitude' =>  $request->pickup_longitude,
+            'address' => $request->pickup_location
+        ];
+
+        $dropOff = (object) [
+            'time' => $drop_time,
+            'latitude' =>  $request->drop_latitude,
+            'longitude' =>  $request->drop_longitude,
+            'address' => $request->drop_location
+        ];
+
+        $data = $this->productSearch($request, $pickup, $dropOff);
         return view('frontend.yacht.car-rental',$data);
     }
 }

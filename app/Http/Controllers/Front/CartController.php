@@ -2187,7 +2187,6 @@ class CartController extends FrontController
                 $currency_code=$currency->currency->iso_code;
             }
             $cart_details->currency_code=$currency_code;
-
             $addon = AddonSet::with('option', 'translation')->where('vendor_id', $cart_details->vendor_id)->where('status',1)->get();
             $mycartView = view('frontend.yacht.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message, 'addons' => $addon])->render();
         }
@@ -2613,15 +2612,15 @@ class CartController extends FrontController
                 }
 
             }
-
+            $addon_ids = [];
             if($request->has('addonID')){
                 $addon_ids = $request->addonID;
             }
-
+            $addon_options = [];
             if($request->has('addonoptID')){
                 $addon_options = $request->addonoptID;
             }
-
+            $addonSets = [];
             foreach($addon_options as $key => $opt){
                 if(isset($addon_ids[$key])){
                     $addonSets[$addon_ids[$key]][] = $opt;
@@ -2639,6 +2638,7 @@ class CartController extends FrontController
                 }
             }
             $cartProduct = CartProduct::where('cart_id', $cart_detail->id)->first();
+            $isnew = 0;
             if(!$cartProduct){
                 $isnew = 1;
             }else{

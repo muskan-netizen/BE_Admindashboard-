@@ -358,7 +358,7 @@ class ProductController extends FrontController{
             }
 
             $productAttributes = [];
-            if( checkTableExists('attributes') ) {
+            if( checkTableExists('attributes') && 0) {
                 $productAttributes = Attribute::with('option', 'varcategory.cate.primary')
                     ->select('attributes.*')
                     ->join('attribute_categories', 'attribute_categories.attribute_id', 'attributes.id')

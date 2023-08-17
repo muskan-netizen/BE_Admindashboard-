@@ -8,7 +8,7 @@ use Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag,DeliverySlotProduct, DeliverySlot,UserAddress};
+use App\Models\{Attribute, User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag,DeliverySlotProduct, DeliverySlot,UserAddress};
 use Validation;
 use DB;
 use App\Http\Traits\{ApiResponser,ProductTrait, ProductActionTrait};
@@ -66,6 +66,9 @@ class ProductController extends BaseController
                         $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
                         $q2->where('apt.language_id', $langId);
                     },
+                    'ProductAttribute' => function($q){
+                        $q->whereIn('key_name', ['Transmission', 'Fuel Type', 'Seats']);
+                    }, 'ProductAttribute.attributeOption'
                     ])->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count')
                     ->where('id', $pid)
                     ->first();
@@ -285,6 +288,9 @@ class ProductController extends BaseController
                     if( !empty($value->attribute) && !empty($value->attribute->status) && $value->attribute->status == 1 ) {
                         $product_attr[$key]['title'] = optional($value->attribute)->title ?? '';
                         $product_attr[$key]['attribute_id'] = $value->attribute_id ?? '';
+                        $attribute = $value->attribute;
+                        $img = $attribute->icon ? $attribute->icon['proxy_url'] . '100/100' . $attribute->icon['image_path'] : '';
+                        $product_attr[$key]['icon'] = $img;
                         
                         if( !empty($value->attribute) && $value->attribute->type != 4 && $value->attribute->type != 6) {
                             $product_attr[$key]['value'] = optional($value->attributeOption)->title ?? '';
@@ -360,8 +366,33 @@ class ProductController extends BaseController
                     }
                 }
             }
+            
 
-        
+            $detail = [
+            'Mileage',
+            'Engine',
+            'Transmission',
+            'BHP',
+            'Seats',
+            'Boot Space',
+            'Fuel Type'
+            ];
+            $additional = [];
+            foreach ($product->ProductAttribute as $productAttribute) {
+                $attribute = $productAttribute->attribute;
+                $img = $attribute->icon['proxy_url'] . '100/100' . $attribute->icon['image_path'];
+                if ($productAttribute->attributeOption()->exists()) {
+                    $title = $productAttribute->attributeOption->title ?? $productAttribute->key_value;
+                    if(!in_array($productAttribute->key_name, $detail)){
+                        $additional[] = [
+                            'title' => $productAttribute->key_name,
+                            'value' => $title,
+                            'img' => $img
+                        ];
+                    }
+                }
+            }
+                
             $response['suggested_category_products'] =  $suggested_category_products;
             $response['suggested_brand_products'] =  $suggested_brand_products;
             $response['suggested_vendor_products'] =  $suggested_vendor_products;
@@ -371,6 +402,7 @@ class ProductController extends BaseController
             $response['upSellProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'upSell', $product->upSell);
             $response['crossProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'cross', $product->crossSell);
             $response['product_attribute'] = $product_attr;
+            $response['additional_features'] = $additional;
             // $response['product_variant'] = ProductVariant::select('id', 'sku', 'product_id', 'title', 'quantity','price','markup_price','cost_price','barcode','tax_category_id')->where('product_id',$pid)->get();
             /* group by in query return data only for key - 0 so using 0 */
             $is_return_days = 0;

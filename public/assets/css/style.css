@@ -1504,6 +1504,10 @@ line-height: 21px;
     }
 }
 
+.pac-container {
+    z-index: 99999;
+}
+
 @media (max-width:767px){
     .fleet_slider .item .image{
         border-right: unset;

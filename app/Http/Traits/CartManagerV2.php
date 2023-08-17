@@ -728,11 +728,9 @@ trait CartManagerV2{
                    
                     $total_container_charges = $container_charges_in_currency * $prod->quantity;
                     $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
-
                     if($prod->is_cart_checked == 1){
-                        $sub_total+=$quantity_price+$quantity_container_charges;
+                        $sub_total+=$quantity_price + $quantity_container_charges;
                     }
-                    
                     $prod->pvariant->price_in_cart = $prod->pvariant->price??0;
                    
                     $total_quantity += $prod->quantity;
