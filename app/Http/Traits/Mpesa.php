@@ -132,7 +132,7 @@ trait Mpesa{
        
    public function getWebhookUrl(){       
       if($this->testmode)
-          return "https://webhook.site/6f12a228-fc95-4241-8495-1ff5f41cf421"; //Your callback URL
+          return "https://webhook.site/b1c6b395-7728-4874-8f06-66edcd943c07"; //Your callback URL
      else
           return route('safari.payment');
    }
@@ -430,7 +430,7 @@ trait Mpesa{
            'Password' => $passwd,
            'Timestamp' => $timestamp,
            'TransactionType' => 'CustomerPayBillOnline',
-           'Amount' => $amount,
+           'Amount' => floor($amount),
            'PartyA' => $phone,
            'PartyB' => $this->lipa_na_mpesa,
            'PhoneNumber' => $phone,
