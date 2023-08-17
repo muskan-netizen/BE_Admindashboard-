@@ -111,7 +111,8 @@ class MpesaSafariController extends Controller
                $payment->save();
                if($payment->type == 'cart'){
                     \Session::flash('success', 'Order placed successfully.');
-                    $route = route('order.success',['order_id' => $request->order_id]);
+                    if($payment->payment_from == 'web')
+                        $route = route('order.success',['order_id' => $request->order_id]);
                 } elseif($payment->type == 'wallet'){
                     \Session::flash('success', 'Wallet amount updated soon.');
                     if($payment->payment_from == 'web')
