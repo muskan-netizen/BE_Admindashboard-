@@ -16,7 +16,13 @@ body .pac-container{
     background: none !important;
     border: none !important;
 }
-
+.address-form .where-to-go .title-36 {
+    font-size: 22px;
+    font-weight: 600;
+}
+.address-form .where-to-first .title-36 {
+    font-size: 20px;
+}
 .navigation-tab .nav-link.active {
     color: #fff !important;
     background-color: var(--theme-deafult) !important;
@@ -1795,3 +1801,6 @@ section#our_vendor_main_div .render_full_best_sellers {padding: 20px 0 !importan
         font-size: 14px;
     }
 }
+
+.dark .slick-slide .inner_spacing p{color:#fff;}
+.dark .displayProducts .inner_spacing h3 label b{color:#fff;}
