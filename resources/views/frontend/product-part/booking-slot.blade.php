@@ -296,21 +296,19 @@
         });*/
 
         async function check_product_availibility(formData){
-          console.warn(formData);
           if(formData.variant_option_id == undefined){
             formData.variant_option_id = '';
           }
           formData.variant_id = $('#first_variant').val()
             axios.post(`/booking/checkProductAvailibility`, formData)
             .then(async response => {
-            //console.log(response);
                 var data = response.data.variant_data;
 
                 if(response.data.success){
                   if(!data.variant_product_quantity){
-                  $("a#add_to_cart_btn").removeClass("addToCart");
-                  await sweetAlert.error('',_language.getLanString('Not available yet!')); 
-                  return false;
+                    $("a#add_to_cart_btn").removeClass("addToCart");
+                    await sweetAlert.error('','Not available yet!'); 
+                    return false;
                   }
 
                   var available_product_variant = data.available_product_variant;
@@ -334,7 +332,7 @@
                       }
                     }
                   } else {
-                    $("a#add_to_cart_btn").removeClass("addToCart");
+                    $("a#add_to_cart_btn").remove();
                     Swal.fire({
                       icon: 'error',
                       title: 'Oops...',
@@ -351,7 +349,7 @@
                 // }
             })
             .catch(e => {
-              //console.log(e);
+              console.log(e);
                 Swal.fire({
                       icon: 'error',
                       title: 'Oops...',

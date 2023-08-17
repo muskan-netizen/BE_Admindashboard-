@@ -27,6 +27,7 @@ if($client_preference_detail->show_dark_mode == 1){
 $left_sidebar = 'layouts.store/top-car-rental-header';
 
 @endphp
+    @include('layouts.language')
 <body class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
     <header>
         @include($left_sidebar)

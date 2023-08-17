@@ -94,7 +94,7 @@
                         /*$newRequest->merge(['product_id'=> $product->product_id, 'quantity'=>$product->quantity, 'variant_id'=>$product->product->variant[0]->id, 'vendor_id'=>$product->product->vendor_id,'bid_number'=>(($is_bid_enable)?$id:null),'bid_discount'=>(($is_bid_enable)?$product->bids->discount:null)]);
                         $data = $CartController->postAddToCart($newRequest);*/
                     @endphp
-                        <a href="javascript:void(0);" class="addToCart">Next</a>
+                        <a href="javascript:void(0);" id="add_to_cart_btn" class="">Next</a>
                     </div>
                 </div>
             </div>
@@ -117,6 +117,7 @@
     <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
     <input type="hidden" name="sele_slot_id" id="sele_slot_id" value="" />
     <input type="hidden" name="sele_slot_price" id="sele_slot_price" value="" />
+    <input type="hidden" name="product_id" id="product_id" value="{{$product->id}}" />
     <div id="selected_slot"></div>
     @include('frontend.product-part.booking-slot')
         <h3>Car specifications</h3>

@@ -1212,10 +1212,10 @@ class OrderController extends FrontController
             }
             $loyalty_amount_saved = 0;
             $redeem_points_per_primary_currency = '';
-            $loyalty_card = LoyaltyCard::where('status', '0')->first();
-            if ($loyalty_card) {
-                $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
-            }
+            // $loyalty_card = LoyaltyCard::where('status', '0')->first();
+            // if ($loyalty_card) {
+            //     $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
+            // }
             $currency_id = Session::get('customerCurrency');
             $language_id = Session::get('customerLanguage');
             $cart = Cart::where('user_id', $user->id)->with([
@@ -1227,9 +1227,9 @@ class OrderController extends FrontController
             $customerCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
             $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
             // Get earn and used loyalty amount
-            $loyaltyCheck = $this->getOrderLoyalityAmount($user, $customerCurrency);
-            $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
-            $loyalty_points_used = $loyaltyCheck->loyalty_points_used ?? 0;
+            // $loyaltyCheck = $this->getOrderLoyalityAmount($user, $customerCurrency);
+            // $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
+            // $loyalty_points_used = $loyaltyCheck->loyalty_points_used ?? 0;
 
             // check gift card
 
@@ -2126,7 +2126,7 @@ class OrderController extends FrontController
                 $order_status->save();
             } // End cart product loop
               // echo "loop end";
-            $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint('', $payable_amount);
+            // $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint('', $payable_amount);
 
             // Total Discount
             $total_discount = $total_discount + $total_subscription_discount;
