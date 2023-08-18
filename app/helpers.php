@@ -795,7 +795,7 @@ function showPriceWithCurrency($price = 0,$compare = 0)
             $is_token_currency = getAdditionalPreference(['is_token_currency_enable'])['is_token_currency_enable'];
             $redis->set("ifTCurrency_".session()->get('userCode'), $is_token_currency, 'EX', 36000);
         }
-        
+        $is_token_currency = 0;
         if($is_token_currency == 1)
         {
             $currencysymbol = "<i class='fa fa-money' aria-hidden='true'></i> ";

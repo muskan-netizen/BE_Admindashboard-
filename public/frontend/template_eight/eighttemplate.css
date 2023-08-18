@@ -2644,7 +2644,7 @@ body.al_body_template_eight .categories-product-list .col-sm-6.offset-sm-3 {
         font-weight: 600;
     }
     .al_body_template_eight .best-seller-full h2.h2-heading {
-        margin-bottom: 20px !important;
+        margin: 26px 0px !important;
     }
     .al_body_template_eight .margin-res .supplier-rating p {
         text-overflow: ellipsis;
@@ -2804,6 +2804,13 @@ body.al_body_template_eight .p2p-full-width {
     font-weight:400;position: relative;
     line-height: 1.5;
     padding:0 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.status_box li a {
+    font-size: 14px;
+    color: #000;
 }
 .al_body_template_eight .menu-navigation.alThreeMenu li.al_main_category a i {
     position: absolute;
@@ -3013,6 +3020,7 @@ body.al_body_template_eight.homeHeader .main-fillter .side_fillter .range-slider
 .dark .cutom_add_wishlist .fav-button  i {
     color: var(--theme-deafult );
 }
+.dark .displayProducts .inner_spacing h3 label b{color:#fff;}
 .price_box_bottom li label{
     font-size: 12px;
     font-weight: 500;

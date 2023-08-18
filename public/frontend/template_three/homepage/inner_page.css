@@ -112,7 +112,7 @@ body[dir=rtl] .third-temp-lan {
     width: fit-content;
     font-size: 12px;
     margin: 0 auto;
-    padding: 8px 10px;
+    padding: 6px 20px;
 }
 .al_body_template_three .add_vendor_product_btn {
     border: 1px solid var(--theme-deafult);
@@ -3251,6 +3251,15 @@ input.addon-input-number {
     width: 100%;
 }
 
+.vendor-products-wrapper .price_head h5 {
+    font-size: 18px;
+    letter-spacing: 0px;
+    font-weight: 600;
+}
+.vendor-products-wrapper .member_no span {
+    font-size: 14px;
+    color: #000;
+}
 .classes_wrapper .number {
     border: 1px solid var(--theme-deafult);
     border-radius: 4px;
