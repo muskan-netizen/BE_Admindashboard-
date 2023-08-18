@@ -308,9 +308,6 @@ class VendorController extends FrontController
                 }
             }
         }
-
-
-
         $product_tag_ids = Product::byProductCategoryServiceType($type)->where('vendor_id', $vendor->id)->where('is_live', 1)->pluck('id')->toArray();
         $tag_ids = ProductTag::whereIn('product_id',$product_tag_ids)->pluck('tag_id')->toArray();
         $tags = Tag::whereIn('id',$tag_ids)->with('primary')->get();
@@ -432,8 +429,6 @@ class VendorController extends FrontController
                 // abort(404);
             }
         }
-
-
         return view('frontend/vendor-'.$page)->with(['vendor' => $vendor, 'show_range' => $show_range, 'listData' => $listData, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'brands' => $brands, 'range_products' => $range_products, 'vendor_category' => $slug2]);
     }
 

@@ -1170,8 +1170,8 @@ body .royo_whatsapp_img {
     .al_body_template_six .cart-price .tip_label {
         padding: 5px 8px;
     }
-   
-
+    .al_desktop_banner span.carousel-control-prev-icon, span.carousel-control-next-icon{display: none;}
+    body.al_body_template_six .d-inline-flex.al_searchType.align-items-center.justify-content-start.px-2.position-relative{padding:10px;}
 }
 
 /*hotfix product page css*/
@@ -1218,7 +1218,7 @@ body .royo_whatsapp_img {
     body.al_body_template_six .nav-tabs.navigation-tab_al.nav-material{
         width: 368px;
         flex-wrap: nowrap;
-        overflow-x: auto;
+        overflow-x: auto;padding:0px;
     }
     body.al_body_template_six .nav-tabs.navigation-tab_al.nav-material li {
         margin: 10px;
