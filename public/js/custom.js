@@ -4211,7 +4211,6 @@ $(document).ready(function () {
     $(document).on('change', '.vendor_schedule_datetime, .vendor_schedule_slot', async function () {
 
         var task_type = 'schedule';
-
         let schedule_type = $(this).data("schedule_type");
         let cart_product_id = $(this).data("cart_product_id");
         let vendor_id = $(this).data("vendor_id");
@@ -4250,6 +4249,8 @@ $(document).ready(function () {
                     return false;
                 }
             }
+        }else{
+            var schedule_dt = $(this).closest('.vendor_slot_cart').find('.vendor_schedule_datetime').val();
         }
 
         $.ajax({
