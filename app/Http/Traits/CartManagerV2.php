@@ -814,7 +814,6 @@ trait CartManagerV2{
                                     }else{
                                         $sub_total+=($opt_price_in_currency * $prod->quantity);
                                     }
-                                    $coupon_apply_price+=$opt_price_in_currency;
                                     $opt_quantity_price = decimal_format($opt_price_in_doller_compare * $prod->quantity);
                                     $addons->option->price_in_cart = $addons->option->price;
                                     
@@ -917,6 +916,7 @@ trait CartManagerV2{
                                         || ($in_or_not == 0 && in_array($vendorData->vendor_id, $coupon_vendor_ids))
                                         || ($in_or_not == 1 && !in_array($vendorData->vendor_id, $coupon_vendor_ids))
                                     ){
+                                        $coupon_apply_price+=$opt_price_in_currency;
                                         $coupon_product_discount = $coupon_product_discount + $opt_quantity_price;
                                     }
                                 }
@@ -969,6 +969,9 @@ trait CartManagerV2{
                                             $coupon_amount_used = $total_discount_percent;
                                         } else {
                                             $gross_amount = decimal_format($payable_amount - $taxable_amount-$total_container_charges);
+                                            if($vendorData->coupon->promo->restriction_on == 0 ){
+                                                $gross_amount = $coupon_apply_price;
+                                            }
                                             $percentage_amount = ($gross_amount * $vendorData->coupon->promo->amount / 100);
                                             $payable_amount -= $percentage_amount;
                                             $vendor_discount_amount = $percentage_amount;
