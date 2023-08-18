@@ -36,7 +36,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row map-configration_dashboard">
             @if ($client_preference_detail->business_type != 'taxi')
                 <div class="col-lg-4 col-md-6 mb-3">
                     <div class="row h-100">
@@ -616,7 +616,7 @@
             </div><!-- Map Sms Emails title end -->
         </div>
     </div>
-    <div class="row">
+    <div class="row map-configration_dashboard">
         <div class="col-lg-3 mb-3">
             <!-- Map Configuration start -->
             <form class="h-100" method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
@@ -1352,7 +1352,7 @@
     </div>
 
 
-    <div class="row">
+    <div class="row map-configration_dashboard">
         {{-- hubspot form --}}
         <div class="col-xl-4 col-lg-4 mb-3">
             <!-- Social Logins title start -->
@@ -1621,7 +1621,7 @@
 
 
 
-    <div class="row">
+    <div class="row map-configration_dashboard">
         {{-- Third party Accounting --}}
         <div class="col-xl-4 col-lg-4 mb-3">
             <div class="page-title-box">

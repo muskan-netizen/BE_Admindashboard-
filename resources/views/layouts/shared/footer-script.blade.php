@@ -359,7 +359,8 @@ if (Session::has('toaster')) {
 
     });
     @endif
-    $(document).on("click", ".update-status", function() {
+    @if(\Request::route()->getName() != 'order.index')
+    $(document).on("click", ".update-status-ar", function() {
         Swal.fire({
             title: "{{__('Are you Sure?')}}",
             // icon: 'info',
@@ -410,14 +411,14 @@ if (Session::has('toaster')) {
                                 var next_status = '{{__("Out For Delivery")}}';
                             else
                                 var next_status = '{{__("Delivered")}}';
-                            that.replaceWith("<button class='update-status btn-warning' data-full_div='" + full_div + "' data-single_div='" + single_div + "'  data-count='" + count + "'  data-order_id='" + order_id + "'  data-vendor_id='" + vendor_id + "'  data-status_option_id='" + status_option_id_next + "' data-order_vendor_id=" + order_vendor_id + ">" + next_status + "</button>");
+                            that.replaceWith("<button class='update-status-ar btn-warning' data-full_div='" + full_div + "' data-single_div='" + single_div + "'  data-count='" + count + "'  data-order_id='" + order_id + "'  data-vendor_id='" + vendor_id + "'  data-status_option_id='" + status_option_id_next + "' data-order_vendor_id=" + order_vendor_id + ">" + next_status + "</button>");
                             return false;
                         } else {
                             $(that).parents(single_div).slideUp(1000, function() {
                                 $(this).remove();
                             });
                             setTimeout(function() {
-                                if ($("#received_new_orders").find(".update-status").length == 0) {
+                                if ($("#received_new_orders").find(".update-status-ar").length == 0) {
                                     $("#received_new_orders").modal('hide');
                                 }
                             }, 2000);
@@ -434,6 +435,7 @@ if (Session::has('toaster')) {
             }
         });
     });
+    @endif
 </script>
 @endif
 

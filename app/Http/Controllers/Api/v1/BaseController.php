@@ -330,7 +330,7 @@ class BaseController extends Controller{
                 $celebrity_check = 1;
                 $include_categories[] = 5; // type 5 for celebrity
             }
-            if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
+           // if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
                 $categories = $categories->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
                     ->where(function ($q1) use ($vends, $include_categories) {
                         $q1->whereIn('vct.vendor_id', $vends)
@@ -339,7 +339,7 @@ class BaseController extends Controller{
                                 $q2->whereIn('categories.type_id', $include_categories);
                             });
                     });
-            }
+           // }
         }
         $categories = $categories->leftjoin('types', 'types.id', 'categories.type_id')
                         ->where('categories.id', '>', '1')

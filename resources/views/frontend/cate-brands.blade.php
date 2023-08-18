@@ -30,7 +30,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row mb-5 homepageSix">
+            <div class="row mb-4 homepageSix">
                 <div class="collection-filter col-lg-3 main-fillter">
                     @if(!empty($newProducts) && count($newProducts) > 0)
                     <div class="theme-card custom-inner-card">

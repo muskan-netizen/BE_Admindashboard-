@@ -50,7 +50,10 @@
     .login-page .theme-card .theme-form input {
         margin-bottom: 5px;
     }
-
+    .errors {
+        color: #F00;
+        background-color: #FFF;
+    }
     .invalid-feedback {
         display: block;
     }
@@ -195,6 +198,7 @@
 <script src="{{asset('assets/libs/dropify/dropify.min.js')}}"></script>
 <script src="{{asset('assets/js/pages/form-fileuploads.init.js')}}"></script>
 <script src="{{asset('assets/js/intlTelInput.js')}}"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js"></script>
 <script type="text/javascript">
     var ajaxCall = 'ToCancelPrevReq';
     $('.verifyEmail').click(function() {
@@ -223,6 +227,62 @@
             error: function(data) {},
         });
     }
+
+    $(document).ready(function() {
+        jQuery.validator.addMethod("alphanumeric", function(value, element) {
+                return this.optional(element) || /^[a-zA-Z0-9 ]+$/i.test(value);
+            }, "Name should contains alphanumeric data.");
+            $("#editProfileForm").validate({
+                errorClass: 'errors',
+                rules: {
+                    name : {
+                        required: true,
+                        minlength: 3,
+                        alphanumeric: true
+                    },
+                    phone_number: {
+                        required: true,
+                        number: true,
+                        minlength: 7,
+                        maxlength: 15,
+                        regex: /^[1-9][0-9]*$/
+                    },
+                    email: {
+                        required: true,
+                        email: true
+                    }
+                },
+                onfocusout: function(element) {
+                    this.element(element); // triggers validation
+                },
+                onkeyup: function(element, event) {
+                    this.element(element); // triggers validation
+                },
+                messages : {
+                    name: {
+                        required:"{{ __('Please enter your name')}}",
+                        minlength:"{{__('The name must be at least 3 characters.')}}",
+                        alphanumeric:"{{ __('Name should contains alphanumeric data')}}"
+                    },
+                    phone_number: {
+                        required: "{{ __('Please enter your phone')}}",
+                        number: "{{ __('Please enter a numerical value')}}",
+                        minlength:"{{ __('minimum 7 digits allowed')}}",
+                        maxlength:"{{ __('maximum 15 digits required')}}"
+                    },
+                    email: "{{ __('The email should be in the format:')}} abc@domain.tld",
+                }
+            });
+
+            $("#editProfileForm").submit(function() {
+                if($("#phone").hasClass("is-invalid")){
+                    $("#phone").focus();
+                    return false;
+                }
+            });
+        });
+
+
     $(".openProfileModal").click(function (e) {
         e.preventDefault();
         var uri = "{{route('user.editAccount')}}";
