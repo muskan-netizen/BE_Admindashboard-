@@ -9,13 +9,13 @@ use Carbon\Carbon;
 use Auth;
 use Session;
 use DB;
-use App\Http\Traits\{ApiResponser,OrderTrait};
-use App\Models\{Order, OrderProduct, OrderTax, OrderCancelRequest, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, OrderQrcodeLinks, ProductVariantSet, QrcodeImport,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus,OrderLongTermServiceSchedule,PickDropDriverBid,VendorOrderProductStatus,UserBidRideRequest};
+use App\Http\Traits\{ApiResponser, OrderBlockchain, OrderTrait};
+use App\Models\{Order, OrderProduct, OrderTax, OrderCancelRequest, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, ClientPreferenceAdditional, UserVendor, LuxuryOption, EmailTemplate, OrderQrcodeLinks, ProductVariantSet, QrcodeImport,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus,OrderLongTermServiceSchedule,PickDropDriverBid,VendorOrderProductStatus,UserBidRideRequest};
 use Illuminate\Support\Facades\Log;
 
 class DispatcherController extends FrontController
 {
-    use ApiResponser,OrderTrait;
+    use ApiResponser,OrderTrait,OrderBlockchain;
 
 
     /******************    ---- order status update from dispatch (Need to dispatcher_status_option_id ) -----   ******************/
@@ -130,6 +130,14 @@ class DispatcherController extends FrontController
 
              $data = ['order'=>$update,'vendor_detail'=>$code->vendorDetail??[]];
             DB::commit();
+
+                $blockchain_route = ClientPreferenceAdditional::where('key_name','blockchain_route_formation')->first();
+    
+                if(isset($blockchain_route) && ($blockchain_route->key_value == 1))
+                {
+                    @$this->moveOrderToWarehouse($order);
+
+                }
                     $message = "Order status updated.";
                     return $this->successResponse($data??[], $message);
 

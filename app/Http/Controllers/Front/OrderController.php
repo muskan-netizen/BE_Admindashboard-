@@ -62,6 +62,7 @@ use App\Models\ClientPreference;
 use App\Http\Traits\ {
     ApiResponser,
     CartManager,
+    OrderBlockchain,
     SquareInventoryManager,
     VendorTrait,
     OrderTrait
@@ -72,6 +73,7 @@ use App\Models\ {
     OrderLongTermServicesAddon,
     OrderLongTermServiceSchedule,
     Bid,
+    ClientPreferenceAdditional,
     OrderNotificationsLogs
 };
 use App\Models\ProductVariantSet;
@@ -86,7 +88,7 @@ use Illuminate\Support\Facades\Http;
 
 class OrderController extends FrontController
 {
-    use ApiResponser, CartManager, SquareInventoryManager,VendorTrait,OrderTrait;
+    use ApiResponser, CartManager, SquareInventoryManager,VendorTrait,OrderTrait,OrderBlockchain;
 
     /**
      * Display a listing of the resource.
@@ -1135,7 +1137,10 @@ class OrderController extends FrontController
             }
          }
 
+
         $order_response = $this->orderSave($request, "1");
+
+        
         $response = $order_response->getData();
         if ($response->status == 'Success') {
             # if payment type cash on delivery or payment status is 'Paid'
@@ -1149,6 +1154,8 @@ class OrderController extends FrontController
             return $this->errorResponse($response->message, 400);
         }
     }
+
+
 
     public function orderSave($request, $paymentStatus)
     {
@@ -2498,6 +2505,13 @@ class OrderController extends FrontController
             // }
 
             DB::commit();
+            $blockchain_route = ClientPreferenceAdditional::where('key_name','blockchain_route_formation')->first();
+ 
+            if(isset($blockchain_route) && ($blockchain_route->key_value == 1))
+            {
+                @$this->saveBlockchainOrderDetail($order);
+
+            }
             $this->sendSuccessSMS($request, $order);
 
             return $this->successResponse($order);

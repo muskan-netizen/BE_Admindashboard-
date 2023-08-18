@@ -58,6 +58,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
        // Route::post('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
         Route::post('get-order-panel-detail', 'Api\v1\BaseController@getPanelDetail')->middleware('ConnectDbFromDispatcher');
 
+        Route::post('get-blockchain-address', 'Api\v1\BlockchainController@getBlockchainAddress');
+
 
         Route::get('profile', 'Api\v1\ProfileController@profile');
         Route::get('getProfile', 'Api\v1\ProfileController@getProfile');
