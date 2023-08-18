@@ -17,7 +17,7 @@ trait YachtTrait{
             if($theme && !empty($theme->map_key)){
                 $mapKey = $theme->map_key;
             }
-            $response = \Http::get("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$request->latitude,$request->longitude&rankby=distance&type=airport&key=$mapKey")['results'];
+            $response = \Http::get("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$pickup->latitude,$pickup->longitude&rankby=distance&type=airport&key=$mapKey")['results'];
             $data['products'] = collect($response)->map(function($result){
                 return [
                     'title' => $result['name'],

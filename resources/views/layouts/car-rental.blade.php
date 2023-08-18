@@ -34,6 +34,7 @@ $left_sidebar = 'layouts.store/top-car-rental-header';
     </header>
 
     @yield('content')
+    @yield('script')
     @yield('script-bottom-js')
     @include('layouts.store/car-rental-footer')
     <script src="{{ asset('js/car-rental.js') }}"></script>
