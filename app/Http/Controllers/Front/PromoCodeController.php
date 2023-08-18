@@ -33,9 +33,7 @@ class PromoCodeController extends Controller{
             $firstOrderCheck = 0;
             $is_from_cart = $request->is_cart ? $request->is_cart :0;
             $now = Carbon::now()->toDateTimeString();
-            $now = convertDateTimeInClientTimeZone($now);
-            \Log::info("prod ".$product_id);
-             
+            $now = convertDateTimeInClientTimeZone($now);             
             $promo_code_details = PromoCodeDetail::where('refrence_id', $product_id)->pluck('promocode_id');
             $result1 = Promocode::whereDate('expiry_date', '>=', $now)->where('restriction_on', 0)->where(function ($query) use ($promo_code_details,$firstOrderCheck) {
                 $query->where(function ($query2) use ($promo_code_details) {
@@ -67,7 +65,7 @@ class PromoCodeController extends Controller{
             return $this->errorResponse('', 400);
 
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
