@@ -1395,9 +1395,7 @@ class CartController extends BaseController
                         $taxable_amount -= $discount;
                     }
                 }
-
                 $payable_amount = $payable_amount + $vendorTotalDeliveryFee ;
-
                 $deliver_charge = $vendorTotalDeliveryFee * $clientCurrency->doller_compare;
                 $vendorData->proSum = $proSum;
                 $vendorData->addonSum = $ttAddon;

@@ -34,7 +34,7 @@ class PromoCodeController extends Controller{
             $is_from_cart = $request->is_cart ? $request->is_cart :0;
             $now = Carbon::now()->toDateTimeString();
             $now = convertDateTimeInClientTimeZone($now);
-
+            \Log::info("prod ".$product_id);
              
             $promo_code_details = PromoCodeDetail::where('refrence_id', $product_id)->pluck('promocode_id');
             $result1 = Promocode::whereDate('expiry_date', '>=', $now)->where('restriction_on', 0)->where(function ($query) use ($promo_code_details,$firstOrderCheck) {

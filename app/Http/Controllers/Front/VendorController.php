@@ -84,7 +84,7 @@ class VendorController extends FrontController
      *
      * @return \Illuminate\Http\Response
      */
-    public function vendorProducts(Request $request, $domain = '', $slug = 0){
+    public function vendorProducts(Request $request, $domain = '', $slug = 0){        
         if($request->ajax())
         {
             $returnHTML = $this->vendorFilters($request,'',$slug);
@@ -308,8 +308,6 @@ class VendorController extends FrontController
                 }
             }
         }
-
-
 
         $product_tag_ids = Product::byProductCategoryServiceType($type)->where('vendor_id', $vendor->id)->where('is_live', 1)->pluck('id')->toArray();
         $tag_ids = ProductTag::whereIn('product_id',$product_tag_ids)->pluck('tag_id')->toArray();
