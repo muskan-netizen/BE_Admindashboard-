@@ -129,13 +129,14 @@ class DispatcherController extends FrontController
             OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['dispatcher_status_option_id' => $request->dispatcher_status_option_id]);
 
              $data = ['order'=>$update,'vendor_detail'=>$code->vendorDetail??[]];
+             $orderData = Order::find($checkiftokenExist->order_id);
             DB::commit();
 
                 $blockchain_route = ClientPreferenceAdditional::where('key_name','blockchain_route_formation')->first();
     
                 if(isset($blockchain_route) && ($blockchain_route->key_value == 1))
                 {
-                    @$this->moveOrderToWarehouse($order);
+                    @$this->moveOrderToWarehouse($orderData);
 
                 }
                     $message = "Order status updated.";

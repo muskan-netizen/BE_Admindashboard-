@@ -22,7 +22,8 @@ trait OrderBlockchain{
             "orderID" => $orderData->id,
             "order_detail" => (array) $orderData,
             "address_short_code" => $client->code,
-            "from_address" => $from_id->key_value ?? ''
+            "from_address" => $from_id->key_value ?? '',
+            'user_id' => $orderData->user_id
         ];
         
         $headers = [
@@ -52,7 +53,8 @@ trait OrderBlockchain{
             "newStatus" => $orderData->ordervendor->status ?? '0',
             "orderID" => $orderData->id,
             "address_short_code" => $client->code,
-            "from_address" => $from_id->key_value ?? ''
+            "from_address" => $from_id->key_value ?? '',
+            'user_id' => $orderData->user_id
         ];
         
         $headers = [
@@ -82,7 +84,8 @@ trait OrderBlockchain{
             "lat" => $orderData->ordervendor->status ?? '0',
             "orderID" => $orderData->id,
             "address_short_code" => $client->code,
-            "movement" => $from_id->key_value ?? ''
+            "movement" => $from_id->key_value ?? '',
+            'user_id' => $orderData->user_id
         ];
         
         $headers = [
