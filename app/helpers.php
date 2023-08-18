@@ -2006,6 +2006,7 @@ if (!function_exists('getDatesBetweenTwoDates')) {
         // Convert the period to an array of dates
         $dates = $period->toArray();
         return $dates;
+    }
 }
 
 if (!function_exists('recurringCalculationFunction')) {    
