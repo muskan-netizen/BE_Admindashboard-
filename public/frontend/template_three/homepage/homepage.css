@@ -15,7 +15,10 @@
 .al_body_template_three .slick-track {
     margin-left: 0 !important;
 }
-
+.cab-banner-area .card-box h2 {
+    font-size: 24px;
+    letter-spacing: 0px;
+}
 .price_box_bottom li {
     margin: 0;
     color: #6c757d
@@ -812,7 +815,6 @@ article#page-container section .vendors section {
     color: #000 !important;
     opacity: 1;
 }
-
 
 /* car bar css start */
 
