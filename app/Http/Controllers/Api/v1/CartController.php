@@ -1310,9 +1310,7 @@ class CartController extends BaseController
                 if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
                     $payable_amount = $payable_amount + decimal_format($prod->slot_price);
                 }
-                $couponGetAmount = $payable_amount ;
                 if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
-                    //pr($vendorData->coupon->promo);
                     if (isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)) {
                         if($vendorData->coupon->promo->first_order_only==1){
                             if(Auth::user()){
