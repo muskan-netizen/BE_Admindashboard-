@@ -24,9 +24,9 @@
     <div class="container">
         <div class="heading d-flex align-items-center justify-content-between">
         @if($products->count())
-            <h2>Available Cars</h2>
+            <h2>Available {{ucfirst($service)}}</h2>
         @else
-            <h2>No Available Cars</h2>
+            <h2>No Available {{ucfirst($service)}}</h2>
         @endif
             <span class="filter_cta">
                 <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -81,12 +81,21 @@
                                 <h3>{{$productTitle}}</h3>
                                 <span><i class="fa fa-star"></i>(4.5)</span>
                             </div>
-                            <div class="productList">
+                            <div class="productList d-flex justify-content-between">
                                 <ul>
+                                    @if($service == 'rental')
                                     <li><a href="">{{$fields['Transmission'] ?? ''}}</a></li>
                                     <li><a href="">{{$fields['Fuel Type'] ?? ''}}</a></li>
-                                    <li><a href="">{{$fields['Seats'] ?? ''}} Seats</a></li>
+                                    <li><a href="">{{$fields['Seats'] ?? '0'}} Seats</a></li>
+                                    @elseif($service == 'yacht')
+                                    <li><a href="">{{$fields['Cabins'] ?? '0'}} Cabins</a></li>
+                                    <li><a href="">{{$fields['Berths'] ?? '0'}} Berths</a></li>
+                                    <li><a href="">{{$fields['Seats'] ?? '0'}} Seats</a></li>
+                                    @endif
                                 </ul>
+                                <span class="yacht-location">
+                                    Dubai
+                                </span>
                             </div>
                             <div class="productPrice d-flex justify-content-between align-items-center">
                                 <div class="left">

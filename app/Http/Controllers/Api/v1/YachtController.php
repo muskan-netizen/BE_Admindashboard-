@@ -14,10 +14,20 @@ class YachtController extends Controller
     public function productsSearchResult(Request $request)
     {
         $data = [];
-        
+
         $pickup = $request->pickup;
         $dropOff = $request->dropOff;
         $data = $this->productSearch($request, (object) $pickup, (object) $dropOff);
+        foreach ($data['products']->ProductAttribute as $productAttribute) {
+            if ($productAttribute->attributeOption()->exists()) {
+                if (!empty($title = $productAttribute->attributeOption->title)) {
+                    $fields[$productAttribute->key_name] = $title;
+                } else {
+                    $fields[$productAttribute->key_name] = $productAttribute->key_value;
+                }
+            }
+        }
+        $data['attributes'] = $fields;
         return response()->json(['status' => 200, 'message' => 'Product List', 'data' => $data]);
     }
 }
