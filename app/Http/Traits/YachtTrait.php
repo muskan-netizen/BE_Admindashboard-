@@ -40,7 +40,7 @@ trait YachtTrait
                     if ($request->service == 'rental') {
                         $q->whereIn('key_name', ['Transmission', 'Fuel Type', 'Seats']);
                     } else {
-                        $q->whereIn('key_name', ['Cabins', 'Berths', 'Seats']);
+                        $q->whereIn('key_name', ['Cabins', 'Berths', 'Baths']);
                     }
                 },
                 'ProductAttribute.attributeOption:id,title'
@@ -52,7 +52,7 @@ trait YachtTrait
                     }
                 })
                 ->where(function ($q) use ($request) {
-                    if ($request->has('seats')) {
+                    if ($request->has('seats') && !empty($request->seats)) {
                         $q->whereHas('ProductAttribute', function ($q) use ($request) {
                             if ($request->service == 'rental') {
                                 $q->where('key_name', 'Seats')->where('key_value', '<=', $request->seats);
@@ -84,6 +84,8 @@ trait YachtTrait
                 })
                 ->where('category_id', $category->id)->get();
         }
+
+
         $data['service'] = $request->service;
         $data['pick_drop_time'] = $request->pick_drop_time;
         $data['pickup_time'] = $pickup_time;

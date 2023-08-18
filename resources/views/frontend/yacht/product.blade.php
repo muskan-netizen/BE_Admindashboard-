@@ -72,9 +72,15 @@
                         }
                         @endphp
                         <ul>
-                            <li><a href="">{{$fields['Transmission']['title'] ?? ''}}</a></li>
-                            <li><a href="">{{$fields['Fuel Type']['title'] ?? ''}}</a></li>
-                            <li><a href="">{{$fields['Seats']['title'] ?? ''}} Seats</a></li>
+                           @if($category->slug == 'rental')
+                                <li><a href="javascript:void(0);">{{$fields['Transmission']['title'] ?? ''}}</a></li>
+                                <li><a href="javascript:void(0);">{{$fields['Fuel Type']['title'] ?? ''}}</a></li>
+                                <li><a href="javascript:void(0);">{{$fields['Seats']['title'] ?? '0'}} Seats</a></li>
+                            @elseif($category->slug == 'yacht')
+                                <li><a href="javascript:void(0);">{{$fields['Cabins']['title'] ?? '0'}} Cabins</a></li>
+                                <li><a href="javascript:void(0);">{{$fields['Baths']['title'] ?? '0'}} Baths</a></li>
+                                <li><a href="javascript:void(0);">{{$fields['Berths']['title'] ?? '0'}} Berths</a></li>
+                            @endif
                         </ul>
                     </div>
 

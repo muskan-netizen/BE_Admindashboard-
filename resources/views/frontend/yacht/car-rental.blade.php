@@ -23,11 +23,11 @@
 <section class="result_item">
     <div class="container">
         <div class="heading d-flex align-items-center justify-content-between">
-        @if($products->count())
+            @if($products->count())
             <h2>Available {{ucfirst($service)}}</h2>
-        @else
+            @else
             <h2>No Available {{ucfirst($service)}}</h2>
-        @endif
+            @endif
             <span class="filter_cta">
                 <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                     <rect width="29" height="29" fill="url(#pattern0)" />
@@ -60,56 +60,57 @@
             $productTitle = $product['title'];
             $fields = [];
             foreach ($product->ProductAttribute as $productAttribute) {
-            if ($productAttribute->attributeOption()->exists()) {
-            if(!empty($title = $productAttribute->attributeOption->title)){
-            $fields[$productAttribute->key_name] = $title;
-            }else{
-            $fields[$productAttribute->key_name] = $productAttribute->key_value;
-            }
-            }
-            }
+                if ($productAttribute->attributeOption()->exists()) {
+                    if(!empty($title = $productAttribute->attributeOption->title)){
+                            $fields[$productAttribute->key_name] = $title;
+                        }else{
+                            $fields[$productAttribute->key_name] = $productAttribute->key_value;
+                        }
+                    }
+                }
             }
             @endphp
-            <a class="common-product-box text-center" href="{{ $link }}" target="_blank">
-                <div class="col-md-4">
-                    <div class="item">
+            <div class="col-md-4">
+                <div class="item">
+                    <a class="common-product-box text-center" href="{{ $link }}" target="_blank">
                         <div class="image">
-                            <img src="{{$imgSrc}}" data-src="{{$imgSrc}}" alt="">
+                            <img src="{{$imgSrc}}" data-src="{{$imgSrc}}" alt="" />
                         </div>
-                        <div class="text">
-                            <div class="product_heading">
-                                <h3>{{$productTitle}}</h3>
-                                <span><i class="fa fa-star"></i>(4.5)</span>
+                    </a>
+                    <div class="text">
+                        <div class="product_heading">
+                            <h3>{{$productTitle}}</h3>
+                            <span><i class="fa fa-star"></i>(4.5)</span>
+                        </div>
+                        <div class="productList d-flex justify-content-between">
+                            <ul class="product-features">
+                                @if($service == 'rental')
+                                <li><a href="javascript:void(0);">{{$fields['Transmission'] ?? ''}}</a></li>
+                                <li><a href="javascript:void(0);">{{$fields['Fuel Type'] ?? ''}}</a></li>
+                                <li><a href="javascript:void(0);">{{$fields['Seats'] ?? '0'}} Seats</a></li>
+                                @elseif($service == 'yacht')
+                                <li><a href="javascript:void(0);">{{$fields['Cabins'] ?? '0'}} Cabins</a></li>
+                                <li><a href="javascript:void(0);">{{$fields['Baths'] ?? '0'}} Baths</a></li>
+                                <li><a href="javascript:void(0);">{{$fields['Berths'] ?? '0'}} Seats</a></li>
+                                @endif
+                            </ul>
+                            <span class="yacht-location" title="{{$product->vendor->address}}">
+                                {{substr($product->vendor->address, 0, 15) . '...'}}
+                            </span>
+                        </div>
+                        <div class="productPrice d-flex justify-content-between align-items-center">
+                            <div class="left">
+                                <span class="w-100 price">{{Session::get('currencySymbol')}}{{decimal_format($product->variant[0]->price)}}</span>
+                                <span class="off_price d-none">$ 7,987 total</span>
                             </div>
-                            <div class="productList d-flex justify-content-between">
-                                <ul>
-                                    @if($service == 'rental')
-                                    <li><a href="">{{$fields['Transmission'] ?? ''}}</a></li>
-                                    <li><a href="">{{$fields['Fuel Type'] ?? ''}}</a></li>
-                                    <li><a href="">{{$fields['Seats'] ?? '0'}} Seats</a></li>
-                                    @elseif($service == 'yacht')
-                                    <li><a href="">{{$fields['Cabins'] ?? '0'}} Cabins</a></li>
-                                    <li><a href="">{{$fields['Berths'] ?? '0'}} Berths</a></li>
-                                    <li><a href="">{{$fields['Seats'] ?? '0'}} Seats</a></li>
-                                    @endif
-                                </ul>
-                                <span class="yacht-location">
-                                    Dubai
-                                </span>
-                            </div>
-                            <div class="productPrice d-flex justify-content-between align-items-center">
-                                <div class="left">
-                                    <span class="w-100 price">{{Session::get('currencySymbol')}}{{decimal_format($product->variant[0]->price)}}</span>
-                                    <span class="off_price d-none">$ 7,987 total</span>
-                                </div>
-                                <div class="right">
-                                    <span>{{number_format(($product->vendor->distance_in_meter/1000),2)}} Km away</span>
-                                </div>
+                            <div class="right">
+                                <span>{{number_format(($product->vendor->distance_in_meter/1000),2)}} Km away</span>
                             </div>
                         </div>
                     </div>
+
                 </div>
-            </a>
+            </div>
             @endforeach
         </div>
     </div>
@@ -136,7 +137,7 @@
                 <input type="hidden" value="{{$dropoff->longitude}}" name="drop_longitude" id="drop_longitude">
             </div>
             <div class="form-group">
-                <input type="checkbox" name="diff_location" id="diff-location" @if($diff_location) checked @endif/>
+                <input type="checkbox" name="diff_location" id="diff-location" @if($diff_location) checked @endif />
                 <label for="diff-location">Different Return Location</label>
             </div>
             <div class="form-group d-none">

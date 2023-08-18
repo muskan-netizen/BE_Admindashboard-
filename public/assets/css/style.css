@@ -676,7 +676,7 @@ input[type=number]::-webkit-outer-spin-button {
     justify-content: space-between;
 }
 .productList ul {
-    display: flex;
+        /* display: flex; */
     margin-bottom:10px;
 }
 .productList ul  li a{
@@ -1506,6 +1506,10 @@ line-height: 21px;
 
 .pac-container {
     z-index: 99999;
+}
+
+.product-features li{
+    display : inline-block;
 }
 
 @media (max-width:767px){

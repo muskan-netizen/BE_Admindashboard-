@@ -150,5 +150,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
     });
     Route::group(['middleware' => ['dbCheck']], function () {
         Route::post('header', 'Api\v1\HomeController@headerContent');
+        Route::post('rental-protection', 'Api\v1\CartController@getRentalProtection');
     });
 });

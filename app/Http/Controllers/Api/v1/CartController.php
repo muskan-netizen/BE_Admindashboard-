@@ -24,7 +24,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Http\Controllers\ShiprocketController;
 
-use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, CartProductPrescription, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, VerificationOption, TaxRate,VendorMinAmount, WebStylingOption, ProcessorProduct,OrderFiles};
+use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, CartProductPrescription, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, VerificationOption, TaxRate,VendorMinAmount, WebStylingOption, ProcessorProduct,OrderFiles, ProductRentalProtection, RentalProtection};
 
 use GuzzleHttp\Client as GCLIENT;
 use Log;
@@ -2400,4 +2400,13 @@ class CartController extends BaseController
         return response()->json(['status'=>'Success', 'message'=>'Success']);
      }
 
+     public function getRentalProtection(Request $request){
+        $protection = ProductRentalProtection::with('rentalProtection')->where('product_id', $request->product_id);
+        $addon = AddonSet::with('option', 'translation')->where('vendor_id', $request->vendor_id)->where('status',1)->get();
+        $included = clone $protection;
+        $data['included'] = $protection->where('type_id', 1)->get();
+        $data['excluded'] = $included->where('type_id', 2)->get();
+        $data['addons'] = $addon;
+        return response()->json(['status'=>'Success', 'data' => $data]);
+     }
 }

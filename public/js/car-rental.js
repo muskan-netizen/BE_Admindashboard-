@@ -162,3 +162,14 @@ $(document).ready(function(){
     }
   })
 });
+
+$(document).on('change', 'input[name="service"]', function(e){
+  switch($(this).val()){
+    case 'yacht':
+      $('#dropoff-box').hide();
+      $("#diff-box").addClass('d-none');
+    break;
+    default:
+      $("#diff-box").removeClass('d-none');
+  }
+});

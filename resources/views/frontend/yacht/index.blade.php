@@ -87,7 +87,7 @@
                                             <input type="hidden" name="pickup_latitude" id="pickup_latitude" value="">
                                         </p>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group" id="diff-box">
                                         <input type="checkbox" name="diff_location" id="diff-location" />
                                         <label for="diff-location">Different Return Location</label>
                                     </div>
