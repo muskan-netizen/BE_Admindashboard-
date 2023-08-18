@@ -818,7 +818,7 @@ body.al_body_template_eight section.suppliers-section.container.vender_slider {
     }
     body.al_body_template_eight section.suppliers-section.container.vender_slider {
         max-width: 98% !important;
-        padding-top: 30px !important;
+        padding-top: 30px !important;padding-bottom:0px !important;
     }
     .al_body_template_eight .single_category_products .suppliers-img-outer{
         min-height: 290px !important;
@@ -1228,11 +1228,10 @@ section.popular-brands.left-shape_.position-relative.categories {
 }
 
 article#page-container section .vendors section h2.h2-heading {
-    margin-bottom: 20px;
+    margin:20px 0px;
     width: 90%;
     display: block;
     text-align: left;
-    margin-top: 0;
 }
 
 section#our_vendor_main_div .suppliers-slider-vendors.product-m.render_vendors {

@@ -63,6 +63,9 @@
 .al_body_template_two .product-card-box {
     -webkit-transform: scale(1);
     transform: scale(1);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .al_body_template_two header.site-header.fixed-bar img.blur-up.lazyloaded {
