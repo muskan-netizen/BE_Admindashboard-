@@ -21,7 +21,7 @@ Route::get('/order-marg', [MargController::class, 'makeInsertOrderMargApi']);
 Route::match(['get','post'],'payment/payByDataTrans','Front\DataTransController@payByDataTrans')->name('payment.payByDataTrans');
 Route::get('/sync-marg', [MargController::class, 'syncmarg'])->name('sync.marg');
 Route::get('/order-marg', [MargController::class, 'makeInsertOrderMargApi']);
-Route::get('/debug-sentry', function () {
+Route::get('/debug-sentry', function () {		
 	echo \Hash::make('dispatcher@765');
 	//throw new Exception('My first Sentry error!');
 });
@@ -97,6 +97,8 @@ Route::group(['middleware' => ['domain']], function () {
 
 	Route::match(['get', 'post'], 'order/lalamoves/place-order', 'Front\LalaMovesController@placeOrder')->name('order.lalamoves.place_order');
 
+
+	Route::match(['get','post'],'payment/payByCompany','Front\PayCompanyController@payByCompany')->name('payment.payByCompany');
 
 
 	////check Shiprocket
@@ -484,7 +486,16 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('/product/updateCartProductStatus', 'Front\CartController@updateCartProductStatus')->name('updateCartProductStatus');
 	Route::post('/product/deletecartproduct', 'Front\CartController@deleteCartProduct')->name('deleteCartProduct');
 	Route::get('userAddress', 'Front\UserController@getUserAddress')->name('getUserAddress');
+	
+	//Route For company
+	Route::get('company/{id}', 'Front\CategoryController@companyCategoryProduct')->name('companyWiseCategoryDetail');
+	
+
+
 	Route::get('category/{slug?}', 'Front\CategoryController@categoryProduct')->name('categoryDetail');
+
+	
+
 	Route::get('category/{slug1}/{slug2}', 'Front\CategoryController@categoryVendorProducts')->name('categoryVendorProducts');
 	Route::post('category/filters/{id}', 'Front\CategoryController@categoryFilters')->name('productFilters');
 	Route::get('category_kycDocument', 'Front\CategoryController@getcategoryKycDocument')->name('getCategoryKycDocument');

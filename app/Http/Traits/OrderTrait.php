@@ -1763,8 +1763,50 @@ trait OrderTrait
         ];
         sendFcmCurlRequest($data);
      }
+     
 
 
+     public function saveOrderLongTermServiceSchedule($order,$productId)
+     {
+         $user = auth()->user();
+         $client_timezone = DB::table('clients')->first('timezone');
+         if($user){
+             $timezone = $user->timezone ??  $client_timezone->timezone;
+         }else{
+             $timezone = $client_timezone->timezone ?? ( $user ? $user->timezone : 'Asia/Kolkata' );
+         }
+ 
+         $user_timezone          =   $timezone;
+         $recurring_booking_time =   convertDateTimeInTimeZone($order->recurring_booking_time, $user_timezone, 'H:i');
+ 
+             $RecurringServiceSchedule = array();
+ 
+                 // No Nee other action
+                 if(@$order->recurring_booking_type){
+                 $Recurring_quantity     = $order->quantity;
+                 $recurring_day_data     = $order->recurring_day_data;
+                 $recurring_day_data     = explode(",",$recurring_day_data);
+ 
+                 $ndate                  = convertDateTimeInClientTimeZone(Carbon::now());
+                 $recurring_booking_time = convertDateTimeInTimeZone($order->recurring_booking_time, $user_timezone, 'H:i');
+                 for ($x = 0; $x < count($recurring_day_data); $x++) {
+                     $date           = $recurring_day_data[$x];
+                     $newDate        = $date.' '. $recurring_booking_time;
+                     $RecurringServiceSchedule [] = [
+                         'order_vendor_product_id' => $productId,
+                         'schedule_date'           => $newDate,
+                         'type'                    => 4, // Pickup and drop
+                         'order_number'            => $order->order_number
+                     ];
+                 }
+             }
+ 
+             if (!empty($RecurringServiceSchedule)) {
+                     OrderLongTermServiceSchedule::insert($RecurringServiceSchedule);
+                 }
+     }
+ 
+     
 
 
 
