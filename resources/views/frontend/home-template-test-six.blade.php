@@ -325,7 +325,7 @@
          <section class="suppliers-section container-fluid">
             <div class=" top-heading  d-flex justify-content-between align-self-center">
                <h2 class="h2-heading mt-4">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2>
-               <a class="mt-4" href="{{route('vendor.all')}}">{{__("See all")}}</a>
+               <a  href="{{route('vendor.all')}}">{{__("See all")}}</a>
             </div>
             <div class="col-12 p-0">
                <div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
