@@ -40,8 +40,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('service_area:active_for_vendor_slot')->everyMinute();
         $schedule->command('copy:catalog')->everyTenMinutes();
         $schedule->command('pickup:notify')->everyMinute();
-        $schedule->command('auto:sycn_product_from_marg_api')->everyFiveMinutes();
-        $schedule->command('marg:marg_order_update')->everyMinute();
+        $schedule->command('auto:sycn_product_from_marg_api')->hourly();
+        $schedule->command('marg:marg_order_update')->everyTenMinutes();
         // $schedule->command('inspire')->hourly();
     }
 

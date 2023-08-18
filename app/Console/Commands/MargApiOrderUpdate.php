@@ -65,8 +65,7 @@ class MargApiOrderUpdate extends Command
 
                 $result = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", [$database_name]);
                 if (empty($result)) {
-                    \Log::info($client->database_name);
-                    \Log::info($client);
+                    \Log::info($client->database_name." -- no db found");
                     continue;
                 }
 
