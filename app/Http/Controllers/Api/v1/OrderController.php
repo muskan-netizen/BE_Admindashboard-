@@ -2606,6 +2606,7 @@ class OrderController extends BaseController
                     $product_addons = [];
                     $vendor->vendor_name = $vendor->vendor->name;
                     foreach ($vendor->products as  $product) {
+                        
                         $product->longTermSchedule = array();
                         $product->recurring_date_count = 1;
                         if($product->product->is_long_term_service ==1){
@@ -2643,6 +2644,7 @@ class OrderController extends BaseController
                             $product->processor_date = '';
                             $product->address = '';
                         }
+                        $product->product_name = isset($product->translation)?$product->translation->title:$product->product_name;                        
                         //till here
                         $product->scheduled_date_time = (($product->scheduled_date_time!=null)?dateTimeInUserTimeZone($product->scheduled_date_time, $user->timezone):null);
                         $product_addons = [];
