@@ -1775,7 +1775,7 @@
                                             <p class="border-bottom pb-1">In {{ $product->category_name }}</p>
                                             <div class="d-flex align-items-center justify-content-between">
                                                 <b>
-                                                    @if ($product->inquiry_only == 0)
+                                                    @if ($product->inquiry_only == 0  &&  is_numeric($product->variant_price))
                                                         {{ Session::get('currencySymbol') }}{{ decimal_format($product->variant_price) }}
                                                     @endif
                                                 </b>

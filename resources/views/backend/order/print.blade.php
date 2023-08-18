@@ -271,7 +271,7 @@
                                     <tr>
                                         <td align="left">
                                             <p style="font-size: 14px;font-family: Lato,sans-serif;margin: 0;padding: 10px">
-                                                <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __("Address") }} :</span> {{ $order->user->address->first() ? $order->user->address->first()->address : __('Not Available')}}
+                                                <span style="font-size: 14px;font-family: Lato,sans-serif;">{{ __("Address") }} :</span> {{ $order->user->address && $order->user->address->first() ? $order->user->address->first()->address : __('Not Available')}}
                                             </p>
                                         </td>
                                     </tr>

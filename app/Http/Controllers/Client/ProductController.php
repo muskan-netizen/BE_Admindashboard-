@@ -518,6 +518,7 @@ class ProductController extends BaseController
             $product->minimum_order_count        = $request->minimum_order_count??0;
             $product->batch_count        = $request->batch_count??1;
             $product->return_days        = $request->return_days??0;
+            $product->calories        = $request->calories;
 
             // product pickup date by vendor vendor FramMeat priyal by sohail
             $product->product_pickup_date  = isset($request->product_pickup_date) ? $request->product_pickup_date : '';

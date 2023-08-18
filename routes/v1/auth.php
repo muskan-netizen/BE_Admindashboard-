@@ -298,5 +298,11 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::post('create-token', 'Api\v1\MtnMomoController@createToken')->name('mtn.createtoken');
             Route::get('response/{id?}', 'Api\v1\MtnMomoController@getResponse')->name('mtn.response');
         });
+
+        Route::get('allergic-items', 'Api\v1\AllergicItemController@index');
+        Route::get('user/allergic-items', 'Api\v1\AllergicItemController@userAllergicItems');
+	    Route::post('user/add-allergic-items', 'Api\v1\AllergicItemController@addUpdateAllergicItems');
+	    Route::post('user/remove-allergic-items/{id}', 'Api\v1\AllergicItemController@destroy');
+
     });
 });

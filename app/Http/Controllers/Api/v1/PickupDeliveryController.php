@@ -771,7 +771,7 @@ class PickupDeliveryController extends BaseController{
                 $quantity_price = 0;
                 $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
                 $divider = isset($divider) ? $divider : 1;
-                $price_in_currency = $request->tags_amount / $divider;
+                $price_in_currency = $request->amount / $divider;
                 $price_in_dollar_compare = $price_in_currency * $divider;
                 $quantity_price = $price_in_dollar_compare * 1;
                 $payable_amount = $payable_amount + $quantity_price;
@@ -1015,15 +1015,12 @@ class PickupDeliveryController extends BaseController{
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
                     $schedule_datetime_del = $request->schedule_time;
                 }
-
-
                 if(empty($request->task_type) && !empty($request->schedule_time)){
                     $task_type = 'schedule';
                 }else{
                     $task_type = 'now';
                 }
-
-                  $vendor_details = Vendor::where('id', $vendor)->select('order_pre_time')->first();
+                $vendor_details = Vendor::where('id', $vendor)->select('order_pre_time')->first();
                 $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
                 $dynamic = (!empty($order_vendor->web_hook_code)) ? $order_vendor->web_hook_code : uniqid($order->id.$vendor);
                 $unique = Auth::user()->code;
@@ -1033,7 +1030,6 @@ class PickupDeliveryController extends BaseController{
                     $cash_to_be_collected = 'Yes';
                     $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
                 } else {
-
                     if($order->is_postpay==1 && $order->payment_status == 0)
                     {
                         $cash_to_be_collected = 'Yes';
@@ -1118,6 +1114,7 @@ class PickupDeliveryController extends BaseController{
                             'is_one_push_booking' => isset($request->is_one_push_booking)?$request->is_one_push_booking:0,
                             'available_seats' =>isset($product)?$product->seats_for_booking:0,
                             'agent' => $request->agent_id ?? null,
+                            'driver_id' => $request->driver_id ?? null,
                             'order_pre_time'=>$vendor_details->order_pre_time,
                             'driver_unique_id' => $request->unique_id ?? null,
                             'notify_hour' => $notify_hour ?? 0,

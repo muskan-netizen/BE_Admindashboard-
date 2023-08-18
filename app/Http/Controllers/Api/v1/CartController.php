@@ -660,8 +660,8 @@ class CartController extends BaseController
     /**         *      Cart  Date      *          */
     public function getCart($cart, $langId = '1', $currency = '1', $type = 'delivery',$code = 'D')
     {
-
-        try{
+           
+         try{
         $container_charges_tax = 0;
         $deliver_fee_charges_tax = 0;
         $total_service_fee_tax = 0;
@@ -1813,7 +1813,7 @@ class CartController extends BaseController
 
         $total_payable_amount_calc_tip = $cart->total_payable_amount - $total_taxable_amount;
         
-        if($rental_price > 0){
+        if(@$rental_price > 0){
             $cart->total_payable_amount = $rental_price;
         }
         $cart->tip = array(
