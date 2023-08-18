@@ -156,6 +156,17 @@
                                     </div>
                                 </div>
 
+                                @if(@getAdditionalPreference(['is_enable_allergic_items'])['is_enable_allergic_items'])
+                                <label for="">{{ __('Allergic Items') }}</label>
+                                    <div class="form-group">
+                                        <select class="form-control select2-multiple" id="multiple" multiple name="allergic_item_ids[]"  data-placeholder="Select Allergic Item">
+                                            @foreach ($allergic_items as $item)
+                                            <option value="{{$item->id}}">{{$item->title??''}}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                @endif
+
                                 @if (count($user_registration_documents) > 0)    
                                     <div class="user-info d-block w-100">
                                         <h5 class="py-1">User Document</h5>

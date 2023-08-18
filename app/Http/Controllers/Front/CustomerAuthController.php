@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AppStyling, UserRegistrationDocuments, AppStylingOption,VendorCategory, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,PermissionsOld, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page,UserDocs,WebStylingOption,Type, VendorAdditionalInfo};
+use App\Models\{AllergicItem, AppStyling, UserRegistrationDocuments, AppStylingOption,VendorCategory, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,PermissionsOld, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page,UserDocs,WebStylingOption,Type, UserAllergicItem, VendorAdditionalInfo};
 
 use Kutia\Larafirebase\Facades\Larafirebase;
 use App\Http\Controllers\Client\VendorController;
@@ -137,11 +137,11 @@ class CustomerAuthController extends FrontController
             $register_page = "account.registernew";
         }
         
-
+        $allergic_items = AllergicItem::get();
         if (!Session::get('referrer')) {
-            return view('frontend.'.$register_page)->with(['navCategories' => $navCategories,'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents]);
+            return view('frontend.'.$register_page)->with(['navCategories' => $navCategories,'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents,'allergic_items' => $allergic_items]);
         } else {
-            return view('frontend.account.'.$register_page)->with(['navCategories' => $navCategories, 'code' => Session::get('referrer'),'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents]);
+            return view('frontend.account.'.$register_page)->with(['navCategories' => $navCategories, 'code' => Session::get('referrer'),'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents,'allergic_items' => $allergic_items]);
         }
     }
 
@@ -283,6 +283,16 @@ class CustomerAuthController extends FrontController
             $user->timezone = $client_timezone;
             $user->password = Hash::make($req->password);
             $user->save();
+
+            if ($req->allergic_item_ids && count($req->allergic_item_ids)) {
+                foreach($req->allergic_item_ids as $key => $id){
+                    $data[$key] = [
+                        'user_id' => $user->id,
+                        'allergic_item_id' => $id,
+                    ];
+                }
+                UserAllergicItem::insert($data);
+            }
 
             // Save User Kyc Details
             if(@$req->kyc){

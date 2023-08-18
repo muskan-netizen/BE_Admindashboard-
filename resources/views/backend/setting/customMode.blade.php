@@ -687,3 +687,17 @@
             name="is_enable_curb_side" id="is_enable_curb_side" />
     </div>
 </div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_enable_allergic_items" class="mr-2 mb-0">{{ __('Customer Allergic Items') }}<small
+                class="d-block pr-5">{{ __('Enable this for Customer add Allergic Items.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_enable_allergic_items"
+                id="is_enable_allergic_items_switch" class="form-control checkbox_change"
+                data-className="is_enable_allergic_items" data-color="#43bee1"
+                @if (@getAdditionalPreference(['is_enable_allergic_items'])['is_enable_allergic_items']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['is_enable_allergic_items'] == 1) value="1" @else value="0" @endif
+            name="is_enable_allergic_items" id="is_enable_allergic_items" />
+    </div>
+</div>
