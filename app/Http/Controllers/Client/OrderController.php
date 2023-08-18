@@ -750,6 +750,8 @@ class OrderController extends BaseController
                 
                 $query->with('order_product_status');
                 
+            },'vendors.products.translation' => function ($q) use ($langId) {
+                $q->where('language_id',$langId);
             },
              'vendors.products.product',
              'vendors.products.addon',
@@ -849,6 +851,7 @@ class OrderController extends BaseController
                 if ($product->schedule_type == 'schedule') {
                     $product_schedule_type = 'schedule';
                 }
+                $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;
                 $product->image_path  = $product->media->first() && !is_null($product->media->first()->image)  ? $product->media->first()->image->path : '';
                 $divider = (empty($product->doller_compare) || $product->doller_compare < 0) ? 1 : $product->doller_compare;
                 $total_amount = $product->quantity * $product->price;
