@@ -56,6 +56,10 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
     #wallet_transfer_error_msg{
         display: none;
     }
+    .error-msg {
+        color: #F00;
+        background-color: #FFF;
+    }
 </style>
 <section class="section-b-space">
     <div class="container">

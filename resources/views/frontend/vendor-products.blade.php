@@ -72,7 +72,7 @@ $currentPage = $_GET['page']??1;
                             }
                             @endphp
                             @if($slug)
-                        <div class="collection-collapse-block border-0 mb-2 open pt-2 pb-0 border-0">
+                        <div class="collection-collapse-block border-0 mb-2 open pt-2 border-0">
                            
                             <h3 class="collapse-block-title"> {{$slug . $sets->title}}</h3>
                             <div class="collection-collapse-block-content">
@@ -199,7 +199,7 @@ $currentPage = $_GET['page']??1;
                     @endif
                     <!-- side-bar banner end here -->
                 </div>
-                <div class="collection-content col-lg-9 outter-fillter-data">
+                <div class="collection-content col-lg-12 outter-fillter-data">
                     <div class="page-main-content">
                         <div class="row">
                             <div class="col-sm-12">

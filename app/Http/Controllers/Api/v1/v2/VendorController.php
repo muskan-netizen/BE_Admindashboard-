@@ -2194,7 +2194,7 @@ class VendorController extends BaseController{
             $categoriesList = '';
 
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
-                $vendor = $this->getLineOfSightDistanceAndTime($vendor, $preferences);
+                $value = $this->getVendorDistanceWithTime($latitude, $longitude, $vendor, $preferences);
             }
 
             $code = $request->header('code');

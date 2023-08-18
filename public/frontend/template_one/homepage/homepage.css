@@ -4361,6 +4361,9 @@ span.fa.fa-eye-slash.toggle-password.eye::before {
     -webkit-transform: scale(1);
     -moz-transform: scale(1);
     transform: scale(1);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .suppliers-box .suppliers-img-outer img {
@@ -4547,7 +4550,7 @@ body.dark .shopping-cart h6.badge-light {
 }
 
 body.dark select#order_type {
-    background-color: transparent;
+    background-color: transparent;color:#fff;
 }
 
 body.dark .vendors .no-arrow .slick-next,

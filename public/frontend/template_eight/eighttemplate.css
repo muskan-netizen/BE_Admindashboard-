@@ -2656,7 +2656,7 @@ body.al_body_template_eight .categories-product-list .col-sm-6.offset-sm-3 {
         font-weight: 600;
     }
     .al_body_template_eight .best-seller-full h2.h2-heading {
-        margin-bottom: 20px !important;
+        margin: 26px 0px !important;
     }
     .al_body_template_eight .margin-res .supplier-rating p {
         text-overflow: ellipsis;
@@ -2816,10 +2816,17 @@ body.al_body_template_eight .p2p-full-width {
     font-weight:400;position: relative;
     line-height: 1.5;
     padding:0 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.status_box li a {
+    font-size: 14px;
+    color: #000;
 }
 .al_body_template_eight .menu-navigation.alThreeMenu li.al_main_category a i {
     position: absolute;
-    right:0px;
+    right:0px;top:4px;
 }
 .al_body_template_eight .Popular_Brands .slick-slide div {
     text-align: center;
@@ -3028,6 +3035,7 @@ body.al_body_template_eight.homeHeader .main-fillter .side_fillter .range-slider
 .dark .wrapper-main .col-lg-6.pl-3.mb-lg-0.mb-3.text-center.pb-sm-0.border-right {
     border-right: 0px !important;
 }
+.dark .displayProducts .inner_spacing h3 label b{color:#fff;}
 .price_box_bottom li label{
     font-size: 12px;
     font-weight: 500;
@@ -3085,6 +3093,10 @@ body.al_body_template_eight.homeHeader .main-fillter .side_fillter .range-slider
     .al_body_template_eight .product-description_list p span.product_discription{width:50% !important;}
 }
 
+@media screen and (max-width:1366px){
+    .menu-navigation.alThreeMenu .slick-slider .slick-next{right:0px;}
+    .menu-navigation.alThreeMenu .slick-slider .slick-prev{left: 0px;}
+}
 
 /*-------------ipad css--------*/
 

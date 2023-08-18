@@ -8195,9 +8195,9 @@ body .status_box label {
 
     .al_template_two_content .inner_spacing h3,
     .al_template_two_content .inner_spacing h3 span {
-        font-weight: 500;
+        font-weight: 600;
         color: #000;
-        font-size: 16px;
+        font-size: 14px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -14673,6 +14673,12 @@ body .status_box label {
             .dashboard-right .dashboard {
                 border: transparent !important;
             }
+            .al_footer_template_two .footer-contant li {
+                text-align: center;
+            }
+            body #page-container .al_footer_template_one ul.contact-list.al li span {
+                padding: 0;
+            }
         }
         /* mobile or desktop banner css end */
         /* al_footer_template_two css */
@@ -14682,14 +14688,7 @@ body .status_box label {
             float: inherit;
             word-break: break-word;
         }
-        @media (max-width: 767px) {
-            .al_footer_template_two .footer-contant li {
-                text-align: center;
-            }
-            body #page-container .al_footer_template_one ul.contact-list.al li span {
-                padding: 0;
-            }
-        }
+
         /* al_footer_template_two css */
         /* change language new css start */
         body[dir=rtl] #page-container .footer-theme .sub-title .contact-list li span {
@@ -16368,6 +16367,10 @@ body .status_box label {
         .productAddonSetOptions .checkbox {
             width: 100%
         }
+        .payment-card-bottom ul li a img {
+            width: 40px;
+        }
+        
     }
 
     @media (max-width:400px) {
@@ -16381,6 +16384,7 @@ body .status_box label {
         .suppliers-img-outer {
             height: 100px !important;
         }
+
     }
 
     @media (max-width:991px) {

@@ -637,7 +637,6 @@ class UserhomeController extends FrontController
                 //pr($html);
                 return view('frontend.'.$view_page)->with($homeData);
             }
-
             $is_service_product_price_from_dispatch_forOnDemand = 0;
           
             $getOnDemandPricingRule = getOnDemandPricingRule($vendor_type, Session::get('onDemandPricingSelected'),$additionalPreference);

@@ -180,7 +180,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                     </div>
                 </div>
             </div>
-            <div class="row mb-5 homepageSix">
+            <div class="row mb-4 homepageSix">
                 <div class="collection-filter col-lg-3 main-fillter">
                         <!-- <ul class="breadcrumb p-0 mb-2 mt-3">
                             <li class="breadcrumb-item align-items-center"><a href="javascript:void(0)">Home <i class="fa fa-angle-right" aria-hidden="true"></i> <span>Pharmacy <i class="fa fa-angle-right" aria-hidden="true"></i>
