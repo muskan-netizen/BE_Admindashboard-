@@ -1021,6 +1021,7 @@ class OrderController extends BaseController
      */
     public function changeStatus(Request $request, $domain = '')
     {
+       
         
         $orderPlaced = true;
         $orderPlacedNo = '';
@@ -1127,12 +1128,13 @@ class OrderController extends BaseController
                     //Create Shipping place order request for Lalamove when order in processing state
                     $orderPlaced = $this->placeOrderRequestlalamove($request);
                     $orderPlacedNo = $orderPlaced;
-                }
-
+                } 
+               
+              
                 if ($orderPlaced) {
 
                     $vendorOrderStatus = VendorOrderStatus::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
-
+                  
                     $vendor_order_status = new VendorOrderStatus();
                     $vendor_order_status->order_id = $request->order_id;
                     $vendor_order_status->vendor_id = $request->vendor_id;
@@ -1176,6 +1178,7 @@ class OrderController extends BaseController
                             }
                         ))->find($request->order_id);
 
+                       
                         // get vendor return amount from order
                         $return_response =  $this->GetVendorReturnAmount($request, $order);
                         // return amount to user wallet
@@ -1206,11 +1209,11 @@ class OrderController extends BaseController
                         // end amount to user wallet worked by harbans
                     }
                 }
-
+              
                 if ($request->status_option_id == 2) {
                     $this->ProductVariantStock($request->order_id, $request);
                 }
-
+              
                 if ($currentOrderStatus->order_status_option_id == 2 && $request->status_option_id == 3) {
                     $this->ProductVariantStockIncreaseByOrderId($request->order_id);
                 }
@@ -1223,24 +1226,32 @@ class OrderController extends BaseController
                 $order_vendor->order_status_option_id = $request->status_option_id;
                 $order_vendor->reject_reason = $request->reject_reason;
                 $order_vendor->cancelled_by = $request->cancelled_by;
+              
                 $order_vendor->save();
-                OrderProduct::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id'=>$request->status_option_id]);
+                 OrderProduct::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id'=>$request->status_option_id]);
+              
                 DB::commit();
-                $orderData = Order::find($request->order_id);
+                $newOrder = Order::select('id','user_id')->with([
+                'ordervendor'
+            ])
+                ->where('id', $request->order_id)
+                ->first();
+                $blockchain_route = ClientPreferenceAdditional::where('key_name','blockchain_route_formation')->first();
+ 
+                if(isset($blockchain_route) && ($blockchain_route->key_value == 1))
+                {
+                    @$this->updateBlockchainOrderDetail($newOrder);
+
+                }
                 // $this->sendSuccessNotification(Auth::user()->id, $request->vendor_id);
                 $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $orderData, $request->status_option_id);
+            
                 $customer = User::find($orderData->user_id);
                 if(getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1){
                      $this->sendTrackingUrlSMS($orderData);
                 }
 
-                $blockchain_route = ClientPreferenceAdditional::where('key_name','blockchain_route_formation')->first();
- 
-                if(isset($blockchain_route) && ($blockchain_route->key_value == 1))
-                {
-                    @$this->updateBlockchainOrderDetail($orderData);
-
-                }
+                
                 return response()->json([
                     'status' => 'success',
                     'created_date' => convertDateTimeInTimeZone($vendor_order_status->created_at, $timezone, 'l, F d, Y, H:i A'),
@@ -1256,6 +1267,8 @@ class OrderController extends BaseController
             ]);
         } catch (\Exception $e) {
             DB::rollback();
+            \Log::info($e->getCode());
+            \Log::info($e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
@@ -2959,7 +2972,7 @@ class OrderController extends BaseController
                         'body'  => $body_content,
                         "type" => "order_status_change",
                         "order_id" =>$orderData->id,
-                        "vendor_id" =>$orderData->ordervendor->vendor_id,
+                        "vendor_id" =>$orderData->ordervendor->vendor_id ?? '',
                         "order_status" =>$order_status_id,
                         "redirect_type" => $redirect_URL['type'] 
                     ],

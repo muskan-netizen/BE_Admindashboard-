@@ -2506,10 +2506,14 @@ class OrderController extends FrontController
 
             DB::commit();
             $blockchain_route = ClientPreferenceAdditional::where('key_name','blockchain_route_formation')->first();
- 
+              $order_data = Order::select('id','user_id')->with([
+                'ordervendor'
+            ])
+                ->where('order_number', $order->order_number)
+                ->first();
             if(isset($blockchain_route) && ($blockchain_route->key_value == 1))
             {
-                @$this->saveBlockchainOrderDetail($order);
+                @$this->saveBlockchainOrderDetail($order_data);
 
             }
             $this->sendSuccessSMS($request, $order);

@@ -18,25 +18,30 @@ trait OrderBlockchain{
         $from_id = ClientPreferenceAdditional::where('key_name','blockchain_address_id')->first();
         $client = Client::first();
         $data = [
-            "status" => $orderData->ordervendor->status ?? '0',
+            "status" => $orderData->ordervendor->OrderStatusOption->title ?? 'Pending',
             "orderID" => $orderData->id,
             "order_detail" => (array) $orderData,
             "address_short_code" => $client->code,
-            "from_address" => $from_id->key_value ?? '',
-            'user_id' => $orderData->user_id
+            "address_f" => $from_id->key_value ?? '',
+            'user_id' => $orderData->user_id,
         ];
         
+        \Log::info('post data');
+        \Log::info($data);
         $headers = [
             'Content-Type' => 'application/json',
         ];
         if(isset($api_domain))
         {
+            \Log::info('api domain');
+            \Log::info($api_domain->key_value);
             $response = Http::withHeaders($headers)->post($api_domain->key_value.'/createOrder', $data);
         
             $responseData = $response->json();
         }
 
-        
+        \Log::info('create order');
+        \Log::info($responseData);
         return response()->json([
             'message' => 'Order created successfully',
             'data' => $data ?? '',
@@ -50,13 +55,15 @@ trait OrderBlockchain{
         $from_id = ClientPreferenceAdditional::where('key_name','blockchain_address_id')->first();
         $client = Client::first();
         $data = [
-            "newStatus" => $orderData->ordervendor->status ?? '0',
+            "newStatus" => $orderData->ordervendor->OrderStatusOption->title ?? 'Pending',
             "orderID" => $orderData->id,
             "address_short_code" => $client->code,
-            "from_address" => $from_id->key_value ?? '',
+            "order_detail" => (array) $orderData,
+            "address_f" => $from_id->key_value ?? '',
             'user_id' => $orderData->user_id
         ];
-        
+        \Log::info('update post data');
+        \Log::info($data);
         $headers = [
             'Content-Type' => 'application/json',
         ];
@@ -67,7 +74,8 @@ trait OrderBlockchain{
             $responseData = $response->json();
         }
 
-        
+        \Log::info('update order');
+        \Log::info($responseData);
         return response()->json([
             'message' => 'Order Updated successfully',
             'data' => $data ?? '',
@@ -81,7 +89,8 @@ trait OrderBlockchain{
         $from_id = ClientPreferenceAdditional::where('key_name','blockchain_address_id')->first();
         $client = Client::first();
         $data = [
-            "lat" => $orderData->ordervendor->status ?? '0',
+            "lat" => '3.2',
+            "newStatus" => $orderData->ordervendor->OrderStatusOption->title ?? 'Pending',
             "orderID" => $orderData->id,
             "address_short_code" => $client->code,
             "movement" => $from_id->key_value ?? '',
