@@ -918,9 +918,7 @@ class PickupDeliveryController extends FrontController{
 
     // place Request To Dispatch
     public function placeRequestToDispatch($request,$order,$vendor){
-        try {
-            \Log::info($request->all());
-            
+        try {            
             $meta_data = '';
             $tasks = array();
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
@@ -993,14 +991,17 @@ class PickupDeliveryController extends FrontController{
                     $notify_hour = $client_preferences_addional['pickup_notification_before_hours'] ?? 1;
                     $reminder_hour = $client_preferences_addional['pickup_notification_before2_hours'] ?? 1;
                 }
-
+                $allocation_type = 'a';
+                if(isset($request->unique_id) || isset($request->agent_id)){
+                    $allocation_type = 'm';
+                }
                 $postdata =  [
                     'order_number' =>  $order->order_number,
                     //'order_type' =>  $order->type,
                     // 'order_friend_name' =>  $order->friend_name,
                     // 'order_number' =>  $order->friend_phone_number,
                     'barcode' => '',
-                    'allocation_type' => (isset($request->driver_id) && !empty($request->driver_id)) ? 'm' : 'a',
+                    'allocation_type' => $allocation_type,
                     'task' => $request->tasks,
                     'order_team_tag' => $team_tag,
                     'task_type' => $task_type,

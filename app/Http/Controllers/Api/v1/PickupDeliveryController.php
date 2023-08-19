@@ -834,9 +834,10 @@ class PickupDeliveryController extends BaseController{
                     $notify_hour = $client_preferences_addional['pickup_notification_before_hours'] ?? 1;
                     $reminder_hour = $client_preferences_addional['pickup_notification_before2_hours'] ?? 1;
                 }
-                // FacadesLog::warning(['postdata' => $notify_hour
-                // ,$reminder_hour]);
-
+                $allocation_type = 'a';
+                if(isset($request->unique_id) || isset($request->agent_id)){
+                    $allocation_type = 'm';
+                }
                 $postdata =  [
                             'order_number' =>  $order->order_number,
                             'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -846,7 +847,7 @@ class PickupDeliveryController extends BaseController{
                             'recipient_phone' => $request->phone_number ?? $customerno,
                             'recipient_email' => $request->email ?? $customer->email,
                             'task_description' => $request->task_description??null,
-                            'allocation_type' => (isset($request->agent_id) && !empty($request->agent_id)) ? 'm' : 'a',
+                            'allocation_type' =>$allocation_type,
                             'task_type' => $task_type,
                             'schedule_time' => $schedule_datetime_del ?? null,
                             'cash_to_be_collected' => $payable_amount??0.00,
