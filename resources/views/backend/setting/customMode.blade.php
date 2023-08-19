@@ -38,7 +38,9 @@
             </span>
         </div>
     </div>
-    <div class="col-md-4">
+   
+@endif
+ <div class="col-md-4">
         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
             <label for="subscription_mode" class="mr-2 mb-0">{{ __('Subscription Mod') }}<small
                     class="d-block pr-5">{{ __('Enable the option to create Subscriptions for Customers and Vendors.') }}</small></label>
@@ -48,7 +50,6 @@
             </span>
         </div>
     </div>
-@endif
 <div class="col-md-4">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="subscription_tab_taxi" class="mr-2 mb-0">{{ __('Subscription Tab') }}<small
