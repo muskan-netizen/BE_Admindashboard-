@@ -22,6 +22,49 @@ class PromoCodeController extends Controller{
      *
      * @return \Illuminate\Http\Response
      */
+    public function postProductPromoCodeCheck(Request $request){
+        try {
+            $user = Auth::user();
+            $langId = $user->language;
+            $promo_codes = new \Illuminate\Database\Eloquent\Collection;
+            $product_id = $request->product_id;
+            $firstOrderCheck = 0;
+            $is_from_cart = $request->is_cart ? $request->is_cart :0;
+            $now = Carbon::now()->toDateTimeString();
+            $now = convertDateTimeInClientTimeZone($now);
+            $promo_code_details = PromoCodeDetail::where('refrence_id', $product_id)->pluck('promocode_id');
+            $result1 = Promocode::where('expiry_date', '>=', $now)->where('restriction_on', 0)->where(function ($query) use ($promo_code_details,$firstOrderCheck) {
+                $query->where(function ($query2) use ($promo_code_details) {
+                    $query2->where('restriction_type', 1);
+                    if (!empty($promo_code_details->toArray())) {
+                        $query2->whereNotIn('id', $promo_code_details->toArray());
+                    }
+                });
+                $query->orWhere(function ($query1) use ($promo_code_details) {
+                    $query1->where('restriction_type', 0);
+                    if (!empty($promo_code_details->toArray())) {
+                        $query1->whereIn('id', $promo_code_details->toArray());
+                    } else {
+                        $query1->where('id', 0);
+                    }
+                });
+            });
+            // if($firstOrderCheck){
+            //     $result1->where('first_order_only', 0);
+            // }
+            // if($is_from_cart != 1){
+            //     $result1->where(['promo_visibility' => 'public']);
+            // }
+            $result1 = $result1->where('is_deleted', 0)->first();
+            if(isset($result1) && $result1->id){
+                return $this->successResponse($result1, '', 200);
+            }
+            return $this->errorResponse('', 400);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+    
     public function postPromoCodeList(Request $request){
         try {
             $user = Auth::user();

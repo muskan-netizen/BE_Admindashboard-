@@ -933,7 +933,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
         </div>
     </div>
 </section>
-@include('frontend.ondemand.productPriceModel');
+@include('frontend.ondemand.productPriceModel')
 @section('custom-js')
 <script src="{{ asset('js/onDemand/GetDispatcherPrice.js') }}"></script>
 <script src="{{ asset('js/onDemand/AgentSlot.js') }}"></script>

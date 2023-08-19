@@ -923,79 +923,7 @@ trait CartManagerV2{
                             }
                         }
                         
-                        if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
-                            if (isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)) {
-                                if($vendorData->coupon->promo->restriction_on == 0 || $vendorData->coupon->promo->restriction_on == 1)
-                                {
-                                    $couponGetAmount = $coupon_product_discount;
-                                }
-                                if($vendorData->coupon->promo->first_order_only==1){
-                                    if(auth()->user()){
-                                        $userOrder = auth()->user()->orders->first();
-                                        if($userOrder){
-                                            $cart->coupon()->delete();
-                                            $vendorData->coupon()->delete();
-                                            unset($vendorData->coupon);
-                                            $PromoDelete =1;
-                                        }
-                                    }
-                                }
-                                if ($PromoDelete !=1) {
-                                    if(!($vendorData->coupon->promo->expiry_date >= $nowdate) ){
-                                        $cart->coupon()->delete();
-                                        $vendorData->coupon()->delete();
-                                        unset($vendorData->coupon);
-                                        $PromoDelete =1;
-                                    }
-                                }
-                                if ( $PromoDelete !=1) {
-                                    
-                                    $minimum_spend = 0;
-                                    if (isset($vendorData->coupon->promo->minimum_spend)) {
-                                        $minimum_spend = $vendorData->coupon->promo->minimum_spend * $doller_compare;
-                                    }
-                                    
-                                    $maximum_spend = 0;
-                                    if (isset($vendorData->coupon->promo->maximum_spend)) {
-                                        $maximum_spend = $vendorData->coupon->promo->maximum_spend * $doller_compare;
-                                    }
-                                    
-                                    if( ($minimum_spend <= $couponGetAmount ) && ($maximum_spend >= $couponGetAmount))
-                                    {
-                                        if ($vendorData->coupon->promo->promo_type_id == 2) {
-                                            $total_discount_percent = $vendorData->coupon->promo->amount;
-                                            $vendor_discount_amount = $total_discount_percent;
-                                            $payable_amount -= $total_discount_percent;
-                                            $coupon_amount_used = $total_discount_percent;
-                                        } else {
-                                            $gross_amount = decimal_format($payable_amount - $taxable_amount-$total_container_charges);
-                                            $percentage_amount = ($gross_amount * $vendorData->coupon->promo->amount / 100);
-                                            $payable_amount -= $percentage_amount;
-                                            $vendor_discount_amount = $percentage_amount;
-                                            $coupon_amount_used = $percentage_amount;
-                                        }
-                                    }
-                                    else{
-                                        
-                                        $cart->coupon()->delete();
-                                        $vendorData->coupon()->delete();
-                                        unset($vendorData->coupon);
-                                        $PromoDelete =1;
-                                    }
-                                }
-                                if ( $PromoDelete !=1) {
-                                    if($vendorData->coupon->promo->allow_free_delivery ==1   ){
-                                        $PromoFreeDeliver = 1;
-                                        // $coupon_amount_used = $coupon_amount_used ;
-                                        $coupon_amount_used = $coupon_amount_used +  $deliveryCharges_real;
-                                        $deliveryfeeOnCoupon = 1;
-                                        $payable_amount = $payable_amount;
-                                        $deliveryfeeOnCoupon = 1;
-                                    }
-                                }
-                            }
-                        }
-                        
+                      
                         
                     //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
                     /* Getting taxes info */
@@ -1254,9 +1182,80 @@ trait CartManagerV2{
                         $delivery_slot_amount += decimal_format($prod->slot_price);                        
                     }
                 }
-                // dd($security_amount);
-                // $couponGetAmount = $payable_amount ;
-
+                if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
+                    if (isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)) {
+                        if($vendorData->coupon->promo->restriction_on == 0 || $vendorData->coupon->promo->restriction_on == 1)
+                        {
+                            $couponGetAmount = $payable_amount;
+                        }
+                        if($vendorData->coupon->promo->first_order_only==1){
+                            if(auth()->user()){
+                                $userOrder = auth()->user()->orders->first();
+                                if($userOrder){
+                                    $cart->coupon()->delete();
+                                    $vendorData->coupon()->delete();
+                                    unset($vendorData->coupon);
+                                    $PromoDelete =1;
+                                }
+                            }
+                        }
+                        if ($PromoDelete !=1) {
+                            if(!($vendorData->coupon->promo->expiry_date >= $nowdate) ){
+                                $cart->coupon()->delete();
+                                $vendorData->coupon()->delete();
+                                unset($vendorData->coupon);
+                                $PromoDelete =1;
+                            }
+                        }
+                        if ( $PromoDelete !=1) {
+                            $minimum_spend = 0;
+                            if (isset($vendorData->coupon->promo->minimum_spend)) {
+                                $minimum_spend = $vendorData->coupon->promo->minimum_spend * $doller_compare;
+                            }
+                            
+                            $maximum_spend = 0;
+                            if (isset($vendorData->coupon->promo->maximum_spend)) {
+                                $maximum_spend = $vendorData->coupon->promo->maximum_spend * $doller_compare;
+                            }
+                            if( ($minimum_spend <= $couponGetAmount ) && ($maximum_spend >= $couponGetAmount))
+                            {
+                                if ($vendorData->coupon->promo->promo_type_id == 2) {
+                                    $total_discount_percent = $vendorData->coupon->promo->amount;
+                                    $vendor_discount_amount = $total_discount_percent;
+                                    $payable_amount -= $total_discount_percent;
+                                    $coupon_amount_used = $total_discount_percent;
+                                } else {
+                                    $gross_amount = decimal_format($payable_amount - $taxable_amount-$total_container_charges);
+                                    if($vendorData->coupon->promo->restriction_on == 0 ){
+                                        $gross_amount = $coupon_apply_price;
+                                    }
+                                    $percentage_amount = ($gross_amount * $vendorData->coupon->promo->amount / 100);
+                                    $payable_amount -= $percentage_amount;
+                                    $vendor_discount_amount = $percentage_amount;
+                                    $coupon_amount_used = $percentage_amount;
+                                }
+                            }
+                            else{
+                                
+                                $cart->coupon()->delete();
+                                $vendorData->coupon()->delete();
+                                unset($vendorData->coupon);
+                                $PromoDelete =1;
+                            }
+                        }
+                        if ( $PromoDelete !=1) {
+                            if($vendorData->coupon->promo->allow_free_delivery ==1   ){
+                                $PromoFreeDeliver = 1;
+                                // $coupon_amount_used = $coupon_amount_used ;
+                                $coupon_amount_used = $coupon_amount_used +  $deliveryCharges_real;
+                                $deliveryfeeOnCoupon = 1;
+                                $payable_amount = $payable_amount;
+                                $deliveryfeeOnCoupon = 1;
+                            }
+                        }
+                    }
+                }
+                
                 $promoCodeController = new PromoCodeController();
                 $promoCodeRequest = new Request();
                 $promoCodeRequest->setMethod('POST');

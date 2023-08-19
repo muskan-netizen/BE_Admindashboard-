@@ -159,7 +159,7 @@
                                                         </div>
 
                                                         <label class="items_price">
-                                                            ({{ $product['product_name'] }})
+                                                            ({{ $product['product_title'] }})
                                                             {{ $clientCurrency->currency->symbol }}{{ decimal_format($product['price']) }}</label>
                                                     </div>
                                                 @endforeach
