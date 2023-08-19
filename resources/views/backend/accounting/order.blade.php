@@ -112,7 +112,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                         <table class="table table-centered table-nowrap table-striped" id="accounting_vendor_datatable" width="100%">
                             <thead>
                                 <tr>
-                                    <th>{{ __('Order ID') }}</th>
+                                    <!-- <th>{{ __('Order ID') }}</th> -->
                                     <th>{{ __('Date & Time') }}</th>
                                     <th>{{ __('Customer Name') }}</th>
                                     <th>{{ __('Vendor') }}</th>
@@ -239,9 +239,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                           }
                         },
                         columns: [
-                            {data: 'order_detail.order_number', name: 'order_number', orderable: false, searchable: false,"mRender": function ( data, type, full ) {
-                              return "<a href='" + full.view_url + "' target='_blank'>"+full.order_detail.order_number+"</a>";
-                            }},
+                         
                             {data: 'created_date', name: 'name',orderable: false, searchable: false},
                             {data: 'user_name', name: 'Customer Name',orderable: false, searchable: false},
                             {data: 'vendor_name', name: 'vendor_name', orderable: false, searchable: false},

@@ -1381,6 +1381,9 @@ if (!function_exists('getCategoryTypes')) {
             case "p2p":
                 $typeArray = ['p2p'];
                 break;
+            case "emart":
+                $typeArray = ['delivery'];
+                break;
             case "super_app":
                 $typeArray = ['delivery', 'dinein', 'takeaway', 'rental', 'pick_drop', 'on_demand', 'appointment', 'p2p' ];
                 break;
@@ -1390,6 +1393,7 @@ if (!function_exists('getCategoryTypes')) {
         return $typeArray;
     }
 }
+
 if (!function_exists('getCategoryTypesServices')) {
     /**
      * config('constants.ServiceTypes')

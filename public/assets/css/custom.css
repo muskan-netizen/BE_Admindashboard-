@@ -1961,7 +1961,7 @@ i.mdi.mdi-exclamation-thick {
 }
 
 .nav-user img {
-    border-radius: 50%;
+    border-radius: 0%;
     margin-right: 5px
 }
 
@@ -4842,6 +4842,11 @@ div#addRejectmodal {
 
 /*============================================= dashboard page responsive css start here ======================================= */
 
+@media(min-width:576px) {
+    .custom-cols>.col {flex: 0 0 50%;max-width: 50%;}
+    .received-orders .modal-dialog.modal-dialog-centered {max-width: 600px;}
+    .add_product .modal-dialog {max-width: 650px;}
+}
 @media(max-width:1600px) {
     .card-box {
         padding: 20px;

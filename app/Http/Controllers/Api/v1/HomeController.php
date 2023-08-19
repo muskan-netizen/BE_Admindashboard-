@@ -65,7 +65,6 @@ class HomeController extends BaseController
                         $vendorMode[] = $vendorData;
                     }
             }
-
             $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo','is_service_price_selection','is_particular_driver','is_enable_curb_side','is_enable_variant_set_v2']);
     
             //pr($vendorMode);
@@ -441,10 +440,6 @@ class HomeController extends BaseController
             $allVendorData = clone $vendorData;
             $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->limit(100)->get();
             $venderIds  = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
-
-            // //\Log::info($vendorData->toSql());
-            // //\Log::info($venderIds);
-            // //\Log::info($ses_vendors);
 
 
             $timezone = $user->timezone ?? 'Asia/Kolkata';
@@ -1047,7 +1042,6 @@ class HomeController extends BaseController
 
             }
         }
-       // Log::info($products);
         return $products;
     }
 

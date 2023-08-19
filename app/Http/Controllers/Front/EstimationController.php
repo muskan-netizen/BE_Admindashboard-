@@ -161,7 +161,6 @@ class EstimationController extends FrontController
            
           } catch (Exception $e) {
             DB::rollback();
-            \Log::info($e->getMessage());
             return $e->getMessage();
           }
     }

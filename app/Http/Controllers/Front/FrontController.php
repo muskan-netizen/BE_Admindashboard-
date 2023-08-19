@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use Twilio\Rest\Client as TwilioClient;
 use App\Models\{Client, Category, Product,Type, SmsTemplate, ClientPreference,EmailTemplate, ClientCurrency, UserDevice, UserLoyaltyPoint, Wallet, UserSavedPaymentMethods, SubscriptionInvoicesUser,Country,UserAddress,CartProduct, Vendor, VendorCategory, ClientLanguage, LoyaltyCard, Nomenclature, NomenclatureTranslation, Order};
+use App\Models\PermissionsOld;
+use App\Models\UserPermissions;
 
 class FrontController extends Controller
 {

@@ -9,7 +9,7 @@ use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, RoleOld as Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole, TollPassOrigin, TravelMode, VehicleEmissionType, Attribute, ProductAttribute,LongTermServiceProductAddons, ProcessorProduct, OrderProduct,DeliverySlot, Pincode};
+use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, RoleOld as Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole, TollPassOrigin, TravelMode, VehicleEmissionType, Attribute, ProductAttribute,LongTermServiceProductAddons, ProcessorProduct, OrderProduct,DeliverySlot, MargProduct, Pincode};
 
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
@@ -187,7 +187,7 @@ class ProductController extends BaseController
      */
     public function edit($domain = '', $id)
     {
-        // $this->searchCatalogObjects();
+        // $this->testfun1();
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module', 'is_cab_pooling', 'is_one_push_book_enable','is_service_product_price_from_dispatch']);
 
         $with_array = ['brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles'];
@@ -369,8 +369,13 @@ class ProductController extends BaseController
         }
         //mohit sir branch code added by sohail
         $processorProduct = ProcessorProduct::where('product_id', $product->id)->first();
+        $margProduct = MargProduct::where('product_id', $product->id)->first();
+        if(@$margProduct && isset($margProduct))
+        {
+            $margProduct = $margProduct->toArray()??[];
+        }
 
-        return view('backend/product/edit', ['delivery_slots'=> $delivery_slots, 'product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'processorProduct' => $processorProduct,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value, 'attribute_latitude' => $attribute_latitude, 'attribute_longitude' => $attribute_longitude]);
+        return view('backend/product/edit', ['delivery_slots'=> $delivery_slots, 'product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'processorProduct' => $processorProduct,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value, 'attribute_latitude' => $attribute_latitude, 'attribute_longitude' => $attribute_longitude,'margProduct' => $margProduct??[]]);
     }
 
     /**
@@ -414,7 +419,11 @@ class ProductController extends BaseController
             if ($product->is_live == 0) {
                 $product->publish_at = ($request->is_live == 1) ? date('Y-m-d H:i:s') : '';
             }
-            foreach ($request->only('country_origin_id', 'weight', 'weight_unit', 'is_live', 'brand_id') as $k => $val) {
+            // dd($request->all());
+            // foreach ($request->only('country_origin_id', 'weight', 'weight_unit', 'is_live', 'brand_id', 'length', 'breadth', 'height', 'packaging_weight', 'packaging_weight_unit', 'packaging_length', 'packaging_breadth', 'packaging_height') as $k => $val) {
+            //     $product->{$k} = $val;
+            // }
+            foreach ($request->only('country_origin_id', 'weight', 'weight_unit', 'is_live', 'brand_id', 'length', 'breadth', 'height') as $k => $val) {
                 $product->{$k} = $val;
             }
             if( clientPrefrenceModuleStatus('p2p_check') || is_attribute_enabled() ) {
@@ -806,7 +815,6 @@ class ProductController extends BaseController
             return redirect()->back()->with('toaster', $toaster);
         } catch (\Exception $e) {
             DB::rollback();
-            \Log::info($e->getMessage());
             $toaster = $this->errorToaster(__('ERROR'),$e->getMessage() );
             return redirect()->back()->with('toaster', $toaster);
 
@@ -1365,7 +1373,6 @@ class ProductController extends BaseController
                                 
                                 $retResponse['tags'] = $response['tags'];
                             }
-            //               // Log::info($response);
                 }
                 return $retResponse;
             }
@@ -1394,11 +1401,9 @@ class ProductController extends BaseController
                             if($response && $response['message'] == 'success'){
                                 return $response['tags'];
                             }
-            //               // Log::info($response);
                 }
             }
             catch(\Exception $e){
-                //// Log::info($e->getMessage());
             }
     }
     # check if last mile delivery on

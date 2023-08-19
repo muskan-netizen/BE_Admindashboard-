@@ -923,6 +923,7 @@ body.al_body_template_six.dark h6.card_title.ellips {
     justify-content: center;
     position: relative;
     z-index: 9;
+    margin-bottom:30px;
 }
 .al_body_template_six .alSixMainMenu .slick-disabled {
     display: none!important;

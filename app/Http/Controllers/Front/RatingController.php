@@ -108,7 +108,9 @@ class RatingController extends FrontController{
                 if($n != 0 && $max != 0 ){
                     $Average_rating = $max / $n;
                 }
-                $rating['rating'] =  $Average_rating;
+                if(@$request->question_id){
+                    $rating['rating'] =  $Average_rating;
+                }
                 $postdata['attribute']  = $attribute;
                 $postdata['Rating_types']  =$rating_type;
                 $postdata['Rating']  = $rating;
@@ -119,7 +121,7 @@ class RatingController extends FrontController{
                     $Average_rating = $Average_rating > 0 ? $Average_rating : ($request->rating ?? 0);
                     $ratings = OrderDriverRating::updateOrCreate([
                         'order_id' => $order_details->order_id,                 
-                        'user_id' => Auth::id()],['rating' => $Average_rating,'review' => $request->review??$request->hidden_review]);
+                        'user_id' => Auth::id()],['rating' => $request->rating,'review' => $request->review??$request->hidden_review]);
                       
                 }
              
@@ -248,10 +250,11 @@ class RatingController extends FrontController{
     */
     public function getDriverRating(Request $request){
         try {
-            //dd($request->all());
+            // dd($request->all());
             $dispatch_rating_ques = [];
             $dispatch_rating_types = [];
             $rating_details = OrderDriverRating::where('id',$request->id)->first();
+            // dd($rating_details);
             if($request->has('dispatch_traking_url') && !empty($request->dispatch_traking_url)){
                // $traking_url = 'http://192.168.102.65:8001/order/tracking/745e3f/YUCmbs';
                 $rating_response = $this->getRatingQuestingDispatcher($request->dispatch_traking_url); //$request->dispatch_traking_url / change dynamic url
@@ -270,6 +273,7 @@ class RatingController extends FrontController{
 
             if(isset($rating_details)){
                 $withArray['rating'] = $rating_details->rating;
+                // dd($withArray['rating']);
                 if ($request->ajax()) {
                  return \Response::json(\View::make('frontend.modals.update-driver-rating',  $withArray)->render());
                 }

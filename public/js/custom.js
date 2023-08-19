@@ -977,7 +977,7 @@ $(document).ready(function () {
 
     }
     $(document).on("click", "#order_placed_btn", async function () {
-        
+
         if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val()!=$("#schedule_datetime").val())){
             success_error_alert('error', error_unchanged_schedule_date, ".cart_response");
             $("#schedule_datetime").val($("#edit_order_schedule_datetime").val());
@@ -1011,6 +1011,19 @@ $(document).ready(function () {
                 //footer: '<a href="">Why do I have this issue?</a>'
             });
             return false;
+        }
+
+        if ($("#agree_term_check").length > 0) {
+            var checkbox = document.getElementById("agree_term_check");
+            if (!checkbox.checked) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please accept terms and conditions.',
+                    //footer: '<a href="">Why do I have this issue?</a>'
+                });
+                return false;
+            }
         }
 
         var delivery_type = 'D';
@@ -1250,7 +1263,7 @@ $(document).ready(function () {
                             },
                             error: function (error) {
                                 var response = $.parseJSON(error.responseText);
-                                
+
                                 let error_messages = response.message;
                                 $.each(error_messages, function (key, error_message) {
                                     $('#min_order_validation_error_' + error_message.vendor_id).html(error_message.message).show();
@@ -2138,7 +2151,7 @@ $(document).ready(function () {
                 success_error_alert('error', 'Invalid credit card information', "#powertrans_card_error");
                 return false;
             }
-      
+
         }
 
         if ((payment_option_id == undefined || payment_option_id <= 0) && (payment_method_required_error_msg != undefined)) {
@@ -2375,7 +2388,6 @@ $(document).ready(function () {
         OrderStorage.setStorageSingle('RecurringBookingAdded','');
         OrderStorage.setStorageSingle('cartFirstProductId','');
         OrderStorage.setStorageSingle('cartAddressId','');
-        OrderSessionStorage.setStorageSingle('dispatcher_agent_id','')
         $.ajax({
             data: { address_id: address_id, schedule_date_delivery: $("#schedule_datetime").val()},
             type: "get",
@@ -3242,7 +3254,7 @@ $(document).ready(function () {
 
 
        // Recuring booking code
-        
+
 
 
         // if($('#is_recurring_bookingss').val() > 0){
@@ -5093,7 +5105,7 @@ $(document).ready(function () {
             case 56:
                 paymentViaOboPay('', payment_option_id);
             break;
-            
+
             case 57:
                 payWithPesapal(payment_option_id,'');
             break;
@@ -5101,7 +5113,11 @@ $(document).ready(function () {
             case 58:
                 payWithPowerTrans(payment_option_id,'');
             break;
-                
+
+            case 59:
+                payWithLivees(payment_option_id);
+                break;
+
         }
 
     }
@@ -5637,7 +5653,7 @@ $(document).ready(function () {
                 }else{
                     return false;
                 }
-            break; 
+            break;
 
             case '57':
               var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
@@ -5652,6 +5668,13 @@ $(document).ready(function () {
               var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
               if (order != '') {
                 payWithPowerTrans(payment_option_id, order);
+              }
+            break;
+
+            case '59':
+              var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+              if (order != '') {
+                payWithLivees(address_id, payment_option_id, order);
               }
             break;
         }
@@ -5680,26 +5703,10 @@ $(document).ready(function () {
                                 card: card,
                             }).then(stripePaymentMethodHandler);
                             // paymentViaStripeSource(result.source.id, address_id, payment_option_id,delivery_type, order);
-                        // }else{
-                        //     stripe.createToken(card).then(function(result) {
-                        //         if (result.error) {
-                        //             $('#stripe_card_error').html(result.error.message);
-                        //             $(".topup_wallet_confirm").attr("disabled", false);
-                        //         } else {
-                        //             paymentViaStripe(result.token.id, '', payment_option_id, '', '');
-                        //         }
-                        //     });
-                        // }
+                       
                     }
                 });
-                // stripe.createToken(card).then(function (result) {
-                //     if (result.error) {
-                //         $('#stripe_card_error').html(result.error.message);
-                //         $(".topup_wallet_confirm").attr("disabled", false);
-                //     } else {
-                //         paymentViaStripe(result.token.id, '', payment_option_id, '', '');
-                //     }
-                // });
+
             break;
 
             case 5:
@@ -5903,13 +5910,17 @@ $(document).ready(function () {
 
             case 56:
                 paymentViaOboPay('', payment_option_id);
-            
+
             case 57:
                 payWithPesapal(payment_option_id,'');
             break;
-            
+
             case 58:
                 payWithPowerTrans(payment_option_id,'');
+            break;
+
+             case 59: console.log("here");
+                payWithLivees(payment_option_id,payment_from='wallet');
             break;
         }
     }

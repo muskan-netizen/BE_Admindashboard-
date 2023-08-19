@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\BidController;
 use App\Http\Controllers\Front\CartController;
+use App\Http\Controllers\LiveePaymentController;
+use App\Http\Controllers\MargController;
+use Illuminate\Support\Facades\Route;
 
 Route::post('ajaxGetScheduleDateDetails', 'Front\CartController@ajaxGetScheduleDateDetails')->name('ajaxGetScheduleDateDetails');
 Route::get('confirmation', 'Front\UserhomeController@confirmation')->name('confirmation');
@@ -12,6 +15,8 @@ Route::any('auth/callback/xero', 'Front\XeroController@xero_callback')->name('ca
 Route::any('payment/paytab/callback', 'Front\PaytabController@callback')->name('payment.paytab.callback');
 Route::match(['get', 'post'], 'payment/paytab/return', 'Front\PaytabController@returnBack')->name('payment.paytab.return');
 Route::match(['get','post'],'payment/payByDataTrans','Front\DataTransController@payByDataTrans')->name('payment.payByDataTrans');
+Route::get('/sync-marg', [MargController::class, 'syncmarg'])->name('sync.marg');
+Route::get('/order-marg', [MargController::class, 'makeInsertOrderMargApi']);
 Route::get('/debug-sentry', function () {
 	echo \Hash::make('dispatcher@765');
 	//throw new Exception('My first Sentry error!');
@@ -28,6 +33,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::any('webhook/dunzo', 'DunzoController@dunzoWebhook')->name('dunzoWebhook');
 	Route::any('webhook/ahoy', 'AhoyController@ahoyWebhook')->name('ahoyWebhook');
 	Route::get('webhook/user_rating', 'Front\UserRatingController@userRatingWebhook')->name('user_rating_webhook');
+    Route::any('livee/success','LiveePaymentController@afterPayment')->name('livee.payment');
 
 	// order dispatcher order web hooks
 	Route::get('dispatch-order-status-update/{id?}', 'Front\DispatcherController@dispatchOrderStatusUpdate')->name('dispatch-order-update'); // Order Status update Dispatch
@@ -100,7 +106,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('/success-page', 'Front\DataTransController@successPage')->name('order.dataTransuccessPage');
 	Route::get('/cancel-page', 'Front\DataTransController@cancelPage')->name('order.dataTransCancel');
 	Route::post('/payment/payment_init', 'Front\StripeGatewayController@paymentInit')->name('payment_init');
-	Route::post('payment/webhook/stripe', 'Front\StripeGatewayController@stripeWebhook')->name('payment.webhook.stripe');
+	Route::post('payment/webhook/stripe', 'Front\StripeGatewayController@stripeWebhook')->name('payment.webhook.stripe')->middleware('stripeWebhookVerify');
 
 	// Stripe FPX
 	Route::post('payment/create/stripe_fpx', 'Front\StripeGatewayController@createStripeFPXPaymentIntent')->name('payment.create.stripe_fpx');
@@ -177,6 +183,11 @@ Route::group(['middleware' => ['domain']], function () {
     // obo-pay
     Route::post('before-payment/obo','Front\OboPaymentController@beforePayment')->name('obo.pay');
     Route::get('after-payment/obo','Front\OboPaymentController@afterPayment')->name('after.obo.payment');
+
+    //livees
+    Route::get('livees-pay',[LiveePaymentController::class,'livee']);
+    Route::any('payment/livees/api', 'LiveePaymentController@payFormWeb')->name('livees.webview');
+    Route::get('/livee','LiveePaymentController@index')->name('livee.pay');
 
 	Route::post('checkVendorPincode','Front\PincodeController@checkVendorPincode')->name('pincode.checkVendorPincode');
 	Route::get('getShippingMethod','Front\PincodeController@getShippingMethod')->name('pincode.getShippingMethod');
@@ -263,7 +274,7 @@ Route::group(['middleware' => ['domain']], function () {
 	//ccavenue-pay
 	Route::get('ccavenue/pay', 'Front\CcavenueController@payForm')->name('ccavenue.pay');
 	Route::any('ccavenue/success', 'Front\CcavenueController@successForm')->name('ccavenue.success');
-	Route::any('payment/ccavenue/api', 'Front\CcavenueController@payFormWebView')->name('ccavenue.webview');
+	Route::any('payment/ccavenue/api', '    Front\CcavenueController@payFormWebView')->name('ccavenue.webview');
 
 	// EasypaisaController routes
 	Route::get('easypaisa/pay', 'Front\EasypaisaController@create_token')->name('easypaisa.create.token');
@@ -373,7 +384,7 @@ Route::group(['middleware' => ['domain']], function () {
     // Mtn Momo payment gateway
 
 	Route::any('payment/webhook/mtn', 'Front\MtnMomoController@mtnCallback')->name('payment.webhook.mtn');
-	
+
 	Route::group(['prefix' => 'mtn'], function () {
 		Route::post('payment', 'Front\MtnMomoController@createToken')->name('mtn.momo.createToken');
 		Route::get('response/{id?}', 'Front\MtnMomoController@getResponse')->name('payment.response.mtn');

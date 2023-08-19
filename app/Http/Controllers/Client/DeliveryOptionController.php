@@ -23,6 +23,7 @@ class DeliveryOptionController extends Controller
         $ahoyOption = ShippingOption::where('code', 'ahoy')->first();
         $shippoOption = ShippingOption::where('code', 'shippo')->first();
         $kwikOption = ShippingOption::where('code', 'kwikapi')->first();
+        $roadieOption = ShippingOption::where('code', 'roadie')->first();
         $preference = ClientPreference::select('id','need_delivery_service','delivery_service_key_url','delivery_service_key_code','delivery_service_key','last_mile_team')->first();
         # if last mile on
         $last_mile_teams = [];
@@ -30,7 +31,7 @@ class DeliveryOptionController extends Controller
             $last_mile_teams = $this->getLastMileTeams();
         }
 
-        return view('backend/deliveryoption/index')->with(['delOption' => $delOption,'opt'=>$shipingOption,'optDunzo'=>$dunzoOption,'optAhoy'=>$ahoyOption,'shippoOption'=>$shippoOption,'last_mile_teams'=>$last_mile_teams,'preference'=>$preference,'kwikOption'=>$kwikOption]);
+        return view('backend/deliveryoption/index')->with(['delOption' => $delOption,'opt'=>$shipingOption,'optDunzo'=>$dunzoOption,'optAhoy'=>$ahoyOption,'shippoOption'=>$shippoOption,'last_mile_teams'=>$last_mile_teams,'preference'=>$preference,'kwikOption'=>$kwikOption, 'roadieOption' => $roadieOption]);
     }
     
      //Set new dunzo configuration details function
@@ -96,6 +97,54 @@ class DeliveryOptionController extends Controller
              return redirect()->back()->with('toaster', $toaster);
          
      }
+
+    //Set new dunzo configuration details function
+    public function roadie(Request $request)
+    {
+        try{
+            // dd($request->all());
+            $msg = 'Roadie delivery details have been saved successfully!';
+            $id = $request->method_id;
+            $method_name_arr = $request->method_name;
+            $active_arr = $request->active;
+            $test_mode_arr = $request->sandbox;
+            
+            $saved_creds = ShippingOption::select('credentials')->where('id', $id)->first();
+            if ((isset($saved_creds)) && (!empty($saved_creds->credentials))) {
+                $json_creds = $saved_creds->credentials;
+            } else {
+                $json_creds = NULL;
+            }
+            
+            $status = 0;
+            $test_mode = 0;
+            if ((isset($active_arr)) && ($active_arr == 'on')) {
+                $status = 1;
+                if ((isset($test_mode_arr)) && ($test_mode_arr == 'on')) {
+                    $test_mode = 1;
+                }
+                
+                if ((isset($method_name_arr)) && (strtolower($method_name_arr) == 'roadie')) {
+                    $validatedData = $request->validate([
+                        'api_base_url'     => 'required',
+                        'api_access_token' => 'required',
+                    ]);
+                    $json_creds = array(
+                        'api_access_token' => $request->api_access_token,
+                        'api_base_url'     => $request->api_base_url
+                    );
+                    //dd($json_creds);
+                    $json_creds = json_encode($json_creds);
+                }
+            }
+            ShippingOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
+            $toaster = $this->successToaster(__('Success'), $msg);
+        }catch(\Exception $e)
+        {
+            $toaster = $this->errorToaster(__('Error'), $e->getMessage());
+        }
+        return redirect()->back()->with('toaster', $toaster);
+    }
 
     //Set new Ahoy(Masa) configuration details function
     public function ahoy(Request $request)

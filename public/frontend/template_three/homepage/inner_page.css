@@ -3663,6 +3663,10 @@ body[dir] .third-temp-lan {
         margin-top: 30px!important;
         margin-left: 0!important;
     }
+    html .al_body_template_three .vendor-design_new{
+        margin-top: 0!important;
+    }
+
 }
 @media (max-width:767px) {
     body.al_body_template_three.dark .sm-horizontal {

@@ -694,8 +694,6 @@ class ProductController extends BaseController
                 'message' => 'Variant not Found!'
             ]); 
         } catch (Exception $e) {
-            //\Log::info('getFreeLincerFromDispatcher error');
-            \Log::info($e->getMessage());
             return response()->json([
                 'status' => 400,
                 'message' => 'Somthing Went wrong!'

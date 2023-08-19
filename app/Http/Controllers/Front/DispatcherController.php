@@ -894,11 +894,15 @@ class DispatcherController extends FrontController
             // $checkuservendor = UserVendor::where('user_id',$user_id)->first();
             // $sound = ($checkuservendor)?"notification.wav":"default";
             $devices = UserDevice::whereNotNull('device_token')->where('user_id', $user_id)->pluck('device_token');
-
+        
             $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
             if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
                     $title = __('Order Status : #').($orderNumber ?  $orderNumber->order_number : '');
-                    $body =  $OrderStatus ? ($OrderStatus->status_data ? $OrderStatus->status_data['driver_status'] : '') : '';
+                    $notification_content = NotificationTemplate::where('slug', 'order-cancelled')->first();
+                    $body_content =  $OrderStatus ? ($OrderStatus->status_data ? $OrderStatus->status_data['driver_status'] : '') : '';
+                    if($OrderStatus->status_data['driver_status'] == ''){
+                        $body_content = str_ireplace("{order_id}", "#" . $orderNumber->order_number, $notification_content->content);
+                    }
                     
                     //pr($title);
                     //pr($body);
@@ -906,7 +910,7 @@ class DispatcherController extends FrontController
                         "registration_ids" => $devices,
                         "notification" => [
                             'title' => $title,
-                            'body'  => $body,
+                            'body'  => $body_content,
                             'sound' => "default",
                             "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
                             'click_action' => route('order.index'),
@@ -914,7 +918,7 @@ class DispatcherController extends FrontController
                         ],
                         "data" => [
                             'title' => $title,
-                            'body'  => $body,
+                            'body'  => $body_content,
                             'data' => '',
                             'type' => ""
                         ],

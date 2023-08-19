@@ -2207,6 +2207,7 @@ $timezone = Auth::user()->timezone;
     });
     var ajaxCall = 'ToCancelPrevReq';
     var payment_obo_url = "{{route('obo.pay')}}";
+    var livee_payment_url="{{route('livee.pay')}}"
     var credit_tip_url = "{{ route('user.tip_after_order') }}";
     var payment_stripe_url = "{{ route('payment.stripe') }}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";

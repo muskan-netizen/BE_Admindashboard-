@@ -42,6 +42,8 @@
 
                                 @include('backend.chat.vendorpart.left')
                                 @include('backend.chat.vendorpart.right')
+                                @include('backend.chat.mediaUpload.index')
+
                             </div>
 
 
@@ -87,10 +89,13 @@
 {{-- <script>
     var client_data = `<?php echo $authData; ?>`;
 </script> --}}
+<script src="https://sdk.amazonaws.com/js/aws-sdk-2.100.0.min.js"></script>
 <script src="https://momentjs.com/downloads/moment.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="{{asset('assets/js/chat/socket_chat.js')}}"></script>
 <script src="{{asset('assets/js/chat/commonChat.js')}}"></script>
+{{-- <script src="{{asset('assets/js/chat/chatMedia.js')}}"></script> --}}
+
 
 {{-- <script src="{{asset('assets/js/chat/vendor_chat.js')}}"></script> --}}
 
