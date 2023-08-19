@@ -919,6 +919,8 @@ class PickupDeliveryController extends FrontController{
     // place Request To Dispatch
     public function placeRequestToDispatch($request,$order,$vendor){
         try {
+            \Log::info($request->all());
+            
             $meta_data = '';
             $tasks = array();
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
@@ -998,7 +1000,7 @@ class PickupDeliveryController extends FrontController{
                     // 'order_friend_name' =>  $order->friend_name,
                     // 'order_number' =>  $order->friend_phone_number,
                     'barcode' => '',
-                    'allocation_type' => $request->unique_id ? 'notify' : 'a',
+                    'allocation_type' => (isset($request->driver_id) && !empty($request->driver_id)) ? 'm' : 'a',
                     'task' => $request->tasks,
                     'order_team_tag' => $team_tag,
                     'task_type' => $task_type,
@@ -1037,7 +1039,10 @@ class PickupDeliveryController extends FrontController{
                     'app_call' => 0,
                     'call_notification' => 0
                 ];
-
+                
+                if(isset($request->bid_task_type) && !empty($request->bid_task_type)){
+                    $postdata['bid_task_type']    = $request->bid_task_type;
+                }
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post($url.'/api/task/create',['form_params' => ($postdata)]);
@@ -1349,7 +1354,6 @@ class PickupDeliveryController extends FrontController{
             return $this->successResponse($update, "Request accepted successfully", 200);
         }
         catch (\Exception $e) {
-            \Log::error($e->getMessage());
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }
