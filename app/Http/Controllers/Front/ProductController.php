@@ -44,13 +44,17 @@ class ProductController extends FrontController{
             Session::put('customerCurrency', $primaryCurrency->currency_id);
         }
         $curId = Session::get('customerCurrency');
-
         $navCategories = $this->categoryNav($langId);
+        $serviceType = Session::get('serviceType');
         $product = Product::select('id', 'vendor_id')->where('url_slug', $url_slug)
             ->whereHas('vendor',function($q) use($vendor){
                 $q->where('slug',$vendor);
-            })->with(['ProductAttribute' => function($q){
-                $q->whereIn('key_name', ['Transmission', 'Fuel Type', 'Seats']);
+            })->with(['ProductAttribute' => function($q) use($serviceType){
+                if($serviceType == 'rental'){
+                    $q->whereIn('key_name', ['Transmission', 'Fuel Type', 'Seats']);
+                }else{
+                    $q->whereIn('key_name', ['Cabins', 'Berths', 'Baths']);
+                }
             }, 'ProductAttribute.attributeOption'])->firstOrFail();
         $product_in_cart = CartProduct::where(["product_id" => $product->id]);
         $processorProduct = ProcessorProduct::where('product_id', $product->id)->first();

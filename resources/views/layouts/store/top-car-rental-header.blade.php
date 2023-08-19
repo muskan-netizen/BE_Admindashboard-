@@ -15,7 +15,7 @@
 					<ul class="d-flex  align-items-center">
 						<li><a href="{{route('userHome')}}" title="">Home</a></li>
 						<li><a href="{{ route('productSearch',['service' => 'rental']) }}" title="">Car Rental</a></li>
-						<li><a href="{{ url('category/airport') }}" title="">Airport Pickup and Drop</a></li>
+						<li><a href="{{ url('category/airport',['service' => 'pick_drop']) }}" title="">Airport Pickup and Drop</a></li>
 						<li><a href="{{ route('productSearch',['service' => 'yacht']) }}" title="">Yacht</a></li>
 						@if (Auth::guest())
 							<li><a href="user/login" title="">Sign in / Login</a></li>

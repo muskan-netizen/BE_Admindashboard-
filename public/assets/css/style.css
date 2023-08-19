@@ -941,6 +941,7 @@ line-height: 21px;
 .product_cart .left-item .item .select_product {
     border: 1px solid  #B3B3B3;
     padding: 30px 26px;
+    margin-bottom: 50px;
 }
 .product_cart .left-item .item .select_product h2{
     font-size: 24px;
@@ -1257,7 +1258,7 @@ line-height: 21px;
     font-weight: 700;
     margin-bottom: 10px;
 }
-.rentalcharges p, .rentalcharges span{
+.rentalcharges div p, .rentalcharges div span{
     margin-bottom: 0;
     font-size: 14px;
     font-weight: 400;

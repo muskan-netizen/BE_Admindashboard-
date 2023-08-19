@@ -32,7 +32,7 @@ $left_sidebar = 'layouts.store/top-car-rental-header';
     <header>
         @include($left_sidebar)
     </header>
-
+    @include('layouts.store.remove_cart_model')
     @yield('content')
     @yield('script')
     @yield('script-bottom-js')

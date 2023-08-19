@@ -399,8 +399,8 @@ class YachtController extends FrontController
             'longitude' =>  $request->drop_longitude,
             'address' => $request->drop_location
         ];
-
         $data = $this->productSearch($request, $pickup, $dropOff);
+        Session::put('serviceType', $data['service']);
         return view('frontend.yacht.car-rental',$data);
     }
 }

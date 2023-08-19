@@ -472,7 +472,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('/product/updateCartProductStatus', 'Front\CartController@updateCartProductStatus')->name('updateCartProductStatus');
 	Route::post('/product/deletecartproduct', 'Front\CartController@deleteCartProduct')->name('deleteCartProduct');
 	Route::get('userAddress', 'Front\UserController@getUserAddress')->name('getUserAddress');
-	Route::get('category/{slug?}', 'Front\CategoryController@categoryProduct')->name('categoryDetail');
+	Route::get('category/{slug?}/{slug1?}', 'Front\CategoryController@categoryProduct')->name('categoryDetail');
 	Route::get('category/{slug1}/{slug2}', 'Front\CategoryController@categoryVendorProducts')->name('categoryVendorProducts');
 	Route::post('category/filters/{id}', 'Front\CategoryController@categoryFilters')->name('productFilters');
 	Route::get('category_kycDocument', 'Front\CategoryController@getcategoryKycDocument')->name('getCategoryKycDocument');

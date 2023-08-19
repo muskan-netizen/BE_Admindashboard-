@@ -26,10 +26,13 @@ class CategoryController extends FrontController{
      *
      * @return \Illuminate\Http\Response
      */
-    public function categoryProduct(Request $request, $domain = '', $slug = 0)
+    public function categoryProduct(Request $request, $domain = '', $slug = 0, $service = null)
     {        
         //$preferences = Session::get('preferences');
-        $vendorType = Session::get('vendorType');
+        if(!empty($service) && $service == 'pick_drop'){
+            Session::forget('vendorType');
+            $vendorType = Session::put('vendorType', $service);
+        }
         $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'):  getClientPreferenceDetail();
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
@@ -56,6 +59,7 @@ class CategoryController extends FrontController{
             $child->translation_name = ($child->translationLatest) ? $child->translationLatest->name : $child->slug;
         }
         $service_type = $category->type->service_type;
+        
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && (isset($category->type_id)) && !in_array($category->type_id,[4,5]) ){
             $latitude = Session::get('latitude');
             $longitude = Session::get('longitude');

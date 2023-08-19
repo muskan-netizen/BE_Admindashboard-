@@ -42,7 +42,7 @@
                         <p>{{Session::get('currencySymbol')}}{{decimal_format($product->variant[0]->price)}}</p>
                         {{-- <p>AED<span> 599.00/day</span></p> --}}
                     </div>
-                    <div class="productList">
+                    <div class="productList d-flex justify-content-between">
                         @php
 
                         $fields = [];
@@ -54,24 +54,27 @@
                         'BHP',
                         'Seats',
                         'Boot Space',
-                        'Fuel Type'
+                        'Fuel Type',
+                        'Cabins',
+                        'Baths',
+                        'Berths'
                         ];
                         foreach ($product->ProductAttribute as $productAttribute) {
-                        $attribute = $productAttribute->attribute;
-                        $img = $attribute->icon['proxy_url'] . '100/100' . $attribute->icon['image_path'];
-                        if ($productAttribute->attributeOption()->exists()) {
-                        $title = $productAttribute->attributeOption->title ?? $productAttribute->key_value;
-                        if(in_array($productAttribute->key_name, $detail)){
-                        $fields[$productAttribute->key_name]['title'] = $title;
-                        $fields[$productAttribute->key_name]['img'] = $img;
-                        }else{
-                        $desc[$productAttribute->key_name]['title'] = $title;
-                        $desc[$productAttribute->key_name]['img'] = $img;
-                        }
-                        }
+                            $attribute = $productAttribute->attribute;
+                            $img = $attribute->icon['proxy_url'] . '100/100' . $attribute->icon['image_path'];
+                            if ($productAttribute->attributeOption()->exists()) {
+                                $title = $productAttribute->attributeOption->title ?? $productAttribute->key_value;
+                                if(in_array($productAttribute->key_name, $detail)){
+                                    $fields[$productAttribute->key_name]['title'] = $title;
+                                    $fields[$productAttribute->key_name]['img'] = $img;
+                                }else{
+                                    $desc[$productAttribute->key_name]['title'] = $title;
+                                    $desc[$productAttribute->key_name]['img'] = $img;
+                                }
+                            }
                         }
                         @endphp
-                        <ul>
+                        <ul class="product-features">
                            @if($category->slug == 'rental')
                                 <li><a href="javascript:void(0);">{{$fields['Transmission']['title'] ?? ''}}</a></li>
                                 <li><a href="javascript:void(0);">{{$fields['Fuel Type']['title'] ?? ''}}</a></li>
@@ -126,7 +129,7 @@
     <input type="hidden" name="product_id" id="product_id" value="{{$product->id}}" />
     <div id="selected_slot"></div>
     @include('frontend.product-part.booking-slot')
-        <h3>Car specifications</h3>
+        {{-- <h3>Car specifications</h3>
         <ul class="specifications_list">
             <li>Stunning swimming pool and Gym access</li>
             <li>Full Marina View</li>
@@ -136,10 +139,10 @@
             <li>WiFi</li>
             <li>Kitchen with full appliances</li>
             <li>5 Star Hotel facilities</li>
-        </ul>
+        </ul> --}}
     </div>
 </section>
-
+@if(!empty($desc))
 <section class="product_dis_list">
     <div class="container">
         <h3>Additional Features</h3>
@@ -150,6 +153,7 @@
         </ul>
     </div>
 </section>
+@endif
 @endsection
 @section('script')
 <script>

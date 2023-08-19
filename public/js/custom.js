@@ -977,6 +977,24 @@ $(document).ready(function () {
     }
     $(document).on("click", "#order_placed_btn", async function () {
         
+        $('.adone_item .item').each(function(index, element){
+            let min = $(this).data('min');
+            let max = $(this).data('max');
+            let checkedBox = $(this).find('input[type="checkbox"]:checked').length
+            if(checkedBox < min || checkedBox > max){
+                
+                $(this).css('transition','border 0.2s ease-in-out');
+                $(this).css('border','1px solid red');
+
+                setTimeout(() => {
+                    $(this).css('border','none');
+                    $(this).css('transition','none');
+                }, 3000);
+            }
+        });
+        
+        // return true;
+
         if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val()!=$("#schedule_datetime").val())){
             success_error_alert('error', error_unchanged_schedule_date, ".cart_response");
             $("#schedule_datetime").val($("#edit_order_schedule_datetime").val());
@@ -1196,7 +1214,7 @@ $(document).ready(function () {
                 type: "POST",
                 dataType: 'json',
                 url: update_cart_schedule,
-                data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, dropoff_scheduled_slot : slot_dropoff, address: address,payable_amount : cartAmount,bookingOptions : bookingOptionId, rental_protection : rentalProtectionId, addonID : addonsId, addonoptID : addonsOptionId },
+                data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, dropoff_scheduled_slot : slot_dropoff, address: address,payable_amount : cartAmount,bookingOptions : bookingOptionId, rental_protection : rentalProtectionId, addonID : addonsId, addonoptID : addonsOptionId , rentalProtectionId: rentalProtectionId, bookingOptionId: bookingOptionId},
                 success: function (response) {
                     $(".error_prescription").attr("style", "display:none");
                     if(response.status == "passbase_submitted"){

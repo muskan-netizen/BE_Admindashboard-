@@ -1414,6 +1414,8 @@ class OrderController extends FrontController
             $security_amount = 0.00;
             $is_long_term_order = 0;
             $deliveryfeeOnCoupon = 0;
+            $rentalProtectionPrice = 0;
+            $bookingOptionPrice = 0;
 
             /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
             if (! empty($request->other_taxes_string)) {
@@ -1942,6 +1944,7 @@ class OrderController extends FrontController
                         //pr($res);
                     }
                     // pr($order_product);
+                    
                     if (! empty($vendor_cart_product->addon)) {
 
                         foreach ($vendor_cart_product->addon as $ck => $addon) {
@@ -1958,6 +1961,26 @@ class OrderController extends FrontController
                             // }
                             $vendor_amount = $vendor_amount + $opt_quantity_price;
                             $quantity_price = $quantity_price + $opt_quantity_price;
+                        }
+                    }
+                    
+
+                    if(!empty($cart->rentalProtection)){
+                        foreach($cart->rentalProtection as $protection){
+                            $protection_price_in_currency = $protection->rentalProtection->price ?? 0;
+                            $rentalProtectionPrice = $protection_price_in_currency * $clientCurrency->doller_compare;
+                            $payable_amount += $rentalProtectionPrice;
+                            $quantity_price += $rentalProtectionPrice;
+                            $vendor_amount += $rentalProtectionPrice;
+                        }
+                    }
+                    if(!empty($cart->bookingOption)){
+                        foreach($cart->bookingOption as $option){
+                            $option_price_in_currency = $option->bookingOption->price ?? 0;
+                            $bookingOptionPrice = $option_price_in_currency * $clientCurrency->doller_compare;
+                            $payable_amount += $bookingOptionPrice;
+                            $quantity_price += $bookingOptionPrice;
+                            $vendor_amount += $bookingOptionPrice;
                         }
                     }
 
@@ -2228,6 +2251,8 @@ class OrderController extends FrontController
             // echo " total_subscription_discount=".$total_subscription_discount."; <br>";
             $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'] ?? 0;
             $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'] ?? 0;
+            $order->rental_protection_amount = $rentalProtectionPrice;
+            $order->booking_option_price = $bookingOptionPrice;
             // echo " total_service_fee=".$total_service_fee." total_delivery_fee=".$total_delivery_fee;
             // echo " Total payable_amount 3=".$payable_amount."; <br>";
 

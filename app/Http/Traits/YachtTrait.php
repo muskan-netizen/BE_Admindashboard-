@@ -30,7 +30,7 @@ trait YachtTrait
                 ];
             });
         }
-
+        // pr($request->all());
         $category = Category::where('slug', $request->service)->first();
         $data['products'] = [];
         if ($category) {
@@ -55,14 +55,15 @@ trait YachtTrait
                     if ($request->has('seats') && !empty($request->seats)) {
                         $q->whereHas('ProductAttribute', function ($q) use ($request) {
                             if ($request->service == 'rental') {
-                                $q->where('key_name', 'Seats')->where('key_value', '<=', $request->seats);
+                                $q->where('key_name', 'Seats')->where('key_value', '>=', $request->seats);
                             } else {
-                                $q->where('key_name', 'Berths')->where('key_value', '<=', $request->seats);
+                                $q->where('key_name', 'Berths')->where('key_value', '>=', $request->seats);
                             }
                         });
                     }
 
-                })->where(function ($q) use ($request, $pickup, $dropOff) {
+                })
+                ->where(function ($q) use ($request, $pickup, $dropOff) {
                     if (isset($pickup->latitude) && isset($pickup->longitude)) {
                         $q->whereHas('vendor.serviceArea', function ($q) use ($pickup) {
                             $q->select('id', 'vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $pickup->latitude . " " . $pickup->longitude . ")'))");
@@ -94,6 +95,7 @@ trait YachtTrait
         $data['pickup'] = $pickup;
         $data['dropoff'] = $dropOff;
         $data['diff_location'] = $request->diff_location ?? 0;
+        $data['seats'] = $request->seats ?? '';
         return $data;
     }
 }

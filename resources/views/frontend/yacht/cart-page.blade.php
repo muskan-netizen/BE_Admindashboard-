@@ -118,12 +118,13 @@ $difference = $startDate->diffInDays($endDate);
     <div class="row">
         <div class="col-md-8 left-item">
             <div class="item">
+                @if(!empty($rentalProtection))
                 <div class="select_product">
                     <h2>Select Protection</h2>
                     @foreach($rentalProtection as $key => $protection)
                     @if($protection->type_id == 1)
                     <h5>Included in your booking</h5>
-                    <h5>{{$protection->rental_protection->title}}</h5>
+                    {{-- <h5>{{$protection->rental_protection->title}}</h5> --}}
                     <ul class="d-flex">
                         <li><img src="/yacht-images/check.png" alt="">{{$protection->rental_protection->description}}</li>
                         {{-- <li><img src="/yacht-images/check.png" alt="">Included 24/7 breakdown assistance.</li>
@@ -156,7 +157,7 @@ $difference = $startDate->diffInDays($endDate);
                                             $per = 'day';
                                             }
                                             @endphp
-                                            <p><span>{{$cart_details->currency_code}}</span> {{$protection->rental_protection->price}} /{{$per}}</p>
+                                            <p>{{Session::get('currencySymbol')}}{{$protection->rental_protection->price}} /{{$per}}</p>
                                         </div>
                                     </div>
                                     <p class="d-none">Financial Responsibility:<span> $0.00</span></p>
@@ -169,7 +170,7 @@ $difference = $startDate->diffInDays($endDate);
                             </div>
                             @endif
                             @endforeach
-                            <div class="form-group d-none">
+                            {{-- <div class="form-group d-none">
                                 <input type="radio" name="product_select" name="" id="smart">
                                 <label for="smart">
                                     <div class="d-flex justify-content-between align-items-center">
@@ -189,10 +190,11 @@ $difference = $startDate->diffInDays($endDate);
                                     </ul>
                                 </label>
                                 <span></span>
-                            </div>
+                            </div> --}}
                         </form>
                     </div>
                 </div>
+                @endif
 
                 <div class="select_product mt-5 adone_item">
                     <h2>Choose Ad-Ons</h2>
@@ -200,29 +202,30 @@ $difference = $startDate->diffInDays($endDate);
                         <!-- 1 -->
                         @foreach($addons as $key => $addon)
 
-                        <div class="item">
+                        <div class="item" data-max="{{$addon->max_select}}" data-min="{{$addon->min_select}}">
                             <div class="image">
                                 <img src="/yacht-images/adone/1.png" alt="">
                             </div>
                             <div class="text">
-                                <h6>{{ucfirst($addon->title)}}</h6>
+                                <h6>{{ucfirst($addon->title)}} (Min: {{$addon->min_select}}, Max : {{$addon->max_select}})</h6>
                                 @foreach($addon->option as $key => $option)
-                                <p>{{$option->title}}</p>
-                                <div class="d-flex justify-content-between">
-                                    <span>{{$cart_details->currency_code}} {{number_format($option->price, 2)}}</span>
-                                    <div class="addcart_cta addon" data-id="{{$addon->id}}" data-option-id="{{$option->id}}" data-amount="{{number_format($option->price, 2)}}" data-days="{{$difference}}" data-title="{{$option->title}}">
-                                        <span class="minus" data-min={{$addon->min_select}}>-</span>
-                                        <span class="num">0</span>
-                                        <span class="plus" data-max={{$addon->max_select}} id="cart_plus">+</span>
+                                    <p>{{$option->title}}</p>
+                                    <div class="d-flex justify-content-between">
+                                        <span>{{Session::get('currencySymbol')}}{{number_format($option->price, 2)}}</span>
+                                            <div class="addcart_cta addon" data-id="{{$addon->id}}" data-option-id="{{$option->id}}" data-amount="{{number_format($option->price, 2)}}" data-days="{{$difference}}" data-title="{{$option->title}}">
+                                            <input type="checkbox" name="opt{{$addon->id}}" class="opt{{$addon->id}}" data-max="{{$addon->max_select}}" data-min="{{$addon->min_select}}"/>
+                                            {{-- <span class="minus" data-min={{$addon->min_select}}>-</span>
+                                            <span class="num">0</span>
+                                            <span class="plus" data-max={{$addon->max_select}} id="cart_plus">+</span> --}}
+                                        </div>
                                     </div>
-                                </div>
                                 @endforeach
                             </div>
                         </div>
                         @endforeach
                     </div>
                 </div>
-
+                @if(!empty($bookingOptions))
                 <div class="select_product mt-5 adone_item">
                     <h2>Booking Option</h2>
                     <div class="bokking_form">
@@ -238,7 +241,7 @@ $difference = $startDate->diffInDays($endDate);
                                         <h3>{{$option->booking_option->title}}</h3>
                                         <p>{{$option->booking_option->description}}</p>
                                         <ul class="d-none">
-                                            <li><img src="/yacht-images/check.png" alt="">Before scheduled pick-up time: {{$cart_details->currency_code}} {{$option->booking_option->price}}</li>
+                                            <li><img src="/yacht-images/check.png" alt="">Before scheduled pick-up time: {{Session::get('currencySymbol')}}{{$option->booking_option->price}}</li>
                                             <li><img src="/yacht-images/check.png" alt="">After scheduled pick-up time: No refund</li>
                                         </ul>
                                         <span class="">Included</span>
@@ -269,6 +272,7 @@ $difference = $startDate->diffInDays($endDate);
                         </form>
                     </div>
                 </div>
+                @endif
 
             </div>
         </div>
@@ -277,13 +281,16 @@ $difference = $startDate->diffInDays($endDate);
         $fields = [];
         $desc = [];
         $detail = [
-        'Mileage',
-        'Engine',
-        'Transmission',
-        'BHP',
-        'Seats',
-        'Boot Space',
-        'Fuel Type'
+            'Mileage',
+            'Engine',
+            'Transmission',
+            'BHP',
+            'Seats',
+            'Boot Space',
+            'Fuel Type',
+            'Cabins',
+            'Berths',
+            'Baths'
         ];
     
         foreach ($product->product_attribute as $productAttribute) {
@@ -312,14 +319,20 @@ $difference = $startDate->diffInDays($endDate);
                                 {!! $cart_details->left_section !!}
                             </span>
                             <h3>{{$product->translation_one->title}}</h3>
-                            <div class="productList">
-                                <ul>
+                            <div class="productList d-flex justify-content-between">
+                                <ul class="product-features">
+                                @if(Session::get('serviceType') == 'rental')
                                     <li><a href="javscript:void(0);">{{$fields['Transmission']['title'] ?? ''}}</a></li>
                                     <li><a href="javscript:void(0);">{{$fields['Fuel Type']['title'] ?? ''}}</a></li>
                                     <li><a href="javscript:void(0);">{{$fields['Seats']['title'] ?? ''}} Seats</a></li>
+                                @else
+                                    <li><a href="javascript:void(0);">{{$fields['Cabins']['title'] ?? '0'}} Cabins</a></li>
+                                    <li><a href="javascript:void(0);">{{$fields['Baths']['title'] ?? '0'}} Baths</a></li>
+                                    <li><a href="javascript:void(0);">{{$fields['Berths']['title'] ?? '0'}} Seats</a></li>
+                                @endif
                                 </ul>
                             </div>
-                            <span>Booking for {{$difference}} days <i class="fa fa-angle-up	"></i></span>
+                            <span>Booking for {{$difference}} days</span>
                         </div>
                     </div>
                     <div class="image">
@@ -363,11 +376,11 @@ $difference = $startDate->diffInDays($endDate);
                         <h3>Rental Charges</h3>
                         <div class="inner_item d-flex justify-content-between align-items-center">
                                 <p>{{$difference}} Rental Days</p>
-                                <span>{{$cart_details->currency_code}} {{$cart_details->sub_total}}</span>
+                                <span>{{Session::get('currencySymbol')}}{{$cart_details->sub_total}}</span>
                         </div>
                         <div class="inner_item d-flex justify-content-between align-items-center mt-2">
                                 <p>Security Amount</p>
-                                <span>{{$cart_details->currency_code}} {{$cart_details->security_amount}}</span>
+                                <span>{{Session::get('currencySymbol')}}{{$cart_details->security_amount}}</span>
                         </div>
                     </div>
                     <div class="rentalcharges" id="protection-amount-box" style="display:none;">
@@ -386,19 +399,15 @@ $difference = $startDate->diffInDays($endDate);
                     </div>
                     <div class="rentalcharges" id="addon-box" style="display:none;">
                         <h3>Addons</h3>
-                        <div class="inner_item d-flex justify-content-between align-items-center">
-                            <p></p>
-                            <span></span>
-                        </div>
                     </div>
                 </div>
 
                 <div class="taxes_fees">
                     <h3>Taxes and Fees</h3>
                     <ul>
-                        <li>Discount Amount <span>{{$cart_details->currency_code}} {{$cart_details->total_discount_amount}}</span></li>
-                        <li>Taxes <span>{{$cart_details->currency_code}} {{$cart_details->total_taxable_amount}}</span></li>
-                        <li>Total(incl.tax) <span id="gross-total" data-amount="{{$cart_details->new_gross_amount}}">{{$cart_details->currency_code}} {{$cart_details->new_gross_amount}}</span></li>
+                        <li>Discount Amount <span>{{Session::get('currencySymbol')}}{{$cart_details->total_discount_amount}}</span></li>
+                        <li>Taxes <span>{{Session::get('currencySymbol')}}{{$cart_details->total_taxable_amount}}</span></li>
+                        <li>Total(incl.tax) <span id="gross-total" data-amount="{{$cart_details->new_gross_amount}}">{{Session::get('currencySymbol')}}{{$cart_details->new_gross_amount}}</span></li>
                     </ul>
                 </div>
 
@@ -413,91 +422,17 @@ $difference = $startDate->diffInDays($endDate);
         @endif
 
         <script>
-            const plus = document.querySelector(".plus")
-                , minus = document.querySelector(".minus")
+            const plus = document.querySelectorAll(".plus")
+                , minus = document.querySelectorAll(".minus")
                 protectionBox = document.querySelector(".protection-box"),
                 protectionAmountBox = document.querySelector("#protection-amount-box"),
                 totalAmount = document.querySelector('#gross-total'),
                 bookingBox = document.querySelector('#booking-box'),
                 bookingOption = document.querySelector('.booking-options'),
                 addonBox = document.querySelector('#addon-box'),
-                addAddonButtons = document.querySelectorAll(".add-addon");
+                addAddonButtons = document.querySelectorAll(".add-addon"),
+                checkboxes = document.querySelectorAll('input[class^="opt"]');
 
-            window.addEventListener("load", function() {
-                /*addon.forEach(button => {
-                    let id = button.getAttribute('data-id');
-                    if (localStorage[`num${id}`]) {
-                        num.innerText = localStorage.getItem(`num${id}`);
-                    } else {
-                        let a = "01";
-                        num.innerText = a;
-                    }
-                })*/
-            });
-
-            plus.addEventListener("click", function(e) {
-                let parent = this.parentNode;
-                let id = parent.getAttribute('data-id');
-                let optionId = parent.getAttribute('data-option-id');
-                let amount = parseFloat(parent.getAttribute('data-amount')).toFixed(2);
-                let days = parent.getAttribute('data-days');
-                num = parent.querySelector('.num');
-                a = num.innerText;
-                let maxLimit = this.getAttribute('data-max')
-                if (a == maxLimit || a > maxLimit)
-                    return false;
-                a++;
-                totalPrice = amount * a;
-                addonBox.querySelector('p').textContent = parent.getAttribute('data-title')+' x '+ days +' days';
-                addonBox.querySelector('span').textContent = `{{$cart_details->currency_code}} ${totalPrice.toFixed(2)}`;
-                localStorage.setItem(`num${id}`, a);
-                let totalAmountData = parseFloat(totalAmount.getAttribute('data-amount'));
-                totalAmountData += totalPrice;
-                totalAmount.textContent = `{{$cart_details->currency_code}} ${totalAmountData.toFixed(2)}`;
-                num.innerText = localStorage.getItem(`num${id}`);
-                addonBox.style.display = 'block';
-                
-                addonsId.push(id)
-                addonsOptionId.push(optionId)
-            });
-
-            minus.addEventListener("click", function(e) {
-                let parent = this.parentNode;
-                let id = parent.getAttribute('data-id');
-                let amount = parseFloat(parent.getAttribute('data-amount')).toFixed(2);
-                let days = parent.getAttribute('data-days');
-                num = parent.querySelector('.num');
-                a = num.innerText;
-                let minLimit = this.getAttribute('data-min')
-                if (a == minLimit || a < minLimit)
-                    return false;
-                if (a > 0) {
-                    a--;
-                    totalPrice = amount * a;
-                    addonBox.querySelector('p').textContent = parent.getAttribute('data-title')+' x '+ days +' days';
-                    addonBox.querySelector('span').textContent = `{{$cart_details->currency_code}} ${totalPrice.toFixed(2)}`;
-                    localStorage.setItem(`num${id}`, a);
-                    let totalAmountData = parseFloat(totalAmount.getAttribute('data-amount'));
-                    totalAmountData += totalPrice;
-                    totalAmount.textContent = `{{$cart_details->currency_code}} ${totalAmountData.toFixed(2)}`;
-                    localStorage.setItem(`num${id}`, a);
-                    num.innerText = localStorage.getItem(`num${id}`);
-                    addonBox.style.display = 'block';
-                }
-
-                if(a < 1){
-                    var indexToRemove = addonsId.filter(obj => Object.keys(obj)[0] !== id);
-                    var indexRemove = addonsOptionId.filter(obj => Object.keys(obj)[0] !== id);
-                    
-                    if (indexToRemove !== -1) {
-                        addonsId.splice(indexToRemove, 1);
-                        addonsOptionId.splice(indexRemove, 1);
-                    }
-                    addonBox.style.display = 'none';
-                }
-            });
-
-            
             var states = {
                 'booking' : false,
                 'rentalProtection' : false
@@ -508,40 +443,219 @@ $difference = $startDate->diffInDays($endDate);
             var addonsId = [];
             var addonsOptionId = [];
 
-            [bookingOption, protectionBox].forEach(element => {
-                element.addEventListener("click", function(e) {
-                    let box = this.getAttribute('name');
-                    const id = this.getAttribute('data-id');
-                    if(box == 'booking'){
-                        if(states.booking){
-                            return false;
-                        }
-                        states.booking = true;
-                        box = bookingBox;
-                        bookingOptionId.push(id);
-                    }else{
-                        if(states.rentalProtection){
-                            return false;
-                        }
-                        states.rentalProtection = true;
-                        box = protectionAmountBox;
-                        rentalProtectionId.push(id);
+            checkboxes.forEach(function(checkbox) {
+                checkbox.addEventListener('change', function() {
+                    let parent = this.parentNode;
+                    let id = parent.getAttribute('data-id');
+                    let optionId = parent.getAttribute('data-option-id');
+                    let amount = parseFloat(parent.getAttribute('data-amount')).toFixed(2);
+                    let maxLimit = this.getAttribute('data-max')
+                    var checkedCheckboxes = document.querySelectorAll(`input[name="opt${id}"]:checked`);                        
+                    var style = window.getComputedStyle(addonBox);
+                    
+                    if (checkedCheckboxes.length > maxLimit) {
+                        this.closest('.item').style.transition = 'border 0.2s ease-in-out';
+                        this.closest('.item').style.border = '1px solid red';
+
+                        setTimeout(() => {
+                            this.closest('.item').style.border = 'none';
+                        }, 3000);
+
+                        this.checked = false;
+                        return false;
                     }
-                    const amount = parseFloat(this.getAttribute('data-amount'));
-                    const title = this.getAttribute('data-title');
-                   
-                    const protectionAmountParagraph = box.querySelector('p');
-                    const protectionAmountSpan = box.querySelector('span');
+                    
+                    let totalAmountData = parseFloat(totalAmount.getAttribute('data-amount'));
+                    
+                    if(!this.checked && (ele = addonBox.querySelector(`#addon${optionId}`))){ //if checkbox is unchecked and element already exists remove element
+                        ele.remove();
+                        if(!ele.length){ //check if element is deleted
+                            if(!checkedCheckboxes.length){ // check if any of the child checkbox are checked
+                                let indexToRemove = addonsId.indexOf(id);
+                                if (indexToRemove !== -1) { //remove addon id
+                                    addonsId.splice(indexToRemove, 1);
+                                }
+                            }
+                            //delete addon option id from array
+                            indexToRemove = addonsOptionId.indexOf(optionId);
+                            if (indexToRemove !== -1) {
+                                addonsOptionId.splice(indexToRemove, 1);
+                            }
+                        }
+                        totalAmountData -= parseFloat(amount);
+                    }else{ //create new element
+                        createElement(addonBox, parseFloat(amount), optionId, parent)
+                        
+                        if(style.display == 'none') //if addon box is not visible make it visible
+                            addonBox.style.display = 'block';
 
-                    protectionAmountParagraph.textContent = title;
-                    protectionAmountSpan.textContent = `{{$cart_details->currency_code}} ${amount.toFixed(2)}`;
+                        if(!addonsId.includes(id)) // push addon id
+                            addonsId.push(id)
+                    
+                        if(!addonsOptionId.includes(optionId)) //push addon option id
+                            addonsOptionId.push(optionId)
+                        
+                        totalAmountData += parseFloat(amount);
+                    }
 
-                    const totalAmountData = parseFloat(totalAmount.getAttribute('data-amount'));
-                    const newTotalAmount = totalAmountData + amount;
-                    totalAmount.setAttribute('data-amount', newTotalAmount);
-                    totalAmount.textContent = `{{$cart_details->currency_code}} ${newTotalAmount.toFixed(2)}`;
-                    box.style.pointerEvents = 'none';
-                    box.style.display = 'block';
+                    totalAmount.textContent = `{{Session::get('currencySymbol')}}${totalAmountData.toFixed(2)}`;
+                    totalAmount.setAttribute('data-amount', totalAmountData.toFixed(2));
+                    
+                    if(!addonBox.querySelectorAll('[id^="addon"]').length) // if no addon is selected hide addon box
+                        addonBox.style.display = 'none';
+
                 });
             });
+
+            
+            function createElement(addonBox, totalPrice, optionId, parent){
+                const parentDataTitle = parent.getAttribute('data-title');
+                const totalPriceFormatted = `{{$cart_details->currency_code}} ${totalPrice.toFixed(2)}`;
+
+                const containerDiv = document.createElement('div');
+                containerDiv.setAttribute('id',`addon${optionId}`);
+                containerDiv.setAttribute('class','inner_item d-flex justify-content-between align-items-center');
+                const p = document.createElement('p');
+                p.textContent = parentDataTitle;
+                containerDiv.appendChild(p);
+
+                const span = document.createElement('span');
+                span.textContent = totalPriceFormatted;
+                containerDiv.appendChild(span);
+
+                addonBox.appendChild(containerDiv);
+            }
+
+
+            [bookingOption, protectionBox].forEach(element => {
+                if(element){
+                    element.addEventListener("click", function(e) {
+                        let box = this.getAttribute('name');
+                        const id = this.getAttribute('data-id');
+                        if(box == 'booking'){
+                            if(states.booking){
+                                return false;
+                            }
+                            states.booking = true;
+                            box = bookingBox;
+                            bookingOptionId.push(id);
+                        }else{
+                            if(states.rentalProtection){
+                                return false;
+                            }
+                            states.rentalProtection = true;
+                            box = protectionAmountBox;
+                            rentalProtectionId.push(id);
+                        }
+                        const amount = parseFloat(this.getAttribute('data-amount'));
+                        const title = this.getAttribute('data-title');
+                    
+                        const protectionAmountParagraph = box.querySelector('p');
+                        const protectionAmountSpan = box.querySelector('span');
+
+                        protectionAmountParagraph.textContent = title;
+                        protectionAmountSpan.textContent = `{{Session::get('currencySymbol')}}${amount.toFixed(2)}`;
+
+                        const totalAmountData = parseFloat(totalAmount.getAttribute('data-amount'));
+                        const newTotalAmount = totalAmountData + amount;
+                        totalAmount.setAttribute('data-amount', newTotalAmount);
+                        totalAmount.textContent = `{{Session::get('currencySymbol')}}${newTotalAmount.toFixed(2)}`;
+                        box.style.pointerEvents = 'none';
+                        box.style.display = 'block';
+                    });
+                }
+            });
+
+
+            //add the addons
+            /*plus.forEach(element => {
+                element.addEventListener("click", function(e) {
+                    let parent = this.parentNode;
+                    let id = parent.getAttribute('data-id');
+                    let optionId = parent.getAttribute('data-option-id');
+                    let amount = parseFloat(parent.getAttribute('data-amount')).toFixed(2);
+                    let days = parent.getAttribute('data-days');
+                    num = parent.querySelector('.num');
+                    a = num.innerText;
+                    let maxLimit = this.getAttribute('data-max')
+                    if (a == maxLimit || a > maxLimit){
+                        a = maxLimit;
+                        return false;
+                    }
+                    a++;
+                    totalPrice = amount * a;
+                    
+                    if(addonBox.querySelector(`#addon${optionId}`)){
+                        addonBox.querySelector(`#addon${optionId}`).querySelector('p').textContent = parent.getAttribute('data-title') + ' x '+ a;
+                        addonBox.querySelector(`#addon${optionId}`).querySelector('span').textContent = `{{Session::get('currencySymbol')}} ${totalPrice.toFixed(2)}`;
+                    }else{
+                        createElement(addonBox, totalPrice, optionId, a, parent)
+                    }
+                    
+                    let totalAmountData = parseFloat(totalAmount.getAttribute('data-amount'));
+                    totalAmountData += parseFloat(amount);
+                    totalAmount.textContent = `{{Session::get('currencySymbol')}} ${totalAmountData.toFixed(2)}`;
+                    totalAmount.setAttribute('data-amount', totalAmountData.toFixed(2));
+                    num.innerText = a;
+                    addonBox.style.display = 'block';
+                    
+                    if(!addonsId.includes(id))
+                        addonsId.push(id)
+                    if(!addonsOptionId.includes(optionId))
+                        addonsOptionId.push(optionId)
+                });
+            });*/
+
+            //remove the addons
+            /*minus.forEach(element => {
+                element.addEventListener("click", function(e) {
+                    let parent = this.parentNode;
+                    let id = parent.getAttribute('data-id');
+                    let optionId = parent.getAttribute('data-option-id');
+                    let amount = parseFloat(parent.getAttribute('data-amount')).toFixed(2);
+                    let days = parent.getAttribute('data-days');
+                    num = parent.querySelector('.num');
+                    a = num.innerText;
+                    let minLimit = this.getAttribute('data-min')
+                    if (a < minLimit){
+                        return false;
+                    }
+                    if (a > 0) {
+                        a--;
+                        totalPrice = amount * a;
+
+                        if(addonBox.querySelector(`#addon${optionId}`)){
+                            addonBox.querySelector(`#addon${optionId}`).querySelector('p').textContent = parent.getAttribute('data-title') + ' x '+ a;
+                            addonBox.querySelector(`#addon${optionId}`).querySelector('span').textContent = `{{Session::get('currencySymbol')}} ${totalPrice.toFixed(2)}`;
+                        }else{
+                            createElement(addonBox, totalPrice, optionId, a, parent)
+                        }
+                        
+                        let totalAmountData = parseFloat(totalAmount.getAttribute('data-amount'));
+                        totalAmountData -= amount;
+                        totalAmount.textContent = `{{Session::get('currencySymbol')}} ${totalAmountData.toFixed(2)}`;
+                        totalAmount.setAttribute('data-amount', totalAmountData.toFixed(2));
+                        num.innerText = a
+                        addonBox.style.display = 'block';
+                    }
+
+                    if(a < 1){
+                        addonBox.querySelector(`#addon${optionId}`).remove(); //Delete the element if count less than 0
+                        
+                        //delete addon id from array
+                        var indexToRemove = addonsId.indexOf(id);
+                        if (indexToRemove !== -1) {
+                            addonsId.splice(indexToRemove, 1);
+                        }
+                        //delete addon option id from array
+                        indexToRemove = addonsOptionId.indexOf(optionId);
+                        console.log(indexToRemove)
+                        if (indexToRemove !== -1) {
+                            addonsOptionId.splice(indexToRemove, 1);
+                        }
+                    }
+                    if(!addonBox.querySelectorAll('[id^="addon"]').length)
+                        addonBox.style.display = 'none';
+                });
+            });*/
         </script>

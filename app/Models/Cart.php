@@ -41,4 +41,12 @@ class Cart extends Model
     {
       return $this->hasMany('App\Models\OrderFiles', 'cart_id', 'id'); 
     }
+
+    public function rentalProtection(){
+      return $this->hasMany('App\Models\CartRentalProtection','cart_id','id');
+    }
+
+    public function bookingOption(){
+      return $this->hasMany('App\Models\CartBookingOption','cart_id','id');
+    }
 }

@@ -126,24 +126,28 @@
             <div class="form-group">
                 <label>Pickup Location</label>
                 <input type="text" value="{{$pickup->address}}" name="pickup_location" id="pickup_location">
-                <input type="hidden" value="{{$pickup->latitude}}" name="pickup_longitude" id="pickup_longitude">
-                <input type="hidden" value="{{$pickup->longitude}}" name="pickup_latitude" id="pickup_latitude">
+                <input type="hidden" value="{{$pickup->longitude}}" name="pickup_longitude" id="pickup_longitude">
+                <input type="hidden" value="{{$pickup->latitude}}" name="pickup_latitude" id="pickup_latitude">
                 <input type="hidden" value="{{$service}}" name="service">
             </div>
-            <div class="form-group" id="dropoff-box" @if(!$diff_location) style="display:none;" @endif>
-                <label>Return Location</label>
-                <input type="text" value="{{$dropoff->address}}" name="drop_location" id="drop_location" placeholder="1801 Oak Ridge Ln">
-                <input type="hidden" value="{{$dropoff->latitude}}" name="drop_latitude" id="drop_latitude">
-                <input type="hidden" value="{{$dropoff->longitude}}" name="drop_longitude" id="drop_longitude">
-            </div>
+            @if($service == 'rental')
+                <div class="form-group" id="dropoff-box" @if(!$diff_location) style="display:none;" @endif>
+                    <label>Return Location</label>
+                    <input type="text" value="{{$dropoff->address}}" name="drop_location" id="drop_location" placeholder="1801 Oak Ridge Ln">
+                    <input type="hidden" value="{{$dropoff->latitude}}" name="drop_latitude" id="drop_latitude">
+                    <input type="hidden" value="{{$dropoff->longitude}}" name="drop_longitude" id="drop_longitude">
+                </div>
+                <div class="form-group">
+                    <input type="checkbox" name="diff_location" id="diff-location" @if($diff_location) checked @endif />
+                    <label for="diff-location">Different Return Location</label>
+                </div>
+            @endif
+            @if($service == 'yacht')
             <div class="form-group">
-                <input type="checkbox" name="diff_location" id="diff-location" @if($diff_location) checked @endif />
-                <label for="diff-location">Different Return Location</label>
+                <label>Seats</label>
+                <input type="number" name="seats" value="{{$seats}}" placeholder="04" required>
             </div>
-            <div class="form-group d-none">
-                <label>Pick Date</label>
-                <input type="datetime-local" name="pickup_time" value="{{$pickup_time}}" min="{{date("Y-m-d\TH:i")}}">
-            </div>
+            @endif
             <div class="form-group">
                 <label>Pickup Dropoff Date & Time</label>
                 {{-- <input type="datetime-local" name="drop_time" value="{{$drop_time}}" min="{{date("Y-m-d\TH:i")}}"> --}}

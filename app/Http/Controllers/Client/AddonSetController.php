@@ -122,8 +122,11 @@ class AddonSetController extends BaseController
         $addon->title = $request->title[0];
         $addon->min_select = $min;
         $addon->max_select = $max;
-        $addon->vendor_id = $request->vendor_id ?? '';
-        $addon->icon = $request->icon;
+        // $addon->vendor_id = $request->vendor_id;
+        if ($request->hasFile('icon')) {
+            $file = $request->file('icon');
+            $addon->icon = Storage::disk('s3')->put($this->folderName, $file, 'public');
+        }
         $addon->save();
 
         foreach ($request->language_id as $key => $value) {
