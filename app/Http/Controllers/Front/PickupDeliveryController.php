@@ -992,7 +992,7 @@ class PickupDeliveryController extends FrontController{
                     $reminder_hour = $client_preferences_addional['pickup_notification_before2_hours'] ?? 1;
                 }
                 $allocation_type = 'a';
-                if(isset($request->unique_id) || isset($request->agent_id)){
+                if(isset($request->unique_id) || isset($request->driver_id)){
                     $allocation_type = 'm';
                 }
                 $postdata =  [
