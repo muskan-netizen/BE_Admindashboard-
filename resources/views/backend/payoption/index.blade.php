@@ -164,6 +164,7 @@ Options']) @section('css')
 				$mpesasafari_consumer_key = (isset($creds->mpesasafari_consumer_key)) ? $creds->mpesasafari_consumer_key : '';
 				$mpesasafari_consumer_secret = (isset($creds->mpesasafari_consumer_secret)) ? $creds->mpesasafari_consumer_secret : '';
 				$mpesasafari_shortcode = (isset($creds->mpesasafari_shortcode)) ? $creds->mpesasafari_shortcode : '';                                                                                
+				$mpesasafari_webhook = (isset($creds->mpesasafari_webhook)) ? $creds->mpesasafari_webhook : '';
 				
                 $livee_merchant_key=(isset($creds->livee_merchant_key))?$creds->livee_merchant_key: '';
                   $livee_resource_key=(isset($creds->livee_resource_key))?$creds->livee_resource_key: '';
@@ -1767,6 +1768,14 @@ Options']) @section('css')
 									<label for="mpesasafari_shortcode" class="mr-3">{{ __("Shortcode") }}</label> <input type="text" name="mpesasafari_shortcode"
 										id="mpesasafari_shortcode" class="form-control"
 										value="{{$mpesasafari_shortcode}}" @if($opt->status == 1)
+									required @endif>
+								</div>
+							</div>
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="mpesasafari_webhook" class="mr-3">{{ __("Webhook Url") }}</label> <input type="text" name="mpesasafari_webhook"
+										id="mpesasafari_webhook" class="form-control"
+										value="{{$mpesasafari_webhook}}" @if($opt->status == 1)
 									required @endif>
 								</div>
 							</div>
