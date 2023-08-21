@@ -113,6 +113,7 @@ trait InventoryTrait
         unset($product_update_create['product_translations']);
         unset($product_update_create['variants']);
         unset($product_update_create['i_id']);
+        unset($product_update_create['attribute_keys']);
 
         if ($i_product['sku'] != null) {
             $product_exists = \DB::table('products')->where('sku', $i_product['sku'])->first();
