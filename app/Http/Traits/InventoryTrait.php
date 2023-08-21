@@ -101,8 +101,6 @@ trait InventoryTrait
 
     public function saveProduct($i_product)
     {
-        \Log::info('$i_product');
-        \Log::info($i_product);
         $order_product_id = '';
         $product_update_create = $i_product;
 
