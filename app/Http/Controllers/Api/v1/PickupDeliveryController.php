@@ -834,9 +834,10 @@ class PickupDeliveryController extends BaseController{
                     $notify_hour = $client_preferences_addional['pickup_notification_before_hours'] ?? 1;
                     $reminder_hour = $client_preferences_addional['pickup_notification_before2_hours'] ?? 1;
                 }
-                // FacadesLog::warning(['postdata' => $notify_hour
-                // ,$reminder_hour]);
-
+                $allocation_type = 'a';
+                if(isset($request->unique_id) || isset($request->agent_id)){
+                    $allocation_type = 'm';
+                }
                 $postdata =  [
                             'order_number' =>  $order->order_number,
                             'customer_name' => $customer->name ?? 'Dummy Customer',
@@ -846,7 +847,7 @@ class PickupDeliveryController extends BaseController{
                             'recipient_phone' => $request->phone_number ?? $customerno,
                             'recipient_email' => $request->email ?? $customer->email,
                             'task_description' => $request->task_description??null,
-                            'allocation_type' => (isset($request->agent_id) && !empty($request->agent_id)) ? 'm' : 'a',
+                            'allocation_type' =>$allocation_type,
                             'task_type' => $task_type,
                             'schedule_time' => $schedule_datetime_del ?? null,
                             'cash_to_be_collected' => $payable_amount??0.00,
@@ -931,16 +932,12 @@ class PickupDeliveryController extends BaseController{
                 return $response;
             }
             }catch(\Exception $e)
-                    {
-                        $data = [];
-                        $data['status'] = 400;
-                        $data['message'] =  $e->getMessage();
-                        return $data;
-
-                    }
-
-
-
+            {
+                $data = [];
+                $data['status'] = 400;
+                $data['message'] =  $e->getMessage();
+                return $data;
+            }
     }
 
       /**
@@ -1749,7 +1746,30 @@ class PickupDeliveryController extends BaseController{
         try
         {
             $bid_id       = $request->bid_id;
+            $bid       = PickDropDriverBid::where('id', $bid_id)->first();
             $update       = PickDropDriverBid::where('id', $bid_id)->update(['status' => 2]);
+            $dispatch_domain = $this->checkIfPickupDeliveryOn();
+            if ($dispatch_domain && $dispatch_domain != false) {
+                $postdata =  [
+                    'driver_id'                   => $bid->driver_id,
+                    'status'                      => 2
+                ];
+                
+                $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
+                    'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
+                    'content-type' => 'application/json']
+                ]);
+                $url = $dispatch_domain->pickup_delivery_service_key_url;
+                $res = $client->post(
+                    $url.'/api/bidRide/notification',
+                    ['form_params' => (
+                        $postdata
+                        )]
+                    );
+                $response = json_decode($res->getBody(), true);
+              //  return $response;
+            }
+            
             return $this->successResponse($update, "Request declined successfully", 200);
         }
         catch (\Exception $e) {
