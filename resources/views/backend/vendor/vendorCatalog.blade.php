@@ -1358,7 +1358,7 @@ pr($products->toArray());
             $('#vendor_product_table').DataTable({
                 "responsive": true,
                 "bAutoWidth": false,
-                "scrollX": true,
+                // "scrollX": true,
                 "destroy": true,
                 // "processing": true,
                 "serverSide": true,

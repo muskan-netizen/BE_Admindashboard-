@@ -28,7 +28,7 @@ $is_service_product_price_from_dispatch_forOnDemand =$getOnDemandPricingRule['is
                     </div>
                 </div>
             </div>
-            <div class="row mb-5 homepageSix">
+            <div class="row mb-4 homepageSix">
                 <div class="collection-filter col-lg-3 main-fillter filter_brand">
                         <div class="collection-filter-block bg-transparent p-0">
                             <div class="collection-mobile-back">

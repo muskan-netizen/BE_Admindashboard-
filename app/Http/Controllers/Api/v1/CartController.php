@@ -798,6 +798,7 @@ class CartController extends BaseController
             $total_service_fee = 0;
             $product_out_of_stock = 0;
             $PromoFreeDeliver = 0;
+            $coupon_apply_price=0;
             $PromoDelete = 0;
             $couponApplied = 0;
             $total_container_charges = 0 ;
@@ -811,7 +812,7 @@ class CartController extends BaseController
 
             $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user_timezone);
             $vendorData->scheduled_date_time = date('Y-m-d',strtotime($scheduledDateTime));
-            $slotsRes = getShowSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery');
+            $slotsRes = getShowSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery',"60",0,'',$cartID);
 
             $slots = (array)$slotsRes['slots'];
             // this variable for get slot from dispatc
@@ -837,7 +838,7 @@ class CartController extends BaseController
                 $vendor_latitude = $vendorData->vendor->latitude ?? 30.71728880;
                 $vendor_longitude =  $vendorData->vendor->longitude ?? 76.80350870;
 
-                $slotsDate = findSlot('',$vendorData->vendor->id,$type,'webFormet');
+                $slotsDate = findSlot('',$vendorData->vendor->id,$type,'webFormet',$cartID);
                 // $vendorData->delaySlot = $slotsDate;
                 $vendorData->delaySlot = (($slotsDate)? ( $slotsDate['datetime']?  $slotsDate['datetime'] : '' ):'');
                 $vendorStartDate =  (($slotsDate)? ( $slotsDate['date'] ?  $slotsDate['date'] : '' ):'');
@@ -893,7 +894,22 @@ class CartController extends BaseController
                 $if_previousdeliveryfee_added = 0;
                 $vendorTotalDeliveryFee = 0;
                 $previousdeliveryfee = 0;
-                
+                //get Coupon Discount for product case
+                $coupon_product_ids = [];
+                $coupon_vendor_ids = [];
+                $coupon_product_discount = 0;
+                $in_or_not = 0;
+                if (isset($vendorData->coupon) && !empty($vendorData->coupon) && isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)){                  
+                    if($vendorData->coupon->promo->restriction_on == 0)
+                    { 
+                        $coupon_product_ids = $vendorData->coupon->promo->details->pluck('refrence_id')->toArray();
+                        $in_or_not = $vendorData->coupon->promo->restriction_type; 
+                    }
+                    elseif($vendorData->coupon->promo->restriction_on == 1){
+                        $coupon_vendor_ids = $vendorData->coupon->promo->details->pluck('refrence_id')->toArray();
+                        $in_or_not = $vendorData->coupon->promo->restriction_type;
+                    }
+                }
                 foreach ($vendorData->vendorProducts as $pkey => $prod) {
                     
                     //mohit sir branch code updated by sohail farm meat
@@ -1062,7 +1078,24 @@ class CartController extends BaseController
                             if($prod->product->dropoff_delay_hrs_min > $delay_date)
                             $dropoff_delay_date = $prod->product->dropoff_delay_hrs_min;
                         }
-
+                        //Check product promo code is valid for this product
+                        
+                        $checkProductPromoCodeController = new PromoCodeController();
+                        $productPromoRequest = new Request();
+                        $productPromoRequest->setMethod('POST');
+                        $productPromoRequest->request->add(['cart_id' => $cartID, 'product_id' => $prod->product_id]);
+                        $productPromoCodeResponse = $checkProductPromoCodeController->postProductPromoCodeCheck($productPromoRequest)->getData();                       
+                        if($productPromoCodeResponse->status == 'Success'){
+                            $coupon_apply_price+=$price_in_currency * $prod->quantity;
+                        }
+                        if(($in_or_not == 0 && in_array($prod->product_id,$coupon_product_ids))
+                            || ($in_or_not == 1 && !in_array($prod->product_id,$coupon_product_ids))
+                            || ($in_or_not == 0 && in_array($vendorData->vendor_id, $coupon_vendor_ids))
+                            || ($in_or_not == 1 && !in_array($vendorData->vendor_id, $coupon_vendor_ids))
+                            ){
+                                $coupon_product_discount = $coupon_product_discount + $quantity_price + $quantity_container_charges;  
+                        }
+                        
                         if ($prod->pvariant) {
                             $variantsData['price']              = $price_in_currency;
                             $variantsData['id']                 = $prod->pvariant->id;
@@ -1102,6 +1135,14 @@ class CartController extends BaseController
                                     $order_sub_total = $order_sub_total + $opt_quantity_price;
                                     $opt_quantity_price_new += $opt_quantity_price;
                                     $quantity_price = $quantity_price + $opt_quantity_price;
+                                    if(($in_or_not == 0 && in_array($prod->product_id,$coupon_product_ids))
+                                        || ($in_or_not == 1 && !in_array($prod->product_id,$coupon_product_ids))
+                                        || ($in_or_not == 0 && in_array($vendorData->vendor_id, $coupon_vendor_ids))
+                                        || ($in_or_not == 1 && !in_array($vendorData->vendor_id, $coupon_vendor_ids))
+                                        ){
+                                            $coupon_apply_price+=$opt_price_in_currency;
+                                            $coupon_product_discount = $coupon_product_discount + $opt_quantity_price;
+                                    }
                                 }
                             }
                             $variantsData['discount_amount'] = $pro_disc;
@@ -1243,7 +1284,6 @@ class CartController extends BaseController
                         $prod->variants = $variantsData;
                         $prod->variant_options = $variant_options;
                         $prod->product_addons = $vendorAddons;
-
                         $product = Product::with([
                             'variant' => function ($sel) {
                                 $sel->groupBy('product_id');
@@ -1269,11 +1309,7 @@ class CartController extends BaseController
                 if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
                     $payable_amount = $payable_amount + decimal_format($prod->slot_price);
                 }
-                // echo $payable_amount ;
-                // exit();
-                $couponGetAmount = $payable_amount ;
                 if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
-                    //pr($vendorData->coupon->promo);
                     if (isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)) {
                         if($vendorData->coupon->promo->first_order_only==1){
                             if(Auth::user()){
@@ -1314,7 +1350,11 @@ class CartController extends BaseController
                                    // $payable_amount -= $total_discount_percent;
                                     $discount_amount = $total_discount_percent;
                                 } else {
-                                    $dis_amt = $percentage_amount = ($only_products_amount * $vendorData->coupon->promo->amount / 100);
+                                    $gross_coupon_amount = $payable_amount;
+                                    if($vendorData->coupon->promo->restriction_on == 0 ){
+                                        $gross_coupon_amount = $coupon_apply_price;
+                                    }
+                                    $dis_amt = $percentage_amount = ($gross_coupon_amount * $vendorData->coupon->promo->amount / 100);
                                     // $payable_amount -= $percentage_amount;
                                     $discount_amount = $percentage_amount;
                                 }
@@ -1352,10 +1392,7 @@ class CartController extends BaseController
                         $taxable_amount -= $discount;
                     }
                 }
-
-
                 $payable_amount = $payable_amount + $vendorTotalDeliveryFee ;
-
                 $deliver_charge = $vendorTotalDeliveryFee * $clientCurrency->doller_compare;
                 $vendorData->proSum = $proSum;
                 $vendorData->addonSum = $ttAddon;
@@ -1371,9 +1408,16 @@ class CartController extends BaseController
                 }
                 $vendor_service_fee_percentage_amount = 0;
                 if($vendorData->vendor->service_fee_percent > 0){
-                    $vendor_service_fee_percentage_amount = (($vendor_products_total_amount+$opt_quantity_price_new) * $vendorData->vendor->service_fee_percent) / 100 ;
+                     $amount_for_service = $opt_quantity_price_new + $vendor_products_total_amount;
+                    $vendor_service_fee_percentage_amount = (($amount_for_service) * $vendorData->vendor->service_fee_percent) / 100 ;
                     $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
-                }
+                 }
+                 if($vendorData->vendor->service_charge_amount > 0){
+                     $amount_for_service = $opt_quantity_price_new + $vendor_products_total_amount;
+                     $vendor_service_fee_percentage_amount = $vendorData->vendor->service_charge_amount;
+                     $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
+                 }
+                //end applying service fee on vendor products total
                 $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
                 $vendorData->service_fee_percentage_amount = number_format($vendor_service_fee_percentage_amount, 2, '.', '');
                 $vendorData->vendor_gross_total = $payable_amount;
@@ -1576,10 +1620,10 @@ class CartController extends BaseController
             //type must be a : delivery , takeaway,dine_in
             $duration = Vendor::where('id',$vendorId)->select('slot_minutes','closed_store_order_scheduled')->first();
             $slotsDate = findSlot('',$vendorId,$type,'api');
-            $slots = showSlot($slotsDate,$vendorId,$type,$duration->slot_minutes, 1);
+            $slots = showSlot($slotsDate,$vendorId,$type,$duration->slot_minutes, 1,'',$cartID);
             $cart->slots = $slots;
             if($preferences->business_type == 'laundry'){
-                $dropoff_slots = showSlot($slotsDate,$vendorId,$type,$duration->slot_minutes, 2);
+                $dropoff_slots = showSlot($slotsDate,$vendorId,$type,$duration->slot_minutes, 2,'',$cartID);
                 $cart->dropoff_slots = $dropoff_slots;
             }else{
                 $cart->dropoff_slots = [];
@@ -1722,7 +1766,7 @@ class CartController extends BaseController
 
 
         if (isset($cart_product_luxury_id) && isset($cart_product_luxury_id->luxury_option_id) && $cart_product_luxury_id->luxury_option_id ==4) {
-        $additional_price=($cart_product_luxury_id->additional_increments_hrs_min/$prod->pvariant->incremental_price_per_min);
+        $additional_price= isset($prod->pvariant)  && $prod->pvariant->incremental_price_per_min > 0 ? ($cart_product_luxury_id->additional_increments_hrs_min/$prod->pvariant->incremental_price_per_min) : 0;
         $cart->total_payable_amount= number_format((float)$cart->total_payable_amount+$additional_price, 2, '.', '');
         $cart->additional_price=$additional_price;
         }
@@ -1806,10 +1850,11 @@ class CartController extends BaseController
         $slot = [];
         $vendorId = $request->vendor_id??0;
         $delivery = $request->delivery??'delivery';
+        $cartId = $request->cart_id??0;
         //type must be a : delivery , takeaway,dine_in
         $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
         $duration = $duration->slot_minutes??'';
-        $slots = showSlot($request->date,$vendorId,$delivery,$duration, 1, 'pickup'); // Added 1 for pickup
+        $slots = showSlot($request->date,$vendorId,$delivery,$duration, 1, 'pickup',$cartId); // Added 1 for pickup
         if(count($slots)<=0){
             $slot = [];
         }else{

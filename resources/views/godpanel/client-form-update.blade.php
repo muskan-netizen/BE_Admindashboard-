@@ -132,6 +132,7 @@
                                         <option value="gusto.sql">Gusto - Grocery Delivery </option>
                                         <option value="elixir.sql">Elixir - Pharmacy Delivery </option>
                                         <option value="zest.sql">Zest - Pickup & Delivery </option>
+                                        <option value="emart.sql">E-mart</option>
                                     </select>
                                 </div>    
                             </div>

@@ -20,6 +20,8 @@ use App\Imports\ProductsImport;
 use App\Imports\QrcodesImport;
 use GuzzleHttp\Client as GCLIENT;
 use Carbon\Carbon;
+use App\Jobs\ProductImportCsvJob;
+use Illuminate\Support\Facades\File;
 class ProductController extends BaseController
 {
     use ApiResponser, SquareInventoryManager;
@@ -185,7 +187,7 @@ class ProductController extends BaseController
      */
     public function edit($domain = '', $id)
     {
-        // $this->searchCatalogObjects();
+        // $this->testfun1();
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module', 'is_cab_pooling', 'is_one_push_book_enable','is_service_product_price_from_dispatch']);
 
         $with_array = ['brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles'];
@@ -417,7 +419,11 @@ class ProductController extends BaseController
             if ($product->is_live == 0) {
                 $product->publish_at = ($request->is_live == 1) ? date('Y-m-d H:i:s') : '';
             }
-            foreach ($request->only('country_origin_id', 'weight', 'weight_unit', 'is_live', 'brand_id') as $k => $val) {
+            // dd($request->all());
+            // foreach ($request->only('country_origin_id', 'weight', 'weight_unit', 'is_live', 'brand_id', 'length', 'breadth', 'height', 'packaging_weight', 'packaging_weight_unit', 'packaging_length', 'packaging_breadth', 'packaging_height') as $k => $val) {
+            //     $product->{$k} = $val;
+            // }
+            foreach ($request->only('country_origin_id', 'weight', 'weight_unit', 'is_live', 'brand_id', 'length', 'breadth', 'height') as $k => $val) {
                 $product->{$k} = $val;
             }
             if( clientPrefrenceModuleStatus('p2p_check') || is_attribute_enabled() ) {
@@ -1192,6 +1198,48 @@ class ProductController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    public function importCsvNew(Request $request){
+        $validated = $request->validate([
+            'product_excel' => 'required|mimes:csv,txt'
+        ]);
+        $vendor_id = $request->vendor_id;
+        $fileModel = new CsvProductImport;
+        if($request->file('product_excel')) {
+            $fileName = time().'_'.$request->file('product_excel')->getClientOriginalName();
+            $filePath = $request->file('product_excel')->storeAs('csv_products', $fileName, 'public');
+            $fileModel->vendor_id = $request->vendor_id;
+            $fileModel->name = $fileName;
+            $fileModel->path = 'storage/' . $filePath;
+            $fileModel->status = 1;
+            $fileModel->save();
+            //  $files = CsvProductImport::where('status', 1)->where('type', 0)->first();
+            //foreach ($files as $file) {
+            if (File::exists($fileModel->storage_url)) {
+                $csv = file($fileModel->storage_url);
+                $chunks = array_chunk($csv, 1000);
+                $header = [];
+                $flag = 0;
+                foreach ($chunks as $key => $chunk) {
+                    $data = array_map('str_getcsv', $chunk);
+                    if ($key == 0) {
+                        $header = $data[0];
+                        unset($data[0]);
+                    }
+                    $flag = ProductImportCsvJob::dispatch($fileModel->vendor_id, $fileModel->id, json_encode($data), $header);
+                }
+                if ($flag) {
+                    unlink($fileModel->storage_url);
+                }
+            }
+            //  }
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Product import file uploaded successfully!'
+            ]);
+        }
+    }
+    
     public function importCsv(Request $request){
         $validated = $request->validate([
             'product_excel' => 'required|mimes:csv,txt'

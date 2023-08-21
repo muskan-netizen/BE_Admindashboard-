@@ -2117,7 +2117,7 @@ $timezone = Auth::user()->timezone;
                 </button>
             </div>
             <div class="modal-body text-center">
-                <h6 class="m-0 px-3">{{__('Are u sure u want to repeat same order')}}</h6>
+                <h6 class="m-0 px-3">{{__('Are you sure you want to repeat same order')}}</h6>
             </div>
             <div class="modal-footer flex-nowrap justify-content-center align-items-center">
                 <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>

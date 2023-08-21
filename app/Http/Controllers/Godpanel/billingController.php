@@ -16,6 +16,8 @@ use App\Http\Traits\BillingPlanManager;
 
 class billingController extends Controller
 {
+    use BillingPlanManager;
+    
     private $folderName        = '/billingplan/image';
     private $receiptFolderName        = '/billingplan/receipt';
 

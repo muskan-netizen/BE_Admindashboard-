@@ -86,7 +86,7 @@ class RatingController extends FrontController{
                 $rating_type = [];
                 $rating['rating'] = $request->rating;
                 $rating['review'] = $request->review;
-                if(@$request->question_id){
+                if(isset($request->question_id ) && count($request->question_id )){
                     foreach($request->question_id as $key => $value){
                         $option_name = 'option_id_'.$value;
                         $attribute[$key]['question_id']=$value;
@@ -94,15 +94,16 @@ class RatingController extends FrontController{
                     }
                 }
                 $max = $n = 0;
-                if(@$request->rating_type_id){
-                    foreach($request->rating_type_id as $key => $value){
-                        $rating_name = $value.'_rating';
-                        $rating_type[$key]['rating_type_id']= $value;
-                        $rating_type[$key]['rating']       = $request->$rating_name;
-                        $max = $max+$request->$rating_name;
-                        $n++;
-                    }
+                if(isset($request->rating_type_id ) &&  count($request->rating_type_id )){
+
+                foreach($request->rating_type_id as $key => $value){
+                    $rating_name = $value.'_rating';
+                    $rating_type[$key]['rating_type_id']= $value;
+                    $rating_type[$key]['rating']       = $request->$rating_name;
+                    $max = $max+$request->$rating_name;
+                    $n++;
                 }
+            }
                 $Average_rating =0;
                 if($n != 0 && $max != 0 ){
                     $Average_rating = $max / $n;
@@ -116,8 +117,8 @@ class RatingController extends FrontController{
                
                 $this->setDriverRatingDispatcher($postdata , $request->dispatch_traking_url);
                 $order_details = OrderProduct::where('id',$request->order_vendor_product_id)->whereHas('order',function($q){$q->where('user_id',Auth::id());})->first();
-              
                 if($order_details){
+                    $Average_rating = $Average_rating > 0 ? $Average_rating : ($request->rating ?? 0);
                     $ratings = OrderDriverRating::updateOrCreate([
                         'order_id' => $order_details->order_id,                 
                         'user_id' => Auth::id()],['rating' => $request->rating,'review' => $request->review??$request->hidden_review]);

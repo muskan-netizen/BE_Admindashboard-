@@ -478,7 +478,7 @@ trait CartManagerV2{
                 // }else{
                 //     $vendorData->scheduled_date_time = date('Y-m-d',strtotime($vendorData->scheduled_date_time)) ;
                 // }
-                $slotsRes = getShowSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery');
+                $slotsRes = getShowSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery',"60",0,'',$cart_id);
 
                 $slots = (object)$slotsRes['slots'];
                 // this variable for get slot from dispatc
@@ -596,7 +596,7 @@ trait CartManagerV2{
                         $prod->long_term_products=$LongTermProducts;
                     }
 
-                  $slotsDate = findSlot('',$vendorData->vendor->id,'','webFormet');
+                  $slotsDate = findSlot('',$vendorData->vendor->id,'','webFormet',$cart_id);
 
                   $vendorData->delaySlot = (($slotsDate)? ( $slotsDate['datetime']?  $slotsDate['datetime'] : '' ):'');
                   $vendorStartDate =  (($slotsDate)? ( $slotsDate['date'] ?  $slotsDate['date'] : '' ):'');
@@ -923,79 +923,7 @@ trait CartManagerV2{
                             }
                         }
                         
-                        if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
-                            if (isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)) {
-                                if($vendorData->coupon->promo->restriction_on == 0 || $vendorData->coupon->promo->restriction_on == 1)
-                                {
-                                    $couponGetAmount = $coupon_product_discount;
-                                }
-                                if($vendorData->coupon->promo->first_order_only==1){
-                                    if(auth()->user()){
-                                        $userOrder = auth()->user()->orders->first();
-                                        if($userOrder){
-                                            $cart->coupon()->delete();
-                                            $vendorData->coupon()->delete();
-                                            unset($vendorData->coupon);
-                                            $PromoDelete =1;
-                                        }
-                                    }
-                                }
-                                if ($PromoDelete !=1) {
-                                    if(!($vendorData->coupon->promo->expiry_date >= $nowdate) ){
-                                        $cart->coupon()->delete();
-                                        $vendorData->coupon()->delete();
-                                        unset($vendorData->coupon);
-                                        $PromoDelete =1;
-                                    }
-                                }
-                                if ( $PromoDelete !=1) {
-                                    
-                                    $minimum_spend = 0;
-                                    if (isset($vendorData->coupon->promo->minimum_spend)) {
-                                        $minimum_spend = $vendorData->coupon->promo->minimum_spend * $doller_compare;
-                                    }
-                                    
-                                    $maximum_spend = 0;
-                                    if (isset($vendorData->coupon->promo->maximum_spend)) {
-                                        $maximum_spend = $vendorData->coupon->promo->maximum_spend * $doller_compare;
-                                    }
-                                    
-                                    if( ($minimum_spend <= $couponGetAmount ) && ($maximum_spend >= $couponGetAmount))
-                                    {
-                                        if ($vendorData->coupon->promo->promo_type_id == 2) {
-                                            $total_discount_percent = $vendorData->coupon->promo->amount;
-                                            $vendor_discount_amount = $total_discount_percent;
-                                            $payable_amount -= $total_discount_percent;
-                                            $coupon_amount_used = $total_discount_percent;
-                                        } else {
-                                            $gross_amount = decimal_format($payable_amount - $taxable_amount-$total_container_charges);
-                                            $percentage_amount = ($gross_amount * $vendorData->coupon->promo->amount / 100);
-                                            $payable_amount -= $percentage_amount;
-                                            $vendor_discount_amount = $percentage_amount;
-                                            $coupon_amount_used = $percentage_amount;
-                                        }
-                                    }
-                                    else{
-                                        
-                                        $cart->coupon()->delete();
-                                        $vendorData->coupon()->delete();
-                                        unset($vendorData->coupon);
-                                        $PromoDelete =1;
-                                    }
-                                }
-                                if ( $PromoDelete !=1) {
-                                    if($vendorData->coupon->promo->allow_free_delivery ==1   ){
-                                        $PromoFreeDeliver = 1;
-                                        // $coupon_amount_used = $coupon_amount_used ;
-                                        $coupon_amount_used = $coupon_amount_used +  $deliveryCharges_real;
-                                        $deliveryfeeOnCoupon = 1;
-                                        $payable_amount = $payable_amount;
-                                        $deliveryfeeOnCoupon = 1;
-                                    }
-                                }
-                            }
-                        }
-                        
+                      
                         
                     //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
                     /* Getting taxes info */
@@ -1093,7 +1021,7 @@ trait CartManagerV2{
                                 $deliveriesNew = new CartController();
                                 $deliveries = $deliveriesNew->getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del, $lastMileDate['tags'],$NumberOfroutes);
 
-
+                                
                                 if (isset($deliveries[0])) {
                                     $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
                                     if (count($deliveries)>1) {
@@ -1254,9 +1182,80 @@ trait CartManagerV2{
                         $delivery_slot_amount += decimal_format($prod->slot_price);                        
                     }
                 }
-                // dd($security_amount);
-                // $couponGetAmount = $payable_amount ;
-
+                if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
+                    if (isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)) {
+                        if($vendorData->coupon->promo->restriction_on == 0 || $vendorData->coupon->promo->restriction_on == 1)
+                        {
+                            $couponGetAmount = $payable_amount;
+                        }
+                        if($vendorData->coupon->promo->first_order_only==1){
+                            if(auth()->user()){
+                                $userOrder = auth()->user()->orders->first();
+                                if($userOrder){
+                                    $cart->coupon()->delete();
+                                    $vendorData->coupon()->delete();
+                                    unset($vendorData->coupon);
+                                    $PromoDelete =1;
+                                }
+                            }
+                        }
+                        if ($PromoDelete !=1) {
+                            if(!($vendorData->coupon->promo->expiry_date >= $nowdate) ){
+                                $cart->coupon()->delete();
+                                $vendorData->coupon()->delete();
+                                unset($vendorData->coupon);
+                                $PromoDelete =1;
+                            }
+                        }
+                        if ( $PromoDelete !=1) {
+                            $minimum_spend = 0;
+                            if (isset($vendorData->coupon->promo->minimum_spend)) {
+                                $minimum_spend = $vendorData->coupon->promo->minimum_spend * $doller_compare;
+                            }
+                            
+                            $maximum_spend = 0;
+                            if (isset($vendorData->coupon->promo->maximum_spend)) {
+                                $maximum_spend = $vendorData->coupon->promo->maximum_spend * $doller_compare;
+                            }
+                            if( ($minimum_spend <= $couponGetAmount ) && ($maximum_spend >= $couponGetAmount))
+                            {
+                                if ($vendorData->coupon->promo->promo_type_id == 2) {
+                                    $total_discount_percent = $vendorData->coupon->promo->amount;
+                                    $vendor_discount_amount = $total_discount_percent;
+                                    $payable_amount -= $total_discount_percent;
+                                    $coupon_amount_used = $total_discount_percent;
+                                } else {
+                                    $gross_amount = decimal_format($payable_amount - $taxable_amount-$total_container_charges);
+                                    if($vendorData->coupon->promo->restriction_on == 0 ){
+                                        $gross_amount = $coupon_apply_price;
+                                    }
+                                    $percentage_amount = ($gross_amount * $vendorData->coupon->promo->amount / 100);
+                                    $payable_amount -= $percentage_amount;
+                                    $vendor_discount_amount = $percentage_amount;
+                                    $coupon_amount_used = $percentage_amount;
+                                }
+                            }
+                            else{
+                                
+                                $cart->coupon()->delete();
+                                $vendorData->coupon()->delete();
+                                unset($vendorData->coupon);
+                                $PromoDelete =1;
+                            }
+                        }
+                        if ( $PromoDelete !=1) {
+                            if($vendorData->coupon->promo->allow_free_delivery ==1   ){
+                                $PromoFreeDeliver = 1;
+                                // $coupon_amount_used = $coupon_amount_used ;
+                                $coupon_amount_used = $coupon_amount_used +  $deliveryCharges_real;
+                                $deliveryfeeOnCoupon = 1;
+                                $payable_amount = $payable_amount;
+                                $deliveryfeeOnCoupon = 1;
+                            }
+                        }
+                    }
+                }
+                
                 $promoCodeController = new PromoCodeController();
                 $promoCodeRequest = new Request();
                 $promoCodeRequest->setMethod('POST');
@@ -1524,7 +1523,7 @@ trait CartManagerV2{
                 }
                 if($preferences->scheduling_with_slots != 1 && $preferences->business_type != 'laundry'){
                     $myDate = $cartData[0]->scheduled_date_time;
-                    $slotsRes = getShowSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 0);
+                    $slotsRes = getShowSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 0,'',$cart_id);
                     $slots = (object)$slotsRes['slots'];
                     $slotsdate = $slotsRes['date'];
                     $cart->slotsdate = $slotsdate;
@@ -1542,7 +1541,7 @@ trait CartManagerV2{
                 if($preferences->scheduling_with_slots == 1 && $preferences->business_type == 'laundry'){
                     // For Pickup
                     //$pickupSlots = (object)getShowSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 1);
-                    $slotsRes = getShowSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 1);
+                    $slotsRes = getShowSlot($myDate,$vendorId,'delivery',$duration->slot_minutes, 1,'',$cart_id);
                     $pickupSlots = (object)$slotsRes['slots'];
                     $pickupslotsdate = $slotsRes['date'];
                     $cart->slotsForPickupdate= $pickupslotsdate;
@@ -1550,7 +1549,7 @@ trait CartManagerV2{
 
                     // For Dropoff
                     $myDropoffDate = date('Y-m-d');
-                    $slotsRes = getShowSlot($myDropoffDate,$vendorId,'delivery',$duration->slot_minutes, 2);
+                    $slotsRes = getShowSlot($myDropoffDate,$vendorId,'delivery',$duration->slot_minutes, 2,'',$cart_id);
                     $dropoffSlots = (object)$slotsRes['slots'];
                     $dropoffSlotsdate = $slotsRes['date'];
                     $cart->slotsForDropoffDate = $dropoffSlotsdate;

@@ -12,6 +12,7 @@ use App\Http\Controllers\Client\BaseController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
+use App\Http\Controllers\Front\RoadieController;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Models\RescheduleOrder;
@@ -128,8 +129,6 @@ class OrderController extends BaseController
             $q1->orWhere(function ($q2) {
                 $q2->whereIn('payment_option_id', [1, 38])
                 ->orWhere(function($q3) {
-                    
-                    
                         $q3->where('is_postpay', 1) // 1 for order is post pay.
                             ->whereNotIn('payment_option_id', [1, 38]);
                     
@@ -218,7 +217,9 @@ class OrderController extends BaseController
 
         $orders = Order::onlyEnabledLuxuryOptions($EnabledLuxuryOptions)->with(['vendors.products' => function ($q) {
             $q->withoutAppends();
-        }, 'vendors.status', 'orderStatusVendor', 'address', 'user' ]);
+        },'vendors.products.translation' => function ($q) use ($langId) {
+            $q->where('language_id',$langId);
+        },'vendors.status', 'orderStatusVendor', 'address', 'user' ]);
         
         
         $orders = $orders->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail']);
@@ -605,6 +606,7 @@ class OrderController extends BaseController
                 foreach ($vendor->products as $product) {
                     $product_total_count += $product->quantity * $product->price;
                     $security_amount += $product->security_amount;
+                    $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;
                     $product->image_path  = $product->media->first() &&  !is_null($product->media->first()->image) ? $product->media->first()->image->path : getDefaultImagePath();
                     if (!is_null($product->product) && ($product->has_inventory != 0) && ($product->quantity > ($product->product->variant->first() ? $product->product->variant[0]->quantity : 0))) {
                         $vendor->isAlert = true;
@@ -752,6 +754,8 @@ class OrderController extends BaseController
                 
                 $query->with('order_product_status');
                 
+            },'vendors.products.translation' => function ($q) use ($langId) {
+                $q->where('language_id',$langId);
             },
              'vendors.products.product',
              'vendors.products.addon',
@@ -851,6 +855,7 @@ class OrderController extends BaseController
                 if ($product->schedule_type == 'schedule') {
                     $product_schedule_type = 'schedule';
                 }
+                $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;
                 $product->image_path  = $product->media->first() && !is_null($product->media->first()->image)  ? $product->media->first()->image->path : '';
                 $divider = (empty($product->doller_compare) || $product->doller_compare < 0) ? 1 : $product->doller_compare;
                 $total_amount = $product->quantity * $product->price;
@@ -1116,6 +1121,9 @@ class OrderController extends BaseController
                     } elseif ($orderData->shipping_delivery_type == 'SH') {
                         //Create Shipping place order request for Shippo Masa
                         $orderPlaced = $this->placeOrderRequestShippo($request);
+                    }elseif ($orderData->shipping_delivery_type == 'RO') {
+                        //Create Roadies place order request for Roadies
+                        $orderPlaced = $this->placeOrderRequestRoadies($request);
                     }
                     $orderData->accepted_by = Auth::user()->id;
                     $orderData->save();
@@ -1352,6 +1360,18 @@ class OrderController extends BaseController
         }
 
         return 2;
+    }
+
+    public function placeOrderRequestRoadies($request){
+        $roadie = new RoadieController();
+        $checkdeliveryFeeAdded = OrderVendor::with(['vendor', 'products.product', 'orderDetail'])->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        // dd($checkdeliveryFeeAdded);
+        $checkOrderData = Order::with(['vendors.products.product', 'user', 'address'])->findOrFail($request->order_id);
+        if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 )) {
+            $order_ship_roadie = $roadie->createShipmentRequestRoadie($checkdeliveryFeeAdded, $checkOrderData);
+            return $order_ship_roadie;
+        }
+        return false;
     }
 
     public function placeOrderRequestKwikApi($request)

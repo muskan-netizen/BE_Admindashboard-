@@ -330,7 +330,7 @@ class BaseController extends Controller{
                 $celebrity_check = 1;
                 $include_categories[] = 5; // type 5 for celebrity
             }
-            if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
+           // if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
                 $categories = $categories->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
                     ->where(function ($q1) use ($vends, $include_categories) {
                         $q1->whereIn('vct.vendor_id', $vends)
@@ -339,7 +339,7 @@ class BaseController extends Controller{
                                 $q2->whereIn('categories.type_id', $include_categories);
                             });
                     });
-            }
+           // }
         }
         $categories = $categories->leftjoin('types', 'types.id', 'categories.type_id')
                         ->where('categories.id', '>', '1')
@@ -863,33 +863,56 @@ class BaseController extends Controller{
         return $amount;
     }
 
+   
     public function checkIfLastMileDeliveryOn()
     {
+
         $preference = ClientPreference::first();
-        if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url)) {
-            return $preference;
-        } else {
-            return false;
+     
+        if( isset($preference)  && $preference->business_type == 'taxi'){
+        
+                if($preference->need_dispacher_ride == 1 && !empty($preference->pickup_delivery_service_key) && !empty($preference->pickup_delivery_service_key_code) && !empty($preference->pickup_delivery_service_key_url))
+                return $preference;
+                else
+                return false;
+        }elseif(  isset($preference)  &&  $preference->business_type == 'laundry'){
+                if($preference->need_laundry_service == 1 && !empty($preference->laundry_service_key) && !empty($preference->laundry_service_key_code) && !empty($preference->laundry_service_key_url))
+                return $preference;
+                else
+                return false;
+        } else{
+            if (isset($preference)  ) {
+                if($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+                return $preference;
+                else
+                return false;
+            }
         }
+        return false;
     }
 
     public function driverDocuments()
     {
         try {
             $dispatch_domain = $this->checkIfLastMileDeliveryOn();
-            $url = $dispatch_domain->delivery_service_key_url;
-            $endpoint = $url . "/api/send-documents";
-
-            $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
-
+            if($dispatch_domain->business_type == 'taxi'){
+                $url = $dispatch_domain->pickup_delivery_service_key_url;
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key, 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code]]);
+            } elseif($dispatch_domain->business_type == 'laundry'){
+                $url = $dispatch_domain->laundry_service_key_url;
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->laundry_service_key, 'shortcode' => $dispatch_domain->laundry_service_key_code]]);
+            } else{
+                $url = $dispatch_domain->delivery_service_key_url;
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->delivery_service_key, 'shortcode' => $dispatch_domain->delivery_service_key_code]]);
+            }
+            $endpoint =$url . "/api/send-documents";
             $response = $client->post($endpoint);
             $response = json_decode($response->getBody(), true);
-
             return json_encode($response['data']);
         } catch (\Exception $e) {
             $data = [];
             $data['status'] = 400;
-            $data['message'] =  $e->getMessage();
+            $data['message'] = $e->getMessage();
             return $data;
         }
     }

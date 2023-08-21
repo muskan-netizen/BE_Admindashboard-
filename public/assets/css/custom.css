@@ -2479,7 +2479,9 @@ label.logo-size {
     overflow: hidden;
     text-overflow: ellipsis
 }
-
+.custom-dd-empty .ellips{
+    width: 80%;
+}
 #promo-datatable .ellips {
     width: 50%
 }
@@ -2986,6 +2988,14 @@ button.update-status {
     border-radius: 50px;
     padding: 2px 8px
 }
+
+button.update-status-ar {
+    border: 0;
+    border-radius: 50px;
+    padding: 2px 8px;
+}
+
+
 
 .btn-danger.focus,
 .btn-danger:focus {
@@ -4826,7 +4836,9 @@ div#addRejectmodal {
 #pending_orders_row .order-hover-btn .order_detail .col-4 .list-img img {
     width: 50px;
 }
-
+#AddRejectBox .reject_reason {
+    border: 1px solid#ccc;
+}
 
 /*============================================= dashboard page responsive css start here ======================================= */
 
@@ -4840,6 +4852,18 @@ div#addRejectmodal {
         padding: 20px;
     }
 }
+/*dashboard configure page resposive css*/
+@media screen and (min-width:1029px) and (max-width:1240px){
+.map-configration_dashboard .col-lg-3.mb-3 {
+    flex: 50%;
+    max-width: 50%;
+}
+.map-configration_dashboard .col-lg-4{
+    flex: 50%;
+    max-width: 50%;
+}
+}
+/*=----end here-----*/
 
 @media(min-width:1600px) {
     .style-cols .col-xl-6 {

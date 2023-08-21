@@ -6,7 +6,7 @@
                             </span>
                         </h5>
 @if(@$category->type_id != 13)
-    <div class="col-12 custom_filtter mt-3 mb-3">
+    <div class="col-12 custom_filtter mt-2 mb-2">
         <select name="order_type" id='order_type' class="form-control sortingFilter p-1 mb-0">
             <option value="">{{__('Sort By')}}</option>
             <option value="featured">{{__('Featured')}}</option>

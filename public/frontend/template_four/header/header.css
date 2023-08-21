@@ -9,13 +9,13 @@ body, html {
 .al_mobile_menu.al_new_mobile_header li a{font-size: 14px;color: #777;}
 .al_addCart li.onhover-div a i svg path{fill:#fff;}
 .al_addCart li.onhover-div a:hover i svg path{fill:#000;}
-
+.cab-banner-area .card-box h2 {font-size: 24px;letter-spacing: 0px;}
 /* address-map-container css start */
 #address-map-container{width:100%;height:250px}#address-map-container #address-map{width:100%;height:100%}.address-input-group{position:relative}button.close{padding:5px 10px 0 4px;text-align:right}.delivery-head{font-size:14px;font-weight:400}.address-input-field{border:1px solid #ddd;border-radius:8px;overflow:hidden;padding:0 10px}#edit-address .address-input-group .pac-container{top:75px!important;left:0!important}
 /* address-map-container css start */
 
 .al_body_template_four .al_addCart li.onhover-div a span#cart_qty_span:empty{display:none;}
-.al_body_template_four .al_addCart li.onhover-div a span#cart_qty_span{background-color: var(--top-header-color);width: 25px;border-radius: 50%;height:25px;margin: 0px;padding: 0px;color: #fff;position: absolute;right: 0px;top: 0px;font-size: 12px;display: flex;align-items: center;justify-content: center;}
+.al_body_template_four .al_addCart li.onhover-div a span#cart_qty_span{background-color: var(--top-header-color);width: 25px;border-radius: 50%;height:25px;margin: 0px;padding: 0px;color: #fff;position: absolute;right: -6px;top: 0px;font-size: 12px;display: flex;align-items: center;justify-content: center;}
 
 .ellips{text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
 

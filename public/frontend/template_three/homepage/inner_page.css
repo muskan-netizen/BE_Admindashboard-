@@ -41,11 +41,24 @@
 .al_body_template_three .add-to-fav {
     display: none
 }
-
+.al_body_template_three .scale-effect .inner_spacing p {
+    font-size: 14px;
+}
 .al_body_template_three .supplier-rating p.vendor-cate.ellips {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap
+}
+.al_body_template_three.homeHeader .outter-fillter-data .product-wrapper-grid.card-product h3 label{
+    font-size: 14px;   
+    font-weight: 600;
+    color: #000;
+    letter-spacing: 0px;
+}
+.side_fillter .collapse-block-title {
+    font-size: 14px;
+    text-transform: capitalize;
+    letter-spacing: 0px;
 }
 body[dir=rtl] .third-temp-lan {
     padding-left: 10px !important;
@@ -99,7 +112,7 @@ body[dir=rtl] .third-temp-lan {
     width: fit-content;
     font-size: 12px;
     margin: 0 auto;
-    padding: 8px 10px;
+    padding: 6px 20px;
 }
 .al_body_template_three .add_vendor_product_btn {
     border: 1px solid var(--theme-deafult);
@@ -256,7 +269,7 @@ body .create_box a.btn.btn-solid.mt-2 {
 }
 
 .al_body_template_three .btn.btn-solid {
-    border-radius: 30px
+    border-radius: 30px;border:none;
 }
 
 .al_body_template_three .address-btn .btn.btn-solid {
@@ -767,7 +780,8 @@ span.filter-btn.btn.btn-theme i {
 .dark.al_body_template_three nav.scrollspy-menu li:hover a {
     background: linear-gradient(-90deg, var(--theme-deafult) -540%, #2b2b2b 100%)
 }
-
+.dark .custom-container p span{color:#fff !important;}
+.dark .custom-container ul li span{color:#fff !important;}
 .dark .collection-filter-block {
     border-color: #2b2b2b
 }
@@ -1034,13 +1048,18 @@ h2.homepage-address {
 .al_custom_head .al_z_index {
     z-index: 999
 }
-
+.al_body_template_three .scale-effect .inner_spacing h6 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #000;
+    text-transform: capitalize;
+}
 .al_body_template_three h2.h2-heading {
     text-transform: uppercase!important;
-    font-size: 26px;
-    letter-spacing: -1px;
-    font-weight: 500;
-    color: #777
+    font-size: 22px;
+    letter-spacing: 0px;
+    color: #000;
+    font-weight: 600;
 }
 
 .footer-theme .sub-title li a:before {
@@ -1056,6 +1075,7 @@ h2.homepage-address {
     border-radius: 12px!important;
     background-color: transparent!important;
     border: 1px solid transparent!important;
+    padding-bottom:8px !important;
 }
 
 .al_box_third_template .product-image {
@@ -3231,6 +3251,15 @@ input.addon-input-number {
     width: 100%;
 }
 
+.vendor-products-wrapper .price_head h5 {
+    font-size: 18px;
+    letter-spacing: 0px;
+    font-weight: 600;
+}
+.vendor-products-wrapper .member_no span {
+    font-size: 14px;
+    color: #000;
+}
 .classes_wrapper .number {
     border: 1px solid var(--theme-deafult);
     border-radius: 4px;
@@ -3544,12 +3573,16 @@ footer#footer {
 .alProductCategories .collection-wrapper .container.p-0 {
     padding: 0 10px!important;
 }
-
+.buy_details .discriptions h3 {
+    font-size: 18px;
+    letter-spacing: 0px;
+    font-weight: 600;
+}
 @media (min-width: 1300px) {
     .fillter_product .product-image {
-        min-height: 250px;
-        min-width: 200px;
-        max-height: 250px;
+        min-height: 200px;
+        min-width: 100%;
+        max-height: 200px;
     }
 }
 
@@ -3930,7 +3963,7 @@ a.morelink.less {
     font-size: 20px;
 }
 .al_body_template_three .vendor-design_new {
-    margin-top: -18%!important;
+    margin-top: -22%!important;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -4040,8 +4073,14 @@ a.morelink.less {
     margin-left: 0 !important;
     margin-right: 0 !important;
 }
-
+.order_detail.order_detail_data.card-box h5 {
+    font-size: 14px;
+    letter-spacing: 0px;
+    font-weight: 500;
+}
 .al_body_template_three .product-description_list.border-bottom {
-    height: 60px;
-    overflow-y: auto;
+    height: 100%;
+    max-height: 80px;
+    min-height: 80px;
+    overflow: hidden;
 }

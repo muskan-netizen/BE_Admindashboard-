@@ -83,10 +83,11 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\LalaMovesController;
 use Illuminate\Support\Facades\Http;
+use App\Http\Traits\MargTrait;
 
 class OrderController extends FrontController
 {
-    use ApiResponser, CartManager, SquareInventoryManager,VendorTrait,OrderTrait;
+    use ApiResponser, CartManager, SquareInventoryManager,VendorTrait,OrderTrait,MargTrait;
 
     /**
      * Display a listing of the resource.
@@ -1153,7 +1154,7 @@ class OrderController extends FrontController
     public function orderSave($request, $paymentStatus)
     {
 
-
+        // dd($request->all());
         try {
             $latitude = '';
             $longitude = '';
@@ -1317,7 +1318,6 @@ class OrderController extends FrontController
                 $latitude = '';
                 $longitude = '';
             }
-
             /* Uodating client other details in order object */
             $order->payment_option_id = $request->payment_option_id;
             $order->total_other_taxes = $request->other_taxes_string;
@@ -1335,6 +1335,7 @@ class OrderController extends FrontController
             /* Save initial details of order */
             $order->save();
 
+        
             /* Updating order prescription if any */
             $cart_prescriptions = CartProductPrescription::where('cart_id', $cart->id)->get();
             foreach ($cart_prescriptions as $cart_prescription) {
@@ -1415,11 +1416,9 @@ class OrderController extends FrontController
 
             /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
             if (! empty($request->other_taxes_string)) {
-                foreach (explode(":", $request->other_taxes_string) as $row) {
-                    $total_other_taxes += (float) $row;
-                }
-            }
-
+                $total_other_taxes = array_sum(explode(":", $request->other_taxes_string));
+                $total_other_taxes = decimal_format($total_other_taxes);
+            }  
             /* Loop through evey cart product to get desired data for order */
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
 
@@ -2506,7 +2505,14 @@ class OrderController extends FrontController
 
             DB::commit();
             $this->sendSuccessSMS($request, $order);
+            $hub_key = @getAdditionalPreference(['is_marg_enable']);
 
+            if(isset($hub_key) && $hub_key['is_marg_enable'] == 1){
+         
+              $this->ProductVariantStock($order->id);
+          
+              $this->makeInsertOrderMargApi($order);
+            }
             return $this->successResponse($order);
         } catch (Exception $e) {
             DB::rollback();

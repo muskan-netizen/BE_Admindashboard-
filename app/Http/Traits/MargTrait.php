@@ -31,8 +31,9 @@ trait MargTrait{
         curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
         curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
-        
+        curl_setopt($ch, CURLOPT_TIMEOUT, 20); 
         $response = curl_exec($ch);
+
         $err = curl_error($ch);
         curl_close($ch);
         $encrypted = $response;
@@ -122,13 +123,16 @@ trait MargTrait{
                     if(@$request->Is_Deleted)
                     {
                         $product->delete();
-                        \Log::info('request->name '.$request->name);
                     }
 
                 // \Log::info('Insert MargProduct code --'.$request->code);
 
                 }
             }else{
+                $log = [
+                    'stock'=>$request->stock,
+                    'name'=>$request->name
+                ];
                 //Update Stock Details
                 $this->updateProduct($request,$is_exist);
             }
@@ -153,12 +157,11 @@ trait MargTrait{
             if($product->id){
                 $product->sku = $request->code;      // $request->sku;
                 $product->url_slug = $url_slug;             // $request->url_slug;
-                $product->title = $request->name;           // $request->product_name;        
+                $product->title = $request->name;           // $request->product_name;             
                 $client_lang = ClientLanguage::where('is_primary', 1)->first();
                 if (!$client_lang) {
                     $client_lang = ClientLanguage::where('is_active', 1)->first();
                 }
-
                 $product->save();
 
             }
@@ -174,7 +177,6 @@ trait MargTrait{
                         $marg_product->stock        =       $request->stock;
                         $marg_product->MRP          =       $request->MRP;
                         $marg_product->save();
-
                     }
 
                 $proVariant = ProductVariant::where('sku', $request->code)->first();
@@ -183,7 +185,6 @@ trait MargTrait{
                     $proVariant->price = $request->MRP;            
                     $proVariant->quantity = $request->stock;            
                     $proVariant->save();
-
                 }
 
                 $datatrans = [
@@ -243,7 +244,10 @@ trait MargTrait{
 
 	public function makeInsertOrderMargApi($order)
 	{
-		$productCode = [];
+        
+    try{
+            
+        $productCode = [];
 		$productQuantity = [];
 		$rid = [];
 
@@ -258,16 +262,17 @@ trait MargTrait{
 			}
             $rid  = MargProduct::first();
 		} 
-		
-        $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code']);
+		  
+        $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code','marg_company_url']);
 
         if($hub_key['is_marg_enable'] == 1){
             $decryptionKey  = $hub_key['marg_decrypt_key'];
             $MargID  = $hub_key['marg_access_token'];
             $CompanyCode  = $hub_key['marg_company_code'];
+            $url  = $hub_key['marg_company_url'];
             $detail         = [];
-            $MargMST2017 = "https://corporate.margerp.com/api/eOnlineData/InsertOrderDetail";
-            $detail = ["OrderID"=>"", "OrderNo"=> $order->order_number, "CustomerID"=> $rid->id, "MargID"=> $MargID, "Type"=> "S", "Sid"=> "194130", "ProductCode"=> implode(',',$productCode), "Quantity"=>  implode(',',$productQuantity), "Free"=> "0,0", "Lat"=> "", "Lng"=> "", "Address"=> "", "GpsID"=> "0", "UserType"=> "1", "Points"=> "0.00", "Discounts"=> "0", "Transport"=> "", "Delivery"=> "", "Bankname"=> "", "BankAdd1"=> "", "BankAdd2"=> "", "shipname"=> "", "shipAdd1"=> "", "shipAdd2"=> "", "shipAdd3"=> "", "paymentmode"=> "1", "paymentmodeAmount"=> "0", "payment_remarks"=> "", "order_remarks"=> "","CustName"=>"ramU" ,"CustMobile"=> "9289757820", "CompanyCode"=> $CompanyCode, "OrderFrom"=> $CompanyCode];
+            $MargMST2017 = $url."/api/eOnlineData/InsertOrderDetail";
+            $detail = ["OrderID"=>"", "OrderNo"=> $order->order_number, "CustomerID"=> '7532253', "MargID"=> $MargID, "Type"=> "S", "Sid"=> "194130", "ProductCode"=> implode(',',$productCode), "Quantity"=>  implode(',',$productQuantity), "Free"=> "0,0", "Lat"=> "", "Lng"=> "", "Address"=> "", "GpsID"=> "0", "UserType"=> "1", "Points"=> "0.00", "Discounts"=> "0", "Transport"=> "", "Delivery"=> "", "Bankname"=> "", "BankAdd1"=> "", "BankAdd2"=> "", "shipname"=> "", "shipAdd1"=> "", "shipAdd2"=> "", "shipAdd3"=> "", "paymentmode"=> "1", "paymentmodeAmount"=> "0", "payment_remarks"=> "", "order_remarks"=> "","CustName"=>"ramU" ,"CustMobile"=> "9289757820", "CompanyCode"=> $CompanyCode, "OrderFrom"=> $CompanyCode];
 
 
              // Get the encrypted data from the request
@@ -279,15 +284,27 @@ trait MargTrait{
             {
 				$updateOrder = Order::findOrFail($order->id);
 				$updateOrder->marg_status = $encryptedData??1;
+				$updateOrder->marg_max_attempt =$updateOrder->marg_max_attempt + 1;
 				$updateOrder->save();
-
+                session()->flash('success', 'Order synced successfully!');
                 return true;
                 
+            }else{
+                $updateOrder = Order::findOrFail($order->id);
+				$updateOrder->marg_max_attempt =$updateOrder->marg_max_attempt + 1;
+				$updateOrder->save();
+                session()->flash('success',$encryptedData->Message??'Somthing Went Wrong!');
+                return false;
             }
             return true;
 
         }else{
             return false;
+        }
+        }catch(\Exception $e)
+        {
+            \Log::info($e->getMessage());
+            return true;
         }
 		
 	}

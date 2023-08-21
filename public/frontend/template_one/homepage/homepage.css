@@ -4361,6 +4361,9 @@ span.fa.fa-eye-slash.toggle-password.eye::before {
     -webkit-transform: scale(1);
     -moz-transform: scale(1);
     transform: scale(1);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .suppliers-box .suppliers-img-outer img {
@@ -4547,7 +4550,7 @@ body.dark .shopping-cart h6.badge-light {
 }
 
 body.dark select#order_type {
-    background-color: transparent;
+    background-color: transparent;color:#fff;
 }
 
 body.dark .vendors .no-arrow .slick-next,
@@ -4707,6 +4710,11 @@ body.al_body_template_one .top-banner-wrapper {
 .al_body_template_one .alRentalSinglePageView .single_product-input {
     width: 80% !important;
 }
+
+
+
+
+
 @media(max-width:1100px) {
     .cab-banner-area .card-box {
         padding: 48px 25px;
@@ -5673,3 +5681,14 @@ body.al_body_template_one .slick-slider .common-product-box, .slick-slider .supp
     max-height: 66px !important;
 }
 }
+
+
+
+/*pickup and drop section rwd css */
+@media screen and (min-width:1200px) and (max-width:1317px){
+    .al_body_template_one .cab-banner-area .card-box {
+         padding: 18px;
+     }
+ }
+ 
+ /*-------end here---*/

@@ -59,6 +59,15 @@ body.al_body_template_six span.rating.main-rating {
 }
 
 
+.third-temp-lan .container-badge div {
+    display: inline-block;
+    margin: 4px 0px;
+}
+.third-temp-lan .container-badge .value-badge {
+    margin-right: 40px;
+}
+
+
 .al_body_template_six .col-md-12.text-left.vender-peragraph.mt-3.mb-2 {
     padding-left: 58px;
     margin-top: 0 !important;
@@ -192,8 +201,9 @@ body.al_body_template_six .menu-slider .slick-track {
     width: 100% !important;
     display: flex;
     justify-content: flex-start;
-    margin: 0 auto !important
+    margin: 0 auto !important;
 }
+
 
 body.al_body_template_six.homeHeader {
     margin-top: 0;
@@ -1160,14 +1170,16 @@ body .royo_whatsapp_img {
     .al_body_template_six .cart-price .tip_label {
         padding: 5px 8px;
     }
-
+    .al_desktop_banner span.carousel-control-prev-icon, span.carousel-control-next-icon{display: none;}
+    body.al_body_template_six .d-inline-flex.al_searchType.align-items-center.justify-content-start.px-2.position-relative{padding:10px;}
 }
 
 /*hotfix product page css*/
 @media (max-width:767px){
     body.al_body_template_six .logo a.navbar-brand img {
         width: 100px;
-        height: 40px !important;
+        /* height: 40px !important; */
+        height: auto !important;
     }
     body.al_body_template_six .alTesimonialsText, .alLgFontSize {
         text-align: left;
@@ -1206,7 +1218,7 @@ body .royo_whatsapp_img {
     body.al_body_template_six .nav-tabs.navigation-tab_al.nav-material{
         width: 368px;
         flex-wrap: nowrap;
-        overflow-x: auto;
+        overflow-x: auto;padding:0px;
     }
     body.al_body_template_six .nav-tabs.navigation-tab_al.nav-material li {
         margin: 10px;

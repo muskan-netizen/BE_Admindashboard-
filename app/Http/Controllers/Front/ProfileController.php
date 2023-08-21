@@ -200,7 +200,6 @@ class ProfileController extends FrontController
         ]);
         $user_docs = UserDocs::where('user_id', Auth::user()->id)->get();
         $user_registration_documents = UserRegistrationDocuments::get();
-//pr( $user_docs->toArray());
         $returnHTML = view('frontend.account.edit-profile')->with(['user' => $user,'user_docs'=>$user_docs,'user_registration_documents'=>$user_registration_documents , 'userAddresses' => $user_addresses, 'timezone_list' => $timezone_list])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML));
     }
@@ -222,8 +221,13 @@ class ProfileController extends FrontController
      * @return \Illuminate\Http\Response
      */
     public function submitChangePassword(Request $request, $domain = ''){
+        $user = User::where('id', Auth::user()->id)->first();
         $request->validate([
-            'old_password' => 'required',
+            'old_password' => ['required', function ($attribute, $value, $fail) use ($user) {
+            if (!Hash::check($value, $user->password)) {
+                $fail('Your old password does not match.');
+            }
+            }],
             'new_password' => 'required|string|min:6',
             'confirm_password' => 'required|same:new_password',
         ],[
@@ -233,7 +237,6 @@ class ProfileController extends FrontController
             'confirm_password.required' => __('The confirm password field is required.'),
             'confirm_password.same' => __('The confirm password and new password must match.'),
         ]);
-        $user = User::where('id', Auth::user()->id)->first();
         if ($user){
             if (Hash::check($request['old_password'], $user->password)) {
                 $user->password = Hash::make($request['new_password']);
