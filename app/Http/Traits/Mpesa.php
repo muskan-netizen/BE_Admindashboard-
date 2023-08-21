@@ -116,26 +116,27 @@ trait Mpesa{
 //        $this->bcresult=config('mpesa.b2c_result');
        
        $mpesa = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'mpesasafari')->where('status', 1)->first();
-       $json = json_decode($mpesa->credentials);
-       $this->lipa_na_mpesa = $json->mpesasafari_shortcode;
-       $this->consumer_key=$json->mpesasafari_consumer_key; //Your Consumer key
-       $this->consumer_secret=$json->mpesasafari_consumer_secret; //"Your Secret key
-       $this->lipa_na_mpesa_key = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"; //Your Passkey
-       $this->base_url  = (($mpesa->test_mode==1)?'https://sandbox.safaricom.co.ke':'https://api.safaricom.co.ke');
-       $this->initiator_username = "lmukhuyu"; //Username of your choice
-       $this->initiator_password = "Zallu3279@"; //Password of your choice
-       $this->access_token = $this->getAccessToken(); //Set up access token
-       $this->testmode = $mpesa->test_mode;
-       $this->lnmocallback = $this->getWebhookUrl();
-       
+       if(!empty($mpesa)){
+           $json = json_decode($mpesa->credentials);
+           $this->lipa_na_mpesa = $json->mpesasafari_shortcode;
+           $this->consumer_key=$json->mpesasafari_consumer_key; //Your Consumer key
+           $this->consumer_secret=$json->mpesasafari_consumer_secret; //"Your Secret key
+           $this->lipa_na_mpesa_key = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"; //Your Passkey
+           $this->base_url  = (($mpesa->test_mode==1)?'https://sandbox.safaricom.co.ke':'https://api.safaricom.co.ke');
+           $this->initiator_username = "lmukhuyu"; //Username of your choice
+           $this->initiator_password = "Zallu3279@"; //Password of your choice
+           $this->access_token = $this->getAccessToken(); //Set up access token
+           $this->testmode = $mpesa->test_mode;
+           $this->lnmocallback = $json->mpesasafari_webhook;
+       }
    }
        
-   public function getWebhookUrl(){       
+ /*  public function getWebhookUrl(){       
       if($this->testmode)
           return "https://webhook.site/b1c6b395-7728-4874-8f06-66edcd943c07"; //Your callback URL
      else
           return route('safari.payment');
-   }
+   }*/
    
    /**
     * Submit Request

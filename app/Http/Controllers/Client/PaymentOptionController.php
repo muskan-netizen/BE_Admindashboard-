@@ -793,12 +793,14 @@ class PaymentOptionController extends BaseController
                             $request->validate([
                             'mpesasafari_consumer_key' => 'required',
                             'mpesasafari_consumer_secret' => 'required',
-                            'mpesasafari_shortcode' => 'required'
+                            'mpesasafari_shortcode' => 'required',
+                            'mpesasafari_webhook' => 'required'
                             ]);
                             $json_creds = json_encode(array(
                                 'mpesasafari_consumer_key' => $request->mpesasafari_consumer_key,
                                 'mpesasafari_consumer_secret' => $request->mpesasafari_consumer_secret,
-                                'mpesasafari_shortcode' => $request->mpesasafari_shortcode
+                                'mpesasafari_shortcode' => $request->mpesasafari_shortcode,
+                                'mpesasafari_webhook' => $request->mpesasafari_webhook
                             ));
                             break;
 
