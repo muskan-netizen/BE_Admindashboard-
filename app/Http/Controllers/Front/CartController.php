@@ -19,6 +19,7 @@ use App\Http\Traits\{ApiResponser,CartManager, KwikApi,BiddingCartTrait, CartMan
 use App\Http\Controllers\Client\ShippoController;
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate, Page,WebStylingOption, ProductDeliveryFeeByRole};
+use DateTime;
 use Http\Message\Cookie;
 
 
@@ -2744,13 +2745,27 @@ class CartController extends FrontController
         DB::beginTransaction();
         try{
             $user = Auth::user();
+            $cartProduct=CartProduct::where('id', $request->cart_product_id)->first();
             if ($user) {
                 if($request->task_type == 'now'){
                     $request->schedule_dt = Carbon::now()->format('Y-m-d H:i:s');
                 }else{
+                    if(!empty($request->schedule_time) ){
+                        $slot_time = explode("-",$request->schedule_time);
+                        $start_time = $slot_time[0];
+                        $end_time = !empty($slot_time[1]) ? $slot_time[1]: $slot_time[0];
+                        $request->schedule_dt =date('d-m-Y H:i:s',strtotime( date('Y-m-d',strtotime($request->schedule_dt)). " " . $start_time));
+                    }else{
+                        if(isset($cartProduct->schedule_slot)){
+                            $start_scheduled_time = date('H:i',strtotime($request->schedule_dt));
+                            $interval = isset($cartProduct->vendor) &&  $cartProduct->vendor->slot_minutes > 0 ?  $cartProduct->vendor->slot_minutes : 30;
+                            $request->schedule_time = $start_scheduled_time. " - ". date('H:i',strtotime($start_scheduled_time.' + '.$interval.' minute')); 
+                 }
+                }
+
                     $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
-                CartProduct::where('id', $request->cart_product_id)->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt,'schedule_slot' => $request->schedule_time,'dispatch_agent_id' => $request->dispatch_agent_id]);
+              $cartProduct->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt,'schedule_slot' => $request->schedule_time,'dispatch_agent_id' => $request->dispatch_agent_id]);
 
 
                 // $cartProductDetails = CartProduct::where('id', $request->cart_product_id)->get()->first();
