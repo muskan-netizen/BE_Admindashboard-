@@ -2,7 +2,7 @@
  :root{--alBodyTemplateThreeFont: 'Jost', sans-serif;}
 
  .al_body_template_three,a,b,body,div,h1,h2,h3,h4,h5,h6,html,label,p,section,span,strong{
-    /* font-family:var(--alBodyTemplateThreeFont)!important */
+    font-family:var(--alBodyTemplateThreeFont)!important;
 }
     body,html{scroll-behavior:smooth
     }
