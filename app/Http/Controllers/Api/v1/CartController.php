@@ -1388,10 +1388,10 @@ class CartController extends BaseController
                             }
                         }
                     }
-                    if($rate > 0 && $discount_amount > 0 ){
-                        $discount = ($discount_amount*$rate) / 100;
+                  /*  if($rate > 0 && $discount_amount > 0 ){
+                        $discount = ($discount_amount * $rate) / 100;
                         $taxable_amount -= $discount;
-                    }
+                    }*/
                 }
                 $payable_amount = $payable_amount + $vendorTotalDeliveryFee ;
                 $deliver_charge = $vendorTotalDeliveryFee * $clientCurrency->doller_compare;
