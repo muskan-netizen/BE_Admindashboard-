@@ -58,7 +58,6 @@ trait ProductTrait{
             $with_array[] = 'ProductAttribute.attribute';
         }
         $product = Product::with($with_array);
-
             if($user){
                 $product = $product->with('inwishlist', function ($query) use($user) {
                     $query->where('user_wishlists.user_id', $user->id);

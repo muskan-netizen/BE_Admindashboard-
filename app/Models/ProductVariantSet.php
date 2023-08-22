@@ -34,7 +34,7 @@ class ProductVariantSet extends Model
     		->join('variant_options as pvs', 'product_variant_sets.variant_option_id', 'pvs.id')
     		->join('variant_option_translations as vt','vt.variant_option_id','pvs.id')
     		->join('product_variants as pv','product_variant_sets.product_variant_id','pv.id')
-    		->select('pvs.hexacode', 'vt.title', 'product_variant_sets.product_id', 'product_variant_sets.variant_type_id', 'product_variant_sets.variant_option_id', 'product_variant_sets.product_variant_id','pv.quantity','pv.price','pv.status')
+    		->select('pvs.hexacode', 'vt.title', 'product_variant_sets.id', 'product_variant_sets.product_id', 'product_variant_sets.variant_type_id', 'product_variant_sets.variant_option_id', 'product_variant_sets.product_variant_id','pv.quantity','pv.price','pv.status')
     		->where('pv.status',1)
 			->groupBy('product_variant_sets.variant_option_id');
 	}

@@ -65,7 +65,7 @@ class Product extends Model implements Auditable
 
   public function variant()
   {
-    return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id', 'container_charges', 'markup_price', 'incremental_price', 'incremental_price_per_min')->where('status', 1);
+    return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id', 'container_charges', 'markup_price', 'incremental_price', 'incremental_price_per_min', 'minimum_duration')->where('status', 1);
   }
 
   
@@ -103,7 +103,7 @@ class Product extends Model implements Auditable
 
   public function variantSet()
   {
-    return $this->hasMany('App\Models\ProductVariantSet')->select('product_id', 'product_variant_id', 'variant_type_id', 'variant_option_id')->groupBy('variant_type_id')->orderBy('product_variant_id');
+    return $this->hasMany('App\Models\ProductVariantSet')->select('id','product_id', 'product_variant_id', 'variant_type_id', 'variant_option_id')->groupBy('variant_type_id')->orderBy('product_variant_id');
   }
 
   public function variantSetNew()

@@ -694,6 +694,7 @@ class ProductController extends BaseController
                 $existv = array();
 
                 if ($request->has('variant_ids')) {
+                    // pr($request->variant_minimum_duration);
                     foreach ($request->variant_ids as $key => $value) {
                         $variantData = ProductVariant::where('id', $value)->first();
                         $existv[] = $value;
@@ -710,6 +711,7 @@ class ProductController extends BaseController
                             $variantData->title             = @$request->variant_titles[$key];
                             $variantData->price             = @$request->variant_price[$key];
                             $variantData->incremental_price             = @$request->variant_incremental_price[$key]??0;
+                            $variantData->minimum_duration = @$request->variant_minimum_duration[$key] ?? 0;
                             $variantData->incremental_price_per_min             = @$per_min;
                             $variantData->markup_price      = @$request->markup_price[$key];
                             $variantData->compare_at_price  = @$request->variant_compare_price[$key];
@@ -739,6 +741,7 @@ class ProductController extends BaseController
                     $variantData->cost_price        = $request->cost_price;
                     $variantData->quantity          = $request->quantity;
                     $variantData->tax_category_id   = $request->tax_category;
+                    $variantData->minimum_duration = @$request->minimum_duration ?? 0;
                     $variantData->save();
 
                     // Save Product Variant By Roles without product_variant_id and amount

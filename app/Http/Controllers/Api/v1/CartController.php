@@ -24,7 +24,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Http\Controllers\ShiprocketController;
 
-use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, CartProductPrescription, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, VerificationOption, TaxRate,VendorMinAmount, WebStylingOption, ProcessorProduct,OrderFiles, ProductRentalProtection, RentalProtection};
+use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, CartProductPrescription, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, CartRentalProtection, VerificationOption, TaxRate,VendorMinAmount, WebStylingOption, ProcessorProduct,OrderFiles, ProductRentalProtection, RentalProtection};
 
 use GuzzleHttp\Client as GCLIENT;
 use Log;
@@ -49,7 +49,7 @@ class CartController extends BaseController
             $cart = $cart->first();
             $cartData = [];
             if ($cart) {
-
+                
                 $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
 
                 if(isset($cart->editingOrder) && !empty($cart->editingOrder) && !empty($cartData))
@@ -124,8 +124,7 @@ class CartController extends BaseController
     /**     * Add product In Cart    *           */
     public function add(Request $request)
     {
-        \Log::info($request->all());
-        pr($request->all());
+
         try {
             $preference = ClientPreference::first();
             $luxury_option = LuxuryOption::where('title', $request->type)->first();            
@@ -265,6 +264,23 @@ class CartController extends BaseController
                         'message' => 'You can select maximum ' . $addon->min_select . ' options of ' . $addon->title,
                         'data' => $addon
                     ], 404);
+                }
+            }
+
+            if($request->has('rental_protection')){
+                $saveProtections = [];
+                foreach($request->rental_protection as $protectionId){
+                    $rentalProtection = RentalProtection::find($protectionId);
+                    if($rentalProtection){
+                        $saveProtections[] = [
+                            'cart_id' => $cart_detail->id,
+                            'rental_protection_id' => $rentalProtection->id,
+                            'product_id' => $product->id,
+                        ];
+                    }
+                }
+                if(!empty($saveProtections)){
+                    CartRentalProtection::insert($saveProtections);
                 }
             }
 
@@ -729,6 +745,8 @@ class CartController extends BaseController
                 $qry->select('addon_options.id', 'addon_options.price', 'apt.title', 'addon_options.addon_id', 'apt.language_id');
                 $qry->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
             }, 'vendorProducts.product.taxCategory.taxRate',
+            'product.rentalProtections',
+            'product.bookingOptions'
         ]);
 
         $cartData = $cartData->select('vendor_id', 'vendor_dinein_table_id','dispatch_agent_id', 'is_cart_checked')->where('status', [0, 1])->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
@@ -1141,6 +1159,8 @@ class CartController extends BaseController
                                 }
                             }
                             $prod->taxdata = $taxData;
+                            // if($prod->product->)
+                            $prod->rentalProtection = $prod->product->rentalProtection;
                             if ( (in_array($action,['delivery','on_demand']) )  && ( $is_service_product_price_from_dispatch !=1 )) {
                                 $checkLastMile = 0;
                                 $product_tags = '';
@@ -1353,7 +1373,6 @@ class CartController extends BaseController
                         $taxable_amount -= $discount;
                     }
                 }
-
 
                 $payable_amount = $payable_amount + $vendorTotalDeliveryFee ;
 
@@ -1649,7 +1668,6 @@ class CartController extends BaseController
             ['label' => "Total ".@$taxData[0]['identifier']." amount", 'value' => decimal_format($total_taxable_amount)]
         );
 
-
         $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_container_charges = decimal_format($total_container_charges);
         $cart->total_markup_charges = decimal_format($total_markup_charges);
@@ -1720,18 +1738,19 @@ class CartController extends BaseController
             $cart->deliver_status = $delivery_status;
         }
         $cart->loyalty_amount = $loyalty_amount_saved;
-
-
+        
         if (isset($cart_product_luxury_id) && isset($cart_product_luxury_id->luxury_option_id) && $cart_product_luxury_id->luxury_option_id ==4) {
-        $additional_price=($cart_product_luxury_id->additional_increments_hrs_min/$prod->pvariant->incremental_price_per_min);
-        $cart->total_payable_amount= number_format((float)$cart->total_payable_amount+$additional_price, 2, '.', '');
-        $cart->additional_price=$additional_price;
+            if($cart_product_luxury_id->additional_increments_hrs_min && $prod->pvariant->incremental_price_per_min){
+                $additional_price = ($cart_product_luxury_id->additional_increments_hrs_min / $prod->pvariant->incremental_price_per_min);
+                $cart->total_payable_amount = number_format((float)$cart->total_payable_amount + $additional_price, 2, '.', '');
+                $cart->additional_price = $additional_price;
+            }
         }
         else{
             $cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
         }
-        $cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
-
+        //$cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
+        
         //mohit sir branch code updated by sohail farm meat
         $pendingAmount = 0;
         $advancePayableAmount = 0;

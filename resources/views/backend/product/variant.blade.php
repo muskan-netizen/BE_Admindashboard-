@@ -48,7 +48,7 @@
                             @endforeach
                         @endif
                     <th>{{ __("Price") }}</th>
-                    {{-- <th>{{ __('Minimum Duration') }}</th> --}}
+                    <th>{{ __('Duration (Hrs.)') }}</th>
                     <th>{{ __('Incremental Price') }}</th>
                     <th>{{ __("Action") }}</th>
                 </thead>
@@ -57,7 +57,6 @@
                         $variant_count = count($product->variant)-1;
                     @endphp
                     @foreach($product->variant as $key => $varnt)
-                   
                      @include('backend.product.part.addRows')
                     @endforeach
                 </tbody>

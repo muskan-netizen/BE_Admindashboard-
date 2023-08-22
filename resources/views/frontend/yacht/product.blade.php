@@ -80,6 +80,21 @@
                                 <li><a href="javascript:void(0);">{{$fields['Fuel Type']['title'] ?? ''}}</a></li>
                                 <li><a href="javascript:void(0);">{{$fields['Seats']['title'] ?? '0'}} Seats</a></li>
                             @elseif($category->slug == 'yacht')
+                                @foreach($product->variantSet as $key => $variant)
+                                    <div class="vset-box">
+                                        <h4>{{$variant->title}}</h4>
+                                        <div class="d-flex justify-content-between">
+                                            @foreach($variant->option2 as $key => $option)
+                                                <input type="radio" name="booking_duration" value="{{$variant->id}}"/>
+                                                <div class="border border">
+                                                    <h6>{{$option->title}}</h6>
+                                                    <h6>{{Session::get('currencySymbol')}}{{decimal_format($option->price)}}</h6>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    
+                                @endforeach
                                 <li><a href="javascript:void(0);">{{$fields['Cabins']['title'] ?? '0'}} Cabins</a></li>
                                 <li><a href="javascript:void(0);">{{$fields['Baths']['title'] ?? '0'}} Baths</a></li>
                                 <li><a href="javascript:void(0);">{{$fields['Berths']['title'] ?? '0'}} Berths</a></li>
