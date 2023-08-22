@@ -22,7 +22,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Front\CustomerAuthController;
 use App\Http\Requests\{LoginRequest, SignupRequest};
 use App\Http\Controllers\Client\VendorController;
-use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate, SmsTemplate, UserRegistrationDocuments,UserDocs, Vendor, PermissionsOld, UserPermissions, Type, Category, VendorCategory,UserAddress,UserPaymentCards};
+use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate, SmsTemplate, UserRegistrationDocuments,UserDocs, Vendor, PermissionsOld, UserPermissions, Type, Category, SubscriptionInvoicesUser, VendorCategory,UserAddress,UserPaymentCards};
 use Log;
 use App\Http\Traits\CustomerSignupSuccessEmailTrait;
 use App\Http\Traits\InfluencerTrait;
@@ -336,32 +336,24 @@ class AuthController extends BaseController
                 $rules[$user_registration_document->primary->slug] = 'required';
             }
         }
-
-        $validator = Validator::make($signReq->all(), $rules);
-
+        
         if( (empty($signReq->email)) && (empty($signReq->phone_number)) ){
-            $validator = Validator::make($signReq->all(), [
-                'email'  => 'required',
-                'phone_number'  => 'required'
-            ],[
-                "email.required" => __('The email or phone number field is required.'),
-                "phone_number.required" => __('The email or phone number field is required.'),
-            ]);
+            $rules['email']  = 'required';
+            $rules['phone_number']  = 'required';
         }
         else{
             if(!empty($signReq->email) && ($preferences->verify_email == 0)){
-                $validator = Validator::make($signReq->all(), [
-                    'email'  => 'email|unique:users'
-                ]);
+                $rules['email'] = 'email|unique:users';
             }
-
+            
             if(!empty($signReq->phone_number) && ($preferences->verify_phone == 0)){
-
-                $validator = Validator::make($signReq->all(), [
-                    'phone_number' => 'string|min:7|max:15|unique:users'
-                ]);
+                $rules['phone_number'] = 'string|min:7|max:15|unique:users';
             }
         }
+        $message['email.required'] = __('The email or phone number field is required.');
+        $message['phone_number.required'] = __('The email or phone number field is required.');
+        $validator = Validator::make($signReq->all(), $rules,$message);
+
         if ($validator->fails()) {
             foreach ($validator->errors()->toArray() as $error_key => $error_value) {
                 $errors['error'] = __($error_value[0]);
@@ -1358,6 +1350,7 @@ class AuthController extends BaseController
                 $data['callingCode'] = $user->country ? $user->country->phonecode : '';
                 $data['refferal_code'] = $user_refferal ? $user_refferal->refferal_code : '';
                 $data['user_document'] = $user_registration_documents;
+                $data['user_subscription'] = SubscriptionInvoicesUser::where('status_id',1)->where('end_date','>=',now()->format('Y-m-d'))->count();
                 return response()->json(['data' => $data]);
             }
             else {

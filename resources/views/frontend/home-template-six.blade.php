@@ -181,7 +181,7 @@
 @endif
 <section class="alSixMainMenu p-0">
    @if(count($navCategories))
-   <div class="menu-navigation_al">
+   <div class="menu-navigation_al test">
    <div class="container-fulid">
       <div class="row">
          <div class="col-12">

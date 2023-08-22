@@ -57,7 +57,7 @@ article#page-container {
 }
 
 article#page-container section .vendors section {
-    padding: 40px 0 20px;
+    padding: 20px 0 20px 0px;
     margin-bottom: 0!important
 }
 
@@ -775,7 +775,7 @@ footer#footer {
 }
 body.al_body_template_eight section.suppliers-section.container.vender_slider {
     max-width: 98% !important;
-    padding-top: 10px !important;
+    padding-top: 40px !important;
 }
 .al_body_template_eight .fixed-bar .menu-navigation.alThreeMenu .slick-list.draggable li.al_main_category {
     top: 0px;
@@ -818,7 +818,7 @@ body.al_body_template_eight section.suppliers-section.container.vender_slider {
     }
     body.al_body_template_eight section.suppliers-section.container.vender_slider {
         max-width: 98% !important;
-        padding-top: 10px !important;
+        padding-top: 30px !important;padding-bottom:0px !important;
     }
     .al_body_template_eight .single_category_products .suppliers-img-outer{
         min-height: 290px !important;
@@ -962,7 +962,7 @@ article#page-container {
 /*--------------new design css--------*/
 
 body.al_body_template_eight section.container.popular-brands.left-shape_.position-relative {
-    margin-top: 40px;
+    margin-top: 20px;
 }
 
 .al_body_template_eight .onhover-dropdown:before {
@@ -1228,15 +1228,14 @@ section.popular-brands.left-shape_.position-relative.categories {
 }
 
 article#page-container section .vendors section h2.h2-heading {
-    margin-bottom: 35px;
+    margin:20px 0px;
     width: 90%;
     display: block;
     text-align: left;
-    margin-top: 0;
 }
 
 section#our_vendor_main_div .suppliers-slider-vendors.product-m.render_vendors {
-    margin-bottom: 50px;
+    margin-bottom: 20px;
 }
 
 section#our_vendor_main_div .render_full_best_sellers {
@@ -1290,24 +1289,27 @@ section.main-product.single_category_products .top-heading a {
 }
 
 .al_custom_brand .logo_brand {
-    margin-bottom: 30px;
+    margin-bottom: 0px;
 }
 
 article#page-container section .vendors section a {
-   color:#000;font-size: 20px;
+   color:#000;
+   letter-spacing: 0px;
+   font-weight: 500;
+   font-size: 14px;
+   line-height: 20px;
 }
-
 .al_body_template_eight .main-product {
-    padding:30px 0 !important;
+    padding:0px 0 !important;
 }
 
 section.home-headings {
     padding: 60px 0 0 !important;
 }
 
-.product-card-box.position-relative.al_box_third_template.al {
+/* .product-card-box.position-relative.al_box_third_template.al {
     margin-bottom: 30px;
-}
+} */
 
 .al_body_template_eight .product-description_list p span.product_discription {
     white-space: nowrap;
@@ -1318,7 +1320,7 @@ section.home-headings {
 }
 
 section#homepage_recently_viewed {
-    padding: 60px 0 0!important;
+    padding: 18px 0px 18px 0px!important;
 }
 
 .main-pro-slider .suppliers-slider-recently_viewed {
@@ -1537,7 +1539,7 @@ body.al_body_template_eight.homeHeader .common-banner img {
 
 section#homepage_top_rated {
     background: #f2f2f2;
-    padding: 60px 0 20px !important;
+    padding: 20px 0 20px 0px !important;margin-bottom: 0px;
 }
 
 h2.h2-heading {
@@ -1556,7 +1558,7 @@ section#homepage_top_rated .slick-slider .slick-next {
 }
 */
 .al_body_template_eight section#homepage_top_rated h2.h2-heading {
-    margin: 0 0 40px !important;
+    margin: 0 0 20px 0px !important;
     width: auto;
     display: inline-block !important;
     text-align: left;
@@ -1581,6 +1583,11 @@ section#homepage_top_rated .slick-slider .slick-next {
     border: 1px solid #e8e8e8!important;
     height: 100%;
     min-height: 330px;
+}
+.render_full_featured_products .product-card-box.position-relative.al_box_third_template.al{
+    height: 100%;
+    min-height: 310px;
+    max-height: 310px;
 }
 
 .al_body_template_eight .product-card-box.position-relative.al_box_third_template.al:hover {
@@ -1650,7 +1657,7 @@ section.main-product.mb-0.render_full_new_products h2.h2-heading {
 }
 
 body.al_body_template_eight section.section-b-space {
-    padding-top: 50px !important;
+    padding-top: 10px !important;
 }
 
 body.al_body_template_eight section.cab-banner-area.alTaxiBannerStart {
@@ -1868,7 +1875,27 @@ section.main-product.single_category_products.mb-0.render_full_selected_products
     .al_clock b{
         font-size: 14px;
     }
+    /* .render_full_featured_products .col-md-12.pl-0.pt-4.text-center {
+        padding-top: 0px !important;
+    } */
+}
 
+
+@media screen and (max-width:1440px){
+.render_top_rated .product-card-box.position-relative.al_box_third_template.al {height: 100% !important;min-height: 320px !important;max-height: 320px !important;}
+
+}
+
+@media screen and (max-width:1366px){
+article#page-container section .vendors section h2.h2-heading{margin-bottom: 20px;}
+.al_body_template_eight .main-product {padding: 10px 0px 0px 0px !important;}
+.al_body_template_eight .render_full_on_sale .img-outer-box{min-height: 240px !important;max-height: 240px !important;}
+.order_detail h5 {letter-spacing: 0px;font-weight: 500;font-size: 14px;line-height: 20px;}
+
+.render_full_featured_products .col-md-12.pl-0.pt-4.text-center {padding-top:30px !important;}
+/* .render_full_recent_orders h2{padding-top:30px !important;} */
+.render_full_featured_products .product-card-box.position-relative.al_box_third_template {height: 100% !important;min-height: 310px !important;max-height: 310px !important;}
+.render_top_rated .product-card-box.position-relative.al_box_third_template.al {height: 100%;min-height: 320px;max-height: 320px;}
 }
 
 @media(max-width:991px) {
