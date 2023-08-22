@@ -767,7 +767,7 @@ class CartController extends BaseController
             }
                 $products->product->transmission = $fields['Transmission'] ?? '';
                 $products->product->fuel_type = $fields['Fuel Type'] ?? '';
-                $products->product->Seats = $fields['Seats'] .' Seats'?? '';
+                $products->product->Seats = $fields['Seats'] ?? '' .' Seats';
                 $products->product->cabins = $fields['Cabins'] ?? '';
                 $products->product->baths = $fields['Baths'] ?? '';
         }
