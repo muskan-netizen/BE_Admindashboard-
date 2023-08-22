@@ -72,6 +72,8 @@ use App\Models\ {
     OrderLongTermServicesAddon,
     OrderLongTermServiceSchedule,
     Bid,
+    CartBookingOption,
+    CartRentalProtection,
     OrderNotificationsLogs
 };
 use App\Models\ProductVariantSet;
@@ -646,7 +648,8 @@ class OrderController extends FrontController
 
         $order = Order::with([
             'products.vendor',
-            'products.pvariant.vset',
+            'products.pvariant.vset.option2',
+            'products.product.productcategory',
             'products.pvariant.translation' => function ($q) use ($langId) {
                 $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                 $q->where('language_id', $langId);
@@ -2421,6 +2424,8 @@ class OrderController extends FrontController
                 CartProduct::query()->whereIn('id', $cart_product_ids)->delete();
                 CartProductPrescription::where('cart_id', $cart->id)->delete();
                 CartDeliveryFee::where('cart_id', $cart->id)->delete();
+                CartRentalProtection::where('cart_id', $cart->id)->delete();
+                CartBookingOption::where('cart_id', $cart->id)->delete();
                 // send sms
                 // $this->sendSuccessSMS($request, $order);
             }

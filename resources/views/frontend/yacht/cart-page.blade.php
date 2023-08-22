@@ -87,19 +87,20 @@ $getOnDemandPricingRule = getOnDemandPricingRule($serviceType, (@Session::get('o
 // $is_service_product_price_from_dispatch_forOnDemand =1;
 // }
 $is_service_product_price_from_dispatch_forOnDemand = $getOnDemandPricingRule['is_price_from_freelancer'] ?? 0;
-
 $cartProduct = $cart_details->products[0] ?? null;
 if($cartProduct){
-$vendorProduct = $cartProduct->vendor_products[0] ?? null;
-$product = $vendorProduct->product ?? null;
-$rentalProtection = $product->rental_protections ?? null;
-$bookingOptions = $product->booking_options ?? null;
-$translation = $vendorProduct->product ? $vendorProduct->product->translation : null;
-$startDate = Carbon::parse($vendorProduct->start_date_time);
-$endDate = Carbon::parse($vendorProduct->end_date_time);
-
-$difference = $startDate->diffInDays($endDate);
+    $vendorProduct = $cartProduct->vendor_products[0] ?? null;
+    $variantData = $vendorProduct->pvariant;
+    $product = $vendorProduct->product ?? null;
+    $rentalProtection = $product->rental_protections ?? null;
+    $bookingOptions = $product->booking_options ?? null;
+    $translation = $vendorProduct->product ? $vendorProduct->product->translation : null;
+    $startDate = Carbon::parse($vendorProduct->start_date_time);
+    $endDate = Carbon::parse($vendorProduct->end_date_time);
+    $difference = $startDate->diffInDays($endDate);
 }
+
+$serviceType = Session::get('serviceType');
 @endphp
 
 @if ($cart_details->totalQuantity <= 0) <div class="container">
@@ -124,11 +125,8 @@ $difference = $startDate->diffInDays($endDate);
                     @foreach($rentalProtection as $key => $protection)
                     @if($protection->type_id == 1)
                     <h5>Included in your booking</h5>
-                    {{-- <h5>{{$protection->rental_protection->title}}</h5> --}}
                     <ul class="d-flex">
                         <li><img src="/yacht-images/check.png" alt="">{{$protection->rental_protection->description}}</li>
-                        {{-- <li><img src="/yacht-images/check.png" alt="">Included 24/7 breakdown assistance.</li>
-                                <li><img src="/yacht-images/check.png" alt="">Included Third party insurance.</li> --}}
                     </ul>
                     @endif
                     @endforeach
@@ -332,7 +330,9 @@ $difference = $startDate->diffInDays($endDate);
                                 @endif
                                 </ul>
                             </div>
-                            <span>Booking for {{$difference}} days</span>
+                            @if($serviceType == 'rental')
+                                <span>Booking for {{$difference}} days</span>
+                            @endif
                         </div>
                     </div>
                     <div class="image">
@@ -352,19 +352,26 @@ $difference = $startDate->diffInDays($endDate);
                     </div>
                 </div>
                 <div class="booking_date">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="start_time inner_item">
-                            <h6>Start :<span>{{date('H:i',strtotime($vendorProduct->start_date_time))}}</span></h6>
-                            <h6>{{date('d M y',strtotime($vendorProduct->start_date_time))}}</h6>
+                    @if($serviceType == 'rental')
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="start_time inner_item">
+                                <h6>Start :<span>{{date('H:i',strtotime($vendorProduct->start_date_time))}}</span></h6>
+                                <h6>{{date('d M y',strtotime($vendorProduct->start_date_time))}}</h6>
+                            </div>
+                            <div class="seleed_date">
+                                <span>{{$difference}} Day(s)</span>
+                            </div>
+                            <div class="end_time inner_item">
+                                <h6>End :<span>{{date('H:i',strtotime($vendorProduct->end_date_time))}}</span></h6>
+                                <h6>{{date('d M y',strtotime($vendorProduct->end_date_time))}}</h6>
+                            </div>
                         </div>
-                        <div class="seleed_date">
-                            <span>{{$difference}} Day(s)</span>
+                    @elseif($serviceType == 'yacht')
+                        <div class="d-flex justify-content-between align-items-center">
+                                <h6>{{$variantData->vset[0]->option_data->title}}</h6>
+                                <h6>{{Session::get('currencySymbol')}}{{$variantData->price}}</h6>
                         </div>
-                        <div class="end_time inner_item">
-                            <h6>End :<span>{{date('H:i',strtotime($vendorProduct->end_date_time))}}</span></h6>
-                            <h6>{{date('d M y',strtotime($vendorProduct->end_date_time))}}</h6>
-                        </div>
-                    </div>
+                    @endif
                     <ul>
                         <img src="/yacht-images/6.png">
                         <li><img src="/yacht-images/4.png" alt=""><span>{{$cart_details->vendor_detail->vendor_address->address}}</span> Pickup</li>

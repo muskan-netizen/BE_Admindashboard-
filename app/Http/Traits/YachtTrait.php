@@ -30,7 +30,7 @@ trait YachtTrait
                 ];
             });
         }
-        // pr($request->all());
+        
         $category = Category::where('slug', $request->service)->first();
         $data['products'] = [];
         if ($category) {
@@ -50,7 +50,7 @@ trait YachtTrait
                         // $q->where('pickup_time', '<=', $pickup_time)
                         // ->where('drop_time', '>=', $drop_time);
                     }
-                })
+                })->whereDoesntHave('productBooked')
                 ->where(function ($q) use ($request) {
                     if ($request->has('seats') && !empty($request->seats)) {
                         $q->whereHas('ProductAttribute', function ($q) use ($request) {

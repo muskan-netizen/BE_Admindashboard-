@@ -537,4 +537,16 @@ class Product extends Model implements Auditable
   public function rentalProtections(){
     return $this->hasMany('App\Models\ProductRentalProtection', 'product_id', 'id');
   }
+
+  public function cartBookingOptions(){
+    return $this->hasOne('App\Models\CartBookingOption', 'product_id', 'id');
+  }
+
+  public function cartRentalProtections(){
+    return $this->hasOne('App\Models\CartRentalProtection', 'product_id', 'id');
+  }
+
+  public function productBooked(){
+    return $this->hasOne('App\Models\ProductBooking', 'product_id', 'id');
+  }
 }

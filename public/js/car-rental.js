@@ -173,3 +173,8 @@ $(document).on('change', 'input[name="service"]', function(e){
       $("#diff-box").removeClass('d-none');
   }
 });
+
+
+$(document).on('change', 'input[name="booking_duration"]', function(e){
+  $('#prod_variant_id').val($(this).val());
+})

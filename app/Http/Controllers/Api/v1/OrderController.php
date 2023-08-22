@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use Log;
-use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule, WebStylingOption,Bid, OrderNotificationsLogs, ProcessorProduct,OrderFiles};
+use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule, WebStylingOption,Bid, CartBookingOption, CartRentalProtection, OrderNotificationsLogs, ProcessorProduct,OrderFiles};
 
 use App\Models\AutoRejectOrderCron;
 
@@ -222,7 +222,9 @@ class OrderController extends BaseController
                     $total_subscription_discount = 0;
 
                     if($cart_products[0]->luxury_option_id=="4"){
-                        $additional_price=($cart_products[0]->additional_increments_hrs_min/$cart_products[0]['product']['variants'][0]->incremental_price_per_min);
+                        if($cart_products[0]->additional_increments_hrs_min  && $cart_products[0]['product']['variants'][0]->incremental_price_per_min){
+                            $additional_price=($cart_products[0]->additional_increments_hrs_min/$cart_products[0]['product']['variants'][0]->incremental_price_per_min);
+                        }
                     }
 
                     /* calculate total fixed fee amount */
@@ -334,9 +336,12 @@ class OrderController extends BaseController
                     $total_container_charges = 0;
                     $fixed_fee_amount = 0.00;
                     $vendor_total_container_charges = 0;
+                    $security_amount = 0.00;
 
                     $slot_based_price = 0;
                     $deliveryfeeOnCoupon = 0;
+                    $rentalProtectionPrice = 0;
+                    $bookingOptionPrice = 0;
                     foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
                         $delivery_fee = 0;
                         $deliver_charge = $delivery_fee_charges = 0.00;
@@ -432,6 +437,10 @@ class OrderController extends BaseController
                             }
 
 
+                            if($luxury_option->id == 4){
+                                $security_amount += $vendor_cart_product->product->security_amount;
+                            }
+
 
                             $quantity_price = ($price_in_dollar_compare * $vendor_cart_product->quantity) * $daysCountRecurring;
                             $quantity_container_charges = $container_charges_in_dollar_compare * $vendor_cart_product->quantity ;
@@ -459,6 +468,30 @@ class OrderController extends BaseController
                                     $vendor_products_total_amount = $vendor_products_total_amount + $opt_quantity_price;
                                 }
                             }
+
+                            if(!empty($cart->rentalProtection)){
+                                foreach($cart->rentalProtection as $protection){
+                                    $protection_price_in_currency = $protection->rentalProtection->price ?? 0;
+                                    $rentalProtectionPrice = $protection_price_in_currency * $clientCurrency->doller_compare;
+                                    $total_amount += $rentalProtectionPrice;
+                                    $productAddon_price += $rentalProtectionPrice;
+                                    $payable_amount += $rentalProtectionPrice;
+                                    $vendor_payable_amount += $rentalProtectionPrice;
+                                    $vendor_products_total_amount += $rentalProtectionPrice;
+                                }
+                            }
+                            if(!empty($cart->bookingOption)){
+                                foreach($cart->bookingOption as $option){
+                                    $option_price_in_currency = $option->bookingOption->price ?? 0;
+                                    $bookingOptionPrice = $option_price_in_currency * $clientCurrency->doller_compare;
+                                    $total_amount += $bookingOptionPrice;
+                                    $productAddon_price += $bookingOptionPrice;
+                                    $payable_amount += $bookingOptionPrice;
+                                    $vendor_payable_amount += $bookingOptionPrice;
+                                    $vendor_products_total_amount += $bookingOptionPrice;
+                                }
+                            }
+
                             $vendor_taxable_amount = 0;
                             if (isset($vendor_cart_product->product->taxCategory)) {
                                 foreach ($vendor_cart_product->product->taxCategory->taxRate as $tax_rate_detail) {
@@ -511,7 +544,7 @@ class OrderController extends BaseController
                             }
 
 
-                            //$taxable_amount += $product_taxable_amount;
+                            $taxable_amount += $product_taxable_amount;
                             $vendor_taxable_amount +=  decimal_format($taxable_amount);
                             //$total_amount += ($vendor_cart_product->quantity * $variant->price) + ($vendor_cart_product->quantity * $variant->container_charges);
                             $variant_price = $variant->price;
@@ -616,7 +649,11 @@ class OrderController extends BaseController
                             $order_product->schedule_type = $vendor_cart_product->schedule_type ?? null;
                             $order_product->schedule_slot = ! empty($vendor_cart_product->schedule_slot) ? $vendor_cart_product->schedule_slot : '';
                             $order_product->scheduled_date_time = $vendor_cart_product->schedule_type == 'schedule' ? $vendor_cart_product->scheduled_date_time : null;
-
+                            
+                            if ($luxury_option->id == 4) {
+                                $order_product->security_amount = $vendor_cart_product->product->security_amount;
+                            }
+                            
                             $order_product->save();
 
 
@@ -1000,7 +1037,7 @@ class OrderController extends BaseController
                         $timezone = $client_timezone->timezone ?? ( $user ? $user->timezone : 'Asia/Kolkata' );
                     }
 
-                    $payable_amount = $payable_amount + $tip_amount ;
+                    $payable_amount = $payable_amount + $tip_amount + $security_amount;
                     $payable_amount = $payable_amount - $wallet_amount_used;
 
 
@@ -1015,6 +1052,8 @@ class OrderController extends BaseController
                     $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot)?$cart->dropoff_scheduled_slot:null);
                     $order->subscription_discount = $total_subscription_discount;
                     $order->luxury_option_id = $luxury_option->id;
+                    $order->rental_protection_amount = $rentalProtectionPrice;
+                    $order->booking_option_price = $bookingOptionPrice;
                     $payable_amount = $payable_amount - $Order_bid_discount??0;
 
                     if (!$additionalPreferences->is_tax_price_inclusive) {
@@ -1086,6 +1125,8 @@ class OrderController extends BaseController
                         CartProduct::query()->whereIn('id', $cart_product_ids)->delete(); 
                         CartProductPrescription::where('cart_id', $cart->id)->delete();
                         CartDeliveryFee::where('cart_id', $cart->id)->delete();
+                        CartRentalProtection::where('cart_id', $cart->id)->delete();
+                        CartBookingOption::where('cart_id', $cart->id)->delete();
                     }
                     if (count($tax_category_ids)) {
                         foreach ($tax_category_ids as $tax_category_id) {
@@ -3055,13 +3096,13 @@ class OrderController extends BaseController
 
                     if ($cart) {
                         $loyalty_points_used = 0;
-                        $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
-                        if ($order_loyalty_points_earned_detail) {
-                            $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
-                            if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
-                                $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
-                            }
-                        }
+                        // $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
+                        // if ($order_loyalty_points_earned_detail) {
+                        //     $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
+                        //     if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
+                        //         $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
+                        //     }
+                        // }
                         $order = Order::whereHas('vendors', function($q) use($order_vendor_id){
                             $q->where('id', $order_vendor_id);
                         })->first();
@@ -3335,7 +3376,7 @@ class OrderController extends BaseController
                             }
 
                         }
-                        $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
+                        // $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
                         if (in_array(1, $subscription_features)) {
                             $total_subscription_discount = $total_subscription_discount + $total_delivery_fee;
                         }
@@ -3344,12 +3385,12 @@ class OrderController extends BaseController
                         $order->total_discount = $total_discount;
                         $order->taxable_amount = $taxable_amount;
                         $payable_amount = $payable_amount + $total_delivery_fee - $total_discount;
-                        if ($loyalty_amount_saved > 0) {
-                            if ($loyalty_amount_saved > $payable_amount) {
-                                $loyalty_amount_saved = $payable_amount;
-                                $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
-                            }
-                        }
+                        // if ($loyalty_amount_saved > 0) {
+                        //     if ($loyalty_amount_saved > $payable_amount) {
+                        //         $loyalty_amount_saved = $payable_amount;
+                        //         $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
+                        //     }
+                        // }
                         // $payable_amount = $payable_amount - $loyalty_amount_saved;
 
                         $difference_to_be_paid = $payable_amount - $previous_order_total;
@@ -3369,15 +3410,15 @@ class OrderController extends BaseController
                                         return $this->errorResponse(__('Insufficient balance in your wallet'), 422);
                                     }
 
-                                    if ($wallet_amount_used > $payable_amount) {
-                                        $wallet_amount_used = $payable_amount;
-                                    }
+                                    // if ($wallet_amount_used > $payable_amount) {
+                                    //     $wallet_amount_used = $payable_amount;
+                                    // }
                                     $order->wallet_amount_used = $wallet_amount_used;
                                     if ($wallet_amount_used > 0) {
                                         $wallet->withdrawFloat($order->wallet_amount_used, ['Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>']);
                                     }
                                 }
-                                $payable_amount = $payable_amount - $wallet_amount_used;
+                                // $payable_amount = $payable_amount - $wallet_amount_used;
                             }
                         }
                         else{
@@ -3401,8 +3442,8 @@ class OrderController extends BaseController
                         $order->total_delivery_fee = $total_delivery_fee;
                         $order->loyalty_points_used = 0;
                         $order->loyalty_amount_saved = 0; //$loyalty_amount_saved;
-                        $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
-                        $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
+                        $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'] ?? 0;
+                        $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'] ?? 0;
                         $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
                         $order->subscription_discount = $total_subscription_discount;
                         $order->luxury_option_id = $luxury_option->id;

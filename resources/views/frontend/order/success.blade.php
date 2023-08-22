@@ -67,7 +67,7 @@ $order_is_long_term = $order->is_long_term;
 
                                 @foreach($vendor->products as $product)
                                     @php
-
+                                        $productCategory = $product->product->productcategory->slug;
                                         $image = count($product->media) ? @$product->media->first()->image['path']['proxy_url'].'74/100'.@$product->media->first()->image['path']['image_path']:@$product->image['proxy_url'].'74/100'.@$product->image['image_path'];
                                         $additional_price+= $product->incremental_price;
                                         $security_amount+=$product->security_amount;
@@ -96,7 +96,13 @@ $order_is_long_term = $order->is_long_term;
                                                     <div>
                                                         @if($serviceType=='rental')
                                                             <h4>{{__('Duration')}}</h4>
-                                                            @php  $dura = getHoursMinutes($product->total_booking_time);  @endphp
+                                                            @php  
+                                                            if($productCategory == 'rental'){
+                                                                $dura = getHoursMinutes($product->total_booking_time);
+                                                            }elseif($productCategory == 'yacht'){
+                                                                $dura = $product->pvariant->vset[0]->options1->title;
+                                                            }
+                                                            @endphp
                                                             <h5>{{$dura}}</h5>
                                                         @else
                                                             <h4>{{__('Quantity')}}</h4>

@@ -1989,7 +1989,8 @@ class CartController extends FrontController
         CartProduct::where('id', $request->cartproduct_id)->delete();
         CartCoupon::where('vendor_id', $request->vendor_id)->delete();
         CartAddon::where('cart_product_id', $request->cartproduct_id)->delete();
-
+        CartRentalProtection::where('cart_id', $cartProd->cart_id)->delete();
+        CartBookingOption::where('cart_id', $cartProd->cart_id)->delete();
         if(!empty($cartProd)){
             $cartpro_count = CartProduct::where('cart_id', $cartProd->cart_id)->count();
             if($cartpro_count == 0){

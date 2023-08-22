@@ -3361,6 +3361,19 @@ $(document).ready(function () {
                     }
                    showRemoveCart(modelText);
                 } else {
+                    // if(serviceType == 'yacht'){
+                        
+                    //     var booking_duration = $('input[name="booking_duration"]');
+                    //     let isDurationSelected = false;
+
+                    //     booking_duration.each(function(inbdex, element){
+                    //         if(element.checked){
+                    //             let isDurationSelected = false;
+                    //             console.log(element.value)
+                    //         }
+                    //     })
+                    //     return false;
+                    // }
                     var variant_id = $('#prod_variant_id').val();
                     var start_date =  $('#start_time').val();
                     var end_date =  $('#end_time').val();
