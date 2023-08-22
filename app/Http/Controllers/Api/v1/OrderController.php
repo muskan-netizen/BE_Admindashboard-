@@ -2360,7 +2360,7 @@ class OrderController extends BaseController
                     'qty' => $product->quantity,
                     'category_type' => $product->product->category->categoryDetail->type->title ?? '',
                     'product_id' => $product->product_id,
-                    'title' => $product->product_name,
+                    'title' =>$product->translation->title,
                     'product_title' => $product->translation->title,
                     'routes' => $product->routes,
                     'dispatcher_agent' => $dispatcher_agent,
