@@ -9,28 +9,53 @@
     <div class="container">
         <div class="row">
             <div class="left col-md-7">
-                <div class="product_slider">
-                    <div class="item">
-                        <div class="">
-                            @if(!empty($product->media) && count($product->media) > 0)
-                            @foreach($product->media as $k => $image)
-                            @php
+                <div class="product_slider prodct_slider">
+                @if(!empty($product->media) && count($product->media) > 0)
+                    @foreach($product->media as $k => $image)
+                        @php
                             if(isset($image->pimage)){
                             $img = $image->pimage->image;
                             }else{
                             $img = $image->image;
                             }
-                            @endphp
-                            @if(!is_null($img))
-                            <img data-src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}" src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}">
-                            @endif
-                            @endforeach
-                            @else
-                            <img data-src="{{loadDefaultImage()}}" width="60" height="60" src="{{loadDefaultImage()}}">
-                            @endif
+                        @endphp
+                        <div class="item">
+                                <div class="image">
+                                    <img src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}" alt="" data-src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}">
+                                </div>
                         </div>
-                    </div>
+                        {{-- <div class="item">
+                            <div class="image">
+                                <img src="images/product1.png" alt="">
+                            </div>
+                        </div> --}}
+                    @endforeach
+                    @endif
+                        {{-- <div class="item">
+                            <div class="">
+                                @if(!empty($product->media) && count($product->media) > 0)
+                                @foreach($product->media as $k => $image)
+                                @php
+                                if(isset($image->pimage)){
+                                $img = $image->pimage->image;
+                                }else{
+                                $img = $image->image;
+                                }
+                                @endphp
+                                @if(!is_null($img))
+                                <img data-src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}" src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}">
+                                @endif
+                                @endforeach
+                                @else
+                                <img data-src="{{loadDefaultImage()}}" width="60" height="60" src="{{loadDefaultImage()}}">
+                                @endif
+                            </div>
+                        </div> --}}
                 </div>
+                <ul class="slider product_list_slider">
+						<li><img src="images/product.png" alt=""></li>
+						<li><img src="images/product1.png" alt=""></li>
+				</ul>
             </div>
             <div class="right col-md-5">
                 <div class="text">
@@ -220,6 +245,27 @@
             map: map,
             title: 'Company Location'
         });
+
+            $('.prodct_slider').slick({
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        arrows: false,
+        fade: true,
+        asNavFor: '.product_list_slider'
+    });
+
+    $('.product_list_slider').slick({
+        slidesToShow: 6,
+        slidesToScroll: 1,
+        asNavFor: '.prodct_slider',
+        dots: false,
+        focusOnSelect: true
+    });
+    $('a[data-slide]').click(function(e) {
+        e.preventDefault();
+        var slideno = $(this).data('slide');
+        $('.product_list_slider').slick('slickGoTo', slideno - 1);
+    });  
     });
 </script>
 
