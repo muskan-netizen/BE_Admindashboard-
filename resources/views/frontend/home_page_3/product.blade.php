@@ -12,7 +12,9 @@
             <div class="inner_spacing px-0">
                 <div class="product-description">
                     <div class="d-flex align-items-center justify-content-between">
-                        <h6 class="card_title ellips">{{ $product->title }}</h6> 
+                        <h6 class="card_title ellips">{{ $product->title }} @if ($product->calories)
+                            ({{$product->calories}} {{ __("calories") }})
+                        @endif </h6> 
                         @if($client_preference_detail && $client_preference_detail->rating_check==1) 
                             @if($product->averageRating >0)
                                 <span class="rating-number">{{ $product->averageRating }}</span>

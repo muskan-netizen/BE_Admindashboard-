@@ -273,6 +273,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                     <div class="product-right inner_spacing pl-sm-3 p-0 third-temp-lan">
                                         <h2 class="mb-0">
                                             {{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}
+                                            @if ($product->calories)({{$product->calories}} {{ __("calories") }})@endif
                                         </h2>
                                         <h6 class="sold-by">
                                             <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
@@ -400,7 +401,9 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                         @if($product->is_recurring_booking == 1)
                                             @include('frontend.product-part.recurring-booking')
                                         @endif
-                                        @if($product->category->categoryDetail->type_id == 10)
+                                        @if(@getAdditionalPreference(['is_rental_weekly_monthly_price'])['is_rental_weekly_monthly_price'] && $product->category->categoryDetail->type_id == 10)
+                                            @include('frontend.product-part.booking-slot-p2p-rental')
+                                        @elseif($product->category->categoryDetail->type_id == 10)
                                             @include('frontend.product-part.booking-slot')
                                         @endif
 
@@ -981,8 +984,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
         <div class="product-m  related-products pb-2  related-css">
             @forelse($product->related_products as $related_product)
             <div>
-                <a class="common-product-box scale-effect text-center"
-                        href="{{route('productDetail',[$related_product->vendor->slug,$related_product->url_slug])}}">
+                <a class="common-product-box scale-effect text-center" href="{{route('productDetail',[$related_product->vendor->slug,$related_product->url_slug])}}">
                     <div class="img-outer-box position-relative">
                         <img class="img-fluid blur-up lazyload" data-src="{{ $related_product->image_url }}" alt="">
                         <!-- <div class="pref-timing">

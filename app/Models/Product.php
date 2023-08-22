@@ -34,10 +34,10 @@ class Product extends Model implements Auditable
   public function vendor()
   {
     if (checkColumnExists('vendors', 'need_sync_with_order') && checkColumnExists('vendors', 'is_seller')) {
-      return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status', 'closed_store_order_scheduled', 'need_container_charges', 'fixed_fee', 'fixed_fee_amount', 'price_bifurcation', 'fixed_fee_tax_id', 'add_markup_price', 'latitude', 'longitude', 'need_sync_with_order', 'is_seller', 'fixed_service_charge', 'service_charge_amount', 'pick_drop', 'return_request', 'phone_no', 'dial_code', 'same_day_delivery', 'next_day_delivery', 'hyper_local_delivery', 'cutOff_time','service_fee_percent');
+      return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status', 'closed_store_order_scheduled', 'need_container_charges', 'fixed_fee', 'fixed_fee_amount', 'price_bifurcation', 'fixed_fee_tax_id', 'add_markup_price', 'latitude', 'longitude', 'need_sync_with_order', 'is_seller', 'fixed_service_charge', 'service_charge_amount', 'pick_drop', 'return_request', 'phone_no', 'dial_code', 'same_day_delivery', 'next_day_delivery', 'hyper_local_delivery', 'cutOff_time','service_fee_percent','service_charges_tax_id','service_charges_tax');
     }
 
-    return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status', 'closed_store_order_scheduled', 'need_container_charges', 'fixed_fee', 'fixed_fee_amount', 'price_bifurcation', 'fixed_fee_tax_id', 'add_markup_price', 'latitude', 'longitude', 'fixed_service_charge', 'service_charge_amount', 'pick_drop', 'return_request', 'phone_no', 'dial_code', 'same_day_delivery', 'next_day_delivery', 'hyper_local_delivery', 'cutOff_time','service_fee_percent');
+    return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status', 'closed_store_order_scheduled', 'need_container_charges', 'fixed_fee', 'fixed_fee_amount', 'price_bifurcation', 'fixed_fee_tax_id', 'add_markup_price', 'latitude', 'longitude', 'fixed_service_charge', 'service_charge_amount', 'pick_drop', 'return_request', 'phone_no', 'dial_code', 'same_day_delivery', 'next_day_delivery', 'hyper_local_delivery', 'cutOff_time','service_fee_percent','service_charges_tax_id','service_charges_tax');
   }
 
   public function related()
@@ -63,7 +63,7 @@ class Product extends Model implements Auditable
 
   public function variant()
   {
-    return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id', 'container_charges', 'markup_price', 'incremental_price', 'incremental_price_per_min')->where('status', 1);
+    return $this->hasMany('App\Models\ProductVariant')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id', 'container_charges', 'markup_price', 'incremental_price', 'incremental_price_per_min', 'month_price', 'week_price')->where('status', 1);
   }
 
   
@@ -520,5 +520,9 @@ class Product extends Model implements Auditable
     return $this->belongsToMany('App\Models\DeliverySlot', 'delivery_slots_product', 'product_id', 'delivery_slot_id')->withTimestamps();
   }
 
+  public function product_availability()
+  {
+    return $this->hasMany('App\Models\ProductAvailability');
+  }
 
 }

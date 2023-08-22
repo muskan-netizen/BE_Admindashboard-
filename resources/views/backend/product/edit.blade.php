@@ -306,7 +306,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 @if($product->category->categoryDetail->type_id != 7)
                 <div class="card-box">
                     {{-- @dd($product->vendor) --}}
-                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Pricing Information") }}</h5>
+                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2 def">{{ __("Pricing Information") }}</h5>
                     @if($product->has_variant == 0)
                     <div class="row mb-2">
                         @if(@$product->vendor->is_seller == 1 && Auth::user()->is_superadmin == 1)
@@ -1136,6 +1136,12 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::label('title', __('Return/Replace Days'),['class' => 'control-label']) !!}
                             {!! Form::number('return_days', $product->return_days, ['class'=>'form-control', 'id' => 'return_days', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
+
+                        <div class="col-md-6 mb-2">
+                            {!! Form::label('title', __('Calories'),['class' => 'control-label']) !!}
+                            {!! Form::number('calories', $product->calories, ['class'=>'form-control', 'id' => 'calories', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                        </div>
+                        
                     </div>
                     <div class="row">
                         @if(isset($getAdditionalPreference['is_price_by_role']) && $getAdditionalPreference['is_price_by_role'] == '1')

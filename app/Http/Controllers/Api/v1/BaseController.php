@@ -312,18 +312,27 @@ class BaseController extends Controller{
         return $category_list;
     }
 
-    public function categoryNav($lang_id, $vends=[],$type = 'delivery') {
+    public function categoryNav($lang_id, $vends=[],$type = 'delivery', $request = []) {
 
         $categoryTypes = getServiceTypesCategory($type);
-
+        $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
         $preferences = ClientPreference::select('is_hyperlocal', 'client_code', 'language_id', 'celebrity_check')->first();
         $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
-                    ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to')
-                    ->whereIn('categories.type_id',$categoryTypes )
-                    ->distinct('categories.slug');
+                    ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to', 'categories.type_id');
+
+                    // if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                    //     $categories->whereIn('categories.type_id',[10] );
+                    // }else{
+                        $categories->whereIn('categories.type_id',$categoryTypes );
+                    // }
+
+                $categories =  $categories->distinct('categories.slug');
 
         $status = $this->field_status;
         $include_categories = [4,8]; // type 4 for brands
+        if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+            $include_categories[] = 10;
+        }
         $celebrity_check = 0;
         if ($preferences) {
             if((isset($preferences->celebrity_check)) && ($preferences->celebrity_check == 1)){
@@ -357,7 +366,13 @@ class BaseController extends Controller{
                         ->whereNull('categories.vendor_id')
                         ->withCount('products')
                         ->orderBy('categories.position', 'asc')
-                        ->groupBy('id')->get();
+                        ->groupBy('id');
+        if(@$request['category_limit'] && $request['category_limit'] > 0){
+            $categories = $categories->take($request['category_limit'])->get();
+        }else{
+            $categories = $categories->get();
+        }
+        // dd($categories);
         if($categories){
             $categories = $this->buildTree($categories->toArray());
         }
@@ -805,7 +820,6 @@ class BaseController extends Controller{
         $d = floor ($minutes / 1440);
         $h = floor (($minutes - $d * 1440) / 60);
         $m = $minutes - ($d * 1440) - ($h * 60);
-        
 
         if(isset($user) && !empty($user))
         $user =  $user;
@@ -843,7 +857,6 @@ class BaseController extends Controller{
             $searchTerm = $result->translations->count() != 0 ? $result->translations->first()->name : ucfirst($searchTerm);
         }
         return $searchTerm;
-        // return $plural ? $searchTerm : rtrim($searchTerm, 's');
     }
 
     /* doller compare amount */
@@ -963,14 +976,7 @@ class BaseController extends Controller{
                 $mail_from = 'dineshk@codebrewinnovations.com';
                 $sendto = 'dkdenni7@gmail.com';
                 try{
-                    // $data = [
-                    //     'customer_name' => 'Test',
-                    //     'code_text' => '',
-                    //     'logo' => $client->logo['original'],
-                    //     'frequency' => $subscription->frequency,
-                    //     'end_date' => $subscription->end_date,
-                    //     'link'=> "http://local.myorder.com/user/subscription/select/".$subscription->plan->slug,
-                    // ];
+
                     Mail::send([], [],
                     function ($message) use($sendto, $client_name, $mail_from) {
                         $message->from($mail_from, $client_name);

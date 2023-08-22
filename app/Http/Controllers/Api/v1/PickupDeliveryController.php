@@ -11,16 +11,18 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client, ClientPreferenceAdditional, Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, OrderVendorProduct, ProductFaq, ProductFaqSelectOption, UserBidRideRequest, PickDropDriverBid, UserDevice};
+use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client, ClientPreferenceAdditional, Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, OrderVendorProduct, ProductFaq, ProductFaqSelectOption, UserBidRideRequest, PickDropDriverBid, TaxRate, UserDevice};
 use App\Http\Traits\ApiResponser;
+use App\Http\Traits\OrderTrait;
 use GuzzleHttp\Client as GCLIENT;
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log as FacadesLog;
 
 class PickupDeliveryController extends BaseController{
 
-    use ApiResponser;
+    use ApiResponser,OrderTrait;
     private $riderObj;
     public function __construct()
     {
@@ -176,6 +178,225 @@ class PickupDeliveryController extends BaseController{
             return $this->errorResponse($e->getMessage().''.$e->getLineNo(), $e->getCode());
         }
     }
+
+
+    public function getTaxes()
+    {
+        /* Getting All Taxes available and making TaxRate array according to requirement */
+        $taxes=TaxRate::all();
+        $taxRates=array();
+        foreach($taxes as $tax){
+            $taxRates[$tax->id]=['tax_rate'=>$tax->tax_rate,'tax_amount'=>$tax->tax_amount];
+        }
+        return $taxRates;
+    }
+
+
+    public function postCabProductById(Request $request){
+
+        try
+        {
+            $user = Auth::user();
+            $product_id = $request->product_id;
+            $language_id = $user->language;
+            $preferences = ClientPreference::where('id', '>', 0)->first();
+            $preferences->is_cab_pooling = getAdditionalPreference(['is_cab_pooling'])['is_cab_pooling'];
+
+            $taxRates = $this->getTaxes();
+            $taxCharges = 0;
+            $service_charge_tax = 0;
+            $product_tax = 0;
+
+            if(!empty($user)){
+                $client_timezone = DB::table('clients')->first('timezone');
+                $user->timezone = $client_timezone->timezone ?? $user->timezone;
+            }
+            $recurring = '';
+            $recurringDays = 0;
+            if($request->recurringformPost)
+            {
+            $recurring = recurringCalculationFunction($request);
+            // \Log::info(json_encode($recurring));
+            $recurringDays  = $recurring->daysCnt??1; 
+            }
+
+            $schedule_datetime_del = '';
+            if(isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
+                $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+            }else{
+                $schedule_datetime_del = Carbon::now()->timezone('UTC')->format('Y-m-d H:i:s');
+            }
+
+            $product = Product::with(['taxCategory','category.categoryDetail','media.image', 'vendor', 'tollpass', 'travelmode', 'emissiontype', 'translation' => function($q) use($language_id){
+                                $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $language_id);
+                            },'variant' => function($q) use($language_id){
+                                $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode');
+                                $q->groupBy('product_id');
+                            }])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags', 'products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id','products.tax_category_id')->where('products.id', $product_id)->where('products.is_live', 1)->first();
+            $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
+            $product->image_url = $image_url;
+            $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
+            // \Log::info(json_encode($tags_price));
+        
+            if($recurringDays)
+            {
+                $tags_price['delivery_fee'] = decimal_format($tags_price['delivery_fee'] * $recurringDays);
+                $product->daysCnt = $recurringDays;
+                $product->selectedCustomdates = $recurring->selectedCustomdates;
+                $product->schedule_time = $recurring->schedule_time;
+            }
+
+            $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
+
+            $product->original_tags_price = decimal_format($tags_price['delivery_fee']);
+            $product->tags_price = decimal_format($tags_price['delivery_fee']);
+            $product->toll_fee = decimal_format($tags_price['toll_fee']);
+
+            $product->distance = decimal_format($tags_price['distance']);
+            $product->duration = decimal_format($tags_price['duration']);
+            $product->min_tags_price = decimal_format($tags_price['min_delivery_fee']);
+
+            //for cab pooling
+            $product->seats_for_booking = ($product->seats_for_booking > 0)?$product->seats_for_booking:1;
+            $no_seats_for_pooling = isset($request->no_seats_for_pooling)?$request->no_seats_for_pooling:1;
+            $product->no_seats_for_pooling = $no_seats_for_pooling;
+            if(!empty($request->is_cab_pooling) && $request->is_cab_pooling == 1 && !empty($preferences) && $preferences->is_cab_pooling == 1)
+            {
+                $product->original_tags_price = decimal_format(($product->original_tags_price/$product->seats_for_booking)*$no_seats_for_pooling);
+                $product->tags_price = decimal_format(($product->tags_price/$product->seats_for_booking)*$no_seats_for_pooling);
+                $product->toll_fee = decimal_format(($product->toll_fee/$product->seats_for_booking)*$no_seats_for_pooling);
+            }//------
+
+            $product->service_charge_amount  = 0.00;
+            if($product->vendor->fixed_service_charge)
+            {
+                $product->service_charge_amount  =  $product->vendor->service_charge_amount??0.00;
+            }else{
+                if($product->vendor->service_fee_percent>0){
+
+                    $product->service_charge_amount  = $product->tags_price * $product->vendor->service_fee_percent/100;
+                }
+            } 
+       
+
+            $product->total_tags_price = decimal_format($product->tags_price + $product->toll_fee + $product->service_charge_amount);
+
+
+        
+            $customerCurrency = ClientCurrency::where('is_primary', 1)->first();
+            $price_in_doller_compare = $product->total_tags_price  * $customerCurrency->doller_compare;
+    
+            // dd($product->taxCategory);
+            //Add Tax on product
+            $taxData = array();
+            if (!empty($product->taxCategory) && count($product->taxCategory->taxRate) > 0) {
+                foreach ($product->taxCategory->taxRate as $tckey => $tax_value) {
+                    $rate = $tax_value->tax_rate;
+                    $product_tax = ($price_in_doller_compare * $rate) / 100;
+    
+                    $taxData[$tckey]['identifier'] = $tax_value->identifier;
+                    $taxData[$tckey]['rate'] = $rate;
+                    $taxData[$tckey]['product_tax'] = decimal_format($product_tax);
+                    $payable_amount = $product->total_tags_price + $product_tax;
+                    $product->product_tax = decimal_format($product_tax);
+                    $product->product_tax_name = $tax_value->identifier .' '.$rate.'%';
+                    $product->total_tags_price = $payable_amount;
+                    $taxCharges = $taxCharges + $product_tax;
+                }
+            }
+            // dd($price_in_doller_compare);
+    
+    
+            $service_charges_tax_rate = 0;
+                if($product->vendor->service_charges_tax_id!=null){
+                    if(isset($taxRates[$product->vendor->service_charges_tax_id])){
+                           $service_charges_tax_rate=$taxRates[$product->vendor->service_charges_tax_id]['tax_rate'];
+                    }
+                } 
+              
+            if($product->service_charge_amount && $service_charges_tax_rate)
+            {
+                $service_charge_tax = ($product->service_charge_amount * $service_charges_tax_rate) /100;
+                $taxCharges = $taxCharges + $service_charge_tax;
+                $product->total_tags_price = $product->total_tags_price  + $service_charge_tax;
+            }
+    
+    
+            $other_taxes=$taxCharges;
+            $other_taxes_string='service_charge_tax:'.($service_charge_tax??0).',product_tax_fee:'.($product_tax??0);
+            $product->total_other_taxes = $other_taxes??0;
+            $product->total_other_taxes_string = $other_taxes_string;
+
+
+
+            $product->name = $product->translation->first() ? $product->translation->first()->title :'';
+            $product->description = $product->translation->first() ? $product->translation->first()->body_html :'';
+            $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
+            $product->faqlist = count($product->ProductFaq);
+            if(isset($request->rider_id) && $request->rider_id)
+            {
+                $rider = Rider::where('id',$request->rider_id)->first();
+                $product->friend_name = $rider->first_name.(!is_null($rider->last_name) ? " ".$rider->last_name : "");
+                // $product->friend_phone_name = "+".$rider->dial_code.$rider->phone_number;
+                $product->friend_phone_name = $rider->phone_number;
+            }
+            foreach ($product->variant as $k => $v) {
+                $product->variant[$k]->price = $product->total_tags_price;
+                $product->variant[$k]->toll_fee = $product->toll_fee;
+                $product->variant[$k]->multiplier = 1;
+            }
+            $loyalty_amount_saved = 0;
+            $redeem_points_per_primary_currency = '';
+            $loyalty_card = LoyaltyCard::where('status', '0')->first();
+            if ($loyalty_card) {
+                $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
+            }
+            $loyalty_points_used = 0;
+            $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
+            if ($order_loyalty_points_earned_detail) {
+                $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
+                if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
+                    $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
+                }
+            }
+            $product->loyalty_amount_saved = decimal_format((float)$loyalty_amount_saved ?? 0);
+
+            if($product->loyalty_amount_saved > $product->total_tags_price)
+            $product->loyalty_amount_saved = $product->total_tags_price;
+
+            $subscription_features = array();
+            $user_subscription = null;
+            $user = Auth::user();
+
+
+            $product->subscription_discount = 0;
+            $product->subscription_percent_value = 0;
+            if ($user) {
+                $now = Carbon::now()->toDateTimeString();
+                $user_subscription = SubscriptionInvoicesUser::with('features')
+                    ->select('id', 'user_id', 'subscription_id')
+                    ->where('user_id', $user->id)
+                    ->where('end_date', '>', $now)
+                    ->orderBy('end_date', 'desc')->first();
+                if ($user_subscription) {
+                    foreach ($user_subscription->features as $feature) {
+                        if ($feature->feature_id == 2) {
+                            $product->subscription_discount = $product->total_tags_price - ($feature->percent_value * $product->total_tags_price / 100);
+                            $product->subscription_percent_value = $feature->percent_value;
+                        }
+                    }
+                }
+            }
+
+            return $this->successResponse($product);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage().''.$e->getLineNo(), $e->getCode());
+        }
+    
+    }
+
+
+    
     /**
      * list of vehicles details
     */
@@ -299,30 +520,27 @@ class PickupDeliveryController extends BaseController{
         try {
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
+           
+            if($order_place['data']['recurring_booking_time'])
+            {
+                DB::commit();
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Recurring Order placed successfully.'
+                ]);
+            }
+
+
             if($order_place && $order_place['status'] == 200){
                 if (($request->payment_option_id == 1) || ($request->payment_option_id == 42) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) || (( $request->has('is_postpay')) && ($request->is_postpay==1))){
                     $data = [];
                     $order = $order_place['data'];
                     $request_to_dispatch = $this->placeRequestToDispatch($request, $order, $request->vendor_id);
                     if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
-                        DB::commit();
+                        // DB::commit();
                         $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
+            
 
-                        //Send sendNotificationToCustomer
-                        if (isset($request->schedule_time) && !empty($request->schedule_time))
-                        {
-                            $order_number = $order_place['data']->order_number??$order_place['data']['order_number'];
-                            $device_token = UserDevice::whereUserId($user->id)->orderBy('id','desc')->value('device_token');
-                            sendNotificationToCustomer($device_token,$order_number);
-                        }
-
-                        //Send message if ride is booked for friend
-                      /*  if($request->type == 1 && isset($request->friendPhoneNumber))
-                        {
-                            $msg = "Hi ".($request->friendName??'User').", ".$user->name." has booked a ride for you. Tracking url is ".$request_to_dispatch['dispatch_traking_url'];
-                            $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
-                        }*/
-                        return $order_place;
                     }else{
                         DB::rollback();
                         return $request_to_dispatch;
@@ -331,43 +549,53 @@ class PickupDeliveryController extends BaseController{
                     $order = $order_place['data'];
                     $request_to_dispatch = $this->placeRequestToDispatch($request, $order, $request->vendor_id);
                     if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
-                        DB::commit();
+                        // DB::commit();
                         $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
                         $order_place['data']['user_name'] = $user->email;
                         $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
-
-
-
-                        //Send sendNotificationToCustomer
-                        if (isset($request->schedule_time) && !empty($request->schedule_time))
-                        {
-                            $order_number = $order_place['data']->order_number??$order_place['data']['order_number'];
-                            $device_token = UserDevice::whereUserId($user->id)->orderBy('id','desc')->value('device_token');
-                            sendNotificationToCustomer($device_token,$order_number);
-                        }
-
-                         //Send message if ride is booked for friend
-                       /* if($request->type == 1 && isset($request->friendPhoneNumber))
-                        {
-                            $msg = "Hi ".($request->friendName??'User').", ".$user->name." has booked a ride for you. Tracking url is ".$request_to_dispatch['dispatch_traking_url'];
-                            $send = $this->sendSms('', '', '', '', $request->friendPhoneNumber, $msg);
-                        }*/
-                        return  $order_place;
+            
+                        
+                        // return  $order_place;
                     }
                     else{
                         DB::rollback();
                         return $request_to_dispatch;
                     }
-                }else{
-                    DB::commit();
-                    //DB::rollback();
-                    return $order_place;
                 }
             }
             else{
                 DB::rollback();
                 return $order_place;
             }
+                
+            DB::commit();
+            // if(@$order_place['data']['recurring_booking_time']!=null)
+            // {
+                if(@$request->share_ride_users && count($request->share_ride_users)>0)
+                {
+                    // $share_ride_users = Rider::whereIn('id',$request->share_ride_users)->get();
+
+                    foreach($request->share_ride_users as $share_ride_users)
+                    {
+                        $share_ride_users = (object)$share_ride_users;
+                        $dialCode = empty($share_ride_users->dial_code) ? '+91' : null;
+                        $phone = $dialCode.$share_ride_users->phone_number;
+                        $msg = "Hi ".($share_ride_users->first_name??'User').", ".$user->name." has booked a ride. Tracking url is ".$request_to_dispatch['dispatch_traking_url']??null;
+                        $send = $this->sendSms('', '', '', '', $phone, $msg);
+                    }
+                }
+            // }
+
+               //Send sendNotificationToCustomer
+               if (isset($request->schedule_time) && !empty($request->schedule_time))
+               {
+                   $order_number = $order_place['data']->order_number??$order_place['data']['order_number'];
+                   $device_token = UserDevice::whereUserId($user->id)->orderBy('id','desc')->value('device_token');
+                   sendNotificationToCustomer($device_token,$order_number);
+               }
+
+               return  $order_place;
+            
         }
         catch(\Exception $e){
             DB::rollback();
@@ -393,7 +621,6 @@ class PickupDeliveryController extends BaseController{
                 'content-type' => 'application/json']
                                     ]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
-                // dd($dispatch_domain->pickup_delivery_service_key_url.'/api/task/callNotifications');
                 $res = $client->post(
                     $url.'/api/task/callNotification',
                             ['form_params' => (
@@ -485,12 +712,30 @@ class PickupDeliveryController extends BaseController{
                 $order->luxury_option_id = $luxury_option->id;
 
                 $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
+                $order->total_other_taxes   = ($request->other_taxes_string)?$request->other_taxes_string:'';
 
                 $schedule_datetime_del = NULL;
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
                     $schedule_datetime_del = Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
-                $order->scheduled_date_time = $schedule_datetime_del??NULL;
+                $recurringformPost = '';
+                if(isset($request->recurringformPost) && !empty($request->recurringformPost))
+                {
+                    //This Function Return objected array of recurring data
+                    $recurringformPost = recurringCalculationFunction($request);
+                     //Check if recurring_booking_type,recurring_week_day,recurring_week_type,recurring_day_data,recurring_booking_time coulmn exists in table
+                    $order->recurring_booking_type  =$recurringformPost->action??null;
+                    $order->recurring_week_day      =$recurringformPost->weekTypes??null;
+                    $order->recurring_week_type     =$recurringformPost->weekTypes??null;
+                    $order->recurring_day_data      =$recurringformPost->selectedCustomdates??null;
+                    $order->recurring_booking_time  =$recurringformPost->schedule_time??null;
+                    $order->scheduled_date_time     =Null;
+
+                }else{
+
+                    $order->scheduled_date_time = $schedule_datetime_del;
+
+                }
                 $order->save();
 
                 // save pickup delivery task
@@ -503,8 +748,8 @@ class PickupDeliveryController extends BaseController{
                 $order_location->tasks = json_encode($request->tasks );
                 $order_location->save();
 
-                     $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
-                     $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+                $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
+                $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
                 $vendor = Vendor::whereHas('product', function ($q) use ($request) {
                     $q->where('id', $request->product_id);
                 })->select('*','id as vendor_id')->orderBy('created_at', 'asc')->first();
@@ -534,17 +779,22 @@ class PickupDeliveryController extends BaseController{
                 $product_taxable_amount = 0;
                 $product_payable_amount = 0;
                 $vendor_taxable_amount = 0;
-                if ($product['tax_category']) {
-                    foreach ($product['tax_category']['tax_rate'] as $tax_rate_detail) {
-                        $rate = round($tax_rate_detail->tax_rate);
-                        $tax_amount = ($price_in_dollar_compare * $rate) / 100;
-                        $product_tax = $quantity_price * $rate / 100;
-                        $taxable_amount = $taxable_amount + $product_tax;
-                        $payable_amount = $payable_amount + $product_tax;
-                        $vendor_payable_amount = $vendor_payable_amount;
-                    }
+                // if ($product['tax_category']) {
+                //     foreach ($product['tax_category']['tax_rate'] as $tax_rate_detail) {
+                //         $rate = round($tax_rate_detail->tax_rate);
+                //         $tax_amount = ($price_in_dollar_compare * $rate) / 100;
+                //         $product_tax = $quantity_price * $rate / 100;
+                //         $taxable_amount = $taxable_amount + $product_tax;
+                //         $payable_amount = $payable_amount + $product_tax;
+                //         $vendor_payable_amount = $vendor_payable_amount;
+                //     }
+                // }
+
+                if ($request->other_taxes) {
+                        $payable_amount = $payable_amount + $request->other_taxes;
                 }
-                $vendor_taxable_amount += $taxable_amount;
+
+                $vendor_taxable_amount += $request->other_taxes;
                 $total_amount += $variant->price;
                 $order_product = new OrderProduct;
                 $order_product->order_vendor_id = $order_vendor->id;
@@ -658,7 +908,7 @@ class PickupDeliveryController extends BaseController{
                         }
                     }
                 }else{
-                    $order->payable_amount = $delivery_fee + $payable_amount - $total_discount - $loyalty_amount_saved + $total_toll_amount + $total_service_fee;
+                    $order->payable_amount = $delivery_fee + $payable_amount - $total_discount - $loyalty_amount_saved + $total_toll_amount +  $request->servicechargeamount;
                 }
 
 
@@ -674,6 +924,12 @@ class PickupDeliveryController extends BaseController{
                 }
                 $order->save();
 
+                 /** for Recurring Service */
+                 if(!empty($order->recurring_booking_time) && !empty($request->recurringformPost)){
+                    DB::commit();
+                    $this->saveOrderLongTermServiceSchedule($order,$order_product->id);
+                }
+
                 if (($request->payment_option_id != 1) && ($request->payment_option_id != 2) && (!empty($request->transaction_id))) {
                     $payment = new Payment();
                     $payment->date = date('Y-m-d');
@@ -687,6 +943,7 @@ class PickupDeliveryController extends BaseController{
                         $data = [];
                         $data['status'] = 200;
                         $data['message'] =  __('Order Placed');
+                        $data['recurring_booking_time'] = @$order->recurring_booking_time??null;
                         $data['data'] = $order;
                         return $data;
         }
@@ -753,33 +1010,17 @@ class PickupDeliveryController extends BaseController{
             $wallet = $customer->wallet;
             if ($dispatch_domain && $dispatch_domain != false) {
                 $tasks = array();
-                // if ($request->payment_option_id == 1) {
-                //     $cash_to_be_collected = 'Yes';
-                //     $payable_amount = $order->payable_amount;
-                // } else {
-                //     if($order->is_postpay==1)
-                //     {
-                //         $cash_to_be_collected = 'Yes';
-                //         $payable_amount = $order->payable_amount;
-                //     }else{
-                //         $cash_to_be_collected = 'No';
-                //         $payable_amount = 0.00;
-                //     }
-                // }
 
                 $schedule_datetime_del = NULL;
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
                     $schedule_datetime_del = $request->schedule_time;
                 }
-
-
                 if(empty($request->task_type) && !empty($request->schedule_time)){
                     $task_type = 'schedule';
                 }else{
                     $task_type = 'now';
                 }
-
-                  $vendor_details = Vendor::where('id', $vendor)->select('order_pre_time')->first();
+                $vendor_details = Vendor::where('id', $vendor)->select('order_pre_time')->first();
                 $order_vendor = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->first();
                 $dynamic = (!empty($order_vendor->web_hook_code)) ? $order_vendor->web_hook_code : uniqid($order->id.$vendor);
                 $unique = Auth::user()->code;
@@ -789,7 +1030,6 @@ class PickupDeliveryController extends BaseController{
                     $cash_to_be_collected = 'Yes';
                     $payable_amount = $order_vendor->payable_amount + $order_vendor->taxable_amount;
                 } else {
-
                     if($order->is_postpay==1 && $order->payment_status == 0)
                     {
                         $cash_to_be_collected = 'Yes';
@@ -875,6 +1115,7 @@ class PickupDeliveryController extends BaseController{
                             'is_one_push_booking' => isset($request->is_one_push_booking)?$request->is_one_push_booking:0,
                             'available_seats' =>isset($product)?$product->seats_for_booking:0,
                             'agent' => $request->agent_id ?? null,
+                            'driver_id' => $request->driver_id ?? null,
                             'order_pre_time'=>$vendor_details->order_pre_time,
                             'driver_unique_id' => $request->unique_id ?? null,
                             'notify_hour' => $notify_hour ?? 0,
@@ -908,7 +1149,7 @@ class PickupDeliveryController extends BaseController{
 
                     $or_ids = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])->with(['vendor'])->first();
 
-                    //if($or_ids->vendor->auto_accept_order==1):
+
                         $update_vendor = VendorOrderStatus::updateOrCreate([
                             'order_id' =>  $order->id,
                             'order_status_option_id' => 2,
@@ -916,9 +1157,6 @@ class PickupDeliveryController extends BaseController{
                             'order_vendor_id' =>  $or_ids->id]);
 
                         OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['order_status_option_id' => 2,'dispatcher_status_option_id' => 1]);
-                    // else:
-                    //     OrderVendor::where('vendor_id', $vendor)->where('order_id', $order->id)->update(['dispatcher_status_option_id' => 1]);
-                    // endif;
 
                     $update = VendorOrderDispatcherStatus::updateOrCreate(['dispatcher_id' => null,
                     'order_id' =>  $order->id,
@@ -1228,6 +1466,7 @@ class PickupDeliveryController extends BaseController{
     public function getAllRiders(Request $request)
     {
         $data = $request->all();
+
         $data['user_id'] = Auth::user()->id;
         if($request->isMethod('post')){
             $add = $this->riderObj->createRider($data);
@@ -1655,7 +1894,6 @@ class PickupDeliveryController extends BaseController{
             }
         }
         catch (\Exception $e) {
-            \Log::error($e->getMessage());
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }

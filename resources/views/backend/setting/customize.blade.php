@@ -5,6 +5,7 @@
 .select2-multiple {visibility: hidden !important;}
 </style>
 @endsection
+
 @section('content')
 <div class="container-fluid" id="alCustomizePage">
     {{--<div class="row">
@@ -43,7 +44,8 @@
 
 <!-- New Customize Page -->
 @php
-$getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id','fpixel_id','is_token_currency_enable', 'token_currency','is_price_by_role','advance_booking_amount', 'advance_booking_amount_percentage',]); //,'seller_sold_title','saller_platform_logo'
+$getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id','fpixel_id','is_token_currency_enable', 'token_currency','is_price_by_role','advance_booking_amount', 'advance_booking_amount_percentage','is_user_pre_signup']); //,'seller_sold_title','saller_platform_logo'
+
 @endphp
    <!--Localization start -->
     <div class="row">
@@ -1760,6 +1762,30 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                             </div>
                             @endforeach
                         </div>
+
+                        <div class="row mb-2 mx-0 flex-nowrap d-flex align-items-center">
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <label for="agree_term">{{ __("Recurring") }}</label>
+                                </div>
+                            </div>
+                            @foreach($client_languages as $k => $client_language)
+                            <div class="col-sm-2">
+                                <div class="form-group mb-0">
+                                    <input type="hidden" name="recurring_language_ids[]" value="{{$client_language->langId}}">
+                                    <input type="text" name="recurring[]" class="form-control al_box_height" value="{{ App\Models\NomenclatureTranslation::getNameBylanguageId($client_language->langId,'Recurring')}}">
+                                    @if($k == 0)
+                                        @if($errors->has('recurring.0'))
+                                            <span class="text-danger" role="alert">
+                                                <strong>{{ __("The primary language name field is required.") }}</strong>
+                                            </span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
                     </div>
                 </div>
             </form>
@@ -1813,6 +1839,13 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                                 <label for="Phone_signup" class="mr-3 mb-0">{{ __("Phone SignUp") }}</label>
                                 <input type="checkbox" data-plugin="switchery" name="is_phone_signup_switch" id="is_phone_signup_switch" class="form-control checkbox_change" data-className="is_phone_signup"  data-color="#43bee1" @if( @$getAdditionalPreference['is_phone_signup'] == '1') checked='checked' @endif>
                                 <input type="hidden"  @if(@$getAdditionalPreference['is_phone_signup'] == 1) value="1" @else value="0" @endif  name="is_phone_signup"  id="is_phone_signup"/>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group d-flex justify-content-between">
+                                <label for="is_pre_signup" class="mr-3 mb-0">{{ __("User Pre SignUp") }}</label>
+                                <input type="checkbox" data-plugin="switchery" name="is_user_pre_signup" id="is_phone_signup_switch" class="form-control checkbox_change" data-className="is_phone_signup"  data-color="#43bee1" @if( @$getAdditionalPreference['is_user_pre_signup'] == '1') checked='checked' @endif>
+                                <input type="hidden"  @if(@$getAdditionalPreference['is_user_pre_signup'] == 1) value="1" @else value="0" @endif  name="is_phone_signup"  id="is_pre_signup"/>
                             </div>
                         </div>
                         @foreach($verify_options as $key => $opt)
@@ -2584,7 +2617,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                   <div id="save_social_media">
                      <input type="hidden" name="vendor_registration_document_id" value="">
                      <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                            <div class="form-group position-relative">
                               <label for="">Type</label>
                               <div class="input-group mb-2">
@@ -2597,7 +2630,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                               </div>
                            </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                            <div class="form-group position-relative">
                               <label for="">Is Required?</label>
                               <div class="input-group mb-2">
@@ -2608,6 +2641,17 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
                               </div>
                            </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="form-group position-relative">
+                               <label for="">Need Expiration Date</label>
+                               <div class="input-group mb-2">
+                                <select class="form-control" name="need_expiration_date">
+                                   <option value="1">{{__('Yes')}}</option>
+                                   <option value="0">{{__('No')}}</option>
+                                </select>
+                             </div>
+                            </div>
+                         </div>
                         <div class="col-md-12 selector-option-al ">
                             <table class="table table-borderless table-responsive al_table_responsive_data mb-0 optionTableAdd" id="selector-datatable">
                                 <tr class="trForClone">

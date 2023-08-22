@@ -185,16 +185,15 @@ class CartController extends BaseController
                 }
             }
 
-            if(@$luxury_option->id == 4)
-            {
+            if(@$luxury_option->id == 4) {
                 if($already_added_product_variant_in_cart)
-                    {
-                        return response()->json([
-                            "status" => "Error",
-                            'message' => 'Product already exists in the cart',
-                        ], 404);
-                    }
-             }
+                {
+                    return response()->json([
+                        "status" => "Error",
+                        'message' => 'Product already exists in the cart',
+                    ], 404);
+                }
+            }
             
             $order_edit_qty = (!empty($already_added_product_in_cart) && !empty($already_added_product_in_cart->order_quantity))?$already_added_product_in_cart->order_quantity:0;
             if($product->is_long_term_service !=1){
@@ -661,8 +660,8 @@ class CartController extends BaseController
     /**         *      Cart  Date      *          */
     public function getCart($cart, $langId = '1', $currency = '1', $type = 'delivery',$code = 'D')
     {
-
-        try{
+           
+         try{
         $container_charges_tax = 0;
         $deliver_fee_charges_tax = 0;
         $total_service_fee_tax = 0;
@@ -911,7 +910,7 @@ class CartController extends BaseController
                     }
                 }
                 foreach ($vendorData->vendorProducts as $pkey => $prod) {
-                    
+                    $vendorData->product_address = $prod->product->address ?? '';
                     //mohit sir branch code updated by sohail farm meat
                     if ($action == 'takeaway') {
                         $processorProduct = ProcessorProduct::where('product_id', $prod->product_id)->first();
@@ -972,6 +971,26 @@ class CartController extends BaseController
                         $prod->dispatchAgents =  $dispatchAgents;
                         $prod->vendorStartDate = $vendorStartDate;
                     }
+                    $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
+                    if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                        $rental_price = 0;
+                        if(@$prod->start_date_time && @$prod->end_date_time){
+                            $start_date_time  = new Carbon($prod->start_date_time);
+                            $end_date_time  = new Carbon($prod->end_date_time);
+                            $prod->days = $start_date_time->diff($end_date_time)->days + 1;
+                            $rental_price = $prod->pvariant ? $prod->pvariant->price : 0;
+                            if(isset($prod->pvariant->month_price) && !empty($prod->pvariant->month_price)  && isset($prod->pvariant->week_price)){
+                                
+                                if($prod->days >= 7 && $prod->days < 30){
+                                    $rental_price = $prod->pvariant->week_price;
+                                }elseif($prod->days >= 30){
+                                    $rental_price = $prod->pvariant->month_price;
+                                }
+                            }
+                            $prod->price = $rental_price;
+                            $rental_price = $rental_price *$prod->days;
+                        }
+                    }
 
 
                     if(isset($prod->product) && !empty($prod->product)){
@@ -1022,6 +1041,16 @@ class CartController extends BaseController
                         $variantsData = $taxData = $vendorAddons = array();
                         $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
                         $price_in_currency = $prod->pvariant ? $prod->pvariant->price : 0;
+
+                        if(@$prod->pvariant->month_price && $prod->pvariant->week_price &&  @$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                            $schedule_days = $prod->additional_increments_hrs_min / 24;
+                            if($schedule_days >= 7 && $schedule_days < 30){
+                                $price_in_currency = $prod->pvariant->week_price;
+                            }elseif($schedule_days >= 30){
+                                $price_in_currency = $prod->pvariant->month_price;
+                            }
+                        }
+
                          //  GET PRICE from driver
                         if($is_service_product_price_from_dispatch ==1){
                             $price_in_currency = isset($prod->dispatch_agent_price) ? $prod->dispatch_agent_price : 0 ;
@@ -1419,6 +1448,12 @@ class CartController extends BaseController
                  }
                 //end applying service fee on vendor products total
                 $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount;
+                if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                    $rental_price = $rental_price + $total_service_fee ;
+                }
+                
+
+
                 $vendorData->service_fee_percentage_amount = number_format($vendor_service_fee_percentage_amount, 2, '.', '');
                 $vendorData->vendor_gross_total = $payable_amount;
                 $vendorData->discount_amount = $discount_amount;
@@ -1736,12 +1771,20 @@ class CartController extends BaseController
 
 
         // add other taxes amount as well in total payable amount.
+        
+
+        
         if($cart->other_taxes>0){
             $cart->total_payable_amount = $cart->total_payable_amount + $cart->other_taxes;
         }
         if($cart->total_fixed_fee_amount){
             $cart->total_payable_amount = $cart->total_payable_amount +$cart->total_fixed_fee_amount;
         }
+        if(@$rental_price){
+            $cart->total_payable_amount = $rental_price;
+        }
+            
+
         $wallet_amount_used = 0;
         if (isset($user)) {
             if ($user->balanceFloat > 0) {
@@ -1774,7 +1817,7 @@ class CartController extends BaseController
             $cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
         }
         $cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
-
+        
         //mohit sir branch code updated by sohail farm meat
         $pendingAmount = 0;
         $advancePayableAmount = 0;
@@ -1806,7 +1849,10 @@ class CartController extends BaseController
         }
 
         $total_payable_amount_calc_tip = $cart->total_payable_amount - $total_taxable_amount;
-
+        
+        if(@$rental_price > 0){
+            $cart->total_payable_amount = $rental_price;
+        }
         $cart->tip = array(
             ['label' => '5%', 'value' => decimal_format(0.05 * $total_payable_amount_calc_tip)],
             ['label' => '10%', 'value' => decimal_format(0.1 * $total_payable_amount_calc_tip)],

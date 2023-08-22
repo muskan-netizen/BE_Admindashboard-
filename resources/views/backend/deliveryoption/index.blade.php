@@ -635,6 +635,21 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="col-md-12 mt-3 p-0">
+
+                            <h5 class="d-inline-block ">
+                                <span>{{ __('Webhook Url') }} : </span>
+                                <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('roadieWebhook')}}</span></a>
+                            </h5>
+                            <sup class="position-relative">
+                                <a class="copy-icon ml-2" id="copy_icon2" data-url="{{route('roadieWebhook')}}" style="cursor:pointer;">
+                                    <i class="fa fa-copy"></i>
+                                </a>
+                                <h6 id="copy_message2" class="copy-message mt-2"></h6>
+                            </sup>
+                            <hr/>
+                        </div>
                     </div>
                     @endif
                 </div>

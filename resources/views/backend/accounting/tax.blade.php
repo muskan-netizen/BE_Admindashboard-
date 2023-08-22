@@ -155,7 +155,22 @@
                             action: function ( e, dt, node, config ) {
                                 window.location.href = "{{ route('account.tax.export') }}";
                             }
-                        }],
+                        },
+                        {
+                                extend: 'pdf',
+                                text: 'Export to PDF',
+                                className:'btn btn-success waves-effect Export_btn waves-light ml-2',
+                                id:'exp-btn',
+                                text: '<span class="btn-label"><i class="mdi mdi-file-pdf-box"></i></span>Export PDF',
+                                orientation: 'landscape',
+                                exportOptions: {
+                                    columns: ':visible'
+                                },
+                                customize: function (doc) {
+                                doc.pageOrientation = 'landscape';
+                                doc.pageSize = 'A3'; // Set the custom page size
+                            }
+                            }],
                         ajax: {
                           url: "{{route('account.tax.filter')}}",
                           data: function (d) {
@@ -182,4 +197,5 @@
 @endsection
 @section('script')
 <script src="{{asset('assets/libs/datatables/datatables.min.js')}}"></script>
+@include('backend.export_pdf')
 @endsection
