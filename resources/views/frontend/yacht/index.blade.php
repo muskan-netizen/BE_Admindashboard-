@@ -89,7 +89,7 @@
                                     </div>
                                     <div class="form-group" id="diff-box">
                                         <input type="checkbox" name="diff_location" id="diff-location" />
-                                        <label for="diff-location">Different Return Location</label>
+                                        <label for="diff-location" class="different_cta">Different Return Location</label>
                                     </div>
                                 </div>
                                 <div class="col" id="dropoff-box" style="display:none;">
@@ -111,7 +111,7 @@
                                         </p>
                                     </div>
                                 </div>
-                                {{-- <div class="col d-none">
+                                    {{-- <div class="col d-none">
                                     <div class="item">
                                         <h5>Drop Date & Time</h5>
                                         <p><img src="yacht-images/icons/4.png" alt="">

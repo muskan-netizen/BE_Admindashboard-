@@ -1818,6 +1818,7 @@ class CartController extends BaseController
 
         }catch(\Exception $ex)
         {
+            \Log::info($ex->getMessage());
             return [];
         }
     }

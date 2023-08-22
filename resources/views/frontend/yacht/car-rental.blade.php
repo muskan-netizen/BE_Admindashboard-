@@ -137,7 +137,7 @@
                     <input type="hidden" value="{{$dropoff->latitude}}" name="drop_latitude" id="drop_latitude">
                     <input type="hidden" value="{{$dropoff->longitude}}" name="drop_longitude" id="drop_longitude">
                 </div>
-                <div class="form-group">
+                <div class="diff-loc">
                     <input type="checkbox" name="diff_location" id="diff-location" @if($diff_location) checked @endif />
                     <label for="diff-location">Different Return Location</label>
                 </div>
