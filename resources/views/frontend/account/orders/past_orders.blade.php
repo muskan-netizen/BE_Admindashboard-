@@ -158,8 +158,10 @@
                                                                     class="item_no position-absolute">x{{ $product->quantity }}</span>
                                                             </li>
                                                             <li>
-                                                                <label
-                                                                    class="items_price">{{ Session::get('currencySymbol') }}{{ $product->price * $clientCurrency->doller_compare }}</label>
+                                                            <label class="items_price">
+                                                            {{$product->product_title}}
+                                                            ({{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($product->price * $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($product->price * $clientCurrency->doller_compare) }})
+                                                            </label>
                                                                 <label class="rating-star add_edit_review"
                                                                     data-id="{{ $product->productRating->id ?? 0 }}"
                                                                     data-order_vendor_product_id="{{ $product->id ?? 0 }}">

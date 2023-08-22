@@ -141,7 +141,8 @@ class StoreController extends BaseController{
 	    					'qty' => $product->quantity,
 							'category_type' => $product->product->category->categoryDetail->type->title ?? '',
 							'product_id' => $product->product_id,
-							'title' => $product->product_name,
+	    				    'title' => isset($product->translation)?$product->translation->title:$product->product_name
+	    				,
 	    				);
     				}
 				}
@@ -346,8 +347,8 @@ class StoreController extends BaseController{
 	    					'qty' => $product->quantity,
 							'category_type' => $product->product->category->categoryDetail->type->title ?? '',
 							'product_id' => $product->product_id,
-							'title' => $product->product_name,
-							'category_name' => (!empty($product->product->categoryName->name))?$product->product->categoryName->name:'',
+	    				    'title' => isset($product->translation)?$product->translation->title:$product->product_name,
+							'category_name' => (!empty($product->product->categoryName->name))?$product->product->categoryName->name:''
 	    				);
     				}
 				}
@@ -482,8 +483,8 @@ class StoreController extends BaseController{
 	    					'qty' => $product->quantity,
 							'category_type' => $product->product->category->categoryDetail->type->title ?? '',
 							'product_id' => $product->product_id,
-							'title' => $product->product_name,
-							'category_name' => (!empty($product->product->categoryName->name))?$product->product->categoryName->name:'',
+	    				    'title' => isset($product->translation)?$product->translation->title:$product->product_name,
+							'category_name' => (!empty($product->product->categoryName->name))?$product->product->categoryName->name:''
 	    				);
 
 						$total_markup_Price += $product->markup_price;
