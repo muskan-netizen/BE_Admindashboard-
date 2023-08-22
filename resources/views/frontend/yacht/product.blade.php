@@ -164,8 +164,8 @@
 @if($category->slug == 'yacht')
     <section class="container map-container mt-5">
         <div class="row">
-            <div class="col-md-4 border">
-                    <div id="vendor-detail" class="d-flex justify-content-between">
+            <div class="col-md-4 border d-none">
+                <div id="vendor-detail" class="d-flex justify-content-between">
                     <div class="image-box">
                         <img src="" alt="vendor image"/>
                     </div>
