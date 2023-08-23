@@ -681,7 +681,7 @@ class CartController extends BaseController
     public function getCart($cart, $langId = '1', $currency = '1', $type = 'delivery',$code = 'D')
     {
 
-        try {
+        // try {
         $container_charges_tax = 0;
         $deliver_fee_charges_tax = 0;
         $total_service_fee_tax = 0;
@@ -753,24 +753,7 @@ class CartController extends BaseController
         ]);
         
         $cartData = $cartData->select('vendor_id', 'vendor_dinein_table_id','dispatch_agent_id', 'is_cart_checked')->where('status', [0, 1])->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
-        
-        $fields = [];
-        foreach ($cartData[0]->vendorProducts as $products) {
-            foreach ($products->product->ProductAttribute as $productAttribute) {
-                if ($productAttribute->attributeOption()->exists()) {
-                    if(!empty($title = $productAttribute->attributeOption->title)){
-                        $fields[$productAttribute->key_name] = $title;
-                    }else{
-                        $fields[$productAttribute->key_name] = $productAttribute->key_value;
-                    }
-                }
-            }
-                $products->product->transmission = $fields['Transmission'] ?? '';
-                $products->product->fuel_type = $fields['Fuel Type'] ?? '';
-                $products->product->Seats = $fields['Seats'] ?? '' .' Seats';
-                $products->product->cabins = $fields['Cabins'] ?? '';
-                $products->product->baths = $fields['Baths'] ?? '';
-        }
+    
 
         $taxes=TaxRate::all();
         $taxRates=array();
@@ -840,6 +823,9 @@ class CartController extends BaseController
             $PromoDelete = 0;
             $couponApplied = 0;
             $total_container_charges = 0 ;
+            $rentalProtection = 0;
+            $bookingOption = 0 ;
+            $securityAmount = 0;
 
             $total_markup_charges = 0 ;
             $deliver_fee_charges = 0;
@@ -934,7 +920,26 @@ class CartController extends BaseController
                 $previousdeliveryfee = 0;
                 
                 foreach ($vendorData->vendorProducts as $pkey => $prod) {
-                    
+                    $fields = [];
+                    foreach ($prod->product->ProductAttribute as $productAttribute) {
+                        if ($productAttribute->attributeOption()->exists()) {
+                            if(!empty($title = $productAttribute->attributeOption->title)){
+                                $fields[$productAttribute->key_name] = $title;
+                            }else{
+                                $fields[$productAttribute->key_name] = $productAttribute->key_value;
+                            }
+                        }
+                    }
+                    $prod->product->transmission = $fields['Transmission'] ?? '';
+                    $prod->product->fuel_type = $fields['Fuel Type'] ?? '';
+                    $prod->product->Seats = $fields['Seats'] ?? '' .' Seats';
+                    $prod->product->cabins = $fields['Cabins'] ?? '';
+                    $prod->product->baths = $fields['Baths'] ?? '';
+
+                    $rentalProtection += $prod->product->cartRentalProtections->rentalProtection->price ?? 0;
+                    $bookingOption += $prod->product->cartBookingOptions->bookingOption->price ?? 0;
+                    $securityAmount += $prod->product->security_amount ?? 0;
+
                     //mohit sir branch code updated by sohail farm meat
                     if ($action == 'takeaway') {
                         $processorProduct = ProcessorProduct::where('product_id', $prod->product_id)->first();
@@ -1769,11 +1774,7 @@ class CartController extends BaseController
             $cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
         }
         
-        $product = $cartData[0]->vendorProducts[0]->product;
-        $rentalProtection = $product->cartRentalProtections->rentalProtection->price ?? 0;
-        $bookingOption = $product->cartBookingOptions->bookingOption->price ?? 0;
-        
-        $cart->total_payable_amount += ($product->security_amount + $rentalProtection + $bookingOption);
+        $cart->total_payable_amount += ($securityAmount + $rentalProtection + $bookingOption);
         //$cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
         
         //mohit sir branch code updated by sohail farm meat
@@ -1816,11 +1817,11 @@ class CartController extends BaseController
         return $cart;
 
 
-        }catch(\Exception $ex)
-        {
-            \Log::info($ex->getMessage());
-            return [];
-        }
+        // }catch(\Exception $ex)
+        // {
+        //     \Log::info($ex->getMessage());
+        //     return [];
+        // }
     }
 
     public function uploadPrescriptions(Request $request){

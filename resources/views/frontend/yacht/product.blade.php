@@ -246,7 +246,7 @@
             title: 'Company Location'
         });
 
-            $('.prodct_slider').slick({
+    $('.prodct_slider').slick({
         slidesToShow: 1,
         slidesToScroll: 1,
         arrows: false,
