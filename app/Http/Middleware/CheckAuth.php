@@ -80,7 +80,7 @@ class CheckAuth
         }
 
         $language_id = $checkLang->language_id;
-        $currency_id = $checkCur->currency_id;
+        $currency_id = $checkCur->currency_id??'';
 
         if(!empty($header['timezone'][0])){
             $timezone = $header['timezone'][0];
