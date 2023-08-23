@@ -50,7 +50,12 @@ trait YachtTrait
                         // $q->where('pickup_time', '<=', $pickup_time)
                         // ->where('drop_time', '>=', $drop_time);
                     }
-                })->whereDoesntHave('productBooked')
+                })->whereDoesntHave('productBooked', function($q){
+                    if (!empty($pickup_time) && !empty($drop_time)) {
+                        $q->where('start_date_time', '<=', $pickup_time)
+                        ->where('end_date_time', '>=', $drop_time);
+                    }
+                })
                 ->where(function ($q) use ($request) {
                     if ($request->has('seats') && !empty($request->seats)) {
                         $q->whereHas('ProductAttribute', function ($q) use ($request) {
