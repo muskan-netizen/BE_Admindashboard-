@@ -24,13 +24,6 @@ use App\Http\Traits\OrderTrait;
 use App\Http\Traits\ProductActionTrait;
 use App\Http\Traits\VendorTrait;
 use App\Http\Traits\YachtTrait;
-use App\Models\ClientCurrency;
-use App\Models\Product;
-use App\Models\ProductAttribute;
-use App\Models\ProductTag;
-use App\Models\Tag;
-use App\Models\Vendor;
-use App\Models\VendorCategory;
 
 class YachtController extends FrontController
 {

@@ -73,6 +73,19 @@ class PickupDeliveryController extends BaseController{
                         },'ProductFaq.selection.translations' => function ($qs) use($langId){
                             $qs->where('language_id',$langId);
                         },
+                        'ProductAttribute',
+                        'ProductAttribute.attributeOption',
+                        'addOn' => function ($q1) use ($langId) {
+                            $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
+                            $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
+                            $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
+                            $q1->where('set.status', 1)->where('ast.language_id', $langId);
+                        },
+                        'addOn.setoptions' => function ($q2) use ($langId) {
+                            $q2->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
+                            $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
+                            $q2->where('apt.language_id', $langId);
+                        }
                     ])->join('product_categories as pc', 'pc.product_id', 'products.id')
                     ->whereNotIn('pc.category_id', function($qr) use($vid){
                                 $qr->select('category_id')->from('vendor_categories')
@@ -112,6 +125,20 @@ class PickupDeliveryController extends BaseController{
                             $product->service_charge_amount  = $product->tags_price * $product->vendor->service_fee_percent/100;
                         }
                     }
+
+                    $fields = [];
+                    foreach ($product->ProductAttribute as $productAttribute) {
+                        if ($productAttribute->attributeOption()->exists()) {
+                            if(!empty($title = $productAttribute->attributeOption->title)){
+                                $fields[$productAttribute->key_name] = $title;
+                            }else{
+                                $fields[$productAttribute->key_name] = $productAttribute->key_value;
+                            }
+                        }
+                    }
+                    $product->no_of_luggage = $fields['No of luggage'] ?? '';
+                    $product->seats = $fields['Seats'] ?? '0' .' Seats';
+
 
                     $product->toll_fee   = $tags_price['toll_fee']??0;
                     $product->tags_price = $tags_price['delivery_fee']??0;
