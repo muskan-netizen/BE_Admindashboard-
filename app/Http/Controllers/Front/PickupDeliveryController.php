@@ -995,11 +995,16 @@ class PickupDeliveryController extends FrontController{
                 if(isset($request->unique_id) || isset($request->driver_id)){
                     $allocation_type = 'm';
                 }
+                
+//                 if(isset($request->unique_id)){
+//                     $allocation_type = 'notify';
+//                 }
                 $postdata =  [
                     'order_number' =>  $order->order_number,
                     //'order_type' =>  $order->type,
                     // 'order_friend_name' =>  $order->friend_name,
                     // 'order_number' =>  $order->friend_phone_number,
+                    'notify_all' => $request->send_to_all ?1: 0,
                     'barcode' => '',
                     'allocation_type' => $allocation_type,
                     'task' => $request->tasks,
