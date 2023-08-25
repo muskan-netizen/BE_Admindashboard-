@@ -2201,7 +2201,7 @@ class CartController extends FrontController
             $cart_details->tokenAmount = $tokenAmount;
         }
         // till here
-        return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'', 'cart_error_message' => $error_message,'wishListCount'=>$wishListCount]);//'token_val' => $tokenAmount , 'is_token_enable' => $is_token_enable
+        return response()->json(['loggedIn' => Auth::check() ? 'true' : 'false','status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'', 'cart_error_message' => $error_message,'wishListCount'=>$wishListCount]);//'token_val' => $tokenAmount , 'is_token_enable' => $is_token_enable
     }
 
 
