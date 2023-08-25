@@ -2444,7 +2444,24 @@ $(document).ready(function () {
                     $("#cart_table").html('');
                     $(".spinner-box").hide();
                     $("#mycart").html(response.mycart);
-
+                    if(response.loggedIn ==  "true") {
+                        $('.onhover-show-div').html(`<li>
+                            <a href="/client/dashboard" data-lng="en">Control Panel</a>
+                        </li>
+                        <li>
+                            <a href="/user/profile" data-lng="en">Profile</a>
+                        </li>
+                        <li>
+                            <a href="/user/logout" data-lng="es">Logout</a>
+                        </li>`);
+                    } else{
+                        $('.onhover-show-div').html( `<li>
+                            <a href="/user/login" data-lng="en">Login</a>
+                        </li>
+                        <li>
+                            <a href="/user/register" data-lng="es">Register</a>
+                        </li>`);
+                    }
                     //return true;
                     var cart_details = response.cart_details;
                     var client_preference_detail = response.client_preference_detail;
