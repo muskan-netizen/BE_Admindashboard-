@@ -1457,7 +1457,26 @@ body.al_body_template_three .dashboard-right .profile-page .info-text label {
 	padding-top: 22px;
 } 
 
+.al_body_template_six  .al_vendor_product_page .row > .col-12 {
+    padding: 0;
+}
+.al_body_template_six .vendor-design_new .vendor-design_new .vendor-info li p{
+    color: #000;
+}
 
+.al_body_template_six .vendor-design_new p {
+    color: #000;
+}
+.al_body_template_six .vendor-design_new .vendor-info li {
+    display: flex!important;
+    align-items: center;
+}
+.al_body_template_six .vendor-design_new .vendor-info li i{
+    min-width: 25px;
+    padding-right: 5px;
+    display: inline-block;
+    text-align: center;
+}
 
 @media (max-width:1440px){
     .al_body_template_four  .brand-ing {
@@ -1710,7 +1729,14 @@ section#our_vendor_main_div .render_full_best_sellers {padding: 20px 0 !importan
 .al_body_template_four .al_box_third_template .product-description{
     min-height: 115px;
 }
-
+.al_body_template_six  .common-banner {
+    height: 340px;
+}
+.al_body_template_six .vendor-design_new {
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+}
 
 }
 /*======== first template css gagandeep 29-03-2023 start ========*/
@@ -1855,7 +1881,19 @@ section#our_vendor_main_div .render_full_best_sellers {padding: 20px 0 !importan
     .al_body_template_one .shoping_cart .vendor_products_tr h4 strong {
         font-size: 14px;
     }
+    .al_body_template_six .vendor-design_new .vendor-details-left {
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start!important;
+    }
 }
 
 .dark .slick-slide .inner_spacing p{color:#fff;}
 .dark .displayProducts .inner_spacing h3 label b{color:#fff;}
+
+.dark.al_body_template_six .vendor-design_new .vendor-description .profile_address h3,
+.dark.al_body_template_six .vendor-description .profile_address h4,
+.dark.al_body_template_six .vendor-design_new .vendor-info li,
+.dark.al_body_template_six .vendor-design_new p{
+    color: #fff!important;
+}
