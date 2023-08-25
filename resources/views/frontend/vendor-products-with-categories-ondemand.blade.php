@@ -5,6 +5,26 @@ $checkSlot = findSlot('', $vendor->id, '');
 @section('css')
 <style type="text/css">
     .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.productVariants .firstChild{min-width:150px;text-align:left!important;border-radius:0!important;margin-right:10px;cursor:default;border:none!important}.product-right .color-variant li,.productVariants .otherChild{height:35px;width:35px;border-radius:50%;margin-right:10px;cursor:pointer;border:1px solid #f7f7f7;text-align:center}.productVariants .otherSize{height:auto!important;width:auto!important;border:none!important;border-radius:0}.product-right .size-box ul li.active{background-color:inherit}.product-box .product-detail h4,.product-box .product-info h4{font-size:16px}select.changeVariant{color:#343a40;border:1px solid #bbb;border-radius:5px;font-size:14px}.counter-container{border:1px solid var(--theme-deafult);border-radius:5px;padding:2px}.switch{opacity:0;position:absolute;z-index:1;width:18px;height:18px;cursor:pointer}.switch+.lable{position:relative;display:inline-block;margin:0;line-height:20px;min-height:18px;min-width:18px;font-weight:400;cursor:pointer}.switch+.lable::before{cursor:pointer;font-family:fontAwesome;font-weight:400;font-size:12px;color:#32a3ce;content:"\a0";background-color:#fafafa;border:1px solid #c8c8c8;box-shadow:0 1px 2px rgba(0,0,0,.05);border-radius:0;display:inline-block;text-align:center;height:16px;line-height:14px;min-width:16px;margin-right:1px;position:relative;top:-1px}.switch:checked+.lable::before{display:inline-block;content:'\f00c';background-color:#f5f8fc;border-color:#adb8c0;box-shadow:0 1px 2px rgba(0,0,0,.05),inset 0 -15px 10px -12px rgba(0,0,0,.05),inset 15px 10px -12px rgba(255,255,255,.1)}.switch+.lable{margin:0 4px;min-height:24px}.switch+.lable::before{font-weight:400;font-size:11px;line-height:17px;height:20px;overflow:hidden;border-radius:12px;background-color:#f5f5f5;-webkit-box-shadow:inset 0 1px 1px 0 rgba(0,0,0,.15);box-shadow:inset 0 1px 1px 0 rgba(0,0,0,.15);border:1px solid #ccc;text-align:left;float:left;padding:0;width:52px;text-indent:-21px;margin-right:0;-webkit-transition:text-indent .3s ease;-o-transition:text-indent .3s ease;transition:text-indent .3s ease;top:auto}.switch.switch-bootstrap+.lable::before{font-family:FontAwesome;content:"\f00d";box-shadow:none;border-width:0;font-size:16px;background-color:#a9a9a9;color:#f2f2f2;width:52px;height:22px;line-height:21px;text-indent:32px;-webkit-transition:background .1s ease;-o-transition:background .1s ease;transition:background .1s ease}.switch.switch-bootstrap+.lable::after{content:'';position:absolute;top:2px;left:3px;border-radius:12px;box-shadow:0 -1px 0 rgba(0,0,0,.25);width:18px;height:18px;text-align:center;background-color:#f2f2f2;border:4px solid #f2f2f2;-webkit-transition:left .2s ease;-o-transition:left .2s ease;transition:left .2s ease}.switch.switch-bootstrap:checked+.lable::before{content:"\f00c";text-indent:6px;color:#fff;border-color:#b7d3e5}.switch-primary>.switch.switch-bootstrap:checked+.lable::before{background-color:#337ab7}.switch-success>.switch.switch-bootstrap:checked+.lable::before{background-color:#5cb85c}.switch-danger>.switch.switch-bootstrap:checked+.lable::before{background-color:#d9534f}.switch-info>.switch.switch-bootstrap:checked+.lable::before{background-color:#5bc0de}.switch-warning>.switch.switch-bootstrap:checked+.lable::before{background-color:#f0ad4e}.switch.switch-bootstrap:checked+.lable::after{left:32px;background-color:#fff;border:4px solid #fff;text-shadow:0 -1px 0 rgba(0,200,0,.25)}.switch-square{opacity:0;position:absolute;z-index:1;width:18px;height:18px;cursor:pointer}.switch-square+.lable{position:relative;display:inline-block;margin:0;line-height:20px;min-height:18px;min-width:18px;font-weight:400;cursor:pointer}.switch-square+.lable::before{cursor:pointer;font-family:fontAwesome;font-weight:400;font-size:12px;color:#32a3ce;content:"\a0";background-color:#fafafa;border:1px solid #c8c8c8;box-shadow:0 1px 2px rgba(0,0,0,.05);border-radius:0;display:inline-block;text-align:center;height:16px;line-height:14px;min-width:16px;margin-right:1px;position:relative;top:-1px}.switch-square:checked+.lable::before{display:inline-block;background-color:#f5f8fc;border-color:#adb8c0;box-shadow:0 1px 2px rgba(0,0,0,.05),inset 0 -15px 10px -12px rgba(0,0,0,.05),inset 15px 10px -12px rgba(255,255,255,.1)}.switch-square+.lable{margin:0 4px;min-height:24px}.switch.switch-bootstrap+.lable::before,.switch.switch-bootstrap:checked+.lable::before{content:"";width:40px;height:18px;line-height:21px}.switch.switch-bootstrap+.lable::after{width:14px;height:14px}.switch+.lable{line-height:14px}.switch.switch-bootstrap:checked+.lable::after{left:23px}.switch-square+.lable::before{font-weight:400;font-size:11px;line-height:17px;height:20px;overflow:hidden;border-radius:2px;background-color:#f5f5f5;-webkit-box-shadow:inset 0 1px 1px 0 rgba(0,0,0,.15);box-shadow:inset 0 1px 1px 0 rgba(0,0,0,.15);border:1px solid #ccc;text-align:left;float:left;padding:0;width:52px;text-indent:-21px;margin-right:0;-webkit-transition:text-indent .3s ease;-o-transition:text-indent .3s ease;transition:text-indent .3s ease;top:auto}.switch-square.switch-bootstrap+.lable::before{font-family:FontAwesome;box-shadow:none;border-width:0;font-size:16px;background-color:#a9a9a9;color:#f2f2f2;width:52px;height:22px;line-height:21px;text-indent:32px;-webkit-transition:background .1s ease;-o-transition:background .1s ease;transition:background .1s ease}.switch-square.switch-bootstrap+.lable::after{content:'';position:absolute;top:2px;left:3px;border-radius:12px;box-shadow:0 -1px 0 rgba(0,0,0,.25);width:18px;height:18px;text-align:center;background-color:#f2f2f2;border:4px solid #f2f2f2;-webkit-transition:left .2s ease;-o-transition:left .2s ease;transition:left .2s ease}.switch-square.switch-bootstrap:checked+.lable::before{text-indent:6px;color:#fff;border-color:#b7d3e5}.switch-primary>.switch-square.switch-bootstrap:checked+.lable::before{background-color:#337ab7}.switch-success>.switch-square.switch-bootstrap:checked+.lable::before{background-color:#5cb85c}.switch-danger>.switch-square.switch-bootstrap:checked+.lable::before{background-color:#d9534f}.switch-info>.switch-square.switch-bootstrap:checked+.lable::before{background-color:#5bc0de}.switch-warning>.switch-square.switch-bootstrap:checked+.lable::before{background-color:#f0ad4e}.switch-square.switch-bootstrap:checked+.lable::after{left:32px;background-color:#fff;border:4px solid #fff;text-shadow:0 -1px 0 rgba(0,200,0,.25)}.switch-square.switch-bootstrap+.lable::after{border-radius:2px}
+.product-bottom-bar {
+  padding: 20px 0;
+  margin: -70px auto 0;
+  background-color: #fff;
+  width: 100%;
+  position: relative;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -30px 20px rgb(0 0 0 / 20%);
+}
+.vendor-description{
+  background-color: #fff !important;
+}
+.productsPrice{font-size:16px;}
+@media screen and (max-width:1366px){
+.vendor-design_new .vender-icon img {
+  width: 80px !important;
+  height: 80px !important;
+  object-fit: cover !important;
+}
+}
 </style>
 @endsection
 @section('css-links')
@@ -16,51 +36,21 @@ $checkSlot = findSlot('', $vendor->id, '');
         <div class="collection-wrapper">
 
         <!-- section hero start -->
-        <section class="heroArea" id="heroMembershipPage">
+        <section class="heroArea alProductCategories" id="heroMembershipPage">
             <div class="container-fluid">
                 <div class="row">
-                    <div class="slider regular">
-                        @if (!empty($vendor->banner))
-                            <div><img src="{{ $vendor->banner['image_fit'] . '1920/550' . $vendor->banner['image_path'] }}" alt=""></div>
-                        @endif
-                        @foreach ($vendorMultiBanner['banner'] as $key =>$multiBanner )
-                         <div><img src="{{$multiBanner->image['proxy_url'] . '1920/550' . $multiBanner->image['image_path']}}" alt=""></div>
-                        @endforeach
-                        {{-- <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div> --}}
-                    </div>
-
-
-                    <div class="slider regular-nav">
-                        @if (!empty($vendor->banner))
-                        <div><img src="{{ $vendor->banner['image_fit'] . '1920/550' . $vendor->banner['image_path'] }}" alt=""></div>
-                    @endif
-                    @foreach ($vendorMultiBanner['banner'] as $key =>$multiBanner )
-                         <div><img src="{{$multiBanner->image['proxy_url'] . '1920/550' . $multiBanner->image['image_path']}}" alt=""></div>
-                    @endforeach
-                        {{-- <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/membershipBanner.png')  }}" alt=""></div>
-                        <div><img src="{{asset('frontend/template_six/spaimages/singleP.png')  }}" alt=""></div> --}}
-                    </div>
-                 </div>
+                        <div class="col-12">
+                            @include('frontend.vendor-category-topbar-banner')   
+                        </div>
+                        @include('frontend.vendor-details-in-banner')
+                       
+                </div>
             </div>
 
         </section>
         <!-- section hero end -->
-
         <!-- single products content start -->
-        <section class="singleProductContent pb-5">
+        <section class="singleProductContent pb-5 d-none">
         	<div class="container">
         		<div class="row">
 	        		<!-- breadcrumb start -->
@@ -149,8 +139,7 @@ $checkSlot = findSlot('', $vendor->id, '');
         	</div>
         </section><!-- single products content end -->
 
-
-        @include('frontend.ondemand.vendor_ondemandSection');
+        @include('frontend.ondemand.vendor_ondemandSection')
 
 
 
@@ -181,7 +170,7 @@ $checkSlot = findSlot('', $vendor->id, '');
         <!-- Why people visit here end -->
 
         <!-- More spas nearby start -->
-        <section class="moreSpasNearby pt-5 pb-0">
+        <section class="moreSpasNearby pt-5 pb-0 d-none">
         	<div class="container">
         		<div class="row">
         			<div class="col-md-12">
@@ -206,7 +195,7 @@ $checkSlot = findSlot('', $vendor->id, '');
         <!-- More spas nearby end -->
 
         <!-- sections SpasRelated start -->
-        <section class="SpasRelated py-5">
+        <section class="SpasRelated py-2">
             <div class="container">
                 <div class="row">
                     <!-- alSpaListSlider start -->

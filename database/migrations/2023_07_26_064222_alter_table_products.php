@@ -13,17 +13,17 @@ class AlterTableProducts extends Migration
      */
     public function up()
     {
-        Schema::table('products', function (Blueprint $table) {
-            if(!Schema::hasColumn('products', 'height')){
-                $table->decimal('height', 10, 4)->nullable();
-            }
-            if(!Schema::hasColumn('products', 'breadth')){
-                $table->decimal('breadth', 10, 4)->nullable();
-            }
-            if(!Schema::hasColumn('products', 'length')){
-                $table->decimal('length', 10, 4)->nullable();
-            }
-        });
+        // Schema::table('products', function (Blueprint $table) {
+        //     if(!Schema::hasColumn('products', 'height')){
+        //         $table->decimal('height', 10, 4)->nullable();
+        //     }
+        //     if(!Schema::hasColumn('products', 'breadth')){
+        //         $table->decimal('breadth', 10, 4)->nullable();
+        //     }
+        //     if(!Schema::hasColumn('products', 'length')){
+        //         $table->decimal('length', 10, 4)->nullable();
+        //     }
+        // });
     }
 
     /**
@@ -33,16 +33,16 @@ class AlterTableProducts extends Migration
      */
     public function down()
     {
-        Schema::table('products', function (Blueprint $table) {
-            if(Schema::hasColumn('products', 'height')){
-                $table->dropColumn('height');
-            }
-            if(Schema::hasColumn('products', 'breadth')){
-                $table->dropColumn('breadth');
-            }
-            if(Schema::hasColumn('products', 'length')){
-                $table->dropColumn('length');
-            }
-        });
+        // Schema::table('products', function (Blueprint $table) {
+        //     if(Schema::hasColumn('products', 'height')){
+        //         $table->dropColumn('height');
+        //     }
+        //     if(Schema::hasColumn('products', 'breadth')){
+        //         $table->dropColumn('breadth');
+        //     }
+        //     if(Schema::hasColumn('products', 'length')){
+        //         $table->dropColumn('length');
+        //     }
+        // });
     }
 }

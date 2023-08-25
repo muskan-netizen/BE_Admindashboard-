@@ -84,7 +84,7 @@ class VendorController extends FrontController
      *
      * @return \Illuminate\Http\Response
      */
-    public function vendorProducts(Request $request, $domain = '', $slug = 0){
+    public function vendorProducts(Request $request, $domain = '', $slug = 0){        
         if($request->ajax())
         {
             $returnHTML = $this->vendorFilters($request,'',$slug);

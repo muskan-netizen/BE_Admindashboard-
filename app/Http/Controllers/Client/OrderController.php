@@ -217,7 +217,9 @@ class OrderController extends BaseController
 
         $orders = Order::onlyEnabledLuxuryOptions($EnabledLuxuryOptions)->with(['vendors.products' => function ($q) {
             $q->withoutAppends();
-        }, 'vendors.status', 'orderStatusVendor', 'address', 'user' ]);
+        },'vendors.products.translation' => function ($q) use ($langId) {
+            $q->where('language_id',$langId);
+        },'vendors.status', 'orderStatusVendor', 'address', 'user' ]);
         
         
         $orders = $orders->with(['vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail']);
@@ -604,6 +606,7 @@ class OrderController extends BaseController
                 foreach ($vendor->products as $product) {
                     $product_total_count += $product->quantity * $product->price;
                     $security_amount += $product->security_amount;
+                    $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;
                     $product->image_path  = $product->media->first() &&  !is_null($product->media->first()->image) ? $product->media->first()->image->path : getDefaultImagePath();
                     if (!is_null($product->product) && ($product->has_inventory != 0) && ($product->quantity > ($product->product->variant->first() ? $product->product->variant[0]->quantity : 0))) {
                         $vendor->isAlert = true;
@@ -751,6 +754,8 @@ class OrderController extends BaseController
                 
                 $query->with('order_product_status');
                 
+            },'vendors.products.translation' => function ($q) use ($langId) {
+                $q->where('language_id',$langId);
             },
              'vendors.products.product',
              'vendors.products.addon',
@@ -850,6 +855,7 @@ class OrderController extends BaseController
                 if ($product->schedule_type == 'schedule') {
                     $product_schedule_type = 'schedule';
                 }
+                $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;
                 $product->image_path  = $product->media->first() && !is_null($product->media->first()->image)  ? $product->media->first()->image->path : '';
                 $divider = (empty($product->doller_compare) || $product->doller_compare < 0) ? 1 : $product->doller_compare;
                 $total_amount = $product->quantity * $product->price;

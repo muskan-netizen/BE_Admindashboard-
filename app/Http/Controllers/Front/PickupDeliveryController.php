@@ -1028,7 +1028,7 @@ class PickupDeliveryController extends FrontController{
 
     // place Request To Dispatch
     public function placeRequestToDispatch($request,$order,$vendor){
-        try {
+        try {            
             $meta_data = '';
             $tasks = array();
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
@@ -1100,7 +1100,10 @@ class PickupDeliveryController extends FrontController{
                     $notify_hour = $client_preferences_addional['pickup_notification_before_hours'] ?? 1;
                     $reminder_hour = $client_preferences_addional['pickup_notification_before2_hours'] ?? 1;
                 }
-
+                $allocation_type = 'a';
+                if(isset($request->unique_id) || isset($request->driver_id)){
+                    $allocation_type = 'm';
+                }
                 $postdata =  [
                     'order_number' =>  $order->order_number,
 
@@ -1144,7 +1147,10 @@ class PickupDeliveryController extends FrontController{
                     'app_call' => 0,
                     'call_notification' => 0
                 ];
-
+                
+                if(isset($request->bid_task_type) && !empty($request->bid_task_type)){
+                    $postdata['bid_task_type']    = $request->bid_task_type;
+                }
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post($url.'/api/task/create',['form_params' => ($postdata)]);

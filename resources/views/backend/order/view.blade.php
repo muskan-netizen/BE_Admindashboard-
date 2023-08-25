@@ -442,7 +442,7 @@ $timezone = Auth::user()->timezone;
 
 
                                             <a href="{{ $product_url }}" @if ($product_url !='javascript:void(0)' ) target="_blank" @endif>
-                                                {{ $product->product_name }} @if(@$product->product->is_long_term_service && $product->product->is_long_term_service ==1) <span class="badge badge-info"> {{ __('Long Term Service') }}</span> @endif
+                                                {{ $product->product_title }} @if(@$product->product->is_long_term_service && $product->product->is_long_term_service ==1) <span class="badge badge-info"> {{ __('Long Term Service') }}</span> @endif
                                             </a>
 
                                             @if (isset($product->product) &&

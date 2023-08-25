@@ -492,6 +492,12 @@
                         @endif
                         @if(Auth::user()->is_superadmin == 1)
                             <li>  
+                                <a href="{{route('manageCache')}}">
+                                    <i class="icon-profile"></i>
+                                    <span>{{ __("Cache Control") }}</span>
+                                    </a>
+                            </li>
+                            <li>  
                                 <a href="{{route('manage.attribute')}}">
                                     <i class="icon-profile"></i>
                                     <span>{{ __("Manage Attributes") }}</span>

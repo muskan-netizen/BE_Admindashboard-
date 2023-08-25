@@ -4,8 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-// class AlterTableProducts extends Migration
-// {
+class AlterTableProducts extends Migration
+{
 //     /**
 //      * Run the migrations.
 //      *
@@ -33,4 +33,4 @@ use Illuminate\Support\Facades\Schema;
 //             $table->dropColumn('length');
 //         });
 //     }
-// }
+}
