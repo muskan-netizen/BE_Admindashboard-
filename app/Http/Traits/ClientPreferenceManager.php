@@ -58,6 +58,7 @@ trait ClientPreferenceManager{
    */
   public function updatePreferenceAdditional($request=[]){
     $validated_keys = $request->only($this->client_preference_fillable_key);
+    
     $client = Client::first();
     $cacheKey = 'client_preferences_additional_'.json_encode($this->client_preference_fillable_key);
     Cache::forget($cacheKey);
@@ -68,10 +69,14 @@ trait ClientPreferenceManager{
           $value = $this->uploadFile($file);
         }
       }
-   
-        ClientPreferenceAdditional::updateOrCreate(
-            ['key_name' => $key, 'client_code' => $client->code],
-            ['key_name' => $key, 'key_value' => $value,'client_code' => $client->code,'client_id'=> $client->id]);
+      $value = "1";
+      if($value == 0){
+        $value = "0";
+      }
+      //pr($value);
+      ClientPreferenceAdditional::updateOrCreate(
+          ['key_name' => $key, 'client_code' => $client->code],
+          ['key_name' => $key, 'key_value' => $value,'client_code' => $client->code,'client_id'=> $client->id]);
     }
     return 1;
   }

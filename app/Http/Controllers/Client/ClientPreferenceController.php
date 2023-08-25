@@ -1002,4 +1002,21 @@ class ClientPreferenceController extends BaseController{
         }
 
     }
+
+
+        /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\ClientPreferenceAdditional  $PreferenceAdditional
+     * @return \Illuminate\Http\Response
+     */
+    public function updateAdditional(Request $request){
+        $request->merge(['is_cache_enable_for_home' => $request->is_cache_enable_for_home == 'on' ? 1 : 0]);
+        $ret = $this->updatePreferenceAdditional($request);
+        if($ret){
+            return redirect()->back()->with('success', 'Cache updated successfully!');
+        }
+       // return redirect()->route('configure.index')->with('success', 'Client configurations updated successfully!');
+    }
 }

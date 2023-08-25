@@ -505,6 +505,7 @@ class UserhomeController extends FrontController
 
             if ($this->additionalPreference['is_cache_enable_for_home'] == 1 && @$find_key['data']) {
                 $homeData = $find_key['data'];
+                //die;
                 echo $homeData;
                 exit;
             } else {
