@@ -210,7 +210,7 @@ $(document).ready( async function () {
     }
 
     //$(".navigation-tab-item").click(function() {
-    $(document).on('click','.navigation-tab-item > a',function() {
+   $(document).on('click','.navigation-tab-item > a', async function() {
         // if($.hasAjaxRunning()){
         //     return false;
         // }
@@ -234,12 +234,12 @@ $(document).ready( async function () {
         let type = "";
         let sessionType = "";
         //var id = $(this).attr('id');
-        type = $(this).attr('VendorType');
+        type = $(this).attr('vendortype');
         sessionType = $(this).data("sessiontype");
         console.log(type, sessionType);
         if(type == sessionType){
-        window.location.href = home_page_url;
-        return false;
+            window.location.href = home_page_url;
+            return false;
         }
         if($("#address-latitude").length > 0){
             latitude = $("#address-latitude").val();
@@ -252,7 +252,7 @@ $(document).ready( async function () {
         // if(!$.hasAjaxRunning()){
         //     vendorType(latitude, longitude, type);
         // }
-        setSession(type);
+        //setSession(type);
     });
 
     $('#remove_cart_modal').on("hide.bs.modal", function() {
@@ -273,7 +273,7 @@ $(document).ready( async function () {
             $(".nav-tabs.vendor_mods").attr("data-mod", type);
             return false;
         }
-        $.ajax({
+        await  $.ajax({
             type: "get",
             dataType: 'json',
             url: `/setSessionIndex?type=${type}`,
