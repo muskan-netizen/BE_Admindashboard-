@@ -22,7 +22,7 @@ trait smsManager{
 
 
 
-    public function mazinhost($to,$message,$crendentials)
+    public function mazinhost_sms($to,$message,$crendentials)
     {
         $curl = curl_init();
         $from = $crendentials->sender_id;
