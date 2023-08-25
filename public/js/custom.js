@@ -2444,6 +2444,8 @@ $(document).ready(function () {
                     $("#cart_table").html('');
                     $(".spinner-box").hide();
                     $("#mycart").html(response.mycart);
+
+
                     if(response.loggedIn ==  "true") {
                         $('.onhover-show-div').html(`<li>
                             <a href="/client/dashboard" data-lng="en">Control Panel</a>

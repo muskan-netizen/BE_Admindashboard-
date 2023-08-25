@@ -1012,7 +1012,11 @@ class ClientPreferenceController extends BaseController{
      * @return \Illuminate\Http\Response
      */
     public function updateAdditional(Request $request){
-        $request->merge(['is_cache_enable_for_home' => $request->is_cache_enable_for_home == 'on' ? 1 : 0]);
+
+        $request->merge(['is_cache_enable_for_home' => ($request->has('is_cache_enable_for_home') && $request->is_cache_enable_for_home == 'on') ? 1 : 0]);
+
+        // dd($request->all());
+
         $ret = $this->updatePreferenceAdditional($request);
         if($ret){
             return redirect()->back()->with('success', 'Cache updated successfully!');

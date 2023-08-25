@@ -210,7 +210,7 @@ $(document).ready( async function () {
     }
 
     //$(".navigation-tab-item").click(function() {
-   $(document).on('click','.navigation-tab-item > a', async function() {
+    $(document).on('click','.navigation-tab-item > a', async function() {
         // if($.hasAjaxRunning()){
         //     return false;
         // }
@@ -273,7 +273,7 @@ $(document).ready( async function () {
             $(".nav-tabs.vendor_mods").attr("data-mod", type);
             return false;
         }
-        await  $.ajax({
+        await $.ajax({
             type: "get",
             dataType: 'json',
             url: `/setSessionIndex?type=${type}`,
