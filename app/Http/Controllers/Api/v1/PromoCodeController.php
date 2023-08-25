@@ -89,7 +89,7 @@ class PromoCodeController extends Controller{
             }
             $clientCurrency = ClientCurrency::where('currency_id', $user->currency )->first();
             $now = Carbon::now()->toDateTimeString();
-            $product_ids = Product::where('vendor_id', $request->vendor_id)->pluck("id");
+            $product_ids = Product::where('vendor_id', $request->vendor_id)->pluck("id")->toArray();
             $cart_products = CartProduct::with(['product.variant' => function($q){
                 $q->select('sku', 'product_id', 'quantity', 'price', 'barcode');
                 $q->groupBy('product_id');
@@ -104,6 +104,7 @@ class PromoCodeController extends Controller{
             }
             ])->where('vendor_id', $request->vendor_id)->where('cart_id', $request->cart_id)->get();
             $total_minimum_spend = 0;
+            $cart_product_ids =[];
             foreach ($cart_products as $cart_product) {
                 $total_price = 0;
                 if(isset($cart_product->product->variant) && !empty($cart_product->product->variant->first()))
@@ -126,9 +127,13 @@ class PromoCodeController extends Controller{
                     }
                 }
                 $total_minimum_spend += $product_addon_price;
+                $cart_product_ids[] = $cart_product->product_id;
             }
-            if ($product_ids) {
-                $promo_code_details = PromoCodeDetail::whereIn('refrence_id', $product_ids->toArray())->pluck('promocode_id');
+            if ($product_ids) {  
+                if(!empty($cart_product_ids)){
+                    $product_ids = array_intersect($cart_product_ids,$product_ids); 
+                }                
+                $promo_code_details = PromoCodeDetail::whereIn('refrence_id', $product_ids)->pluck('promocode_id');
                 $result1 = Promocode::whereDate('expiry_date', '>=', $now)->where('restriction_on', 0)->where(function ($query) use ($promo_code_details ) {
                     $query->where(function ($query2) use ($promo_code_details) {
                         $query2->where('restriction_type', 1);

@@ -898,6 +898,7 @@ class CartController extends BaseController
                 $coupon_vendor_ids = [];
                 $coupon_product_discount = 0;
                 $in_or_not = 0;
+                $rate = 0;
                 if (isset($vendorData->coupon) && !empty($vendorData->coupon) && isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)){                  
                     if($vendorData->coupon->promo->restriction_on == 0)
                     { 
@@ -1416,10 +1417,10 @@ class CartController extends BaseController
                             }
                         }
                     }
-                    if(isset($rate) && $discount_amount > 0 ){
-                        $discount = ($discount_amount*$rate) / 100;
+                  /*  if($rate > 0 && $discount_amount > 0 ){
+                        $discount = ($discount_amount * $rate) / 100;
                         $taxable_amount -= $discount;
-                    }
+                    }*/
                 }
                 $payable_amount = $payable_amount + $vendorTotalDeliveryFee ;
                 $deliver_charge = $vendorTotalDeliveryFee * $clientCurrency->doller_compare;
