@@ -48,7 +48,7 @@ class FrontController extends Controller
             }elseif($client_preference->sms_provider == 3) //for mazinhost gateway
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
-                $send = $this->mazinhost($to,$body,$crendentials);
+                $send = $this->mazinhost_sms($to,$body,$crendentials);
             }elseif($client_preference->sms_provider == 4) //for unifonic gateway
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
@@ -125,7 +125,7 @@ class FrontController extends Controller
             }elseif($client_preference->sms_provider == 3) //for mazinhost gateway
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
-                $send = $this->mazinhost($to,$body,$crendentials);
+                $send = $this->mazinhost_sms($to,$body,$crendentials);
             }elseif($client_preference->sms_provider == 4) //for unifonic gateway
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
