@@ -17,7 +17,9 @@ class ManageCacheController extends Controller
 
     public function index(Request $request)
     {
-        $additionalPreferences = getAdditionalPreference(['is_cache_enable_for_home','cache_reset_time_for_home','cache_radius_for_home']);
+        $additionalPreferences = getAdditionalPreference(['is_cache_enable_for_home','cache_reset_time_for_home','cache_radius_for_home'],1);
+
+        // dd($additionalPreferences);
         return view('backend/cacheManagement/index',compact('additionalPreferences'));
     }
   
