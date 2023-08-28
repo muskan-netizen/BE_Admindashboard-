@@ -1069,6 +1069,22 @@ input[type=number]::-webkit-outer-spin-button {
                     <a class="remove-coupon" href="javascript:void(0)" id="remove_promo_code_cab_booking_btn" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" style="display:none;">Remove</a>
 
         </div>
+        <% if(result.add_on){ %>
+        <h5>Addons</h5>
+            <div class="addon-box btn-product-order-form-div">
+                <% _.each(result.add_on, function(addon, key){%>
+                    <div class="">
+                        <h6><%= addon.add_on_name.title%></h6>
+                        <% _.each(addon.add_on_name.option, function(option, key){%>
+                            <div class="d-flex">
+                                <input type="checkbox" class="addon-opt" name="addon-opt-<%= option.id%>" data-id="<%=option.id%>"/>
+                                <p><%= option.title %><span><%= option.price %></span></p>
+                            </div>
+                        <%})%>
+                    </div>
+                <%})%>
+            </div>
+        <%}%>
         <% if((result.faqlist) && (result.faqlist) > 0 ){ %>
         <div class="text-center my-3 btn-product-order-form-div">
             <button class="clproduct_order_form btn btn-solid w-100"  id="add_product_order_form"  data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" >{{__('Product Order Form')}}</button>

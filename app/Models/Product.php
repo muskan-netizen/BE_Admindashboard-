@@ -20,7 +20,7 @@ class Product extends Model implements Auditable
 
   public function addOn()
   {
-    return $this->hasMany('App\Models\ProductAddon')->select('product_id', 'addon_id');
+    return $this->hasMany('App\Models\ProductAddon', 'product_id', 'id')->select('product_id', 'addon_id');
   }
 
   public function sets()
