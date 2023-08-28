@@ -6,7 +6,7 @@
     <div class="container">
         <div class="serch_result_heading">
             <div class="item">
-                <h3>{{$pickup->address}}</h3>
+                <h3>{{$pickup->address ?? session('selectedAddress')}}</h3>
                 <span><i class="fa fa-pencil filter_cta"></i></span>
             </div>
             <div class="result_date">
@@ -24,9 +24,9 @@
     <div class="container">
         <div class="heading d-flex align-items-center justify-content-between">
             @if($products->count())
-            <h2>Available {{ucfirst($service)}}</h2>
+            <h2>Available {{$service == 'yacht' ? ucfirst($service) : 'Cars'}}</h2>
             @else
-            <h2>No Available {{ucfirst($service)}}</h2>
+            <h2>No Available {{$service == 'yacht' ? ucfirst($service) : 'Cars'}}</h2>
             @endif
             <span class="filter_cta">
                 <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -125,9 +125,9 @@
             @csrf
             <div class="form-group">
                 <label>Pickup Location</label>
-                <input type="text" value="{{$pickup->address}}" name="pickup_location" id="pickup_location">
-                <input type="hidden" value="{{$pickup->longitude}}" name="pickup_longitude" id="pickup_longitude">
-                <input type="hidden" value="{{$pickup->latitude}}" name="pickup_latitude" id="pickup_latitude">
+                <input type="text" value="{{$pickup->address ?? Session::get('selectedAddress')}}" name="pickup_location" id="pickup_location">
+                <input type="hidden" value="{{$pickup->longitude ?? Session::get('longitude')}}" name="pickup_longitude" id="pickup_longitude">
+                <input type="hidden" value="{{$pickup->latitude ?? Session::get('latitude')}}" name="pickup_latitude" id="pickup_latitude">
                 <input type="hidden" value="{{$service}}" name="service">
             </div>
             @if($service == 'rental')

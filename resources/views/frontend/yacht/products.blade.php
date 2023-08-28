@@ -268,7 +268,7 @@
 						<span>Showing available cars from {{$pickup_time}} to {{$drop_time}}</span>
 					</div>
 					<div class="col-6 col-lg-3">
-						<div class="product-card-box position-relative al_box_third_template al"  >
+						<div class="product-card-box position-relative al_box_third_template al">
 							@php									
 							if ($service == 'airport') {
 								$link = 'category/airport?destination_location='.$product['location'].'&destination_location_latitude='.$product['latitude'].'&destination_location_longitude='.$product['longitude'];

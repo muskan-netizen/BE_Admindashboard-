@@ -13,10 +13,13 @@
 			<div class="right">
 				<nav class="menu">
 					<ul class="d-flex  align-items-center">
+						@php
+							$searchDate = date('d M Y H:i').' to '.date('d M Y H:i', strtotime('+1 week'));
+						@endphp
 						<li class="navigation-tab-item"><a href="{{route('userHome')}}" title="">Home</a></li>
-						<li><a href="{{ route('productSearch',['service' => 'rental']) }}" title="">Car Rental</a></li>
+						<li><a href="{{ route('productSearch',['service' => 'rental', 'pick_drop_time' => $searchDate]) }}" title="">Car Rental</a></li>
 						<li><a href="{{ url('category/airport',['service' => 'pick_drop']) }}" title="">Airport Pickup and Drop</a></li>
-						<li><a href="{{ route('productSearch',['service' => 'yacht']) }}" title="">Yacht</a></li>
+						<li><a href="{{ route('productSearch',['service' => 'yacht', 'pick_drop_time' => $searchDate]) }}" title="">Yacht</a></li>
 						@if (Auth::guest())
 							<li><a href="user/login" title="">Sign in / Login</a></li>
 						@else	

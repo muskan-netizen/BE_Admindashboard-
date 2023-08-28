@@ -43,19 +43,14 @@ trait YachtTrait
                         $q->whereIn('key_name', ['Cabins', 'Berths', 'Baths']);
                     }
                 },
-                'ProductAttribute.attributeOption:id,title'
+                'ProductAttribute.attributeOption:id,title',
             ])
-                ->where(function ($q) use ($pickup_time, $drop_time) {
-                    if (!empty($pickup_time) && !empty($drop_time)) {
-                        // $q->where('pickup_time', '<=', $pickup_time)
-                        // ->where('drop_time', '>=', $drop_time);
-                    }
-                })->whereDoesntHave('productBooked', function($q){
-                    if (!empty($pickup_time) && !empty($drop_time)) {
-                        $q->where('start_date_time', '>=', $pickup_time)
-                        ->where('end_date_time', '<=', $drop_time);
-                    }
-                })
+            ->whereDoesntHave('productBooked', function($q) use($pickup_time, $drop_time){
+                if (!empty($pickup_time) && !empty($drop_time)) {
+                    $q->whereRaw("DATE(start_date_time) <= ?", [$drop_time])
+                    ->WhereRaw("DATE(end_date_time) >= ?", [$pickup_time]);
+                }
+            })
                 ->where(function ($q) use ($request) {
                     if ($request->has('seats') && !empty($request->seats)) {
                         $q->whereHas('ProductAttribute', function ($q) use ($request) {
@@ -88,12 +83,13 @@ trait YachtTrait
                         $q->distanceInMeters($clientPreference->Default_latitude, $clientPreference->Default_longitude);
                     }
                 })
-                ->where('category_id', $category->id)->get();
+                ->where('category_id', $category->id)
+                ->get();
         }
 
 
         $data['service'] = $request->service;
-        $data['pick_drop_time'] = $request->pick_drop_time;
+        $data['pick_drop_time'] = date('d M Y H:i', strtotime($pickup_time)).' to '.date('d M Y H:i', strtotime($drop_time));
         $data['pickup_time'] = $pickup_time;
         $data['drop_time'] = $drop_time;
         $data['category'] = $category;

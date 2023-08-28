@@ -373,7 +373,6 @@ class YachtController extends FrontController
         $data = [];
         $pickup_time = null;
         $drop_time = null;
-
         if($request->has('pick_drop_time')){
             $time = explode('to',$request->pick_drop_time);
             $pickup_time = date('Y-m-d H:i',strtotime($time[0]));
@@ -392,6 +391,7 @@ class YachtController extends FrontController
             'longitude' =>  $request->drop_longitude,
             'address' => $request->drop_location
         ];
+        
         $data = $this->productSearch($request, $pickup, $dropOff);
         Session::put('serviceType', $data['service']);
         return view('frontend.yacht.car-rental',$data);

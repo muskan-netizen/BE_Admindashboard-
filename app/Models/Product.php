@@ -547,6 +547,6 @@ class Product extends Model implements Auditable
   }
 
   public function productBooked(){
-    return $this->hasOne('App\Models\ProductBooking', 'product_id', 'id');
+    return $this->hasMany('App\Models\ProductBooking', 'product_id', 'id');
   }
 }
