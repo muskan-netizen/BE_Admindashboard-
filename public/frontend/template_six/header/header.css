@@ -1215,7 +1215,17 @@ body .royo_whatsapp_img {
         font-size: 12px;
     }
 }
-
+@media (max-width:991px){
+    li.alShoppingBag.mx-md-4.mx-2.dropdown {
+        margin: 0 10px!important;
+    }
+    .nav-tabs.navigation-tab_al.nav-material{
+        padding: 4px!important;
+    }
+    .nav-tabs.navigation-tab_al.nav-material{
+        width: 270px!important;
+    }
+}
 @media (max-width:767px){
     .al_body_template_six .al_count_tabs_new_design {
         margin: 10px 0 0;
@@ -1261,7 +1271,7 @@ body .royo_whatsapp_img {
         width: 100%;
     }
     body.al_body_template_six .nav-tabs.navigation-tab_al.nav-material {
-        width: 100%;
+        width: 100%!important;
         flex-wrap: nowrap;
         overflow-x: auto;
         padding: 0px;
@@ -1432,6 +1442,13 @@ body .royo_whatsapp_img {
     }
     .al_desktop_banner span.carousel-control-prev-icon, span.carousel-control-next-icon{display: none;}
     body.al_body_template_six .d-inline-flex.al_searchType.align-items-center.justify-content-start.px-2.position-relative{padding:10px;}
+    body.al_body_template_six .alFindSec{
+        width: 170px;
+        padding: 0 5px!important;
+    }
+    body.al_body_template_six .al_searchType .form-control{
+        width: 100%;
+    }
 }
 
 @media (max-width:400px) {
@@ -1447,9 +1464,3 @@ body .royo_whatsapp_img {
         display: none!important;
     }
 }
-
-    /* .al_body_template_six .vendor_mods_section {
-        width: 100%;
-    }
-
-} */

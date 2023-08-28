@@ -4985,6 +4985,16 @@ div#addRejectmodal {
     #map-canvas {
         height: calc(100vh - 284px);
     }
+    #pending_orders_row .al_order_sec{
+        max-width: 50%;
+        width: 50%;
+        flex:unset;
+    }
+    #pending_orders_row .al_order_sec .row.mb-3 >  .col-md-9, #pending_orders_row .al_order_sec .row.mb-3 >  .col-md-3 {
+        max-width: 100%;
+        width: 100%;
+        flex: unset;
+    }
 }
 
 @media (min-width: 1200px) {
@@ -5174,6 +5184,11 @@ div#addRejectmodal {
     }
     .al_add_user {
         margin-top: 0;
+    }
+    #pending_orders_row .al_order_sec{
+        max-width: 100%;
+        width: 100%;
+        flex:unset;
     }
 }
 
