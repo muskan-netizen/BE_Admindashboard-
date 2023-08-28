@@ -252,7 +252,7 @@ $(document).ready( async function () {
         // if(!$.hasAjaxRunning()){
         //     vendorType(latitude, longitude, type);
         // }
-        //setSession(type);
+        setSession(type);
     });
 
     $('#remove_cart_modal').on("hide.bs.modal", function() {
