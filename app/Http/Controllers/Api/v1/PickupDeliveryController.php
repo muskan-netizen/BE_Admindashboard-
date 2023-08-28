@@ -137,7 +137,7 @@ class PickupDeliveryController extends BaseController{
                         }
                     }
                     $product->no_of_luggage = $fields['No of luggage'] ?? '';
-                    $product->seats = $fields['Seats'] ?? '0' .' Seats';
+                    $product->Seats = $fields['Seats'] ?? '0' .' Seats';
 
 
                     $product->toll_fee   = $tags_price['toll_fee']??0;
