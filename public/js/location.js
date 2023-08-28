@@ -236,7 +236,7 @@ $(document).ready( async function () {
         //var id = $(this).attr('id');
         type = $(this).attr('vendortype');
         sessionType = $(this).data("sessiontype");
-        console.log(type, sessionType);
+      
         if(type == sessionType){
         window.location.href = home_page_url;
         return false;
