@@ -488,7 +488,7 @@ class PickupDeliveryController extends BaseController{
             if ($cart) {
                 $addons = null;
                 if(!empty($request->addons_ids) && is_array($request->addons_ids)){
-                    $addons = AddonOption::whereIN('id', $request->addons_ids);
+                    $addons = AddonOption::whereIN('id', $request->addons_ids)->get();
                 }
                 // $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
                 // if ($order_loyalty_points_earned_detail) {
@@ -519,10 +519,15 @@ class PickupDeliveryController extends BaseController{
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
                     $schedule_datetime_del = Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
+
+                $returnBookingTime = null;
+                if (!empty($request->return_booking_time)) {
+                    $returnBookingTime = Carbon::parse($request->return_booking_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                }
                 $order->scheduled_date_time = $schedule_datetime_del??NULL;
                 $order->specific_instructions = $request->task_description;
-                $order->recurring_booking_time = $request->return_booking_time;
-                $order->recurring_week_type = 2; //once
+                $order->recurring_booking_time = $returnBookingTime;
+                $order->recurring_week_type = $returnBookingTime ? 2 : null; //once
                 $order->flight_no = $request->flight_number;
                 $order->adults = $request->number_of_adult;
                 $order->name_sign_board = $request->name_sign_board;
