@@ -1598,6 +1598,9 @@ section#our_vendor_main_div .render_full_best_sellers {padding: 20px 0 !importan
     }
 }
 @media (max-width:991px){
+    .al_body_template_six  .order-success-sec .row{
+        margin-bottom: 0!important;
+    }
     .al_body_template_four .vender-icon img {
         width: 70px;
         height: 70px;
