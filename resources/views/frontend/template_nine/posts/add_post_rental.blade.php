@@ -25,7 +25,7 @@
                                 <div class="d-flex mb-2 align-items-center justify-content-between alCategoryItemsHead">
                                     <h6 class="m-0">CHOOSE A CATEGORY </h6>
                                     <div class="fillter_div">
-                                        <span>Fillter:</span>
+                                        <span>Filter:</span>
                                         <select name="category-filter" id="category_filter" value="">
                                             <option value="all">All</option>
                                             <option value="10">Rental</option>
@@ -130,7 +130,7 @@
                                                         id="" aria-describedby="">
                                                 </div> --}}
                                                 <div class="form-group">
-                                                    <label for="inputAddress">Location Avialability *</label>
+                                                    <label for="inputAddress">Location Availability *</label>
                                                     <input type="hidden" name="lat" id="latitude" value="">
                                                     <input type="hidden" name="long" id="longitude" value="">
                                                     <input type="text" name="address" class="form-control" id="address"
