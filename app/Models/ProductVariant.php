@@ -160,12 +160,13 @@ class ProductVariant extends Model
         $vendor = Product::where('id', $this->product_id)->select('vendor_id','tax_category_id')->first();
         if(!empty($vendor)){
             $checkMarkup = Vendor::where('id',$vendor->vendor_id)->value('add_markup_price');
-        }
-        //if vendor price add with markup price
-       if(auth()->user() !=null && auth()->user()->is_admin == 1){
-            $userVendor = UserVendor::where('user_id', auth()->id())->where('vendor_id', $vendor->vendor_id)->first();
-            if($userVendor){
-                return decimal_format($value);
+        
+            //if vendor price add with markup price
+            if(auth()->user() !=null && auth()->user()->is_admin == 1){
+                $userVendor = UserVendor::where('user_id', auth()->id())->where('vendor_id', $vendor->vendor_id)->first();
+                if($userVendor){
+                    return decimal_format($value);
+                }
             }
        }
        if($checkMarkup){
