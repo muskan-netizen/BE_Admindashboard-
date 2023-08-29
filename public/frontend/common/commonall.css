@@ -28,6 +28,11 @@
         background-color: var(--theme-deafult) !important;
         border-radius: 40px;
     }
+    /* .al_body_template_one  .navigation-tab .nav-link.active {
+        background-color: transparent!important;
+        color: var(--theme-deafult) !important;
+        border-bottom: 2px solid var(--theme-deafult);
+    } */
 
     .navigation-tab-item .nav-link {
         font-size: 12px;
