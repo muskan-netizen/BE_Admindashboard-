@@ -12,6 +12,7 @@ use App\Http\Traits\HomePage\HomePageTrait;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Models\{User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, VendorCategory, ProductCategory, Client, ClientPreference, Type};
+use Illuminate\Support\Facades\Cache;
 use Log;
 class CategoryController extends BaseController
 {
@@ -33,17 +34,18 @@ class CategoryController extends BaseController
             $userid = Auth::user()->id;
             $langId = Auth::user()->language;
             $category = Category::with([
-                'tags', 'type'  => function ($q) {
+                // 'tags', 
+                'type'  => function ($q) {
                     $q->select('id', 'title as redirect_to');
                 },
-                'childs.translation'  => function ($q) use ($langId) {
-                    $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
-                        ->where('category_translations.language_id', $langId);
-                },
-                'translation' => function ($q) use ($langId) {
-                    $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
-                        ->where('category_translations.language_id', $langId);
-                }
+                // 'childs.translation'  => function ($q) use ($langId) {
+                //     $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                //         ->where('category_translations.language_id', $langId);
+                // },
+                // 'translation' => function ($q) use ($langId) {
+                //     $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+                //         ->where('category_translations.language_id', $langId);
+                // }
             ])->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products')
                 ->where('id', $cid)->first();
             $mode_of_service = "";
@@ -60,21 +62,30 @@ class CategoryController extends BaseController
 
 
             $variantSets = ProductVariantSet::with(['options' => function ($zx) use ($langId) {
-                $zx->join('variant_option_translations as vt', 'vt.variant_option_id', 'variant_options.id');
-                $zx->select('variant_options.*', 'vt.title');
-                $zx->where('vt.language_id', $langId);
-            }])->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id')
-                ->join('variant_translations as vt', 'vt.variant_id', 'vr.id')
-                ->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title')
-                ->where('vt.language_id', $langId)
-                ->whereIn('product_variant_sets.product_id', function ($qry) use ($cid) {
-                    $qry->select('product_id')->from('product_categories')->where('category_id', $cid);
-                })->groupBy('product_variant_sets.variant_type_id')->get();
+                $zx->join('variant_option_translations as vt', 'vt.variant_option_id', 'variant_options.id')
+                    ->where('vt.language_id', $langId)
+                    ->select('variant_options.*', 'vt.title');
+            }])
+            ->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id')
+            // ->join('product_variants as pv', 'product_variant_sets.product_variant_id', 'pv.id')
+            ->join('variant_translations as vt', 'vt.variant_id', 'vr.id')
+            ->where('vt.language_id', $langId)
+            ->whereIn('product_variant_sets.product_id', function ($qry) use ($cid) {
+                $qry->select('product_id')->from('product_categories')->where('category_id', $cid);
+            })
+            ->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title')
+            ->groupBy('product_variant_sets.variant_type_id')
+            ->get();
+
             if (!$category) {
                 return response()->json(['error' => 'No record found.'], 404);
             }
             $code = $request->header('code');
-            $client = Client::where('code', $code)->first();
+            // $client = Client::where('code', $code)->first();
+            $cacheKey = 'client_'.$code;
+            $client = Cache::remember($cacheKey, 60, function () use ($code) {
+                return Client::where('code', $code)->first();
+            });
             $category->share_link = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/category/" . $category->slug;
             $response['category'] = $category;
             $response['filterData'] = $variantSets;
@@ -275,7 +286,8 @@ class CategoryController extends BaseController
             $multipli = $clientCurrency ? $clientCurrency->doller_compare : 1;
                 
             $products = Product::has('vendor')->with([
-                'category.categoryDetail', 'media.image',
+                // 'category.categoryDetail', 
+                'media.image',
                 'translation' => function ($q) use ($langId) {
                     $q->select('id','product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                     $q->groupBy('language_id','product_id');
@@ -316,34 +328,65 @@ class CategoryController extends BaseController
 
             if (!empty($products)) {
                 foreach ($products as $key => $product) {
-                   
-
-                    $product->vendor->is_vendor_closed = 0;
-                    if ($product->vendor->show_slot == 0) {
-                        if (($product->vendor->slotDate->isEmpty()) && ($product->vendor->slot->isEmpty())) {
-                            $product->vendor->is_vendor_closed = 1;
+                    $vendor = $product->vendor;
+                    $vendor->is_vendor_closed = 0;
+                    if ($vendor->show_slot == 0) {
+                        if (($vendor->slotDate->isEmpty()) && ($vendor->slot->isEmpty())) {
+                            $vendor->is_vendor_closed = 1;
                         } else {
-                            $product->vendor->is_vendor_closed = 0;
-                            if ($product->vendor->slotDate->isNotEmpty()) {
-                                $product->vendor->opening_time = Carbon::parse($product->vendor->slotDate->first()->start_time)->format('g:i A');
-                                $product->vendor->closing_time = Carbon::parse($product->vendor->slotDate->first()->end_time)->format('g:i A');
-                            } elseif ($product->vendor->slot->isNotEmpty()) {
-                                $product->vendor->opening_time = Carbon::parse($product->vendor->slot->first()->start_time)->format('g:i A');
-                                $product->vendor->closing_time = Carbon::parse($product->vendor->slot->first()->end_time)->format('g:i A');
+                            $vendor->is_vendor_closed = 0;
+                            if ($vendor->slotDate->isNotEmpty()) {
+                                $vendor->opening_time = Carbon::parse($product->vendor->slotDate->first()->start_time)->format('g:i A');
+                                $vendor->closing_time = Carbon::parse($product->vendor->slotDate->first()->end_time)->format('g:i A');
+                            } elseif ($vendor->slot->isNotEmpty()) {
+                                $vendor->opening_time = Carbon::parse($product->vendor->slot->first()->start_time)->format('g:i A');
+                                $vendor->closing_time = Carbon::parse($product->vendor->slot->first()->end_time)->format('g:i A');
                             }
                         }
                     }
 
+                    // $product->vendor->is_vendor_closed = 0;
+                    // if ($product->vendor->show_slot == 0) {
+                    //     if (($product->vendor->slotDate->isEmpty()) && ($product->vendor->slot->isEmpty())) {
+                    //         $product->vendor->is_vendor_closed = 1;
+                    //     } else {
+                    //         $product->vendor->is_vendor_closed = 0;
+                    //         if ($product->vendor->slotDate->isNotEmpty()) {
+                    //             $product->vendor->opening_time = Carbon::parse($product->vendor->slotDate->first()->start_time)->format('g:i A');
+                    //             $product->vendor->closing_time = Carbon::parse($product->vendor->slotDate->first()->end_time)->format('g:i A');
+                    //         } elseif ($product->vendor->slot->isNotEmpty()) {
+                    //             $product->vendor->opening_time = Carbon::parse($product->vendor->slot->first()->start_time)->format('g:i A');
+                    //             $product->vendor->closing_time = Carbon::parse($product->vendor->slot->first()->end_time)->format('g:i A');
+                    //         }
+                    //     }
+                    // }
+
                     $p_id = $product->id;
                     $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
-                    $product->product_image = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
-                    $product->translation_title = ($product->translation->isNotEmpty()) ? $product->translation->first()->title : $product->sku;
-                    $product->translation_description = ($product->translation->isNotEmpty()) ? html_entity_decode(strip_tags($product->translation->first()->body_html)) : '';
-                    $product->translation_description = !empty($product->translation_description) ? mb_substr($product->translation_description, 0, 70) . '...' : '';
+                    if(($media = $product->media->first())){
+                        $image = $media->image;
+                        $image = $image->path['image_fit'] . '300/300' . $image->path['image_path'];
+                    }
+                    $product->product_image = $image ?? '';//($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
+                    // $product->translation_title = ($product->translation->isNotEmpty()) ? $product->translation->first()->title : $product->sku;
+                    // $product->translation_description = ($product->translation->isNotEmpty()) ? html_entity_decode(strip_tags($product->translation->first()->body_html)) : '';
+                    // $product->translation_description = !empty($product->translation_description) ? mb_substr($product->translation_description, 0, 70) . '...' : '';
+                    // $product->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
+                    if(($translation = $product->translation->first())){
+                        $title = $translation->title;
+                        $body_html = $translation->body_html;
+                    }
+                    $product->translation_title = $title ?? $product->sku;
+                    $product->translation_description = $body_html ??  '';
                     $product->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
-                    $product->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
-                    $product->variant_id = ($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
-                    $product->variant_quantity = ($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
+                    if(($variant = $product->variant()->select('id', 'price', 'quantity')->first())){
+                        $variant_price = $variant->price;
+                        $variant_id = $variant->id;
+                        $variant_quantity = $variant->quantity;
+                    }
+                    $product->variant_price = $variant_price ?? 0;//($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
+                    $product->variant_id = $variant_id ?? 0; //($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
+                    $product->variant_quantity = $variant_quantity ?? 0; //($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
                     if ($product->variant->count() > 0) {
                         foreach ($product->variant as $k => $v) {
                             $product->variant[$k]->multiplier = $clientCurrency->doller_compare;

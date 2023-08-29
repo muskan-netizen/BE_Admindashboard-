@@ -26,10 +26,14 @@
         <div class="col-6">
             <div class="page-title-box text-right">
                 <a href="{{route('databaseAuditingLogs')}}" target="_self" rel="noopener noreferrer">
-                    <h4 class="page-title text-capitalize" style="color:#43bee1;">Return Back</h4>
+                    <h4 class="page-title text-capitalize" style="color:#43bee1;">Return Back </h4>
                 </a>
             </div>
         </div>
+        <h3>Total Login : {{@$logsignIn}}</h3>
+                    <h3>Total SignUp : {{@$logsignUp}}</h3>
+                    <h3>Total paymentCall : {{@$paymentCall}}</h3>
+                    <h3>Total orderCreated : {{@$orderCreated}}</h3>
     </div>
     <div class="row cms-cols al_custom_cms_page">
         <div class="col-md-12 col-xl-12 mb-2 cms-content">

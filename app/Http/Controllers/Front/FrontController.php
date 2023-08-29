@@ -30,15 +30,13 @@ class FrontController extends Controller
     private $field_status = 2;
     protected function sendSms($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
         try{
-
             $client_preference =  getClientPreferenceDetail();
+           
             if($client_preference->sms_provider == 1)
             {
                 if(!empty($client_preference->sms_secret) && !empty($client_preference->sms_from)){
                     $client = new TwilioClient($client_preference->sms_key, $client_preference->sms_secret);
                     $send =  $client->messages->create($to, ['from' => $client_preference->sms_from, 'body' => $body]);
-                    //// Log::info('SMS twilio respons');
-                    //// Log::info($send);
                 }else{
                     return 2;
                 }
@@ -50,7 +48,7 @@ class FrontController extends Controller
             }elseif($client_preference->sms_provider == 3) //for mazinhost gateway
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
-                $send = $this->mazinhost($to,$body,$crendentials);
+                $send = $this->mazinhost_sms($to,$body,$crendentials);
             }elseif($client_preference->sms_provider == 4) //for unifonic gateway
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
@@ -97,8 +95,8 @@ class FrontController extends Controller
             //return $send;
         }
         catch(\Exception $e){
-            //// Log::info('SMS logs');
-            //// Log::info($e->getMessage());
+            Log::info('SMS logs');
+            Log::info($e->getMessage());
             return '2';
         }
         return '1';
@@ -127,7 +125,7 @@ class FrontController extends Controller
             }elseif($client_preference->sms_provider == 3) //for mazinhost gateway
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
-                $send = $this->mazinhost($to,$body,$crendentials);
+                $send = $this->mazinhost_sms($to,$body,$crendentials);
             }elseif($client_preference->sms_provider == 4) //for unifonic gateway
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
@@ -225,14 +223,14 @@ class FrontController extends Controller
                 } else {
                     $vendors = (Session::has('vendors')) ? Session::get('vendors') : $this->getServiceAreaVendors();
                 }
-                $categories = $categories->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
-                    ->where(function ($q1) use ($vendors , $include_categories) {
-                        $q1->whereIn('vct.vendor_id', $vendors)
-                            ->where('vct.status', 1)
-                            ->orWhere(function ($q2) use($include_categories) {
-                                $q2->whereIn('categories.type_id', $include_categories);
-                            });
-                    });
+                // $categories = $categories->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
+                //     ->where(function ($q1) use ($vendors , $include_categories) {
+                //         $q1->whereIn('vct.vendor_id', $vendors)
+                //             ->where('vct.status', 1)
+                //             ->orWhere(function ($q2) use($include_categories) {
+                //                 $q2->whereIn('categories.type_id', $include_categories);
+                //             });
+                //     });
         }
         $categories = $categories->leftjoin('types', 'types.id', 'categories.type_id')
                                 ->where('categories.id', '>', '1')

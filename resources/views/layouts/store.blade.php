@@ -91,6 +91,11 @@ if(isset($set_template))
 
 }
 
+$p2pClass = '';
+$type = session()->get('vendorType');
+if($type == 'p2p'){
+  $p2pClass = "p2p_module_enable";
+}
 @endphp
 @include('layouts.shared.variables-constant-js')
 @include('layouts.language')
@@ -98,7 +103,8 @@ if(isset($set_template))
 <script>
 	var featured_products_length = '';
 </script>
-<body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }} {{$body_class}} " dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
+
+<body  class="{{$dark_mode}}{{ Request::is('category/cabservice') ? 'cab-booking-body' : '' }} {{$body_class}} {{$p2pClass}}" dir="{{session()->get('locale') == 'ar' ? 'rtl' : ''}}">
 <article id="page-container">
   <article id="content-wrap">
   @if(isset($set_template)  && ($set_template->template_id == 3 || $set_template->template_id == 6 || $set_template->template_id == 1 ))

@@ -12,7 +12,7 @@ use App\Http\Controllers\Client\BaseController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
-use App\Http\Controllers\Front\RoadieController;
+use App\Http\Controllers\RoadieController;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Models\RescheduleOrder;
@@ -942,9 +942,9 @@ class OrderController extends BaseController
 
         $recurring_booking = '';
         if(!empty($order->recurring_booking_time)){
-            $recurring_booking = OrderLongTermServiceSchedule::where(['order_number'=>$order->order_number,'type'=>2])->get();
+            $recurring_booking = OrderLongTermServiceSchedule::where(['order_number'=>$order->order_number])->get();
         }
-        //    pr( $order['total_other_taxes'][14]);
+        //    pr($recurring_booking);
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id,
             'order' => $order,
@@ -1054,7 +1054,7 @@ class OrderController extends BaseController
                 }
 
 
-                $orderData = OrderVendor::with('orderDetail')->where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
+                $orderData = OrderVendor::with(['vendor', 'products.product', 'orderDetail'])->where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
                 if(@$orderData->exchanged_of_order){
                     $return = OrderReturnRequest::where('order_id', $orderData->exchanged_of_order->order_id)->first();
                     if (@$return && $request->status_option_id == 2) { //accept exchange
@@ -1123,7 +1123,9 @@ class OrderController extends BaseController
                         $orderPlaced = $this->placeOrderRequestShippo($request);
                     }elseif ($orderData->shipping_delivery_type == 'RO') {
                         //Create Roadies place order request for Roadies
-                        $orderPlaced = $this->placeOrderRequestRoadies($request);
+                        if ($orderData && ($orderData->delivery_fee > 0.00 )) {
+                            $orderPlaced = $this->placeOrderRequestRoadies($request, $orderData);
+                        }
                     }
                     $orderData->accepted_by = Auth::user()->id;
                     $orderData->save();
@@ -1362,14 +1364,19 @@ class OrderController extends BaseController
         return 2;
     }
 
-    public function placeOrderRequestRoadies($request){
+    public function placeOrderRequestRoadies($request, $orderData){
         $roadie = new RoadieController();
-        $checkdeliveryFeeAdded = OrderVendor::with(['vendor', 'products.product', 'orderDetail'])->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
-        // dd($checkdeliveryFeeAdded);
         $checkOrderData = Order::with(['vendors.products.product', 'user', 'address'])->findOrFail($request->order_id);
-        if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 )) {
-            $order_ship_roadie = $roadie->createShipmentRequestRoadie($checkdeliveryFeeAdded, $checkOrderData);
-            return $order_ship_roadie;
+        if (@$checkOrderData) {
+            $order_ship_roadie = $roadie->createShipmentRequestRoadie($orderData, $checkOrderData);
+            if ($order_ship_roadie) {
+                $roadie_tracking_url = "https://www.roadie.com/tracking?tracking_number=".$order_ship_roadie->tracking_number;
+                $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrderData->id, 'vendor_id' => $request->vendor_id])
+                    ->update([
+                        'roadie_tracking_url' => $roadie_tracking_url
+                    ]);
+                return 1;
+            }
         }
         return false;
     }

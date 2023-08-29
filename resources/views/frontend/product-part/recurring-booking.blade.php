@@ -616,7 +616,7 @@ div#custom_date_recurring {
 <div class="addManualTime">
   <div class="addManualTimeGroup" style="text-align:left;">
       <div class="row mb-3 recurring_booking_warpper">
-          <div class="col-md-2">
+          <div class="col-md-2 once">
               <label class="check_recurring m-0">
                   <span>{{__('Once')}}</span>
                   <input type="radio" name="booking_type" checked value="5">

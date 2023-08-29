@@ -18,6 +18,7 @@ use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Cache;
 
 if (!function_exists('setUserCode')) {
     function setUserCode(){
@@ -38,11 +39,18 @@ if (!function_exists('checkColumnExists')) {
      * @param string @columnName
      * @return boolean true or false
      */
-    function checkColumnExists($tableName, $columnName){
-        if (Schema::hasColumn($tableName, $columnName)){
-            return true;
-        }else{
-            return false;
+        function checkColumnExists($tableName, $columnName)
+        {
+            if (Schema::hasColumn($tableName, $columnName)){
+                $cacheKey = "$tableName$columnName";
+                $columnExists = Cache::remember($cacheKey, 60 * 60, function () use($tableName, $columnName) {
+                    return Schema::hasColumn($tableName, $columnName);
+                });
+            if ($columnExists){
+                return true;
+            }else{
+                return false;
+            }
         }
     }
 }
@@ -59,7 +67,11 @@ if (!function_exists('getAdditionalPreference')) {
         $return = [];
         $dbreturn= [];
         if(sizeof($key)){
-            $result = ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
+            // $result = ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
+            $cacheKey = 'client_preferences_additional_'.json_encode($key);
+            $result = Cache::remember($cacheKey, 60, function () use ($key) {
+                return ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
+            });
             $return = array_column($result->toArray(), 'key_value', 'key_name');
             if (sizeof($result)) {
                 $dbreturn = array_column($result->toArray(), 'key_value', 'key_name');
@@ -1305,6 +1317,10 @@ if (!function_exists('getServiceTypesCategory')) {
                 'p2p'          => ['p2p'],
                 'home_service' => ['on_demand_service', 'appointment_service'],
             ];
+            $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
+            if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                $alltypes['p2p'] = ['p2p', 'rental_service'];
+            }
             
             if ($vendorType == 'delivery' || $vendorType == 'dine_in' || $vendorType == 'takeaway' || $vendorType == 'rental' || $vendorType == 'pick_drop' || $vendorType == 'on_demand' || $vendorType == 'laundry' || $vendorType == 'appointment' || $vendorType == 'p2p') {
                 $service_types = $alltypes[$vendorType];
@@ -1312,6 +1328,10 @@ if (!function_exists('getServiceTypesCategory')) {
 
             if ($client_preference->business_type == 'taxi' || $client_preference->business_type == 'laundry' || $client_preference->business_type == 'home_service' || $client_preference->business_type == 'p2p') {
                 $service_types = $alltypes[$client_preference->business_type];
+            }
+            $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
+            if($client_preference->business_type == 'p2p' && @$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                $service_types = $alltypes['p2p'];
             }
             /* if ($vendorType == "delivery" || $vendorType == "dine_in" || $vendorType == "takeaway") {
                 $service_types = ['products_service'];
@@ -1898,6 +1918,7 @@ if( !function_exists('get_file_path') ) {
       if(!empty($url)){
         $img = $url;
       }
+
       $ex = checkImageExtension($img);
       $return_url = $values =  \Config::get('app.'.$type);
 
@@ -1971,5 +1992,87 @@ if (!function_exists('getOnDemandPricingRule')) {
                 }
             }
             return $return;
+    }
+
+}
+if (!function_exists('getDatesBetweenTwoDates')) { 
+    function getDatesBetweenTwoDates($start_date, $end_date)
+    {
+        $period = CarbonPeriod::create($start_date, $end_date);
+
+        // Convert the period to an array of dates
+        $dates = $period->toArray();
+        return $dates;
+    }
+}
+
+if (!function_exists('recurringCalculationFunction')) {    
+    function recurringCalculationFunction($request)
+    {
+        $recurringformPost = (object)$request->recurringformPost;
+        $weekTypes ='';
+        $daysCnt ='';
+        if(!empty($recurringformPost->weekDay)){
+            $weekTypes = implode(',',$recurringformPost->weekDay);
+        }
+
+        $startDate = $recurringformPost->startDate;
+        $endDate = $recurringformPost->endDate;
+
+        $selectedCustomdates = [];
+        
+        if($recurringformPost->action=='2' || $recurringformPost->action=='1'){
+            $startDate = $recurringformPost->startDate;
+            $endDate = $recurringformPost->endDate;
+            
+            if($recurringformPost->action=='1'){
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            } else {
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate,$recurringformPost->weekDay);
+            }
+            
+            $daysCnt =count($selectedCustomdates);
+            $selectedCustomdates = implode(',',$selectedCustomdates);
+        }elseif($recurringformPost->action=='3'){
+            $startDate = Carbon::now()->addDays(1);
+            $endDate = Carbon::now()->addDays(1);
+            $endDate = $endDate->addMonths($recurringformPost->month_number);
+            $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            $daysCnt =count($selectedCustomdates);
+            $selectedCustomdates = implode(',',$selectedCustomdates);
+        }elseif($recurringformPost->action=='4'){
+            if(!empty($recurringformPost->selectedCustomdates)){
+                $daysCnt =count($recurringformPost->selectedCustomdates);
+                $selectedCustomdates = implode(',',$recurringformPost->selectedCustomdates);
+            }
+        }elseif($recurringformPost->action=='6'){
+            $startDate = $recurringformPost->startDate;
+            $endDate = $recurringformPost->endDate;
+            if($recurringformPost->action=='1'){
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            } else {
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate,$recurringformPost->weekDay,'A');
+            }
+            
+            $daysCnt =count($selectedCustomdates);
+            $selectedCustomdates = implode(',',$selectedCustomdates);
+        }
+
+
+        if(empty($daysCnt)){
+            $days = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            $daysCnt =count($days);
+        }
+
+            return (object)[
+                'weekTypes' => @$weekTypes,
+                'selectedCustomdates' => @$selectedCustomdates,
+                'startDate' => @$startDate,
+                'endDate' => @$endDate,
+                'action'  => @$recurringformPost->action,
+                'schedule_time'=>@$recurringformPost->schedule_time??'10:00',
+                'daysCnt'=>@$daysCnt??'1'
+            ];
+
     }
 }

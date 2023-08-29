@@ -32,6 +32,8 @@ use Math;
 use SimpleXMLElement;
 use Log;
 use App\Http\Traits\ProductActionTrait;
+use App\Observers\OrderObserver;
+use App\Observers\UserObserver;
 
 class CustomerAuthController extends FrontController
 {
@@ -136,6 +138,8 @@ class CustomerAuthController extends FrontController
         }else{
             $register_page = "account.registernew";
         }
+        
+
         if (!Session::get('referrer')) {
             return view('frontend.'.$register_page)->with(['navCategories' => $navCategories,'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents]);
         } else {
@@ -246,6 +250,9 @@ class CustomerAuthController extends FrontController
                     ]);
                 }
             }
+            
+            $getAdditionalPreference = getAdditionalPreference(['is_user_pre_signup']);
+            
             $user = new User();
             $county = Country::where('code', strtoupper($req->countryData))->first();
             $client_timezone = Client::where('id', '>', 0)->value('timezone');
@@ -257,6 +264,14 @@ class CustomerAuthController extends FrontController
             $user->status = 1;
             $user->role_id = 1;
             $user->name = $req->name;
+            
+            if(isset($getAdditionalPreference) && ($getAdditionalPreference['is_user_pre_signup'] == 1))
+            {
+                $user->is_presignup = 1;
+            }else{
+                $user->is_presignup = 0;
+                
+            }
             $user->email = $email;
             $user->is_email_verified = 0;
             $user->is_phone_verified = 0;
@@ -268,6 +283,11 @@ class CustomerAuthController extends FrontController
             $user->phone_token_valid_till = $sendTime;
             $user->email_token_valid_till = $sendTime;
             $user->timezone = $client_timezone;
+
+            if(session()->get('company_id')){
+                $user->company_id = base64_decode(session()->get('company_id'));
+            }
+
             $user->password = Hash::make($req->password);
             $user->save();
 
@@ -513,6 +533,9 @@ class CustomerAuthController extends FrontController
                 $this->LoginActionRecentView($userid);
             }
             
+            //Login Observer
+            UserObserver::signIn(auth()->user());
+            
             $message = ('Logged in successfully');
             $redirect_to = '';
      
@@ -536,7 +559,6 @@ class CustomerAuthController extends FrontController
 
     /*** Login user via username ***/
     public function loginViaUsername(Request $request, $domain = ''){
-       
         try{
             $errors = array();
 
@@ -643,6 +665,10 @@ class CustomerAuthController extends FrontController
                 }
                 $username = str_ireplace(' ', '', $username);
                 if (Auth::attempt(['email' => $username, 'password' => $request->password, 'status' => 1])) {
+
+                    //Login Observer
+                     UserObserver::signIn(auth()->user());
+
                     $userid = Auth::id();
                     $Authuser = Auth::user();
                     $update_last_login = User::where('id',$userid)->update(['last_login_at' => Carbon::now()->toDateTimeString()]);
