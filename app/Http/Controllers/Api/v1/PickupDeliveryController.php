@@ -839,6 +839,7 @@ class PickupDeliveryController extends BaseController{
                     $allocation_type = 'm';
                 }
                 $postdata =  [
+                            'notify_all' => $request->send_to_all ?1: 0,
                             'order_number' =>  $order->order_number,
                             'customer_name' => $customer->name ?? 'Dummy Customer',
                             'customer_phone_number' => $customerno??rand(111111,11111),
