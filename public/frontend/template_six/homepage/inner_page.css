@@ -3734,6 +3734,11 @@ span.registerLink {
     padding-right: 8px;
 }
 
+.homepageSix .w-100.row.mb-sm-5.mb-2.mt-5.ml-0 {
+    margin-top: 0!important;
+}
+
+
 /* ================= dark css ================= */
 
 .dark .tip_label {
