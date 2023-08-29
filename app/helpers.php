@@ -62,14 +62,14 @@ if (!function_exists('getAdditionalPreference')) {
      * @param  mixed $key
      * @return void
      */
-    function getAdditionalPreference($key=array()){
+    function getAdditionalPreference($key=array() , $time = '60'){
         setUserCode();
         $return = [];
         $dbreturn= [];
         if(sizeof($key)){
             // $result = ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
             $cacheKey = 'client_preferences_additional_'.json_encode($key);
-            $result = Cache::remember($cacheKey, 60, function () use ($key) {
+            $result = Cache::remember($cacheKey, $time, function () use ($key) {
                 return ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
             });
             $return = array_column($result->toArray(), 'key_value', 'key_name');
@@ -1262,13 +1262,10 @@ if (!function_exists('decimal_format')) {
     // Number Format according to Client preferences
     function decimal_format($number,$format="")
     {
-        if(is_numeric($number)){
+        $number = is_numeric($number)?$number:0;
         $preference = session()->get('preferences');
         $digits = $preference['digit_after_decimal'] ?? 2;
         return number_format($number,$digits,'.',$format);
-        }else{
-            return 0.00 ;
-        }
     }
 }
 

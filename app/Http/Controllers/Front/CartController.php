@@ -1217,13 +1217,13 @@ class CartController extends FrontController
                                 $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
                                 if (count($deliveries)>1) {
                                     foreach ($deliveries as $k=> $opt) {
-                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$opt['rate'].'</option>';
+                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.decimal_format($opt['rate']).'</option>';
                                         //$select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['rate'].'</option>';
                                     }
                                 } else {
                                     foreach ($deliveries as $k=> $opt) {
                                         //$select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$opt['rate'].'</option>';
-                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['rate'].'</option>';
+                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.decimal_format($opt['rate']).'</option>';
                                     }
                                 }
                                 $select .= '</select>';
@@ -2201,7 +2201,7 @@ class CartController extends FrontController
             $cart_details->tokenAmount = $tokenAmount;
         }
         // till here
-        return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'', 'cart_error_message' => $error_message,'wishListCount'=>$wishListCount]);//'token_val' => $tokenAmount , 'is_token_enable' => $is_token_enable
+        return response()->json(['loggedIn' => Auth::check() ? 'true' : 'false','status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'', 'cart_error_message' => $error_message,'wishListCount'=>$wishListCount]);//'token_val' => $tokenAmount , 'is_token_enable' => $is_token_enable
     }
 
 

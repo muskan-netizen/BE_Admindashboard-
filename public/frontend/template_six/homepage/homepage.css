@@ -1187,6 +1187,9 @@ a.brand-box.d-block.black-box {
 /* car bar css end */
 
 
+section.home-slider-wrapper {
+    margin-bottom: 40px;
+}
 /*responsive css add */
 
 
@@ -1212,6 +1215,9 @@ a.brand-box.d-block.black-box {
 .cab-footer button.btn.btn-solid.new-btn{font-size: 10px;font-weight: 100;padding: 10px 10px;}
 .nav-tabs.navigation-tab_al.nav-material{width: 300px;flex-wrap: nowrap;overflow-x: auto;padding:10px;}
 .nav-tabs.navigation-tab_al.nav-material span.al_textTabsText{width: 100%;display: inline-block;max-width: 100px !important;min-width: 100px;text-align: center;}
+.al_body_template_six .alSixMainMenu {
+    margin-top  : 20px;
+}
 }
 
 @media (max-width:576px) {
@@ -1247,9 +1253,9 @@ a.brand-box.d-block.black-box {
         margin-bottom: 0px;
     }
     .al_body_template_six .vendor_mods_section {
-        margin-top: 10px;width:100%;
+        margin-top:0;width:100%;
     }
-    .carousel-inner a.banner-img-outer{height: 220px;}
+    .carousel-inner a.banner-img-outer{height: 300px;}
     .al_body_template_six .vendors .top-heading{margin: 0px 20px;}
     .menu-navigation_al {margin: 20px 10px;}
     .al_body_template_six .al_custom_brand .brand-box{background-color: #eee;}
