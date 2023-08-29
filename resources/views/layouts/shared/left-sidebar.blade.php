@@ -497,7 +497,7 @@
                                     <span>{{ __("Cache Control") }}</span>
                                     </a>
                             </li>
-                            <li>  
+                            <li class="d-none">  
                                 <a href="{{route('manage.attribute')}}">
                                     <i class="icon-profile"></i>
                                     <span>{{ __("Manage Attributes") }}</span>
