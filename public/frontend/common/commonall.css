@@ -1973,3 +1973,18 @@ body.al_body_template_eight .al_mobile_menu{
 
 .dark .slick-slide .inner_spacing p{color:#fff;}
 .dark .displayProducts .inner_spacing h3 label b{color:#fff;}
+
+
+div#step-2-ondemand button.slick-prev:before, button.slick-next:before{font-size: 12px;}
+.dark div#step-2-ondemand .slick-initialized .slick-arrow:hover {background-color: #353030 !important;}
+
+.dark.al_body_template_one .p2p-sidebar label.control-label{color:#fff !important;}
+.dark.al_body_template_one .main-fillter .side_fillter{background-color:transparent !important;}
+.dark.al_body_template_one .main-fillter .side_fillter .collection-collapse-block{border-bottom: transparent !important;}
+.dark.al_body_template_one .collection-collapse-block{border-bottom:transparent;}
+.dark.al_body_template_one .outter-fillter-data .custom_filtter ul li span {color: #fff;}
+.dark.al_body_template_one .outter-fillter-data .custom_filtter ul li a{color:#fff;}
+.dark.al_body_template_one .order-success-sec li span {color: #fff;}
+.dark.al_body_template_one .order-success-sec h3 {color: #fff;}
+.dark.al_body_template_one .btn-solid:hover {color: #fff !important;}
+.dark div#step-2-ondemand .slick-initialized .slick-arrow{background-color: #000;}
