@@ -402,7 +402,7 @@ $(document).ready(function () {
         let payment_option_id           = $(this).attr('data-payment_method');
         let type                        = parseFloat($('input[name=is_for_friend]:checked').val());
         let driver_id                   = $(this).attr('data-driver_id');
-
+		let send_to_all					= $("#send_to_all").is(":checked")?1:0;
         // return false;
         let friendName=$('input[name=friendName]').val();
         let friendPhoneNumber= $('input[name=friendPhoneNumber]').val();
@@ -424,7 +424,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: cab_booking_create_order,
-            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id, coupon_id: coupon_id, amount: amount, tollamount:tollamount, servicechargeamount:servicechargeamount, totalamount:totalamount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime, type:type, friendName:friendName, friendPhoneNumber:friendPhoneNumber, no_seats_for_pooling:no_seats_for_pooling, is_cab_pooling:is_cab_pooling,driver_id,unique_id,recurringformPost,share_ride_users,total_other_taxes_string,total_other_taxes,bid_task_type},
+            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id, coupon_id: coupon_id, amount: amount, tollamount:tollamount, servicechargeamount:servicechargeamount, totalamount:totalamount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime, type:type, friendName:friendName, friendPhoneNumber:friendPhoneNumber, no_seats_for_pooling:no_seats_for_pooling, is_cab_pooling:is_cab_pooling,driver_id,unique_id,recurringformPost,share_ride_users,total_other_taxes_string,total_other_taxes,bid_task_type,send_to_all},
             success: function(response) {
                 $('#pickup_now').attr('disabled', false);
                 $('#pickup_later').attr('disabled', false);

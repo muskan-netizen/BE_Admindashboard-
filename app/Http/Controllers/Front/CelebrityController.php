@@ -31,7 +31,7 @@ class CelebrityController extends FrontController
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             if(Session::has('vendors')){
                 $vendors = Session::get('vendors');
-                $vendors = $vendors->toArray();
+                $vendors = is_array($vendors)?$vendors:$vendors->toArray();
             }else{
                 abort(404);
             }

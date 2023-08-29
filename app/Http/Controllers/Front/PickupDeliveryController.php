@@ -1106,7 +1106,10 @@ class PickupDeliveryController extends FrontController{
                 }
                 $postdata =  [
                     'order_number' =>  $order->order_number,
-
+                    //'order_type' =>  $order->type,
+                    // 'order_friend_name' =>  $order->friend_name,
+                    // 'order_number' =>  $order->friend_phone_number,
+                    'notify_all' => $request->send_to_all ?1: 0,
                     'barcode' => '',
                     'allocation_type' => @$request->unique_id ? 'notify' : 'a',
                     'task' => $request->tasks??null,

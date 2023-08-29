@@ -1039,13 +1039,18 @@ input[type=number]::-webkit-outer-spin-button {
             <div id="">
                 <div class="col-12 my-2">
                     <div class="w-100 d-flex justify-content-between align-items-center input-get-value">
+                            <input type="checkbox" name="send_to_all" id="send_to_all" value="1" class="form-control">
+                            <label for="send_to_all">Notify all drivers</label>
+                    </div>
+                </div>
+                <div class="col-12 my-2">
+                    <div class="w-100 d-flex justify-content-between align-items-center input-get-value">
                         <div class="input-group col">
-                            <input type="text" name="driver_unique_id" value="" id="driver_unique_id" class="form-control text-center" placeholder="Enter Driver Unique Id" required>
+                            <input type="text" name="driver_unique_id" value="" id="driver_unique_id"  placeholder="Enter Driver Unique Id" required>
                         </div>
                         <div class="input-group col">
                             <input type="datetime-local" name="schedule_date_for_driver" value="{{ date("Y-m-d H:i") }}" id="schedule_date_for_driver" class="form-control text-center" min="{{ date("Y-m-d H:i") }}" required>
                         </div>
-
                     </div>
                 <span id="driver_request_error" class="text-danger"> </span>
                 </div>

@@ -167,21 +167,22 @@ class ProductVariant extends Model
             $checkMarkup = Cache::remember($cacheKey, 60, function () use($vendor) {
                 return Vendor::where('id',$vendor->vendor_id)->value('add_markup_price');
             });
-        }
-        //if vendor price add with markup price
-        $user = auth()->user();
-        if($user !=null && $user->is_admin == 1 ){
-            $cacheKey = 'user_vendor_'.$user->id;
-            $userVendor = Cache::remember($cacheKey, 60, function () use($vendor, $user) {
-                return UserVendor::where('user_id', $user->id)->where('vendor_id', $vendor->vendor_id)->first();
-            });
-            if($userVendor){
-                return decimal_format($value);
+        
+            //if vendor price add with markup price
+            $user = auth()->user();
+            if($user !=null && $user->is_admin == 1 ){
+                $cacheKey = 'user_vendor_'.$user->id;
+                $userVendor = Cache::remember($cacheKey, 60, function () use($vendor, $user) {
+                    return UserVendor::where('user_id', $user->id)->where('vendor_id', $vendor->vendor_id)->first();
+                });
+                if($userVendor){
+                    return decimal_format($value);
+                }
             }
-       }
-       if($checkMarkup){
+        }
+        if($checkMarkup){
            return decimal_format($value + $this->markup_price??0);
-       }
+        }
 
        //  price based on role
        if(auth()->user() !=null){
