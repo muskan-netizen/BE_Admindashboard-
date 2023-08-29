@@ -13,8 +13,9 @@ class AddCoulmnUserIdInfluAttributes extends Migration
      */
     public function up()
     {
-        Schema::create('influ_attributes', function (Blueprint $table) {
-            $table->integer('user_id');
+
+        Schema::table('influ_attributes', function (Blueprint $table) {
+            $table->integer('user_id')->nullable();
         });
     }
 
