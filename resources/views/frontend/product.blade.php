@@ -1407,6 +1407,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
             success: function(resp) {
                 // console.log(resp);
                 if(resp.status == 'Success'){
+                console.log(resp);
                     $("#variant_response span").html('');
                     var response = resp.data;
                     if(response.variant != ''){
@@ -1425,6 +1426,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
                         let variant_template = _.template($('#variant_template').html());
                         response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count);
                         response.variant.compare_at_price = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.compare_at_price)).toFixed(digit_count);
+                        // console.log(response.variant.productPrice);
                         $("#product_variant_wrapper").append(variant_template({ Helper: NumberFormatHelper, variant:response.variant, tokenAmount: response.tokenAmount, is_token_enable: response.is_token_enable}));
                         $('#product_variant_quantity_wrapper').html('');
                         let variant_quantity_template = _.template($('#variant_quantity_template').html());

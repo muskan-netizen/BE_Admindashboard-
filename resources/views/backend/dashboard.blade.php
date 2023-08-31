@@ -87,7 +87,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                             <div class="float-right">
                                 <i class="mdi mdi-account-multiple widget-icon"></i>
                             </div>
-                            <h5 class="" title="Number of Customer">{{ __('Customer') }}</h5>
+                            <h5 class="" title="Number of Customer">{{ __('Customerssss') }}</h5>
                             <h3 class="mt-3 mb-3" id="total_customers">0</h3>
                             <p class="mb-0" id="customers_change">
                             </p>
