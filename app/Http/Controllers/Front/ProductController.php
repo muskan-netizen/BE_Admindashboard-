@@ -515,7 +515,9 @@ class ProductController extends FrontController{
                 $data['variant'] = $variantData;
                 $data['tokenAmount'] = $tokenAmount;
                 $data['is_token_enable'] = $is_token_enable;
-                $returnHTML = view('frontend.product-part.product-variant-ajax')->with(['availableSets' => $availableSets, 'selected_variant_title' => $selected_variant_title,'is_variant_checked' => $request->is_variant_checked])->render();
+                $keyss =  $request->key ;
+                
+                $returnHTML = view('frontend.product-part.product-variant-ajax')->with(['availableSets' => $availableSets, 'selected_variant_title' => $selected_variant_title,'is_variant_checked' => $request->is_variant_checked,'keyss'=>$keyss])->render();
 
                 return response()->json(array('status' => 'Success', 'html' => $returnHTML, 'selected_variant' => $selected_variant));
 

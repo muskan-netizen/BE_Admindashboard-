@@ -1354,15 +1354,21 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     $(document).ready(function() {
         $(".starrate span.ctrl").width($(".starrate span.cont").width());
         $(".starrate span.ctrl").height($(".starrate span.cont").height());
-        $(document).on("click",".color_var", function() {
-        	var name  = $(this).attr("data-id");
-            $(".var_"+name).removeClass("var-active");
-            $(this).toggleClass("var-active");
-        });
-        $(document).on("click",".radio_var", function() {
-        	var name  = $(this).attr("data-id");
-            $(".radio_"+name).removeClass("radio-active");
-            $(this).toggleClass("radio-active");
+        // $(document).on("click",".color_var", function() {
+        // 	var name  = $(this).attr("data-id");
+        //     $(".var_"+name).removeClass("var-active");
+        //     $(this).toggleClass("var-active");
+        // });
+        // $(document).on("click",".radio_var", function() {
+        // 	var name  = $(this).attr("data-id");
+        //     $(".radio_"+name).removeClass("radio-active");
+        //     //$(this).toggleClass("radio-active");
+        // });
+        $(document).on("click",".radio", function() {
+             var name = $(this).find(".changeVariant").attr("vid");
+            $(`.var_${name}`).removeClass("radio-active");
+            $(this).children().last().addClass("radio-active");
+ 
         });
     });
 </script>
@@ -1392,7 +1398,8 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
         var option_title = $(this).data('option-title');
         $('.changeVariant_'+option_title).removeAttr('checked');
         $this.attr('checked', 'checked');
-        updatePrice(myValue);
+       $key =  $(this).data('row-key');
+        updatePrice(myValue ,$key);
     });
 
     $(document).on('click', '.selected_variant', function() {
@@ -1407,7 +1414,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
         // }
     });
 
-    function updatePrice(myValue){
+    function updatePrice(myValue ,key){
         var variants = [];
         var options = [];
         var firstCheckedSelectedTitle = $('.changeVariant:checked').first().parent().data('title');
@@ -1426,6 +1433,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
                 "variants": variants,
                 "options": options,
                 "selected_variant_title": firstCheckedSelectedTitle,
+                "key": key,
                 'is_variant_checked':myValue
             },
             success: function(response) {
@@ -1433,7 +1441,14 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
                     if(response.html != ''){
                         $("#variant_options").html('');
                         $("#variant_options").html(response.html);
-                        $('#prod_variant_id').val(response.selected_variant.product_variant_id);                       
+                        $('#prod_variant_id').val(response.selected_variant.product_variant_id);                     
+                    }
+
+                    if(response.selected_variant.price != null){
+                        let price = parseFloat(response.selected_variant.price);
+                        let compare_at_price = parseFloat(response.selected_variant.compare_at_price);  
+                        $('.product_fixed_price').html(price.toFixed(2));
+                        $('.product_original_price').html(compare_at_price.toFixed(2));
                     }
                    
                 }

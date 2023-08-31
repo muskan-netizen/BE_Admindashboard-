@@ -868,6 +868,8 @@ class ProductController extends BaseController
     /**      Make variant rows          */
     public function makeVariantRows(Request $request)
     {
+
+        // dd($request->all());
         //return $request->all();
         $multiArray = array();
         $variantNames = array();
