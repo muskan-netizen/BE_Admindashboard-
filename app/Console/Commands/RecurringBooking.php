@@ -84,8 +84,10 @@ class RecurringBooking extends Command
                 $preference = ClientPreference::first();
 
 
-                if (@$preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url)){
+                if (isset($preference) && @$preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url)){
                     $dispatch_domain = $preference;
+                }else{
+                    return false;
                 }
 
 
