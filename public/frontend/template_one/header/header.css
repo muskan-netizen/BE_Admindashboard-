@@ -349,6 +349,11 @@ body.al_body_template_two {
     }
 
 
+    .fixed-bar .menu-slider .slick-prev, .fixed-bar .menu-slider .slick-next {
+        height: 15px;
+        width: 15px;
+        background-size: 15px;
+    }    
 /*==========  end Dark the header css 02-03-20223 ==========*/
 
 
