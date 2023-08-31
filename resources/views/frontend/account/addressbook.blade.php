@@ -44,7 +44,9 @@
         display: block;
     }
     .outer-box{
-        min-height: 280px;
+        min-height: 240px;
+        display: flex;
+        justify-content: space-between;
     }
     #address-map-container #pick-address-map {
         width: 100%;
@@ -129,7 +131,7 @@
                                                    <span class="badge badge-warning ml-2">Incomplete</span>
                                                 @endif
                                             </div>
-                                            <div class="address-btn d-flex align-items-center justify-content-end w-100 mt-sm-4 px-2">
+                                            <div class="address-btn d-flex align-items-center justify-content-start w-100 mt-sm-2 mb-2 px-2">
                                                 @if($add->is_primary == 1)
                                                     <a class="btn btn-solid disabled" href="#">{{ __('Primary') }}</a>
                                                 @else
