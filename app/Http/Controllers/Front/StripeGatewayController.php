@@ -233,8 +233,7 @@ class StripeGatewayController extends FrontController
                 );
                 $intent->confirm();
             }
-            \Log::info('payment intent response');
-            \Log::info($intent);
+           
             $this->generateResponse($intent, $parameters);
         } catch (\Stripe\Exception\ApiErrorException $e) {
             # Display error on client
