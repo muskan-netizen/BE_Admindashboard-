@@ -1574,9 +1574,84 @@ div#diff-box input:checked + label.different_cta::after {
     height: 250px;
 }
 
+.vendor-box{
+    width: 347px !important;
+    height: 250px;
+    flex-shrink: 0 !important;
+    border-radius: 5px;
+    border: 1px solid #D2D2D2;
+    background: #FFF;
+    padding: 15px;
+}
+
+/* .vendor-info{
+    width: 238px;
+    height: 65px;
+} */
+
+.vendor-info .text{
+    display: flex;
+    width: 155px;
+    height: 17px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: column;
+    margin-left: 10px;
+}
+
 #vendor-detail{
-    width: 250px;
+    width: 100%;
     height: 100%;
+}
+
+.image-box img{
+    width: 65px;
+    height: 65px;
+    border-radius: 65px;
+}
+
+.text p{
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+
+.text p #rating{
+    width: 53px;
+    height: 17px;
+}
+#rating svg{
+    width: 17px;
+    height: 17px;
+    flex-shrink: 0;
+}
+#rating small{
+    color: #000;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 120%; /* 16.8px */
+}
+
+#bookings{
+    color: #000;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px; /* 114.286% */
+    letter-spacing: 0.1px;
+}
+.res-time{
+    color: #000;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px; /* 114.286% */
+    letter-spacing: 0.1px;
 }
 
 @media (max-width:767px){
