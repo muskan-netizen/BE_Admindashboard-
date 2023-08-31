@@ -1494,6 +1494,27 @@
     #add_new_address_form_modal .add_address_btn .btn.close:hover{
         background-color: #fff;
     }
+    .order-success-sec .order-detail li {
+        color: #777;
+        font-weight: 400;
+        width: 100%;
+        max-width: 100%;
+        flex: 100%;
+        justify-content: space-between;
+        display: flex!important;
+    }
+     .order-success-sec .order-detail li span:first-child {
+        margin-left: 0;
+        width: 250px;
+    }
+    .order-success-sec .order-detail li span {
+        /* color: var(--theme-deafult); */
+        font-weight: 400;
+        margin-left: 0;
+        display: inline-block;
+        width: 100%;
+    }
+
     @media (max-width:1440px){
         .al_body_template_four  .brand-ing {
             width: 180px;
@@ -1614,6 +1635,9 @@
         }
     }
     @media (max-width:991px){
+        .order-success-sec .row{
+            margin-bottom: 0;
+        }
         .al_body_template_six  .order-success-sec .row{
             margin-bottom: 0!important;
         }
@@ -1904,6 +1928,10 @@
             flex-direction: column;
             justify-content: flex-start;
             align-items: flex-start!important;
+        }
+        .order-success-sec .order-detail li{
+            display: block!important;
+            margin-bottom: 10px;
         }
     }
 

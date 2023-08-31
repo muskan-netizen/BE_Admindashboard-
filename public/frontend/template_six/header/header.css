@@ -1237,6 +1237,21 @@ body .royo_whatsapp_img {
         margin: 0 10px!important;
     }
 }
+@media (max-width:1024px){
+    .nav-tabs.navigation-tab_al.nav-material {
+        width: 300px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding: 10px;
+    }
+    .nav-tabs.navigation-tab_al.nav-material span.al_textTabsText {
+        width: 100%;
+        display: inline-block;
+        max-width: 100%!important;
+        min-width: 75px;
+        text-align: center;
+    }
+}
 @media (max-width:991px){
     li.alShoppingBag.mx-md-4.mx-2.dropdown {
         margin: 0 10px!important;
