@@ -9,8 +9,8 @@
                        <th>{{__('Customer Name')}}</th>
                         <th>{{__('Product')}}</th>
                         <th>{{__('Product Price')}}</th>
-                        <th>{{__('Date & Time')}}</th>
-                        <th>{{__('Request Date & Time')}}</th>
+                        <th>{{__('Order Date & Time')}}</th>
+                        <th>{{__('Return Request Date & Time')}}</th>
                     </tr>
                 </thead>
                 <tbody>

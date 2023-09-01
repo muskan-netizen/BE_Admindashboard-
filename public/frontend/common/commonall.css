@@ -1477,6 +1477,11 @@ body.al_body_template_three .dashboard-right .profile-page .info-text label {
     display: inline-block;
     text-align: center;
 }
+.al_body_template_three  .edit_address button.close.edit-close{
+    position: relative;
+    z-index: 99;
+}
+
 
 @media (max-width:1440px){
     .al_body_template_four  .brand-ing {

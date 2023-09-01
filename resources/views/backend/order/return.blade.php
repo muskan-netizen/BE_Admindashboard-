@@ -80,8 +80,8 @@ $timezone = Auth::user()->timezone;
                                             <th>{{__('Customer Name')}}</th>
                                             <th>{{__('Product')}}</th>
                                             <th>{{__('Product Price')}}</th>
-                                            <th>{{__('Date & Time')}}</th>
-                                            <th>{{__('Request Date & Time')}}</th>
+                                            <th>{{__('Order Date & Time')}}</th>
+                                            <th>{{__('Return Request Date & Time')}}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -106,7 +106,7 @@ $timezone = Auth::user()->timezone;
                                                 </b>
                                             </td>
                                             <td class="">
-                                                <b class="text-black">{{@$clientCurrency->currency->symbol}}{{$order->product->price??''}}</b>
+                                                <b class="text-black">{{@$clientCurrency->currency->symbol}}{{number_format($order->product->price,2)??''}}</b>
                                             </td>
                                             <td>
                                                 @if(@$order->order->created_at)
