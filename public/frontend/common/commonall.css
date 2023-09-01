@@ -98,6 +98,7 @@
     }
     .vendor-design_new  .vendor-info li {
         color: #fff!important;
+        font-size:14px;
     }
     .vendor-design_new  .vendor-info li  svg g{
         fill:#fff!important;
@@ -879,9 +880,10 @@
     .vendor-description .profile_address p{
         color: #fff;
         font-weight: 400;
-        font-size: 16px;
+        font-size: 14px;
         text-transform: capitalize;
-        margin:10px 0px;
+        margin:0;
+        line-height: 1.5; 
     }
     .customize_vendor{display:inline-block;}
 
@@ -944,7 +946,11 @@
         width: 100%!important;
     }
     .common-banner.my-banner{
-    position: relative;
+        position: relative;
+        margin-top: 25px;
+    }
+    .vendor-products-wrapper {
+        padding-top: 20px;
     }
     .al_body_template_six .common-banner:after{
         position:absolute;
