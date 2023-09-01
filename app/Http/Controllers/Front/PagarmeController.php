@@ -18,9 +18,12 @@ class PagarmeController extends FrontController
 	public function __construct()
   	{
 		$pagarme_creds = PaymentOption::getCredentials('pagarme');
-	    $creds_arr = json_decode($pagarme_creds->credentials);
-	    $this->api_key = $creds_arr->api_key??'';
-	    $this->secret_key = $creds_arr->secret_key??'';
+        if(@$pagarme_creds && !empty($pagarme_creds->credentials))
+        {
+            $creds_arr = json_decode($pagarme_creds->credentials);
+            $this->api_key = $creds_arr->api_key??'';
+            $this->secret_key = $creds_arr->secret_key??'';
+        }
 	}
 
     public function beforePayment(Request $request) 
