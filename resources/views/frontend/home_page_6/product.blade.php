@@ -14,7 +14,7 @@
            <div class="inner_spacing px-0">
                <div class="product-description">
                    <div class="d-flex align-items-center justify-content-between">
-                       <h6 class="card_title ellips">{{ $product->title }}</h6> 
+                       <h6 class="card_title ellips">{{ @$product->title }}</h6> 
                        @if($client_preference_detail && $client_preference_detail->rating_check==1) 
                            @if($product->averageRating >0)
                                <span class="rating-number">{{ $product->averageRating }}</span>
@@ -22,15 +22,17 @@
                        @endif 
                    </div>
                    <p class="al_productText ellips">
-                       {{ $product->vendor_name }}
+                       {{ @$product->vendor_name }}
                    </p>
                    <p class="border-bottom pb-1 d-none">
-                       <span>{{__('In ') . $product->category_name}} </span>
+                       <span>{{__('In ') . @$product->category_name}} </span>
                    </p>
                    @if($is_service_product_price_from_dispatch_forOnDemand!=1) 
                    <div class="d-flex align-items-center justify-content-between al_clock"> 
                        {{-- <b>{!!$product->price_numeric ?? ''!!}</b> --}}
+                       @if(!empty($product->price_numeric))
                        <b> {{ showPriceWithCurrency($product->price_numeric) }} </b>
+                       @endif
 
                        <!-- <p><i class="fa fa-clock-o"></i> 30-40 min</p>  -->
                        @php
