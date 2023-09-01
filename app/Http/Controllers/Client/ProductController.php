@@ -141,6 +141,16 @@ class ProductController extends BaseController
             $product->type_id = $request->type_id;
             $product->category_id = $request->category;
             $product->vendor_id = $request->vendor_id;
+            $product->captain_name = $request->captain_name ?? '';
+            $product->captain_description = $request->captain_description ?? '';
+            if($request->hasFile('captain_profile')){
+                $filePath = 'profile/' . \Str::random(40);
+                $file = $request->file('captain_profile');
+                $orignal_name = $request->file('captain_profile')->getClientOriginalName();
+                $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                $url = Storage::disk('s3')->url($file_name);
+                $product->captain_profile = $url;
+            }
             $client_lang = ClientLanguage::where('is_primary', 1)->first();
             if (!$client_lang) {
                 $client_lang = ClientLanguage::where('is_active', 1)->first();
@@ -572,7 +582,16 @@ class ProductController extends BaseController
             $product->pickup_time = ($request->has('pickup_time')) ? $request->pickup_time : null;
             $product->drop_time = ($request->has('drop_time')) ? $request->drop_time : null;
             $product->extra_time = ($request->has('extra_time')) ? $request->extra_time : null;
-
+            $product->captain_name = $request->captain_name ?? '';
+            $product->captain_description = $request->captain_description ?? '';
+            if($request->hasFile('captain_profile')){
+                $filePath = 'profile/' . \Str::random(40);
+                $file = $request->file('captain_profile');
+                $orignal_name = $request->file('captain_profile')->getClientOriginalName();
+                $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                $url = Storage::disk('s3')->url($file_name);
+                $product->captain_profile = $url;
+            }
             $product->save();
             if($request->has('slot_ids') && $request->slot_ids != ''){
                 $product->syncProductDeliverySlot()->sync($request->slot_ids);

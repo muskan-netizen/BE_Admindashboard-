@@ -57,24 +57,75 @@
             <li><img src="images/product1.png" alt=""></li>
         </ul>
     </div>
+        @php
+    $fields = [];
+    $desc = [];
+    $detail = [
+    'Mileage',
+    'Engine',
+    'Transmission',
+    'BHP',
+    'Seats',
+    'Boot Space',
+    'Fuel Type',
+    'Cabins',
+    'Baths',
+    'Berths'
+    ];
+    foreach ($product->ProductAttribute as $productAttribute) {
+    $attribute = $productAttribute->attribute;
+    $img = $attribute->icon['proxy_url'] . '100/100' . $attribute->icon['image_path'];
+    if ($productAttribute->attributeOption()->exists()) {
+    $title = $productAttribute->attributeOption->title ?? $productAttribute->key_value;
+    if(in_array($productAttribute->key_name, $detail)){
+    $fields[$productAttribute->key_name]['title'] = $title;
+    $fields[$productAttribute->key_name]['img'] = $img;
+    }else{
+    $desc[$productAttribute->key_name]['title'] = $title;
+    $desc[$productAttribute->key_name]['img'] = $img;
+    }
+    }
+    }
+    $allReviews = array_column($product->vendor->products()->with('reviews')->get()->toArray(),'reviews');
+    
+    $rating = array_sum(array_column($allReviews,'rating'));
+    @endphp
     <div class="right col-md-5">
         <div class="text">
             <h2>{{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}</h2>
-            <h6 class="sold-by mt-2">
+            <h6 class="sold-by mt-4">
                 <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}100/100{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
             </h6>
+
+            <div class="location">
+                <img src="" alt="">
+                <span>{{$product->vendor->address}}</span>
+            </div>
+
+            <div class="pass-detail">
+                <ul class="m-0 p-0">
+                    <li><span>Flexible</span> {!!$product->returnable ? 'Cancellation <br/>Policy' : 'No <br/> Cancellation'!!}</li>
+                    <li><span>Passenger</span> Up to {{$desc['Passangers']['title'] ?? 0}} <br/> Passengers</li>
+                    <li><span>Captained</span> Captain <br/>{{$product->captain_name ? 'Available' : 'Not Available'}}</li>
+                </ul>
+            </div>
+
+            <div class="booking-option mt-4">
+                <h5>Booking Option</h5>
+            </div>
             <div class="product_price">
                 @if($category->slug == 'rental')
                 <p>{{Session::get('currencySymbol')}}{{decimal_format($product->variant[0]->price)}}</p>
                 @elseif($category->slug == 'yacht')
                 @foreach($product->variantSet as $key => $variant)
-                <div class="vset-box mt-5">
+                <div class="vset-box mt-2">
                     <div class="d-flex justify-content-around">
                         @foreach($variant->option2 as $key => $option)
-                        <input type="radio" name="booking_duration" value="{{$option->product_variant_id}}" />
                         <div class="border border">
+                          <input type="radio" name="booking_duration" value="{{$option->product_variant_id}}" />
                             <h6>{{$option->title}}</h6>
-                            <h6>{{Session::get('currencySymbol')}}{{decimal_format($option->price)}}</h6>
+                            <h5>{{Session::get('currencySymbol')}}{{decimal_format($option->price)}}</h5>
+                            <span></span>
                         </div>
                         @endforeach
                     </div>
@@ -84,63 +135,33 @@
                 {{-- <p>AED<span> 599.00/day</span></p> --}}
             </div>
             <div class="productList d-flex justify-content-between">
-                @php
-
-                $fields = [];
-                $desc = [];
-                $detail = [
-                'Mileage',
-                'Engine',
-                'Transmission',
-                'BHP',
-                'Seats',
-                'Boot Space',
-                'Fuel Type',
-                'Cabins',
-                'Baths',
-                'Berths'
-                ];
-                foreach ($product->ProductAttribute as $productAttribute) {
-                $attribute = $productAttribute->attribute;
-                $img = $attribute->icon['proxy_url'] . '100/100' . $attribute->icon['image_path'];
-                if ($productAttribute->attributeOption()->exists()) {
-                $title = $productAttribute->attributeOption->title ?? $productAttribute->key_value;
-                if(in_array($productAttribute->key_name, $detail)){
-                $fields[$productAttribute->key_name]['title'] = $title;
-                $fields[$productAttribute->key_name]['img'] = $img;
-                }else{
-                $desc[$productAttribute->key_name]['title'] = $title;
-                $desc[$productAttribute->key_name]['img'] = $img;
-                }
-                }
-                }
-                @endphp
                 <ul class="product-features">
                     @if($category->slug == 'rental')
                     <li><a href="javascript:void(0);">{{$fields['Transmission']['title'] ?? ''}}</a></li>
                     <li><a href="javascript:void(0);">{{$fields['Fuel Type']['title'] ?? ''}}</a></li>
                     <li><a href="javascript:void(0);">{{$fields['Seats']['title'] ?? '0'}} Seats</a></li>
-                    @elseif($category->slug == 'yacht')
+                    {{-- @elseif($category->slug == 'yacht')
                     <li><a href="javascript:void(0);">{{$fields['Cabins']['title'] ?? '0'}} Cabins</a></li>
                     <li><a href="javascript:void(0);">{{$fields['Baths']['title'] ?? '0'}} Baths</a></li>
-                    <li><a href="javascript:void(0);">{{$fields['Berths']['title'] ?? '0'}} Berths</a></li>
+                    <li><a href="javascript:void(0);">{{$fields['Berths']['title'] ?? '0'}} Berths</a></li> --}}
                     @endif
                 </ul>
             </div>
-
-            <div class="product_iteslist">
-                <ul>
-                    @foreach ($fields as $key => $productAttribute)
-                    <li><img src="{{$productAttribute['img']}}"> <span>{{$key}} <b>{{$productAttribute['title']}}</b> </span></li>
-                    @endforeach
-                </ul>
-                @if($category->slug == 'rental')
-                <div>
-                    <p><b>Rental Start Time:-</b> <span>{{$pickup_time}}</span></p>
-                    <p><b>Rental End Time:- </b>{{$drop_time}}</p>
+            @if($category->slug == 'rental')
+                <div class="product_iteslist">
+                    <ul>
+                        @foreach ($fields as $key => $productAttribute)
+                        <li><img src="{{$productAttribute['img']}}"> <span>{{$key}} <b>{{$productAttribute['title']}}</b> </span></li>
+                        @endforeach
+                    </ul>
+                
+                    <div>
+                        <p><b>Rental Start Time:-</b> <span>{{$pickup_time}}</span></p>
+                        <p><b>Rental End Time:- </b>{{$drop_time}}</p>
+                    </div>
+                
                 </div>
-                @endif
-            </div>
+            @endif
             <div class="product_cta">
                 @php
                 /*$newRequest->merge(['product_id'=> $product->product_id, 'quantity'=>$product->quantity, 'variant_id'=>$product->product->variant[0]->id, 'vendor_id'=>$product->product->vendor_id,'bid_number'=>(($is_bid_enable)?$id:null),'bid_discount'=>(($is_bid_enable)?$product->bids->discount:null)]);
@@ -164,23 +185,29 @@
 @if($category->slug == 'yacht')
 <section class="container map-container mt-5">
     <div class="row">
-        <div class="col-md-3 vendor-box">
-            <div id="vendor-detail">
-                <div class="vendor-info d-flex">
-                    <div class="image-box">
-                        <img class="blur-up lazyload border" data-src="{{$product->vendor->logo['image_fit']}}100/100{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"/>
+        <div class="col-md-3">
+            <div class="vendor-box">
+                <div id="vendor-detail">
+                    <div class="vendor-info d-flex">
+                        <div class="image-box">
+                            <img class="blur-up lazyload border" data-src="{{$product->vendor->logo['image_fit']}}100/100{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"/>
+                        </div>
+                        <div class="text">
+                            <h4><b> {{$product->vendor->name}} </b></h4>
+                            <p class="">
+                            <span id="rating"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
+                                    <path d="M7.11958 1.17082C7.23932 0.802296 7.76068 0.802296 7.88042 1.17082L9.31856 5.59696C9.37211 5.76177 9.5257 5.87336 9.69899 5.87336L14.3529 5.87336C14.7404 5.87336 14.9015 6.3692 14.588 6.59696L10.8229 9.33247C10.6827 9.43433 10.6241 9.61487 10.6776 9.77968L12.1158 14.2058C12.2355 14.5743 11.8137 14.8808 11.5002 14.653L7.73511 11.9175C7.59492 11.8157 7.40508 11.8157 7.26489 11.9175L3.49978 14.653C3.1863 14.8808 2.76451 14.5743 2.88425 14.2058L4.32239 9.77968C4.37594 9.61487 4.31728 9.43433 4.17708 9.33247L0.411978 6.59696C0.0984929 6.3692 0.259603 5.87336 0.647093 5.87336L5.30101 5.87336C5.4743 5.87336 5.62789 5.76177 5.68144 5.59696L7.11958 1.17082Z" fill="#E89732"/>
+                                </svg><small>{{$rating}}</small></span><span id="bookings">{{$productBookingsCount}} Bookings</span></p>
+                        </div>
                     </div>
-                    <div class="text">
-                        <h4><b> {{$product->vendor->name}} </b></h4>
-                        <p class="">
-                        <span id="rating"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
-                                <path d="M7.11958 1.17082C7.23932 0.802296 7.76068 0.802296 7.88042 1.17082L9.31856 5.59696C9.37211 5.76177 9.5257 5.87336 9.69899 5.87336L14.3529 5.87336C14.7404 5.87336 14.9015 6.3692 14.588 6.59696L10.8229 9.33247C10.6827 9.43433 10.6241 9.61487 10.6776 9.77968L12.1158 14.2058C12.2355 14.5743 11.8137 14.8808 11.5002 14.653L7.73511 11.9175C7.59492 11.8157 7.40508 11.8157 7.26489 11.9175L3.49978 14.653C3.1863 14.8808 2.76451 14.5743 2.88425 14.2058L4.32239 9.77968C4.37594 9.61487 4.31728 9.43433 4.17708 9.33247L0.411978 6.59696C0.0984929 6.3692 0.259603 5.87336 0.647093 5.87336L5.30101 5.87336C5.4743 5.87336 5.62789 5.76177 5.68144 5.59696L7.11958 1.17082Z" fill="#E89732"/>
-                            </svg><small>4.5</small></span><span id="bookings">102 Bookings</span></p>
+                    <div class="res-time">
+                        <p>AVG. RESPONSE TIME</p>
+                        <p>2 HOURS</p>
                     </div>
-                </div>
-                <div class="res-time">
-                    <p>AVG. RESPONSE TIME</p>
-                    <p>2 HOURS</p>
+
+                    <div class="btn-message">
+                        <a href="#">MESSAGE OWNER</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -189,7 +216,7 @@
         </div>
     </div>
 </section>
-<section class="container p-5 extra-details">
+<section class="container py-5 extra-details">
     <div id="accordion">
         <div class="card">
             <div class="card-header" id="headingOne">
@@ -201,7 +228,7 @@
             </div>
             <div id="specs" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
                 <div class="card-body">
-                    {{$product->vendor->name}}
+                    {{$desc['Specification']['title'] ?? ''}}
                 </div>
             </div>
         </div>
@@ -229,7 +256,7 @@
             </div>
             <div id="owner" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
                 <div class="card-body">
-                    {{$product->vendor->name}}
+                    {{$desc['Commercial Owner']['title'] ?? ''}}
                 </div>
             </div>
         </div>
@@ -243,7 +270,7 @@
             </div>
             <div id="secDeposit" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
                 <div class="card-body">
-                    {{$product->security_amount ?? "No Security Amount Needs To Be Deposited"}}
+                    {{$product->security_amount ? Session::get('currencySymbol').$product->security_amount. ' need to be paid as security amount' : 'No Security Amount'}}
                 </div>
             </div>
         </div>
@@ -257,11 +284,14 @@
             </div>
             <div id="captain" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
                 <div class="card-body">
-                    {{$desc['Captain Available']['title'] == 'Yes' ? $desc['Captain Name']['title'] : 'No Captain Avialable'}}
+                    <img src="{{$product->captain_profile}}"/>
+                    {{$product->captain_name ? $product->captain_name : 'No Captain Avialable'}}
+                    <p>{{$product->captain_description}}</p>
                 </div>
             </div>
         </div>
     </div>
+    
 </section>
 @endif
 

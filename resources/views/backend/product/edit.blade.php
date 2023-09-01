@@ -1142,30 +1142,47 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             <label for="title" class="control-label">{{ __("Drop Date") }}</label>
                             <input class="form-control" id="drop_time" name="drop_time" type="datetime-local" value="{{ $product->drop_time ?? ''}}">
                         </div>
-                        <div class="col-md-6 mb-2">
-                            {!! Form::label('title', __('Select Booking Option'),['class' => 'control-label']) !!}
-                            <select class="form-control select2-multiple" name="booking_option[]" data-toggle="select2" multiple="multiple" placeholder="Select booking option...">
-                                @foreach($bookingOption as $set)
-                                 <option value="{{$set->id}}" @if(in_array($set->id, $productBookingOption)) selected @endif>{{$set->title??null}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-2">
-                            {!! Form::label('title', __('Select Rental Protection'),['class' => 'control-label']) !!}
-                            <select class="form-control select2-multiple" name="rental_protection[]" data-toggle="select2" multiple="multiple" placeholder="Select Rental Protection...">
-                                @foreach($rentalProtection as $set)
-                                 <option value="{{$set->id}}" @if(in_array($set->id, $productRentalProtection)) selected @endif>{{$set->title??null}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-2">
-                            {!! Form::label('title', __('Included Rental Protection'),['class' => 'control-label']) !!}
-                            <select class="form-control select2-multiple" name="included_rental_protection[]" data-toggle="select2" multiple="multiple" placeholder="Select Included Rental Protection...">
-                                @foreach($rentalProtection as $set)
-                                 <option value="{{$set->id}}" @if(in_array($set->id, $inlcudedProductRentalProtection)) selected @endif>{{$set->title??null}}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                        @if($product->category->categoryDetail->slug == 'rental')
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('title', __('Select Booking Option'),['class' => 'control-label']) !!}
+                                <select class="form-control select2-multiple" name="booking_option[]" data-toggle="select2" multiple="multiple" placeholder="Select booking option...">
+                                    @foreach($bookingOption as $set)
+                                    <option value="{{$set->id}}" @if(in_array($set->id, $productBookingOption)) selected @endif>{{$set->title??null}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('title', __('Select Rental Protection'),['class' => 'control-label']) !!}
+                                <select class="form-control select2-multiple" name="rental_protection[]" data-toggle="select2" multiple="multiple" placeholder="Select Rental Protection...">
+                                    @foreach($rentalProtection as $set)
+                                    <option value="{{$set->id}}" @if(in_array($set->id, $productRentalProtection)) selected @endif>{{$set->title??null}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('title', __('Included Rental Protection'),['class' => 'control-label']) !!}
+                                <select class="form-control select2-multiple" name="included_rental_protection[]" data-toggle="select2" multiple="multiple" placeholder="Select Included Rental Protection...">
+                                    @foreach($rentalProtection as $set)
+                                    <option value="{{$set->id}}" @if(in_array($set->id, $inlcudedProductRentalProtection)) selected @endif>{{$set->title??null}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
+
+                        @if($product->category->categoryDetail->slug == 'yacht')
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('captain_name', __('Captain Name'),['class' => 'control-label']) !!}
+                                <input class="form-control" id="captain_name" name="captain_name" type="text" value="{{ $product->captain_name ?? ''}}">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('captain_description', __('Captain Description'),['class' => 'control-label']) !!}
+                                <input class="form-control" id="captain_description" name="captain_description" type="text" value="{{ $product->captain_description ?? ''}}">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('captain_profile', __('Captain Profile'),['class' => 'control-label']) !!}
+                                <input class="form-control" id="captain_profile" name="captain_profile" type="file">
+                            </div>
+                        @endif
                     </div>
                     <div class="row">
                         @if(isset($getAdditionalPreference['is_price_by_role']) && $getAdditionalPreference['is_price_by_role'] == '1')

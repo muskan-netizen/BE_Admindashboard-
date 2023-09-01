@@ -2115,7 +2115,6 @@ class OrderController extends BaseController
             return 2;
         } catch (\Exception $e) {
             return 2;
-            Log::info($e->getMessage());
             // return response()->json([
             //     'status' => 'error',
             //     'message' => $e->getMessage()

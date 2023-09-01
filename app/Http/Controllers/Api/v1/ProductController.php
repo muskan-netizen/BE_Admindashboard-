@@ -162,7 +162,7 @@ class ProductController extends BaseController
                         },
 
                     ]);
-                    $product = $product->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min', 'returnable', 'replaceable', 'return_days', 'is_long_term_service','service_duration','is_show_dispatcher_agent','is_slot_from_dispatch','tags','mode_of_service','is_recurring_booking');
+                    $product = $product->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min', 'returnable', 'replaceable', 'return_days', 'is_long_term_service','service_duration','is_show_dispatcher_agent','is_slot_from_dispatch','tags','mode_of_service','is_recurring_booking','security_amount', 'captain_name','captain_profile', 'captain_description');
                     
 
                     $product = $product->where('id', $pid)
@@ -172,8 +172,13 @@ class ProductController extends BaseController
                 return response()->json(['error' => 'No record found.'], 404);
             }
             if ($this->checkTemplateForAction(8)) {
-            $this->RecentView($pid);
+                $this->RecentView($pid);
             }
+            $productBookingsCount = ProductBooking::whereHas('products', function ($q) use ($product) {
+                $q->whereHas('product', function($q) use($product){
+                    $q->where('vendor_id', $product->vendor_id);
+                });
+            })->count();
             $product->vendor->is_vendor_closed = 0;
             if($product->vendor->show_slot == 0){
                 if( ($product->vendor->slotDate->isEmpty()) && ($product->vendor->slot->isEmpty()) ){
@@ -189,6 +194,9 @@ class ProductController extends BaseController
                     }
                 }
             }
+            $allReviews = array_column($product->vendor->products()->with('reviews')->get()->toArray(),'reviews');
+            $rating = array_sum(array_column($allReviews,'rating'));
+            $product->rating = $rating;
 
             $slotsDate = 0;
             if($product->vendor->is_vendor_closed){
@@ -403,6 +411,7 @@ class ProductController extends BaseController
             $response['crossProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'cross', $product->crossSell);
             $response['product_attribute'] = $product_attr;
             $response['additional_features'] = $additional;
+            $response['productBookingsCount'] = $productBookingsCount;
             // $response['product_variant'] = ProductVariant::select('id', 'sku', 'product_id', 'title', 'quantity','price','markup_price','cost_price','barcode','tax_category_id')->where('product_id',$pid)->get();
             /* group by in query return data only for key - 0 so using 0 */
             $is_return_days = 0;
@@ -421,7 +430,6 @@ class ProductController extends BaseController
             return response()->json([
                 'data' => $response,
             ]);
-
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }

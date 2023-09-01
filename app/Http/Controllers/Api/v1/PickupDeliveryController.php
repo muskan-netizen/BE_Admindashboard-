@@ -324,7 +324,6 @@ class PickupDeliveryController extends BaseController{
      public function createOrder(Request $request){
         DB::beginTransaction();
         try {
-            \Log::info($request->all());
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
             if($order_place && $order_place['status'] == 200){
@@ -398,7 +397,6 @@ class PickupDeliveryController extends BaseController{
         }
         catch(\Exception $e){
             DB::rollback();
-            \Log::info($e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
@@ -437,7 +435,10 @@ class PickupDeliveryController extends BaseController{
 
         }catch(\Exception $e)
         {
-            \Log::info($e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
         }
 
 

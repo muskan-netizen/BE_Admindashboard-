@@ -11,8 +11,8 @@ trait YachtTrait
 {
     public function productSearch($request, $pickup, $dropOff)
     {
-        $pickup_time = $pickup->time;
-        $drop_time = $dropOff->time;
+        $pickup_time = $pickup->time ?? '';
+        $drop_time = $dropOff->time ?? '';
         $clientPreference = \App\Models\ClientPreference::where(['id' => 1])->first();
         if ($request->service == 'airport') {
             $mapKey = '1234';
@@ -30,8 +30,8 @@ trait YachtTrait
                 ];
             });
         }
-        
         $category = Category::where('slug', $request->service)->first();
+        \Log::info($category);
         $data['products'] = [];
         if ($category) {
             $data['products'] = Product::with([
@@ -80,7 +80,7 @@ trait YachtTrait
                     if (!empty($pickup->latitude) && !empty($pickup->longitude)) {
                         $q->distanceInMeters($pickup->latitude, $pickup->longitude);
                     } else {
-                        $q->distanceInMeters($clientPreference->Default_latitude, $clientPreference->Default_longitude);
+                        // $q->distanceInMeters($clientPreference->Default_latitude, $clientPreference->Default_longitude);
                     }
                 })
                 ->where('category_id', $category->id)
@@ -89,7 +89,7 @@ trait YachtTrait
 
 
         $data['service'] = $request->service;
-        $data['pick_drop_time'] = date('d M Y H:i', strtotime($pickup_time)).' to '.date('d M Y H:i', strtotime($drop_time));
+        $data['pick_drop_time'] = !empty($pickup_time && $drop_time) ? date('d M Y H:i', strtotime($pickup_time)).' to '.date('d M Y H:i', strtotime($drop_time)) : '';
         $data['pickup_time'] = $pickup_time;
         $data['drop_time'] = $drop_time;
         $data['category'] = $category;

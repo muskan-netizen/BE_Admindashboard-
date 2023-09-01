@@ -69,6 +69,10 @@
                     }
                 }
             }
+
+            $allReviews = array_column($product->vendor->products()->with('reviews')->get()->toArray(),'reviews');
+    
+            $rating = array_sum(array_column($allReviews,'rating'));
             @endphp
             <div class="col-md-4">
                 <div class="item">
@@ -80,7 +84,7 @@
                     <div class="text">
                         <div class="product_heading">
                             <h3>{{$productTitle}}</h3>
-                            <span><i class="fa fa-star"></i>(4.5)</span>
+                            <span><i class="fa fa-star"></i>({{$rating??0}})</span>
                         </div>
                         <div class="productList d-flex justify-content-between">
                             <ul class="product-features">
@@ -91,7 +95,7 @@
                                 @elseif($service == 'yacht')
                                 <li><a href="javascript:void(0);">{{$fields['Cabins'] ?? '0'}} Cabins</a></li>
                                 <li><a href="javascript:void(0);">{{$fields['Baths'] ?? '0'}} Baths</a></li>
-                                <li><a href="javascript:void(0);">{{$fields['Berths'] ?? '0'}} Seats</a></li>
+                                <li><a href="javascript:void(0);">{{$fields['Berths'] ?? '0'}} Berths</a></li>
                                 @endif
                             </ul>
                             <span class="yacht-location" title="{{$product->vendor->address}}">

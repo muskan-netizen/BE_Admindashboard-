@@ -14,12 +14,17 @@ class YachtController extends Controller
     public function productsSearchResult(Request $request)
     {
         $data = [];
-        $pickup = $request->pickup;
-        $dropOff = $request->dropOff;
+        $pickup = $request->pickup ?? (object) [];
+        $dropOff = $request->dropOff ?? (object) [];
         $data = $this->productSearch($request, (object) $pickup, (object) $dropOff);
 
         $fields = [];
         foreach ($data['products'] as $products) {
+            $allReviews = array_column($products->vendor->products()->with('reviews')->get()->toArray(),'reviews');
+            $rating = array_sum(array_column($allReviews,'rating'));
+            $products->rating = $rating;
+    
+            $rating = array_sum(array_column($allReviews,'rating'));
             foreach ($products->ProductAttribute as $productAttribute) {
                 if ($productAttribute->attributeOption()->exists()) {
                     if(!empty($title = $productAttribute->attributeOption->title)){
@@ -34,9 +39,9 @@ class YachtController extends Controller
                 $products->fuel_type = $fields['Fuel Type'] ?? '';
                 $products->Seats = $fields['Seats'] .' Seats'?? '';
             }else{
-                $products->cabins = $fields['Cabins'] ?? '';
-                $products->baths = $fields['Baths'] ?? '';
-                $products->Berths = $fields['Berths'] .' Berths'?? '';
+                $products->cabins = $fields['Cabins']. ' Cabins' ?? '0' ;
+                $products->baths = $fields['Baths']. ' Baths' ?? '0' ;
+                $products->berths = $fields['Berths'].' Berths' ?? '0';
             }
         }
         return response()->json(['status' => 200, 'message' => 'Product List', 'data' => $data]);
