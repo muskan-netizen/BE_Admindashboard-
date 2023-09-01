@@ -165,7 +165,7 @@ $timezone = Auth::user()->timezone;
                                                     </b>
                                                 </td>
                                                 <td class="">
-                                                    <b class="text-black">{{@$clientCurrency->currency->symbol}}{{$order->product->price??''}}</b>
+                                                    <b class="text-black">{{@$clientCurrency->currency->symbol}}{{number_format($order->product->price,2)??''}}</b>
                                                 </td>
                                                 <td>{{ dateTimeInUserTimeZone($order->order->created_at, $timezone)}}</td>
                                                 <td>{{ dateTimeInUserTimeZone($order->created_at, $timezone)}}</td>
