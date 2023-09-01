@@ -3788,16 +3788,10 @@ div#cart_template .shoping_cart .vendor_products_tr .row .col-10 h4 {
     }
 }
 
-@media(max-width:1400px) {
-    .pricingtable-header.position-absolute .price-value {
-        font-size: 14px;
-    }
-    .al_body_template_six .product-right .product-buttons button{margin-bottom: 10px;}
-    .al_body_template_six .product-right .product-buttons a{margin-bottom: 10px;}
-}
+
 @media(max-width:1430px) {
     .al_body_template_six #cart_template p.total_amt {
-        text-align: center;
+        text-align: right;
         padding-right: 0;
         padding-left: 14px;
     }
@@ -3807,6 +3801,17 @@ div#cart_template .shoping_cart .vendor_products_tr .row .col-10 h4 {
     .al_body_template_six .btn-solid{
         font-size: 8px;
         padding: 5px 6px;
+    }
+}
+@media(max-width:1400px) {
+    .pricingtable-header.position-absolute .price-value {
+        font-size: 14px;
+    }
+    .al_body_template_six .product-right .product-buttons button{margin-bottom: 10px;}
+    .al_body_template_six .product-right .product-buttons a{margin-bottom: 10px;}
+    .shoping_cart > div .row.my-2 .col-lg-6 .row > div {
+        padding: 0;
+        text-align: right;
     }
 }
 @media (max-width: 1200px) {

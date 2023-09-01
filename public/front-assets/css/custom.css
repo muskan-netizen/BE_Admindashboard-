@@ -7144,6 +7144,9 @@
     span.rating-number::after {
         content: "\2605"
     }
+    .al_body_template_one span.rating-number::after{
+        content: unset;
+    }
 
     .al_custom_brand a.brand-box.d-block.black-box {
         height: auto;
@@ -7825,7 +7828,7 @@
 
         body .suppliers-img-outer,
         body .img-outer-box {
-            height: 150px
+            height: 200px;
         }
 
     /* body .suppliers-img-outer, body .img-outer-box {
@@ -8494,7 +8497,32 @@
         opacity: 0.8;
     }
     /* body #page-container .small-slider .slick-slide{height: auto;} */
+    .al_body_template_one .vendor_products_tr .row .order-md-3 h4 {
+        float: left;
+        width: 100%;
+        text-align: left;
+        padding-top: 5px;
+    }
+    .al_body_template_one .vendor_products_tr .row .order-md-3 h4 strong {
+        font-size: 13px;
+        font-weight: 600;
+    }
 
+    .al_body_template_one  .side_fillter .checkbox_filter {
+        display: flex;
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    .al_body_template_one .product-description_list {
+        display: flex;  
+        align-items: center;
+        justify-content: space-between;
+        flex-direction: row;
+    }
+    body.al_body_template_one  .alFullMapForm .scheduled-footer .btn{
+        width: 100%!important;
+        max-width: 100%!important;
+    }
     @media (max-width:1366px) {
         body .al_footer_template_two .footer-theme .sub-title .contact-list li i {
             top: 5px;
@@ -8632,6 +8660,12 @@
             body.al_body_template_one .al_new_wrapper_design .scale-effect .img-outer-box.position-relative {
                 width: 100% !important;
             }
+            body .suppliers-img-outer, body .img-outer-box{
+                height: 150px;
+            }
+            .al_body_template_one .breadcrumb-section.bg-transparent{
+                padding: 0!important;
+            }
             body.al_body_template_one .collection-product-wrapper .product-top-filter .filter-main-btn,
             .filter-main-btn span {
                 margin-top: 0;
@@ -8768,7 +8802,7 @@
                 display: block !important;
             }
             .al_body_template_one  .al_mobile_banner{
-                padding-top: 70px;
+                padding-top: 0;
             }
             .al_custom_search button.btn {
                 padding: 7px 6px 0 0;
