@@ -1190,89 +1190,7 @@ a.brand-box.d-block.black-box {
 section.home-slider-wrapper {
     margin-bottom: 40px;
 }
-/*responsive css add */
-
-
-@media screen and (min-width:1501px) and (max-width:1800px){
-    .cab-banner-area .card-box{
-        padding: 18px;
-    }
-} 
-@media (max-width:1500px) {
-    .al_body_template_six  h2.h2-heading.mt-4, .al_body_template_six  .h2-heading {
-        margin-bottom: 20px;        
-    }
-    .al_body_template_six .alSixMainMenu{
-        margin: 50px 0px    ;
-    }
-    section {
-        padding-bottom: 0px;
-    }
-    .cab-banner-area .card-box{padding:18px;}
-}
-
-@media screen and (max-width:1024px){
-.cab-footer button.btn.btn-solid.new-btn{font-size: 10px;font-weight: 100;padding: 10px 10px;}
-.nav-tabs.navigation-tab_al.nav-material{width: 300px;flex-wrap: nowrap;overflow-x: auto;padding:10px;}
-.nav-tabs.navigation-tab_al.nav-material span.al_textTabsText{width: 100%;display: inline-block;max-width: 100px !important;min-width: 100px;text-align: center;}
-.al_body_template_six .alSixMainMenu {
-    margin-top  : 20px;
-}
-}
-
-@media (max-width:576px) {
-    html,
-    body {
-        overflow-x: hidden;
-    }
-    .al_body_template_six .cab-banner-area .card-box {
-        padding: 18px;
-    }
-    .cab-footer button {
-        width: 100%;
-    }
-    .menu-navigation {
-        overflow: visible;
-    }
-    .pixelstrap li:hover ul {
-        display: block;
-        position: absolute;
-        left: auto;
-        top: auto;
-        z-index: 11111;
-    }
-    .age-restriction {
-        padding-right: 0px !important;
-    }
-    .al_body_template_six .logo .navbar-brand img {
-        width: 100%;
-        height: 40px !important;
-        display: block;
-    }
-    .al_body_template_six .logo a.navbar-brand {
-        margin-bottom: 0px;
-    }
-    .al_body_template_six .vendor_mods_section {
-        margin-top:0;width:100%;
-    }
-    .carousel-inner a.banner-img-outer{height: 300px;}
-    .al_body_template_six .vendors .top-heading{margin: 0px 20px;}
-    .menu-navigation_al {margin: 20px 10px;}
-    .al_body_template_six .al_custom_brand .brand-box{background-color: #eee;}
-    .cab-banner-area .container-fluid.p-64.py-64 {padding: 10px !important;}
-    body.al_body_template_six .al_searchType .form-control{width:50%;}
-    body.al_body_template_six .alFindSec{width:50%;}
-    body.al_body_template_six .alFindSec button.btn i {padding-left: 10px;}
-    .al_body_template_six section {padding: 30px 0px;}
-}
-
-@media screen and (max-width:320px){
-    body.al_body_template_six .alFindSec{display: none !important;}
-    body.al_body_template_six .alFindSec button.btn i {padding-left: 10px;}
-    .al_body_template_six .al_count_tabs_new_design{margin:0px 0px;}
-}
 /*-------------dark theme css---------------*/
-
 .al_body_template_six .progress-order {
     width: calc(100% + 48px);
     margin: -24px 0 20px;
@@ -1371,4 +1289,84 @@ body.al_body_template_six.homeHeader.dark .displayProducts .product-box .media-b
 
 body.al_body_template_six.homeHeader.dark .displayProducts .product-box .media-body p {
     color: #cbcbcb;
+}
+
+/*responsive css add */
+
+
+@media screen and (min-width:1501px) and (max-width:1800px){
+    .cab-banner-area .card-box{
+        padding: 18px;
+    }
+} 
+@media (max-width:1500px) {
+    .al_body_template_six  h2.h2-heading.mt-4, .al_body_template_six  .h2-heading {
+        margin-bottom: 20px;        
+    }
+    .al_body_template_six .alSixMainMenu{
+        margin: 50px 0px    ;
+    }
+    section {
+        padding-bottom: 0px;
+    }
+    .cab-banner-area .card-box{padding:18px;}
+}
+
+@media screen and (max-width:1024px){
+.cab-footer button.btn.btn-solid.new-btn{font-size: 10px;font-weight: 100;padding: 10px 10px;}
+.nav-tabs.navigation-tab_al.nav-material{width: 300px;flex-wrap: nowrap;overflow-x: auto;padding:10px;}
+.nav-tabs.navigation-tab_al.nav-material span.al_textTabsText{width: 100%;display: inline-block;max-width: 100%!important;min-width:75px;text-align: center;}
+.al_body_template_six .alSixMainMenu {margin-top  : 20px;}
+}
+
+@media (max-width:576px) {
+    html,
+    body {
+        overflow-x: hidden;
+    }
+    .al_body_template_six .cab-banner-area .card-box {
+        padding: 18px;
+    }
+    .cab-footer button {
+        width: 100%;
+    }
+    .menu-navigation {
+        overflow: visible;
+    }
+    .pixelstrap li:hover ul {
+        display: block;
+        position: absolute;
+        left: auto;
+        top: auto;
+        z-index: 11111;
+    }
+    .age-restriction {
+        padding-right: 0px !important;
+    }
+    .al_body_template_six .logo .navbar-brand img {
+        width: 100%;
+        height: 40px !important;
+        display: block;
+    }
+    .al_body_template_six .logo a.navbar-brand {
+        margin-bottom: 0px;
+    }
+    .al_body_template_six .vendor_mods_section {
+        margin-top:0;width:100%;
+    }
+    .carousel-inner a.banner-img-outer{height: 300px;}
+    .al_body_template_six .vendors .top-heading{margin: 0px 20px;}
+    .menu-navigation_al {margin: 20px 10px;}
+    .al_body_template_six .al_custom_brand .brand-box{background-color: #eee;}
+    .cab-banner-area .container-fluid.p-64.py-64 {padding: 10px !important;}
+    body.al_body_template_six .al_searchType .form-control{width:50%;}
+    body.al_body_template_six .alFindSec{width:50%;}
+    body.al_body_template_six .alFindSec button.btn i {padding-left: 10px;}
+    .al_body_template_six section {padding: 30px 0px;}
+}
+
+@media screen and (max-width:320px){
+    body.al_body_template_six .alFindSec{display: none !important;}
+    body.al_body_template_six .alFindSec button.btn i {padding-left: 10px;}
+    .al_body_template_six .al_count_tabs_new_design{margin:0px 0px;}
 }
