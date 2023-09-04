@@ -85,7 +85,7 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
             if ($vendor_order->coupon_paid_by == 1) {
                 $adminDiscount = $vendor_order->discount_amount;
             }
-            $vendor_order->total_amount = $tip+$vendor_order->payable_amount;
+            $vendor_order->total_amount = (double)$tip + (double)$vendor_order->payable_amount;
             $vendor_order->cash_payment = 0;
             if ($vendor_order->orderDetail->payment_option_id == 1) {
                 $vendor_order->cash_payment = $vendor_order->payable_amount + $vendor_order->taxable_amount;

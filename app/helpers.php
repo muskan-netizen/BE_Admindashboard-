@@ -535,12 +535,15 @@ if (!function_exists('productvariantQuantity')) {
 if (!function_exists('checkImageExtension')) {
     function checkImageExtension($image)
     {
-        $ch =  substr($image, strpos($image, ".") + 1);
         $ex = "@webp";
-        if ($ch == 'svg') {
-            $ex = "";
+        if(!empty($image))
+        {
+            $ch =  substr($image, strpos($image, ".") + 1);
+            if ($ch == 'svg') {
+                $ex = "";
+            }
         }
-        return $ex;
+            return $ex;
     }
 }
 

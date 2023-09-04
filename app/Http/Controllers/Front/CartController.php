@@ -260,7 +260,7 @@ class CartController extends FrontController
         $orders_per_slot = $vendor->orders_per_slot??0;
         $orderCount = 0;
         // Get Vendor orders
-        $orderVendors = OrderVendor::where('vendor_id', $vendor->id)->get();
+        $orderVendors = OrderVendor::where('vendor_id', $vendor_id)->get();
         // dd($orderVendors);
         foreach($orderVendors as $orderVendor){
             // Get orders of current vendor where scheduled_slot and schedule_pickup_datetime is same as received from frontend.
