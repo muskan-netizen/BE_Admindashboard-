@@ -5237,6 +5237,9 @@
     .vendors section:last-child {
         margin: 0 auto
     }
+    .age-restriction .modal-footer {
+        justify-content: center;
+    }
 
     @media screen and (max-width:500px) {
         .step p {
@@ -8527,6 +8530,24 @@
         body .al_footer_template_two .footer-theme .sub-title .contact-list li i {
             top: 5px;
         }
+        div#orders_wrapper .row.mt-2 .col-md-9.mb-3, div#orders_wrapper .row.mt-2 .col-md-3 {
+            max-width: 100%;
+            width: 100%;
+            flex: unset;
+            padding: 0 20px!important;
+        }
+        div#orders_wrapper .row.mt-2 .col-md-9.mb-3, div#orders_wrapper .row.mt-2 .col-md-3 {
+            max-width: 100%;
+            width: 100%;
+            flex: unset;
+            padding: 0 20px!important;
+        }
+        div#orders_wrapper .col-md-9.mb-3 {
+            margin-bottom: 0!important;
+        }
+        div#orders_wrapper .col-md-3 {
+            margin-bottom: 15px;
+        }
     }
 
     @media(max-width: 1199px) {
@@ -8752,6 +8773,19 @@
             }
             body.al_body_template_one .alSingleProducts {
                 margin-top: 20px!important;
+            }
+            .order_head h4{
+                padding: 0 ;
+                margin: 0 0 5px;
+            }
+            div#orders_wrapper .col-md-3{
+                margin-bottom: 7px;
+            }
+            div#orders_wrapper  .order_head {
+                padding: 0 20px;
+            }
+            div#orders_wrapper   .order_head span{
+                font-size: 14px;
             }
         }
         /* template two common css */
