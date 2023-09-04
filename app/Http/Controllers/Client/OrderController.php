@@ -603,6 +603,7 @@ class OrderController extends BaseController
                 if($vendor->products->count() == 0){
                     $orders->forget($key);
                 }
+                
                 foreach ($vendor->products as $product) {
                     $product_total_count += $product->quantity * $product->price;
                     $security_amount += $product->security_amount;
