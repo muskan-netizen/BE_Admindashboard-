@@ -1431,6 +1431,7 @@ a.agentInfo.d-block.black-box {
 
 body .order-page .order_head {
     text-transform: capitalize;
+    padding: 0 10px;
 }
 
 body #page-container .vendors {
