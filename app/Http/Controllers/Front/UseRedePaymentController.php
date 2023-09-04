@@ -34,11 +34,14 @@ class UseRedePaymentController extends FrontController
     public function __construct()
     {
         $Rede = PaymentOption::select('credentials', 'test_mode')->where('code', 'userede')->where('status', 1)->first();
-        $creds_arr = json_decode($Rede->credentials);
-        $this->REDE_PV = (isset($creds_arr->userede_Rede_PV)) ? $creds_arr->userede_Rede_PV : '';
-        $this->REDE_TOKEN = (isset($creds_arr->userede_Rede_token)) ? $creds_arr->userede_Rede_token : '';
-        $Environment = (isset($Rede->test_mode) && ($Rede->test_mode == '1')) ? \Rede\Environment::sandbox() : \Rede\Environment::production();
-        $this->store = new \Rede\Store($this->REDE_PV, $this->REDE_TOKEN, $Environment );
+        if(@$Rede && !empty($Rede->credentials))
+        {
+            $creds_arr = json_decode($Rede->credentials);
+            $this->REDE_PV = (isset($creds_arr->userede_Rede_PV)) ? $creds_arr->userede_Rede_PV : '';
+            $this->REDE_TOKEN = (isset($creds_arr->userede_Rede_token)) ? $creds_arr->userede_Rede_token : '';
+            $Environment = (isset($Rede->test_mode) && ($Rede->test_mode == '1')) ? \Rede\Environment::sandbox() : \Rede\Environment::production();
+            $this->store = new \Rede\Store($this->REDE_PV, $this->REDE_TOKEN, $Environment );
+        }
     }
     public function beforePayment(Request $request) 
     {

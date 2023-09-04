@@ -15,15 +15,23 @@ class SquareController extends FrontController
 
 	private $application_id;
 	private $access_token;
+    private $location_id;
+	private $square_url;
+    private $square_creds;
+	private $creds_arr;
+
 	public function __construct()
   	{
 		$this->square_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'square')->where('status', 1)->first();
-	    $this->creds_arr = json_decode($this->square_creds->credentials);
-	    $this->application_id = $this->creds_arr->application_id??'';
-	    $this->access_token = $this->creds_arr->api_access_token??'';
-	    $this->location_id = $this->creds_arr->location_id??'';
-	    $this->square_url = $this->square_creds->test_mode ? "https://sandbox.web.squarecdn.com/v1/square.js" : "https://web.squarecdn.com/v1/square.js";
-	}
+        if(@$this->square_creds && !empty($this->square_creds->credentials))
+        {
+            $this->creds_arr = json_decode($this->square_creds->credentials);
+            $this->application_id = $this->creds_arr->application_id??'';
+            $this->access_token = $this->creds_arr->api_access_token??'';
+            $this->location_id = $this->creds_arr->location_id??'';
+            $this->square_url = $this->square_creds->test_mode ? "https://sandbox.web.squarecdn.com/v1/square.js" : "https://web.squarecdn.com/v1/square.js";
+        }
+    }
 	public function beforePayment(Request $request)
     {
     	$data = $request->all();

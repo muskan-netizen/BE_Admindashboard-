@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Log;
 trait DataTransTrait
 {
     use ApiResponser;
+
+    public $merchant_id;
+    public $password;
+
     public function __construct()
     {
         $this->creds = PaymentOption::where('code', 'data_trans')->where('status', 1)->first();
@@ -28,6 +32,10 @@ trait DataTransTrait
 
     public function dataTransApi(Request $request)
     {
+
+        if(empty($this->merchant_id))
+        return false;
+
         $redirect = route('order.dataTransuccessPage');
         $cancel_redirect = route('order.dataTransCancel');
         

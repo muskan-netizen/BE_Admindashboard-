@@ -565,6 +565,11 @@ body.al_body_template_six.aloverFlow {
     position: relative;
     padding-right: 20px;
 }
+.alLocation.homepage-address i {
+    bottom: -1px;
+    display: inline-block;
+    position: relative;
+}
 
 /*===================== add to cart css ===================*/
 .alShoppingList {
@@ -1161,15 +1166,26 @@ body .royo_whatsapp_img {
     fill: #fff!important;
     opacity: 1;
 }
-
-
-
+.fixed-bar li.add_post a span {
+    color: #000;
+}
+.dark .fixed-bar li.add_post a span {
+    color: #fff;
+}
 /*hotfix product page css*/
 
+@media (max-width:1600px){
+    li.alShoppingBag.mx-md-4.mx-2.dropdown {
+        margin: 0 15px!important;
+    }
+    li.add_post.pr-3 {
+        padding-right: 8px!important;
+    }
+}
 @media (max-width:1500px){
     .nav-tabs.navigation-tab_al.nav-material .nav-link{
         padding: 5px;
-        font-size: 13px;
+        font-size: 12px;
     }
     li.alShoppingBag.mx-md-4.mx-2.dropdown {
         margin: 0 20px!important;
@@ -1178,7 +1194,7 @@ body .royo_whatsapp_img {
 
 @media (max-width:1370px){
     .alFindSec{
-        max-width: 300px;
+        max-width: 270px;
         padding: 0 5px;
     }
     .alFindSec .px-2 {
@@ -1188,14 +1204,14 @@ body .royo_whatsapp_img {
         padding-right: 0px!important;
     }
     .alFindSec li.alLocationArea{
-        max-width: 170px;
+        max-width: 150px;
         margin-right: 5px!important;
     }
     .alFindSec span{
-        font-size: 13px;
+        font-size: 12px;
     }
     .al_searchType .form-control{
-        font-size: 13px;
+        font-size: 12px;
         padding:5px!important;
     }
 }
@@ -1208,14 +1224,45 @@ body .royo_whatsapp_img {
         max-width: 120px;
     }
     .alFindSec {
-        max-width: 250px;
+        max-width: 230px;
         padding: 0 5px;
     }
     .nav-tabs.navigation-tab_al.nav-material .nav-link{
-        font-size: 12px;
+        font-size: 11px;
+    }
+    li.add_post.pr-3 {
+        padding-right:5px!important;
+    }
+    li.alShoppingBag.mx-md-4.mx-2.dropdown {
+        margin: 0 10px!important;
     }
 }
-
+@media (max-width:1024px){
+    .nav-tabs.navigation-tab_al.nav-material {
+        width: 300px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding: 10px;
+    }
+    .nav-tabs.navigation-tab_al.nav-material span.al_textTabsText {
+        width: 100%;
+        display: inline-block;
+        max-width: 100%!important;
+        min-width: 75px;
+        text-align: center;
+    }
+}
+@media (max-width:991px){
+    li.alShoppingBag.mx-md-4.mx-2.dropdown {
+        margin: 0 10px!important;
+    }
+    .nav-tabs.navigation-tab_al.nav-material{
+        padding: 4px!important;
+    }
+    .nav-tabs.navigation-tab_al.nav-material{
+        width: 190px!important;
+    }
+}
 @media (max-width:767px){
     .al_body_template_six .al_count_tabs_new_design {
         margin: 10px 0 0;
@@ -1261,7 +1308,7 @@ body .royo_whatsapp_img {
         width: 100%;
     }
     body.al_body_template_six .nav-tabs.navigation-tab_al.nav-material {
-        width: 100%;
+        width: 100%!important;
         flex-wrap: nowrap;
         overflow-x: auto;
         padding: 0px;
@@ -1432,6 +1479,38 @@ body .royo_whatsapp_img {
     }
     .al_desktop_banner span.carousel-control-prev-icon, span.carousel-control-next-icon{display: none;}
     body.al_body_template_six .d-inline-flex.al_searchType.align-items-center.justify-content-start.px-2.position-relative{padding:10px;}
+    body.al_body_template_six .alFindSec{
+        width: 170px;
+        padding: 0 5px!important;
+    }
+    body.al_body_template_six .al_searchType .form-control{
+        width: 100%;
+    }
+    li.add_post.pr-3 {
+        padding-right: 5px!important;
+    }
+    li.add_post a span {
+        color: #fff;
+        font-size: 11px;
+    }
+    body.al_body_template_six .al_searchType .form-control{
+        width: 100%!important;
+    }
+    body.al_body_template_six .alFindSec{
+        width: 150px!important;
+    }
+    li.add_post a span{
+        position: relative;
+        font-size: 0;
+    }
+    li.add_post a span::before {
+        content: '+';
+        font-size: 25px;
+        line-height: 1;
+        display: inline-flex;
+        align-items: center;
+        padding-top: 5px;
+    }
 }
 
 @media (max-width:400px) {
@@ -1439,7 +1518,7 @@ body .royo_whatsapp_img {
         width: 100%!important;
     }
     body.al_body_template_six .alFindSec {
-        width: 140px!important;
+        width: 120px!important;
     }
 }
 @media (max-width:360px) {
@@ -1447,9 +1526,3 @@ body .royo_whatsapp_img {
         display: none!important;
     }
 }
-
-    /* .al_body_template_six .vendor_mods_section {
-        width: 100%;
-    }
-
-} */
