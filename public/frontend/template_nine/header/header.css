@@ -396,6 +396,7 @@ body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect  a span{
     color:#777;
     font-weight: 400!important;
     text-transform: capitalize;
+    margin: 0!important;
 }
 .al_body_template_nine .pixelstrap li a img {
     width: 100%;

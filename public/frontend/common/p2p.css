@@ -1262,7 +1262,15 @@ body.al_body_template_nine .checkbox_filter input {
 body.al_body_template_nine .outter-fillter-data div#category_products_filter a.product-box.scale-effect{
     position: relative!important;
 }
-
+body.al_body_template_nine.p2p-module .dashboard-right .address-btn{
+    position: unset;
+    bottom: 0;
+    right: 0px;
+}
+body.al_body_template_nine.p2p-module .dashboard-right .address-btn a.btn.btn-solid {
+    font-size: 10px;
+    padding: 4px 04px;
+}
 /*=========== 20-02-2023 css chsnges ===============*/
 body.al_body_template_nine .collection-content .product-wrapper-grid .media-body .inner_spacing {
     min-height: auto;
