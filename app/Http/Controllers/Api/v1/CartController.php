@@ -933,8 +933,8 @@ class CartController extends BaseController
                     $prod->product->transmission = $fields['Transmission'] ?? '';
                     $prod->product->fuel_type = $fields['Fuel Type'] ?? '';
                     $prod->product->Seats = $fields['Seats'] ?? '' .' Seats';
-                    $prod->product->cabins = $fields['Cabins'] ?? '';
-                    $prod->product->baths = $fields['Baths'] ?? '';
+                    $prod->product->cabins = $fields['Cabins'] ?? '' .' Cabins';
+                    $prod->product->baths = $fields['Baths'] ?? '' .'Baths';
 
                     $rentalProtection += $prod->product->cartRentalProtections->rentalProtection->price ?? 0;
                     $bookingOption += $prod->product->cartBookingOptions->bookingOption->price ?? 0;

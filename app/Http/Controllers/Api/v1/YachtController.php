@@ -24,7 +24,6 @@ class YachtController extends Controller
             $rating = array_sum(array_column($allReviews,'rating'));
             $products->rating = $rating;
     
-            $rating = array_sum(array_column($allReviews,'rating'));
             foreach ($products->ProductAttribute as $productAttribute) {
                 if ($productAttribute->attributeOption()->exists()) {
                     if(!empty($title = $productAttribute->attributeOption->title)){

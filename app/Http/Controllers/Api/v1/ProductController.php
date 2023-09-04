@@ -196,7 +196,7 @@ class ProductController extends BaseController
             }
             $allReviews = array_column($product->vendor->products()->with('reviews')->get()->toArray(),'reviews');
             $rating = array_sum(array_column($allReviews,'rating'));
-            $product->rating = $rating;
+            $product->vendor_rating = $rating;
 
             $slotsDate = 0;
             if($product->vendor->is_vendor_closed){
@@ -213,6 +213,7 @@ class ProductController extends BaseController
             $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
             foreach ($product->variant as $key => $value) {
                 $product->variant[$key]->multiplier = $clientCurrency->doller_compare;
+                $product->variant[$key]->variant_title = $product->variant[$key]->optionData ?? '';
             }
             $addonList = array();
             foreach ($product->addOn as $key => $value) {
@@ -386,6 +387,7 @@ class ProductController extends BaseController
             'Fuel Type'
             ];
             $additional = [];
+            $desc = [];
             foreach ($product->ProductAttribute as $productAttribute) {
                 $attribute = $productAttribute->attribute;
                 $img = $attribute->icon['proxy_url'] . '100/100' . $attribute->icon['image_path'];
@@ -398,20 +400,49 @@ class ProductController extends BaseController
                             'img' => $img
                         ];
                     }
+                    $desc[$productAttribute->key_name]['title'] = $title;
+                    $desc[$productAttribute->key_name]['img'] = $img;
                 }
             }
-                
+            $accordianData = [];
+            $desc = array_search('Specification', $additional);
+            $accordianData[] = [
+                'title' => 'Specification',
+                'value' => $desc['Specification']['title'] ?? ''
+            ];
+            $accordianData[] = [
+                'title' => 'Cancellation',
+                'value' => $product->returnable ? "Cancellable" : "Non-Cancelable"
+            ];
+            $accordianData[] = [
+                'title' => 'Commercial Owner',
+                'value' => $desc['Commercial Owner']['title'] ?? ''
+            ];
+            $accordianData[] = [
+                'title' => 'Security Amount',
+                'value' => $product->security_amount ? \Session::get('currencySymbol').$product->security_amount. ' need to be paid as security amount' : 'No Security Amount'
+            ];
+            $accordianData[] = [
+                'title' => 'Captain Info',
+                'value' => [
+                    'name' => $product->captain_name,
+                    'description' => $product->captain_description,
+                    'profile' => $product->captain_profile
+                ]
+            ];
+            
             $response['suggested_category_products'] =  $suggested_category_products;
             $response['suggested_brand_products'] =  $suggested_brand_products;
             $response['suggested_vendor_products'] =  $suggested_vendor_products;
             $response['products'] = $product;
             $response['frequently_bought'] = $frequentlyBoughtProducts;
-            $response['relatedProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'relate', $product->related);
-            $response['upSellProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'upSell', $product->upSell);
-            $response['crossProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'cross', $product->crossSell);
+            $response['relatedProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'relate', $product->related, $request->service);
+            $response['upSellProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'upSell', $product->upSell, $request->service);
+            $response['crossProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'cross', $product->crossSell, $request->service);
             $response['product_attribute'] = $product_attr;
             $response['additional_features'] = $additional;
             $response['productBookingsCount'] = $productBookingsCount;
+            $response['accordianData'] = $accordianData;
             // $response['product_variant'] = ProductVariant::select('id', 'sku', 'product_id', 'title', 'quantity','price','markup_price','cost_price','barcode','tax_category_id')->where('product_id',$pid)->get();
             /* group by in query return data only for key - 0 so using 0 */
             $is_return_days = 0;
@@ -469,7 +500,7 @@ class ProductController extends BaseController
 
     }
 
-    public function metaProduct($langId, $multiplier, $for = 'relate', $productArray = [])
+    public function metaProduct($langId, $multiplier, $for = 'relate', $productArray = [], $service="")
     {
         if(empty($productArray)){
             return $productArray;
@@ -489,7 +520,7 @@ class ProductController extends BaseController
         }
         $products = Product::with(['media' => function($q){
                             $q->groupBy('product_id');
-                        }, 'media.image',
+                        }, 'media.image','ProductAttribute','ProductAttribute.attributeOption','vendor',
                         'translation' => function($q) use($langId){
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                         },
@@ -502,9 +533,31 @@ class ProductController extends BaseController
 
         $products = $products->get();
         if(!empty($products)){
+            $fields = [];
             foreach ($products as $key => $value) {
                 foreach ($value->variant as $k => $v) {
                     $value->variant[$k]->multiplier = $multiplier;
+                }
+
+                foreach ($value->ProductAttribute as $productAttribute) {
+                    if ($productAttribute->attributeOption()->exists()) {
+                        if(!empty($title = $productAttribute->attributeOption->title)){
+                            $fields[$productAttribute->key_name] = $title;
+                        }else{
+                            $fields[$productAttribute->key_name] = $productAttribute->key_value;
+                        }
+                    }
+                }
+                if(!empty($fields)){
+                    if($service == 'rental'){
+                        $value->transmission = $fields['Transmission'] ?? '';
+                        $value->fuel_type = $fields['Fuel Type'] ?? '';
+                        $value->Seats = $fields['Seats'] .' Seats'?? '';
+                    } else{
+                        $value->cabins = $fields['Cabins']. ' Cabins' ?? '0' ;
+                        $value->baths = $fields['Baths']. ' Baths' ?? '0' ;
+                        $value->berths = $fields['Berths'].' Berths' ?? '0';
+                    }
                 }
             }
         }
