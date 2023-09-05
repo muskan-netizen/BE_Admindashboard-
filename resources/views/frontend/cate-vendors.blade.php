@@ -373,6 +373,9 @@
         filterProducts();
     });
     function filterProducts(){
+
+
+        
         var brands = [];
         var variants = [];
         var options = [];

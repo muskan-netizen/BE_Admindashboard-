@@ -1180,6 +1180,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
         }
 
         function vendorProductsSearchResults() {
+            
             let keyword = $("#vendor_search_box").val();
             let order_type = $("#order_type").val();
             var checkboxesChecked = [];
