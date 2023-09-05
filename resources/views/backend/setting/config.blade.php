@@ -2194,6 +2194,38 @@
         </div>
 
     </div>
+     <div class="col-xl-4 col-lg-4 mb-3 d-none">
+        <div class="page-title-box">
+            <h4 class="page-title text-uppercase">{{ __('Testing Database Toggle ') }}</h4>
+        </div>
+        <div class="card-box">
+        <form method="POST" action="{{ route('configure.toggleDatabase') }}">
+            <input type="hidden" name="crm" id="crm" value="1">
+            <input type="hidden" name="send_to" id="send_to" value="configure">
+            @csrf
+
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <h4 class="header-title text-uppercase mb-0">{{ __('Testing Database Toggle') }}
+                </h4>
+                <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
+                </button>
+            </div>
+        
+            <div class="col-12">
+        
+            <select class="form-control" id="db_toggle" name="db_toggle">
+                                
+                <option value="2d98b5"   @if (@$client_detail->code == '2d98b5') checked='checked' @endif>Ace</option>
+                <option value="245bae" @if (@$client_detail->code == '245bae')   checked='checked' @endif>Ace UAT</option>
+                                   
+           </select>
+                </div>
+        
+                </form>
+            </div>
+        </div>
+
+    </div>
     {{-- ends here marg form --}}
     </div>
 
