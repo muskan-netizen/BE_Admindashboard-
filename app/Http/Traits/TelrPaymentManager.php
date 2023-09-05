@@ -9,7 +9,7 @@ trait TelrPaymentManager{
   public function createPaymentpage($data) 
   {
     $cart_id =  uniqid();
-    $after_url = $data['payment_from']."/".$data['come_from'].'/'.$data['amount']."/".($data["order_number"]??0);
+    $after_url = $data['payment_from']??''."/".$data['come_from'].'/'.$data['amount']."/".($data["order_number"]??0);
     $name = explode(' ', $data['customer_name'], 2);
 
     $formParams = [

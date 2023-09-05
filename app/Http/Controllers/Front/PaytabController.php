@@ -19,6 +19,11 @@ class PaytabController extends FrontController
 	public function beforePayment(Request $request)
     {
     	$data = $request->all();
+
+        if(!isset($data['amount']))
+        {
+            return redirect()->back()->with('error','Undefined index amount');
+        }
         $data['come_from'] = 'app';
         if($request->isMethod('post'))
         {
