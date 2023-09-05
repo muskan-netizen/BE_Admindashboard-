@@ -1314,9 +1314,9 @@ body.al_body_template_six.homeHeader.dark .displayProducts .product-box .media-b
 
 @media screen and (max-width:1024px){
 .cab-footer button.btn.btn-solid.new-btn{font-size: 10px;font-weight: 100;padding: 10px 10px;}
-.nav-tabs.navigation-tab_al.nav-material{width: 300px;flex-wrap: nowrap;overflow-x: auto;padding:10px;}
+/* .nav-tabs.navigation-tab_al.nav-material{width: 300px;flex-wrap: nowrap;overflow-x: auto;padding:10px;}
 .nav-tabs.navigation-tab_al.nav-material span.al_textTabsText{width: 100%;display: inline-block;max-width: 100%!important;min-width:75px;text-align: center;}
-.al_body_template_six .alSixMainMenu {margin-top  : 20px;}
+.al_body_template_six .alSixMainMenu {margin-top  : 20px;} */
 }
 
 @media (max-width:576px) {

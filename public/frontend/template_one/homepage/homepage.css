@@ -4972,6 +4972,14 @@ body.dark .slick-slider .d-flex.align-items-center.justify-content-between.al_cl
         top: 50px;
     }
 }
+@media(max-width:1500px) {
+    .vendors .slick-prev {
+        left: 0;
+    }
+    .vendors .slick-next {
+        right: 0px;
+    }
+}
 @media(max-width:1200px) {
     .al_body_template_one .slick-slider .product-card-box .img-outer-box.position-relative {
         height: 200px;
