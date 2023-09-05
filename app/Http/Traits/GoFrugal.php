@@ -3,9 +3,7 @@ namespace App\Http\Traits;
 
 use App\Models\Client;
 use App\Models\ClientPreferenceAdditional;
-use Facade\Ignition\Exceptions\InvalidConfig;
 use GuzzleHttp\Client as GClient;
-use PhpParser\Node\Stmt\Switch_;
 
 trait GoFrugal
 {
@@ -32,15 +30,20 @@ trait GoFrugal
         }
     }
 
-    private function createRequest(string $url, string $method, array $headers = null, array $data = null){
+    private function createRequest(string $slug, string $method, array $headers = null, array $data = null){
         try{
             $headers['X-Auth-Token'] = $this->_clientPreference['api_key'];
-            $request = $this->_transport->request($method, $url, ['headers' => $headers]);
-            $response = $request->send();
+            
+            $url = $this->_clientPreference['domain_url']. $slug;
+
+            $response = $this->_transport->request($method, $url, [
+                'headers' => $headers
+            ]);
+            
             return [
-                'status' =>  $response->isSuccessful(),
+                'status' =>  ($response->getStatusCode() == 200),
                 'message' => 'success',
-                'data' => $response->getBody()->getContents()
+                'data' => json_decode($response->getBody()->getContents())
             ];
         }catch(\Exception $e){
             \Log::info($e->getMessage());
@@ -51,6 +54,9 @@ trait GoFrugal
                 case 500:
                     $message = "Intenal Server Error";
                     break;
+                default:
+                    $message = "Unknown Error";
+                    break;
             }
             return [
                 'status' => false,
@@ -59,15 +65,23 @@ trait GoFrugal
         }
     }
 
-    public function syncAllProducts(){
-        $url = $this->_clientPreference['domain_url'];
-        $response = $this->createRequest($url, 'GET',[], []);
-        return $response;
+    public function getCategory(){
+        $slug = 'categories';
+        return $this->createRequest($slug, 'GET', [], []);
     }
 
     public function getVendors(){
-        $url = $this->_clientPreference['domain_url']. 'supplierMaster';
-        $response = $this->createRequest($url, 'GET',[], []);
-        return $response;
+        $slug = 'supplierMaster';
+        return $this->createRequest($slug, 'GET', [], []);
+    }
+
+    public function getCustomers(){
+        $slug = 'eCustomers';
+        return $this->createRequest($slug, 'GET', [], []);
+    }
+
+    public function getProducts(){
+            $slug = 'items';
+        return $this->createRequest($slug, 'GET', [], []);
     }
 }
