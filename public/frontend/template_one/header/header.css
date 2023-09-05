@@ -360,7 +360,9 @@ body.al_body_template_two {
     }
 /*==========  end Dark the header css 02-03-20223 ==========*/
 
-
+.al_custom_search button.btn{
+    padding: 0 5px;
+}
 
 @media (max-width:1400px) {
     .main-menu.al_template_one_menu .container {
