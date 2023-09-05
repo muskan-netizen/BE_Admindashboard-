@@ -27,7 +27,6 @@ class GoFrugalController extends BaseController
         }
         $products = $response['data'];
         foreach($products as $product){
-            pr($product);
             $item = [
 
             ];

@@ -30,11 +30,11 @@ trait GoFrugal
         }
     }
 
-    private function createRequest(string $slug, string $method, array $headers = null, array $data = null){
+    private function createRequest(string $endpoint, string $method, array $headers = [], array $data = []){
         try{
             $headers['X-Auth-Token'] = $this->_clientPreference['api_key'];
             
-            $url = $this->_clientPreference['domain_url']. $slug;
+            $url = $this->_clientPreference['domain_url']. $endpoint;
 
             $response = $this->_transport->request($method, $url, [
                 'headers' => $headers
@@ -65,23 +65,23 @@ trait GoFrugal
         }
     }
 
-    public function getCategory(){
-        $slug = 'categories';
-        return $this->createRequest($slug, 'GET', [], []);
+    protected function getCategory(){
+        $endpoint = 'categories';
+        return $this->createRequest($endpoint, 'GET');
     }
 
-    public function getVendors(){
-        $slug = 'supplierMaster';
-        return $this->createRequest($slug, 'GET', [], []);
+    protected function getVendors(){
+        $endpoint = 'supplierMaster';
+        return $this->createRequest($endpoint, 'GET');
     }
 
-    public function getCustomers(){
-        $slug = 'eCustomers';
-        return $this->createRequest($slug, 'GET', [], []);
+    protected function getCustomers(){
+        $endpoint = 'eCustomers';
+        return $this->createRequest($endpoint, 'GET');
     }
 
-    public function getProducts(){
-            $slug = 'items';
-        return $this->createRequest($slug, 'GET', [], []);
+    protected function getProducts(){
+        $endpoint = 'items';
+        return $this->createRequest($endpoint, 'GET');
     }
 }
