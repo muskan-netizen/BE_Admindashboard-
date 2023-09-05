@@ -5,8 +5,9 @@ use App\Models\Client;
 use App\Models\ClientPreferenceAdditional;
 use Facade\Ignition\Exceptions\InvalidConfig;
 use GuzzleHttp\Client as GClient;
+use PhpParser\Node\Stmt\Switch_;
 
-class GoFrugal
+trait GoFrugal
 {
     private $_client = null;
 
@@ -27,22 +28,46 @@ class GoFrugal
             if(empty($clientPreferenceAdditional)){
                 throw new \Exception('Configure API Key for GoFrugal POS Integration');
             }
-            $this->_clientPreference = json_decode($clientPreferenceAdditional, true);
+            $this->_clientPreference = json_decode($clientPreferenceAdditional['key_value'], true);
         }
     }
 
     private function createRequest(string $url, string $method, array $headers = null, array $data = null){
-        $request = $this->_client->request($method, $url, ['headers' => $headers]);
-        $response = $request->send();
-        if($response->isSuccessful()){
-           return $response->getBody()->getContents();
+        try{
+            $headers['X-Auth-Token'] = $this->_clientPreference['api_key'];
+            $request = $this->_transport->request($method, $url, ['headers' => $headers]);
+            $response = $request->send();
+            return [
+                'status' =>  $response->isSuccessful(),
+                'message' => 'success',
+                'data' => $response->getBody()->getContents()
+            ];
+        }catch(\Exception $e){
+            \Log::info($e->getMessage());
+            switch($e->getCode()){
+                case 404:
+                    $message = "Given Url is not Found";
+                    break;
+                case 500:
+                    $message = "Intenal Server Error";
+                    break;
+            }
+            return [
+                'status' => false,
+                'message' => $message
+            ];
         }
-        return $response;
     }
 
     public function syncAllProducts(){
         $url = $this->_clientPreference['domain_url'];
         $response = $this->createRequest($url, 'GET',[], []);
-        
+        return $response;
+    }
+
+    public function getVendors(){
+        $url = $this->_clientPreference['domain_url']. 'supplierMaster';
+        $response = $this->createRequest($url, 'GET',[], []);
+        return $response;
     }
 }

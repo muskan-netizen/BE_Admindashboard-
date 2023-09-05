@@ -686,3 +686,8 @@ Route::group(['middleware' => 'auth:client', 'prefix' => '/admin'], function () 
     Route::get('{first}/{second}', 'Client\RoutingController@secondLevel')->name('second');
     Route::get('{any}', 'Client\RoutingController@root')->name('any');
 });
+
+Route::group(['prefix' => '/gofrugal'], function () {
+    Route::get('/', 'Client\GoFrugalController@index')->name('gofrugal.home');
+});
+
