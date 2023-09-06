@@ -44,7 +44,7 @@ class GoFrugalController extends BaseController
         });
     }
 
-    public function generateBarcodeNumber()
+    private function generateBarcodeNumber()
 	{
 		$random_string = substr(md5(microtime()), 0, 14);
 		while (ProductVariant::where('barcode', $random_string)->exists()) {
@@ -61,7 +61,7 @@ class GoFrugalController extends BaseController
         return response()->json(['message' => 'Data Synced Successfully'], 200);
     }
 
-    public function fetchProducts(){
+    private function fetchProducts(){
         $response = $this->checkCachedData('gofurgal_products', 'getProducts');
 
         if (!$response['status']) {
@@ -215,7 +215,7 @@ class GoFrugalController extends BaseController
         return response()->json(['message' => 'Products Added Successfully'], 200);
     }
 
-    public function fetchCustomers(){
+    private function fetchCustomers(){
         $customers = $this->checkCachedData('gofurgal_customers', 'getCustomers');
         if (!$customers['status']) {
             return redirect()->back()->withErrors(['error' => $customers['message']]);
@@ -260,7 +260,7 @@ class GoFrugalController extends BaseController
 
     //fetching categories
 
-    public function fetchCategories()
+    private function fetchCategories()
     {
         $categories = $this->checkCachedData('gofurgal_categories', 'getCategory');
         if (!$categories['status']) {
@@ -319,7 +319,7 @@ class GoFrugalController extends BaseController
         return response()->json(['message' => 'Categories Added Successfully'], 200);
     }
 
-    public function addCategoryHistory($newCategory, $user)
+    private function addCategoryHistory($newCategory, $user)
     {
         $hs = new CategoryHistory();
         $hs->category_id = $newCategory->id;
@@ -330,7 +330,7 @@ class GoFrugalController extends BaseController
         $hs->save();
     }
 
-    public function addCategoryTranslation($category)
+    private function addCategoryTranslation($category)
     {
         Category_translation::updateOrCreate(
             [
@@ -351,7 +351,7 @@ class GoFrugalController extends BaseController
     //fetching categories end
 
     //fetching all vendors
-    public function fetchAllVendors()
+    private function fetchAllVendors()
     {
         $response = $this->checkCachedData('gofurgal_vendors', 'getVendors');
         if (!$response['status']) {
