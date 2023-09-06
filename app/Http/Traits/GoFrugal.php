@@ -81,7 +81,7 @@ trait GoFrugal
     }
 
     protected function getProducts(){
-        $endpoint = 'items';
+        $endpoint = 'items?selectAll=true';
         return $this->createRequest($endpoint, 'GET');
     }
 }
