@@ -1179,8 +1179,9 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
             }, 1000);
         }
 
-        function vendorProductsSearchResults() {
+        function vendorProductsSearchResults(id = '') {
             
+       
             let keyword = $("#vendor_search_box").val();
             let order_type = $("#order_type").val();
             var checkboxesChecked = [];
@@ -1203,7 +1204,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                     keyword: keyword,
                     order_type: order_type,
                     vendor: "{{ $vendor->id }}",
-                    vendor_category: "{{ $vendor_category ?? '' }}"
+                    vendor_category: id ?? "{{ $vendor_category ?? '' }}"
                 },
                 beforeSend: function() {
                     if (ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {

@@ -14,7 +14,9 @@ $add_to_cart =  route('addToCart') ;
     <nav class="scrollspy-menu">
         <ul>
             @forelse($listData as $key => $data)
-            <li class="side-scroll-menu-li" onclick="getVendorProduct({{$data->category_id}})"><a href="javascript:void(0)">{{ @$data->category->translation[0]->name??'' }}({{ $data->products_count }})</a></li>
+
+            <li class="side-scroll-menu-li"><a href="#{{ str_replace(' ', '-', $data->category->slug) }}">{{ @$data->category->translation[0]->name??'' }}({{ $data->products_count }})</a></li>
+
             @empty
             @endforelse
         </ul>
@@ -357,12 +359,6 @@ $add_to_cart =  route('addToCart') ;
     <h4 class="mt-3 mb-3 text-center">{{__('No product found')}}</h4>
 @endforelse
 
-
-
-
-
-
-
 </div>
 {{--@endif--}}
         <div class="col-12 col-lg-3 d-lg-inline-block d-none">
@@ -381,15 +377,15 @@ $add_to_cart =  route('addToCart') ;
             </div>
         </div>
         <script>
-            // $(".side-scroll-menu-li").click(function(){
-            //     $("body").removeClass("overflow-hidden");
-            //     $(".scrollspy-menu").removeClass("side-menu-open");
-            //     $(".manu-bars").removeClass("menu-btn");
-            //  });              
+            $(".side-scroll-menu-li").click(function(){
+                $("body").removeClass("overflow-hidden");
+                $(".scrollspy-menu").removeClass("side-menu-open");
+                $(".manu-bars").removeClass("menu-btn");
+             });              
 
-            function getVendorProduct(id)
-            {
-            console.log(id);
-            }
+            // function getVendorProduct(id)
+            // {
+            //     vendorProductsSearchResults(id);
+            // }
             </script>        
         
