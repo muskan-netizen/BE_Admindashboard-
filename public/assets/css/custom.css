@@ -4993,8 +4993,7 @@ div#addRejectmodal {
 @media (max-width: 1366px) {
     #map-canvas {
         height: calc(100vh - 284px);
-    }
-   
+    }    
 }
 
 @media (min-width: 1200px) {

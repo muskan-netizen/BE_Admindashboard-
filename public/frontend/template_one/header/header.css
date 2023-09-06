@@ -68,10 +68,10 @@ body .pixelstrap li a:hover .nav-cate-img {
     color: #fff !important;
     display: inline-block;
     height: 18px;
-    background: #ff3f6c;
+    background: var(--theme-deafult);
     position: absolute;
     border-radius: 50%;
-    top: 7px;
+    top: 4px;
     width: 18px;
     right: 0px;
 }
@@ -326,6 +326,7 @@ body.al_body_template_two {
 
 .al_template_one_menu .mobile-header .navigation-tab-item .nav-link {
     font-size: 12px;
+    text-transform: capitalize;
 }
 
 .search_bar ul.d-flex.align-items-center.m-0 {
@@ -354,9 +355,14 @@ body.al_body_template_two {
         width: 15px;
         background-size: 15px;
     }    
+    .al_template_one_menu {
+        padding: 5px 0!important;
+    }
 /*==========  end Dark the header css 02-03-20223 ==========*/
 
-
+.al_custom_search button.btn{
+    padding: 0 5px;
+}
 
 @media (max-width:1400px) {
     .main-menu.al_template_one_menu .container {
@@ -834,6 +840,9 @@ body.al_body_template_two {
     .search_bar ul.d-flex.align-items-center.m-0 li {
         display: inline-block;
     }
+    .al_body_template_one .pixelstrap li{
+        line-height: 1;
+    }
 }
 
 @media (max-width:1400px) {
@@ -844,6 +853,28 @@ body.al_body_template_two {
     .radius-bar.d-xl-inline.al_custom_search input {
         max-width: 130px;
         min-width: 130px;
+    }
+}
+
+
+@media (max-width:1200px) {
+    .radius-bar.d-xl-inline.al_custom_search input {
+        max-width: 68px;
+        min-width: 68px;
+    }
+}
+@media (max-width:1024px) {
+    body .navigation-tab-item .nav-link{
+        padding: 5px;
+        font-size: 10px!important;
+    }
+    .mobile-header .logo a.navbar-brand {
+        margin-right: 0!important;
+        padding: 5px 0!important;
+        height: 50px!important;
+    }
+    .top-header .header-dropdown li.onhover-dropdown{
+        padding: 0 10px!important;
     }
 }
 
@@ -870,7 +901,7 @@ body.al_body_template_two {
         overflow-y: hidden;
     }
     .al_body_template_one .main-menu.al_template_one_menu .ipad-view {
-        margin-bottom: 20px;
+        margin-bottom: 0;
     }
     .al_body_template_one .top-header .header-dropdown li.onhover-dropdown {
         padding: 0 12px;
@@ -878,8 +909,31 @@ body.al_body_template_two {
     .shimmer_effect .loading.cardbanner {
         height: 160px;
     }
+    .top-header .header-dropdown li.onhover-dropdown {
+        padding: 0 5px!important;
+    }
+    .al_template_one .homepage-address{
+        width: auto;
+    }
+    .top-header.site-topbar .row .col-sm-6 {
+        width: auto;
+        max-width: inherit;
+        flex: unset;
+    }
 }
-
+@media (max-width:860px) and (min-width:768px)  {
+    .al_count_tabs.my-1 {
+        width: 250px;
+    }
+    .al_count_tabs.my-1 > ul{
+        padding: 10px 0;
+        margin: 0 auto;
+    }
+    .radius-bar.d-xl-inline.al_custom_search input {
+        max-width: 130px;
+        min-width: 130px;
+    }
+}
 @media (max-width:767px) {
     .al_body_template_one .displayProducts .inner_spacing h6 {
         margin: 10px 0;
@@ -993,7 +1047,7 @@ body.al_body_template_two {
     }
     .navbar-brand {
         padding: 0;
-        height: 60px !important
+        height: auto !important
     }
     .top-header.site-topbar.al_template_one {
         height: auto;
@@ -1087,9 +1141,68 @@ body.al_body_template_two {
     .ser_img{
         margin: 0 15px;
     }
+    .product_tag_filter {
+        width: 100%;
+        margin-left: 6px;
+    }
+    #side_menu_toggle {
+        left: auto;
+        right: 10px;
+    }
+    /* body.al_body_template_one section.home-slider-wrapper.py-sm-3 {
+        padding: 0 !important;
+    } */
+    /* body.al_body_template_one .main-menu.al_template_one_menu {
+        display: none;
+    } */
+    body.al_body_template_one #content-wrap .site-header .navbar-brand {
+        text-align: left;
+    }
+    body.al_body_template_one .al_offset-top-home {
+        margin-top: 140.625px !important;
+    }
+    body.al_body_template_one section.suppliers-section {
+        margin-top: 20px !important;
+    }
+
+    i.fa.fa-user {
+        font-size: 10px !important;
+    }
+
+    .al_body_template_one .site-topbar .location-bar h2:after {
+        font-size: 20px;
+    }
+
+    .al_body_template_one .site-topbar .location-bar h2:after {
+        font-size: 20px;
+    }
 }
 
+@media (max-width:576px) {
+    #content-wrap .site-header .navbar-brand img {
+        height: 40px!important;
+    }
+    .location-bar{
+        justify-content: flex-end!important;
+    }
+    .al_template_one .homepage-address {
+        width: 170px;
+    }
+}   
 
+@media (max-width:440px) {
+    html .al_body_template_one .site-topbar .location-bar h2:after {
+        right: 0px!important;
+    }
+}
+@media (max-width:360px) {
+    html .al_template_one.site-topbar .location-bar h2 span {
+        width: 100%;
+    }
+    .al_template_one .homepage-address {
+        width: 140px;
+    }
+}
 /* topbar css */
 
 ul.header-dropdown.d-none.d-sm-inline {
@@ -1120,7 +1233,7 @@ ul.header-dropdown.d-none.d-sm-inline li {
     top: auto;
 }
 .menu-navigation ul.sm.pixelstrap.sm-horizontal li.al_main_category {
-    border-bottom: 2px  solid transparent;
+    border-bottom: 0  solid transparent;
 }   
 .menu-navigation ul.sm.pixelstrap.sm-horizontal li.al_main_category:hover{
     border-bottom:2px solid#000;
@@ -1183,48 +1296,6 @@ ul.header-dropdown.d-none.d-sm-inline li {
 .al_searchType .form-control {
     background-color: transparent;
 }
-
-
-/*hotfix product page css*/
-
-@media (max-width:767px) {
-    .product_tag_filter {
-        width: 100%;
-        margin-left: 6px;
-    }
-    #side_menu_toggle {
-        left: auto;
-        right: 10px;
-    }
-    /* body.al_body_template_one section.home-slider-wrapper.py-sm-3 {
-        padding: 0 !important;
-    } */
-    /* body.al_body_template_one .main-menu.al_template_one_menu {
-        display: none;
-    } */
-    body.al_body_template_one #content-wrap .site-header .navbar-brand {
-        text-align: center;
-    }
-    body.al_body_template_one .al_offset-top-home {
-        margin-top: 140.625px !important;
-    }
-    body.al_body_template_one section.suppliers-section {
-        margin-top: 20px !important;
-    }
-
-    i.fa.fa-user {
-        font-size: 10px !important;
-    }
-
-    .al_body_template_one .site-topbar .location-bar h2:after {
-        font-size: 20px;
-    }
-
-    .al_body_template_one .site-topbar .location-bar h2:after {
-        font-size: 20px;
-    }
-}
-
 
 /*header color var css start here---*/
 .al_template_one .homepage-address{

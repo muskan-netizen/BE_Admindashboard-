@@ -86,8 +86,8 @@ body.dark.al_body_template_one.p2p-module .breadcrumb-section .breadcrumb {
 }
 
 .p2p-module section.section-b-space.alSingleProducts.product_ddetails_page .product-card-box.position-relative.al_box_third_template.al {
-    width: 90% !important;
-    margin-left: 14px;
+    width: 100% !important;
+    margin-left: 0;
 }
 
 .p2p-module .theme-card.custom-inner-card {
@@ -300,9 +300,10 @@ body.al_body_template_nine.p2p-module .top-banner-wrapper {
 }
 
 body.al_body_template_nine.p2p-module .common-banner {
-    min-height: 400px;
+    min-height: 300px;
     margin-bottom: 0;
     object-fit: cover;
+    margin-top: 20px;
 }
 
 body.al_body_template_nine.p2p-module section.section-b-space.ratio_asos.al_vendor_product_page .common-banner img {
@@ -412,7 +413,7 @@ body.al_body_template_nine.p2p-module .info-text label {
 }
 
 body.al_body_template_nine.p2p-module .collection-content.col-lg-9.outter-fillter-data div#category_products_filter .inner_spacing h3 {
-    margin: 0 0 10px;
+    margin: 0!important;
     padding: 0;
 }
 
@@ -542,7 +543,7 @@ body.dark.al_body_template_one.p2p-module .collection-product-wrapper .product-t
 }
 
 .p2p-module section.section-b-space.alSingleProducts.product_ddetails_page .product-card-box.position-relative.al_box_third_template.al {
-    width: 90% !important;
+    width: 100% !important;
     padding: 0px !important;
     border-radius: 10px !important;
     background-color: #ffff !important;
@@ -1019,6 +1020,7 @@ body.al_body_template_nine  .product-description_list {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding-bottom: 5px;
 }
 
 body.al_body_template_nine  .product-description  h6.card_title{
@@ -1158,7 +1160,7 @@ body.al_body_template_nine.p2p-module .header-dropdown .onhover-dropdown a {
         margin: 0!important;
     }
     .al_body_template_nine .alSingleProducts .media-body {
-        min-height: 159px;
+        min-height: inherit;
     }
 
 /*======================  15-02-2023  css changes nine themplate   ===========================*/
@@ -1262,10 +1264,18 @@ body.al_body_template_nine .checkbox_filter input {
 body.al_body_template_nine .outter-fillter-data div#category_products_filter a.product-box.scale-effect{
     position: relative!important;
 }
-
+body.al_body_template_nine.p2p-module .dashboard-right .address-btn{
+    position: unset;
+    bottom: 0;
+    right: 0px;
+}
+body.al_body_template_nine.p2p-module .dashboard-right .address-btn a.btn.btn-solid {
+    font-size: 10px;
+    padding: 4px 04px;
+}
 /*=========== 20-02-2023 css chsnges ===============*/
 body.al_body_template_nine .collection-content .product-wrapper-grid .media-body .inner_spacing {
-    min-height: auto;
+    min-height: inherit;
 }
 
 body.al_body_template_nine span#cart_qty_span:empty {
@@ -1273,7 +1283,7 @@ body.al_body_template_nine span#cart_qty_span:empty {
 }
 body.al_body_template_nine  span#cart_qty_span {
     position: absolute;
-    top: -9px;
+    top: 0;
     right: -4px;
     padding: 0;
     width: 20px!important;
@@ -1317,6 +1327,7 @@ body.al_body_template_nine .menu-navigation.al {
 .al_body_template_nine .menu-slider .al_main_category a {
     color: #fff;
 }
+
 /*----------media css--------------*/
 @media(max-width:1800px) {
     body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head a.sell-btn span{
