@@ -594,8 +594,9 @@ class PickupDeliveryController extends FrontController{
     public function orderUpdateAfterPaymentPickupDelivery($request){
 
           try {
+            $order_number =  isset($request->order_number) ? $request->order_number : ($request->order_id ?? "");
 
-            $order = Order::where('order_number',$request->order_number)->with('orderLocation')->first();
+            $order = Order::where('order_number',$order_number)->with('orderLocation')->first();
 
            if($order && $order->orderLocation){
 

@@ -59,11 +59,9 @@ class CcavenueController extends Controller
 
    public function orderNumber($request)
    {
-        if($request->from == 'cart')
-        {
-            $time = $request->order_number;
-
-        }elseif($request->from == 'wallet')
+    if (($request->from == 'cart') || ($request->from == 'pickup_delivery')) {
+      $time = $request->order_number;
+    }elseif($request->from == 'wallet')
         {
             $time = ($request->transaction_id)??'W_'.time();
             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'wallet','date'=>date('Y-m-d')]);
@@ -78,15 +76,6 @@ class CcavenueController extends Controller
             $time = ($request->subscription_id)??'S_'.time();
             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d')]);
 
-        }elseif($request->from == 'pickup_delivery')
-        {
-            $time = ($request->transaction_id)??'PD_'.time();
-            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'pickup_delivery','date'=>date('Y-m-d')]);
-        }
-        elseif($request->from == 'pickup_delivery')
-        {
-            $time = ($request->transaction_id)??'PD_'.time();
-            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'pickup_delivery','date'=>date('Y-m-d')]);
         }
         return $time;
    }
@@ -168,6 +157,9 @@ class CcavenueController extends Controller
       }elseif($action == 'tip'){
         //app = 2 is for wallet
        $params = $params .'&app=3&order_number='.$request->order_number;
+      }elseif ($action == 'pickup_delivery') {
+        //app = 4 is for pickup delivery
+        $params = $params . '&order_number=' . $request->order_number . '&app=4';
       }
 
        return $this->successResponse(url($request->serverUrl.'payment/ccavenue/api/'.$params));
@@ -201,11 +193,40 @@ class CcavenueController extends Controller
             return $this->completeOrderTip($request);
         }elseif($request->merchant_param2=='subscription'){
             return $this->completeOrderSubs($request);
+        }elseif ($request->merchant_param2 == 'pickup_delivery') {
+          return $this->completeOrderPickup($request);
         }
-
    }
 
-
+   public function completeOrderPickup(Request $request)
+   {
+   
+     $order = Order::where('order_number', $request->order_id)->first();
+     if (isset($request->order_status) && $request->order_status == 'Success') {
+       $order->payment_status = '1';
+       $order->save();
+       Payment::create(['amount' => 0, 'transaction_id' => $request->tracking_id, 'balance_transaction' => $order->payable_amount, 'type' => 'pickup_deleivery', 'date' => date('Y-m-d'), 'order_id' => $order->id]);
+       // Send Notification
+       $plaseOrderForPickup = new PickupDeliveryController();
+       $request->request->add(['transaction_id' => $request->tracking_id]);
+       $plaseOrderForPickup =   $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+       if (isset($request->merchant_param3) && $request->merchant_param3 == 'mob') {
+         $returnUrl = route('payment.gateway.return.response').'/?gateway=ccavenue'.'&status=200&transaction_id='.$request->tracking_id;
+         return Redirect::to($returnUrl); 
+       } else {
+         return Redirect::to(route('front.booking.details', $order->order_number));
+       }
+     } else {
+       if (isset($request->merchant_param3) && $request->merchant_param3 == 'mob') {
+             $response['status'] = 200;
+             $response['msg'] = 'Success Added Pickup.';
+             $response['payment_from'] = 'pickup_delivery';
+             $response['order'] = $order;
+       } else {
+         return Redirect::to(route('user.wallet'))->with('error', $request->message);
+       }
+     }
+   }
 
    public function completeOrderCart($request)
    {
