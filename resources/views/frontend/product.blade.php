@@ -1366,6 +1366,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
         // });
         $(document).on("click",".radio", function() {
              var name = $(this).find(".changeVariant").attr("vid");
+             alert('pass');
             $(`.var_${name}`).removeClass("radio-active");
             $(this).children().last().addClass("radio-active");
  
