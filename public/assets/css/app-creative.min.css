@@ -68,7 +68,7 @@ body {
   position: fixed;
   transition: all 0.1s ease-out;
   top: 70px;
-  box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.15);
+  box-shadow: 0 0 8px #ccc!important;
 }
 
 #sidebar-menu > ul {
@@ -151,10 +151,10 @@ body {
   font-size: 0.875rem;
 }
 .nav-second-level li a:focus, .nav-second-level li a:hover {
-  color: #43bee1;
+  color: #000;
 }
 .nav-second-level li.active > a {
-  color: #43bee1;
+  color: #000;
 }
 
 .menu-arrow {

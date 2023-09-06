@@ -1866,8 +1866,8 @@ i.mdi.mdi-exclamation-thick {
 }
 
 .top-site-links li:hover a {
-    text-decoration: underline;
-    color: #43bee1
+    text-decoration: none;
+    color: #86b641
 }
 
 .top-site-links li i {
@@ -2163,7 +2163,8 @@ th {
 #alDashboardStyle h5{color: #777;}
 .dark #alDashboardStyle h5{color: #98a6ad;}
 .alDasBoxItems span.text-nowrap {padding-left: 8px;}
-.card-body.alRevenueBox {min-height: 364px;}
+.card-body.alRevenueBox {min-height: 585px;}
+#revenue-bar-chart{min-height: 364px!important;}
 .card.alDasBoxItems {  min-height: 170px;}
 .alRevenueByLocation{min-height: 585px;}
 .dark #alDashboardStyle h3{color: #c6c6c6;}
@@ -3545,8 +3546,9 @@ body .form-control {
 }
 
 .navbar-custom {
-    border-radius: 0 0 0 10px;
-    width: calc(100% - 268px);
+    border-radius: 0;
+    width: calc(100% - 240px);
+    box-shadow: 2px 3px 6px #ccc;
 }
 
 .editVariantBox .selectize-input .item {
@@ -3575,19 +3577,20 @@ body label {
 
 .menu-title+.nav-second-level>li>a:hover {
     padding-left: 20px;
-    background-color: #ecfbff;
+    background-color: #dbf3b8;
     border-radius: 5px
 }
 
 #sidebar-menu .menuitem-active .active {
-    background-color: #43bee1;
+    background-color: #dbf3b8;
     border-radius: 5px;
-    color: #fff
+    color: #000;
+    font-weight: 700;
 }
 
 body .btn-blue {
-    background-color: #43bee1;
-    border-color: #43bee1
+    background-color: #dbf3b8;
+    border-color: #dbf3b8
 }
 
 .color_a .card-body {
@@ -3700,7 +3703,9 @@ body .menu-title+.nav-second-level>li>a span:first-child {
 }
 
 body .menu-title+.nav-second-level>li>a {
-    font-size: 14px
+    font-size: 14px;
+    color: #000!important;
+    font-weight: 500;
 }
 
 .al_color_box .card-body .rounded-circle {
@@ -3877,8 +3882,8 @@ body p:empty {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 40px;
-    height: 20px;
+    width: 60px;
+    height: 30px;
     background: #eee;
     border-radius: 50px;
     border: solid 0 transparent;
@@ -3888,10 +3893,10 @@ body p:empty {
 }
 
 .toggle__bg {
-    width: 34px;
-    height: 16px;
+    width: 54px;
+    height: 26px;
     background: #fff;
-    background: linear-gradient(to right, #fff 50%, #777 50% 100%);
+    background: #ccc;
     background-size: 200% 100%;
     background-position: 100%;
     border-radius: 50px;
@@ -3909,10 +3914,10 @@ body p:empty {
 
 .toggle__sphere {
     position: relative;
-    height: 15px;
-    width: 15px;
+    height: 24px;
+    width: 24px;
     background: #777;
-    background: linear-gradient(to right, #fff 50%, #777 50% 100%);
+    background: #dbf3b8!important;
     border-radius: 50%;
     transform-origin: top left;
     transform: translateY(0px);
@@ -3955,7 +3960,8 @@ body p:empty {
     background-color: #fff;
     border-radius: 50%;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='Black' viewBox='0 0 20 20'%3E%3Cpath d='M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm.5-9.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm0 11a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm5-5a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm-11 0a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm9.743-4.036a.5.5 0 1 1-.707-.707.5.5 0 0 1 .707.707zm-7.779 7.779a.5.5 0 1 1-.707-.707.5.5 0 0 1 .707.707zm7.072 0a.5.5 0 1 1 .707-.707.5.5 0 0 1-.707.707zM3.757 4.464a.5.5 0 1 1 .707-.707.5.5 0 0 1-.707.707z'/%3E%3C/svg%3E");
-    background-size: 123%
+    background-size: 123%;
+    background-color: #dbf3b8;
 }
 
 .toggle__sphere-bg:after {
@@ -4028,14 +4034,14 @@ body.dark #sidebar-menu .menu-title {
     line-height: 20px
 }
 
-.navbar-custom ul.list-unstyled.topnav-menu .alLanguageTop .nav-link.waves-effect::before {
+/* .navbar-custom ul.list-unstyled.topnav-menu .alLanguageTop .nav-link.waves-effect::before {
     content: "\0153";
     left: 0;
     top: 0;
     font-size: 15px;
     color: #000;
     margin-right: 4px
-}
+} */
 
 .row.catalog_box.al_catalog_box .card-box {
     position: relative
@@ -4234,7 +4240,7 @@ ul.nav-second-level.p-0.mx-2 span.mdi.mdi-chat-processing-outline {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #43bee1;
+    background:#b3d667;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -4496,7 +4502,9 @@ body[dir=rtl] .modal-header .close {
 }
 
 #alDashboardStyle h3 {
-    font-weight: 600 !important;
+    font-weight: 800 !important;
+    font-size: 40px;
+    color: #000;
 }
 
 #alDashboardStyle h5 {
@@ -4516,7 +4524,10 @@ body[dir=rtl] .modal-header .close {
 }
 
 .card.alDasBoxItems {
-    min-height: 170px;
+    min-height: 187px;
+    background: #fff;
+    box-shadow: 0 0 10px #ccc;
+    border-radius: 16px;
 }
 
 .alRevenueByLocation {
@@ -4733,6 +4744,9 @@ body[dir=rtl] .modal-header .close {
 
 #alDashboardStyle h5 {
     text-transform: capitalize;
+    margin-top: 0;
+    font-size: 18px;
+    color: #000;
 }
 
 .dark .table,
@@ -5256,3 +5270,86 @@ height: 50px;
 }
 
 /*======================= new css add for p2p template on 1/12/2023===================== */
+
+li.dropdown.alLanguageTop {
+    background: #ccc;
+    padding: 8px 0;
+    border-radius: 7px;
+}
+.card.alDasBoxItems .card-body p span.text-danger.me-2 {
+    background: #ffe5e5;
+    padding: 2px 10px;
+    border-radius: 2px;
+    color: #dc4040!important;
+}
+.Revenueweek_row{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+.alRevenueByLocation h4.header-title {
+    text-wrap: nowrap;
+}
+.Revenueweek_row .item {
+    display: flex;
+    align-items: center;
+    margin: 0 10px;
+    border: 1px solid #ccc;
+    padding: 0 5px;
+    background: #f5f5f5;
+    border-radius: 4px;
+}
+.Revenueweek_row .item h2.fw-normal {
+    margin: 0;
+    font-size: 16px;
+}
+.Revenueweek_row .item h2.fw-normal span {
+    display: inline-block;
+    padding: 3px 10px;
+    color: #ffff;
+    font-size: 21px;
+    margin: 4px 2px;
+    border-radius: 4px;
+}
+.Revenueweek_row .item h2.fw-normal.current span{
+    background-color:#93d339;
+    color: #000;
+}
+.Revenueweek_row .item h2.fw-normal.previous span{
+    background-color: #0f85f9;
+}
+#alDashboardStyle .page-title-box .input-group>.form-control{
+    max-width: 240px;
+    margin-left: auto;
+}
+.vendor-page .row .card .card-body .row .col-6 .text-center {
+    background: #fff;
+    box-shadow: 0 0 10px #cccc;
+    min-height: 150px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    border-radius: 8px;
+}
+.vendor-page .row .card .card-body .row .col-6 .text-center h3 i {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    color: #000!important;
+    background-color: #dbf3b8;
+    padding: 8px;
+    line-height: 1;
+    font-size: 25px!important;
+}
+.vendor-page .row .card .card-body .row .col-6 .text-center h3 {
+    font-size: 50px;
+    line-height: 1.2;
+    font-weight: 800!important;
+}
+.vendor-page .row .card .card-body .row .col-6 .text-center  p {
+    color: #000!important;
+    font-size: 18px!important;
+    font-weight: 400;
+}

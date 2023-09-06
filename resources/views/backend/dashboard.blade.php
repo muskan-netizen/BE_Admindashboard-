@@ -77,7 +77,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
     </div>
 
     <div class="row">
-        <div class="col-xl-7 col-lg-7">
+        <div class="col-xl-12 col-lg-12">
             <div class="row">
                 @if(auth()->user()->is_superadmin)
                 <div class="col-sm">
@@ -200,27 +200,12 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                 @endif
             </div>
         </div>
-        @if(auth()->user()->can('dashboard-monthRevenue') || auth()->user()->is_superadmin)
-        <div class="col-xl-5 col-lg-5">
-            <div class="card card-h-100">
-                <!-- month wise data shown start here  -->
-                <div class="card-body alRevenueBox">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h4 class="header-title">{{ __('Revenue Monthly') }}</h4>
-
-                    </div>
-                    <div dir="ltr">
-                        <div id="revenue-bar-chart" class="apex-charts" data-colors="#43bee1,#e3eaef"></div>
-                    </div>
-                </div><!-- month wise data shown end here  -->
-            </div>
-        </div>
-        @endif
+        
 
     </div>
 
     <div class="row">
-        @if(auth()->user()->can('dashboard-weekRevenue') || auth()->user()->is_superadmin)
+        {{-- @if(auth()->user()->can('dashboard-weekRevenue') || auth()->user()->is_superadmin)
         <div class="col-lg-8">
             <!-- total revenue sec start here -->
             <div class="card alRevenueByLocation">
@@ -263,8 +248,84 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                 </div>
             </div>
         </div>
+        @endif --}}
+        @if(auth()->user()->can('dashboard-monthRevenue') || auth()->user()->is_superadmin)
+        <div class="col-xl-6 col-lg-6">
+            <div class="card card-h-100">
+                <!-- month wise data shown start here  -->
+                <div class="card-body alRevenueBox">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h4 class="header-title">{{ __('Revenue Monthly') }}</h4>
+
+                    </div>
+                    <div dir="ltr">
+                        <div id="revenue-bar-chart" class="apex-charts" data-colors="#a1c957,#e3eaef"></div>
+                    </div>
+                </div><!-- month wise data shown end here  -->
+            </div>
+        </div>
         @endif
-        @if(auth()->user()->can('dashboard-locationRevenue') || auth()->user()->is_superadmin)
+        @if(auth()->user()->can('dashboard-weekRevenue') || auth()->user()->is_superadmin)
+        <div class="col-lg-6">
+            <!-- total revenue sec start here -->
+            <div class="card alRevenueByLocation">
+                <div class="card-body">
+                    <!-- total revenue title start here -->
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h4 class="header-title">{{ __('Revenue Weekly') }}</h4>
+                        <div class="Revenueweek_row">
+                            <div class="item">
+                                <p class="text-muted mb-0">{{ __('Current Week') }}</p>
+                                <h2 class="fw-normal current">
+                                    {{-- <small class="mdi mdi-checkbox-blank-circle text-primary align-middle me-1"></small> --}}
+                                    <span id="revenueCurrentWeek">0</span>
+                                </h2>
+                            </div>
+
+                            <div class="item">
+                                <p class="text-muted mb-0">{{ __('Previous Week') }}</p>
+                                <h2 class="fw-normal previous">
+                                    {{-- <small class="mdi mdi-checkbox-blank-circle text-success align-middle me-1"></small> --}}
+                                    <span id="revenueLastWeek">0</span>
+                                </h2>
+                            </div>
+                        </div>
+                    </div><!-- total revenue title start here -->
+
+
+                    <div class="chart-content-bg d-none ">
+                        <div class="row text-center">
+                            <!-- current week data start here -->
+                            <div class="col-sm-6">
+                                <p class="text-muted mb-0 mt-3">{{ __('Current Week') }}</p>
+                                <h2 class="fw-normal mb-3 current">
+                                    {{-- <small class="mdi mdi-checkbox-blank-circle align-middle me-1"></small> --}}
+                                    <span id="revenueCurrentWeek">0</span>
+                                </h2>
+                            </div><!-- current week data end here -->
+
+                            <!-- Previous week data start here -->
+                            <div class="col-sm-6">
+                                <p class="text-muted mb-0 mt-3">{{ __('Previous Week') }}</p>
+                                <h2 class="fw-normal mb-3 previous">
+                                    {{-- <small class="mdi mdi-checkbox-blank-circle text-success align-middle me-1"></small> --}}
+                                    <span id="revenueLastWeek">0</span>
+                                </h2>
+                            </div><!-- Previous week data end here -->
+                        </div>
+                    </div>
+
+
+                    <div dir="ltr">
+                        <div id="revenue-line-chart" class="apex-charts mt-3" data-colors=" #8ecc34, #0f85f9 " style="height: 364px"></div>
+                    </div><!-- Total earning chat end here -->
+
+
+                </div>
+            </div>
+        </div>
+        @endif
+        {{-- @if(auth()->user()->can('dashboard-locationRevenue') || auth()->user()->is_superadmin)
         <div class="col-lg-4">
             <div class="card alRevenueByLocation">
                 <div class="card-body">
@@ -282,7 +343,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                 </div>
             </div>
         </div>
-        @endif
+        @endif --}}
 
     </div>
 

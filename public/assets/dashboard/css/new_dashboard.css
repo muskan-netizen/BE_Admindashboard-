@@ -39,10 +39,13 @@ body.dark .btn {
 max-height: 229px;
 overflow: auto;
 padding-right: 0;
-}
+} 
 .widget-icon{
-  color: #43bee1;
-  background-color: #43bee161;
+  color: #000;
+  background-color: #d9e9c2;
+}
+.card.alDasBoxItems .card-body p  span.text-nowrap {
+  color: #000;
 }
 .dark .widget-icon{
   color: #d3a14a;
@@ -75,4 +78,9 @@ padding-right: 0;
   background-color: #43bee1;
   border-color: #43bee1;
   box-shadow: 0 0 0 .15rem rgba(125,113,226,.5);
+}
+#alDashboardStyle .input-group span, a#dashboard_refresh_btn {
+  background: #dbf3b8!important;
+  color: #000!important;
+  border-color: #dbf3b8!important;
 }
