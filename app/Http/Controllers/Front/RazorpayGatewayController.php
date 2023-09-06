@@ -76,7 +76,6 @@ class RazorpayGatewayController extends FrontController
     public function razorpayCompletePurchase(Request $request)
     { 
         try {
-            \Log::info("reequ ".json_encode($request->all()));
             $user = Auth::user();
             $cart = Cart::select('id')->where('status', '0')->where('user_id', $user->id)->first();
             $amount = $this->getDollarCompareAmount($request->amount);
