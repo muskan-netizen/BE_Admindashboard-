@@ -3772,6 +3772,13 @@ div#cart_template .shoping_cart .vendor_products_tr .row .col-10 h4 {
 .al_body_template_six.dark .alFourSpecificInstructions input#specific_instructions {
     color: #000;
 }
+.alSingleProducts .col-sm-12 .buy_details .product-right hr {
+    display: none;
+}
+.alSingleProducts .product-right .btn-wrapper .product-buttons{
+    margin: 0 0 10px;
+}
+
 @media(max-width:1600px) {
     .alFourTemplateCartPage .product-img:first-child {
         max-width: 20px;
@@ -3801,6 +3808,10 @@ div#cart_template .shoping_cart .vendor_products_tr .row .col-10 h4 {
         font-size: 8px;
         padding: 5px 6px;
     }
+    .product-right .product-buttons .btn-solid{
+        font-size:12px ;
+        padding:10px 12px;
+    }
 }
 @media(max-width:1400px) {
     .pricingtable-header.position-absolute .price-value {
@@ -3826,6 +3837,13 @@ div#cart_template .shoping_cart .vendor_products_tr .row .col-10 h4 {
     .alFourTemplateCartPage .product-img img {
         min-width: inherit;
         object-fit: contain;
+    }
+    .product-right .product-buttons .btn-solid{
+        padding: 8px;
+        font-size: 10px;
+    }
+    .alSingleProducts .product-right .btn-wrapper .product-buttons{
+        margin: 0 0 10px;
     }
 }
 
