@@ -1865,13 +1865,21 @@ $(document).ready(function () {
                 }
             },
             error: function (error) {
+                console.log(error);
                 var response = $.parseJSON(error.responseText);
+                console.log(response);
                 // success_error_alert('error', response.message, ".payment_response");
                 if ($('.cart_response').length > 0) {
                     $(".cart_response").removeClass('d-none');
                     success_error_alert('error', response.message, ".cart_response");
                     $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
                 }
+                if (response.code == 404) {
+                setTimeout(function () {
+                    window.location.reload();
+                }, 2000)
+            }
+                
             },
             complete: function (data) {
                 $('.spinner-overlay').hide();
