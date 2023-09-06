@@ -2658,7 +2658,8 @@ body.al_body_template_eight .categories-product-list .col-sm-6.offset-sm-3 {
         font-size: 30px;text-align: left;
     }
 body.al_body_template_eight .box-account.box-info .btn-solid {
-    padding: 8px 8px !important;
+    padding: 4px 4px !important;
+    font-size: 10px;
 }
 .al_body_template_eight article#page-container section .vendors section h2.h2-heading{
     font-size: 22px;
