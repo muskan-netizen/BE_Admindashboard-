@@ -446,6 +446,7 @@ trait HomePageTrait
     {
         $client_timezone = DB::table('clients')->first('timezone');
       
+        
         if(!empty($user)){
             $timezone        = $user->timezone ? $user->timezone :  ($client_timezone->timezone ?? 'Asia/Kolkata' );
         } else{
