@@ -3,6 +3,7 @@ use App\Models\PaymentOption;
 
 
 ?>
+
 @php
 $urlImg = URL::to('/').'/assets/images/users/user-1.jpg';
 $clientData = \App\Models\Client::select('id', 'logo','socket_url')->first();
@@ -38,6 +39,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_gift_card','is_token_cur
                                 <a href="{{route('userChat.UservendorChat')}}">{{ __('Vendor Chat') }}</a>
                             </li>
                             @if(p2p_module_status())
+                            
                             <li  class="{{ (request()->is('user/chat/userToUser')) ? 'active' : '' }}">
                                 <a href="{{route('userChat.UserToUserChat')}}">{{ __('User Chat') }}</a>
                             </li>
@@ -45,7 +47,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_gift_card','is_token_cur
                             <li  class="{{ (request()->is('user/chat/userAgent')) ? 'active' : '' }}">
                                 <a href="{{route('userChat.UserAgentChat')}}">{{ __('Driver Chat') }}</a>
                             </li>
-
+ 
                             {{-- <li>
                                 <a href="{{route('report.productperformance')}}">{{ __("Product Performance Report") }}</a>
                             </li> --}}
