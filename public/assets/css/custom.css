@@ -1900,11 +1900,12 @@ i.mdi.mdi-exclamation-thick {
 }
 
 .tab-product .nav-material.nav-tabs .nav-link.active {
-    color: #43bee1
+    color: #000;
+    background-color: #99d93d;
 }
 
 .tab-product .nav-material.nav-tabs .nav-item .material-border {
-    border-bottom: 2px solid #43bee1;
+    /* border-bottom: 2px solid #43bee1; */
     opacity: 0
 }
 
@@ -2791,7 +2792,7 @@ td.product-name {
     min-height: 25px;
     line-height: 25px;
     border-radius: 50%;
-    color: #43bee1;
+    color: #000;
     display: inline-block;
     top: -10px;
     font-weight: 900
@@ -3558,12 +3559,15 @@ body .form-control {
 body .content-page .btn.btn-info {
     background-color: transparent;
     border-radius: 50px;
-    color: #43bee1;
+    color: #000;
     border-width: 2px;
     font-family: 'Cera Round Pro Medium';
     padding-top: 5px;
     padding-bottom: 5px;
-    border-style: solid
+    border-style: solid;
+    border-color: #000;
+    margin-top: 30px;
+    margin-bottom: 20px;
 }
 
 body label {
@@ -5352,4 +5356,17 @@ li.dropdown.alLanguageTop {
     color: #000!important;
     font-size: 18px!important;
     font-weight: 400;
+}
+#vendor_active_datatable tr td a {
+    color: #99d93d;
+}
+#vendor_active_datatable tr th br{
+    display: none;
+}
+#payment_option_form .card-box {
+    box-shadow: 0 0 10px #ccc;
+}
+.page-item.active .page-link{
+    background-color: #99d93d;
+    color: #000;
 }
