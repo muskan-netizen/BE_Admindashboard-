@@ -264,7 +264,7 @@ class MpesaSafariController extends Controller
     {
         //if (isset($request) && ($request->get('statusId') == '2')){
             $subscription = explode('_',$payment->transaction_id);
-            $request->request->add(['user_id' => $payment->user_id, 'payment_option_id' => 60, 'amount' => $payment->balance_transaction, 'transaction_id' => $request->transId]);
+            $request->request->add(['user_id' => $payment->user_id, 'payment_option_id' => 61, 'amount' => $payment->balance_transaction, 'transaction_id' => $request->transId]);
             $subscriptionController = new UserSubscriptionController();
             $subscriptionController->purchaseSubscriptionPlan($request, '', $subscription[0]);
            /* if(isset($payment->payment_from) && $payment->payment_from=='app')
@@ -290,7 +290,7 @@ class MpesaSafariController extends Controller
     {
         $order = Order::where('order_number', $payment->transaction_id)->first();
        // if (isset($request) && ($request->get('statusId') == '2')){
-            $request->request->add(['order_number'=> $order->order_number, 'payment_option_id' => 60, 'amount' => $order->payable_amount, 'transaction_id' => $request->TransID]);
+            $request->request->add(['order_number'=> $order->order_number, 'payment_option_id' => 61, 'amount' => $order->payable_amount, 'transaction_id' => $request->TransID]);
             $plaseOrderForPickup = new PickupDeliveryController();
             $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
             

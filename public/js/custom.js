@@ -5174,8 +5174,8 @@ $(document).ready(function () {
             case 59:
                 payWithLivees(payment_option_id);
                 break;
-             case 60:
-                paymentViaMpesaSafari(payment_option_id,'');
+             case 61:
+                paymentViaMpesaSafari('', payment_option_id, '');
             break;
                 
         }
@@ -5736,10 +5736,10 @@ $(document).ready(function () {
                 payWithLivees(address_id, payment_option_id, order);
               }
             break;
-           case '60':
+           case '61':
               var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
               if (order != '') {
-                paymentViaMpesaSafari(payment_option_id, order);
+                paymentViaMpesaSafari(address_id, payment_option_id, order);
               }
         }
 
@@ -5984,8 +5984,8 @@ $(document).ready(function () {
              case 59:
                 payWithLivees(payment_option_id,payment_from='wallet');
             break;
-            case 60:
-                paymentViaMpesaSafari(payment_option_id,'');
+            case 61:
+                paymentViaMpesaSafari('',payment_option_id,'');
             break;
         }
     }
