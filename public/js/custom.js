@@ -579,6 +579,7 @@ $(document).ready(function () {
                                 $("#subscription_payment #features_list").html(response.sub_plan.features);
                                 $("#subscription_payment #subscription_id").val(sub_id);
                                 $("#subscription_payment #subscription_amount").val(response.sub_plan.price);
+                                $("#subscription_payment #type_id").val(response.sub_plan.type_id);
                                 $("#subscription_payment #subscription_payment_methods").html('');
                                 let payment_method_template = _.template($('#payment_method_template').html());
                                 $("#subscription_payment #subscription_payment_methods").append(payment_method_template({ payment_options: response.payment_options }));
@@ -586,6 +587,22 @@ $(document).ready(function () {
                                     $("#subscription_payment .subscription_confirm_btn").hide();
                                 }
                                 $("#subscription_payment").modal("show");
+                                if(response.sub_plan.type_id == 2){
+									var form = document.getElementById('meal-subscription-form');
+						          	  var formData = new FormData(form); // Create a new FormData object
+
+						            var serializedData = JSON.stringify(Object.fromEntries(formData)); // Serialize the form data to JSON
+
+						            var serializedField = document.createElement("input"); // Create a new input element
+						            serializedField.type = "hidden";
+						            serializedField.name = "serializedForm";
+						            serializedField.value = serializedData;
+
+						            document.getElementById('subscription_payment_form').appendChild(serializedField); // Append the serialized field to the form
+
+						            // Display the serialized form data in the console
+						            console.log(serializedData);
+								}
                                 if(stripe_publishable_key != ''){
                                     stripeInitialize();
                                 }
@@ -1392,9 +1409,16 @@ $(document).ready(function () {
         let pending_amount = $("input[name='amount_pending']");
         let tipElement = $("#cart_tip_amount");
         let payment_form = '';
+        let type = $("input[name='type_id']").val();
+        let mealSubscriptionForm = '';
+        if(type == '2'){
+			mealSubscriptionForm = $("input[name='serializedForm']").val()
+			paymentAjaxData.days = $('#sub-days').html();
+		}
         // let payment_option_id = paymentAjaxData.payment_option_id;
 
         paymentAjaxData.payment_method_id = result.paymentMethod.id;
+        paymentAjaxData.type_id = type;
         // paymentAjaxData.payment_option_id = payment_option_id;
         if (path.indexOf("cart") !== -1) {
             payment_form = 'cart';
@@ -1402,7 +1426,7 @@ $(document).ready(function () {
         } else if ((path.indexOf("wallet") !== -1) || ((typeof cabbookingwallet !== 'undefined') && (cabbookingwallet == 1))) {
             payment_form = 'wallet';
             total_amount = walletElement.val();
-        } else if (path.indexOf("subscription") !== -1) {
+        } else if (path.indexOf("subscription") !== -1 || path.indexOf("mealSubscription") !== -1) {
             payment_form = 'subscription';
             total_amount = subscriptionElement.val();
             // paymentAjaxData = $("#subscription_payment_form").serializeArray();
@@ -1431,6 +1455,9 @@ $(document).ready(function () {
         }
         paymentAjaxData.payment_form = payment_form;
         paymentAjaxData.total_amount = total_amount;
+        if(mealSubscriptionForm !== 'undefined' && mealSubscriptionForm !== ''){
+			paymentAjaxData.mealSubscriptionForm = mealSubscriptionForm;
+		}
         if (result.error) {
             swal.fire({
                 icon: 'error',
@@ -1472,12 +1499,23 @@ $(document).ready(function () {
             // Show error from server on payment form
         } else if (response.requires_action) {
             // Use Stripe.js to handle required card action
-            stripe.handleCardAction(
-                response.payment_intent_client_secret
-            ).then(handleStripeJsResult);
+            if(response.hasOwnProperty('type') && response.type == 'subscription'){
+                stripe.confirmCardPayment(response.payment_intent_client_secret, {
+                    payment_method: {
+                        card: card
+                    },
+                })
+                .then(function(){
+                    setTimeout(() => {
+                        window.location.href = response.result;
+                    }, 1500);
+                });
+            }else{
+                stripe.handleCardAction(
+                    response.payment_intent_client_secret
+                ).then(handleStripeJsResult);
+            }
         } else {
-            // console.log(response);
-            // Show success message
             setTimeout(() => {
                 window.location.href = response.result;
             }, 1500);
@@ -2403,10 +2441,29 @@ $(document).ready(function () {
                         $('.wishListCount').removeClass('fa-heart');
                         $('.wishListCount').addClass('fa-heart-o');
                     }
-                    $("#cart_table").html('');
+                    $("#cart_table").html('');  
                     $(".spinner-box").hide();
                     $("#mycart").html(response.mycart);
 
+
+                    // if(response.loggedIn ==  "true") {
+                    //     $('.onhover-show-div').html(`<li>
+                    //         <a href="/client/dashboard" data-lng="en">Control Panel</a>
+                    //     </li>
+                    //     <li>
+                    //         <a href="/user/profile" data-lng="en">Profile</a>
+                    //     </li>
+                    //     <li>
+                    //         <a href="/user/logout" data-lng="es">Logout</a>
+                    //     </li>`);
+                    // } else{
+                    //     $('.onhover-show-div').html( `<li>
+                    //         <a href="/user/login" data-lng="en">Login</a>
+                    //     </li>
+                    //     <li>
+                    //         <a href="/user/register" data-lng="es">Register</a>
+                    //     </li>`);
+                    // }
                     //return true;
                     var cart_details = response.cart_details;
                     var client_preference_detail = response.client_preference_detail;
@@ -3388,7 +3445,7 @@ $(document).ready(function () {
             },
             success: function (response) {
                 if (response.status == 'success') {
-                    $(".shake-effect").effect("shake", { times: 3 }, 1200);
+                    // $(".shake-effect").effect("shake", { times: 3 }, 1200);
                     returnResponse = true;
                     cartHeader();
                     if(vendor_type == 'rental') {
@@ -3893,7 +3950,7 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.status == 'success') {
                     returnResponse = true;
-                    $(".shake-effect").effect("shake", { times: 3 }, 1200);
+                    // $(".shake-effect").effect("shake", { times: 3 }, 1200);
                     cartHeader();
                     if (that.hasClass('add_vendor_addon_product')) {
                         that.parents('.modal').modal('hide');
@@ -4154,7 +4211,7 @@ $(document).ready(function () {
             success: function (response) {
                 var address_id = dispatcherAgentData?.address_id;
                 if (response.status == 'success') {
-                    $(".shake-effect").effect("shake", { times: 3 }, 1200);
+                    // $(".shake-effect").effect("shake", { times: 3 }, 1200);
                     cartHeader(address_id);
                     if($(`#added_button_href${product_id}`).length > 0){
                         $(`#add_button_href${product_id}`).hide();
@@ -4223,7 +4280,6 @@ $(document).ready(function () {
     $(document).on('change', '.vendor_schedule_datetime, .vendor_schedule_slot', async function () {
 
         var task_type = 'schedule';
-
         let schedule_type = $(this).data("schedule_type");
         let cart_product_id = $(this).data("cart_product_id");
         let vendor_id = $(this).data("vendor_id");
@@ -4262,6 +4318,8 @@ $(document).ready(function () {
                     return false;
                 }
             }
+        }else{
+            var schedule_dt = $(this).closest('.vendor_slot_cart').find('.vendor_schedule_datetime').val();
         }
 
         $.ajax({
@@ -5738,7 +5796,6 @@ $(document).ready(function () {
                     }
                 }).catch(function (error) {
                     // Re-enable button now that request is complete
-                    // alert("error occured: " + error);
                 Swal.fire({
                     // title: "Warning!",
                     text: "error occured: " + error,
@@ -5939,6 +5996,5 @@ function numberWithCommas(x) {
     // x=x.toFixed(2)
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
-//   var number = 213242.3412;
-//   alert(numberWithCommas(number));
+
 $(".related-css").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"20px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}}]});

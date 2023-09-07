@@ -38,13 +38,15 @@ trait RoadieTrait{
   public function createShipmentRoadie($data){
     $this->configDetails();
     $path = '/v1/shipments';
+    $response = [];
     $response = Http::withHeaders([
       'Content-Type' => 'application/json',
       'Authorization' => 'Bearer '.$this->api_access_token
     ])->post($this->api_base_url.$path, $data);
     $statusCode = $response->getStatusCode();
     if($statusCode = 200){
-      return true;
+      $data = json_decode($response);
+      return $data;
     }else{
       return false;
     }

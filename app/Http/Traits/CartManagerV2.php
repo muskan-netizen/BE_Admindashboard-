@@ -640,6 +640,15 @@ trait CartManagerV2{
                         if($cartData[0]->luxury_option_id == 4 ){ // for rental case
                             if(($prod->pvariant->incremental_price_per_min!='' && $prod->pvariant->incremental_price_per_min > 0)){
                                 $prod->additional_price = ($prod->additional_increments_hrs_min / $prod->pvariant->incremental_price_per_min);
+                                if(@$prod->pvariant->month_price && $prod->pvariant->week_price){
+
+                                    $schedule_days = $prod->additional_increments_hrs_min / 24;
+                                    if($schedule_days >= 7 && $schedule_days < 30){
+                                        $price_in_currency = $prod->pvariant->week_price;
+                                    }elseif($schedule_days >= 30){
+                                        $price_in_currency = $prod->pvariant->month_price;
+                                    }
+                                }
                             } else {
                                 $prod->additional_price = 0.00;
                             }
@@ -659,6 +668,16 @@ trait CartManagerV2{
                         }
                         $totalMarkup += $prod->pvariant->markup_price * $prod->quantity??0;
                         $price_in_doller_compare = $prod->pvariant->price??0;
+                        if(@$prod->pvariant->month_price && $prod->pvariant->week_price){
+
+                            $schedule_days = $prod->additional_increments_hrs_min / 24;
+                            if($schedule_days >= 7 && $schedule_days < 30){
+                                $price_in_currency = $prod->pvariant->week_price;
+                            }elseif($schedule_days >= 30){
+                                $price_in_currency = $prod->pvariant->month_price;
+                            }
+                        }
+                        
                         $container_charges_in_currency = $prod->pvariant->container_charges??0;
 
                         //Check product promo code is valid for this product
@@ -681,7 +700,7 @@ trait CartManagerV2{
                             $container_charges_in_doller_compare = $container_charges_in_currency * $doller_compare;
                         }
                         $quantity_price = $price_in_doller_compare * $prod->quantity;
-
+                        
                     // Recurring Booking Enabled
                     // if($prod->recurring_day_data && !empty($prod->recurring_day_data)){
                     //     if(checkColumnExists('cart_products','recurring_booking_type')){
@@ -726,9 +745,7 @@ trait CartManagerV2{
                     $total_container_charges = $container_charges_in_currency * $prod->quantity;
                     $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
 
-                    if($prod->is_cart_checked == 1){
-                        $sub_total+=$quantity_price+$quantity_container_charges;
-                    }
+                    $sub_total+=$quantity_price+$quantity_container_charges;
                     
                     $prod->pvariant->price_in_cart = $prod->pvariant->price??0;
                    
@@ -751,10 +768,12 @@ trait CartManagerV2{
                     //echo "index 1: quantity_price. ",$quantity_price." quantity_container_charges:".$quantity_container_charges;
                     $prod->quantity_role_price = $quantity_role_price;
                     
-                    if($prod->is_cart_checked == 1){
+                    if (($prod->pvariant->month_price ?? 0) > 0 && ($prod->pvariant->week_price ?? 0) > 0) {
+                        $payable_amount = $payable_amount + $prod->additional_increments_hrs_min/(60*24) * $price_in_currency;
+                    }else{
                         $payable_amount = $payable_amount + $prod->additional_price + $quantity_price + $quantity_container_charges;
                     }
-
+                    
                     $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                     $total_container_charges = $total_container_charges + $quantity_container_charges;
                     if(
@@ -1021,29 +1040,29 @@ trait CartManagerV2{
                                 $deliveriesNew = new CartController();
                                 $deliveries = $deliveriesNew->getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del, $lastMileDate['tags'],$NumberOfroutes);
 
-                                
+
                                 if (isset($deliveries[0])) {
                                     $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
                                     if (count($deliveries)>1) {
                                         foreach ($deliveries as $k=> $opt) {
                                             if($prod->product->individual_delivery_fee == 1) {
-                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)):($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)).'</option>';
+                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)):decimal_format($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)).'</option>';
                                             }else{
                                                 if($if_previousdeliveryfee_added == 0 && $opt['rate'] > 0){
                                                     $delivery_to_add = $opt['rate'];
                                                 }else{$delivery_to_add = 0;}
-                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $delivery_to_add)):($vendorTotalDeliveryFee + $delivery_to_add)).'</option>';
+                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($vendorTotalDeliveryFee + $delivery_to_add)):decimal_format($vendorTotalDeliveryFee + $delivery_to_add)).'</option>';
                                             }
                                         }
                                     } else {
                                         foreach ($deliveries as $k=> $opt) {
                                             if($prod->product->individual_delivery_fee == 1) {
-                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)):($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)).'</option>';
+                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)):decimal_format($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)).'</option>';
                                             }else{
                                                 if($if_previousdeliveryfee_added == 0 && $opt['rate'] > 0){
                                                     $delivery_to_add = $opt['rate'];
                                                 }else{$delivery_to_add = 0;}
-                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $delivery_to_add)):($vendorTotalDeliveryFee + $delivery_to_add)).'</option>';
+                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($vendorTotalDeliveryFee + $delivery_to_add)):decimal_format($vendorTotalDeliveryFee + $delivery_to_add)).'</option>';
                                             }
                                         }
                                     }
@@ -1286,7 +1305,7 @@ trait CartManagerV2{
 
 
                 $subtotal_amount = $payable_amount;
-
+                
                 $payable_amount = $payable_amount + $deliveryfee_ifnot_discounted + $security_amount;
 
 

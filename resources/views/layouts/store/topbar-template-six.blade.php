@@ -146,7 +146,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                   </div>
                   <!-- logo end -->
                   <!-- alFindSec start -->
-                  <div class="alFindSec d-none d-lg-block">
+                  <div class="alFindSec  d-lg-block">
                      <ul class="p-0 m-0 d-flex align-items-center justify-content-between">
                         @if(isset($preference))
                         @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))

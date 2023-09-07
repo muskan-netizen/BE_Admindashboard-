@@ -385,7 +385,6 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                                                                         @endif
                                                                     </p>
                                                                     <div class="member_no d-block mb-0">
-
                                                                         <span>{!! $prod->translation_description !!}</span>
                                                                     </div>
                                                                     <div id="product_variant_options_wrapper">

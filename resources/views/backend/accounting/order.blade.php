@@ -8,6 +8,7 @@
 div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
 .dt-buttons.btn-group.flex-wrap {right: 310px;top: -50px;}
 </style>
+
 @endsection
 @section('content')
 <div class="content">
@@ -94,6 +95,15 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                                             <option value="">{{ __('Select Order Status') }}</option>
                                             @forelse($order_status_options as $order_status_option)
                                                 <option value="{{$order_status_option->id}}">{{$order_status_option->title}}</option>
+                                            @empty
+                                            @endforelse
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-3 mb-1">
+                                        <select class="form-control al_box_height" id="company_option_select_box" name="company_id" >
+                                            <option value="">{{ __('Select Company') }}</option>
+                                            @forelse($companies as $company)
+                                                <option value="{{$company->id}}">{{$company->name}}</option>
                                             @empty
                                             @endforelse
                                         </select>
@@ -203,6 +213,10 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                     initDataTable();
                     getOrderCalculations();
                 });
+                $("#vendor_select_box, #company_option_select_box").change(function() {
+                    initDataTable();
+                    getOrderCalculations();
+                });
                 function initDataTable() {
                     $('#accounting_vendor_datatable').DataTable({
                         "dom": '<"toolbar">Bfrtip',
@@ -227,8 +241,24 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                                 action: function ( e, dt, node, config ) {
                                     //window.location.href = "{{ route('account.order.export') }}";
                                     $('#export-form').trigger('submit');
-                                }
-                        }],
+                                },
+                                
+                            },
+                            {
+                                extend: 'pdf',
+                                text: 'Export to PDF',
+                                className:'btn btn-success waves-effect Export_btn waves-light ml-2',
+                                id:'exp-btn',
+                                text: '<span class="btn-label"><i class="mdi mdi-file-pdf-box"></i></span>Export PDF',
+                                orientation: 'landscape',
+                                exportOptions: {
+                                    columns: ':visible'
+                                },
+                                customize: function (doc) {
+                                doc.pageOrientation = 'landscape';
+                                doc.pageSize = 'A3'; // Set the custom page size
+                            }
+                            }],
                         ajax: {
                           url: "{{route('account.order.filter')}}",
                           data: function (d) {
@@ -236,6 +266,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                             d.date_filter = $('#range-datepicker').val();
                             d.vendor_id = $('#vendor_select_box option:selected').val();
                             d.status_filter = $('#order_status_option_select_box option:selected').val();
+                            d.company_filter = $('#company_option_select_box option:selected').val();
                           }
                         },
                         columns: [
@@ -357,4 +388,5 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
 @endsection
 @section('script')
 <script src="{{asset('assets/libs/datatables/datatables.min.js')}}"></script>
+@include('backend.export_pdf')
 @endsection

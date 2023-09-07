@@ -1136,7 +1136,7 @@ class DispatcherController extends FrontController
                     $PickDropDriverBid = PickDropDriverBid::create($PickDropDriverBid);
 
                     //-------------driver bid received notification
-                    $title     = $request->task_type;
+                    $title     =  __('Driver\'s Bid Request');
                     $body      = "";
                     $devices   = UserDevice::whereNotNull('device_token')->where('user_id', $checkiftokenExist->user_id)->pluck('device_token');
                     $data      = [

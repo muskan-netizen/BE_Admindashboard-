@@ -398,8 +398,6 @@ class PaymentOptionController extends BaseController
         }
     }
 
-
-
     public function creditMyWallet(Request $request)
     {
         $user = Auth::user();
@@ -669,7 +667,6 @@ class PaymentOptionController extends BaseController
                     }
 
 
-
                     DB::commit();
                     return $this->successResponse($order, __('Order placed successfully.'), 201);
                 }
@@ -819,7 +816,6 @@ class PaymentOptionController extends BaseController
         // Auto accept order
         $orderController = new OrderController();
         $orderController->autoAcceptOrderIfOn($order->id);
-
 
         // Send Notification
         if (!empty($order->vendors)) {

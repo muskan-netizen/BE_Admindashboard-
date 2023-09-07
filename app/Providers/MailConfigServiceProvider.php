@@ -8,6 +8,7 @@ use App\Models\Client;
 use Config;
 use DB,Log;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class MailConfigServiceProvider extends ServiceProvider
 {
@@ -18,14 +19,19 @@ class MailConfigServiceProvider extends ServiceProvider
 */
 public function boot(Request $request)
 {
-	$mail = ClientPreference::where('id', '>', 0)->first(['id', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption', 'mail_from']);
+	// $mail = ClientPreference::where('id', '>', 0)->first(['id', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption', 'mail_from']);
+	$mail = Cache::remember('client_preference', 60 * 60, function () {
+		return ClientPreference::where('id', '>', 0)->first(['id', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption', 'mail_from']);
+	});
 
 	if (array_key_exists("code", $request->header())) {
 	$header = $request->header();
 	$clientCode = $header['code'][0];
 
-	$client = Client::where('code',$clientCode)->first();
-	
+	// $client = Client::where('code',$clientCode)->first();
+	$client = Cache::remember('client', 60 * 60, function () use($clientCode) {
+		return Client::where('code',$clientCode)->first();
+	});
 	if($client){
 
 		$schemaName = 'royo_' . $client->database_name;

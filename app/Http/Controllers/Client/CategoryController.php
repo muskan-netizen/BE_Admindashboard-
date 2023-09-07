@@ -10,7 +10,12 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
 use App\Models\{Client, ClientPreference, ProductVariant, MapProvider, Category, Category_translation, ClientLanguage, Variant, Brand, CategoryHistory, Type, CategoryTag, Vendor, DispatcherWarningPage, DispatcherTemplateTypeOption, Product,CategoryTranslation,CategoryKycDocumentMapping,CategoryKycDocuments,CategoryKycDocumentTranslation, Tag,Facilty, RoleOld, CategoryRole, Attribute};
 use GuzzleHttp\Client as GCLIENT;
-
+use App\Models\AdditionalAttributeOptionTranslation;
+use App\Models\AdditionalAttributeOption;
+use App\Models\AdditionalAttributeTranslation;
+use App\Models\AdditionalAttribute;
+use Illuminate\Support\Str;
+use App\Models\AttributeType;
 class CategoryController extends BaseController
 {
     private $blocking = '2';
@@ -552,4 +557,229 @@ class CategoryController extends BaseController
             return false;
     }
 
+    public function manageAttribute(Request $request){
+        $attributes = [];
+        if( checkTableExists('product_attributes') ) {
+            $attributes = AdditionalAttribute::with('option','translation_one')->where('status', '!=', 2)->orderBy('position', 'asc');
+            if(Auth::user()->is_superadmin) {
+                $attributes = $attributes->get();
+            }
+            else {
+                $attributes = $attributes->where('user_id', Auth::id())->get();
+            }
+        }
+        
+        return view('backend.attributes.manageAttribute')->with(['attributes' => $attributes]);
+    }
+    
+    public function getAddAttributeForm(Request $request)
+    {
+        $langs = ClientLanguage::with('language')->select('language_id', 'is_primary', 'is_active')
+        ->where('is_active', 1)
+        ->orderBy('is_primary', 'desc')->get();
+        
+        $attributeType = AttributeType::select('id', 'title')
+        ->get()
+        ->pluck('title', 'id')
+        ->toArray();
+        $fieldType = AdditionalAttribute::fieldType();
+        $returnHTML = view('backend.attributes.add-attribute')->with(['languages' => $langs, 'attributeType' => $attributeType, 'fieldType' => $fieldType])->render();
+        return response()->json(array('success' => true, 'html' => $returnHTML));
+    }
+    
+    public function getEditAttributeForm($domain = '', $id)
+    {
+        if(
+            checkTableExists('additional_attributes') &&
+            checkTableExists('additional_attributes_option_translations') &&
+            checkTableExists('additional_attributes_options') &&
+            checkTableExists('additional_attributes_translations')
+            ){
+                $variant = AdditionalAttribute::select('id', 'title', 'type_id', 'position', 'service_type', 'field_type')
+                ->with('translation', 'option.translation')
+                ->where('id', $id)->firstOrFail();
+                
+                $langs = ClientLanguage::with(['language', 'variantTrans' => function($query) use ($id) {
+                    $query->where('variant_id', $id);
+                }])
+                ->select('language_id', 'is_primary', 'is_active')
+                ->where('is_active', 1)
+                ->orderBy('is_primary', 'desc')->get();
+                $submitUrl = route('manage.attribute.update', $id);
+                
+                $attributeType = AttributeType::select('id', 'title')
+                ->get()
+                ->pluck('title', 'id')
+                ->toArray();
+                $fieldType = AdditionalAttribute::fieldType();
+                $returnHTML = view('backend.attributes.edit-attribute')->with(['languages' => $langs, 'variant' => $variant, 'attributeType' => $attributeType, 'fieldType' => $fieldType])->render();
+                return response()->json(array('success' => true, 'html'=>$returnHTML, 'submitUrl' => $submitUrl));
+        }
+        else {
+            return response()->json(array('success' => false));
+        }
+    }
+    
+    public function storeAttributeForm(Request $request)
+    {
+        if(
+            checkTableExists('additional_attributes') &&
+            checkTableExists('additional_attributes_option_translations') &&
+            checkTableExists('additional_attributes_options') &&
+            checkTableExists('additional_attributes_translations')
+            ){
+                \DB::beginTransaction();
+                $v_pos = AdditionalAttribute::select('id','position')->where('position', \DB::raw("(select max(`position`) from variants)"))->first();
+                $variant = new AdditionalAttribute();
+                $variant->title = (!empty($request->title[0])) ? $request->title[0] : '';
+                $variant->user_id = Auth::id();
+                $variant->field_type = $request->field_type;
+                $variant->type_id = $request->type_id;
+                $variant->service_type = $request->service_type;
+                $variant->is_required = $request->is_required;
+                $variant->position = 1;
+                if($v_pos){
+                    $variant->position = $v_pos->position + 1;
+                }
+                $variant->save();
+                $data = [];
+                if($variant->id > 0){
+                    foreach ($request->title as $key => $value) {
+                        $varTrans = new AdditionalAttributeTranslation();
+                        $varTrans->title = $request->title[$key];
+                        $varTrans->additional_attribute_id = $variant->id;
+                        $varTrans->language_id = $request->language_id[$key];
+                        $varTrans->slug = Str::slug($request->title[$key], "_");
+                        $varTrans->save();
+                    }
+                    
+                    foreach ($request->hexacode as $key => $value) {
+                        
+                        $varOpt = new AdditionalAttributeOption();
+                        $varOpt->title = $request->opt_color[0][$key];
+                        $varOpt->additional_attribute_id = $variant->id;
+                        $varOpt->hexcode = ($value == '') ? '' : $value;
+                        $varOpt->save();
+                        
+                        foreach($request->language_id as $k => $v) {
+                            $data[] = [
+                                'title' => $request->opt_color[$k][$key],
+                                'additional_attribute_option_id' => $varOpt->id,
+                                'language_id' => $v
+                            ];
+                        }
+                    }
+                    AdditionalAttributeOptionTranslation::insert($data);
+                }
+                \DB::commit();
+                return redirect()->back()->with('success', 'Attribute added successfully!');
+        }
+        else {
+            return redirect()->back()->with(array('error_delete' => 'Attribute not added !'));
+        }
+    }
+    
+    public function updateAttributeForm(Request $request, $domain = '', $id)
+    {
+        if(
+            checkTableExists('additional_attributes') &&
+            checkTableExists('additional_attributes_option_translations') &&
+            checkTableExists('additional_attributes_options') &&
+            checkTableExists('additional_attributes_translations')
+            ){
+                \DB::beginTransaction();
+                $variant = AdditionalAttribute::where('id', $id)->firstOrFail();
+                $variant->title = (!empty($request->title[0])) ? $request->title[0] : '';
+                $variant->user_id = Auth::id();
+                $variant->field_type = $request->field_type;
+                $variant->type_id = $request->type_id;
+                $variant->service_type = $request->service_type;
+                $variant->is_required = $request->is_required;
+                $variant->save();
+                
+                foreach ($request->language_id as $key => $value) {
+                    
+                    $varTrans = AdditionalAttributeTranslation::where('language_id', $value)->where('additional_attribute_id', $variant->id)->first();
+                    if(!$varTrans){
+                        $varTrans = new AdditionalAttributeTranslation();
+                        $varTrans->additional_attribute_id = $variant->id;
+                        $varTrans->language_id = $value;
+                    }
+                    $varTrans->title = $request->title[$key];
+                    $varTrans->slug = str::slug($request->title[$key], "_");
+                    $varTrans->save();
+                }
+                
+                $exist_options = [];
+                foreach ($request->option_id as $key => $value) {
+                    
+                    $curLangId = $request->language_id[0];
+                    
+                    if(!empty($value)){
+                        $varOpt = AdditionalAttributeOption::where('id', $value)->first();
+                        
+                        if(!$varOpt){
+                            $varOpt = new AdditionalAttributeOption();
+                            $varOpt->additional_attribute_id = $variant->id;
+                        }
+                        
+                        $varOpt->title = $request->opt_title[$curLangId][$key];
+                        $varOpt->hexcode = ($request->hexacode[$key] == '') ? '' : $request->hexacode[$key];
+                        $varOpt->save();
+                        $exist_options[$key] = $varOpt->id;
+                    }else{
+                        
+                        $varOpt = new AdditionalAttributeOption();
+                        $varOpt->additional_attribute_id = $variant->id;
+                        $varOpt->title = $request->opt_title[$curLangId][$key];
+                        $varOpt->hexcode = ($request->hexacode[$key] == '') ? '' : $request->hexacode[$key];
+                        $varOpt->save();
+                        $exist_options[$key] = $varOpt->id;
+                        
+                    }
+                }
+                
+                foreach($request->opt_id as $lid => $options) {
+                    
+                    foreach($options as $key => $value) {
+                        
+                        if(!empty($value)){
+                            $varOptTrans = AdditionalAttributeOptionTranslation::where('language_id', $lid)->where('attribute_option_id', $value)->first();
+                            if(!$varOptTrans){
+                                $varOptTrans = new AdditionalAttributeOptionTranslation();
+                                $varOptTrans->additional_attribute_option_id =$exist_options[$key];
+                                $varOptTrans->language_id = $lid;
+                            }
+                            $varOptTrans->title = $request->opt_title[$lid][$key];
+                            $varOptTrans->save();
+                            
+                        }else{
+                            $varOptTrans = new AdditionalAttributeOptionTranslation();
+                            $varOptTrans->additional_attribute_option_id =$exist_options[$key];
+                            $varOptTrans->language_id = $lid;
+                            $varOptTrans->title = $request->opt_title[$lid][$key];
+                            $varOptTrans->save();
+                        }
+                    }
+                }
+                \DB::commit();
+                return redirect()->back()->with('success', 'Attribute updated successfully!');
+        }
+        else {
+            return redirect()->back()->with('error_delete', 'Attribute not updated successfully!');
+        }
+    }
+    
+    public function destroyAttribute($domain = '', $id)
+    {
+        if(checkTableExists('additional_attributes')) {
+            $var = AdditionalAttribute::where('id', $id)->first();
+            $var->status = 2;
+            $var->save();
+            return redirect()->back()->with('success', 'Attribute deleted successfully!');
+        }
+        else {
+            return redirect()->back()->with('error_delete', 'Attribute not deleted successfully!');
+        }
+    }
 }

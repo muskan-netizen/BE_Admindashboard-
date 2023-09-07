@@ -218,6 +218,8 @@ return [
         App\Providers\LocalizationServiceProvider::class,
         // TelrGateway\TelrServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
+        Barryvdh\DomPDF\ServiceProvider::class,  
+
     ],
 
     /*
@@ -279,7 +281,8 @@ return [
         'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
         'Share' => Jorenvh\Share\ShareFacade::class,
         // 'HTMLMin' => HTMLMin\HTMLMin\Facades\HTMLMin::class,
-        'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class
+        'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
+        'PDF' => Barryvdh\DomPDF\Facade::class,  
     ],
 
 ];

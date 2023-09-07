@@ -3822,9 +3822,9 @@ body[dir="rtl"] .product-description {
 }
 
 .start_chat {
-    float: right;
+    /* float: right;
     margin: -15px;
-    padding: 0px 132px 0px 0px;
+    padding: 0px 132px 0px 0px; */
 }
 
 

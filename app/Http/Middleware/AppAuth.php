@@ -20,6 +20,7 @@ class AppAuth{
      * @return mixed
      */
     public function handle($request, Closure $next){
+        
         $header = $request->header();
         $token = $header['authorization'][0]??null;
         if($token != null) {

@@ -1148,6 +1148,9 @@ body.dark .btn.btn-primary-outline.action-icon {
 #addCardBox .btn {
     border-radius: 0
 }
+.vendor_export_button {
+    margin-top: -26px;
+}
 
 body.dark .tagsinput {
     background-color: transparent;
@@ -2023,7 +2026,7 @@ p.al_custom_title.mb-1{font-weight:600}
 body .dropify-wrapper .dropify-clear{top:auto;bottom:5px}
 button.btn.btn-secondary.btn-success.waves-effect.waves-light{background-color:#43bee1;height:40px;border-color:#43bee1;box-shadow:none}
 body .page-title-box .page-title{line-height:55px}
-.order_head h4{opacity:0}
+.order_head h4{opacity:1}
 .al_box_height{height:40px!important;padding-left:4px!important}
 .al_order_sec{cursor:pointer}
 .al_order_sec:hover .order_head h4{opacity:1}
@@ -3349,7 +3352,7 @@ body .page-title-box .page-title {
 }
 
 .order_head h4 {
-    opacity: 0
+    opacity: 1
 }
 .order_received1 .order_head h4{
     opacity: inherit;
@@ -4930,7 +4933,16 @@ div#addRejectmodal {
     .al_new_export_table .sync_hubspot {
         max-width: 150px !important;
     }
-    
+    #pending_orders_row .al_order_sec{
+        max-width: 50%;
+        width: 50%;
+        flex:unset;
+    }
+    #pending_orders_row .al_order_sec .row.mb-3 >  .col-md-9, #pending_orders_row .al_order_sec .row.mb-3 >  .col-md-3 {
+        max-width: 100%;
+        width: 100%;
+        flex: unset;
+    }
 }
 
 @media(min-width:1367px) {
@@ -4985,6 +4997,7 @@ div#addRejectmodal {
     #map-canvas {
         height: calc(100vh - 284px);
     }
+   
 }
 
 @media (min-width: 1200px) {
@@ -5175,6 +5188,27 @@ div#addRejectmodal {
     .al_add_user {
         margin-top: 0;
     }
+    #pending_orders_row .al_order_sec{
+        max-width: 100%;
+        width: 100%;
+        flex:unset;
+    }
+    .tab-pane #pending_orders_row .al_order_sec .order_head .col-md-3 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .tab-pane #pending_orders_row .al_order_sec .order_head .col-md-3 .col-md-12.pl-0.ellips {
+        text-align: right;
+        padding-right: 0!important;
+    }
+    .order_data_box .badge.badge-info{
+        margin-left: 22px!important;
+    }
+    .pulse{
+        left: 10px;
+        top: 11px;
+    }
 }
 
 @media(min-width:576px) {
@@ -5190,7 +5224,7 @@ div#addRejectmodal {
     }
     .add_product .modal-dialog {
         max-width: 650px;
-    }
+    }   
 }
 
 @media(min-width:320px) {
@@ -5200,6 +5234,13 @@ div#addRejectmodal {
     }
 }
 
+@media(max-width:576px) {
+    .tab-pane #pending_orders_row .al_order_sec .order_head .col-md-3 .col-md-12.pl-0.ellips {
+        text-align: right;
+        padding-right: 0!important;
+        width: 180px;
+    }
+}   
 
 /* Mtn mom payment gateway css*/
 
