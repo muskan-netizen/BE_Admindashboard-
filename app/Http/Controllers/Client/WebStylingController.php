@@ -180,6 +180,8 @@ class WebStylingController extends BaseController{
             $client_preferences->show_qr_on_footer = $request->show_qr_on_footer == 'on' ? 1 : 0;
             $client_preferences->age_restriction_title = $request->age_restriction_title;
             $client_preferences->site_top_header_color = $request->site_top_header_color;
+            $client_preferences->dashboard_theme_color = $request->dashboard_theme_color;
+
             $client_preferences->save();
         }
 

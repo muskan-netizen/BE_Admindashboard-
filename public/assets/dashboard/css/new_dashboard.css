@@ -42,7 +42,7 @@ padding-right: 0;
 } 
 .widget-icon{
   color: #000;
-  background-color: #d9e9c2;
+  background-color: var(--dashboard_color);
 }
 .card.alDasBoxItems .card-body p  span.text-nowrap {
   color: #000;
@@ -80,7 +80,7 @@ padding-right: 0;
   box-shadow: 0 0 0 .15rem rgba(125,113,226,.5);
 }
 #alDashboardStyle .input-group span, a#dashboard_refresh_btn {
-  background: #dbf3b8!important;
+  background: var(--dashboard_color)!important;
   color: #000!important;
-  border-color: #dbf3b8!important;
+  border-color:var(--dashboard_color)!important;
 }

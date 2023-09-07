@@ -52,9 +52,13 @@
         }
 
         .wishlist_product {
-            height: 550px;
+            /* height: 550px;
             overflow-y: auto;
-            overflow-x: hidden;
+            overflow-x: hidden; */
+        }
+        .dashboard-left{
+            position: sticky;
+            top: 166px;
         }
     </style>
 @endsection

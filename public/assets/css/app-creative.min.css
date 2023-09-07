@@ -68,7 +68,8 @@ body {
   position: fixed;
   transition: all 0.1s ease-out;
   top: 70px;
-  box-shadow: 0 0 8px #ccc!important;
+  box-shadow: unset!important;
+  border-right:1px solid #e5e5e5;
 }
 
 #sidebar-menu > ul {

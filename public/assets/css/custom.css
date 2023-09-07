@@ -1901,7 +1901,7 @@ i.mdi.mdi-exclamation-thick {
 
 .tab-product .nav-material.nav-tabs .nav-link.active {
     color: #000;
-    background-color: #99d93d;
+    background-color: var(--dashboard_color);
 }
 
 .tab-product .nav-material.nav-tabs .nav-item .material-border {
@@ -1982,7 +1982,7 @@ i.mdi.mdi-exclamation-thick {
 }
 
 body.light {
-    background: #fff
+    background: #f9f9f9;    
 }
 
 .dashboard-boxes p {
@@ -2167,7 +2167,7 @@ th {
 .card-body.alRevenueBox {min-height: 585px;}
 #revenue-bar-chart{min-height: 364px!important;}
 .card.alDasBoxItems {  min-height: 170px;}
-.alRevenueByLocation{min-height: 585px;}
+.alRevenueByLocation{min-height: inherit;}
 .dark #alDashboardStyle h3{color: #c6c6c6;}
 
 .al_new_export_table.royo_customber_btn.table_customber_add .position-absolute.mb-2 {z-index: 999; right: 0;margin: 0 !important;text-align: right;}
@@ -3549,7 +3549,7 @@ body .form-control {
 .navbar-custom {
     border-radius: 0;
     width: calc(100% - 240px);
-    box-shadow: 2px 3px 6px #ccc;
+    /* box-shadow: 2px 3px 6px #ccc; */
 }
 
 .editVariantBox .selectize-input .item {
@@ -3581,12 +3581,12 @@ body label {
 
 .menu-title+.nav-second-level>li>a:hover {
     padding-left: 20px;
-    background-color: #dbf3b8;
+    background-color: var(--dashboard_color);
     border-radius: 5px
 }
 
 #sidebar-menu .menuitem-active .active {
-    background-color: #dbf3b8;
+    background-color: var(--dashboard_color);
     border-radius: 5px;
     color: #000;
     font-weight: 700;
@@ -3742,7 +3742,10 @@ span.icon-estimation svg path {
 
 .vendor-page .tab-content {
     padding: 40px 0 0!important;
-    margin-top: -47px
+    margin-top: -57px
+}
+#vendor_active_datatable_filter label{
+    margin-bottom: 25px;
 }
 
 .content-page .content {
@@ -3965,7 +3968,7 @@ body p:empty {
     border-radius: 50%;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='Black' viewBox='0 0 20 20'%3E%3Cpath d='M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm.5-9.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm0 11a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm5-5a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm-11 0a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm9.743-4.036a.5.5 0 1 1-.707-.707.5.5 0 0 1 .707.707zm-7.779 7.779a.5.5 0 1 1-.707-.707.5.5 0 0 1 .707.707zm7.072 0a.5.5 0 1 1 .707-.707.5.5 0 0 1-.707.707zM3.757 4.464a.5.5 0 1 1 .707-.707.5.5 0 0 1-.707.707z'/%3E%3C/svg%3E");
     background-size: 123%;
-    background-color: #dbf3b8;
+    background-color: var(--dashboard_color);
 }
 
 .toggle__sphere-bg:after {
@@ -4507,7 +4510,7 @@ body[dir=rtl] .modal-header .close {
 
 #alDashboardStyle h3 {
     font-weight: 800 !important;
-    font-size: 40px;
+    font-size: 30px;
     color: #000;
 }
 
@@ -4528,14 +4531,14 @@ body[dir=rtl] .modal-header .close {
 }
 
 .card.alDasBoxItems {
-    min-height: 187px;
+    /* min-height: 187px; */
     background: #fff;
-    box-shadow: 0 0 10px #ccc;
-    border-radius: 16px;
+    box-shadow: 0 0 4px #ccc;
+    border-radius: 6px;
 }
 
 .alRevenueByLocation {
-    min-height: 585px;
+    min-height: inherit;
 }
 
 .dark #alDashboardStyle h3 {
@@ -5316,7 +5319,7 @@ li.dropdown.alLanguageTop {
     border-radius: 4px;
 }
 .Revenueweek_row .item h2.fw-normal.current span{
-    background-color:#93d339;
+    background-color:var(--dashboard_color);
     color: #000;
 }
 .Revenueweek_row .item h2.fw-normal.previous span{
@@ -5342,7 +5345,7 @@ li.dropdown.alLanguageTop {
     top: 8px;
     right: 8px;
     color: #000!important;
-    background-color: #dbf3b8;
+    background-color: var(--dashboard_color);
     padding: 8px;
     line-height: 1;
     font-size: 25px!important;
@@ -5358,7 +5361,7 @@ li.dropdown.alLanguageTop {
     font-weight: 400;
 }
 #vendor_active_datatable tr td a {
-    color: #99d93d;
+    color:#6c757d;
 }
 #vendor_active_datatable tr th br{
     display: none;
@@ -5367,6 +5370,9 @@ li.dropdown.alLanguageTop {
     box-shadow: 0 0 10px #ccc;
 }
 .page-item.active .page-link{
-    background-color: #99d93d;
-    color: ;
+    background-color: var(--dashboard_color);
+    color: #000;
+}
+.vendor-page .card {
+    box-shadow: unset;
 }

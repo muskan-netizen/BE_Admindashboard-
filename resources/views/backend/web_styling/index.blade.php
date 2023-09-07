@@ -77,9 +77,13 @@
                                         <label for="primary_color">{{ __("Primary Color") }}</label>
                                         <input type="text" id="primary_color_option" name="primary_color" class="form-control ss_form_submit" value="{{ old('primary_color', $client_preferences->web_color ?? 'cccccc')}}">
                                     </div>
-                                    <div class="form-group mb-0">
+                                    <div class="form-group mb-3">
                                         <label>{{ __("Top Header Color") }}</label>
                                         <input type="text" id="site_top_header_color" name="site_top_header_color" class="form-control ss_form_submit" value="{{ old('site_top_header_color', $client_preferences->site_top_header_color ?? '#4c4c4c')}}">
+                                    </div>
+                                    <div class="form-group mb-0">
+                                        <label>{{ __("Dashboard Theme Color") }}</label>
+                                        <input type="text" id="dashboard_theme_color" name="dashboard_theme_color" class="form-control ss_form_submit" value="{{ old('dashboard_theme_color', $client_preferences->dashboard_theme_color ?? '#4c4c4c')}}">
                                     </div>
                                 </div>
 
@@ -835,6 +839,12 @@ $(document).on('click', '.deletePickupSection', function() {
 
     $(document).ready(function() {
         var color1 = new jscolor('#site_top_header_color', options);
+
+    });
+
+    $(document).ready(function() {
+        var color1 = new jscolor('#dashboard_theme_color', options);
+
     });
     $("#save_home_page").click(function(event) {
         event.preventDefault();

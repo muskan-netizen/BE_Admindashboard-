@@ -259,7 +259,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
 
                     </div>
                     <div dir="ltr">
-                        <div id="revenue-bar-chart" class="apex-charts" data-colors="#a1c957,#e3eaef"></div>
+                        <div id="revenue-bar-chart" class="apex-charts" data-colors="var(--dashboard_color),#e3eaef"></div>
                     </div>
                 </div><!-- month wise data shown end here  -->
             </div>
@@ -317,7 +317,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
 
 
                     <div dir="ltr">
-                        <div id="revenue-line-chart" class="apex-charts mt-3" data-colors=" #8ecc34, #0f85f9 " style="height: 364px"></div>
+                        <div id="revenue-line-chart" class="apex-charts mt-3" data-colors=" var(--dashboard_color), #0f85f9 " style="height: 364px"></div>
                     </div><!-- Total earning chat end here -->
 
 
