@@ -117,6 +117,9 @@ z-index:1111;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-
     opacity: 1;
     visibility: inherit;
 }
+.top-header.site-topbar {
+    padding: 8px 0!important;
+}
 /*-----------new css ------------*/
 .dark .al_count_tabs_new_design li a.nav-link .al_tabsIcons {
     background-color: #ffffff;
@@ -446,6 +449,8 @@ body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect  a span{
 .search_bar  a svg{
     width: 16px;
 }
+
+
 
 @media(max-width:1200px){
     body .navigation-tab-item .nav-link{
