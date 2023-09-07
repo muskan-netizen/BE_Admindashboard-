@@ -650,6 +650,7 @@ $(document).ready(function () {
     });
 
     function productRemove(product_id, cartproduct_id, vendor_id) {
+        
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -686,6 +687,7 @@ $(document).ready(function () {
                     if($(`#add_button_href${cartproduct_id}`).length > 0){
                         $(`#add_button_href${cartproduct_id}`).show();
                         $(`#added_button_href${cartproduct_id}`).hide();
+                        $(`#add_button_href${cartproduct_id}`).text('Add');
                     }
                     if($(`#add_button_href${product_id}`).length > 0){
                         $(`#add_button_href${product_id}`).show();

@@ -2863,12 +2863,19 @@ span.org_price.ml-1.font-14{
     right: 11px;
 }
 
-.vendor-reviwes {
+/* .vendor-reviwes {
     position: absolute;
     top: 0;
     right: 0;
+} */
+.vendor-reviwes {
+    position: unset;
+    top: 0;
+    right: 0;
+    padding: 0;
+    width: auto;
+    display: inline-block;
 }
-
 .rating-text-box.ml-sm-auto {
     padding: 0 6px;
 }
@@ -3596,7 +3603,35 @@ footer#footer {
     bottom: 0;
     width: 100%;
 }
-
+select.delivery-fee {
+    appearance: none;
+    padding: 0px 11px!important;
+    background: url('https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/jgogrnme6JZ4cE9MfxKWToB0it5TZecrzPrQLpgf.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-size: 14px;
+    background-position: 95%;
+}
+.dark select.delivery-fee {
+    background: url('https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/668jWeBrePbn0Lf43aZbqZBJQ7n25qoh6IJAL5ZE.png');
+    appearance: none;
+    padding: 0px 11px!important;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-size: 14px;
+    background-position: 95%;
+}
+@media (max-width:1200px) {
+    body.al_body_template_eight .product-right .product-buttons .btn-outline, .product-right .product-buttons .btn-solid{
+        font-size: 10px;
+    }
+}
+@media (max-width:991px) {
+    .inner_spacing {
+        width: 100% !important;
+        padding: 0!important;
+    }
+}
 @media (max-width:767px) {
     body.al_body_template_three.dark .sm-horizontal {
         background-color: transparent;
