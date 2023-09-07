@@ -2670,6 +2670,7 @@ class OrderController extends BaseController
                     }
                     $dispatch_domain = $this->getDispatchDomain();
                     $order_details = OrderProduct::where('id',$return->order_vendor_product_id)->whereHas('order',function($q) use ($user){$q->where('user_id',$user->id);})->first();
+                    $this->ProductVariantStockIncreaseByOrderId($order_product->order_id);
                     $this->placeReturnRequestToDispatch($order_details->order_id, $order_details->vendor_id, $dispatch_domain, $order_details);
                 }
                 DB::commit();
@@ -2702,6 +2703,7 @@ class OrderController extends BaseController
                     $dispatch_domain = $this->getDispatchDomain();
                     $order_details = OrderProduct::where('id',$return->order_vendor_product_id)->whereHas('order',function($q) use ($user){$q->where('user_id',$user->id);})->first();
                     $this->placeReturnRequestToDispatch($order_details->order_id, $order_details->vendor_id, $dispatch_domain, $order_details);
+                    $this->ProductVariantStockIncreaseByOrderId($order_product->order_id);
                     DB::commit();
                     return $this->successResponse($returns, 'Updated.');
                 }

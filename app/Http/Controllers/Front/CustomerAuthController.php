@@ -534,6 +534,53 @@ class CustomerAuthController extends FrontController
         }
     }
 
+    public function checkValidEmail(Request $request, $domain = '')
+    {
+        try {
+            $username = $request->username;
+    
+            // Define regular expressions for phone and email validation
+            $phone_regex = '/^[0-9\-\(\)\/\+\s]*$/';
+            $email_regex = '/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/';
+    
+            if (preg_match($phone_regex, $username)) {
+                // Handle phone number validation and existence check
+                $phone_number = preg_replace('/\D+/', '', $username);
+                $dialCode = $request->dialCode;
+    
+                // Check if the user exists based on phone number and dial code
+                $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
+    
+                if ($user) {
+                    // User with the provided phone number exists
+                   return $this->successResponse(null,'user exists');
+                } else {
+                    // User with the provided phone number does not exist
+                    return response()->json(['message' => __('You are not registered with us. Please sign up.')], 404);
+                }
+            } elseif (preg_match($email_regex, $username)) {
+                // Handle email validation and existence check
+                $username = str_ireplace(' ', '', $username);
+    
+                // Check if the user exists based on email
+                $user = User::where('email', $username)->first();
+    
+                if ($user) {
+                    // User with the provided email exists
+                    return $this->successResponse(null,'user exists',200);
+                } else {
+                    // User with the provided email does not exist
+                    return response()->json(['message' => __('You are not registered with us. Please sign up.')], 404);
+                }
+            } else {
+                // Invalid username format
+                return response()->json(['message' => __('Invalid email or phone number')], 400);
+            }
+        } catch (\Exception $ex) {
+            return response()->json(['message' => $ex->getMessage()], $ex->getCode());
+        }
+    }
+    
     /*** Login user via username ***/
     public function loginViaUsername(Request $request, $domain = ''){
        

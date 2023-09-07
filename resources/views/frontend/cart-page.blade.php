@@ -67,6 +67,7 @@
 </style>
 
 @php
+
     $serviceType = Session::get('vendorType');
 
     $additionalPreference = $getAdditionalPreference;
@@ -196,6 +197,8 @@
                         $other_taxes_string = $cart_details->other_taxes_string;
                     @endphp
                     @foreach ($cart_details->products as $product)
+
+                    
                         <div id="thead_{{ $product->vendor->id }}" class="mt-2 px-0">
                             <div class="row">
 

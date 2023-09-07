@@ -542,7 +542,7 @@ trait ProductActionTrait{
             // }
 
             // $returnArray = $products;
-            //pr($returnArray);
+          
             return $returnArray;
         }
         catch (\Exception $e) {
@@ -555,6 +555,7 @@ trait ProductActionTrait{
     }
     public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude, $vendor_ids = [], $set_template = NULL,$venderFilterOpenClose=null,$venderFilterbest=null)
     {
+        
         try 
         {
             $mytime = Carbon::now()->setTimezone($timezone);

@@ -1200,7 +1200,24 @@ body section.cab-banner-area {
 body .iti--separate-dial-code .iti__selected-flag {
     background-color: #eee;
 }
-
+.edit_profile_modal  .iti__selected-flag {
+    height: 35.5px;
+}
+#add_edit_address .address-input-group {
+    flex-wrap: nowrap;
+}
+#removeAddressConfirmation .modal-body {
+    padding-bottom: 5px;
+}
+#removeAddressConfirmation .modal-body h6 {
+    text-align: center;
+    font-size: 18px;
+    letter-spacing: 0;
+}
+#add_edit_address .modal-header.border-bottom {
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
 
 /* vendorStories page css start */
 
