@@ -68,7 +68,7 @@ class RazorpayGatewayController extends FrontController
 
             return $this->successResponse($data);
             // return $this->successResponse(url('/payment/razorpay/view?amount=' . $amount . '&order=' . $order_number . '&api_key=' . $api_key));
-        } catch (\Exception $ex) {
+        } catch (\Exception $ex) {            
             return $this->errorResponse($ex->getMessage(), 400);
         }
     }
@@ -86,10 +86,10 @@ class RazorpayGatewayController extends FrontController
                 $returnUrl = route('user.wallet');
             }
             $orderData = [
-                'amount'          => $amount/100,
+                'amount'          => (int)$amount,
                 'currency'        => 'INR'
             ];
-            $payment = $this->api->payment->fetch($request->razorpay_payment_id);
+            $payment = $this->api->payment->fetch($request->razorpay_payment_id)->capture($orderData);            
             // $capture = $payment->capture(['amount'=>$payment['amount']]);
             if ($payment['status'] == 'captured') {
                 $response =  $this->razorpayNotify($payment, $amount/100, $request, $orderData);
