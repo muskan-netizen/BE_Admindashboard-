@@ -1322,8 +1322,8 @@ label.file-input.uploadImages {
 }
 
 .light input:checked~.switchery.switchery-default {
-    border-color: #43bee1 !important;
-    background-color: #43bee1 !important
+    border-color: var(--dashboard_color) !important;
+    background-color:var(--dashboard_color) !important
 }
 
 .light .text-info {
@@ -2346,7 +2346,31 @@ button.add_edit_driver_review {
 #pending_orders_row .order-hover-btn .order_detail .col-4 .list-img img {
     width: 50px;
 }
+.order-list-spinner .item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #dee2e6;
+}
+.order-list-spinner .item  ul#top-tab {
+    border: unset;
+}
+.tabs_radio_controls{
+    text-align: center;
+    padding: 10px 0;
+}
 
+.order-list-spinner .item .page-title-box a {
+    background-color: var(--dashboard_color);
+    color: #000;
+    font-size: 16px;
+    letter-spacing: 0;
+    font-weight: 600;
+    padding: 5px 10px;
+}
+.order-list-spinner .item .page-title-box a span{
+    color: #000;
+}
 /*============================================= dashboard page responsive css start here ======================================= */
 @media(max-width:1600px) {
 .card-box {padding: 20px;}
