@@ -23,6 +23,10 @@ use Log;
 use Illuminate\Support\Str;
 use App\Http\Traits\OrderTrait;
 use App\Models\Client;
+use App\Models\OrderVendor;
+use App\Models\UserDevice;
+use App\Models\ClientPreference;
+use App\Models\NotificationTemplate;
 
 class MpesaSafariController extends Controller
 {
@@ -172,19 +176,35 @@ class MpesaSafariController extends Controller
 
     public function successPage(Request $request,$domain = '')
     { 
-         if (isset($request->Body) && isset($request->Body['stkCallback']) && isset($request->Body['stkCallback']['ResultCode']) && $request->Body['stkCallback']['ResultCode'] == 0) {
-             $payment = Payment::where('viva_order_id', $request->Body['stkCallback']['CheckoutRequestID'])->first();
+         if (isset($request->Body) && isset($request->Body['stkCallback']) && isset($request->Body['stkCallback']['ResultCode'])) {
+             if($request->Body['stkCallback']['ResultCode'] == 0){
+                $payment = Payment::where('viva_order_id', $request->Body['stkCallback']['CheckoutRequestID'])->first();
                 if ($payment->type == 'cart') {
-                    return $this->completeOrderCart($request, $payment);
+                    $this->completeOrderCart($request, $payment);
                 } elseif ($payment->type == 'wallet') {
-                    return $this->completeOrderWallet($request, $payment, $request->amount);
+                    $this->completeOrderWallet($request, $payment, $request->amount);
                 } elseif ($payment->type == 'tip') {
-                    return $this->completeOrderTip($request, $payment);
+                    $this->completeOrderTip($request, $payment);
                 } elseif ($payment->type == 'subscription') {
-                    return $this->completeOrderSubs($request, $payment, $request);
+                    $this->completeOrderSubs($request, $payment, $request);
                 } elseif ($payment->type == 'pickup_delivery') {
-                    return $this->completePickupDelivery($request, $payment, $request);
+                    $this->completePickupDelivery($request, $payment, $request);
                 }
+             }else{
+                 $payment = Payment::where('viva_order_id', $request->Body['stkCallback']['CheckoutRequestID'])->first();
+                 if (in_array($payment->type,['cart','pickup_delivery'])) {
+                     $order = Order::where('order_number', $payment->transaction_id)->first();
+                     if (!empty($order))
+                     {
+                         $currentOrderStatus = OrderVendor::where(['order_id' => $order->id])->first();
+                         if(!empty($currentOrderStatus)){
+                             $currentOrderStatus->order_status_option_id = 3;
+                             $currentOrderStatus->save();
+                             $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $order,$currentOrderStatus->order_status_option_id);                          
+                         }
+                     } 
+                 }
+             }
          }else{
              \Log::info("webhook error");
              \Log::info($request->all());
@@ -306,5 +326,58 @@ class MpesaSafariController extends Controller
 //             $data->delete();
 //             return Redirect::to(route('front.booking.details'))->with('error',$request->message);
 //         }
+    }
+    
+    public function sendStatusChangePushNotificationCustomer($user_ids, $orderData, $order_status_id)
+    {
+        $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
+        
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
+        if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
+            if ($order_status_id == 2) {
+                $notification_content = NotificationTemplate::where('id', 5)->first();
+            } elseif ($order_status_id == 3) {
+                $notification_content = NotificationTemplate::where('id', 6)->first();
+            } elseif ($order_status_id == 4) {
+                $notification_content = NotificationTemplate::where('id', 7)->first();
+            } elseif ($order_status_id == 5) {
+                //Check for order is takeaway
+                if(@$orderData->luxury_option_id == 3)
+                {
+                    $notification_content = NotificationTemplate::where('slug', 'order-out-for-takeaway-delivery')->first();
+                }else{
+                    $notification_content = NotificationTemplate::where('id', 8)->first();
+                }
+            } elseif ($order_status_id == 6) {
+                $notification_content = NotificationTemplate::where('id', 9)->first();
+            }
+            if ($notification_content) {
+                $body_content = str_ireplace("{order_id}", "#" . $orderData->order_number, $notification_content->content);
+                $redirect_URL['type'] = 4;
+                $data = [
+                    "registration_ids" => $devices,
+                    "notification" => [
+                        'title' => $notification_content->subject,
+                        'body'  => $body_content,
+                        'sound' => "default",
+                        "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                        'click_action' => '',
+                        "android_channel_id" => "default-channel-id",
+                        "redirect_type" => $redirect_URL['type']
+                    ],
+                    "data" => [
+                        'title' => $notification_content->subject,
+                        'body'  => $body_content,
+                        "type" => "order_status_change",
+                        "order_id" =>$orderData->id,
+                        "vendor_id" =>$orderData->ordervendor->vendor_id,
+                        "order_status" =>$order_status_id,
+                        "redirect_type" => $redirect_URL['type']
+                    ],
+                    "priority" => "high"
+                ];
+                sendFcmCurlRequest($data);
+            }
+        }
     }
   }
