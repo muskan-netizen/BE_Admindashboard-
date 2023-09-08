@@ -323,7 +323,7 @@ body[data-sidebar-size=condensed] .content-page {
 }
 @media (min-width: 992px) {
   body[data-sidebar-size=condensed] .footer {
-    left: 70px !important;
+    left: 0 !important;
   }
 }
 body[data-sidebar-size=condensed] .user-box {
@@ -685,7 +685,7 @@ body[data-sidebar-icon=twotones] #sidebar-menu > ul > li > a svg {
 .navbar-custom .topnav-menu > li {
   float: left;
 }
-.navbar-custom .topnav-menu .nav-link {
+/* .navbar-custom .topnav-menu .nav-link {
   padding: 0 15px;
   color: rgba(0 0 0 / 0.6);
   min-width: 32px;
@@ -693,6 +693,19 @@ body[data-sidebar-icon=twotones] #sidebar-menu > ul > li > a svg {
   line-height: normal;
   text-align: center;
   max-height: initial;
+} */
+.navbar-custom .topnav-menu .nav-link span.pro-user-name.ml-1 {
+  border: 1px solid var(--dashboard_color)!important;
+  line-height: 1.5;
+  display: block;
+  padding: 7px 10px;
+  border-radius: 50%;
+  background: var(--dashboard_color);
+  margin: 0!important;
+}
+.navbar-custom .topnav-menu .nav-link span.pro-user-name.ml-1 i {
+  color: #000;
+  font-size: 18px;
 }
 .navbar-custom .dropdown.show .nav-link {
   background-color: rgba(255, 255, 255, 0.05);

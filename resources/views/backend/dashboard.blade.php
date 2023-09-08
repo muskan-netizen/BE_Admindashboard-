@@ -77,10 +77,10 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
     </div>
 
     <div class="row">
-        <div class="col-xl-12 col-lg-12">
+        <div class="col-xl-8 col-lg-8">
             <div class="row">
                 @if(auth()->user()->is_superadmin)
-                <div class="col-sm">
+                <div class="col-sm-12 col-md-6 col-lg-4">
                     <!-- Customer box start here -->
                     <div class="card alDasBoxItems"><a href="{{route('customer.index')}}">
                         <div class="card-body">
@@ -96,7 +96,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                     </div><!-- Customer box end here -->
                 </div>
                 @endif
-                <div class="col-sm">
+                <div class="col-sm-12 col-md-6 col-lg-4">
                     <!-- Orders box start here -->
                     <div class="card alDasBoxItems"> <a href="{{route('order.index')}}">
                         <div class="card-body">
@@ -112,7 +112,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                     </div><!-- Orders box end here -->
                 </div>
 
-                <div class="col-sm">
+                <div class="col-sm-12 col-md-6 col-lg-4">
                     @if(auth()->user()->is_superadmin)
                     <!-- Orders box start here -->
                     <div class="card alDasBoxItems"> <a href="{{route('vendor.index')}}">
@@ -130,11 +130,11 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                     @endif
                 </div>
 
-            </div>
+            {{-- </div>
 
-            <div class="row">
+            <div class="row"> --}}
                 @if(auth()->user()->can('dashboard-totalRevenue') || auth()->user()->is_superadmin)
-                <div class="col-sm">
+                <div class="col-sm-12 col-md-6 col-lg-4">
                     <!-- Revenue box start here -->
                     <div class="card alDasBoxItems">
                         <div class="card-body">
@@ -151,7 +151,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                 @endif
 
                 @if(getRoleId(@auth()->user()->getRoleNames()[0])==4)
-                <div class="col-sm">
+                <div class="col-sm-12 col-md-6 col-lg-4">
                     <!-- Revenue box start here -->
                     <div class="card alDasBoxItems">
                         <div class="card-body">
@@ -167,7 +167,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                 </div>
                 @endif
 
-                <div class="col-sm">
+                <div class="col-sm-12 col-md-6 col-lg-4">
                     <!-- Growth box start here -->
                     <div class="card alDasBoxItems">
                         <div class="card-body">
@@ -183,7 +183,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                     </div><!-- Growth box end here -->
                 </div>
                 @if(auth()->user()->is_superadmin)
-                <div class="col-sm">
+                <div class="col-sm-12 col-md-6 col-lg-4">
                     <!-- Growth box start here -->
                     <div class="card alDasBoxItems">
                         <div class="card-body">
@@ -200,8 +200,27 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                 @endif
             </div>
         </div>
-        
+        <div class=" col-lg-4">
+            @if(auth()->user()->can('dashboard-locationRevenue') || auth()->user()->is_superadmin)
+                <div class="item"  >
+                    <div class="card alRevenueByLocation" style="min-height: 364px">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h4 class="header-title">{{ __('Revenue By Location') }}</h4>
 
+                            </div>
+                            <div class="mb-4 mt-3">
+                                <div id="world-map" style="height: 150px"></div>
+                            </div>
+
+                            <div id="revenue_locations">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
     </div>
 
     <div class="row">
