@@ -1850,8 +1850,12 @@ section#our_vendor_main_div .render_full_best_sellers {padding: 20px 0 !importan
 .new_cart table td{
     word-break: break-all;
 }
-
-
+.al_body_template_nine  .remove_product_via_cart i:hover {
+    color: red;
+}
+.al_body_template_nine div#dispatcher_status_show{
+    font-size: 14px;;
+}
 
 /*======== first template css gagandeep 29-03-2023 end ========*/
 
