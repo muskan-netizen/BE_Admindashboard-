@@ -1865,9 +1865,7 @@ $(document).ready(function () {
                 }
             },
             error: function (error) {
-                console.log(error);
                 var response = $.parseJSON(error.responseText);
-                console.log(response);
                 // success_error_alert('error', response.message, ".payment_response");
                 if ($('.cart_response').length > 0) {
                     $(".cart_response").removeClass('d-none');
@@ -3993,7 +3991,6 @@ $(document).ready(function () {
                 }
             },
             error: function (error) {
-                console.log(error);
                 var response = $.parseJSON(error.responseText);
                 alert(response.message);
                 success_error_alert('error', response.message, ".cart_response");
