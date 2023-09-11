@@ -235,7 +235,12 @@ $applocale = session()->get('applocale');
         </div>
     </div>
 </footer>
-
+@if(@getAdditionalPreference(['is_enable_google_analytics'])['is_enable_google_analytics'] == 1)
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NRWHB2J7"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+@endif
 </article>
 
 <div class="modal fade single-vendor-order-modal" id="single_vendor_order_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="s_vendor_remove_cartLabel" style="background-color: rgba(0,0,0,0.8);">
