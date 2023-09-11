@@ -27,8 +27,11 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
         $user = Auth::user();
         if (Session::has('preferences') && !empty(Session::get('preferences'))) {
             $client_preference_detail = (object)Session::get('preferences');
+            if(!isset($client_preference_detail->is_tax_price_inclusive)){
+                $client_preference_detail =  (object)getAdditionalPreference(['is_tax_price_inclusive']);
+            }
         }else{
-            $client_preference_detail = ClientPreference::select('is_tax_price_inclusive')->first();
+            $client_preference_detail = (object)getAdditionalPreference(['is_tax_price_inclusive']);
         }
         $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
         $vendor_orders =  OrderVendor::with(['orderDetail.paymentOption', 'user','vendor','payment'])->orderBy('id', 'DESC');
@@ -85,7 +88,7 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
             if ($vendor_order->coupon_paid_by == 1) {
                 $adminDiscount = $vendor_order->discount_amount;
             }
-            $vendor_order->total_amount = $tip+$vendor_order->payable_amount;
+            $vendor_order->total_amount = (double)$tip + (double)$vendor_order->payable_amount;
             $vendor_order->cash_payment = 0;
             if ($vendor_order->orderDetail->payment_option_id == 1) {
                 $vendor_order->cash_payment = $vendor_order->payable_amount + $vendor_order->taxable_amount;

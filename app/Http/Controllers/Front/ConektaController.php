@@ -12,10 +12,17 @@ class ConektaController extends FrontController
 { 
     use \App\Http\Traits\ConektaPaymentManager; 
 	use \App\Http\Traits\ApiResponser;
+
+    public $conekta_creds;
+    public $creds_arr;
+    public $public_key;
+    public $private_key;
+    public $url;
+
 	public function __construct()
   	{
 		$this->conekta_creds = PaymentOption::select('credentials','status')->where('code', 'conekta')->where('status', 1)->first();
-		if(@$this->conekta_creds->status){
+		if(@$this->conekta_creds && !empty($this->conekta_creds->credentials)){
     	    $this->creds_arr = json_decode($this->conekta_creds->credentials);
     	    $this->public_key = $this->creds_arr->public_key ?? '';
     	    $this->private_key = $this->creds_arr->private_key ?? '';
