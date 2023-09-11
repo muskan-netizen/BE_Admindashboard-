@@ -481,9 +481,7 @@ class ProductController extends BaseController
                 }
 
             }
-            if ($request->is_live == 0) {
-                CartProduct::where('product_id',$product->id)->delete();
-            }
+          
             $product->sku = $request->sku;
             $product->markup_price = $request->markup_price;
             $product->url_slug = $request->url_slug;

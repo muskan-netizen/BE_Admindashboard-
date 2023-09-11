@@ -907,6 +907,7 @@ class OrderController extends FrontController
         }
         $latitude = ($address) ? $address->latitude : '';
         $longitude = ($address) ? $address->longitude : '';
+       
         $cartData = CartProduct::with([
             'vendor',
             'coupon' => function ($qry) use ($cart_id) {
@@ -1133,6 +1134,8 @@ class OrderController extends FrontController
         // return view('frontend/orderPayment')->with(['navCategories' => $navCategories, 'first_name' => $request->first_name, 'last_name' => $request->last_name, 'email_address' => $request->email_address, 'phone' => $request->phone, 'total_amount' => $request->total_amount, 'address_id' => $request->address_id]);
         // }
 
+        
+
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
          if($request->payment_option_id=='52'){
             if($primaryCurrency->currency->iso_code!='QAR'){
@@ -1151,7 +1154,8 @@ class OrderController extends FrontController
 
             return $this->successResponse($response->data, __('Order placed successfully.'), 201);
         } else {
-            return $this->errorResponse($response->message, 400);
+            
+            return $this->errorResponse($response->message, $response->code ?? 400);
         }
     }
 
@@ -1227,6 +1231,21 @@ class OrderController extends FrontController
                     'editingOrder.orderStatusVendor',
                     'cartvendor'
                 ])->first();
+                if(!isset($cart)){
+                    return $this->errorResponse(__('Product is removed as it is no longer available.'), 404);
+                }
+                $cart_product_removed =    CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
+                    $q->whereIn('is_live',[0,2]);
+                })->pluck('id');
+               
+                if(count($cart_product_removed)){
+                     CartProduct::whereIn('id',$cart_product_removed)->delete();
+                     if(CartProduct::where('cart_id',$cart->id)->count() == 0){
+                        Cart::find($cart->id)->delete();
+                     }
+                     DB::commit();
+                     return $this->errorResponse(__('Product is removed as it is no longer available.'), 404);
+                }
             /* Get Currencies of client and customer */
             $customerCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
             $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();

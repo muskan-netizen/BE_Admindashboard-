@@ -27,8 +27,11 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
         $user = Auth::user();
         if (Session::has('preferences') && !empty(Session::get('preferences'))) {
             $client_preference_detail = (object)Session::get('preferences');
+            if(!isset($client_preference_detail->is_tax_price_inclusive)){
+                $client_preference_detail =  (object)getAdditionalPreference(['is_tax_price_inclusive']);
+            }
         }else{
-            $client_preference_detail = ClientPreference::select('is_tax_price_inclusive')->first();
+            $client_preference_detail = (object)getAdditionalPreference(['is_tax_price_inclusive']);
         }
         $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
         $vendor_orders =  OrderVendor::with(['orderDetail.paymentOption', 'user','vendor','payment'])->orderBy('id', 'DESC');
