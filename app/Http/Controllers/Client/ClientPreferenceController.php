@@ -960,16 +960,12 @@ class ClientPreferenceController extends BaseController{
                 return redirect()->back()->withInput()->withErrors(new \Illuminate\Support\MessageBag(['custom_domain' => $e->getMessage()]));
             }
 
-
         }else{
             return redirect()->back()->withInput()->withErrors(new \Illuminate\Support\MessageBag(['custom_domain' => 'Domain name "' . $request->custom_domain . '" is already pointed. Please select a different domain']));
         }
 
-
-
-
-
     }
+    
     public function updateVerificationOption($data)
     {
         $method_id_arr = $data['method_id'];
@@ -1014,9 +1010,6 @@ class ClientPreferenceController extends BaseController{
     public function updateAdditional(Request $request){
 
         $request->merge(['is_cache_enable_for_home' => ($request->has('is_cache_enable_for_home') && $request->is_cache_enable_for_home == 'on') ? 1 : 0]);
-
-        // dd($request->all());
-
         $ret = $this->updatePreferenceAdditional($request);
         if($ret){
             return redirect()->back()->with('success', 'Cache updated successfully!');
