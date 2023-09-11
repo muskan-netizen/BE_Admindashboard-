@@ -538,9 +538,6 @@
     </div>
 </div>
 
-
-
-
 <div class="col-md-4">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="is_user_kyc_for_registration_switch"
@@ -698,5 +695,19 @@
         </span>
         <input type="hidden" @if (@$getAdditionalPreference['is_enable_curb_side'] == 1) value="1" @else value="0" @endif
             name="is_enable_curb_side" id="is_enable_curb_side" />
+    </div>
+</div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_enable_google_analytics" class="mr-2 mb-0">{{ __('Google Analytics') }}<small
+                class="d-block pr-5">{{ __('Google Analytics.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_enable_google_analytics"
+                id="is_enable_google_analytics_switch" class="form-control checkbox_change"
+                data-className="is_enable_google_analytics" data-color="#43bee1"
+                @if (@$getAdditionalPreference['is_enable_google_analytics'] == 1) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['is_enable_google_analytics'] == 1) value="1" @else value="0" @endif
+            name="is_enable_google_analytics" id="is_enable_google_analytics" />
     </div>
 </div>
