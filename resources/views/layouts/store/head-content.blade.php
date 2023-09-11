@@ -106,7 +106,11 @@
 	body .menu-slider .slick-track{max-width:100vw!important;width:100%!important;display:flex;justify-content:center;margin:auto!important} 
 	
 	.pixelstrap li a,.product-card-box{position:relative;-webkit-transform:scale(.95);transform:scale(.95);-webkit-transition:.3s ease-in-out;transition:.3s ease-in-out}.pixelstrap a,.pixelstrap a:active,.pixelstrap a:hover,.pixelstrap li>a{padding:0 7px 10px;text-align:center;width:100px;white-space:normal}
-    :root {--theme-deafult: <?= ($client_preference_detail) ? $client_preference_detail->web_color : '#ff4c3b' ?>;--top-header-color: <?= ($client_preference_detail) ? $client_preference_detail->site_top_header_color : '#4c4c4c' ?>;}
+    :root {
+		--theme-deafult: <?= ($client_preference_detail) ? $client_preference_detail->web_color : '#ff4c3b' ?>;
+		--top-header-color: <?= ($client_preference_detail) ? $client_preference_detail->site_top_header_color : '#4c4c4c' ?>;
+		--dashboard_theme_color: <?= ($client_preference_detail) ? $client_preference_detail->dashboard_theme_color : '#4c4c4c' ?>;
+}
     a {color: <?= ($client_preference_detail) ? $client_preference_detail->web_color : '#ff4c3b' ?>;}
 	body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head a.sell-btn{
 		background: linear-gradient(to right, <?= ($client_preference_detail) ? $client_preference_detail->web_color : '#ff4c3b' ?>, #ffce32, <?= ($client_preference_detail) ? $client_preference_detail->site_top_header_color : '#3a77ff' ?>);
