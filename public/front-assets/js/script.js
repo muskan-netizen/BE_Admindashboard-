@@ -48,7 +48,7 @@ function  layoutMode(){
 		infinite: true,
         //centerMode: true,
 		speed: 300,
-		slidesToShow: 8,
+		slidesToShow: 6,
 		slidesToScroll: 2,
         responsive: [
             { breakpoint: 1920, settings: { slidesToShow: 8, slidesToScroll: 2 } },

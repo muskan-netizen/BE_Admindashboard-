@@ -1790,10 +1790,33 @@ i.mdi.mdi-exclamation-thick {
 
 .custom-control-input:checked~.custom-control-label::before,
 .form-check-input:checked~label:before {
-    background-color: #43bee1 !important;
-    opacity: 1
+    background-color: var(--dashboard_color) !important;
+    opacity: 1;
+    border-color: var(--dashboard_color);
 }
-
+.edit_payment_method_btn {
+    color: inherit;
+}
+a.openCategoryModal, a.editVariantBtn, a.editBrandBtn, a.editAttributeBtn, .social_head i, a.editTaxCateModal, a.openBannerModal{
+    color: var(--dashboard_color);
+}
+#products-datatable td a i, #products-datatable td a{
+    color: inherit;
+}
+#varient-datatable td a.editAttributeBtn {
+    color: inherit!important;
+}
+#varient-datatable td a {
+    color: inherit;
+}
+.setredeempoints{
+    background-color: var(--dashboard_color);
+    border-color: var(--dashboard_color);
+    color: #000;
+}
+div#pickup_page_datatable a {
+    color: inherit;
+}
 .custom-radio.radio_new .custom-control-input:checked~.custom-control-label::after,
 .form-check-input:checked~label::after {
     opacity: 1
@@ -1896,7 +1919,9 @@ i.mdi.mdi-exclamation-thick {
     text-align: center;
     border: 0;
     font-weight: 600;
-    font-size: 14px
+    font-size: 14px;
+    border-radius: 10px 10px 0 0;
+
 }
 
 .tab-product .nav-material.nav-tabs .nav-link.active {
@@ -2022,7 +2047,7 @@ p.al_custom_title.mb-1{font-weight:600}
 #al_web_styling input[type="checkbox"]{margin:0 10px}
 
 body .dropify-wrapper .dropify-clear{top:auto;bottom:5px}
-button.btn.btn-secondary.btn-success.waves-effect.waves-light{background-color:#43bee1;height:40px;border-color:#43bee1;box-shadow:none}
+button.btn.btn-secondary.btn-success.waves-effect.waves-light{background-color:var(--dashboard_color);height:40px;border-color:var(--dashboard_color);box-shadow:none}
 body .page-title-box .page-title{line-height:55px}
 .order_head h4{opacity:1}
 .al_box_height{height:40px!important;padding-left:4px!important}
@@ -3364,10 +3389,11 @@ body .dropify-wrapper .dropify-clear {
 }
 
 button.btn.btn-secondary.btn-success.waves-effect.waves-light {
-    background-color: #43bee1;
+    background-color: var(--dashboard_color);
     height: 40px;
-    border-color: #43bee1;
-    box-shadow: none
+    border-color:var(--dashboard_color);
+    box-shadow: none;
+    color: #000;
 }
 
 body .page-title-box .page-title {
@@ -3567,7 +3593,7 @@ body .form-control {
 }
 
 #sidebar-menu .menuitem-active a.active::before {
-    border: 1px solid #fff
+    border: 1px solid #000
 }
 
 .navbar-custom {
@@ -3590,8 +3616,8 @@ body .content-page .btn.btn-info {
     padding-bottom: 5px;
     border-style: solid;
     border-color: #000;
-    margin-top: 30px;
-    margin-bottom: 20px;
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 body label {
@@ -4271,7 +4297,7 @@ ul.nav-second-level.p-0.mx-2 span.mdi.mdi-chat-processing-outline {
 }
 
 ::-webkit-scrollbar-thumb {
-    background:#b3d667;
+    background:var(--dashboard_color);
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -4574,6 +4600,7 @@ body[dir=rtl] .modal-header .close {
     right: 0;
     margin: 0 !important;
     text-align: right;
+    top: -10px;
 }
 
 .al_new_export_table.royo_customber_btn.table_customber_add .row.mt-1.sml_royo-responsive {
@@ -4884,6 +4911,21 @@ div#addRejectmodal {
 #AddRejectBox .reject_reason {
     border: 1px solid#ccc;
 }
+table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > td.dtr-control:before, table.dataTable.dtr-inline.collapsed > tbody > tr[role="row"] > th.dtr-control:before{
+    background-color: var(--dashboard_color)!important;
+}
+.dataTables_scrollBody #user_datatable tbody td a {
+    color: #000;
+}
+.dataTables_scrollBody #user_datatable tbody td i{
+    color: var(--dashboard_color);
+}
+#tbody_tab1 td a{
+    color: inherit;
+}
+a.edit_vendor_registration_document_btn {
+    color: inherit;
+}
 
 /*============================================= dashboard page responsive css start here ======================================= */
 
@@ -4957,6 +4999,7 @@ div#addRejectmodal {
     body .content-page .btn.btn-info {
         font-size: 12px;
         display: inline-block;
+        max-width: max-content!important;
     }
     body .content-page .btn.btn-info.openServiceModal {
         max-width: 130px;
@@ -4985,6 +5028,7 @@ div#addRejectmodal {
         width: 100%;
         flex: unset;
     }
+
 }
 
 @media(min-width:1367px) {
@@ -5127,7 +5171,7 @@ div#addRejectmodal {
     }
     .tab-product .nav-material.nav-tabs .nav-item .nav-link {
         font-size: 12px;
-        padding: 0 5px;
+        padding: 4px 25px;
     }
     .tab-content.nav-material.al .order_head h4 {
         color: #000;
@@ -5259,7 +5303,15 @@ div#addRejectmodal {
         left: 10px;
         top: 11px;
     }
+    .main-customer-page .table_customber_add .position-absolute {
+        position: unset!important;
+        padding-bottom: 20px;
+    }
+    .main-customer-page .table_customber_add {
+        padding: 0!important;
+    }
 }
+
 
 @media(min-width:576px) {
     .custom-cols>.col {
@@ -5363,8 +5415,8 @@ li.dropdown.alLanguageTop {
 }
 .vendor-page .row .card .card-body .row .col-6 .text-center {
     background: #fff;
-    box-shadow: 0 0 10px #cccc;
-    min-height: 150px;
+    box-shadow: 0 0 2px #cccc;
+    min-height: 120px;
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -5373,20 +5425,20 @@ li.dropdown.alLanguageTop {
     border-radius: 8px;
 }
 .vendor-page .row .card .card-body .row .col-6 .text-center h3 i {
-    position: absolute;
-    top: 8px;
-    right: 8px;
+    position: unset;
+    top: 0;
+    right: 0;
     color: #000!important;
-    background-color: var(--dashboard_color);
-    padding: 8px;
+    /* background-color: var(--dashboard_color); */
+    padding: 0 5px;
     line-height: 1;
     font-size: 25px!important;
 }
-.vendor-page .row .card .card-body .row .col-6 .text-center h3 {
+/* .vendor-page .row .card .card-body .row .col-6 .text-center h3 {
     font-size: 50px;
     line-height: 1.2;
     font-weight: 800!important;
-}
+} */
 .vendor-page .row .card .card-body .row .col-6 .text-center  p {
     color: #000!important;
     font-size: 18px!important;
@@ -5403,7 +5455,15 @@ li.dropdown.alLanguageTop {
 }
 .page-item.active .page-link{
     background-color: var(--dashboard_color);
+    border-color: var(--dashboard_color);
     color: #000;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: transparent!important;
+    border: transparent!important;
+}
+.alCustomersPage .card-box {
+    background-color: transparent!important;
 }
 .vendor-page .card {
     box-shadow: unset;
@@ -5434,6 +5494,39 @@ li.dropdown.alLanguageTop {
 }
 .active_slidebar .left-side-menu {
     width: 80px;
+}
+html body .alCustomersPage .card-box {
+    background: #f9f9f9!important;
+    box-shadow: unset;
+}
+html body .alCustomersPage .card-box .row > div .text-center {
+    background: #ffff!important;
+    min-height: 120px;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 3px #cccc;
+}
+html body .alCustomersPage .card-box .row > div .text-center  i {
+    color: #000!important;
+}
+.card.widget-inline {
+    box-shadow: unset;
+}
+.card.widget-inline .card-body.p-2 {
+    padding-top: 0!important;
+    padding-bottom: 0!important;
+}
+.card.widget-inline .card-body.p-2 .row > div .text-center {
+    padding: 25px 0;
+    background: #fff;
+    box-shadow: 0 0 3px #ccc;
+    border-radius: 10px;
+}
+.card.widget-inline .card-body.p-2 .row > div .text-center i {
+    color: #000!important;
 }
 .active_slidebar  #sidebar-menu>ul>li a[data-toggle=collapse]:after{
     content: unset;

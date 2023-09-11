@@ -561,18 +561,11 @@
 		@elseif($homePageLabel->slug == 'brands' && (count($homePageData['brands']) != 0))
 		<section class="container p2p-full-width popular-brands left-shape_ position-relative">
 			<div class="top-heading al_top_heading text-center d-flex align-items-center">
-				<!-- <h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
-				<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>  -->
+				 <h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
+				<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>  
 			</div>
-			<div class="row align-items-center">
-				<div class="col-md-2 brand text-center">
-					<div class=" top-heading">
-						<h2 class="h2-heading">top-Brands</h2>
-					<!-- <a class="" href="javscript:void(0);">See All <i class="fa fa-angle-right" aria-hidden="true"></i></a> -->
-					</div>
-				</div>
-
-				<div class=" col-md-10 al_custom_brand mt-3">
+			<div class="row align-items-center">				
+				<div class=" col-12 al_custom_brand mt-3">
 					<div class="alNewSliderTopBrand render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 						@foreach ($homePageData[$homePageLabel->slug] as $brand )
 						@include('frontend.home_page_8.brands')
@@ -609,14 +602,12 @@
 				<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2>
 				<a class="" href="{{route('vendor.all')}}">{{__("See all")}} <img class="btn-arrow" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""></a>
 			</div> -->
-			<div class="row eccomerce-temp">
-				<div class="col-md-2 text-center">
-					<div class=" top-heading mt-5 pt-5">
-					<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('Recommended Vendor', true)}}</h2>
+			<div class=" top-heading">
+				<h2 class="text-left h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('Recommended Vendor', true)}}</h2>
 				<a class="" href="{{route('vendor.all')}}">{{__("See All")}} <i class="fa fa-angle-right" aria-hidden="true"></i></a>
-					</div>
-				</div>
-				<div class="col-md-10">
+			</div>
+			<div class="row eccomerce-temp">				
+				<div class="col-12">
 					<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 						@foreach ($homePageData[$homePageLabel->slug] as $vendor )
 						@include('frontend.home_page_8.vendor')
@@ -737,18 +728,20 @@
 			</div>
 		</section>
 		@elseif($homePageLabel->slug == 'best_sellers' && (count($homePageData['best_sellers']) != 0))
-		<section class="container best-seller-eccomerce mb-0 pb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-			<div class="top-heading d-flex justify-content-between">
-				<h2 class="col h2-heading"> @php
-					echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
-					@endphp </h2>
-			</div>
-			<div class="row">
-				<div class="col-12">
-					<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-						@foreach ($homePageData[$homePageLabel->slug] as $vendor )
-						@include('frontend.home_page_8.best_sellers')
-						@endforeach
+		<section class=" best-seller-eccomerce mb-0 pb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+			<div class="container">
+				<div class="top-heading d-flex justify-content-between">
+					<h2 class="col h2-heading"> @php
+						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
+						@endphp </h2>
+				</div>
+				<div class="row">
+					<div class="col-12">
+						<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+							@foreach ($homePageData[$homePageLabel->slug] as $vendor )
+							@include('frontend.home_page_8.best_sellers')
+							@endforeach
+						</div>
 					</div>
 				</div>
 			</div>
@@ -868,7 +861,7 @@
 				<div class="row ">
 					<div class="col-md-12 pl-0 pt-4 text-center">
 						<div class="top-heading d-flex justify-content-between">
-							<h2 class="h2-heading"> @php
+							<h2 class="mt-0 h2-heading"> @php
 								echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 								@endphp </h2>
 								<!-- <a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>  -->

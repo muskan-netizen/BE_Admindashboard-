@@ -773,10 +773,10 @@ footer#footer {
     -webkit-transform: scale(1);
     transform: scale(1);
 }
-body.al_body_template_eight section.suppliers-section.container.vender_slider {
+/* body.al_body_template_eight section.suppliers-section.container.vender_slider {
     max-width: 98% !important;
     padding-top: 40px !important;
-}
+} */
 .al_body_template_eight .fixed-bar .menu-navigation.alThreeMenu .slick-list.draggable li.al_main_category {
     top: 0px;
 }
@@ -1454,18 +1454,22 @@ section.suppliers-section.container {
     border: 3px solid var(--theme-deafult);
 } */
 
-section.suppliers-section.container.vender_slider h2.h2-heading {
-    text-align: center !important;
+section.suppliers-section.container.vender_slider h2.h2-heading {    
     width: 100%;
     line-height: 45px;
 }
-
+.vender_slider .top-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
 section.suppliers-section.container.vender_slider .product-m.render_vendors {
     margin-bottom: 50px;
-    background: #f2f2f2;
+    /* background: #f2f2f2; */
+    background-color: #fff;
     mix-blend-mode: normal;
-    border-radius: 12px;
-    padding: 20px;
+    /* border-radius: 12px;
+    padding: 20px; */
 }
 .suppliers-slider-vendors .vender-logo.deals-product .supplier-rating a {
     font-size: 16px !important;

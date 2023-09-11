@@ -1830,10 +1830,10 @@ body.al_body_template_nine .menu-navigation.al {
         display: none !important;
     }
     body.al_body_template_nine .vendor-reviwes {
-        position: absolute;
+        position: unset;
         top: 0;
         right: inherit;
-    }
+    }   
     body.al_body_template_nine .add-cart-btn {
         width: 70px;
         height: 35px;
