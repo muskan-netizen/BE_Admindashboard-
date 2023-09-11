@@ -106,16 +106,15 @@ class CcavenueController extends Controller
     $working_key=$this->access_key;//Shared by CCAVENUES
     $access_code=$this->access_code;//Shared by CCAVENUES   
     $url=$this->url;//Shared by CCAVENUES
-
-    if($request->from == 'pickup_delivery'){
+    if($request->from == 'pickup_delivery' && UserAddress::where('is_primary','1')->doesntExist()){
+      $address = new \stdClass();
       $order =  Order::where('order_number',$number)->first();
       $addressess = json_decode($order->orderLocation->tasks,true);
-      $address = $addressess[0]['address'];
+      $address->address = $addressess[0]['address'];
       }else{
         $address = UserAddress::where('is_primary','1')->first();
-        $address =  $address->address;
       }
-      $merchant_data = 'merchant_id='.$this->merchant_id.'&order_id='.$number.'&amount='.$request->amt.'&currency='.getPrimaryCurrencyName().'&redirect_url='.route('ccavenue.success').'&cancel_url='.route('ccavenue.success').'&language=EN&billing_name='.$user->name.'&billing_address='.@$address->address.'&billing_city='.@$address->city.'&billing_state='.@$address->state.'&billing_zip='.@$address->pincode.'&billing_country='.@$address->country.'&billing_tel='.$user->phone_number.'&billing_email='.$user->email.'&delivery_name='.$user->name.'&delivery_address='.@$address->address.'&delivery_city='.@$address->city.'&delivery_state='.@$address->state.'&delivery_zip='.@$address->pincode.'&delivery_country='.@$address->country.'&delivery_tel='.$user->phone_number.'&merchant_param1='.$number.'&merchant_param2='.$request->from.'&merchant_param3=web&merchant_param4='.auth()->id().'&merchant_param5='.$this->token.'&promo_code=&customer_identifier=&';
+      $merchant_data = 'merchant_id='.$this->merchant_id.'&order_id='.$number.'&amount='.$request->amt.'&currency='.getPrimaryCurrencyName().'&redirect_url='.route('ccavenue.success').'&cancel_url='.route('ccavenue.success').'&language=EN&billing_name='.$user->name.'&billing_address='.@$address->address.'&billing_city='.@$address->city.'&billing_state='.@$address->state.'&billing_zip='.@$address->pincode.'&billing_country='.@$address->country.'&billing_tel='.$user->phone_number.'&billing_email='.$user->email.'&delivery_name='.$user->name.'&delivery_address='.@$address->address.'&delivery_city='.@$address->city.'&delivery_state='.@$address->state.'&delivery_zip='.@$address->pincode.'&delivery_country='.@$address->country.'&delivery_tel='.$user->phone_number.'&merchant_param1='.$number.'&merchant_param2='.$request->from.'&merchant_param3=web&merchant_param4='.auth()->id().'&merchant_param5='.$user->auth_token.'&promo_code=&customer_identifier=&';
       $encrypted_data=$this->encrypt($merchant_data,$working_key); // Method for encrypting the data.
 
     return view('frontend.payment_gatway.ccavenue_view', compact('encrypted_data','access_code','url'));
@@ -137,15 +136,15 @@ class CcavenueController extends Controller
     $access_code=$this->access_code;//Shared by CCAVENUES
     $url=$this->url;//Shared by CCAVENUES
     $user = auth()->user();
-    if($request->from == 'pickup_delivery'){
+    if($request->from == 'pickup_delivery' && UserAddress::where('is_primary','1')->doesntExist()){
+      $address = new \stdClass();
       $order =  Order::where('order_number',$number)->first();
       $addressess = json_decode($order->orderLocation->tasks,true);
-      $address = $addressess[0]['address'];
+      $address->address = $addressess[0]['address'];
       }else{
         $address = UserAddress::where('is_primary','1')->first();
-        $address =  $address->address;
       }
-      $merchant_data = 'merchant_id='.$this->merchant_id.'&order_id='.$number.'&amount='.$request->amt.'&currency='.getPrimaryCurrencyName().'&redirect_url='.route('ccavenue.success').'&cancel_url='.route('ccavenue.success').'&language=EN&billing_name='.$user->name.'&billing_address='.@$address->address.'&billing_city='.@$address->city.'&billing_state='.@$address->state.'&billing_zip='.@$address->pincode.'&billing_country='.@$address->country.'&billing_tel='.$user->phone_number.'&billing_email='.$user->email.'&delivery_name='.$user->name.'&delivery_address='.@$address->address.'&delivery_city='.@$address->city.'&delivery_state='.@$address->state.'&delivery_zip='.@$address->pincode.'&delivery_country='.@$address->country.'&delivery_tel='.$user->phone_number.'&merchant_param1='.$number.'&merchant_param2='.$request->from.'&merchant_param3=web&merchant_param4='.auth()->id().'&merchant_param5='.$this->token.'&promo_code=&customer_identifier=&';
+      $merchant_data = 'merchant_id='.$this->merchant_id.'&order_id='.$number.'&amount='.$request->amt.'&currency='.getPrimaryCurrencyName().'&redirect_url='.route('ccavenue.success').'&cancel_url='.route('ccavenue.success').'&language=EN&billing_name='.$user->name.'&billing_address='.@$address->address.'&billing_city='.@$address->city.'&billing_state='.@$address->state.'&billing_zip='.@$address->pincode.'&billing_country='.@$address->country.'&billing_tel='.$user->phone_number.'&billing_email='.$user->email.'&delivery_name='.$user->name.'&delivery_address='.@$address->address.'&delivery_city='.@$address->city.'&delivery_state='.@$address->state.'&delivery_zip='.@$address->pincode.'&delivery_country='.@$address->country.'&delivery_tel='.$user->phone_number.'&merchant_param1='.$number.'&merchant_param2='.$request->from.'&merchant_param3=web&merchant_param4='.auth()->id().'&merchant_param5='.$user->auth_token.'&promo_code=&customer_identifier=&';
       $encrypted_data=$this->encrypt($merchant_data,$working_key); // Method for encrypting the data.
 
     return view('frontend.payment_gatway.ccavenue_view', compact('encrypted_data','access_code','url'));
