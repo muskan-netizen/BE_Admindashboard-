@@ -92,6 +92,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                             <p class="mb-0" id="customers_change">
                             </p>
                         </div>
+                   
                     </div><!-- Customer box end here -->
                 </div>
                 @endif
@@ -107,13 +108,14 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                             <p class="mb-0" id="orders_change">
                             </p>
                         </div>
+                  
                     </div><!-- Orders box end here -->
                 </div>
 
                 <div class="col-sm">
                     @if(auth()->user()->is_superadmin)
                     <!-- Orders box start here -->
-                    <div class="card alDasBoxItems">
+                    <div class="card alDasBoxItems"> 
                         <div class="card-body">
                             <div class="float-right">
                                 <i class="mdi mdi-account-multiple widget-icon"></i>
@@ -123,6 +125,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                             <p class="mb-0" id="orders_vendor">
                             </p>
                         </div>
+                    
                     </div><!-- Orders box end here -->
                     @endif
                 </div>
@@ -176,6 +179,7 @@ span.nodatafound {font-size: 120% !important;border: 1px solid #FC0;background: 
                             <p class="mb-0" id="products_change">
                             </p>
                         </div>
+                    </a>
                     </div><!-- Growth box end here -->
                 </div>
                 @if(auth()->user()->is_superadmin)
