@@ -4130,7 +4130,7 @@
         }
 
         .location-box {
-            background-color: var(--theme-deafult);
+            /* background-color: var(--theme-deafult); */
             position: relative;
             padding: 35px 24px 30px
         }
@@ -11260,3 +11260,99 @@
         .inner_spacing .border-product .product-icon #social-links ul li a {
             font-size: 20px;
         }
+/*===  Cab header ===*/
+.site-header .cab-booking-header {
+    background-color: var(--top-header-color);
+}
+.pool_radio_controls  .item {
+    position: relative;
+    overflow: hidden;
+}
+.pool_radio_controls  .item  input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 46px;
+    opacity: 0;
+}
+.pool_radio_controls  .item label {
+    border: 1px solid #000;
+    border-radius: 4px;
+    padding: 4px 10px!important;
+    margin: 0!important;
+    margin-right: 10px!important;
+}
+.pool_radio_controls  .item:hover label{
+    background-color: #000;;
+}
+.pool_radio_controls  .item:hover label h5{
+    color: #fff;
+}
+.pool_radio_controls   .item input:checked + label {
+    background: #000;
+    color: #fff;
+}
+.pool_radio_controls   .item input:checked + label h5 {
+    color: #fff;
+}
+.location-inputs li {
+    color: #000;
+    background: #eee;
+    align-items: center;
+    padding-left: 35px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    max-height: 44px;
+}
+.location-inputs li .title , .location-inputs li i{
+    color: #000;
+}
+.location-box ul#location_input_main_div {
+    padding: 0!important;
+}
+.location-inputs li::before{
+    background-color: #000;
+}
+.location-box .add-more-location::before {
+    color: #000;
+    left: 11px;
+}
+.location-inputs li::before {
+    background: #000!important;
+    left: 20px;
+    border-color: #000;
+}
+.location-inputs li.dots::after{
+    border: 2px solid #000;
+    background: #000;
+    left: 17px;
+}
+.location-box .title {
+    color: #000;
+}
+.location-box .add-more-location {
+    color: #000;
+    padding-left: 35px!important;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #eee;
+    border-radius: 4px;
+}
+#alTaxiBookingWrapper .alFullMapForm {
+    margin-left: 40px!important;
+    height: 75vh!important;
+}
+.address-form .where-to-first .title-36 {
+    font-size: 16px!important;
+}
+#alTaxiBookingWrapper .gmnoprint {
+    margin-left: 40px!important;
+}
+.location-inputs li .title{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
