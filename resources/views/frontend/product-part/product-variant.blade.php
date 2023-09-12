@@ -41,7 +41,7 @@
                                         data-id="{{ $var_id }}"></span>
                                 @else
                                     <span
-                                        class="color_var radio_var radio_{{ $var_id }} @if ($checked == 'checked') var-active radio-active @endif"
+                                        class="color_var radio_var var_{{ $var_id }} @if ($checked == 'checked') var-active radio-active @endif"
                                         style="padding:8px; border: 1px solid var(--theme-deafult); background:#fff;"
                                         data-id="{{ $var_id }}"></span>
                                 @endif
