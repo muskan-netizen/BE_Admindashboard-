@@ -5171,11 +5171,13 @@ $(document).ready(function () {
             case 58:
                 payWithPowerTrans(payment_option_id,'');
             break;
-
             case 59:
                 payWithLivees(payment_option_id);
                 break;
-
+             case 62:
+                paymentViaMpesaSafari('', payment_option_id, '');
+            break;
+                
         }
 
     }
@@ -5728,13 +5730,17 @@ $(document).ready(function () {
                 payWithPowerTrans(payment_option_id, order);
               }
             break;
-
             case '59':
               var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
               if (order != '') {
                 payWithLivees(address_id, payment_option_id, order);
               }
             break;
+           case '62':
+              var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+              if (order != '') {
+                paymentViaMpesaSafari(address_id, payment_option_id, order);
+              }
         }
 
     }
@@ -5975,9 +5981,11 @@ $(document).ready(function () {
             case 58:
                 payWithPowerTrans(payment_option_id,'');
             break;
-
-             case 59: console.log("here");
+             case 59:
                 payWithLivees(payment_option_id,payment_from='wallet');
+            break;
+            case 62:
+                paymentViaMpesaSafari('',payment_option_id,'');
             break;
         }
     }
