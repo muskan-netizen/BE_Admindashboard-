@@ -506,9 +506,9 @@ body.dark .inner_spacing{
     .al_body_template_two .menu-navigation.al_template_two_menu {
         margin-left: 0px;
     }
-    .al_body_template_two .menu-navigation.al .navigation-tab-item .nav-link {
+    /* .al_body_template_two .menu-navigation.al .navigation-tab-item .nav-link {
         padding-bottom: 0px;
-    }
+    } */
     .al_body_template_two .navigation-tab {
         border-bottom: 1px solid#efe5e5 !important;
     }

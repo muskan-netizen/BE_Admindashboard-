@@ -1533,6 +1533,37 @@ body.al_body_template_three .dashboard-right .profile-page .info-text label {
 .al_body_template_nine  .shoping_cart .radio{
     font-size:14px ;
 }
+ul.product_list_order_page {
+    display: grid!important;
+    grid-template-columns: 50px 1fr;
+    justify-content: flex-start;
+    align-items: center;
+    grid-gap:10px 15px;
+}
+ul.product_list_order_page .items_price{
+    text-align: left;
+}
+.product_list_item {
+    height: 140px;
+    overflow-y: auto;
+    padding-top: 8px;
+}
+.product_list_order_page li img {    
+    border-radius: 50%!important;
+    width: 50px!important;
+    height: 50px!important;
+    margin: 0!important;
+}
+.product_list_order_page li{
+    width: auto!important;
+    height: auto!important;
+    border-radius: 50%;
+    margin: 0!important;
+}
+.product_list_item::-webkit-scrollbar-thumb{
+    background-color: var(--theme-deafult);
+}
+
 @media(min-width:1440px){
     .al_body_template_eight .container {
         max-width: 1500px;

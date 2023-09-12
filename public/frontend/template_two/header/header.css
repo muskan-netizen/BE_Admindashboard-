@@ -401,6 +401,11 @@ body.al_body_template_two .search_bar.menu-right ul.d-flex.align-items-center {
         margin:20px 0!important;
     }
 }
+@media (max-width: 576px) {
+    body .menu-navigation.al .navigation-tab-item .nav-link {
+        padding: 5px;
+    }
+}
 
 /* menu css */
 .al_body_template_two .pixelstrap ul.alInnerMenu {

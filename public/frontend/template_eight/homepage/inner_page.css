@@ -447,7 +447,7 @@ ul.product_list_order_page {
     grid-template-columns: 50px 1fr;
     justify-content: flex-start;
     align-items: center;
-    grid-gap: 15px;
+    grid-gap:10px 15px;
 }
 ul.product_list_order_page .items_price{
     text-align: left;
@@ -457,6 +457,7 @@ ul.product_list_order_page .items_price{
     overflow-y: auto;
     padding-top: 8px;
 }
+
 
 @media (max-width: 1366px){
     .al_body_template_eight  .home-serivces .side-card .product-order .shopping-cart .alVendorProductDetails {
