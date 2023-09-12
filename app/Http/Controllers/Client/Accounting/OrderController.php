@@ -68,6 +68,26 @@ class OrderController extends Controller{
     
             return redirect()->route('failed-marg-orders');
     }
+
+    public function syncMargAllOrder($domain = null,Request $request)
+    {
+        try {
+            foreach ($request->order_ids as $key => $order_id) {
+                $order = Order::find($order_id);
+                if (!empty($order)) {
+                    $response = $this->makeInsertOrderMargApi($order);
+                }
+            }
+            if ($response == false) {
+                return response()->json(['status' => 208]);
+            }
+            return response()->json(['status' => 200]);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => 500,'message' => 'something went wrong']);
+        }
+        
+    }
+
     public function getOrdervendors($request,$is_marg = null){
         $user = Auth::user();
         $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
@@ -230,7 +250,9 @@ class OrderController extends Controller{
         $vendor_orders = $this->getOrdervendors($request,1);
 
         return Datatables::of($vendor_orders)
-       
+        ->addColumn('checkbox', function($row){
+            return $row->order_id;
+        })
          ->addColumn('orderId', function ($vendor_orders) {
             return $vendor_orders->orderDetail->id; 
         })

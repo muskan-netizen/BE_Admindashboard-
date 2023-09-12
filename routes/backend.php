@@ -138,6 +138,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('account/order/filter', [OrderController::class, 'filter'])->name('account.order.filter');
         Route::get('account/order/margfilter', [OrderController::class, 'margFilter'])->name('account.order.margFilter');
         Route::get('sync-marg-order/{order_id}', [OrderController::class, 'syncMargOrder'])->name('sync-marg-order');
+        Route::post('sync-marg-all-order', [OrderController::class, 'syncMargAllOrder'])->name('sync-marg-all-order');
 
         Route::get('account/order/getOrderCalculations', [OrderController::class, 'getOrderVendorCalculations'])->name('account.order.calculations');
         Route::get('account/loyalty/filter', [LoyaltyController::class, 'filter'])->name('account.loyalty.filter');
