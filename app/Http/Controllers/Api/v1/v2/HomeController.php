@@ -15,15 +15,16 @@ use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Traits\HomePage\HomePageTrait;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Http\Traits\{OrderTrait, ProductActionTrait, VendorTrait};
+use App\Http\Traits\{OrderTrait, ProductActionTrait, VendorTrait, RedisCacheTrait};
 use App\Models\{Banner, Brand, CabBookingLayout, CabBookingLayoutTranslation, Category, Client, ClientPreference, Vendor, VendorCategory, Product, ClientCurrency, HomePageLabel, HomeProduct, MobileBanner, OnboardSetting, Order, ProductCategory, SubscriptionInvoicesVendor, UserVendor, VendorCities, VendorOrderStatus, WebStylingOption};
+use Illuminate\Support\Facades\Redis;
 
 /**
  * HomeController
  */
 class HomeController extends BaseController
 {
-    use ApiResponser, HomePageTrait, OrderTrait, ProductActionTrait, VendorTrait;
+    use ApiResponser, HomePageTrait, OrderTrait, ProductActionTrait, VendorTrait, RedisCacheTrait;
     public $cities = [];
     private $curLang = 0;
     private $field_status = 2;
@@ -31,6 +32,7 @@ class HomeController extends BaseController
     public $client_preferences = [];
     public $venderFilterOpenClose = null;
     public $venderFilterbest = null;
+    public $loc_key = 'geo_fence:locations:mobile';
 
 
     public function __construct(Request $request)
@@ -47,6 +49,14 @@ class HomeController extends BaseController
         });
         
     }
+
+    public function config()
+    {
+        $this->additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating', 'is_service_product_price_from_dispatch','is_service_price_selection','is_cache_enable_for_home','cache_reset_time_for_home','cache_radius_for_home']);
+        $this->cache_minutes =  ($this->additionalPreference['cache_reset_time_for_home']!='') ? $this->additionalPreference['cache_reset_time_for_home'] :  $this->cache_minutes;
+        $this->radius =  ($this->additionalPreference['cache_radius_for_home']!='') ? $this->additionalPreference['cache_radius_for_home'] :  $this->radius;       
+    }
+
 
 
     public function categoriesAll(Request $request, $domain='')
@@ -104,6 +114,7 @@ class HomeController extends BaseController
     public function homepage(Request $request, $domain = '')
     {
         try {           
+            $this->config();
             $home = array();
             $vendor_ids = array();
             if ($request->has('ref')) {
@@ -190,6 +201,48 @@ class HomeController extends BaseController
             //     }
             // }
             // $banners = $banners->orderBy('sorting', 'asc')->get();
+
+            $clientPreferences = ClientPreference::first();
+
+
+            $count = 0;
+            if ($clientPreferences) {
+                foreach (config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value) {
+                    $clientVendorTypes = $vendor_typ_key . '_check';
+                    if ($clientPreferences->$clientVendorTypes == 1) {
+                        $count++;
+                    }
+                }
+
+                if (empty($latitude) && empty($longitude)) {
+                    $latitude = $clientPreferences->Default_latitude;
+                    $longitude = $clientPreferences->Default_longitude;
+                }
+            }
+
+            if($clientPreferences->is_hyperlocal == 1) {
+                
+                $this->loc_key = $this->loc_key.":hyperlocal:".$type.":".$clientPreferences->client_code;
+                $cacheKey = $this->loc_key.":{$latitude}:{$longitude}";
+                
+                $find_key = $this->isPointInRadius($latitude, $longitude, $this->radius, $this->loc_key);
+
+
+            } else {
+                $this->loc_key = $this->loc_key.':'.$type.':'.$clientPreferences->client_code;
+                $cacheKey = $this->loc_key;
+                $cachedResult = Redis::get($this->loc_key);
+                //$cachedResult['cacheKey'] = $cacheKey??'';
+                if ($cachedResult) {
+                    $find_key['data'] = json_decode($cachedResult);
+                } 
+
+            }
+
+            if ($this->additionalPreference['is_cache_enable_for_home'] == 1 && @$find_key['data']) {
+                $homeData = $find_key['data'];
+            } else {
+
 
             $mobile_banners = MobileBanner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
                 ->where(function ($q) {
@@ -312,6 +365,25 @@ class HomeController extends BaseController
             //$homeData['banners'] = $banners??[];
             $homeData['banner_image'] = $banners??[];
             //$homeData['categories'] = $categories;
+            $homeData['cacheKey'] = $cacheKey??'';
+
+            $locations = [
+                [
+                    'latitude' => $latitude,
+                    'longitude' => $longitude,
+                    'key' => $cacheKey,
+                    //'data' => json_encode($homeData)
+                ]
+            ];
+            //pr($cacheKey);
+            if($clientPreferences->is_hyperlocal == 1) {
+                $this->storeLocations($locations,$homeData,$this->loc_key);
+
+            } else {
+                Redis::set($this->loc_key, json_encode($homeData));
+                Redis::expire($this->loc_key, $this->cache_minutes);
+            }
+        }
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -1491,8 +1563,6 @@ class HomeController extends BaseController
             $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids,null,$this->venderFilterOpenClose,$this->venderFilterbest);
         }
         
-       
-        
         $trendingVendors = [];
         if (in_array('trending_vendors', $enable_layout)) {  # if enable trending_vendors section in 
             $now = Carbon::now()->toDateTimeString();
@@ -1515,18 +1585,10 @@ class HomeController extends BaseController
         //get Most Selling Vendors
         $mostSellingVendors = []; //best_sellers
         if (in_array('best_sellers', $enable_layout)) {
-            if(!empty($vendors)){
-                $mostSellingVendors = collect($vendors);
-                if(sizeof($mostSellingVendors)){
-                    $mostSellingVendors[] = $mostSellingVendors->sortByDesc('selling_count');
-                }
-                
-            }else{
-                if(count($vendor_ids) > 0){
-                    $dataMo = $this->getVendorForHomePage($preferences, "best_sellers", $timezone, 0, $request->type, $language_id, $latitude, $longitude, $vendor_ids);
-                    if(sizeof($dataMo)){
-                        $mostSellingVendors = $dataMo;
-                    }
+            if(count($vendor_ids) > 0){
+                $dataMo = $this->getVendorForHomePage($preferences, "best_sellers", $timezone, 0, $request->type, $language_id, $latitude, $longitude, $vendor_ids);
+                if(sizeof($dataMo)){
+                    $mostSellingVendors = $dataMo;
                 }
             }
         }

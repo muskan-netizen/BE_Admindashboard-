@@ -2134,12 +2134,12 @@ class OrderController extends BaseController
                 if ($email_template) {
 
                     $email_template_content = $email_template->content;
-                    if ($vendor_id == "") {
-
+                   // if ($vendor_id == "") {
                         $returnHTML = view('email.newOrderProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
-                    } else {
-                        $returnHTML = view('email.newOrderVendorProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
-                    }
+                   // } else {
+                   //     $returnHTML = view('email.newOrderVendorProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
+                   // }
+
                     $email_template_content = str_ireplace("{description}",'', $email_template_content);
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
@@ -2417,7 +2417,7 @@ class OrderController extends BaseController
                     'qty' => $product->quantity,
                     'category_type' => $product->product->category->categoryDetail->type->title ?? '',
                     'product_id' => $product->product_id,
-                    'title' => $product->product_name,
+                    'title' =>$product->translation->title,
                     'product_title' => $product->translation->title,
                     'routes' => $product->routes,
                     'dispatcher_agent' => $dispatcher_agent,
@@ -2655,6 +2655,7 @@ class OrderController extends BaseController
                     $product_addons = [];
                     $vendor->vendor_name = $vendor->vendor->name;
                     foreach ($vendor->products as  $product) {
+                        
                         $product->longTermSchedule = array();
                         $product->recurring_date_count = 1;
                         if($product->product->is_long_term_service ==1){
@@ -2692,6 +2693,7 @@ class OrderController extends BaseController
                             $product->processor_date = '';
                             $product->address = '';
                         }
+                        $product->product_name = isset($product->translation)?$product->translation->title:$product->product_name;                        
                         //till here
                         $product->scheduled_date_time = (($product->scheduled_date_time!=null)?dateTimeInUserTimeZone($product->scheduled_date_time, $user->timezone):null);
                         $product_addons = [];

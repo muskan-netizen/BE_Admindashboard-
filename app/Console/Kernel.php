@@ -19,7 +19,8 @@ class Kernel extends ConsoleKernel
         Commands\RejectOrderNotification::class,
         Commands\HubSpotSyncData::class,
         Commands\MargApiProductUpdateCron::class,
-        Commands\MargApiOrderUpdate::class
+        Commands\MargApiOrderUpdate::class,
+        Commands\RecurringBooking::class
         //
     ];
 
@@ -36,12 +37,14 @@ class Kernel extends ConsoleKernel
         $schedule->command('auto:reject_order_notifi')->everyMinute();
         // $schedule->command('set_default_dummy:data')->dailyAt('00:30');
         $schedule->command('auto:create_recurring_order_for_dispatcher')->dailyAt('00:30');
+        $schedule->command('set_default_dummy:data')->dailyAt('00:30');
+        $schedule->command('auto:create_recurring_order_for_dispatcher')->hourly();
         $schedule->command('send_campaign:notification')->everyMinute();
         $schedule->command('service_area:active_for_vendor_slot')->everyMinute();
         $schedule->command('copy:catalog')->everyTenMinutes();
         $schedule->command('pickup:notify')->everyMinute();
-        $schedule->command('auto:sycn_product_from_marg_api')->everyFiveMinutes();
-        $schedule->command('marg:marg_order_update')->everyMinute();
+        $schedule->command('auto:sycn_product_from_marg_api')->hourly();
+        $schedule->command('marg:marg_order_update')->everyTenMinutes();
         // $schedule->command('inspire')->hourly();
     }
 

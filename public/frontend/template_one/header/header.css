@@ -1,4 +1,26 @@
-
+.al_body_template_one .mobile-account span{
+    font-family: 'Zen Kaku Gothic Antique',sans-serif!important;
+}
+.dark.al_body_template_one .mobile-account span{
+    color: #fff;
+}
+.dark.al_body_template_one .mobile-account svg g,
+.dark.al_body_template_one .mobile-account svg g rect {
+    stroke: #fff!important;
+    fill: #fff!important;
+}
+.dark .search_bar ul.d-flex.align-items-center.m-0 li a {
+    border: unset;
+}
+.al_body_template_one span#cart_qty_span:empty{
+    display: none;
+}
+.dark.al_body_template_one .main-menu .menu-right .icon-nav li.mobile-account ul li a{
+    color: #fff;    
+}
+.al_body_template_one .main-menu .menu-right .icon-nav li.mobile-account ul li a{
+    font-family: 'Zen Kaku Gothic Antique',sans-serif!important;
+}
 article#page-container {
     position: relative;
     /* min-height: 100vh; */
@@ -452,6 +474,11 @@ body.al_body_template_one .main-menu .menu-right .icon-nav li ul.onhover-show-di
     }
 
 
+    .fixed-bar .menu-slider .slick-prev, .fixed-bar .menu-slider .slick-next {
+        height: 15px;
+        width: 15px;
+        background-size: 15px;
+    }    
 /*==========  end Dark the header css 02-03-20223 ==========*/
 
 

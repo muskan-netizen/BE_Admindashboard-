@@ -32,6 +32,8 @@ use Math;
 use SimpleXMLElement;
 use Log;
 use App\Http\Traits\ProductActionTrait;
+use App\Observers\OrderObserver;
+use App\Observers\UserObserver;
 
 class CustomerAuthController extends FrontController
 {
@@ -281,6 +283,11 @@ class CustomerAuthController extends FrontController
             $user->phone_token_valid_till = $sendTime;
             $user->email_token_valid_till = $sendTime;
             $user->timezone = $client_timezone;
+
+            if(session()->get('company_id')){
+                $user->company_id = base64_decode(session()->get('company_id'));
+            }
+
             $user->password = Hash::make($req->password);
             $user->save();
 
@@ -536,6 +543,9 @@ class CustomerAuthController extends FrontController
                 $this->LoginActionRecentView($userid);
             }
             
+            //Login Observer
+            UserObserver::signIn(auth()->user());
+            
             $message = ('Logged in successfully');
             $redirect_to = '';
      
@@ -559,7 +569,6 @@ class CustomerAuthController extends FrontController
 
     /*** Login user via username ***/
     public function loginViaUsername(Request $request, $domain = ''){
-       
         try{
             $errors = array();
 
@@ -666,6 +675,10 @@ class CustomerAuthController extends FrontController
                 }
                 $username = str_ireplace(' ', '', $username);
                 if (Auth::attempt(['email' => $username, 'password' => $request->password, 'status' => 1])) {
+
+                    //Login Observer
+                     UserObserver::signIn(auth()->user());
+
                     $userid = Auth::id();
                     $Authuser = Auth::user();
                     $update_last_login = User::where('id',$userid)->update(['last_login_at' => Carbon::now()->toDateTimeString()]);

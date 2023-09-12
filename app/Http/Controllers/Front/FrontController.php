@@ -30,15 +30,13 @@ class FrontController extends Controller
     private $field_status = 2;
     protected function sendSms($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
         try{
-
             $client_preference =  getClientPreferenceDetail();
+           
             if($client_preference->sms_provider == 1)
             {
                 if(!empty($client_preference->sms_secret) && !empty($client_preference->sms_from)){
                     $client = new TwilioClient($client_preference->sms_key, $client_preference->sms_secret);
                     $send =  $client->messages->create($to, ['from' => $client_preference->sms_from, 'body' => $body]);
-                    //// Log::info('SMS twilio respons');
-                    //// Log::info($send);
                 }else{
                     return 2;
                 }
@@ -50,7 +48,7 @@ class FrontController extends Controller
             }elseif($client_preference->sms_provider == 3) //for mazinhost gateway
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
-                $send = $this->mazinhost($to,$body,$crendentials);
+                $send = $this->mazinhost_sms($to,$body,$crendentials);
             }elseif($client_preference->sms_provider == 4) //for unifonic gateway
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
@@ -97,8 +95,8 @@ class FrontController extends Controller
             //return $send;
         }
         catch(\Exception $e){
-            //// Log::info('SMS logs');
-            //// Log::info($e->getMessage());
+            Log::info('SMS logs');
+            Log::info($e->getMessage());
             return '2';
         }
         return '1';
@@ -127,7 +125,7 @@ class FrontController extends Controller
             }elseif($client_preference->sms_provider == 3) //for mazinhost gateway
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
-                $send = $this->mazinhost($to,$body,$crendentials);
+                $send = $this->mazinhost_sms($to,$body,$crendentials);
             }elseif($client_preference->sms_provider == 4) //for unifonic gateway
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
@@ -458,7 +456,7 @@ class FrontController extends Controller
                 $value->variant_price = (!empty($value->variant->first())) ? decimal_format(($value->variant->first()->price * $multiplier),',') : 0;
                 $value->averageRating = number_format($value->averageRating, 1, '.', '');
                 $value->image_url = ($value->media->first() && !is_null($value->media->first()->image))  ? $value->media->first()->image->path['image_fit'] . '300/300' . $value->media->first()->image->path['image_path'] : $this->loadDefaultImage();
-                $value->category_name = ($value->category->categoryDetail->translation->first()) ? $value->category->categoryDetail->translation->first()->name :  $value->category->slug;
+                $value->category_name = (@$value->category->categoryDetail->translation->first()) ? $value->category->categoryDetail->translation->first()->name :  $value->category->slug;
                // $value->category_type_id = ($value->category->categoryDetail->first()) ? $value->category->categoryDetail->first()->type_id : '';
             }
         }

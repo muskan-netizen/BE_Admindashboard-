@@ -62,14 +62,14 @@ if (!function_exists('getAdditionalPreference')) {
      * @param  mixed $key
      * @return void
      */
-    function getAdditionalPreference($key=array()){
+    function getAdditionalPreference($key=array() , $time = '60'){
         setUserCode();
         $return = [];
         $dbreturn= [];
         if(sizeof($key)){
             // $result = ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
             $cacheKey = 'client_preferences_additional_'.json_encode($key);
-            $result = Cache::remember($cacheKey, 60, function () use ($key) {
+            $result = Cache::remember($cacheKey, $time, function () use ($key) {
                 return ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
             });
             $return = array_column($result->toArray(), 'key_value', 'key_name');
@@ -547,12 +547,15 @@ if (!function_exists('productvariantQuantity')) {
 if (!function_exists('checkImageExtension')) {
     function checkImageExtension($image)
     {
-        $ch =  substr($image, strpos($image, ".") + 1);
         $ex = "@webp";
-        if ($ch == 'svg') {
-            $ex = "";
+        if(!empty($image))
+        {
+            $ch =  substr($image, strpos($image, ".") + 1);
+            if ($ch == 'svg') {
+                $ex = "";
+            }
         }
-        return $ex;
+            return $ex;
     }
 }
 
@@ -807,7 +810,7 @@ function showPriceWithCurrency($price = 0,$compare = 0)
             $is_token_currency = getAdditionalPreference(['is_token_currency_enable'])['is_token_currency_enable'];
             $redis->set("ifTCurrency_".session()->get('userCode'), $is_token_currency, 'EX', 36000);
         }
-        
+        $is_token_currency = 0;
         if($is_token_currency == 1)
         {
             $currencysymbol = "<i class='fa fa-money' aria-hidden='true'></i> ";
@@ -1262,13 +1265,10 @@ if (!function_exists('decimal_format')) {
     // Number Format according to Client preferences
     function decimal_format($number,$format="")
     {
-        if(is_numeric($number)){
+        $number = is_numeric($number)?$number:0;
         $preference = session()->get('preferences');
         $digits = $preference['digit_after_decimal'] ?? 2;
         return number_format($number,$digits,'.',$format);
-        }else{
-            return 0.00 ;
-        }
     }
 }
 
@@ -1921,6 +1921,7 @@ if( !function_exists('get_file_path') ) {
       if(!empty($url)){
         $img = $url;
       }
+
       $ex = checkImageExtension($img);
       $return_url = $values =  \Config::get('app.'.$type);
 
@@ -2005,5 +2006,76 @@ if (!function_exists('getDatesBetweenTwoDates')) {
         // Convert the period to an array of dates
         $dates = $period->toArray();
         return $dates;
+    }
+}
+
+if (!function_exists('recurringCalculationFunction')) {    
+    function recurringCalculationFunction($request)
+    {
+        $recurringformPost = (object)$request->recurringformPost;
+        $weekTypes ='';
+        $daysCnt ='';
+        if(!empty($recurringformPost->weekDay)){
+            $weekTypes = implode(',',$recurringformPost->weekDay);
+        }
+
+        $startDate = $recurringformPost->startDate;
+        $endDate = $recurringformPost->endDate;
+
+        $selectedCustomdates = [];
+        
+        if($recurringformPost->action=='2' || $recurringformPost->action=='1'){
+            $startDate = $recurringformPost->startDate;
+            $endDate = $recurringformPost->endDate;
+            
+            if($recurringformPost->action=='1'){
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            } else {
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate,$recurringformPost->weekDay);
+            }
+            
+            $daysCnt =count($selectedCustomdates);
+            $selectedCustomdates = implode(',',$selectedCustomdates);
+        }elseif($recurringformPost->action=='3'){
+            $startDate = Carbon::now()->addDays(1);
+            $endDate = Carbon::now()->addDays(1);
+            $endDate = $endDate->addMonths($recurringformPost->month_number);
+            $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            $daysCnt =count($selectedCustomdates);
+            $selectedCustomdates = implode(',',$selectedCustomdates);
+        }elseif($recurringformPost->action=='4'){
+            if(!empty($recurringformPost->selectedCustomdates)){
+                $daysCnt =count($recurringformPost->selectedCustomdates);
+                $selectedCustomdates = implode(',',$recurringformPost->selectedCustomdates);
+            }
+        }elseif($recurringformPost->action=='6'){
+            $startDate = $recurringformPost->startDate;
+            $endDate = $recurringformPost->endDate;
+            if($recurringformPost->action=='1'){
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            } else {
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate,$recurringformPost->weekDay,'A');
+            }
+            
+            $daysCnt =count($selectedCustomdates);
+            $selectedCustomdates = implode(',',$selectedCustomdates);
+        }
+
+
+        if(empty($daysCnt)){
+            $days = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            $daysCnt =count($days);
+        }
+
+            return (object)[
+                'weekTypes' => @$weekTypes,
+                'selectedCustomdates' => @$selectedCustomdates,
+                'startDate' => @$startDate,
+                'endDate' => @$endDate,
+                'action'  => @$recurringformPost->action,
+                'schedule_time'=>@$recurringformPost->schedule_time??'10:00',
+                'daysCnt'=>@$daysCnt??'1'
+            ];
+
     }
 }

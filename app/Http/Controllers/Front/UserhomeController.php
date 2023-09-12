@@ -505,6 +505,7 @@ class UserhomeController extends FrontController
 
             if ($this->additionalPreference['is_cache_enable_for_home'] == 1 && @$find_key['data']) {
                 $homeData = $find_key['data'];
+                //die;
                 echo $homeData;
                 exit;
             } else {
@@ -637,18 +638,6 @@ class UserhomeController extends FrontController
                 //pr($html);
                 return view('frontend.'.$view_page)->with($homeData);
             }
-
-            $is_service_product_price_from_dispatch_forOnDemand = 0;
-          
-            $getOnDemandPricingRule = getOnDemandPricingRule($vendor_type, Session::get('onDemandPricingSelected'),$additionalPreference);
-         
-            $is_service_product_price_from_dispatch_forOnDemand =$getOnDemandPricingRule['is_price_from_freelancer'];
-            // if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
-            //     $is_service_product_price_from_dispatch_forOnDemand =1;
-            // }
-            $homeData = ['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $client_preferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData ,'is_service_product_price_from_dispatch_forOnDemand'=> $is_service_product_price_from_dispatch_forOnDemand];
-            return view('frontend.'.$view_page)->with($homeData);
-
         } catch (Exception $e) {
             pr($e->getCode());
             die;
@@ -692,11 +681,8 @@ class UserhomeController extends FrontController
      * @param  mixed $request
      * @return void
      */
-    public function postHomePageData(Request $request,$set_template,$enable_layout,$additionalPreference)
+    public function postHomePageData(Request $request,$set_template,$enable_layout)
     {
-     
-        //pr($enable_layout);
-       // $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating','is_show_vendor_on_subcription']);
         $vendor_ids = $vendors = [];
         $new_products = [];
         $feature_products = [];
@@ -780,7 +766,7 @@ class UserhomeController extends FrontController
                     break;
             }
         }
-        $vendor_ids = $this->getRandomVendorIdsForHomePage($preferences, $request->type, $additionalPreference['is_admin_vendor_rating'], $latitude, $longitude);
+        $vendor_ids = $this->getRandomVendorIdsForHomePage($preferences, $request->type, $this->additionalPreference['is_admin_vendor_rating'], $latitude, $longitude);
         $home_page_labels = HomePageLabel::with('translations')->get();
         if (in_array('brands', $enable_layout)) {     # if enable brands section in
             $brands = $this->getBrandsForHomePage($language_id, $this->field_status);
@@ -809,7 +795,7 @@ class UserhomeController extends FrontController
         }
   
         if(count($vendor_ids) > 0){
-            $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $clientdata->timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids);
+            $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $clientdata->timezone, $this->additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids);
         }
         $trendingVendors = [];
         if (in_array('trending_vendors', $enable_layout)) {  # if enable trending_vendors section in 
@@ -867,8 +853,8 @@ class UserhomeController extends FrontController
         $top_rated_products = '';
          //get long term service 
         $long_term_service_products =[];
-        if( in_array('long_term_service', $enable_layout) && @$additionalPreference['is_long_term_service'] == 1 && count($vendor_ids) > 0){ # if enable long_term_service section in 
-            $long_term_service_products = $this->longTermServiceProducts($vendor_ids, $additionalPreference, $language_id, $currency_id,'', $request->type,$p_dim);
+        if( in_array('long_term_service', $enable_layout) && @$this->additionalPreference['is_long_term_service'] == 1 && count($vendor_ids) > 0){ # if enable long_term_service section in 
+            $long_term_service_products = $this->longTermServiceProducts($vendor_ids, $this->additionalPreference, $language_id, $currency_id,'', $request->type,$p_dim);
         }
         if($this->checkTemplateForAction(8)){
             $recently_viewed = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'recent_viewed', $request->type, $featured_products_title,$p_dim);
@@ -960,7 +946,7 @@ class UserhomeController extends FrontController
             'trending_vendors' => (!empty($trendingVendors) && count($trendingVendors) > 0)?$trendingVendors:$mostSellingVendors,
             'active_orders' => $activeOrders,
             'long_term_service' => $long_term_service_products,
-            'additionalPreference' => $additionalPreference,
+            'additionalPreference' => $this->additionalPreference,
             
         ];
        
@@ -984,7 +970,7 @@ class UserhomeController extends FrontController
                 'most_popular_products'  => (!empty($popular_products) && count($popular_products) > 0)?$popular_products:[],
                 'recent_orders' => $activeOrders,
                 'banners' => $banners,
-                'additionalPreference' => $additionalPreference,
+                'additionalPreference' => $this->additionalPreference,
             ];
             //pr( $data);
             return $data ;
@@ -1021,7 +1007,7 @@ class UserhomeController extends FrontController
     // public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type,$Products_title, $p_dim)
     // {
      
-    //     $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
+    //     $this->additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
     //     // $products = $products->whereHas('vendor', function($q) use ($type,$venderIds){
     //     //             $q->where('status',1);
     //     //             $q->whereIn('id',$venderIds);

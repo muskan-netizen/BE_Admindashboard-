@@ -4361,6 +4361,9 @@ span.fa.fa-eye-slash.toggle-password.eye::before {
     -webkit-transform: scale(1);
     -moz-transform: scale(1);
     transform: scale(1);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .suppliers-box .suppliers-img-outer img {
@@ -4547,7 +4550,7 @@ body.dark .shopping-cart h6.badge-light {
 }
 
 body.dark select#order_type {
-    background-color: transparent;
+    background-color: transparent;color:#fff;
 }
 
 body.dark .vendors .no-arrow .slick-next,
@@ -4934,7 +4937,8 @@ body.al_body_template_one .top-banner-wrapper {
         box-shadow: 0 0 10px rgba(0, 0, 0, .3);
     }
     .al_body_template_one .slick-slider .product-card-box .img-outer-box.position-relative {
-        height: 175px;
+        height:300px;
+        max-height: 300px;
     }
     .product-banner-img {
         height: 120px;

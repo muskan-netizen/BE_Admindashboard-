@@ -147,6 +147,11 @@
                                                                                             <a class="start_chat_driver chat-icon btn btn-solid" data-driver_details_api="{{$vendor->dispatch_traking_url}}" data-vendor_order_id="{{$vendor->id}}" data-vendor_id="{{$vendor->vendor_id}}" data-orderid="" data-order_id="{{$order->id}}">{{__('Driver Chat')}}</a>
                                                                                             @endif
                                                                                         @endif
+
+                                                                                        @if(@$order->recurring_day_data)
+                                                                                            <a class="btn btn-solid recurringBtn" data-recurring_slot="{{$order->recurring_booking_time}}"  data-recurring_day_data="{{$order->recurring_day_data}}">{{getNomenclatureName('Recurring', true)}}</a>
+                                                                                        @endif
+
                                                                                     </div>
                                                                                 @endif
                                                                                 <span class="left_arrow pulse"></span>
@@ -250,7 +255,10 @@
                                                                                                         <span class="item_no position-absolute">x{{ $product->quantity }}</span>
                                                                                                     </li>
                                                                                                     <li>
-                                                                                                        <label class="items_price">{{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($product->price * $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($product->price * $clientCurrency->doller_compare) }}</label>
+                                                                                                        <label class="items_price">
+                                                                                                        {{$product->product_title}}
+                                                                                                        ({{ $additionalPreference["is_token_currency_enable"] ? getInToken(decimal_format($product->price * $clientCurrency->doller_compare)) : Session::get('currencySymbol').decimal_format($product->price * $clientCurrency->doller_compare) }})
+                                                                                                        </label>
                                                                                                     </li>
                                                                                                     @php
                                                                                                         $product_total_price = $product->price * $clientCurrency->doller_compare;

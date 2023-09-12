@@ -46,17 +46,15 @@ class LiveePaymentController extends Controller
     {
         $payOption = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'livee')->where('status', 1)->first();
 
-        if($payOption->status)
-        $credentials = json_decode($payOption->credentials);
-
-        $this->trade_key = $credentials->livee_merchant_key;
-        $this->resource_key = $credentials->livee_resource_key;
-        $this->apiUrl = "https://www.livees.net/Checkout/api4";
-
-
-
-        $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
-        $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
+        if(@$payOption && !empty($payOption->credentials))
+        {
+            $credentials = json_decode($payOption->credentials);
+            $this->trade_key = $credentials->livee_merchant_key;
+            $this->resource_key = $credentials->livee_resource_key;
+            $this->apiUrl = "https://www.livees.net/Checkout/api4";
+            $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
+            $this->currency = (isset($primaryCurrency->currency->iso_code)) ? $primaryCurrency->currency->iso_code : 'USD';
+        }
     }
 
 

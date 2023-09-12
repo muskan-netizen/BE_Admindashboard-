@@ -234,7 +234,7 @@
 										{{$variant->fieldType($variant->field_type)}}
 									</td>
 									<td>
-										{{$variant->attributeType->title}}
+										{{((@$variant->attributeType)?$variant->attributeType->title:'')}}
 									</td>
 									<td>{{ ($variant->is_required == 1)?__('Yes'):__('No') }}</td>
 									<td><a class="action-icon editAttributeBtn"

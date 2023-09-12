@@ -481,7 +481,9 @@ class ProductController extends BaseController
                 }
 
             }
-
+            if ($request->is_live == 0) {
+                CartProduct::where('product_id',$product->id)->delete();
+            }
             $product->sku = $request->sku;
             $product->markup_price = $request->markup_price;
             $product->url_slug = $request->url_slug;
@@ -1290,27 +1292,22 @@ class ProductController extends BaseController
       public function getDispatcherTags($vendor_id){
         try {
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
-                if ($dispatch_domain && $dispatch_domain != false) {
-
-                    $unique = Auth::user()->code;
-                    $email =  $unique.$vendor_id."_royodispatch@dispatch.com";
-
-                    $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
-                                                        'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
-                                                        'content-type' => 'application/json']
-                                                            ]);
-                            $url = $dispatch_domain->pickup_delivery_service_key_url;
-                            $res = $client->get($url.'/api/get-agent-tags?email_set='.$email);
-                            $response = json_decode($res->getBody(), true);
-                            if($response && $response['message'] == 'success'){
-                                return $response['tags'];
-                            }
-
+            if ($dispatch_domain && $dispatch_domain != false) {
+                $unique = Auth::user()->code;
+                $email =  $unique.$vendor_id."_royodispatch@dispatch.com";
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
+                                                    'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
+                                                    'content-type' => 'application/json']
+                                                        ]);
+                $url = $dispatch_domain->pickup_delivery_service_key_url;
+                $res = $client->get($url.'/api/get-agent-tags?email_set='.$email);
+                $response = json_decode($res->getBody(), true);
+                if($response && $response['message'] == 'success'){
+                    return $response['tags'];
                 }
             }
-            catch(\Exception $e){
-
-            }
+        }catch(\Exception $e){
+        }
     }
 
     public function getDeliveryDispatcherTags($vendor_id)

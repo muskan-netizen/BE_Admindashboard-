@@ -581,7 +581,7 @@ $timezone = Auth::user()->timezone;
                 </button>
             </div>
             <div class="modal-body text-center">
-                <h6 class="m-0 px-3">{{__('Are u sure u want to repeat same order')}}</h6>
+                <h6 class="m-0 px-3">{{__('Are you sure you want to repeat same order')}}</h6>
             </div>
             <div class="modal-footer flex-nowrap justify-content-center align-items-center">
                 <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>
@@ -591,6 +591,7 @@ $timezone = Auth::user()->timezone;
     </div>
 </div>
 <!-- end repat order modal -->
+@include('frontend.modals.modal_recurring')
 
 @endsection
 @section('script')
@@ -1155,6 +1156,20 @@ $(document).delegate(".order_placed_btn_pending", "click", function() {
         document.getElementById(element.id).value = finalVal;
     }
 }
+       
+        $('.recurringBtn').click(function() 
+        {
+            var date = $(this).attr('data-recurring_day_data');
+            var slot = $(this).attr('data-recurring_slot');
+
+            const dateDate = date.split(",");
+            var days = dateDate.length;
+
+            $(".recurring-modal").modal();
+            $('#days-recurring').html(days);
+            $('#slot-recurring').html(slot);
+            $('#date-recurring').html(date);
+        });
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>

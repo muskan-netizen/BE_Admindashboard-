@@ -85,9 +85,14 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
             if ($vendor_order->coupon_paid_by == 1) {
                 $adminDiscount = $vendor_order->discount_amount;
             }
-            $vendor_order->total_amount = $tip+$vendor_order->payable_amount;
+            $vendor_order->total_amount = (double)$tip + (double)$vendor_order->payable_amount;
+            $vendor_order->cash_payment = 0;
+            if ($vendor_order->orderDetail->payment_option_id == 1) {
+                $vendor_order->cash_payment = $vendor_order->payable_amount + $vendor_order->taxable_amount;
+            }
             $vendor_order->order_status = $order_status;
             $revenue = $vendor_order->admin_commission_percentage_amount + $vendor_order->admin_commission_fixed_amount + $vendor_order->total_markup_price;
+            $vendor_order->online_payment = isset($vendor_order->payment) ? $vendor_order->payment->balance_transaction :'';
             if(@$client_preference_detail->is_tax_price_inclusive){
                 $vendor_order->admin_revenue = ($revenue + $vendor_order->total_container_charges + $vendor_order->service_fee_percentage_amount + $vendor_order->delivery_fee) - $adminDiscount - number_format($vendor_order->orderDetail->loyalty_amount_saved??0.00);
             }else{
@@ -108,6 +113,9 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 'Customer Name',
                 'Vendor Name',
                 'Subtotal Amount',
+                'Wallet',
+                'Cash',
+                'Online',
                 'Promo Code Used',
                 'Promo Code Discount',
                 'Service Fee',
@@ -137,6 +145,9 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 'Customer Name',
                 'Vendor Name',
                 'Subtotal Amount',
+                'Wallet',
+                'Cash',
+                'Online',
                 'Promo Code Used',
                 'Promo Code Discount',
                 'Service Fee',
@@ -169,6 +180,9 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 $order_vendors->user_name,
                 $order_vendors->vendor ? $order_vendors->vendor->name : '',
                 decimal_format($order_vendors->subtotal_amount),
+                decimal_format($order_vendors->orderDetail ? $order_vendors->orderDetail->wallet_amount_used : 0),
+                decimal_format($order_vendors->cash_payment),
+                decimal_format(floatval($order_vendors->online_payment)),
                 $order_vendors->coupon_code,
                 decimal_format($order_vendors->discount_amount),
                 decimal_format($order_vendors->service_fee_percentage_amount),
@@ -198,6 +212,9 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 $order_vendors->user_name,
                 $order_vendors->vendor ? $order_vendors->vendor->name : '',
                 decimal_format($order_vendors->subtotal_amount),
+                decimal_format($order_vendors->orderDetail ? $order_vendors->orderDetail->wallet_amount_used : 0),
+                decimal_format($order_vendors->cash_payment),
+                decimal_format(floatval($order_vendors->online_payment)),
                 $order_vendors->coupon_code,
                 decimal_format($order_vendors->discount_amount),
                 decimal_format($order_vendors->service_fee_percentage_amount),

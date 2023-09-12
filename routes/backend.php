@@ -59,6 +59,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::POST('role/getRolePermission', 'Client\RolePermissionController@getRolePermission')->name('get.role.permission');
         Route::post('role/savePermissions', 'Client\RolePermissionController@saveRolePermissions')->name('save.role.permissions');
 
+        Route::get('manage-cache', 'Client\ManageCacheController@index')->name('manageCache');
+
         Route::get('permission/add', 'Client\RolePermissionController@indexPermission')->name('permissions');
         Route::post('permission/save', 'Client\RolePermissionController@savePermission')->name('save.permission');
         Route::post('permission/assign', 'Client\RolePermissionController@assignPermission')->name('assign.permissions');
@@ -155,6 +157,11 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
 
         Route::post('custom/mod/verification', 'Client\ClientPreferenceController@customModVerification')->name('custom.mod.verification');
 
+
+        Route::post('updatePreferenceAdditional/{code}', 'Client\ClientPreferenceController@updatePreferenceAdditional')->name('configure.updatePreferenceAdditional');
+        Route::get('deleteKeysContainingWord/{code}', 'Client\ManageCacheController@deleteKeysContainingWord')->name('configure.deleteKeysContainingWord');
+
+        
         Route::post('referandearnUpdate/{code}', 'Client\ClientPreferenceController@referandearnUpdate')->name('referandearn.update');
         Route::post('updateDomain/{code}', 'Client\ClientPreferenceController@postUpdateDomain')->name('client.updateDomain');
         Route::resource('banner', 'Client\BannerController');
@@ -380,6 +387,12 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('orderReport/delete/{id}', 'Client\OrderController@deleteReport')->name('order.report.delete');
         Route::post('order/delay_time', 'Client\OrderController@addExtraPrepTimeToOrder')->name('order.delay_time');
 
+
+        Route::post('admin/company', 'Client\CompanyController@store')->name('company.add');
+        Route::get('admin/company', 'Client\CompanyController@index')->name('company.getList');
+        Route::post('admin/deleteCompany', 'Client\CompanyController@destroy')->name('company.delete');
+        Route::post('admin/editCompany', 'Client\CompanyController@edit')->name('company.edit');
+        Route::post('admin/updateCompany/{id}', 'Client\CompanyController@update')->name('company.update');
 
         // Admin Service Area Routes
         Route::post('admin/serviceArea', 'Client\AdminServiceAreaController@store')->name('admin.serviceArea');

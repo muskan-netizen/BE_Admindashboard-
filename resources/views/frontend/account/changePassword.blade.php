@@ -1,8 +1,8 @@
 @extends('layouts.store', ['title' => __('Change Password')])
 @section('css-links')
-<link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 @endsection
 @section('css')
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet" />
 <style type="text/css">
     .main-menu .brand-logo {
         display: inline-block;
@@ -61,6 +61,10 @@
     .invalid-feedback{
         display: block;
     }
+    .errors {
+        color: #F00;
+        background-color: #FFF;
+    }
 </style>
 @endsection
 @section('content')
@@ -79,7 +83,7 @@
                         <span>{!! \Session::get('error') !!}</span>
                     </div>
                 @endif
-                    @if ( ($errors) && (count($errors) > 0) )
+                {{--  @if ( ($errors) && (count($errors) > 0) )
                         <div class="alert alert-danger">
                             <ul class="m-0">
                                 @foreach ($errors->all() as $error)
@@ -87,7 +91,7 @@
                                 @endforeach
                             </ul>
                         </div>
-                    @endif
+                    @endif--}}
                 </div>
             </div>
         </div>
@@ -114,7 +118,8 @@
                         <div class="form-row mb-2">
                             <div class="col-md-12 mb-3">
                                 <label for="review">{{__('Old Password')}}</label>
-                                <input type="password" class="form-control mb-0" id="review" placeholder="{{__('Current Password')}}" name="old_password">
+                                <input type="password" class="form-control mb-0" id="old_password" placeholder="{{__('Current Password')}}" name="old_password">
+                               <span class="text-danger" id="old_password_error"></span>
                                 @if($errors->has('old_password'))
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $errors->first('old_password') }}</strong>
@@ -123,7 +128,8 @@
                             </div>
                             <div class="col-md-12 mb-3">
                                 <label for="review">{{__('Password')}}</label>
-                                <input type="password" class="form-control mb-0" id="review" placeholder="{{__('Password')}}" name="new_password">
+                                <input type="password" class="form-control mb-0" id="new_password" placeholder="{{__('Password')}}" name="new_password">
+                                <span class="text-danger" id="new_password_error"></span>                              
                                 @if($errors->has('new_password'))
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $errors->first('new_password') }}</strong>
@@ -132,7 +138,9 @@
                             </div>
                             <div class="col-md-12 mb-3">
                                 <label for="review">{{__('Confirm Password')}}</label>
-                                <input type="password" class="form-control mb-0" id="review" placeholder="{{__('Confirm Password')}}" name="confirm_password">
+                                <input type="password" class="form-control mb-0" id="confirm_password" placeholder="{{__('Confirm Password')}}" name="confirm_password">
+                               <span class="text-danger" id="confirm_password_error"></span>
+                               
                                 @if($errors->first('confirm_password'))
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $errors->first('confirm_password') }}</strong>
@@ -147,7 +155,7 @@
                             <input type="hidden" name="device_type" value="web">
                             <input type="hidden" name="device_token" value="web">
                             <input type="hidden" id="countryData" name="countryData" value="us">
-                            <div class="col-md-12"><button type="submit" class="btn btn-solid submitRegister w-100">{{__('Submit')}}</button></div>
+                            <div class="col-md-12"><button type="button" class="btn btn-solid submitRegister w-100" id="submitRegister">{{__('Submit')}}</button></div>
                         </div>
                     </form>
                 </div>
@@ -159,26 +167,28 @@
 </section>
 @endsection
 @section('script')
-<script src="{{asset('assets/js/intlTelInput.js')}}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
 <script>
-    var input = document.querySelector("#phone");
-    window.intlTelInput(input, {
-        separateDialCode: true,
-        hiddenInput: "full_number",
-        utilsScript: "{{asset('assets/js/utils.js')}}",
-        initialCountry: "{{ Session::get('default_country_code','US') }}",
-    });
-    $(document).ready(function () {
-        $("#phone").keypress(function (e) {
-            if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
-                return false;
+	var url =  "{{route('user.submitChangePassword')}}";    
+    $(document).on("click","#submitRegister",function() {
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: $("#register").serialize(),
+            success: function(response) {
+                 $('#register')[0].reset();    
+                 toastr.options.timeOut = 3000;
+                 toastr.success('{{__('Your Password has been changed successfully')}}');
+            },
+            error: function (reject) {
+                if( reject.status === 422 ) {
+                    var message = $.parseJSON(reject.responseText);
+                    $.each(message.errors, function (key, val) {
+                        $("#" + key + "_error").text(val[0]);
+                    });
+                }
             }
-            return true;
         });
     });
-    $('.iti__country').click(function(){
-        var code = $(this).attr('data-country-code');
-        $('#countryData').val(code);
-    })
 </script>
 @endsection
