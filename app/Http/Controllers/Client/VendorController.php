@@ -1545,6 +1545,8 @@ class VendorController extends BaseController
             $vendor->is_featured   = $request->is_featured == 'on' ? 1 : 0;
         }
 
+        $vendor->marg_vendor_id   = $request->marg_vendor_id ?? null;
+
         $vendor->save();
 
         if ($request->has('facilty_ids')) {

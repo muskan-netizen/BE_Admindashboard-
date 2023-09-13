@@ -47,8 +47,8 @@ trait MargTrait{
         try{
             DB::beginTransaction();	
             $is_exist = Product::where('sku', $request->code)->first();
-
-			if(isset($request->ProductCode) && isset($request->name) && is_null($is_exist)){
+            $mega_vendor_id = $is_exist->vendor->mega_vendor_id;
+			if(isset($request->ProductCode) && isset($request->name) && is_null($is_exist) && isset($mega_vendor_id)){
                 $url_slug = $this->validateSlug($request->name);
                 $request->catcode = 5;
 

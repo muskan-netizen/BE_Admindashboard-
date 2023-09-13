@@ -95,7 +95,7 @@ class OrderController extends Controller{
 
         $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
 
-        $vendor_orders = OrderVendor::with(['orderDetail.paymentOption', 'user','vendor','payment','orderstatus.OrderStatusOption']);
+        $vendor_orders = OrderVendor::with(['orderDetail.paymentOption', 'user','vendor','payment','orderstatus.OrderStatusOption','products']);
         if (!empty($request->get('date_filter'))) {
 
             $date_date_filter = explode(' to ', $request->get('date_filter'));
@@ -258,6 +258,9 @@ class OrderController extends Controller{
         })
          ->addColumn('order_number', function ($vendor_orders) {
             return $vendor_orders->orderDetail->order_number; 
+        })
+        ->addColumn('product_name', function ($vendor_orders) {
+            return $vendor_orders->products[0]->product->title ?? '--'; 
         })
             ->addColumn('created_date', function($vendor_orders) use($timezone) {
                 return dateTimeInUserTimeZone($vendor_orders->created_at, $timezone);

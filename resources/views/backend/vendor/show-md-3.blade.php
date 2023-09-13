@@ -272,7 +272,7 @@ body .rating-form .btn-reset {
 
 {{-- @if(auth()->user()->can('vendor-setting') || auth()->user()->is_superadmin) --}}
 @php
-    $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery']);
+    $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery','is_marg_enable']);
 @endphp
 @if( !p2p_module_status() )
 <div class="card-box cate-vendor">
@@ -509,7 +509,16 @@ body .rating-form .btn-reset {
                             </textarea>
                         </div>
                     </div> --}}
-                   
+
+                    @if(isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == '1')
+                        <div class="col-md-12">
+                            <div class="form-group" id="social_link">
+                                {!! Form::label('title', 'Vender Marg Id',['class' => 'control-label']) !!}
+                                <input class="form-control" name="marg_vendor_id" type="text" value="{{$vendor->marg_vendor_id}}" >
+                            </div>
+                        </div>
+                    @endif
+
                     @if(Auth::user()->is_superadmin == 1 && $client_preferences->is_one_push_book_enable == 1 && $vendor->pick_drop == 1)
                         <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                             {!! Form::label('title', __('Instant Booking'),['class' => 'control-label']) !!}

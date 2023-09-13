@@ -49,6 +49,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                                     <th><input type="checkbox" class="all-order_check" name="all_order_id" id="all-order_check"></th>
                                     <th>{{ __('Order ID') }}</th>
                                     <th>{{ __('Order Number') }}</th>
+                                    <th>{{ __('Product Name') }}</th>
                                     <th>{{ __('Date & Time') }}</th>
                                     <th>{{ __('Customer Name') }}</th>
                                     <th>{{ __('Vendor') }}</th>
@@ -105,6 +106,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                             }},
                             {data: 'orderId', name: 'orderId',orderable: false, searchable: false},
                             {data: 'order_number', name: 'order_number',orderable: false, searchable: false},
+                            {data: 'product_name', name: 'product_name',orderable: false, searchable: false},
                             {data: 'created_date', name: 'name',orderable: false, searchable: false},
                             {data: 'user_name', name: 'Customer Name',orderable: false, searchable: false},
                             {data: 'vendor_name', name: 'vendor_name', orderable: false, searchable: false},
