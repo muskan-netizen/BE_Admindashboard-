@@ -52,7 +52,6 @@ class UserhomeController extends FrontController
         
     }
 
-
     public function setTheme(Request $request)
     {
         $clientData = Client::select('id', 'logo','dark_logo','socket_url')->where('id', '>', 0)->first();

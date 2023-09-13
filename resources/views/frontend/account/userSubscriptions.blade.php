@@ -548,6 +548,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var create_mtn_momo_token = "{{route('mtn.momo.createToken')}}";
     var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
 	var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
+	var payment_mpesa_safari_url = "{{route('mpesasafari.pay')}}";
 	var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
     var payment_obo_url = "{{route('obo.pay')}}";
     var powertrans_payment_url = "{{ route('powertrans.payment') }}";
