@@ -657,7 +657,7 @@ content: inherit;
 }
 .al_body_template_one .file.file--upload {
     position: relative;
-    z-index: 99;
+    z-index: 9;
 }
 .al_body_template_one .rating.main-rating i {
     padding-left: 2px;

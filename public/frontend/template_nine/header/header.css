@@ -15,6 +15,11 @@
     ::-webkit-scrollbar-thumb:hover{
     background: #555;
     }
+
+    .section-b-space .container .row .col-lg-3 >.dashboard-left {
+        position: sticky;
+        top: 170px;
+    }    
     .result-item-name.product_heading h4{
         font-size:14px;
         font-weight: bold;

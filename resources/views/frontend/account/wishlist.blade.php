@@ -50,15 +50,11 @@
         .box-info table tr:first-child td {
             padding-top: .85rem;
         }        
-        .wishlist_product {
-            /* height: 550px;
+        /* .wishlist_product {
+            height: 550px;
             overflow-y: auto;
-            overflow-x: hidden; */
-        }
-        .dashboard-left{
-            position: sticky;
-            top: 166px;
-        }
+            overflow-x: hidden;
+        } */
         
     </style>
 @endsection
@@ -67,7 +63,7 @@
         $timezone = Auth::user()->timezone;
         $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency']);
     @endphp
-    <section class="section-b-space wishlist_block">
+    <section class="section-b-space ">
         <div class="container">
             @if ($errors->any())
                 <div class="alert alert-danger">
@@ -81,7 +77,7 @@
             <div class="row my-md-3 mt-5 pt-4 align-items-start">
                 <div class="col-lg-3">
                     <div class="account-sidebar"><a class="popup-btn">{{ __('My Account') }}</a></div>
-                    <div class="dashboard-left wishlist_block_item  mb-3">
+                    <div class="dashboard-left  mb-3">
                         <div class="collection-mobile-back"><span class="filter-back d-lg-none d-inline-block"><i
                                     class="fa fa-angle-left" aria-hidden="true"></i>{{ __('Back') }}</span></div>
                         @include('layouts.store/profile-sidebar')

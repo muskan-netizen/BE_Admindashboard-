@@ -11308,7 +11308,7 @@
     max-height: 44px;
 }
 .location-inputs li .title , .location-inputs li i{
-    color: #000;
+    color: #000!important;
 }
 .location-box ul#location_input_main_div {
     padding: 0!important;
@@ -11320,10 +11320,13 @@
     color: #000;
     left: 11px;
 }
+.location-box{
+    background-color: transparent!important;
+}
 .location-inputs li::before {
     background: #000!important;
-    left: 20px;
-    border-color: #000;
+    left: 20px!important;
+    border-color: #000!important;
 }
 .location-inputs li.dots::after{
     border: 2px solid #000;

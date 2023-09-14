@@ -2,9 +2,12 @@
 article#page-container {
     position: relative;
     /* min-height: 100vh; */
-    overflow: hidden;
+    /* overflow: hidden; */
 }
-
+.section-b-space .container .row .col-lg-3 >.dashboard-left {
+    position: sticky;
+    top: 160px;
+}
 .al_body_template_one .container {
     max-width: 1400px;
     

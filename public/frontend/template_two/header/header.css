@@ -1,3 +1,7 @@
+.section-b-space .container .row .col-lg-3 >.dashboard-left {
+    position: sticky;
+    top: 170px;
+}
 .al_white_bg_round .scrollspy-menu {
     position: sticky;
     top: 145px
