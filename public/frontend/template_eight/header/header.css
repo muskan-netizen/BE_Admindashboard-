@@ -504,7 +504,7 @@ li {
 }
 
 .sm ul.al_main_category_list {
-    z-index: 9;
+    z-index: -1;
     display: block;
     opacity: 0;
     list-style: none;
@@ -513,8 +513,8 @@ li {
     direction: ltr;
     text-align: left;
     padding: 0;
-    transition: all 0.1s!important;
-    transform: translateY(-20px);
+    transition:  0.01s!important;
+    transform: translateY(-0);
     visibility: hidden;
 }
 
@@ -1060,8 +1060,7 @@ header#al_new_design.site-header.fixed-bar .menu-navigation.alThreeMenu ul.al_ma
 }
 
 body.al_body_template_eight #al_new_design .pixelstrap ul {
-    top: 24px;
-    /* top:40px; */
+    top: 100%;    
     box-shadow: none;
 }
 
