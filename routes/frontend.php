@@ -20,6 +20,7 @@ Route::get('/order-marg', [MargController::class, 'makeInsertOrderMargApi']);
 // Route::get('/margcmd', [MargController::class, 'margcmd'])->name('sync.marg');
 Route::match(['get','post'],'payment/payByDataTrans','Front\DataTransController@payByDataTrans')->name('payment.payByDataTrans');
 Route::get('/sync-marg', [MargController::class, 'syncmarg'])->name('sync.marg');
+Route::get('/sync-marg/{vendor_id}', [MargController::class, 'syncmargVendor'])->name('sync.margVendor');
 Route::get('/order-marg', [MargController::class, 'makeInsertOrderMargApi']);
 Route::get('/debug-sentry', function () {		
 	echo \Hash::make('dispatcher@765');

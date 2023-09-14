@@ -271,6 +271,16 @@ body .rating-form .btn-reset {
 </div> -->
 
 {{-- @if(auth()->user()->can('vendor-setting') || auth()->user()->is_superadmin) --}}
+@if(Auth::user()->is_admin == 1)
+
+    <a href="{{ route('vendor.margConfig',$vendor->id) }}">
+    @php
+        $vendormenu = getNomenclatureName('Marg Configuration', true);
+    @endphp 
+        <span>{{ __('Marg Configuration') }}</span>
+    </a>
+ 
+@endif
 @php
     $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery','is_marg_enable']);
 @endphp
@@ -510,14 +520,6 @@ body .rating-form .btn-reset {
                         </div>
                     </div> --}}
 
-                    @if(isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == '1')
-                        <div class="col-md-12">
-                            <div class="form-group" id="social_link">
-                                {!! Form::label('title', 'Vender Marg Id',['class' => 'control-label']) !!}
-                                <input class="form-control" name="marg_vendor_id" type="text" value="{{$vendor->marg_vendor_id}}" >
-                            </div>
-                        </div>
-                    @endif
 
                     @if(Auth::user()->is_superadmin == 1 && $client_preferences->is_one_push_book_enable == 1 && $vendor->pick_drop == 1)
                         <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">

@@ -42,23 +42,25 @@ trait MargTrait{
     }
 
 
-    public function addProduct($request)
+    public function addProduct($request,$vendor_id = null)
 	{
         try{
             DB::beginTransaction();	
-            $is_exist = Product::where('sku', $request->code)->first();
-            $mega_vendor_id = $is_exist->vendor->mega_vendor_id;
-			if(isset($request->ProductCode) && isset($request->name) && is_null($is_exist) && isset($mega_vendor_id)){
+            $is_exist = Product::where(['sku' => $request->code, 'vendor_id' => $vendor_id])->first();
+            // $mega_vendor_id = $is_exist->vendor->mega_vendor_id;
+            $vendor_id = $vendor_id ?? 8;
+   
+			if(isset($request->ProductCode) && isset($request->name) && is_null($is_exist)){
                 $url_slug = $this->validateSlug($request->name);
                 $request->catcode = 5;
 
                 $product = new Product();
-                $product->sku = $request->code;      // $request->sku;
-                $product->url_slug = $url_slug;             // $request->url_slug;
+                $product->sku = $request->code.'_'.$vendor_id;      // $request->sku;
+                $product->url_slug = $url_slug.'_'.$vendor_id;             // $request->url_slug;
                 $product->title = $request->name;           // $request->product_name;        
                 $product->category_id = $request->catcode;  // $request->category_id;
                 $product->type_id = 1;
-                $product->vendor_id = 8;                    //$request->vendor_id;
+                $product->vendor_id = $vendor_id;                    //$request->vendor_id;
                 $client_lang = ClientLanguage::where('is_primary', 1)->first();
                 if (!$client_lang) {
                     $client_lang = ClientLanguage::where('is_active', 1)->first();
@@ -68,6 +70,7 @@ trait MargTrait{
                 if ($product->id > 0) {
                         $marg_product  =  new MargProduct();
                         $marg_product->product_id   =       $product->id;
+                        $marg_product->vendor_id    =       $vendor_id;
                         $marg_product->rid          =       $request->rid;
                         $marg_product->catcode      =       $request->catcode;               
                         $marg_product->code         =       $request->code;               
@@ -110,7 +113,7 @@ trait MargTrait{
                     $product_category->save();
 
                     $proVariant = new ProductVariant();
-                    $proVariant->sku = $request->code; // $request->sku;
+                    $proVariant->sku = $request->code.'_'.$vendor_id; // $request->sku;
                     $proVariant->product_id = $product->id;            
                     $proVariant->price = $request->MRP;            
                     $proVariant->quantity = $request->stock;            

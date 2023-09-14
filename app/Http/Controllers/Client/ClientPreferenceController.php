@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, ClientPreferenceAdditional, MapProvider, SmsProvider, NomenclatureTranslation, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption,StaticDropoffLocation,Facilty, RoleOld, User, Country, ClientCountries};
+use App\Models\{Client, ClientPreference, ClientPreferenceAdditional, MapProvider, SmsProvider, NomenclatureTranslation, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption,StaticDropoffLocation,Facilty, RoleOld, User, Country, ClientCountries, VendorMargConfig};
 use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Http\Traits\ApiResponser;
@@ -1022,5 +1022,27 @@ class ClientPreferenceController extends BaseController{
             return redirect()->back()->with('success', 'Cache updated successfully!');
         }
        // return redirect()->route('configure.index')->with('success', 'Client configurations updated successfully!');
+    }
+
+    public function vendorMargConfig($domain,$vendor_id)
+    {
+        $data['vendorMargConfig'] = VendorMargConfig::where('vendor_id',$vendor_id)->first();
+        $data['vendor_id'] = $vendor_id;
+        return view('backend.vendor.marg_config',$data);
+    }
+
+    public function vendorMargConfigUpdate($domain,Request $request,$vendor_id)
+    {
+        VendorMargConfig::updateOrCreate([
+            'vendor_id' => $vendor_id
+        ],[
+            'is_marg_enable' => $request->is_marg_enable,
+            'marg_company_url' => $request->marg_company_url,
+            'marg_company_code' => $request->marg_company_code,
+            'marg_access_token' => $request->marg_access_token,
+            'marg_decrypt_key' => $request->marg_decrypt_key
+        ]);
+
+        return back();
     }
 }

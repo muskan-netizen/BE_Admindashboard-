@@ -503,7 +503,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
             Route::post('updateCreateVendorInDispatchAppointment', 'Client\VendorController@updateCreateVendorInDispatchAppointment')->name('update.Create.Vendor.In.Dispatch.Appointment');
         });
 
-
+        Route::get('vendor-marg-config/{vendor_id}',  'Client\ClientPreferenceController@vendorMargConfig')->name("vendor.margConfig");
+        Route::post('vendor-marg-config-update/{vendor_id}',  'Client\ClientPreferenceController@vendorMargConfigUpdate')->name("vendorMargConfig.update");
+        
         Route::get('reports/productperformance', 'Client\ReportController@productPerformance')->name('report.productperformance');
         Route::post('reports/searchproduct', 'Client\ReportController@getOrdersListAjax')->name('report.searchproduct');
         Route::post('reports/productreport', 'Client\ReportController@getProductReportAjax')->name('report.loadproductreport');

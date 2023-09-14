@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddMargVendorIdInVendorsTable extends Migration
+class AddVendorIdInMargProductsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddMargVendorIdInVendorsTable extends Migration
      */
     public function up()
     {
-        Schema::table('vendors', function (Blueprint $table) {
-            $table->string('marg_vendor_id')->nullable();
+        Schema::table('marg_products', function (Blueprint $table) {
+            $table->foreignId('vendor_id');
         });
     }
 
@@ -25,8 +25,8 @@ class AddMargVendorIdInVendorsTable extends Migration
      */
     public function down()
     {
-        Schema::table('vendors', function (Blueprint $table) {
-            $table->dropColumn('marg_vendor_id');
+        Schema::table('marg_products', function (Blueprint $table) {
+            $table->dropColumn('vendor_id');
         });
     }
 }
