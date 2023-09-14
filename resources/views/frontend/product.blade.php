@@ -76,6 +76,7 @@ $clientData = \App\Models\Client::select('socket_url')->first();
     .customer_review_item_row  img{width:50px;height: 50px;border-radius:50%;}
     .customer_review_item_row h4{margin-bottom:0;font-size:18px;font-weight:600;padding-left:15px;margin-top:0;}
     .review-images img {width: 100%;max-width: 100px;margin: 10px 10px 10px 0px;}
+    .label-disabled {pointer-events: none;opacity: 0.5;}
     </style>
 
 @endsection
@@ -219,22 +220,20 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             @if(!empty($product->media) && count($product->media) > 0)
 
                                                 @foreach($product->media as $k => $image)
-                                                        @php
-                                                            if(isset($image->pimage)){
-                                                                $img = $image->pimage->image;
-                                                            }else{
-                                                                $img = $image->image;
-                                                            }
-                                                        @endphp
+                                                    @php
+                                                        if(isset($image->pimage)){
+                                                            $img = $image->pimage->image;
+                                                        }else{
+                                                            $img = $image->image;
+                                                        }
+                                                    @endphp
                                                 @endforeach
                                                 @if(!is_null($img))
-                                                <img id="main_image" src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}" />
+                                                    <img id="main_image" src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}" />
                                                 @endif
                                                 @else
-
                                                     <img id="main_image" class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
-
-                                            @endif
+                                                @endif
                                             </ul>
                                         </div>
                                         {{-- @if(count($product->media) > 1)
@@ -919,7 +918,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
     <% } %>
 </script>
 <script type="text/template" id="variant_options_template">
-    <% _.each(availableSets, function(type, key){ %>
+    <% _.each(availableSets, function(type, kkey){ %>
         <% if(type.variant_detail.type == 1 || type.variant_detail.type == 2) { %>
             <div class="size-box">
                 <ul class="productVariants">
@@ -1355,15 +1354,21 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     $(document).ready(function() {
         $(".starrate span.ctrl").width($(".starrate span.cont").width());
         $(".starrate span.ctrl").height($(".starrate span.cont").height());
-        $(".color_var").click(function () {
-        	var name  = $(this).attr("data-id");
-            $(".var_"+name).removeClass("var-active");
-            $(this).toggleClass("var-active");
-            });
-        $(".radio_var").click(function () {
-        	var name  = $(this).attr("data-id");
-            $(".radio_"+name).removeClass("radio-active");
-            $(this).toggleClass("radio-active");
+        // $(document).on("click",".color_var", function() {
+        // 	var name  = $(this).attr("data-id");
+        //     $(".var_"+name).removeClass("var-active");
+        //     $(this).toggleClass("var-active");
+        // });
+        // $(document).on("click",".radio_var", function() {
+        // 	var name  = $(this).attr("data-id");
+        //     $(".radio_"+name).removeClass("radio-active");
+        //     //$(this).toggleClass("radio-active");
+        // });
+        $(document).on("click",".radio", function() {
+             var name = $(this).find(".changeVariant").attr("vid");
+            $(`.var_${name}`).removeClass("radio-active");
+            $(this).children().last().addClass("radio-active");
+ 
         });
     });
 </script>
@@ -1375,87 +1380,168 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     let vendor_id = "{{ $product->vendor_id }}";
     let product_id = "{{ $product->id }}";
     var add_to_cart_url = "{{ route('addToCart') }}";
-    $('.changeVariant').click(function() {
-        updatePrice();
-    });
-    function updatePrice()
-    {
+    $(document).on('click', '.changeVariant', function() {
+        var $this = $(this);
+         
+        // var data_id = $(this).attr('data-variant-id');
+        // // Set session variable
+        // sessionStorage.setItem('selected_variant', data_id);
+        // var myValue = sessionStorage.getItem('selected_variant');
+        var myValue = []; // Initialize an empty array
 
+        $('.selected_variant:checked').each(function() {
+            var value = $(this).attr('data-variant-id'); // Get the value of the 'data' attribute
+            myValue.push(value); // Push the value into the array
+        });
+
+        var variant_val = $(this).val();
+        var option_title = $(this).data('option-title');
+        $('.changeVariant_'+option_title).removeAttr('checked');
+        $this.attr('checked', 'checked');
+       $key =  $(this).data('row-key');
+        updatePrice(myValue ,$key);
+    });
+
+    $(document).on('click', '.selected_variant', function() {
+        var $this = $(this);
+        var option_title = $(this).data('option-title');
+        $('.changeVariant_'+option_title).removeAttr('checked');
+        // $this.attr('checked', 'checked');
+        // var isSelected = $this.is(':checked');
+        // if(isSelected){
+        //     // alert($(this).data('variant-id'));
+        //     $('#prod_variant_id').val($(this).data('variant-id'));
+        // }
+    });
+
+    function updatePrice(myValue ,key){
         var variants = [];
         var options = [];
+        var firstCheckedSelectedTitle = $('.changeVariant:checked').first().parent().data('title');
         $('.changeVariant').each(function() {
-            var that = this;
             if (this.checked == true) {
+                var that = this;
                 variants.push($(that).attr('vid'));
                 options.push($(that).attr('optid'));
             }
         });
-        ajaxCall = $.ajax({
-            type: "post",
-            dataType: "json",
+        $.ajax({
             url: "{{ route('productVariant', $product->sku) }}",
+            type: 'POST',
             data: {
                 "_token": "{{ csrf_token() }}",
                 "variants": variants,
                 "options": options,
+                "selected_variant_title": firstCheckedSelectedTitle,
+                "key": key,
+                'is_variant_checked':myValue
             },
-            beforeSend: function() {
-                if (ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {
-                    ajaxCall.abort();
-                }
-            },
-            success: function(resp) {
-                // console.log(resp);
-                if(resp.status == 'Success'){
-                    $("#variant_response span").html('');
-                    var response = resp.data;
-                    if(response.variant != ''){
-                        if(vendor_type == 'rental'){
-                            // $('.incremental_hrs').val(0);
-                            // $('.base_hours_min').val();
-                            $('.incremental_hrs').val(0);
-                            $('#incremental_hrs_hidden').val(base_hours_min);
-                            $('.incremental-left-minus').click();
-                            //$('#blocktime, #blocktime2').change();
-                        }
-                        // if(additionalPreference != 0){
-                        //     response.variant.productPrice = token_currency * response.variant.productPrice;
-                        // }
-                        $('#product_variant_wrapper').html('');
-                        let variant_template = _.template($('#variant_template').html());
-                        response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count);
-                        response.variant.compare_at_price = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.compare_at_price)).toFixed(digit_count);
-                        $("#product_variant_wrapper").append(variant_template({ Helper: NumberFormatHelper, variant:response.variant, tokenAmount: response.tokenAmount, is_token_enable: response.is_token_enable}));
-                        $('#product_variant_quantity_wrapper').html('');
-                        let variant_quantity_template = _.template($('#variant_quantity_template').html());
-                        $("#product_variant_quantity_wrapper").append(variant_quantity_template({variant:response.variant}));
-                        // console.log(response.variant.quantity);
-                        if(!response.is_available){
-                            $(".addToCart, #addon-table").hide();
-                        }else{
-                            $(".addToCart, #addon-table").show();
-                        }
-                        let variant_image_template = _.template($('#variant_image_template').html());
-                        $(".product__carousel .gallery-parent").html('');
-                        $(".product__carousel .gallery-parent").append(variant_image_template({variant:response.variant}));
-                        // easyZoomInitialize();
-                        // $('.easyzoom').easyZoom();
-
-                        if(response.variant.media != ''){
-                            $(".product-slick").slick({ slidesToShow: 1, slidesToScroll: 1, arrows: !0, fade: !0, asNavFor: ".slider-nav" });
-                            $(".slider-nav").slick({ vertical: !1, slidesToShow: 3, slidesToScroll: 1, asNavFor: ".product-slick", arrows: !1, dots: !1, focusOnSelect: !0 });
-                        }
+            success: function(response) {
+                if(response.status == "Success"){
+                    if(response.html != ''){
+                        $("#variant_options").html('');
+                        $("#variant_options").html(response.html);
+                        $('#prod_variant_id').val(response.selected_variant.product_variant_id);                     
                     }
-                }else{
-                    $("#variant_response span").html(resp.message);
-                    $(".addToCart, #addon-table").hide();
-                }
-            },
-            error: function(data) {
 
+                    if(response.selected_variant.price != null){
+                        let price = parseFloat(response.selected_variant.price);
+                        let compare_at_price = parseFloat(response.selected_variant.compare_at_price);  
+                        $('.product_fixed_price').html(price.toFixed(2));
+                        $('.product_original_price').html(compare_at_price.toFixed(2));
+                    }
+                   
+                }
+                // Handle the successful response
             },
+            error: function(xhr) {
+                console.log(xhr);
+                // Handle the error
+            }
         });
     }
+
+
+    // function updatePrice(){
+    //     var variants = [];
+    //     var options = [];
+    //     var selected_variant_title = "";
+    //     $('.changeVariant').each(function() {
+    //         var that = this;
+    //         if (this.checked == true) {
+    //             variants.push($(that).attr('vid'));
+    //             options.push($(that).attr('optid'));
+    //             selected_variant_title = $(that).parent().attr('data-title');
+    //         }
+    //     });
+    //     ajaxCall = $.ajax({
+    //         type: "post",
+    //         dataType: "json",
+    //         url: "{{ route('productVariant', $product->sku) }}",
+    //         data: {
+    //             "_token": "{{ csrf_token() }}",
+    //             "variants": variants,
+    //             "options": options,
+    //             "selected_variant_title": selected_variant_title
+    //         },
+    //         beforeSend: function() {
+    //             if (ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {
+    //                 ajaxCall.abort();
+    //             }
+    //         },
+    //         success: function(resp) {
+    //             console.log(resp);
+    //             if(resp.status == 'Success'){
+    //                 $("#variant_response span").html('');
+    //                 var response = resp.data;
+    //                 if(response.variant != ''){
+    //                     if(vendor_type == 'rental'){
+    //                         // $('.incremental_hrs').val(0);
+    //                         // $('.base_hours_min').val();
+    //                         $('.incremental_hrs').val(0);
+    //                         $('#incremental_hrs_hidden').val(base_hours_min);
+    //                         $('.incremental-left-minus').click();
+    //                         //$('#blocktime, #blocktime2').change();
+    //                     }
+    //                     // if(additionalPreference != 0){
+    //                     //     response.variant.productPrice = token_currency * response.variant.productPrice;
+    //                     // }
+    //                     $('#product_variant_wrapper').html('');
+    //                     let variant_template = _.template($('#variant_template').html());
+    //                     response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count);
+    //                     response.variant.compare_at_price = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.compare_at_price)).toFixed(digit_count);
+    //                     $("#product_variant_wrapper").append(variant_template({ Helper: NumberFormatHelper, variant:response.variant, tokenAmount: response.tokenAmount, is_token_enable: response.is_token_enable}));
+    //                     $('#product_variant_quantity_wrapper').html('');
+    //                     let variant_quantity_template = _.template($('#variant_quantity_template').html());
+    //                     $("#product_variant_quantity_wrapper").append(variant_quantity_template({variant:response.variant}));
+    //                     // console.log(response.variant.quantity);
+    //                     if(!response.is_available){
+    //                         $(".addToCart, #addon-table").hide();
+    //                     }else{
+    //                         $(".addToCart, #addon-table").show();
+    //                     }
+    //                     let variant_image_template = _.template($('#variant_image_template').html());
+    //                     $(".product__carousel .gallery-parent").html('');
+    //                     $(".product__carousel .gallery-parent").append(variant_image_template({variant:response.variant}));
+    //                     // easyZoomInitialize();
+    //                     // $('.easyzoom').easyZoom();
+
+    //                     if(response.variant.media != ''){
+    //                         $(".product-slick").slick({ slidesToShow: 1, slidesToScroll: 1, arrows: !0, fade: !0, asNavFor: ".slider-nav" });
+    //                         $(".slider-nav").slick({ vertical: !1, slidesToShow: 3, slidesToScroll: 1, asNavFor: ".product-slick", arrows: !1, dots: !1, focusOnSelect: !0 });
+    //                     }
+    //                 }
+    //             }else{
+    //                 $("#variant_response span").html(resp.message);
+    //                 $(".addToCart, #addon-table").hide();
+    //             }
+    //         },
+    //         error: function(data) {
+
+    //         },
+    //     });
+    // }
+    
     function checkAddOnPrice()
     {
         price  = 0;

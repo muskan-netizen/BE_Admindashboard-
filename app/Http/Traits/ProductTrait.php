@@ -34,10 +34,11 @@ trait ProductTrait{
             'variantSet' => function ($z) use ($langId, $product_id) {
                 $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
                 $z->join('variant_translations as vt', 'vt.variant_id', 'vr.id');
-                $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
+                $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title', 'vr.position');
                 $z->where('vt.language_id', $langId);
                 $z->where('product_variant_sets.product_id', $product_id);
                 $z->where('vr.status', 1);
+                $z->orderBy('vr.position');
             },
             'variantSet.option2' => function ($zx) use ($langId, $product_id) {
                 $zx->where('vt.language_id', $langId)
@@ -73,6 +74,7 @@ trait ProductTrait{
                 })->where('url_slug', $url_slug)
                 ->where('is_live', 1)
                 ->firstOrFail();
+                // pr($product->variantSet);
         return $product;
     }
 

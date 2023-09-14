@@ -627,11 +627,11 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     that.prop("disabled",false);
                 }else{
                     Swal.fire({
-                    title: "{{__('Are you Sure?')}}",
+                    title: "{{__('Proceed with Accepting Order')}}",
                     // icon: 'info',
                     text: alertMessage,
                     showCancelButton: true,
-                    confirmButtonText: 'Ok',
+                    confirmButtonText: 'Yes',
                     }).then((result) => {
                         if (result.value) {
                             $.ajax({
@@ -743,11 +743,11 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             var alertMessage = "";
             
             Swal.fire({
-                title: "{{__('Are you Sure?')}}",
+                title: "{{__('Proceed with Accepting Order')}}",
                 // icon: 'info',
                 text: alertMessage,
                 showCancelButton: true,
-                confirmButtonText: 'Ok',
+                confirmButtonText: 'Yes',
             }).then((result) => {
                 if (result.value) {
                     $.ajax({
