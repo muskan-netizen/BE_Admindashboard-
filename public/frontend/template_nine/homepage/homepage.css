@@ -1481,7 +1481,7 @@ body.al_body_template_nine.p2p-module section.p2p-categories .cate-item a {
     background: linear-gradient(180deg, #e1dfdf 0%, #efe7e7 100%);
     border-radius: 9px;
     padding: 20px 10px;
-    margin-bottom: 25px;
+    margin-bottom: 0;
     min-height: inherit;
     cursor: pointer;
     display: block;
@@ -1583,8 +1583,8 @@ body.al_body_template_nine  .product-description  h6.card_title{
     text-align: left;
 }
 body.al_body_template_nine .product-m .item {
-    width: 16.33%;
-    padding: 0 10px;
+    width: 100%;
+    padding: 0;
     
 }
 body.al_body_template_nine .product-m .item  .product-card-box{

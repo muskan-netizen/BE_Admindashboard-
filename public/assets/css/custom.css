@@ -4363,7 +4363,7 @@ span.mdibookoutline svg {
 }
 
 .menu-title+.nav-second-level>li>a:hover span svg path {
-    fill: #43bee1;
+    fill: #000;
 }
 
 .tabs_radio {
