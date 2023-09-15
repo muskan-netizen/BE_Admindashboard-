@@ -66,15 +66,20 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                 </div>
             </div>
 
-
+            @php
+            $getAdditionalPreference = getAdditionalPreference(['marg_company_url']);
+            @endphp
             <div class="row marg_row"
                 style="{{ isset($vendorMargConfig->is_marg_enable) && $vendorMargConfig->is_marg_enable == 1 ? '' : 'display:none;' }}">
                 <div class="col-12">
                     <div class="form-group mb-2 mt-2">
                         <label for="marg_company_url">{{ __('Marg Company Url') }}</label>
-                        <input type="text" name="marg_company_url" id="marg_company_url"
-                            placeholder="" class="form-control"
-                            value="{{ old('marg_company_url', $vendorMargConfig->marg_company_url ?? '') }}">
+                        <input type="text" name="marg_company_url" id="marg_company_url" 
+                        @if ($getAdditionalPreference['marg_company_url'])
+                            readonly        
+                        @endif
+                            placeholder="" class="form-control" required
+                            value="{{ $getAdditionalPreference['marg_company_url'] ??  old('marg_company_url', $vendorMargConfig->marg_company_url ?? '') }}">
                         @if ($errors->has('marg_company_url'))
                             <span class="text-danger" role="alert">
                                 <strong>{{ $errors->first('marg_company_url') }}</strong>
@@ -90,7 +95,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                 <div class="col-12">
                     <div class="form-group mb-2 mt-2">
                         <label for="marg_company_code">{{ __('Company Code') }}</label>
-                        <input type="password" name="marg_company_code" id="marg_company_code"
+                        <input type="password" name="marg_company_code" id="marg_company_code" required
                             placeholder="" class="form-control"
                             value="{{ old('marg_company_code', $vendorMargConfig->marg_company_code ?? '') }}">
                         @if ($errors->has('marg_company_code'))
@@ -106,7 +111,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                 <div class="col-12">
                     <div class="form-group mb-2 mt-2">
                         <label for="marg_access_token">{{ __('Marg ID') }}</label>
-                        <input type="password" name="marg_access_token" id="marg_access_token"
+                        <input type="password" name="marg_access_token" id="marg_access_token" required
                             placeholder="" class="form-control"
                             value="{{ old('marg_access_token', $vendorMargConfig->marg_access_token ?? '') }}">
                         @if ($errors->has('marg_access_token'))
@@ -123,7 +128,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                     <div class="form-group mb-2 mt-2">
                         <label for="marg_decrypt_key">{{ __('Decrypt Key') }}</label>
                         <input type="password" name="marg_decrypt_key" id="marg_decrypt_key" placeholder=""
-                            class="form-control"
+                            class="form-control" required
                             value="{{ old('marg_decrypt_key', $vendorMargConfig->marg_decrypt_key ?? '') }}">
                         @if ($errors->has('marg_decrypt_key'))
                             <span class="text-danger" role="alert">

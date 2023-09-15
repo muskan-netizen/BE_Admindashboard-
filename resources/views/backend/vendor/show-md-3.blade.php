@@ -271,19 +271,26 @@ body .rating-form .btn-reset {
 </div> -->
 
 {{-- @if(auth()->user()->can('vendor-setting') || auth()->user()->is_superadmin) --}}
-@if(Auth::user()->is_admin == 1)
 
-    <a href="{{ route('vendor.margConfig',$vendor->id) }}">
-    @php
-        $vendormenu = getNomenclatureName('Marg Configuration', true);
-    @endphp 
-        <span>{{ __('Marg Configuration') }}</span>
-    </a>
- 
-@endif
 @php
-    $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery','is_marg_enable']);
+    $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery','is_marg_enable','is_vendor_marg_configuration']);
 @endphp
+
+@if(Auth::user()->is_admin == 1 && isset($getAdditionalPreference['is_vendor_marg_configuration']) && $getAdditionalPreference['is_vendor_marg_configuration'] == '1')
+    <div class="card-box cate-vendor">
+        <div class="row text-left">
+            <div class="col-md-12">
+                <a class="" href="{{ route('vendor.margConfig',$vendor->id) }}">
+                @php
+                    $vendormenu = getNomenclatureName('Marg Configuration', true);
+                @endphp 
+                    <span>{{ __('Marg Configuration') }}</span>
+                </a>
+            </div>
+        </div>
+    </div>
+@endif
+
 @if( !p2p_module_status() )
 <div class="card-box cate-vendor">
     <div class="row text-left">
