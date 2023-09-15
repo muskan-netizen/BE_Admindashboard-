@@ -154,7 +154,37 @@ class HomeController extends BaseController
                 }
             }
             $mobile_banners = $mobile_banners->orderBy('sorting', 'asc')->get();
-
+            if (count($mobile_banners)) {
+                foreach ($mobile_banners as $key => $value) {
+                    $bannerLink = '';
+                    $is_show_category = null;
+                    $vendor_name = null;
+                    if (!empty($value->link) && $value->link == 'category') {
+                        $bannerLink = $value->redirect_category_id;
+                        if ($bannerLink) {
+                            $categoryData = Category::where('status', 1)->where('id', $value->redirect_category_id)->with('translation_one')->first();
+                            $value->redirect_name = (($categoryData) && ($categoryData->translation_one)) ? $categoryData->translation_one->name : '';
+                        }
+                    }
+                    if (!empty($value->link) && $value->link == 'vendor') {
+                        $bannerLink = $value->redirect_vendor_id;
+                        if ($bannerLink) {
+                            $vendorDataSingle = Vendor::select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude')->where('status', 1)->where('id', $value->redirect_vendor_id)->first();
+                            if ($vendorDataSingle) {
+                                $vendorDataSingle->is_show_category = ($vendorDataSingle->vendor_templete_id == 2 || $vendorDataSingle->vendor_templete_id == 4) ? 1 : 0;
+                            }
+                            $is_show_category = (($vendorDataSingle) && ($vendorDataSingle->vendor_templete_id == 1)) ? 0 : 1;
+                            $value->is_show_category = $is_show_category;
+                            $value->redirect_name = $vendorDataSingle->name ?? '';
+                            $value->vendor = $vendorDataSingle;
+                        }
+                    }
+                    $value->redirect_to = ucwords($value->link);
+                    $value->redirect_id = $bannerLink;
+                    unset($value->redirect_category_id);
+                    unset($value->redirect_vendor_id);
+                }
+            }
 
             $home_page_labels = CabBookingLayout::where('is_active', 1)->app()->where('for_no_product_found_html', 0)->orderBy('order_by');
 
