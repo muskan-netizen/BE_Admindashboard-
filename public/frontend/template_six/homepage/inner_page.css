@@ -2426,7 +2426,9 @@ ol.breadcrumb {
     -webkit-transition: 0.5s;
     transition: 0.5s;
 }
-
+.product-order .show-div.shopping-cart li.alVendorProductDetails .media-body {
+    padding-right: 30px;
+}
 .product-order .show-div.shopping-cart li.alVendorProductDetails:hover .media-body {
     padding-right: 30px;
     -webkit-transition: 0.5s;
@@ -3758,6 +3760,13 @@ section.singleProductContent.pb-md-5.pb-2 {
 }
 .singleProductContent  .alSpaListHead.text-center.text-lg-left.mb-md-4 {
     margin-bottom: 15px!important;
+}
+#header_cart_main_ul_ondemand li  a.action-icon {
+    right: 0;
+    position: unset;
+    transform: unset;
+    top: 0;
+    margin: 0!important;
 }
 
 @media(max-width:1600px) {
