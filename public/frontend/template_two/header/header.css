@@ -1,3 +1,7 @@
+.section-b-space .container .row .col-lg-3 >.dashboard-left {
+    position: sticky;
+    top: 170px;
+}
 .al_white_bg_round .scrollspy-menu {
     position: sticky;
     top: 145px
@@ -399,6 +403,11 @@ body.al_body_template_two .search_bar.menu-right ul.d-flex.align-items-center {
     }
     body.dark.al_body_template_two .row.footer-theme.partition-f .footer-logo{
         margin:20px 0!important;
+    }
+}
+@media (max-width: 576px) {
+    body .menu-navigation.al .navigation-tab-item .nav-link {
+        padding: 5px;
     }
 }
 

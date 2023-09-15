@@ -1,6 +1,6 @@
 <!-- <div class="row">
     <div class="col-md-3"> -->
-    <div class="col-12">
+    <div class="col-12 p-0">
         <div  class="logo_brand">
             <a class="brand-box d-block black-box" href="{{$brand->redirect_url }}">
                 <div class="brand-img">

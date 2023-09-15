@@ -2,11 +2,15 @@
 article#page-container {
     position: relative;
     /* min-height: 100vh; */
-    overflow: hidden;
+    /* overflow: hidden; */
 }
-
+.section-b-space .container .row .col-lg-3 >.dashboard-left {
+    position: sticky;
+    top: 160px;
+}
 .al_body_template_one .container {
     max-width: 1400px;
+    
 }
 .search_bar.menu-right .icon-nav a svg {
     width: 16px;
@@ -853,6 +857,9 @@ body.al_body_template_two {
     .radius-bar.d-xl-inline.al_custom_search input {
         max-width: 130px;
         min-width: 130px;
+    }
+    .al_body_template_one .container {
+        padding: 0 25px;
     }
 }
 

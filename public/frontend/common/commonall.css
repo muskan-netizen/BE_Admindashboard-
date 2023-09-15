@@ -657,7 +657,7 @@ content: inherit;
 }
 .al_body_template_one .file.file--upload {
     position: relative;
-    z-index: 99;
+    z-index: 9;
 }
 .al_body_template_one .rating.main-rating i {
     padding-left: 2px;
@@ -1005,10 +1005,10 @@ display: inline-block;
 }.supplier-rating p{height: unset;font-size: 12px;font-weight: 400;color: #535766;}
 .cart-main-box{z-index: 1;}
 .al_body_template_eight .product-card-box .img-outer-box.position-relative{
-    min-height:260px;
+    min-height:220px;
     height: 100%;
     overflow: hidden;
-    max-height: 260px;
+    max-height: inherit;
 }
 .al_body_template_eight .render_full_selected_products .selected_products-slider .suppliers-img-outer {
     height: 100%;
@@ -1028,8 +1028,8 @@ display: inline-block;
 }
 .al_body_template_eight  .render_full_on_sale .img-outer-box {
     height: 100%;
-    min-height: 299px !important;
-    max-height: 299px !important;
+    /* min-height: 299px !important;
+    max-height: 299px !important; */
 }
 .al_body_template_eight .render_full_featured_products .img-outer-box{
     min-height: 224px;max-height: 224px;overflow: hidden;
@@ -1533,6 +1533,49 @@ body.al_body_template_three .dashboard-right .profile-page .info-text label {
 .al_body_template_nine  .shoping_cart .radio{
     font-size:14px ;
 }
+ul.product_list_order_page {
+    display: grid!important;
+    grid-template-columns: 50px 1fr;
+    justify-content: flex-start;
+    align-items: center;
+    grid-gap:10px 15px;
+}
+ul.product_list_order_page .items_price{
+    text-align: left;
+}
+.product_list_item {
+    height: 140px;
+    overflow-y: auto;
+    padding-top: 8px;
+}
+.product_list_order_page li img {    
+    border-radius: 50%!important;
+    width: 50px!important;
+    height: 50px!important;
+    margin: 0!important;
+}
+.product_list_order_page li{
+    width: auto!important;
+    height: auto!important;
+    border-radius: 50%;
+    margin: 0!important;
+}
+.product_list_item::-webkit-scrollbar-thumb{
+    background-color: var(--theme-deafult);
+}
+
+.categories_slider .slick-slide > div {
+    margin: 0 10px;
+}
+.categories_slider{
+    margin-bottom: 25px;
+}
+
+@media(min-width:1440px){
+    .al_body_template_eight .container {
+        max-width: 1500px;
+    }
+}
 @media(max-width:1440px) and (min-width:991px){
     .al_body_template_six  .shoping_cart .radio, .al_body_template_one  .shoping_cart .radio,
     .al_body_template_two  .shoping_cart .radio, .al_body_template_three  .shoping_cart .radio,
@@ -1570,7 +1613,8 @@ body.al_body_template_three .dashboard-right .profile-page .info-text label {
 
     .al_body_template_eight .product-card-box.position-relative.al_box_third_template.al{
         height: 100%;
-        min-height: 350px;max-height: 350px;
+        min-height: 350px;
+        max-height: 350px;
     }
     .al_body_template_eight .alNewSliderTopBrand .brand-img {height: 100%;min-height: 180px;}
     .al_body_template_eight .product-card-box .img-outer-box.position-relative{min-height: 230px;height: 100%;}
@@ -1613,8 +1657,8 @@ body.al_body_template_three .dashboard-right .profile-page .info-text label {
     } */
     .al_body_template_eight .render_full_on_sale .img-outer-box{
         height: 100%;
-    min-height: 260px !important;
-    max-height: 260px !important;
+    /* min-height: 260px !important;
+    max-height: 260px !important; */
     }  
     .render_full_spotlight_deals {
         padding: 20px 0px 0px 0px !important;
@@ -1850,8 +1894,12 @@ section#our_vendor_main_div .render_full_best_sellers {padding: 20px 0 !importan
 .new_cart table td{
     word-break: break-all;
 }
-
-
+.al_body_template_nine  .remove_product_via_cart i:hover {
+    color: red;
+}
+.al_body_template_nine div#dispatcher_status_show{
+    font-size: 14px;;
+}
 
 /*======== first template css gagandeep 29-03-2023 end ========*/
 
@@ -1890,6 +1938,7 @@ section#our_vendor_main_div .render_full_best_sellers {padding: 20px 0 !importan
     }
     .al_body_template_eight .product-card-box.position-relative.al_box_third_template.al{
         min-height: auto;
+        max-height: inherit;
     }
     .al_body_template_eight .slick-slide .inner_spacing p{
         white-space: nowrap;

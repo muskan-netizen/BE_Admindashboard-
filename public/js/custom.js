@@ -3009,9 +3009,9 @@ $(document).ready(function () {
         $('#add_new_address_btn').show();
         $('#add_new_address_form').hide();
     });
-    $(document).on("click", "#add_new_address_btn", function () {
+    $(document).on("click", "#add_new_address_btn a.add-address", function () {
         if(auth){
-        $(this).hide();
+        // $(this).hide();
         initialize();
         $("#add_new_address_form_modal").modal('show');
         $('#add_new_address_form').show();
@@ -5946,3 +5946,72 @@ $(".add_edit_address_btn").click(function(){
     $("html").addClass("intro");
   });
 
+
+// nine template slider 
+$('.categories_slider').slick({
+    slidesToShow: 7,
+    slidesToScroll: 1,
+    arrows: true,
+    dots: false,
+    speed: 300,
+    infinite: true,
+    autoplaySpeed: 5000,
+    autoplay: true,
+    responsive: [
+        {
+            breakpoint: 991,
+            settings: {
+            slidesToShow: 4,
+            }
+        },
+        {
+            breakpoint: 767,
+            settings: {
+            slidesToShow: 3,
+            }
+        },
+        {
+            breakpoint: 576,
+            settings: {
+            slidesToShow: 2,
+            }
+        }
+    ]
+});
+
+$('.featured_slider').slick({
+    slidesToShow: 5,
+    slidesToScroll: 1,
+    arrows: true,
+    dots: false,
+    speed: 300,
+    infinite: true,
+    autoplaySpeed: 5000,
+    autoplay: true,
+    responsive: [
+        {
+            breakpoint: 1440,
+            settings: {
+            slidesToShow: 4,
+            }
+        },
+        {
+            breakpoint: 991,
+            settings: {
+            slidesToShow: 3,
+            }
+        },
+        {
+            breakpoint: 767,
+            settings: {
+            slidesToShow: 2,
+            }
+        },
+        {
+            breakpoint: 576,
+            settings: {
+            slidesToShow: 1,
+            }
+        }
+    ]
+});

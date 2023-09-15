@@ -2,7 +2,7 @@
 article#page-container {
     position: relative;
     min-height: 100vh;
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 .al_body_template_one .slick-slide .inner_spacing p {
@@ -4979,6 +4979,14 @@ body.dark .slick-slider .d-flex.align-items-center.justify-content-between.al_cl
     .vendors .slick-next {
         right: 0px;
     }
+}
+@media(max-width:1400px){
+    .vendors .slick-prev{
+        left: -20px;
+    }
+    .vendors .slick-next {
+        right: -26px;
+    }   
 }
 @media(max-width:1200px) {
     .al_body_template_one .slick-slider .product-card-box .img-outer-box.position-relative {
