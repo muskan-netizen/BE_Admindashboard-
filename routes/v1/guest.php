@@ -132,6 +132,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::get('home-restaurents', 'Api\v1\HomeController@homeRestaurents');
         Route::get('category-restaurents/{category_id}', 'Api\v1\HomeController@categoryRestaurents');
+        
+        Route::get('allergic-items', 'Api\v1\AllergicItemController@index');
+
     });
 
     Route::group(['middleware' => ['dbCheck', 'systemAuth']], function () { //apilogger

@@ -521,6 +521,8 @@ $(document).ready(function () {
                     else if(payment_option_id == 60){
                         payWithCompany('',payment_option_id,response.data);
                         window.location.replace(response.data.route);
+                    }else if(payment_option_id == 62){
+                        payWithLivees(reload_route,'',response.data);
                     }
                     cabBookingPaymentOptions(payment_option_id, response.data);
                 }

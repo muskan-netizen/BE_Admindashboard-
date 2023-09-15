@@ -1392,15 +1392,22 @@ class VendorController extends BaseController{
                 if($client_preference->delivery_check == 1){$count++;}
             }
             if($count > 1){
-                $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 'on') ? 1 : 0;
-                $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 'on') ? 1 : 0;
-                $vendor->delivery = ($request->has('delivery') && $request->delivery == 'on') ? 1 : 0;
+                $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 1) ? 1 : 0;
+                $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 1) ? 1 : 0;
+                $vendor->delivery = ($request->has('delivery') && $request->delivery == 1) ? 1 : 0;
             }
             else{
                 $vendor->dine_in = $client_preference->dinein_check == 1 ? 1 : 0;
                 $vendor->takeaway = $client_preference->takeaway_check == 1 ? 1 : 0;
                 $vendor->delivery = $client_preference->delivery_check == 1 ? 1 : 0;
             }
+
+            $vendor->rental = ($client_preference->rental_check == 1 && $request->rental == 1) ? 1 : 0;
+            $vendor->appointment = ($client_preference->appointment_check == 1 && $request->appointment == 1) ? 1 : 0;
+            $vendor->p2p = ($client_preference->p2p_check == 1 && $request->p2p == 1) ? 1 : 0;
+            $vendor->pick_drop = ($client_preference->pick_drop_check == 1 && $request->pick_drop == 1) ? 1 : 0;
+            $vendor->on_demand = ($client_preference->on_demand_check == 1 && $request->on_demand == 1) ? 1 : 0;
+
             $vendor->logo = 'default/default_logo.png';
             $vendor->banner = 'default/default_image.png';
             if ($request->hasFile('upload_logo')) {

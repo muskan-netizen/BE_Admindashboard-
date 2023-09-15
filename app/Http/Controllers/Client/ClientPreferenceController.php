@@ -71,7 +71,7 @@ class ClientPreferenceController extends BaseController{
 
         $productDeliveryFeeByRole = ProductDeliveryFeeByRole::groupBy('role_id')->get()->pluck('role_id')->toArray();
 
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role','is_phone_signup', 'token_currency', 'is_token_currency_enable', 'hubspot_access_token', 'is_hubspot_enable', 'gtag_id', 'fpixel_id','is_long_term_service', 'is_free_delivery_by_roles', 'is_cab_pooling', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'add_to_cart_btn', 'chat_button', 'call_button', 'seller_sold_title','saller_platform_logo','is_tracking_url','is_tracking_sms_url', 'is_tax_price_inclusive', 'is_postpay_enable', 'is_order_edit_enable', 'order_edit_before_hours','is_gift_card', 'is_place_order_delivery_zero', 'is_cust_success_signup_email','is_influencer_refer_and_earn','is_bid_enable','advance_booking_amount','advance_booking_amount_percentage','update_order_product_price', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds',  'is_corporate_user', 'is_user_kyc_for_registration','is_service_product_price_from_dispatch','is_recurring_booking','is_file_cart_instructions','is_admin_vendor_rating', 'square_enable_status', 'square_credentials','is_show_vendor_on_subcription','is_enable_compare_product','is_service_price_selection','is_particular_driver', 'pickup_notification_before', 'pickup_notification_before_hours','pickup_notification_before2', 'pickup_notification_before2_hours','is_enable_curb_side','is_map_search_perticular_country','marg_access_token','marg_date_time', 'is_marg_enable', 'marg_company_code', 'marg_decrypt_key','stock_notification_before','stock_notification_qunatity','marg_company_url','is_share_ride_users','is_cache_enable_for_home','cache_reset_time_for_home','cache_radius_for_home','is_enable_google_analytics']);
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role','is_phone_signup', 'token_currency', 'is_token_currency_enable', 'hubspot_access_token', 'is_hubspot_enable', 'gtag_id', 'fpixel_id','is_long_term_service', 'is_free_delivery_by_roles', 'is_cab_pooling', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'add_to_cart_btn', 'chat_button', 'call_button', 'seller_sold_title','saller_platform_logo','is_tracking_url','is_tracking_sms_url', 'is_tax_price_inclusive', 'is_postpay_enable', 'is_order_edit_enable', 'order_edit_before_hours','is_gift_card', 'is_place_order_delivery_zero', 'is_cust_success_signup_email','is_influencer_refer_and_earn','is_bid_enable','advance_booking_amount','advance_booking_amount_percentage','update_order_product_price', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds',  'is_corporate_user', 'is_user_kyc_for_registration','is_service_product_price_from_dispatch','is_recurring_booking','is_file_cart_instructions','is_admin_vendor_rating', 'square_enable_status', 'square_credentials','is_show_vendor_on_subcription','is_enable_compare_product','is_service_price_selection','is_particular_driver', 'pickup_notification_before', 'pickup_notification_before_hours','pickup_notification_before2', 'pickup_notification_before2_hours','is_enable_curb_side','is_map_search_perticular_country','marg_access_token','marg_date_time', 'is_marg_enable', 'marg_company_code', 'marg_decrypt_key','stock_notification_before','stock_notification_qunatity','marg_company_url','is_share_ride_users','is_cache_enable_for_home','cache_reset_time_for_home','cache_radius_for_home','is_enable_allergic_items','is_enable_google_analytics']);
 
         return view('backend/setting/config')->with([
                     'tags' => $tags,
@@ -128,7 +128,7 @@ class ClientPreferenceController extends BaseController{
         }
 
         $preference = $ClientPreference ? $ClientPreference : new ClientPreference();
-        
+
         $nomenclature_value = $nomenclatureAllToGet->first();
         foreach ($preference->currency as $value) {
             $cli_currs[] = $value->currency_id;
@@ -202,7 +202,7 @@ class ClientPreferenceController extends BaseController{
             }
 
         try {
-            
+
             $this->updatePreferenceAdditional($request);
 
             if($request->has('token_currency'))
@@ -463,8 +463,8 @@ class ClientPreferenceController extends BaseController{
             // $preference->takeaway_check = ($request->has('takeaway_check') && $request->takeaway_check == 'on') ? 1 : 0;
             // $preference->delivery_check = ($request->has('delivery_check') && $request->delivery_check == 'on') ? 1 : 0;
         }
-        
-   
+
+
         if($request->has('custom_mods_config') && $request->custom_mods_config == '1'){
             $preference->enquire_mode = ($request->has('enquire_mode') && $request->enquire_mode == 'on') ? 1 : 0;
             $preference->pharmacy_check = ($request->has('pharmacy_check') && $request->pharmacy_check == 'on') ? 1 : 0;
@@ -499,7 +499,7 @@ class ClientPreferenceController extends BaseController{
             $preference->map_on_search_screen = ($request->has('map_on_search_screen') && $request->map_on_search_screen == 'on') ? 1 : 0;
             $preference->slots_with_service_area = ($request->has('slots_with_service_area') && $request->slots_with_service_area == 'on') ? 1 : 0;
         }
-        
+
         if($request->has('edit_order_modes') && $request->edit_order_modes == '1'){
          $preference->is_edit_order_admin = ($request->has('is_edit_order_admin') && $request->is_edit_order_admin == 'on') ? 1 : 0;
          $preference->is_edit_order_vendor = ($request->has('is_edit_order_vendor') && $request->is_edit_order_vendor == 'on') ? 1 : 0;
@@ -583,7 +583,7 @@ class ClientPreferenceController extends BaseController{
         if($request->has('primary_currency') && !$request->has('currency_data')){
             $delete = ClientCurrency::where('client_code',Auth::user()->code)->where('is_primary', 0)->delete();
         }
-        // Create Or Update Primary Country And Additional Country 
+        // Create Or Update Primary Country And Additional Country
         if ($request->filled('primary_country')) {
             $primaryCountryData = [
                 'is_active' => 1,
@@ -591,12 +591,12 @@ class ClientPreferenceController extends BaseController{
                 'client_code' => Auth::user()->code,
                 'country_id' => $request->primary_country,
             ];
-        
+
             ClientCountries::where('client_code', Auth::user()->code)->where('is_primary', 0)->delete();
-        
+
             ClientCountries::updateOrCreate(['is_primary' => 1], $primaryCountryData);
         }
-        
+
         if ($request->filled('countries')) {
             $existingCountryIds = [];
             foreach ($request->countries as $country) {
@@ -863,11 +863,11 @@ class ClientPreferenceController extends BaseController{
         }
         $preferenceset->save();
         $client = Client::first();
-        
+
         ClientPreferenceAdditional::updateOrCreate(
             ['key_name' => 'is_user_pre_signup', 'client_code' => $client->code],
             ['key_name' => 'is_user_pre_signup', 'key_value' => ($request->has('is_user_pre_signup') && $request->input('is_user_pre_signup') == 'on') ? 1 : 0,'client_code' => $client->code,'client_id'=> $client->id]);
-      
+
         if($request->has('send_to') && $request->send_to == 'customize' ){
             return redirect()->route('configure.customize')->with('success', 'Client customizations updated successfully!');
         }
@@ -965,7 +965,7 @@ class ClientPreferenceController extends BaseController{
         }
 
     }
-    
+
     public function updateVerificationOption($data)
     {
         $method_id_arr = $data['method_id'];
