@@ -454,8 +454,15 @@ body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect  a span{
 .search_bar  a svg{
     width: 16px;
 }
-
-
+body.al_body_template_nine.p2p-module ul#header_cart_main_ul:empty {
+    display: none;
+}
+.header-dropdown > .onhover-dropdown.mobile-account:hover .onhover-show-div{
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+    bottom: 0;
+    top: 100%;
+}
 
 @media(max-width:1200px){
     body .navigation-tab-item .nav-link{
@@ -605,7 +612,7 @@ body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect  a span{
         
     }
     body.al_body_template_nine.p2p-module .navigation-tab-item .nav-link{
-        white-space: :nowrap;
+        white-space: nowrap;
     }
     body.al_body_template_nine.p2p-module .navigation-tab-item .nav-link {
         padding: 5px 10px;
