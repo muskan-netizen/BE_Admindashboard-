@@ -143,10 +143,13 @@
                                     <span class="icon-vendor"></span>
                                     @php
                                         $vendormenu = getNomenclatureName('Marg Failed Orders', true);
-
-                                    @endphp
+                                        $vendor_orders_count = \App\Models\OrderVendor::select('id')->whereHas('orderDetail', function ($query){
+                                            $query->where('marg_status', '=',null);
+                                            $query->where('marg_max_attempt', '>',2);
+                                        })->count(); 
+                                    @endphp 
                                         {{-- <span>{{getNomenclatureName('Vendors', true)}}</span> --}}
-                                        <span>{{ __('Marg Failed Orders') }}</span>
+                                        <span>{{ __('Marg Failed Orders') }} {{ $vendor_orders_count ? '('. $vendor_orders_count .')' : '' }}</span>
                                     </a>
                          </li>
                          @endif

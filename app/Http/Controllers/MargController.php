@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Traits\MargTrait;
 use App\Models\Client;
 use App\Models\ClientPreferenceAdditional;
+use App\Models\VendorMargConfig;
 use Illuminate\Support\Facades\Artisan;
 
 class MargController extends Controller
@@ -25,7 +26,7 @@ class MargController extends Controller
     {
         Artisan::call('fetch:margdata');
     }
-
+    
     public function syncmarg()
     {
         $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code','marg_company_url']);
@@ -78,5 +79,55 @@ class MargController extends Controller
         // dd($resp);
     }
 
+    public function syncmargVendor($domain,$vendor_id)
+    {
 
+        $vendor_marg_config = VendorMargConfig::where('vendor_id',$vendor_id)->first();
+        
+        if($vendor_marg_config->is_marg_enable == 1){
+            $decryptionKey  = $vendor_marg_config->marg_decrypt_key;
+            $MargID  = $vendor_marg_config->marg_access_token;
+            $CompanyCode  = $vendor_marg_config->marg_company_code;
+            $margDateTime = $vendor_marg_config->marg_date_time??date('Y-m-d H:i:s');
+            $url  = $vendor_marg_config->marg_company_url;
+
+            $detail         = [];
+            $MargMST2017 = $url."/api/eOnlineData/MargMST2017";
+            $reqData = ["CompanyCode" => $CompanyCode,"MargID" => $MargID,"Datetime" =>'', "index" => 0];
+        }else{
+            return false;
+        }
+
+        $vendor_marg_config->update([
+            'marg_date_time' => date('Y-m-d H:i:s')
+        ]);
+        // Get the encrypted data from the request
+        $encryptedData = $this->getData($MargMST2017, $reqData);
+
+        // Decrypt the data using the DLL wrapper
+        $decryptedData = $this->DecryptLogic->Decrypt($encryptedData, $decryptionKey);
+        $collectionData = collect( json_decode($decryptedData));
+            //    dd($collectionData["Details"]->pro_N);
+        if(!empty($collectionData["Details"]->pro_N)){
+
+        // ---------------------- With Dispatch ---------------------
+            // $chunck = array_chunk($collectionData["Details"]->pro_N,100);
+            // foreach($chunck as $data){
+            //     dispatch(new \App\Jobs\SyncFromMarg($data))->onQueue('sync_data_from_marg');
+            // }
+        // ---------------------- Without Dispatch ------------------
+            foreach($collectionData["Details"]->pro_N as $key => $product){
+
+               $detail = $this->addProduct($product,$vendor_marg_config->vendor_id); // 1 for vendor
+            }
+        }
+
+        $time = '';
+        $time = convertDateTimeInClientTimeZone(date('Y-m-d H:i:s'), 'd-m-Y h:i:s');
+        // // Return the decrypted data in the API response
+        return response()->json(['time' =>__('Last Sync Date & Time : ').$time]);
+
+        // $resp =  $this->makeInsertOrderMargApi();
+        // dd($resp);
+    }
 }
