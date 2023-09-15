@@ -189,8 +189,6 @@ return [
         Orangehill\Iseed\IseedServiceProvider::class,
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
         Jorenvh\Share\Providers\ShareServiceProvider::class,
-
-
         /*
          * Package Service Providers...
          */

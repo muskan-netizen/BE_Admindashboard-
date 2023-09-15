@@ -682,6 +682,7 @@ $timezone = Auth::user()->timezone;
     var livee_payment_url="{{route('livee.pay')}}"
     var credit_tip_url = "{{ route('user.tip_after_order') }}";
     var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
+    var payment_mpesa_safari_url = "{{route('mpesasafari.pay')}}";
     var payment_stripe_url = "{{ route('payment.stripe') }}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";
     var create_payphone_url = "{{route('payphone.createHash')}}";

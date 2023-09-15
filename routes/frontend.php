@@ -40,7 +40,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::any('webhook/roadie', [RoadieController::class, 'roadieWebhook'])->name('roadieWebhook');
 	Route::get('webhook/user_rating', 'Front\UserRatingController@userRatingWebhook')->name('user_rating_webhook');
     Route::any('livee/success','LiveePaymentController@afterPayment')->name('livee.payment');
-
+    Route::any('webhook/mpesa','Front\MpesaSafariController@successPage')->name('safari.payment');
+    
 	// order dispatcher order web hooks
 	Route::get('dispatch-order-status-update/{id?}', 'Front\DispatcherController@dispatchOrderStatusUpdate')->name('dispatch-order-update'); // Order Status update Dispatch
 	Route::get('dispatch-pickup-delivery/{id?}', 'Front\DispatcherController@dispatchPickupDeliveryUpdate')->name('dispatch-pickup-delivery'); // pickup delivery update from dispatch
@@ -187,7 +188,10 @@ Route::group(['middleware' => ['domain']], function () {
 
     //azulpay
     Route::match(['get','post'],'payment/nmi','Front\NmiPaymentController@beforePayment')->name('nmi.pay');
-
+    
+    //mpesasafari
+    Route::match(['get','post'],'payment/mpesa','Front\MpesaSafariController@createPayment')->name('mpesasafari.pay');
+    
     // obo-pay
     Route::post('before-payment/obo','Front\OboPaymentController@beforePayment')->name('obo.pay');
     Route::get('after-payment/obo','Front\OboPaymentController@afterPayment')->name('after.obo.payment');
@@ -282,7 +286,7 @@ Route::group(['middleware' => ['domain']], function () {
 	//ccavenue-pay
 	Route::get('ccavenue/pay', 'Front\CcavenueController@payForm')->name('ccavenue.pay');
 	Route::any('ccavenue/success', 'Front\CcavenueController@successForm')->name('ccavenue.success');
-	Route::any('payment/ccavenue/api', '    Front\CcavenueController@payFormWebView')->name('ccavenue.webview');
+	Route::any('payment/ccavenue/api', 'Front\CcavenueController@payFormWebView')->name('ccavenue.webview');
 
 	// EasypaisaController routes
 	Route::get('easypaisa/pay', 'Front\EasypaisaController@create_token')->name('easypaisa.create.token');
@@ -423,7 +427,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('/autocomplete-search', 'Front\SearchController@postAutocompleteSearch')->name('autocomplete');
 	Route::get('/search-all/{keyword}', 'Front\SearchController@showSearchResults')->name('showSearchResults');
 	Route::get('/', 'Front\UserhomeController@index')->name('userHome');
-
+	
 	Route::get('/setSessionIndex', 'Front\UserhomeController@setSessionIndex')->name('setSessionIndex');
 
 	Route::get('/updateLocation', 'Front\UserhomeController@setHyperlocalAddress')->name('updateLocation');

@@ -8,7 +8,7 @@ class ProductVariantSet extends Model
     protected $fillable = ['product_id','product_variant_id','variant_type_id','variant_option_id'];
 
 	public function variantDetail() {
-	    return $this->belongsTo('App\Models\Variant', 'variant_type_id', 'id');
+	    return $this->belongsTo('App\Models\Variant', 'variant_type_id', 'id')->orderBy('position');
 	}
 	
 	public function options() {
