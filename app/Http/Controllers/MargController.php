@@ -81,7 +81,6 @@ class MargController extends Controller
 
     public function syncmargVendor($domain,$vendor_id)
     {
-        \Log::info('in syncmargVendor here');
 
         $vendor_marg_config = VendorMargConfig::where('vendor_id',$vendor_id)->first();
         
@@ -111,7 +110,6 @@ class MargController extends Controller
             //    dd($collectionData["Details"]->pro_N);
         if(!empty($collectionData["Details"]->pro_N)){
 
-            \Log::info('in here');
         // ---------------------- With Dispatch ---------------------
             // $chunck = array_chunk($collectionData["Details"]->pro_N,100);
             // foreach($chunck as $data){
@@ -119,7 +117,6 @@ class MargController extends Controller
             // }
         // ---------------------- Without Dispatch ------------------
             foreach($collectionData["Details"]->pro_N as $key => $product){
-            \Log::info([$product]);
 
                $detail = $this->addProduct($product,$vendor_marg_config->vendor_id); // 1 for vendor
             }
