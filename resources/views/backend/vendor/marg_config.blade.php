@@ -138,6 +138,24 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                     </div>
                 </div>
             </div>
+
+            <div class="row marg_row"
+                style="{{ isset($vendorMargConfig->is_marg_enable) && $vendorMargConfig->is_marg_enable == 1 ? '' : 'display:none;' }}">
+                <div class="col-12">
+                    <div class="form-group mb-2 mt-2">
+                        <label for="marg_date_time">{{ __('Date Time') }}</label>
+                        <input type="datetime-local" name="marg_date_time" id="marg_date_time" placeholder=""
+                            class="form-control" required
+                            value="{{ old('marg_date_time', $vendorMargConfig->marg_date_time ?? '') }}">
+                        @if ($errors->has('marg_date_time'))
+                            <span class="text-danger" role="alert">
+                                <strong>{{ $errors->first('marg_date_time') }}</strong>
+                            </span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
     </form>
     <div class="row marg_row"
         style="{{ isset($vendorMargConfig->is_marg_enable) && $vendorMargConfig->is_marg_enable == 1 ? '' : 'display:none;' }}">
@@ -194,7 +212,7 @@ $(document).on("click", "#sync_marg_btn", function(e) {
                     sweetAlert.success('Data Sycn Successfully!');
                 },
                 error: function(response) {
-                    sweetAlert.error('Error!');
+                    sweetAlert.error('Error!','Marg api - '+response.responseJSON.message);
                 }
             });
         });

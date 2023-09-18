@@ -146,6 +146,10 @@
                                         $vendor_orders_count = \App\Models\OrderVendor::select('id')->whereHas('orderDetail', function ($query){
                                             $query->where('marg_status', '=',null);
                                             $query->where('marg_max_attempt', '>',2);
+                                        })->whereHas('vendor.permissionToUser', function ($query){
+                                            if (auth()->user()->is_admin) {
+                                                $query->where('user_id', auth()->user()->id);
+                                            }
                                         })->count(); 
                                     @endphp 
                                         {{-- <span>{{getNomenclatureName('Vendors', true)}}</span> --}}
