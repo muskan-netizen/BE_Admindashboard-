@@ -1039,7 +1039,8 @@ class ClientPreferenceController extends BaseController{
             'marg_company_url' => $request->marg_company_url,
             'marg_company_code' => $request->marg_company_code,
             'marg_access_token' => $request->marg_access_token,
-            'marg_decrypt_key' => $request->marg_decrypt_key
+            'marg_decrypt_key' => $request->marg_decrypt_key,
+            'marg_date_time' => $request->marg_date_time
         ]);
 
         return back();

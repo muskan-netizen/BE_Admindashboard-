@@ -46,6 +46,9 @@ trait MargTrait{
 	{
         try{
             DB::beginTransaction();	
+            if ($vendor_id) {
+                $request->code = $request->code.'_'.$vendor_id;
+            }
             $is_exist = Product::where(['sku' => $request->code, 'vendor_id' => $vendor_id])->first();
             // $mega_vendor_id = $is_exist->vendor->mega_vendor_id;
             $vendor_id = $vendor_id ?? 8;
@@ -59,6 +62,7 @@ trait MargTrait{
                 $product->url_slug = $url_slug.'_'.$vendor_id;             // $request->url_slug;
                 $product->title = $request->name;           // $request->product_name;        
                 $product->category_id = $request->catcode;  // $request->category_id;
+                $product->is_live = 1;
                 $product->type_id = 1;
                 $product->vendor_id = $vendor_id;                    //$request->vendor_id;
                 $client_lang = ClientLanguage::where('is_primary', 1)->first();
@@ -259,7 +263,7 @@ trait MargTrait{
 		}else{
 			foreach($order->products as $product)
 			{
-				$productCode[] = $product->product->sku;
+				$productCode[] = $product->sku;
 				$productQuantity[] = $product->quantity;
 			}
             $rid  = MargProduct::first();
@@ -296,7 +300,7 @@ trait MargTrait{
 				$updateOrder->marg_max_attempt =$updateOrder->marg_max_attempt + 1;
 				$updateOrder->save();
                 session()->flash('success',$encryptedData->Message??'Somthing Went Wrong!');
-                return false;
+                return $encryptedData->Message;
             }
             return true;
 
