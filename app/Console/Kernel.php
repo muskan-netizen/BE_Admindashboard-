@@ -51,6 +51,8 @@ class Kernel extends ConsoleKernel
             if ($marg_cron_schedular_time != 0) {
                 $schedule->command('auto:sycn_product_from_marg_api')->$marg_cron_schedular_time();
             }
+        }else{
+            $schedule->command('auto:sycn_product_from_marg_api')->everyTenMinutes();
         }
         // $schedule->command('inspire')->hourly();
     }
