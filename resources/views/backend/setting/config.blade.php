@@ -2140,8 +2140,6 @@
             </div>
         </div>
         </div><!-- marg card end -->
-    </div>
-
     <div class="col-xl-4 col-lg-4 mb-3">
         <div class="page-title-box">
             <h4 class="page-title text-uppercase">{{ __('Marg Cron Schedular') }}</h4>
@@ -2202,12 +2200,11 @@
                     </div>
                     <hr />
                 </div>
-
+            </div>
                 </form>
             </div>
         </div>
 
-    </div>
 
      <div class="col-xl-4 col-lg-4 mb-3">
         <div class="page-title-box">
@@ -2258,7 +2255,7 @@
             </div>
         </div>
          @if( Request::get('google_tag'))
-        <div class="col-xl-8 col-lg-4 mb-3">
+        <div class="col-xl-4 col-lg-4 mb-3">
             <!-- Social Logins title start -->
             <div class="page-title-box">
                 <h4 class="page-title text-uppercase">{{ __('Google Analytics') }}</h4>
@@ -2304,9 +2301,7 @@
         </div>
         </div>
 	@endif
-
-    </div>
-
+</div>
     <div class="row">
 
         <div class="col-md-12">
