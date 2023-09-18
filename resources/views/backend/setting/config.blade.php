@@ -2191,7 +2191,7 @@
             </div>
         </div>
          @if( Request::get('google_tag'))
-        <div class="col-xl-4 col-lg-4 mb-3">
+        <div class="col-xl-8 col-lg-4 mb-3">
             <!-- Social Logins title start -->
             <div class="page-title-box">
                 <h4 class="page-title text-uppercase">{{ __('Google Analytics') }}</h4>
@@ -2224,12 +2224,12 @@
 
                    <div class="form-group mt-3 mb-0">
                         <label for="header_script">{{ __('Header Script') }}</label>
-                        <textarea class="form-control m-0" id="header_script" rows="1" name="header_script" cols="10">{{ old('header_script', @$getAdditionalPreference['header_script'] ?? '') }}</textarea>
+                        <textarea class="form-control m-0" id="header_script" rows="5" name="header_script" cols="10">{{ old('header_script', @$getAdditionalPreference['header_script'] ?? '') }}</textarea>
                             
                     </div>
                     <div class="form-group mt-3 mb-0">
                         <label for="footer_script">{{ __('Footer Script') }}</label>
-                        <textarea class="form-control m-0" id="footer_script" rows="1" name="footer_script" cols="10">{{ old('footer_script', @$getAdditionalPreference['footer_script'] ?? '') }}</textarea>
+                        <textarea class="form-control m-0" id="footer_script" rows="5" name="footer_script" cols="10">{{ old('footer_script', @$getAdditionalPreference['footer_script'] ?? '') }}</textarea>
                             
                     </div>
                 </div>
