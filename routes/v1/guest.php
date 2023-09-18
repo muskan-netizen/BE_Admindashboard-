@@ -54,6 +54,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::get('user/registration/document', 'Api\v1\HomeController@UserRegistrationDocument');
 
+        Route::post('product/inquiry', 'Api\v1\ProductInquiryController@store');
         Route::post('cart/add', 'Api\v1\CartController@add');
         Route::post('checkProductAvailibility', 'Api\v1\RentalProductController@checkProductAvailibility');
         Route::get('cart/list', 'Api\v1\CartController@index');
