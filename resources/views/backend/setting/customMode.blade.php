@@ -711,3 +711,17 @@
             name="is_enable_allergic_items" id="is_enable_allergic_items" />
     </div>
 </div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_vendor_marg_configuration" class="mr-2 mb-0">{{ __('Vendor Marg Configuration') }}<small
+                class="d-block pr-5">{{ __('Enable this for Vendor add own Marg Configuration.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_vendor_marg_configuration"
+                id="is_vendor_marg_configuration_switch" class="form-control checkbox_change"
+                data-className="is_vendor_marg_configuration" data-color="#43bee1"
+                @if (@getAdditionalPreference(['is_vendor_marg_configuration'])['is_vendor_marg_configuration']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['is_vendor_marg_configuration'] == 1) value="1" @else value="0" @endif
+            name="is_vendor_marg_configuration" id="is_vendor_marg_configuration" />
+    </div>
+</div>

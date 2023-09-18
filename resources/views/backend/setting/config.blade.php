@@ -2120,7 +2120,7 @@
                         </div>
                     </div>
             </form>
-                      
+
             <div class="row marg_row"
                 style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
                 <div class="col-12">
@@ -2132,17 +2132,84 @@
                  if($marg_order){
                     $class= "disabled";
                  }
-        }    
+        }
         @endphp
                 <button class="btn btn-info btn-block" id="sync_marg_btn" {{$class }}>{{ __('Sync Data') }} </button>
-      
+
                 </div>
             </div>
         </div>
         </div><!-- marg card end -->
-            {{-- ends here marg form --}}
-        
-        <div class="col-xl-4 col-lg-4 mb-3">
+    </div>
+
+    <div class="col-xl-4 col-lg-4 mb-3">
+        <div class="page-title-box">
+            <h4 class="page-title text-uppercase">{{ __('Marg Cron Schedular') }}</h4>
+        </div>
+        <div class="card-box">
+        <form method="POST" action="{{ route('additional.update') }}">
+            <input type="hidden" name="crm" id="crm" value="1">
+            <input type="hidden" name="send_to" id="send_to" value="configure">
+            @csrf
+
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <h4 class="header-title text-uppercase mb-0">{{ __('Marg Cron Schedular') }}
+                </h4>
+                <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
+                </button>
+            </div>
+
+            <div class="col-12">
+
+                <div class="form-group mb-0 d-flex switchery-demo">
+                    <label for="" class="mr-3">{{ __('Select Marg Cron Configuration') }}</label>
+                </div>
+                @if (@$getAdditionalPreference['marg_cron_schedular_time'] != 0 && @$getAdditionalPreference['marg_cron_schedular_time'] != '')
+                    @php
+                        $marg_cron_schedular_time = '';
+                    @endphp
+                @else
+                    @php
+                        $marg_cron_schedular_time = $getAdditionalPreference['marg_cron_schedular_time'];
+                    @endphp
+                @endif
+                <select name="marg_cron_schedular_time" id="" class="form-control">
+                    <option value="">{{ __("Select Marg Cron") }}</option>
+                    <option @if($marg_cron_schedular_time == "everyMinute") selected @endif value="everyMinute">{{ __("everyMinute")}}</option>
+                    <option @if($marg_cron_schedular_time == "everyFiveMinutes") selected @endif value="everyFiveMinutes">{{ __("everyFiveMinutes")}}</option>
+                    <option @if($marg_cron_schedular_time == "everyTenMinutes") selected @endif value="everyTenMinutes">{{ __("everyTenMinutes")}}</option>
+                    <option @if($marg_cron_schedular_time == "everyFifteenMinutes") selected @endif value="everyFifteenMinutes">{{ __("everyFifteenMinutes")}}</option>
+                    <option @if($marg_cron_schedular_time == "everyThirtyMinutes") selected @endif value="everyThirtyMinutes">{{ __("everyThirtyMinutes")}}</option>
+                    <option @if($marg_cron_schedular_time == "hourly") selected @endif value="hourly">{{ __("hourly")}}</option>
+                    <option @if($marg_cron_schedular_time == "everyTwoHours") selected @endif value="everyTwoHours">{{ __("everyTwoHours")}}</option>
+                    <option @if($marg_cron_schedular_time == "everyThreeHours") selected @endif value="everyThreeHours">{{ __("everyThreeHours")}}</option>
+                    <option @if($marg_cron_schedular_time == "everySixHours") selected @endif value="everySixHours">{{ __("everySixHours")}}</option>
+                    <option @if($marg_cron_schedular_time == "daily") selected @endif value="daily">{{ __("daily")}}</option>
+                    <option @if($marg_cron_schedular_time == "twiceDaily") selected @endif value="twiceDaily">{{ __("twiceDaily")}}</option>
+                    <option @if($marg_cron_schedular_time == "weekly") selected @endif value="weekly">{{ __("weekly")}}</option>
+                    <option @if($marg_cron_schedular_time == "monthly") selected @endif value="monthly">{{ __("monthly")}}</option>
+                </select>
+
+                <div class="row mt-2" id="stock_notification_div"
+                    style="display:@if (@$getAdditionalPreference['stock_notification_before'] == 1) @else none @endif;">
+                    <div class="col-8">
+                        <label for="" class="mr-3">{{ __('Reminder For Minimum Product Quantity') }}</label>
+                    </div>
+                    <div class="col-4">
+                        <input type="number" name="stock_notification_qunatity" id="stock_notification_qunatity"
+                            placeholder="" class="form-control"
+                            value="{{ old('stock_notification_qunatity', @$getAdditionalPreference['stock_notification_qunatity'] ?? '') }}">
+                    </div>
+                    <hr />
+                </div>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+     <div class="col-xl-4 col-lg-4 mb-3">
         <div class="page-title-box">
             <h4 class="page-title text-uppercase">{{ __('Vendor Notification Product Stock') }}</h4>
         </div>
@@ -2173,7 +2240,7 @@
                     <input type="hidden" @if (@$getAdditionalPreference['stock_notification_before'] == 1) value="1" @else value="0" @endif
                         name="stock_notification_before" id="stock_notification_before" />
                 </div>
-        
+
                 <div class="row mt-2" id="stock_notification_div"
                     style="display:@if (@$getAdditionalPreference['stock_notification_before'] == 1) @else none @endif;">
                     <div class="col-8">
@@ -2197,7 +2264,7 @@
                 <h4 class="page-title text-uppercase">{{ __('Google Analytics') }}</h4>
             </div><!-- Social Logins title end -->
                             <div class="card-box">
-            
+
             <form method="POST" action="{{ route('additional.update') }}">
                 <input type="hidden" name="crm" id="crm" value="1">
                 <input type="hidden" name="send_to" id="send_to" value="configure">
@@ -2209,7 +2276,7 @@
                     </button>
                 </div>
                             <div class="col-12">
-                
+
                 <!-- HubSpot card start -->
                     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                         <label for="is_enable_google_analytics_switch" class="mr-2 mb-0">{{ __('Enable Google Analytics') }}</label>
@@ -2225,21 +2292,21 @@
                    <div class="form-group mt-3 mb-0">
                         <label for="header_script">{{ __('Header Script') }}</label>
                         <textarea class="form-control m-0" id="header_script" rows="5" name="header_script" cols="10">{{ old('header_script', @$getAdditionalPreference['header_script'] ?? '') }}</textarea>
-                            
+
                     </div>
                     <div class="form-group mt-3 mb-0">
                         <label for="footer_script">{{ __('Footer Script') }}</label>
                         <textarea class="form-control m-0" id="footer_script" rows="5" name="footer_script" cols="10">{{ old('footer_script', @$getAdditionalPreference['footer_script'] ?? '') }}</textarea>
-                            
+
                     </div>
                 </div>
             </form>
         </div>
         </div>
 	@endif
-        
+
     </div>
-     
+
     <div class="row">
 
         <div class="col-md-12">
@@ -2260,7 +2327,7 @@
 
                 </div>
                         </form>
-                
+
         </div>
         <!-- Custom Mods end -->
     </div>
@@ -2653,7 +2720,7 @@
                     success: function(response) {
                         dd(response);
                         if (response.status == "Success") {
-                           
+
                         }
                     }
                 });

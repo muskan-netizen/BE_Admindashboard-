@@ -43,8 +43,17 @@ class Kernel extends ConsoleKernel
         $schedule->command('service_area:active_for_vendor_slot')->everyMinute();
         $schedule->command('copy:catalog')->everyTenMinutes();
         $schedule->command('pickup:notify')->everyMinute();
-        $schedule->command('auto:sycn_product_from_marg_api')->hourly();
         $schedule->command('marg:marg_order_update')->everyTenMinutes();
+
+        $marg_cron_schedular_time = @getAdditionalPreference(['marg_cron_schedular_time']);
+        if (isset($marg_cron_schedular_time)) {
+            $marg_cron_schedular_time = $marg_cron_schedular_time['marg_cron_schedular_time'];
+            if ($marg_cron_schedular_time != 0) {
+                $schedule->command('auto:sycn_product_from_marg_api')->$marg_cron_schedular_time();
+            }
+        }else{
+            $schedule->command('auto:sycn_product_from_marg_api')->everyTenMinutes();
+        }
         // $schedule->command('inspire')->hourly();
     }
 
