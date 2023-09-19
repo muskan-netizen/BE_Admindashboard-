@@ -16,6 +16,7 @@ class ProductInquiryController extends FrontController
     public function store(Request $request, $domain = '')
     {
         try {
+            \Log::info($request->all());
             $request->validate([
                 'agree' =>'accepted',
                 'name' => 'required',
@@ -31,7 +32,7 @@ class ProductInquiryController extends FrontController
             ]);
             ProductInquiry::create(['name' => $request->name, 'email' => $request->email, 'phone_number' => $request->number1, 'company_name' => $request->company_name, 'message' => $request->message, 'product_id' => $request->product_id, 'vendor_id' => $request->vendor_id, 'product_variant_id' => $request->variant_id]);
             return response()->json(['success', 'Inquiry Submitted Successfully.']);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['error', $e->getMessage()]);
         }
     }
