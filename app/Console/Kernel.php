@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Models\Client;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -43,17 +44,43 @@ class Kernel extends ConsoleKernel
         $schedule->command('service_area:active_for_vendor_slot')->everyMinute();
         $schedule->command('copy:catalog')->everyTenMinutes();
         $schedule->command('pickup:notify')->everyMinute();
-        $schedule->command('marg:marg_order_update')->everyTenMinutes();
+        $schedule->command('marg:marg_order_update')->everyFiveMinutes();
 
-        $marg_cron_schedular_time = @getAdditionalPreference(['marg_cron_schedular_time']);
-        if (isset($marg_cron_schedular_time)) {
-            $marg_cron_schedular_time = $marg_cron_schedular_time['marg_cron_schedular_time'];
-            if ($marg_cron_schedular_time != 0) {
-                $schedule->command('auto:sycn_product_from_marg_api')->$marg_cron_schedular_time();
+        $clients = Client::where('status', 1)->limit(1)->get();
+        foreach ($clients as $key => $client) {
+           $database_name  = 'royo_' . $client->database_name;
+
+            $result = \DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", [$database_name]);
+            if (empty($result)) {
+                continue;
             }
-        }else{
-            $schedule->command('auto:sycn_product_from_marg_api')->everyTenMinutes();
+            $default = [
+                'driver' => env('DB_CONNECTION', 'mysql'),
+                'host' => env('DB_HOST'),
+                'port' => env('DB_PORT'),
+                'database' => $database_name,
+                'username' => $client->database_username,
+                'password' => $client->database_password,
+                'charset' => 'utf8mb4',
+                'collation' => 'utf8mb4_unicode_ci',
+                'prefix' => '',
+                'prefix_indexes' => true,
+                'strict' => false,
+                'engine' => null
+            ];
+            \Config::set("database.connections.$database_name", $default);
+            \DB::setDefaultConnection($database_name);
+            $marg_cron_schedular_time = @getAdditionalPreference(['marg_cron_schedular_time']);
+            \DB::disconnect($database_name);
+            $marg_cron_schedular_time = $marg_cron_schedular_time['marg_cron_schedular_time'];
+
+            if ($marg_cron_schedular_time) {
+                $schedule->command('auto:sycn_product_from_marg_api')->$marg_cron_schedular_time();
+            }else{
+                $schedule->command('auto:sycn_product_from_marg_api')->everyFiveMinutes();
+            }
         }
+
         // $schedule->command('inspire')->hourly();
     }
 

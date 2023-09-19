@@ -73,7 +73,8 @@ use App\Models\ {
     OrderLongTermServicesAddon,
     OrderLongTermServiceSchedule,
     Bid,
-    OrderNotificationsLogs
+    OrderNotificationsLogs,
+    VendorMargConfig
 };
 use App\Models\ProductVariantSet;
 use GuzzleHttp\Client as GCLIENT;
@@ -3215,9 +3216,10 @@ class OrderController extends FrontController
 
             DB::commit();
             $this->sendSuccessSMS($request, $order);
-            $hub_key = @getAdditionalPreference(['is_marg_enable']);
+            // $hub_key = @getAdditionalPreference(['is_marg_enable']);
+            $hub_key = VendorMargConfig::where('vendor_id',$order->ordervendor->vendor_id ?? 0)->first();
 
-            if(isset($hub_key) && $hub_key['is_marg_enable'] == 1){
+            if(isset($hub_key) && $hub_key->is_marg_enable == 1){
          
               $this->ProductVariantStock($order->id);
           
