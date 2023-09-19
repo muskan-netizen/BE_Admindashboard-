@@ -1071,9 +1071,11 @@ body.dark #sidebar-menu .menuitem-active .active,
 body.dark #sidebar-menu>ul>li>a:active,
 body.dark #sidebar-menu>ul>li>a:focus,
 body.dark #sidebar-menu>ul>li>a:hover {
-    background-color: #ecfbff;
+    background-color: #0000005c;
 }
-
+body.dark .menu-title+.nav-second-level>li>a:hover{
+    background-color: #0000005c;
+}
 body.dark .action-icon .mdi-square-edit-outline {
     color: rgb(247 184 75 / 82%)
 }
@@ -3760,6 +3762,15 @@ body .menu-title+.nav-second-level>li>a {
     font-size: 14px;
     color: #000!important;
     font-weight: 500;
+}
+body.dark .menu-title+.nav-second-level>li>a{
+    color: #fff!important;
+}
+body.dark  span.mdichat, body.dark  span.mdibookoutline, body.dark  span.mdibookoutline svg{    
+    fill: #fff;
+}
+.dark .menu-title+.nav-second-level>li>a:hover span svg path{
+    fill:#fff;
 }
 
 .al_color_box .card-body .rounded-circle {
