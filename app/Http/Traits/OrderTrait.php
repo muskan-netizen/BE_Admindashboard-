@@ -1126,8 +1126,6 @@ trait OrderTrait
 
     public function sendTrackingUrlSMS($order, $vendor_id = '')
     {
-
-        \Log::info('test12');
         $user = User::find($order['user_id']);
         $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'currency_id')->first();
         if ($user['dial_code'] == "971") {
@@ -1158,18 +1156,19 @@ trait OrderTrait
             }
         }
 
-        $tracking_url = url('/order/track/' . $user['id'] . '/' . $order['order_number'] . '');
+        $tracking_url = $order->ordervendor->dispatch_traking_url;
+        \Log::info('tracking');
+        \Log::info($tracking_url);
         $tracking_url = get_tiny_url($tracking_url);
 
         $keyData = ['{user_name}' => $user['name'] ?? '', '{order_number}' => $order['order_number'] ?? '', '{track_url}' => $tracking_url ?? '', '{order_status}' => $order_status ?? ''];
 
         $checkSeeder = SmsTemplate::where('slug', 'order-tracking-url')->count();
         if ($checkSeeder > 0) {
-            \Log::info('test123');
             $body = sendSmsTemplate('order-tracking-url', $keyData);
 
             if (!empty($prefer['sms_provider'])) {
-                \Log::info('test1234');
+
                 $send = $this->sendSmsNew($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
             }
         }
