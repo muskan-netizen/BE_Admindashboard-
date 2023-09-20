@@ -216,8 +216,7 @@ $is_map_search_perticular_country = getMapConfigrationPreference();
                     <a class="nav-link dropdown-toggle nav-user mr-0 waves-effect waves-light" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
 
                         <span class="pro-user-name ml-1">
-                            {{-- <img src="{{$urlImg}}" alt=""> --}}
-                            <i class="fa fa-user"></i>
+                            <img src="{{$urlImg}}" alt="">
                             <!-- <b class="text-capitalize">{{ auth()->user()->name }} <i class="mdi mdi-chevron-down"></i></b> -->
                         </span>
                     </a>
