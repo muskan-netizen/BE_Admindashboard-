@@ -16,7 +16,6 @@ class ProductInquiryController extends FrontController
     public function store(Request $request, $domain = '')
     {
         try {
-            \Log::info($request->all());
             $request->validate([
                 'agree' =>'accepted',
                 'name' => 'required',
