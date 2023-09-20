@@ -1,5 +1,5 @@
 @php
-    $getAdditionalPreference = getAdditionalPreference(['is_seller_module','is_gift_card','is_marg_enable']);
+    $getAdditionalPreference = getAdditionalPreference(['is_seller_module','is_gift_card','is_marg_enable','is_vendor_marg_configuration']);
 @endphp
 <div class="left-side-menu">
     <div class="logo-box m-hide d-lg-block">
@@ -137,7 +137,7 @@
                                     </a>
                                 </li>
                             @endif
-                            @if(@$getAdditionalPreference['is_marg_enable'] == '1')
+                            @if(Auth::user()->is_superadmin == 1 || @$getAdditionalPreference['is_vendor_marg_configuration'] == '1')
                             <li>
                                     <a href="{{route('failed-marg-orders')}}">
                                     <span class="icon-vendor"></span>
