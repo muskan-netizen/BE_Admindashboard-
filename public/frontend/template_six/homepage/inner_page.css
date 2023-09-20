@@ -891,11 +891,11 @@ a.action-icon.d-block.remove_product_via_cart {
     -webkit-transform: translate(0, -50%);
     transform: translate(0, -50%);
     /* right: -50px; */
-    right: 50px;
+    right: 20px;
 }
 
 .vendor_products_tr:hover a.action-icon.d-block.remove_product_via_cart {
-    right: 50px;
+    /* right: 50px; */
 }
 
 .al_body_template_six .btn-solid {
@@ -3799,7 +3799,7 @@ section.singleProductContent.pb-md-5.pb-2 {
         padding-left: 14px;
     }
     .vendor_products_tr:hover a.action-icon.d-block.remove_product_via_cart{
-        right: 20px;
+        /* right: 20px; */
     }
     .al_body_template_six .btn-solid{
         font-size: 8px;
