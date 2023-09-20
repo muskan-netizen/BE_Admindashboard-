@@ -125,23 +125,32 @@ article#page-container section .vendors section {
     left: 0;
 }
 
-.product-m .slick-next:before,
-.product-m .slick-prev:before {
+.product-m .slick-next:before, .product-m .slick-prev:before {
     height: 30px;
     width: 30px;
     border-radius: 50px;
     background-color: #fff;
     display: inline-block;
-    line-height: 30px;
     opacity: 1;
+    color: #000!important;
     box-shadow: 0 0 5px rgba(0, 0, 0, .2);
+    transform: unset;
+    font-size: 24px;
+    line-height: 30px;
 }
 
 .slick-slider .slick-prev {
     left: 1px;
     z-index: 9;
 }
-
+.product-m .slick-next:before{
+    background-image: unset;
+    content: '\f105';
+}
+.product-m .slick-prev:before {
+    background-image: unset;
+    content: '\f104';
+}
 .slick-slider .slick-next {
     right: 11px;
 }

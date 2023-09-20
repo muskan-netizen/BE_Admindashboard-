@@ -1012,10 +1012,6 @@ $timezone = Auth::user()->timezone;
                                                                                 {{ __(ucfirst($vendor->order_status)) }}</label>
                                                                         </li>
                                                                         @endif
-
-
-
-
                                                                         @if (!empty($vendor->dispatch_traking_url))
                                                                         <li>
                                                                             <img src="{{ asset('assets/images/order-icon.svg') }}" alt="">
