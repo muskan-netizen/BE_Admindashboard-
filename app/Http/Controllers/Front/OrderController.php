@@ -932,7 +932,7 @@ class OrderController extends FrontController
                     } else {
                         $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
                     }
-                    $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;                   
+                    $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;
                 }
                 if ($vendor->delivery_fee > 0) {
                     $order_pre_time = ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0;
@@ -989,7 +989,7 @@ class OrderController extends FrontController
                     } else {
                         $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
                     }
-                    $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;                  
+                    $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;
                 }
                 if ($vendor->dineInTable) {
                     $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
@@ -1035,7 +1035,7 @@ class OrderController extends FrontController
                     } else {
                         $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
                     }
-                    $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;                   
+                    $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;
                 }
                 if ($vendor->dineInTable) {
                     $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
@@ -1105,7 +1105,7 @@ class OrderController extends FrontController
                             $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
                         }
                     }
-                    $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;              
+                    $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;
                 }
                 if ($vendor->dineInTable) {
                     $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
@@ -1553,6 +1553,7 @@ class OrderController extends FrontController
         }
         $latitude = ($address) ? $address->latitude : '';
         $longitude = ($address) ? $address->longitude : '';
+
         $cartData = CartProduct::with([
             'vendor',
             'coupon' => function ($qry) use ($cart_id) {
@@ -1796,7 +1797,8 @@ class OrderController extends FrontController
 
             return $this->successResponse($response->data, __('Order placed successfully.'), 201);
         } else {
-            return $this->errorResponse($response->message, 400);
+
+            return $this->errorResponse($response->message, $response->code ?? 400);
         }
     }
 
@@ -1870,6 +1872,21 @@ class OrderController extends FrontController
                     'editingOrder.orderStatusVendor',
                     'cartvendor'
                 ])->first();
+                if(!isset($cart)){
+                    return $this->errorResponse(__('Product is removed as it is no longer available.'), 404);
+                }
+                $cart_product_removed =    CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
+                    $q->whereIn('is_live',[0,2]);
+                })->pluck('id');
+
+                if(count($cart_product_removed)){
+                     CartProduct::whereIn('id',$cart_product_removed)->delete();
+                     if(CartProduct::where('cart_id',$cart->id)->count() == 0){
+                        Cart::find($cart->id)->delete();
+                     }
+                     DB::commit();
+                     return $this->errorResponse(__('Product is removed as it is no longer available.'), 404);
+                }
             /* Get Currencies of client and customer */
             $customerCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
             $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
@@ -1982,7 +1999,7 @@ class OrderController extends FrontController
             /* Save initial details of order */
             $order->save();
 
-        
+
             /* Updating order prescription if any */
             $cart_prescriptions = CartProductPrescription::where('cart_id', $cart->id)->get();
             foreach ($cart_prescriptions as $cart_prescription) {
@@ -2065,7 +2082,7 @@ class OrderController extends FrontController
             if (! empty($request->other_taxes_string)) {
                 $total_other_taxes = array_sum(explode(":", $request->other_taxes_string));
                 $total_other_taxes = decimal_format($total_other_taxes);
-            }  
+            }
             /* Loop through evey cart product to get desired data for order */
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
 
@@ -2916,13 +2933,13 @@ class OrderController extends FrontController
             $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
 
             $order->scheduled_slot = (($cart->scheduled_slot) ? $cart->scheduled_slot : null);
-            if($order->scheduled_slot){   
+            if($order->scheduled_slot){
                 $scheduled_time =    explode("-",$order->scheduled_slot);
                 // dd($scheduled_time);
                 $schedule_dt =  date('Y-m-d',strtotime($order->scheduled_date_time));
                 $schedule_dt = date('Y-m-d H:i:s',strtotime( $schedule_dt." ".$scheduled_time[0]));
                 $order->scheduled_date_time = Carbon::parse($schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-          
+
             }
 
             $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot) ? $cart->dropoff_scheduled_slot : null);
@@ -3198,9 +3215,9 @@ class OrderController extends FrontController
             $hub_key = @getAdditionalPreference(['is_marg_enable']);
 
             if(isset($hub_key) && $hub_key['is_marg_enable'] == 1){
-         
+
               $this->ProductVariantStock($order->id);
-          
+
               $this->makeInsertOrderMargApi($order);
             }
             return $this->successResponse($order);

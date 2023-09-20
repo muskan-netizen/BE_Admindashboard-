@@ -180,7 +180,8 @@ class VendorController extends BaseController
 
         $user = Auth::user();
         $csvVendors = CsvVendorImport::orderBy('id','desc')->get();
-
+        $preferences = ClientPreference::first();
+        $EnabledLuxuryOptions = $this->geteEnabledLuxuryOptions($preferences);
        // pr($csvVendors->toArray());
         $vendor_docs = collect(new VendorDocs);
         $client_preferences = ClientPreference::first();
@@ -340,6 +341,21 @@ class VendorController extends BaseController
             ]);
         }
     }
+
+    public function geteEnabledLuxuryOptions($clientPreference){
+        $LuxuryOptions = [];
+       // $enabled_vendor_types = [];
+            foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+                $clientVendorTypes = $vendor_typ_key.'_check';
+                    if($clientPreference->$clientVendorTypes == 1){
+                        $vendor_type_name = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key;
+                       // $enabled_vendor_types[] = $vendor_type_name;
+                        $LuxuryOptions[] = config('constants.VendorTypesLuxuryOptions.'.$vendor_typ_key);
+                    }
+            }
+            return $LuxuryOptions;
+           // pr($LuxuryOptions);
+       }
 
     /**
      * Display the specified resource.

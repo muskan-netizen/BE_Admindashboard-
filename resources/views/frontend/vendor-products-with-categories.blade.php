@@ -1114,7 +1114,6 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                 success: function(response) {
                     if (response.status == 'Success') {
                         response = response.data;
-                        // console.log(response);
                         $(that).parents('.product_row').find(".variant_response span").html('');
                         if (response.variant != '') {
 

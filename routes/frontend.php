@@ -20,6 +20,7 @@ Route::get('/order-marg', [MargController::class, 'makeInsertOrderMargApi']);
 // Route::get('/margcmd', [MargController::class, 'margcmd'])->name('sync.marg');
 Route::match(['get','post'],'payment/payByDataTrans','Front\DataTransController@payByDataTrans')->name('payment.payByDataTrans');
 Route::get('/sync-marg', [MargController::class, 'syncmarg'])->name('sync.marg');
+Route::get('/sync-marg/{vendor_id}', [MargController::class, 'syncmargVendor'])->name('sync.margVendor');
 Route::get('/order-marg', [MargController::class, 'makeInsertOrderMargApi']);
 Route::get('/debug-sentry', function () {		
 	echo \Hash::make('dispatcher@765');
@@ -285,7 +286,7 @@ Route::group(['middleware' => ['domain']], function () {
 	//ccavenue-pay
 	Route::get('ccavenue/pay', 'Front\CcavenueController@payForm')->name('ccavenue.pay');
 	Route::any('ccavenue/success', 'Front\CcavenueController@successForm')->name('ccavenue.success');
-	Route::any('payment/ccavenue/api', '    Front\CcavenueController@payFormWebView')->name('ccavenue.webview');
+	Route::any('payment/ccavenue/api', 'Front\CcavenueController@payFormWebView')->name('ccavenue.webview');
 
 	// EasypaisaController routes
 	Route::get('easypaisa/pay', 'Front\EasypaisaController@create_token')->name('easypaisa.create.token');

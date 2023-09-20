@@ -75,6 +75,6 @@ class FetchMargData extends Command
                 DB::disconnect($database_name);
             }
         }
-        \Log::info("FetchMargData Command End");
+        // \Log::info("FetchMargData Command End");
     }
 }

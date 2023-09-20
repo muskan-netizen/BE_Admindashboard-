@@ -43,7 +43,7 @@ class DashBoardController extends BaseController
             $q->where('name','Manager');
        })->get();
        $setWeekDate = $this->setWeekDate;
-
+            
         return view('backend/dashboard',compact('managers','setWeekDate'));
     }
 

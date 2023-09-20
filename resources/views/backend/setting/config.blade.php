@@ -2144,6 +2144,74 @@
             </div>
         </div><!-- marg card end -->
     </div>
+
+    <div class="col-xl-4 col-lg-4 mb-3">
+        <div class="page-title-box">
+            <h4 class="page-title text-uppercase">{{ __('Marg Cron Schedular') }}</h4>
+        </div>
+        <div class="card-box">
+        <form method="POST" action="{{ route('additional.update') }}">
+            <input type="hidden" name="crm" id="crm" value="1">
+            <input type="hidden" name="send_to" id="send_to" value="configure">
+            @csrf
+
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <h4 class="header-title text-uppercase mb-0">{{ __('Marg Cron Schedular') }}
+                </h4>
+                <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
+                </button>
+            </div>
+
+            <div class="col-12">
+
+                <div class="form-group mb-0 d-flex switchery-demo">
+                    <label for="" class="mr-3">{{ __('Select Marg Cron Configuration') }}</label>
+                </div>
+                @if (@$getAdditionalPreference['marg_cron_schedular_time'] != 0 && @$getAdditionalPreference['marg_cron_schedular_time'] != '')
+                    @php   
+                        $marg_cron_schedular_time = '';
+                    @endphp
+                @else
+                    @php   
+                        $marg_cron_schedular_time = $getAdditionalPreference['marg_cron_schedular_time'];
+                    @endphp
+                @endif
+                <select name="marg_cron_schedular_time" id="" class="form-control">
+                    <option value="">{{ __("Select Marg Cron") }}</option>
+                    <option @if($marg_cron_schedular_time == "everyMinute") selected @endif value="everyMinute">{{ __("everyMinute")}}</option>
+                    <option @if($marg_cron_schedular_time == "everyFiveMinutes") selected @endif value="everyFiveMinutes">{{ __("everyFiveMinutes")}}</option>
+                    <option @if($marg_cron_schedular_time == "everyTenMinutes") selected @endif value="everyTenMinutes">{{ __("everyTenMinutes")}}</option>
+                    <option @if($marg_cron_schedular_time == "everyFifteenMinutes") selected @endif value="everyFifteenMinutes">{{ __("everyFifteenMinutes")}}</option>
+                    <option @if($marg_cron_schedular_time == "everyThirtyMinutes") selected @endif value="everyThirtyMinutes">{{ __("everyThirtyMinutes")}}</option>
+                    <option @if($marg_cron_schedular_time == "hourly") selected @endif value="hourly">{{ __("hourly")}}</option>
+                    <option @if($marg_cron_schedular_time == "everyTwoHours") selected @endif value="everyTwoHours">{{ __("everyTwoHours")}}</option>
+                    <option @if($marg_cron_schedular_time == "everyThreeHours") selected @endif value="everyThreeHours">{{ __("everyThreeHours")}}</option>
+                    <option @if($marg_cron_schedular_time == "everySixHours") selected @endif value="everySixHours">{{ __("everySixHours")}}</option>
+                    <option @if($marg_cron_schedular_time == "daily") selected @endif value="daily">{{ __("daily")}}</option>
+                    <option @if($marg_cron_schedular_time == "twiceDaily") selected @endif value="twiceDaily">{{ __("twiceDaily")}}</option>
+                    <option @if($marg_cron_schedular_time == "weekly") selected @endif value="weekly">{{ __("weekly")}}</option>
+                    <option @if($marg_cron_schedular_time == "monthly") selected @endif value="monthly">{{ __("monthly")}}</option>
+                </select>
+
+                <div class="row mt-2" id="stock_notification_div"
+                    style="display:@if (@$getAdditionalPreference['stock_notification_before'] == 1) @else none @endif;">
+                    <div class="col-8">
+                        <label for="" class="mr-3">{{ __('Reminder For Minimum Product Quantity') }}</label>
+                    </div>
+                    <div class="col-4">
+                        <input type="number" name="stock_notification_qunatity" id="stock_notification_qunatity"
+                            placeholder="" class="form-control"
+                            value="{{ old('stock_notification_qunatity', @$getAdditionalPreference['stock_notification_qunatity'] ?? '') }}">
+                    </div>
+                    <hr />
+                </div>
+        
+                </form>
+            </div>
+        </div>
+
+    </div>
+
      <div class="col-xl-4 col-lg-4 mb-3">
         <div class="page-title-box">
             <h4 class="page-title text-uppercase">{{ __('Vendor Notification Product Stock') }}</h4>
