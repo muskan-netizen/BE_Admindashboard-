@@ -675,7 +675,15 @@
             contentType: false,
             processData: false,
             success: function(response) {
-
+                if (response.status == 'error') {
+                    Swal.fire({
+                        title: "Warning!",
+                        text: response.message,
+                        icon: "Warning!",
+                        button: "OK",
+                    });
+                return 
+                }
                 if (response.status == 'success') {
                     $(".modal .close").click();
                     location.reload();

@@ -23,10 +23,11 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\{BaseController, VendorPayoutController};
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\AhoyController;
-use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, AddonSetTranslation, Bid, BidRequest, ProductTranslation, Client, ClientPreference, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia,CsvQrcodeImport,VendorFacilty,Facilty, OrderVendorProduct, RoleOld, VendorSection,VendorMultiBanner, VendorMinAmount, VendorAdditionalInfo};
+use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, AddonSetTranslation, Bid, BidRequest, ProductTranslation, Client, ClientPreference, Country, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia,CsvQrcodeImport,VendorFacilty,Facilty, OrderVendorProduct, RoleOld, VendorSection,VendorMultiBanner, VendorMinAmount, VendorAdditionalInfo};
 use GuzzleHttp\Client as GCLIENT;
 use App\Exports\VendorSimpelExport;
 use App\Exports\VendorProductExport;
+use App\Http\Traits\ShipEngineTrait;
 use DB,Log;
 use App\Models\VendorRegistrationDocument;
 use App\Services\InventoryService;
@@ -39,11 +40,16 @@ class VendorController extends BaseController
     use ToasterResponser;
     use ApiResponser;
     use VendorTrait;
+    use ShipEngineTrait{
+        ShipEngineTrait::__construct as __ShipEngineConstruct;
+    }
     public $is_payout_enabled;
     private $folderName = '/vendor/extra_docs';
     public $roleId;
 
     public function __construct(){
+        $this->__ShipEngineConstruct();
+
         $code = Client::orderBy('id','asc')->value('code');
         $this->folderName = '/'.$code.'/vendor/extra_docs';
         $payoutOption = PayoutOption::where('status', 1)->first();
@@ -439,7 +445,17 @@ class VendorController extends BaseController
         $vendor->slug = Str::slug($request->name, "-");
         if(Vendor::where('slug',$vendor->slug)->count() > 0)
         $vendor->slug = Str::slug($request->name, "-");
-        $vendor->save();
+
+        $country = Country::where('name',$request->country)->first();
+        $vendor->country_code = $country->code;
+        
+        $res = $this->shipEngineAddressValidate($vendor->toArray());
+        if ($res[0]['status'] == 'verified') {
+            $vendor->state_code = $res[0]['matched_address']['state_province'];
+            $vendor->save();
+        }else{
+            return ['status' => 'shipEngineAdressError','message' => $res['message']];
+        }  
 
         if(@$this->roleId=='5')
         {
@@ -553,6 +569,14 @@ class VendorController extends BaseController
         $validation  = Validator::make($request->all(), $rules)->validate();
         $vendor = Vendor::where('id', $id)->first();
         $saveVendor = $this->save($request, $vendor, 'true');
+
+        if (isset($saveVendor['status']) && $saveVendor['status'] == 'shipEngineAdressError') { 
+            return response()->json([
+                'status' => 'error',
+                'message' => __($saveVendor['message']),
+            ]);
+        }
+
         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
         if ($vendor_registration_documents->count() > 0) {
             foreach ($vendor_registration_documents as $vendor_registration_document) {

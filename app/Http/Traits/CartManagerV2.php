@@ -29,9 +29,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Traits\{ProductTrait};
 use App\Models\WebStylingOption;
-
+use App\Http\Traits\ShipEngineTrait;
 trait CartManagerV2{
-  use ProductTrait;
+  use ProductTrait,ShipEngineTrait;
   public function configV2($obj=array())
   {
     $this->user = auth()->user();
@@ -1749,6 +1749,15 @@ trait CartManagerV2{
             $cart->is_token =  $additionalPreference['is_token_currency_enable'] ? 1 : 0;
             $cart->token_value = $additionalPreference['token_currency'] ?? 0;
             $cart->products = $cartData->toArray();
+
+            $ship_engine = $this->getShippingFee($cart);
+            // dd($ship_engine);
+            if ($ship_engine['status'] == 208) {
+                $cart->ship_engine_error = $ship_engine['message'];
+            }else{
+                $cart->ship_engine_fee = $ship_engine['shipment_cost']['amount'];
+            }
+
         }
         return $cart;
     }

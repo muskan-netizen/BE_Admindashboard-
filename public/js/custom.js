@@ -3118,7 +3118,15 @@ $(document).ready(function () {
                     }
                 },
                 success: function (response) {
-
+                    if (response.status == 'error') {
+                        Swal.fire({
+                            title: "Warning!",
+                            text: response.message,
+                            icon: "warning",
+                            button: "OK",
+                        });
+                        return
+                    }
                     if ($("#add_edit_address").length > 0) {
 
                         $("#add_edit_address").modal('hide');
