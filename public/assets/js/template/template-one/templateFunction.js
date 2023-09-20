@@ -1,6 +1,6 @@
 function showKeycode(e) {
     if(e.code == 'KeyZ'){
-       alert(e.keyCode);
+    
     }
  }
  

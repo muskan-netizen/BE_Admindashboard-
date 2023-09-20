@@ -3802,7 +3802,7 @@ div#cart_template .shoping_cart .vendor_products_tr .row .col-10 h4 {
         padding-left: 14px;
     }
     .vendor_products_tr:hover a.action-icon.d-block.remove_product_via_cart{
-        right: 20px;
+        /* right: 20px; */
     }
     .al_body_template_six .btn-solid{
         font-size: 8px;

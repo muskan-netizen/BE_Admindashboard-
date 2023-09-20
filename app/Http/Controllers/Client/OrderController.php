@@ -2702,6 +2702,7 @@ class OrderController extends BaseController
                     $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return ' . $order_product->product_name]);
                     $dispatch_domain = $this->getDispatchDomain();
                     $order_details = OrderProduct::where('id',$return->order_vendor_product_id)->whereHas('order',function($q) use ($user){$q->where('user_id',$user->id);})->first();
+                    $this->ProductVariantStockIncreaseByOrderId($order_product->order_id);
                     $this->placeReturnRequestToDispatch($order_details->order_id, $order_details->vendor_id, $dispatch_domain, $order_details);
                     $this->ProductVariantStockIncreaseByOrderId($order_product->order_id);
                     DB::commit();
