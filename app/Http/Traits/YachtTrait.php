@@ -31,7 +31,6 @@ trait YachtTrait
             });
         }
         $category = Category::where('slug', $request->service)->first();
-        \Log::info($category);
         $data['products'] = [];
         if ($category) {
             $data['products'] = Product::with([
@@ -46,9 +45,11 @@ trait YachtTrait
                 'ProductAttribute.attributeOption:id,title',
             ])
             ->whereDoesntHave('productBooked', function($q) use($pickup_time, $drop_time){
-                if (!empty($pickup_time) && !empty($drop_time)) {
-                    $q->whereRaw("DATE(start_date_time) <= ?", [$drop_time])
-                    ->WhereRaw("DATE(end_date_time) >= ?", [$pickup_time]);
+                if (!empty($pickup_time) ) {
+                    $q->WhereRaw("DATE(end_date_time) >= ?", [$pickup_time]);
+                }
+                if (!empty($drop_time)) {
+                    $q->whereRaw("DATE(start_date_time) <= ?", [$drop_time]);
                 }
             })
                 ->where(function ($q) use ($request) {

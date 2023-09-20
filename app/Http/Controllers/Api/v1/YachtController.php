@@ -13,6 +13,7 @@ class YachtController extends Controller
     use YachtTrait;
     public function productsSearchResult(Request $request)
     {
+        \Log::info($request->all());
         $data = [];
         $pickup = $request->pickup ?? (object) [];
         $dropOff = $request->dropOff ?? (object) [];
