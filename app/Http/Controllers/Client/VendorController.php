@@ -311,6 +311,13 @@ class VendorController extends BaseController
         $vendor      = new Vendor();
         $saveVendor = $this->save($request, $vendor, 'false');
 
+        if (isset($saveVendor['status']) && $saveVendor['status'] == 'shipEngineAdressError') { 
+            return response()->json([
+                'status' => 'error',
+                'message' => __($saveVendor['message']),
+            ]);
+        }
+
         // Add vendor additional data
         $additionalData = [];
         if(@$getAdditionalPreference['is_gst_required_for_vendor_registration'] == 1){
