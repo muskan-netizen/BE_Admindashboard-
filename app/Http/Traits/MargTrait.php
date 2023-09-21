@@ -46,10 +46,8 @@ trait MargTrait{
 	{
         try{
             DB::beginTransaction();	
-            if ($vendor_id) {
-                $request->code = $request->code.'_'.$vendor_id;
-            }
-            $is_exist = Product::where(['sku' => $request->code, 'vendor_id' => $vendor_id])->first();
+          
+            $is_exist = Product::where(['sku' => $request->code.'_'.$vendor_id, 'vendor_id' => $vendor_id])->first();
             // $mega_vendor_id = $is_exist->vendor->mega_vendor_id;
             $vendor_id = $vendor_id ?? 8;
    
@@ -62,7 +60,6 @@ trait MargTrait{
                 $product->url_slug = $url_slug.'_'.$vendor_id;             // $request->url_slug;
                 $product->title = $request->name;           // $request->product_name;        
                 $product->category_id = $request->catcode;  // $request->category_id;
-                $product->is_live = 1;
                 $product->type_id = 1;
                 $product->vendor_id = $vendor_id;                    //$request->vendor_id;
                 $client_lang = ClientLanguage::where('is_primary', 1)->first();
@@ -129,6 +126,7 @@ trait MargTrait{
                     if(@$request->Is_Deleted)
                     {
                         $product->delete();
+                        $proVariant->delete();
                     }
 
                 // \Log::info('Insert MargProduct code --'.$request->code);

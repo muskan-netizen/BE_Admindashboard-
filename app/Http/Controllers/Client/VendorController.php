@@ -785,7 +785,7 @@ class VendorController extends BaseController
     /**   show vendor page - catalog tab      */
     public function vendorCatalog($domain = '', $id){
 
-        if(!auth()->user()->can('vendor-add') && !auth()->user()->is_superadmin)
+        if(!auth()->user()->can('vendor-catalog') && !auth()->user()->is_superadmin)
         {
             return redirect('client/dashboard')->with('error','You do not have permission to do this task.');
         }
@@ -1115,9 +1115,16 @@ class VendorController extends BaseController
                         ->orWhereHas('category.cat', function($q) use($search){
                             $q->where('name', 'LIKE', '%'.$search.'%');
                         });
-
                     });
                 }
+                
+                $instance->where(function($query) use($request) {
+                    $is_live = $request->get('is_live');
+                    if (isset($is_live)) {
+                        $query->where('is_live',$is_live);
+                    }
+                });
+
                 $instance->where(function($query) use($request) {
                     $ordring = 'asc';
                     if(!empty($request->order)){
