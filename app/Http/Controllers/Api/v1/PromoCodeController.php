@@ -298,6 +298,7 @@ class PromoCodeController extends Controller{
 
     public function validate_promo_code(Request $request){
         try {
+            $user = Auth::user();
             $validator = $this->validatePromoCodeList($request);
             if($validator->fails()){
                 return $this->errorResponse($validator->messages(), 422);
