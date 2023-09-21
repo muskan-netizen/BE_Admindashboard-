@@ -129,3 +129,12 @@
     @endif
 </style>
   @yield('css')
+@php
+if(@getAdditionalPreference(['is_enable_google_analytics'])['is_enable_google_analytics'] == 1){ 
+$header_script = getAdditionalPreference(['header_script'])['header_script'];
+
+@endphp
+{!! $header_script !!}
+
+  
+ @php } @endphp

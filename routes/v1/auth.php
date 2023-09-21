@@ -80,7 +80,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('order-detail', 'Api\v1\OrderController@postOrderDetail');
         Route::post('order-detail_p2p', 'Api\v1\OrderController@postOrderDetailP2p');
         Route::post('order-update', 'Api\v1\OrderController@orderUpdate');
-
         Route::post('order-ride-bid-details', 'Api\v1\PickupDeliveryController@getBidsRelatedToOrderRide');
         Route::post('accept-ride-bid', 'Api\v1\PickupDeliveryController@acceptBidsRelatedToOrderRide');
         Route::post('decline-ride-bid', 'Api\v1\PickupDeliveryController@declineBidsRelatedToOrderRide');
