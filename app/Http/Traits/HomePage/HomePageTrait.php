@@ -442,6 +442,24 @@ trait HomePageTrait
      }
 
 
+     public function getCities_v2($language_id)
+     {
+         $this->cities =  VendorCities::with(['translations' => function ($q) use ($language_id) {
+             $q->where('language_id', $language_id);
+         }])->where(function ($q) {
+             $q->where('latitude', '!=', null);
+             $q->where('longitude', '!=', null);
+         })->get();
+ 
+         $this->cities = $this->cities->map(function ($da) {
+             $da->title = $da->translations->first() ? $da->translations->first()->name : $da->slug;
+             unset($da->translations);
+             return $da;
+         });
+         return $this->cities;
+     }
+
+
      public function postHomePageDataV2($request,$set_template,$enable_layout,$additionalPreference,$user='', $getSubCatIds='')
     {
         $client_timezone = DB::table('clients')->first('timezone');
@@ -742,6 +760,8 @@ trait HomePageTrait
             }
         }
         /**  Get cities end */
+
+
 
 
         /** Respose data */
