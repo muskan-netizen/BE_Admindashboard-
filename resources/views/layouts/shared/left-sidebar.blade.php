@@ -137,10 +137,11 @@
                                     </a>
                                 </li>
                             @endif
-                            @if(Auth::user()->is_superadmin == 1 || @$getAdditionalPreference['is_vendor_marg_configuration'] == '1')
-                            <li>
+
+                            @if(@$getAdditionalPreference['is_vendor_marg_configuration'] == '1')
+                                <li>
                                     <a href="{{route('failed-marg-orders')}}">
-                                    <span class="icon-vendor"></span>
+                                    <span class="icon-orders"></span>
                                     @php
                                         $vendormenu = getNomenclatureName('Marg Failed Orders', true);
                                         $vendor_orders_count = \App\Models\OrderVendor::select('id')->whereHas('orderDetail', function ($query){
@@ -155,8 +156,9 @@
                                         {{-- <span>{{getNomenclatureName('Vendors', true)}}</span> --}}
                                         <span>{{ __('Marg Failed Orders') }} {{ $vendor_orders_count ? '('. $vendor_orders_count .')' : '' }}</span>
                                     </a>
-                         </li>
-                         @endif
+                                </li>
+                            @endif
+
                             @if(@$getAdditionalPreference['is_seller_module'] == '1')
                                 <li>
                                     <a href="{{route('seller.index')}}">

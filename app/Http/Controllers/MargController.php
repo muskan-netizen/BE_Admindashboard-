@@ -98,9 +98,6 @@ class MargController extends Controller
             return false;
         }
 
-        $vendor_marg_config->update([
-            'marg_date_time' => date('Y-m-d H:i:s')
-        ]);
         // Get the encrypted data from the request
         $encryptedData = $this->getData($MargMST2017, $reqData);
 
@@ -108,6 +105,11 @@ class MargController extends Controller
         $decryptedData = $this->DecryptLogic->Decrypt($encryptedData, $decryptionKey);
         $collectionData = collect( json_decode($decryptedData));
             //    dd($collectionData["Details"]->pro_N);
+
+        $vendor_marg_config->update([
+            'marg_date_time' => date('Y-m-d H:i:s')
+        ]);
+        
         if(!empty($collectionData["Details"]->pro_N)){
 
         // ---------------------- With Dispatch ---------------------

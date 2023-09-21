@@ -44,7 +44,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('service_area:active_for_vendor_slot')->everyMinute();
         $schedule->command('copy:catalog')->everyTenMinutes();
         $schedule->command('pickup:notify')->everyMinute();
-        $schedule->command('marg:marg_order_update')->everyFiveMinutes();
 
         $clients = Client::where('status', 1)->limit(1)->get();
         foreach ($clients as $key => $client) {
@@ -76,8 +75,10 @@ class Kernel extends ConsoleKernel
 
             if ($marg_cron_schedular_time) {
                 $schedule->command('auto:sycn_product_from_marg_api')->$marg_cron_schedular_time();
+                $schedule->command('marg:marg_order_update')->$marg_cron_schedular_time();
             }else{
                 $schedule->command('auto:sycn_product_from_marg_api')->everyFiveMinutes();
+                $schedule->command('marg:marg_order_update')->everyFiveMinutes();
             }
         }
 

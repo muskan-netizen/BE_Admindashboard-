@@ -75,11 +75,11 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                     <div class="form-group mb-2 mt-2">
                         <label for="marg_company_url">{{ __('Marg Company Url') }}</label>
                         <input type="text" name="marg_company_url" id="marg_company_url" 
-                        @if ($getAdditionalPreference['marg_company_url'])
+                        @if ($getAdditionalPreference['marg_company_url'] || $getAdditionalPreference['marg_company_url'] != '0')
                             readonly        
                         @endif
                             placeholder="" class="form-control" required
-                            value="{{ $getAdditionalPreference['marg_company_url'] ??  old('marg_company_url', $vendorMargConfig->marg_company_url ?? '') }}">
+                            value="{{ $getAdditionalPreference['marg_company_url'] == 0 ? old('marg_company_url', $vendorMargConfig->marg_company_url ?? '') : $getAdditionalPreference['marg_company_url'] }}">
                         @if ($errors->has('marg_company_url'))
                             <span class="text-danger" role="alert">
                                 <strong>{{ $errors->first('marg_company_url') }}</strong>
@@ -143,8 +143,8 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                 style="{{ isset($vendorMargConfig->is_marg_enable) && $vendorMargConfig->is_marg_enable == 1 ? '' : 'display:none;' }}">
                 <div class="col-12">
                     <div class="form-group mb-2 mt-2">
-                        <label for="marg_date_time">{{ __('Date Time') }}</label>
-                        <input type="datetime-local" name="marg_date_time" id="marg_date_time" placeholder=""
+                        <label for="marg_date_time">{{ __('Date Time (yyyy-mm-dd 00:00:00)') }}</label>
+                        <input type="text" name="marg_date_time" id="marg_date_time" placeholder=""
                             class="form-control"
                             value="{{ old('marg_date_time', $vendorMargConfig->marg_date_time ?? '') }}">
                         @if ($errors->has('marg_date_time'))
@@ -197,22 +197,22 @@ if (is_marg_enable.length > 0) {
 }
 
 $(document).on("click", "#sync_marg_btn", function(e) {
-            e.preventDefault();
-            $.ajax({
-                type: "GET",
-                dataType: 'json',
-                url: "{{ route('sync.margVendor',$vendor_id) }}",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                },
-                success: function(response) {
-                    $('#sycn_time').html(response.time);
-                    sweetAlert.success('Data Sycn Successfully!');
-                },
-                error: function(response) {
-                    sweetAlert.error('Error!','Marg api - '+response.responseJSON.message);
-                }
-            });
+        e.preventDefault();
+        $.ajax({
+            type: "GET",
+            dataType: 'json',
+            url: "{{ route('sync.margVendor',$vendor_id) }}",
+            data: {
+                _token: "{{ csrf_token() }}",
+            },
+            success: function(response) {
+                $('#sycn_time').html(response.time);
+                sweetAlert.success('Data Sycn Successfully!');
+            },
+            error: function(response) {
+                sweetAlert.error('Error!','Marg api - '+response.responseJSON.message);
+            }
         });
+    });
 </script>
 @endsection
