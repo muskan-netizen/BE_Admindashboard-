@@ -2030,7 +2030,7 @@ class VendorController extends BaseController{
                     cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
                     sin( radians(' . $latitude . ') ) *
                     sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->withAvg('product', 'averageRating');
-            $vendorData = $vendorData->whereIn('id', $ses_vendors);
+            $vendorData = $vendorData->whereIn('id', $ses_vendors)->orderBy('vendorToUserDistance', 'ASC');
             //if($venderFilternear && ($venderFilternear == 1) ){
                 //->orderBy('vendorToUserDistance', 'ASC')
                 // $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
@@ -2367,9 +2367,6 @@ class VendorController extends BaseController{
             $userid = $user->id;
              $limit = $request->has('limit') ? $request->limit : 12;
             $langId = $user->language;
-
-
-
             $variantSets =  ProductVariantSet::with(['options' => function($zx) use($langId){
                                 $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id');
                                 $zx->select('variant_options.*', 'vt.title');

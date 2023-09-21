@@ -139,7 +139,7 @@ class HomeController extends BaseController
             // }
             // $banners = $banners->orderBy('sorting', 'asc')->get();
 
-            $mobile_banners = MobileBanner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
+            $mobile_banners = MobileBanner::with(['category','category.type', 'vendor'])->where('status', 1)->where('validity_on', 1)
                 ->where(function ($q) {
                     $q->whereNull('start_date_time')->orWhere(function ($q2) {
                         $q2->whereDate('start_date_time', '<=', Carbon::now())
@@ -1364,9 +1364,6 @@ class HomeController extends BaseController
 
         $currency_id = $this->setCurrencyInSesion();
 
-
-        //sd
-
         $featured_products_title = $vendors_title = $new_products_title = $on_sale_title = $brands_title = $best_sellers_title = $recent_orders_title = $banner_title = $selected_products_title = $trending_vendors_title = '';
 
         $slugs = array("featured_products", "vendors", "new_products", "on_sale", "brands", "best_sellers", "recent_orders", "banner", "selected_products", "trending");
@@ -1461,9 +1458,7 @@ class HomeController extends BaseController
                     Session::put('selectedAddress', $preferences->Default_location_name);
                 }
             }
-        }
-
-        
+        }        
         if(count($vendor_ids) > 0){
             $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids,null,$this->venderFilterOpenClose,$this->venderFilterbest);
         }
