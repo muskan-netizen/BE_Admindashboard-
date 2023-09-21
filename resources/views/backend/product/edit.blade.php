@@ -1134,6 +1134,12 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::label('title', __('Return/Replace Days'),['class' => 'control-label']) !!}
                             {!! Form::number('return_days', $product->return_days, ['class'=>'form-control', 'id' => 'return_days', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
+                        @if($product->category->categoryDetail->slug == 'yacht')
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('title', __('Select Destination'),['class' => 'control-label']) !!}
+                                {!! Form::select('destination_id', [], $product->destination_id ,['class'=>'form-control', 'id' => 'destination_id']) !!}
+                            </div>
+                        @endif
                         <div class="col-md-6 mb-2">
                             <label for="title" class="control-label">{{ __("Pickup Date") }}</label>
                             <input class="form-control" id="pickup_time" name="pickup_time" type="datetime-local" value="{{ $product->pickup_time ?? ''}}">
