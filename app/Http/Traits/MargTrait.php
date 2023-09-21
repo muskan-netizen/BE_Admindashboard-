@@ -6,7 +6,7 @@ use Auth;
 use HttpRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use App\Models\{Client as CP, Order, ProductAddon, ProductAttribute, ProductCelebrity, ProductCrossSell, ProductRelated, ProductTag, ProductUpSell, SubscriptionInvoicesVendor};
+use App\Models\{Client as CP, Order, ProductAddon, ProductAttribute, ProductCelebrity, ProductCrossSell, ProductRelated, ProductTag, ProductUpSell, SubscriptionInvoicesVendor, VendorMargConfig};
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -269,9 +269,11 @@ trait MargTrait{
             $rid  = MargProduct::first();
 		} 
 		  
-        $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code','marg_company_url']);
+        // $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code','marg_company_url']);
+        $hub_key = VendorMargConfig::where('vendor_id',$order->ordervendor->vendor_id)->first()->toArray();
 
-        if($hub_key['is_marg_enable'] == 1){
+
+        if($hub_key && $hub_key['is_marg_enable'] == 1){
             $decryptionKey  = $hub_key['marg_decrypt_key'];
             $MargID  = $hub_key['marg_access_token'];
             $CompanyCode  = $hub_key['marg_company_code'];

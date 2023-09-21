@@ -2013,7 +2013,7 @@
 
 
         {{-- marg form --}}
-        <div class="col-xl-4 col-lg-4 mb-3">
+        {{-- <div class="col-xl-4 col-lg-4 mb-3">
             <!-- Social Logins title start -->
             <div class="page-title-box">
                 <h4 class="page-title text-uppercase">Marg</h4>
@@ -2076,7 +2076,7 @@
                         <div class="col-12">
                             <div class="form-group mb-2 mt-2">
                                 <label for="marg_company_code">{{ __('Company Code') }}</label>
-                                <input type="password" name="marg_company_code" id="marg_company_code"
+                                <input type="text" name="marg_company_code" id="marg_company_code"
                                     placeholder="" class="form-control"
                                     value="{{ old('marg_company_code', $getAdditionalPreference['marg_company_code'] ?? '') }}">
                                 @if ($errors->has('marg_company_code'))
@@ -2092,7 +2092,7 @@
                         <div class="col-12">
                             <div class="form-group mb-2 mt-2">
                                 <label for="marg_access_token">{{ __('Marg ID') }}</label>
-                                <input type="password" name="marg_access_token" id="marg_access_token"
+                                <input type="text" name="marg_access_token" id="marg_access_token"
                                     placeholder="" class="form-control"
                                     value="{{ old('marg_access_token', $getAdditionalPreference['marg_access_token'] ?? '') }}">
                                 @if ($errors->has('marg_access_token'))
@@ -2108,7 +2108,7 @@
                         <div class="col-12">
                             <div class="form-group mb-2 mt-2">
                                 <label for="marg_decrypt_key">{{ __('Decrypt Key') }}</label>
-                                <input type="password" name="marg_decrypt_key" id="marg_decrypt_key" placeholder=""
+                                <input type="text" name="marg_decrypt_key" id="marg_decrypt_key" placeholder=""
                                     class="form-control"
                                     value="{{ old('marg_decrypt_key', $getAdditionalPreference['marg_decrypt_key'] ?? '') }}">
                                 @if ($errors->has('marg_decrypt_key'))
@@ -2138,8 +2138,9 @@
 
                 </div>
             </div>
-        </div>
-        </div><!-- marg card end -->
+        </div><!-- marg card end --> --}}
+    {{-- </div> --}}
+
     <div class="col-xl-4 col-lg-4 mb-3">
         <div class="page-title-box">
             <h4 class="page-title text-uppercase">{{ __('Marg Cron Schedular') }}</h4>
@@ -2173,19 +2174,19 @@
                 @endif
                 <select name="marg_cron_schedular_time" id="" class="form-control">
                     <option value="">{{ __("Select Marg Cron") }}</option>
-                    <option @if($marg_cron_schedular_time == "everyMinute") selected @endif value="everyMinute">{{ __("everyMinute")}}</option>
-                    <option @if($marg_cron_schedular_time == "everyFiveMinutes") selected @endif value="everyFiveMinutes">{{ __("everyFiveMinutes")}}</option>
-                    <option @if($marg_cron_schedular_time == "everyTenMinutes") selected @endif value="everyTenMinutes">{{ __("everyTenMinutes")}}</option>
-                    <option @if($marg_cron_schedular_time == "everyFifteenMinutes") selected @endif value="everyFifteenMinutes">{{ __("everyFifteenMinutes")}}</option>
-                    <option @if($marg_cron_schedular_time == "everyThirtyMinutes") selected @endif value="everyThirtyMinutes">{{ __("everyThirtyMinutes")}}</option>
-                    <option @if($marg_cron_schedular_time == "hourly") selected @endif value="hourly">{{ __("hourly")}}</option>
-                    <option @if($marg_cron_schedular_time == "everyTwoHours") selected @endif value="everyTwoHours">{{ __("everyTwoHours")}}</option>
-                    <option @if($marg_cron_schedular_time == "everyThreeHours") selected @endif value="everyThreeHours">{{ __("everyThreeHours")}}</option>
-                    <option @if($marg_cron_schedular_time == "everySixHours") selected @endif value="everySixHours">{{ __("everySixHours")}}</option>
-                    <option @if($marg_cron_schedular_time == "daily") selected @endif value="daily">{{ __("daily")}}</option>
-                    <option @if($marg_cron_schedular_time == "twiceDaily") selected @endif value="twiceDaily">{{ __("twiceDaily")}}</option>
-                    <option @if($marg_cron_schedular_time == "weekly") selected @endif value="weekly">{{ __("weekly")}}</option>
-                    <option @if($marg_cron_schedular_time == "monthly") selected @endif value="monthly">{{ __("monthly")}}</option>
+                    <option @if($marg_cron_schedular_time === "everyMinute") selected @endif value="everyMinute">{{ __("everyMinute")}}</option>
+                    <option @if($marg_cron_schedular_time === "everyFiveMinutes") selected @endif value="everyFiveMinutes">{{ __("everyFiveMinutes")}}</option>
+                    <option @if($marg_cron_schedular_time === "everyTenMinutes") selected @endif value="everyTenMinutes">{{ __("everyTenMinutes")}}</option>
+                    <option @if($marg_cron_schedular_time === "everyFifteenMinutes") selected @endif value="everyFifteenMinutes">{{ __("everyFifteenMinutes")}}</option>
+                    <option @if($marg_cron_schedular_time === "everyThirtyMinutes") selected @endif value="everyThirtyMinutes">{{ __("everyThirtyMinutes")}}</option>
+                    <option @if($marg_cron_schedular_time === "hourly") selected @endif value="hourly">{{ __("hourly")}}</option>
+                    <option @if($marg_cron_schedular_time === "everyTwoHours") selected @endif value="everyTwoHours">{{ __("everyTwoHours")}}</option>
+                    <option @if($marg_cron_schedular_time === "everyThreeHours") selected @endif value="everyThreeHours">{{ __("everyThreeHours")}}</option>
+                    <option @if($marg_cron_schedular_time === "everySixHours") selected @endif value="everySixHours">{{ __("everySixHours")}}</option>
+                    <option @if($marg_cron_schedular_time === "daily") selected @endif value="daily">{{ __("daily")}}</option>
+                    <option @if($marg_cron_schedular_time === "twiceDaily") selected @endif value="twiceDaily">{{ __("twiceDaily")}}</option>
+                    <option @if($marg_cron_schedular_time === "weekly") selected @endif value="weekly">{{ __("weekly")}}</option>
+                    <option @if($marg_cron_schedular_time === "monthly") selected @endif value="monthly">{{ __("monthly")}}</option>
                 </select>
 
                 <div class="row mt-2" id="stock_notification_div"
