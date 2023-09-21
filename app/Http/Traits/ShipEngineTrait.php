@@ -38,6 +38,31 @@ trait ShipEngineTrait
         return $response;
     }
 
+    public function shipEngineRateEstimate()
+    {
+        // \Log::info(['address' => $address]);
+        $response =  Http::withHeaders($this->header)->post($this->url.'/rates/estimate',[
+            "carrier_ids" => [
+                "se-5298717"
+            ],
+            "from_country_code" => "US",
+            "from_postal_code" => "78756",
+            "to_country_code" => "US",
+            "to_postal_code" => "95128",
+            "to_city_locality" => "San Jose",
+            "to_state_province" => "CA",
+            "weight" => [
+                "value" => 1.0,
+                "unit" => "ounce"
+            ],
+            "confirmation" => "none",
+            "address_residential_indicator" => "no"
+            
+        ])->json();
+        // \Log::info($response);
+        return $response;
+    }
+
     public function getShippingDetail($id)
     {
         return  Http::withHeaders($this->header)->get($this->url.'/shipments/'.$id);
