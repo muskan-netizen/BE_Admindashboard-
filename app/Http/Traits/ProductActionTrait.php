@@ -608,7 +608,7 @@ trait ProductActionTrait{
             
 
             
-            $mainQuery .= " GROUP BY `vendors`.`id` ";
+            $mainQuery .= " GROUP BY `vendors`.`id` ORDER BY `lineOfSightDistance` ASC";
 
             //------based on hyper location------------
             if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
