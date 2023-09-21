@@ -538,9 +538,6 @@
     </div>
 </div>
 
-
-
-
 <div class="col-md-4">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="is_user_kyc_for_registration_switch"

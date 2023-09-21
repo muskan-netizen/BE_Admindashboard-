@@ -105,20 +105,11 @@
         <div class="view_all_address d-none" id="view_all_address_div">
         @endif
 
-
         @if((($k+1)%2)==0)
             <div class="row w-100">
         @endif
 
-
-
-
-
-
-
-
         {{-- @if($k ==2)
-
 
         <div class="view_all_address d-none" id="view_all_address_div" >
         @endif
