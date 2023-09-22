@@ -3084,6 +3084,7 @@ body.al_body_template_eight.homeHeader .main-fillter .side_fillter .range-slider
 .buy_details .product-right> hr {
     display: none;
 }
+.product_compare_design ul.cd-features-list li.compare_pro_discription{display: block!important;}
 /*----------laptop view----------*/
 
 @media screen and (min-width:768px) and (max-width:1392px){
