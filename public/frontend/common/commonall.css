@@ -1036,8 +1036,8 @@ display: inline-block;
 }
 .al_body_template_eight .single_category_products .suppliers-img-outer{
     height: 100%;
-    min-height: 330px !important;
-    max-height: 330px !important;
+    min-height: 260px !important;
+    max-height: 260px !important;
 }
 .al_body_template_eight section#homepage_top_rated .product-m.render_top_rated .row .img-outer-box.position-relative {
     min-height: 220px;
