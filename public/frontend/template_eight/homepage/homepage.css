@@ -1346,7 +1346,7 @@ section#homepage_recently_viewed {
 }
 
 .main-pro-slider .img-outer-box.position-relative img {
-    height: 185px;
+    height: 220px!important;
     border-radius: 10px 10px 0 0 !important;
 }
 
