@@ -5,60 +5,65 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\ClientCurrency;
 use App\Models\ClientLanguage;
+use App\Models\Destination;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class DestinationController extends Controller
 {
     public function index(Request $request){
-        $rentalProtection = RentalProtection::get();
+        $destinations = Destination::get();
         $langs = ClientLanguage::with('language')->select('language_id', 'is_primary', 'is_active')
             ->where('is_active', 1)
             ->orderBy('is_primary', 'desc')->get();
         $clientCurrency = ClientCurrency::select('currency_id')->where('is_primary', 1)->with('currency')->first();
-        return view('backend.rentalProtection.index')->with(['rentalProtection' => $rentalProtection,'languages' => $langs, 'clientCurrency' => $clientCurrency]);
+        return view('backend.destination.index')->with(['destination' => $destinations,'languages' => $langs, 'clientCurrency' => $clientCurrency]);
     }
 
     public function store(Request $request, $domain = '', $id = null){
         $rules = [
             'title' => 'required',
-            'description' => 'required',
-            'validity' => 'required',
-            'price' => 'required'
+            'image' => 'required'
         ];
         Validator::make($request->all(), $rules)->validate();
         if($id){
-            $rentalProtection = RentalProtection::where('id', $id)->firstOrFail();
+            $destination = Destination::where('id', $id)->firstOrFail();
         }else{
-            $rentalProtection = new RentalProtection();
+            $destination = new Destination();
         }
-        $rentalProtection->title = $request->title;
-        $rentalProtection->description = $request->description;
-        $rentalProtection->price = $request->price;
-        $rentalProtection->validity = $request->validity;
-        $rentalProtection->save();
+        $destination->title = $request->title;
+        $destination->address = $request->address;
+        $destination->latitude = $request->latitude;
+        $destination->longitude = $request->longitude;
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $destination->image = Storage::disk('s3')->put('/destination', $file, 'public');
+        }
+        $destination->save();
 
-        return redirect(route('rental.protection'));
+        return redirect(route('destinations'));
     }
 
     public function edit($domain = '', $id)
     {
-        $rentalProtection = RentalProtection::where('id', $id)->firstOrFail();
+        $destination = Destination::where('id', $id)->firstOrFail();
         $langs = ClientLanguage::with('language')->select('language_id', 'is_primary', 'is_active')
                     ->where('is_active', 1)
                     ->orderBy('is_primary', 'desc')->get();
 
-        $submitUrl = route('rental.protection.store', $id);
+        $submitUrl = route('destination.store', $id);
         $clientCurrency = ClientCurrency::select('currency_id')->where('is_primary', 1)->with('currency')->first();
-        $returnHTML = view('backend.rentalProtection.edit')->with(['languages' => $langs, 'rentalProtection' => $rentalProtection, 'clientCurrency' => $clientCurrency])->render();
+        $returnHTML = view('backend.destination.edit')->with(['languages' => $langs, 'destination' => $destination, 'clientCurrency' => $clientCurrency])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML, 'submitUrl' => $submitUrl));
     }
 
     public function delete($domain = '', $id){
-        $rentalProtection = RentalProtection::where('id', $id)->first();
-        if(empty($rentalProtection)){
-            return redirect()->back()->with('error', 'Rental Protection not found!');
+        $destination = Destination::where('id', $id)->first();
+        if(empty($destination)){
+            return redirect()->back()->with('error', 'Destination not found!');
         }
-        $rentalProtection->delete();
-        return redirect()->back()->with('success', 'Rental Protection deleted successfully!');
+        $destination->delete();
+        return redirect()->back()->with('success', 'Destination deleted successfully!');
     }
 }

@@ -1402,4 +1402,67 @@ $('.editProtection').on('click', function(e) {
         }
         return false;
     });
+
+    var input2 = document.getElementById('destination-address');
+    if(input2){
+        var autocomplete = new google.maps.places.Autocomplete(input2);
+        google.maps.event.addListener(autocomplete, 'place_changed', function () {
+            var place = autocomplete.getPlace();
+            document.getElementById('longitude').value = place.geometry.location.lng();
+            document.getElementById('latitude').value = place.geometry.location.lat();
+        });
+    }
+
+    $(".openDestinationModal").click(function(e) {
+        $('#addDestinationmodal').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    });
+    
+
+    $('.editDestination').on('click', function(e) {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        e.preventDefault();
+        var did = $(this).attr('dataid');
+        let url = `{{route("destination.edit", ":id")}}`;
+        url = url.replace(':id', did);
+        
+        $.ajax({
+            type: "get",
+            url: url,
+            data: '',
+            dataType: 'json',
+            success: function(data) {
+                $('#editdAddonmodal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                $('#editAddonForm #editAddonBox').html(data.html);
+                $('#editdAddonmodal .editAddonSubmit').html('Update');
+                document.getElementById('editAddonForm').action = data.submitUrl;
+            },
+            beforeSend: function() {
+                $(".loader_box").show();
+            },
+            complete: function() {
+                $(".loader_box").hide();
+            },
+            error: function(data) {
+                console.log('data2');
+            }
+        });
+    });
+
+    $(document).on('click', '.deleteDestination', function() {
+        var did = $(this).attr('dataid');
+        if (confirm("Are you sure? You want to delete this Destination.")) {
+            $('#DestinationDeleteForm' + did).submit();
+        }
+        return false;
+    });
 </script>

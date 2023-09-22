@@ -484,6 +484,12 @@
                                 <span>{{ __("Booking Option") }}</span>
                             </a>
                         </li>
+                        <li>  
+                            <a href="{{route('destinations')}}">
+                                <i class="icon-profile"></i>
+                                <span>{{ __("Destination") }}</span>
+                            </a>
+                        </li>
                         
                         {{-- @if(Auth::user()->is_superadmin == 1)
                             <li>

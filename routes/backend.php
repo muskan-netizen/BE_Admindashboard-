@@ -23,6 +23,7 @@ use App\Http\Controllers\Client\VendorRegistrationDocumentController;
 use App\Http\Controllers\Client\SubscriptionPlansUserController;
 use App\Http\Controllers\Client\TagController;
 use App\Http\Controllers\Client\ClientSlotController;
+use App\Http\Controllers\Client\DestinationController;
 use App\Http\Controllers\Client\DriverRegistrationDocumentController;
 use App\Http\Controllers\Client\ProductFaqController;
 use App\Http\Controllers\Client\EstimationController;
@@ -651,6 +652,12 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
             Route::match(['put', 'post'],'store/{id?}', [BookingOptionController::class, 'store'])->name('booking.option.store');
             Route::get('{id}/edit', [BookingOptionController::class, 'edit'])->name('booking.option.edit');
             Route::delete('delete/{id}', [BookingOptionController::class, 'delete'])->name('booking.option.delete');
+        });
+        Route::group(['prefix' => 'destination/'], function () {     
+            Route::get('', [DestinationController::class, 'index'])->name('destinations');
+            Route::match(['put', 'post'],'store/{id?}', [DestinationController::class, 'store'])->name('destination.store');
+            Route::get('{id}/edit', [DestinationController::class, 'edit'])->name('destination.edit');
+            Route::delete('delete/{id}', [DestinationController::class, 'delete'])->name('destination.delete');
         });
     });
 });
