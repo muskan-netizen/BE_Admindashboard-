@@ -181,7 +181,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
 
 @endsection
 @section('script')
-
+<script src="https://cdn.jsdelivr.net/gh/AmagiTech/JSLoader/amagiloader.js"></script>
 <script>
     var is_marg_enable = $('#is_marg_enable');
 
@@ -197,6 +197,7 @@ if (is_marg_enable.length > 0) {
 }
 
 $(document).on("click", "#sync_marg_btn", function(e) {
+        AmagiLoader.show();
         e.preventDefault();
         $.ajax({
             type: "GET",
@@ -207,9 +208,11 @@ $(document).on("click", "#sync_marg_btn", function(e) {
             },
             success: function(response) {
                 $('#sycn_time').html(response.time);
+                AmagiLoader.hide();
                 sweetAlert.success('Data Sycn Successfully!');
             },
             error: function(response) {
+                AmagiLoader.hide();
                 sweetAlert.error('Error!','Marg api - '+response.responseJSON.message);
             }
         });

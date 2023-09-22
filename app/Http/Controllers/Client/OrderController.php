@@ -25,17 +25,17 @@ use GuzzleHttp\Client;
 use App\Models\Client as CP;
 use App\Models\Transaction;
 use App\Models\AutoRejectOrderCron;
-use App\Http\Traits\{ApiResponser,OrderTrait};
+use App\Http\Traits\{ApiResponser, MargTrait, OrderTrait};
 use Log;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-use App\Models\{LoyaltyCard, VendorOrderCancelReturnPayment};
+use App\Models\{LoyaltyCard, VendorMargConfig, VendorOrderCancelReturnPayment};
 
 class OrderController extends BaseController
 {
     private $folderName = '/order/reports';
 
-    use ApiResponser,OrderTrait;
+    use ApiResponser,OrderTrait,MargTrait;
     public $from_date;
     public $to_date;
     public $setWeekDate;
@@ -1217,6 +1217,11 @@ class OrderController extends BaseController
 
                 if ($request->status_option_id == 2) {
                     $this->ProductVariantStock($request->order_id, $request);
+
+                    $hub_key = VendorMargConfig::where('vendor_id',$orderData->vendor_id ?? 0)->first();
+                    if(isset($hub_key) && $hub_key->is_marg_enable == 1){
+                      $this->makeInsertOrderMargApi($orderData->orderDetail);
+                    }
                 }
 
                 if ($currentOrderStatus->order_status_option_id == 2 && $request->status_option_id == 3) {
