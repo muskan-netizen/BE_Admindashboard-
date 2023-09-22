@@ -30,6 +30,7 @@ class BannerController extends BaseController
      */   
     public function index()
     {
+        
         $client_preferences = ClientPreference::first();
         $banners = Banner::orderBy('sorting', 'asc')->get();
         $areas = ServiceAreaForBanner::where('type', 1)->orderBy('created_at', 'DESC')->get();

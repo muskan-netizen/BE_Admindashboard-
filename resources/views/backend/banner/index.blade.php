@@ -166,7 +166,6 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                                         </tbody>
                                     </table>
                                 </div>
-
                                 <form action="{{ route('banner.draw.circle.with.radius') }}" method="post">
                                     @csrf()
                                     <input type="hidden" name="type" value="1" />

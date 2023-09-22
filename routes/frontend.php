@@ -438,6 +438,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('user/loginData', 'Front\CustomerAuthController@login')->name('customer.loginData');
 	Route::post('user/register', 'Front\CustomerAuthController@register')->name('customer.register');
 	Route::post('user/loginViaUsername', 'Front\CustomerAuthController@loginViaUsername')->name('customer.loginViaUsername');
+	Route::post('user/check-valid-email', 'Front\CustomerAuthController@checkValidEmail')->name('check-valid-email');
+
 	Route::post('user/verifyPhoneLoginOtp', 'Front\CustomerAuthController@verifyPhoneLoginOtp')->name('customer.verifyPhoneLoginOtp');
 	Route::post('vendor/register', 'Front\CustomerAuthController@postVendorregister')->name('vendor.register');
 	Route::post('user/forgotPassword', 'Front\ForgotPasswordController@postForgotPassword')->name('customer.forgotPass');

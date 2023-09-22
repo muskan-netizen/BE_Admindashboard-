@@ -193,7 +193,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                 </div>
                                 @endif
                                 <div class="radius-bar d-xl-inline al_custom_search mr-sm-2">
-                                    <div class="search_form d-flex align-items-start justify-content-start"> <button
+                                    <div class="search_form d-flex align-items-center justify-content-start"> <button
                                             class="btn">
 <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 512.000000 512.000000"

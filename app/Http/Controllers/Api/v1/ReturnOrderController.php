@@ -163,11 +163,6 @@ class ReturnOrderController extends BaseController{
                         }
                     }
                 }
-
-
-
-
-
                 $user = Auth::user();
                 $p_id = $request->product_id;
                 // dd($p_id);

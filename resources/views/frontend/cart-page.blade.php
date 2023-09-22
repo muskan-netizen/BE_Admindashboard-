@@ -67,6 +67,7 @@
 </style>
 
 @php
+
     $serviceType = Session::get('vendorType');
 
     $additionalPreference = $getAdditionalPreference;
@@ -196,6 +197,8 @@
                         $other_taxes_string = $cart_details->other_taxes_string;
                     @endphp
                     @foreach ($cart_details->products as $product)
+
+                    
                         <div id="thead_{{ $product->vendor->id }}" class="mt-2 px-0">
                             <div class="row">
 
@@ -766,7 +769,7 @@
                                                 <label class="m-0 radio">
                                                     {{ __('Processor Name') }} :</label>
                                             </div>
-                                            <div class="col-7">
+                                            <div class="col-7 text-right">
                                                 {!! ($product->processor_product ? $product->processor_product->name : '') !!}
                                             </div>
                                         </div>
@@ -775,7 +778,7 @@
                                                 <label class="m-0 radio">
                                                     {{ __('Processor Date') }} :</label>
                                             </div>
-                                            <div class="col-7">
+                                            <div class="col-7 text-right">
                                                 {!! $product->processor_product->date !!}
                                             </div>
                                         </div>
@@ -795,7 +798,7 @@
                                                 <label class="m-0 radio">
                                                     {{getDynamicTypeName('Fixed Fee')}} :</label>
                                             </div>
-                                            <div class="col-7">
+                                            <div class="col-7 text-right">
                                                 @if ($additionalPreference['is_token_currency_enable'])
                                                     {{ getInToken($product->vendor->fixed_fee_amount) }}@else{{ $product->vendor->fixed_fee_amount }}
                                                 @endif
