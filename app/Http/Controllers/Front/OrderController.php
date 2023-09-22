@@ -3214,14 +3214,7 @@ class OrderController extends FrontController
             DB::commit();
             $this->sendSuccessSMS($request, $order);
             // $hub_key = @getAdditionalPreference(['is_marg_enable']);
-            $hub_key = VendorMargConfig::where('vendor_id',$order->ordervendor->vendor_id ?? 0)->first();
-
-            if(isset($hub_key) && $hub_key->is_marg_enable == 1){
-         
-              $this->ProductVariantStock($order->id);
-
-              $this->makeInsertOrderMargApi($order);
-            }
+            
             return $this->successResponse($order);
         } catch (Exception $e) {
             DB::rollback();
