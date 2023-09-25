@@ -75,6 +75,17 @@ trait ShipEngineTrait
         return $response;
     }
 
+    public function shipEngineWebhooks()
+    {
+        // \Log::info(['address' => $address]);
+        $response =  Http::withHeaders($this->header)->post($this->url.'/environment/webhooks',[
+            "url" => "https://webhook.site/7a5ab76c-0862-4538-999a-b2112f3fba29",
+            "event" => "batch"
+        ])->json();
+        // \Log::info($response);
+        return $response;
+    }
+
     public function getShippingDetail($id)
     {
         return  Http::withHeaders($this->header)->get($this->url.'/shipments/'.$id);
@@ -130,6 +141,9 @@ trait ShipEngineTrait
             return ['status' => 208,'message' => $response['errors'][0]['message']];
         }
 
-        return $response['shipment_cost']['amount'];
+        return [
+            'amount' => $response['shipment_cost']['amount'],
+            'response' => $response,
+        ];
     }
 }

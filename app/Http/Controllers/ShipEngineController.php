@@ -18,7 +18,9 @@ class ShipEngineController extends Controller
 
 	public function getShippingFee($data)
 	{
-		return $this->getLabelFee($data);
+		$data = $this->getLabelFee($data);
+        
+        return $data['amount'];
 	}
 
 }
