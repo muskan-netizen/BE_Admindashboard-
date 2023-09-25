@@ -50,8 +50,8 @@ trait MargTrait{
             $is_exist = Product::where(['sku' => $request->code.'_'.$vendor_id, 'vendor_id' => $vendor_id])->first();
             // $mega_vendor_id = $is_exist->vendor->mega_vendor_id;
             $vendor_id = $vendor_id ?? 8;
-   
-			if(isset($request->ProductCode) && isset($request->name) && is_null($is_exist)){
+
+            if(isset($request->ProductCode) && isset($request->name) && is_null($is_exist)){
                 $url_slug = $this->validateSlug($request->name);
                 $request->catcode = 5;
 
@@ -113,20 +113,30 @@ trait MargTrait{
                     $product_category->category_id = $request->catcode; // $request->category_id;
                     $product_category->save();
 
-                    $proVariant = new ProductVariant();
-                    $proVariant->sku = $request->code.'_'.$vendor_id; // $request->sku;
-                    $proVariant->product_id = $product->id;            
-                    $proVariant->price = $request->MRP;            
-                    $proVariant->quantity = $request->stock;            
-                    $proVariant->barcode = $this->generateBarcodeNumber();
-                    $proVariant->save();
+                    $productVariant = ProductVariant::where(['sku' => $request->code.'_'.$vendor_id])->first();
+
+                    if (is_null($productVariant)) {
+                        $proVariant = new ProductVariant();
+                        $proVariant->sku = $request->code.'_'.$vendor_id; // $request->sku;
+                        $proVariant->product_id = $product->id;            
+                        $proVariant->price = $request->MRP;            
+                        $proVariant->quantity = $request->stock;            
+                        $proVariant->barcode = $this->generateBarcodeNumber();
+                        $proVariant->save();
+                    }else{
+                        $productVariant->price = $request->MRP;            
+                        $productVariant->quantity = $request->stock;            
+                        $productVariant->barcode = $this->generateBarcodeNumber();
+                        $productVariant->save();
+                    }
+                    
 
                     ProductTranslation::insert($datatrans);
 
                     if(@$request->Is_Deleted)
                     {
                         $product->delete();
-                        $proVariant->delete();
+                        isset($proVariant) ? $proVariant->delete() : '';
                     }
 
                 // \Log::info('Insert MargProduct code --'.$request->code);
@@ -138,6 +148,8 @@ trait MargTrait{
                     'name'=>$request->name
                 ];
                 //Update Stock Details
+
+                $request->code = $request->code.'_'.$vendor_id; 
                 $this->updateProduct($request,$is_exist);
             }
 
