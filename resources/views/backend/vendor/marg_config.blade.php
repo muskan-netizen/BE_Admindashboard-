@@ -57,9 +57,9 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                             @if (isset($vendorMargConfig->is_marg_enable) == 1) value="1" @else value="0" @endif
                             name="is_marg_enable" id="is_marg_enable_hidden" />
 
-                        @if (isset($vendorMargConfig->is_marg_enable) == 1 && $vendorMargConfig->marg_date_time)
+                        @if (isset($vendorMargConfig->is_marg_enable) == 1 && $vendorMargConfig->marg_last_date_time)
                             <label for="" id="sycn_time" class="ml-3">{{ __('Last Sync Date & Time :') }}
-                            {{ convertDateTimeInClientTimeZone($vendorMargConfig->marg_date_time, 'd-m-Y h:i:s') }}</label >
+                            {{ convertDateTimeInClientTimeZone($vendorMargConfig->marg_last_date_time, 'd-m-Y h:i:s') }}</label >
                         @endif
 
                     </div>

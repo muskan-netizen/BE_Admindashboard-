@@ -88,7 +88,7 @@ class MargController extends Controller
             $decryptionKey  = $vendor_marg_config->marg_decrypt_key;
             $MargID  = $vendor_marg_config->marg_access_token;
             $CompanyCode  = $vendor_marg_config->marg_company_code;
-            $margDateTime = $vendor_marg_config->marg_date_time??date('Y-m-d H:i:s');
+            $margDateTime = $vendor_marg_config->marg_date_time??'';
             $url  = $vendor_marg_config->marg_company_url;
 
             $detail         = [];
@@ -107,7 +107,7 @@ class MargController extends Controller
             //    dd($collectionData["Details"]->pro_N);
 
         $vendor_marg_config->update([
-            'marg_date_time' => date('Y-m-d H:i:s')
+            'marg_last_date_time' => date('Y-m-d H:i:s')
         ]);
         
         if(!empty($collectionData["Details"]->pro_N)){
