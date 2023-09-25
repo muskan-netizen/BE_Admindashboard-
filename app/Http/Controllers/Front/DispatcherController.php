@@ -635,8 +635,7 @@ class DispatcherController extends FrontController
                             $product_addons = [];
                             $variant_options = [];
                             $order_item_count += $product->quantity;
-                            $product->image_path = $product->translation?$product->translation->title:$product->title;
-                            $product->image_path = $product->media->first() ? $product->media->first()->image->path : $product->image;
+                            $product->product_name = isset($product->product)?isset($product->product->translation_one)?$product->product->translation_one->title:$product->title:$product->title;
                             $product->image_path = $product->media->first() ? $product->media->first()->image->path : $product->image;
                             if ($product->pvariant) {
                                 foreach ($product->pvariant->vset as $variant_set_option) {
