@@ -1750,14 +1750,6 @@ trait CartManagerV2{
             $cart->token_value = $additionalPreference['token_currency'] ?? 0;
             $cart->products = $cartData->toArray();
 
-            $ship_engine = $this->getShippingFee($cart);
-            // dd($ship_engine);
-            if ($ship_engine['status'] == 208) {
-                $cart->ship_engine_error = $ship_engine['message'];
-            }else{
-                $cart->ship_engine_fee = $ship_engine['shipment_cost']['amount'];
-            }
-
         }
         return $cart;
     }

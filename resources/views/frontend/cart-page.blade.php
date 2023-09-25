@@ -1195,19 +1195,6 @@
                                 <hr class="my-2">
                             @endif
 
-                            @if (isset($cart_details->ship_engine_fee) && $cart_details->ship_engine_fee > 0)
-                                <div class="row">
-                                    <div class="col-6">{{ __('Total ShipEngine Fee') }}</div>
-                                    <div class="col-6 text-right"><b>
-                                        @if ($additionalPreference['is_token_currency_enable'])
-                                            {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!} {{ getInToken(decimal_format($cart_details->ship_engine_fee)) }}@else{{ Session::get('currencySymbol') ." ". decimal_format($cart_details->ship_engine_fee) }}
-                                        @endif
-                                        </b>
-                                    </div>
-                                </div>
-                                <hr class="my-2">
-                            @endif
-
                             @if ($serviceType == 'rental' || $serviceType == 'p2p')
                                 <div class="row">
                                     <div class="col-6">{{ __('Security Amount') }}</div>

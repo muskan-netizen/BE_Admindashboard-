@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\{ApiResponser,CartManager, KwikApi,BiddingCartTrait, CartManagerV2};
 use App\Http\Controllers\Client\ShippoController;
-use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController, RoadieController};
+use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController, RoadieController, ShipEngineController};
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate, Page,WebStylingOption, ProductDeliveryFeeByRole};
 use DateTime;
 use Http\Message\Cookie;
@@ -2430,6 +2430,29 @@ class CartController extends FrontController
                     }
                 }
 
+
+                //ShipEngine Delivery fee changes code
+                if(isset($vendorData->vendor)){
+                    $shipEngine = new ShipEngineController();
+                    if($shipEngine->status){
+                        $deliver_fee = $shipEngine->getShippingFee($vendorData);
+                        if($deliver_fee>0)
+                        {
+                            $optionAhoy[] = array(
+                                'type'=>'SE',
+                                'courier_name'=>__('ShipEngine'),
+                                'rate' => decimal_format($deliver_fee),
+                                'courier_company_id' => 0,
+                                'etd' => 0,
+                                'etd_hours' => 0,
+                                'duration' => 0,
+                                'estimated_delivery_days' => 0,
+                                'code' => 'SE_0'
+                            );
+                            $option = array_merge($option,$optionAhoy);
+                        }
+                    }
+                }
 
                 }elseif($preferences->static_delivey_fee == 1 &&  $vendorData->vendor->order_amount_for_delivery_fee != 0){
                 # for static fees

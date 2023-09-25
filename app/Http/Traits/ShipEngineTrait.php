@@ -1,6 +1,8 @@
 <?php
 namespace App\Http\Traits;
 
+use App\Models\Cart;
+use App\Models\ShippingOption;
 use App\Models\UserAddress;
 use Illuminate\Support\Facades\Http;
 
@@ -9,15 +11,25 @@ trait ShipEngineTrait
     public $ship_engine_api_key;
     public $url;
     public $header;
+    public $service_code;
+    public $status;
     
     public function __construct()
     {
-        $this->ship_engine_api_key = "TEST_WoN4X4QWdCc8s2jrZLqxyRN0ToPUP0owGWcEDlGYjJM";
-        $this->url = "https://api.shipengine.com/v1";
-        $this->header = [
-            'API-Key' => $this->ship_engine_api_key,
-            'Content-Type' => 'application/json',
-        ];
+        $creds = ShippingOption::select('credentials', 'test_mode','status')->where('code', 'shipengine')->where('status', 1)->first();
+
+        if(isset($creds) && !empty($creds)){
+            $creds_arr = json_decode($creds->credentials);
+
+            $this->ship_engine_api_key = $creds_arr->api_key;
+            $this->service_code = $creds_arr->service_code;
+            $this->url = "https://api.shipengine.com/v1";
+            $this->header = [
+                'API-Key' => $this->ship_engine_api_key,
+                'Content-Type' => 'application/json',
+            ];
+            $this->status = $creds->status ?? 0;
+        } 
     }
 
     public function shipEngineAddressValidate($address)
@@ -68,26 +80,21 @@ trait ShipEngineTrait
         return  Http::withHeaders($this->header)->get($this->url.'/shipments/'.$id);
     }
 
-    public function getShippingFee($cart)
+    public function getLabelFee($data)
     {
-        // dd($cart);
-        $vendor = $cart->products[0]['vendor'];
-        $cart_products = $cart->products;
-        // dd($product);
-        $total_weight = 0;
-        foreach ($cart_products as $key => $cart_product) {
-            foreach ($cart_product['vendor_products'] as $key => $vendor_product) {
-                $total_weight += $vendor_product['product']['weight'];
-            }
-        }
-        
-        $vendor = $cart->products[0]['vendor'];
+        $vendor = $data['vendor'];
 
+        $total_weight = 0;
+
+        foreach ($data->vendorProducts as $key => $vendor_product) {
+            $total_weight += $vendor_product['product']['weight'] ?? 0;
+        }
+                
         $user_address = UserAddress::where('user_id', auth()->user()->id)->where('status',1)->orderBy('is_primary','Desc')->first();
 
         $response =  Http::withHeaders($this->header)->post($this->url.'/labels',[
             "shipment" => [
-                "service_code" => "ups_ground",
+                "service_code" => $this->service_code,
                 "ship_to" => [
                     "name" => auth()->user()->name,
                     "address_line1" => explode(',',$user_address['address'])[0],
@@ -118,11 +125,11 @@ trait ShipEngineTrait
                 ]
             ]
         ]);
-
+        // \Log::info(['response' => $response]);
         if (isset($response['errors'])) {
             return ['status' => 208,'message' => $response['errors'][0]['message']];
         }
 
-        return $response;
+        return $response['shipment_cost']['amount'];
     }
 }
