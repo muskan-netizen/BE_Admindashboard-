@@ -2018,11 +2018,10 @@
             <div class="page-title-box">
                 <h4 class="page-title text-uppercase">Marg</h4>
             </div><!-- Social Logins title end -->
-
+            <div class="card-box">
             <form method="POST" action="{{ route('additional.update') }}">
                 @csrf
                 <!-- marg card start -->
-                <div class="card-box h-100">
                     <div class="row">
                         <div class="col-12">
                             <div class="form-group mb-0 switchery-demo">
@@ -2119,32 +2118,24 @@
                             </div>
                         </div>
                     </div>
-            </form>
-            <div class="row marg_row"
-                style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
+                </form>
+                <div class="row marg_row" style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
                 <div class="col-12">
-            @php
-        {
-
-                $marg_order =  App\Models\Order::where('marg_status', '=',null)->
-                  where('marg_max_attempt', '>',2)->first();
-                 $class= "";
-                 if($marg_order){
-                    $class= "disabled";
-                 }
-
-
-        }
-        @endphp
-
-
-                <button class="btn btn-info btn-block" id="sync_marg_btn" {{$class }}>{{ __('Sync Data') }} </button>
-
+                    @php
+                    {
+                        $marg_order =  App\Models\Order::where('marg_status', '=',null)->where('marg_max_attempt', '>',2)->first();
+                        $class= "";
+                        if($marg_order){
+                            $class= "disabled";
+                        }
+                    }
+                    @endphp
+                    <button class="btn btn-info btn-block" id="sync_marg_btn" {{$class }}>{{ __('Sync Data') }} </button>
                 </div>
             </div>
-        </div><!-- marg card end -->
-    </div>
-     <div class="col-xl-4 col-lg-4 mb-3">
+        </div>
+    </div><!-- marg card end -->
+    <div class="col-xl-4 col-lg-4 mb-3">
         <div class="page-title-box">
             <h4 class="page-title text-uppercase">{{ __('Vendor Notification Product Stock') }}</h4>
         </div>
@@ -2188,7 +2179,7 @@
                     </div>
                     <hr />
                 </div>
-
+            </div>
                 </form>
             </div>
         </div>
@@ -2238,7 +2229,6 @@
         </div>
         </div>
 	@endif
-    </div>
      <div class="col-xl-4 col-lg-4 mb-3 d-none">
         <div class="page-title-box">
             <h4 class="page-title text-uppercase">{{ __('Testing Database Toggle ') }}</h4>
