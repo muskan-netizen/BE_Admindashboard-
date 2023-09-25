@@ -603,6 +603,7 @@ class OrderController extends BaseController
                 if($vendor->products->count() == 0){
                     $orders->forget($key);
                 }
+                
                 foreach ($vendor->products as $product) {
                     $product_total_count += $product->quantity * $product->price;
                     $security_amount += $product->security_amount;
@@ -2703,6 +2704,7 @@ class OrderController extends BaseController
                     $order_details = OrderProduct::where('id',$return->order_vendor_product_id)->whereHas('order',function($q) use ($user){$q->where('user_id',$user->id);})->first();
                     $this->ProductVariantStockIncreaseByOrderId($order_product->order_id);
                     $this->placeReturnRequestToDispatch($order_details->order_id, $order_details->vendor_id, $dispatch_domain, $order_details);
+                    $this->ProductVariantStockIncreaseByOrderId($order_product->order_id);
                     DB::commit();
                     return $this->successResponse($returns, 'Updated.');
                 }

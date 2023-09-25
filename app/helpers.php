@@ -1581,6 +1581,7 @@ if( !function_exists('clientPrefrenceModuleStatus') ) {
 if( !function_exists('p2p_module_status') ) {
     function p2p_module_status() {
         $additional_preference = getAdditionalPreference(['is_attribute']);
+        
         if(clientPrefrenceModuleStatus('p2p_check') && $additional_preference['is_attribute']) {
             return true;
         }

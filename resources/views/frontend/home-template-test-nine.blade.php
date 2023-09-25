@@ -205,11 +205,11 @@
 				<h2>Categories</h2>
 			</div>
 		</div>
-		<div class="row align-items-center justify-content-center" >
+		<div class="categories_slider" >
 			{{-- @dump($navCategories) --}}
 			@foreach($navCategories as $cate)
 				@if($cate['name'])
-					<div class="col-md-2">
+					<div class="item">
 						<div class="cate-item text-center">
 							<a href="{{route('categoryDetail', $cate['slug'])}}">
 								<img
@@ -786,7 +786,7 @@
 						</div>
 					</div>
 				<div class="product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-					<div class="row">
+					<div class="featured_slider">
 								@foreach ($homePageData[$homePageLabel->slug] as $product )
 								@include('frontend.home_page_9.product')
 								@endforeach
@@ -809,7 +809,7 @@
 						</div>
 					</div>
 				<div class="product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-					<div class="row">
+					<div class="featured_slider">
 								@foreach ($homePageData[$homePageLabel->slug] as $product )
 								@include('frontend.home_page_9.product')
 								@endforeach
@@ -831,7 +831,7 @@
 						</div>
 					</div>
 				<div class="product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-					<div class="row">
+					<div class="featured_slider">
 						{{-- @dd($homePageData[$homePageLabel->slug]) --}}
 								@foreach ($homePageData[$homePageLabel->slug] as $product )
 								@include('frontend.home_page_9.product')
