@@ -2125,21 +2125,21 @@
                 <div class="col-12">
             @php
         {
-            
+
                 $marg_order =  App\Models\Order::where('marg_status', '=',null)->
                   where('marg_max_attempt', '>',2)->first();
                  $class= "";
                  if($marg_order){
                     $class= "disabled";
                  }
-            
-                 
-        }    
+
+
+        }
         @endphp
-        
-        
+
+
                 <button class="btn btn-info btn-block" id="sync_marg_btn" {{$class }}>{{ __('Sync Data') }} </button>
-      
+
                 </div>
             </div>
         </div><!-- marg card end -->
@@ -2175,7 +2175,7 @@
                     <input type="hidden" @if (@$getAdditionalPreference['stock_notification_before'] == 1) value="1" @else value="0" @endif
                         name="stock_notification_before" id="stock_notification_before" />
                 </div>
-        
+
                 <div class="row mt-2" id="stock_notification_div"
                     style="display:@if (@$getAdditionalPreference['stock_notification_before'] == 1) @else none @endif;">
                     <div class="col-8">
@@ -2188,11 +2188,56 @@
                     </div>
                     <hr />
                 </div>
-        
+
                 </form>
             </div>
         </div>
+        @if( Request::get('google_tag'))
+        <div class="col-xl-4 col-lg-4 mb-3">
+            <!-- Social Logins title start -->
+            <div class="page-title-box">
+                <h4 class="page-title text-uppercase">{{ __('Google Analytics') }}</h4>
+            </div><!-- Social Logins title end -->
+                            <div class="card-box">
+            <form method="POST" action="{{ route('additional.update') }}">
+                <input type="hidden" name="crm" id="crm" value="1">
+                <input type="hidden" name="send_to" id="send_to" value="configure">
+                @csrf
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h4 class="header-title text-uppercase mb-0">{{ __('Google Analytics') }}
+                    </h4>
+                    <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
+                    </button>
+                </div>
+                            <div class="col-12">
 
+                <!-- HubSpot card start -->
+                    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                        <label for="is_enable_google_analytics_switch" class="mr-2 mb-0">{{ __('Enable Google Analytics') }}</label>
+                        <span> <input type="checkbox" data-plugin="switchery" name="is_enable_google_analytics"
+                                id="is_enable_google_analytics_switch" class="form-control checkbox_change"
+                                data-className="is_enable_google_analytics" data-color="#43bee1"
+                                 @if (@$getAdditionalPreference['is_enable_google_analytics'] == 1) checked='checked' @endif>
+                        </span>
+                        <input type="hidden" @if ($getAdditionalPreference['is_enable_google_analytics'] == 1) value="1" @else value="0" @endif
+                            name="is_enable_google_analytics" id="is_enable_google_analytics" />
+                    </div>
+
+                   <div class="form-group mt-3 mb-0">
+                        <label for="header_script">{{ __('Header Script') }}</label>
+                        <textarea class="form-control m-0" id="header_script" rows="5" name="header_script" cols="10">{{ old('header_script', @$getAdditionalPreference['header_script'] ?? '') }}</textarea>
+
+                    </div>
+                    <div class="form-group mt-3 mb-0">
+                        <label for="footer_script">{{ __('Footer Script') }}</label>
+                        <textarea class="form-control m-0" id="footer_script" rows="5" name="footer_script" cols="10">{{ old('footer_script', @$getAdditionalPreference['footer_script'] ?? '') }}</textarea>
+
+                    </div>
+                </div>
+            </form>
+        </div>
+        </div>
+	@endif
     </div>
      <div class="col-xl-4 col-lg-4 mb-3 d-none">
         <div class="page-title-box">
@@ -2210,17 +2255,17 @@
                 <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
                 </button>
             </div>
-        
+
             <div class="col-12">
-        
+
             <select class="form-control" id="db_toggle" name="db_toggle">
-                                
+
                 <option value="2d98b5"   @if (@$client_detail->code == '2d98b5') checked='checked' @endif>Ace</option>
                 <option value="245bae" @if (@$client_detail->code == '245bae')   checked='checked' @endif>Ace UAT</option>
-                                   
+
            </select>
                 </div>
-        
+
                 </form>
             </div>
         </div>
@@ -2229,10 +2274,10 @@
     {{-- ends here marg form --}}
     </div>
 
-   
-    
 
-    
+
+
+
 
 
 
