@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Front\FrontController;
 use Session;
 use App\Models\{Product, ClientCurrency, ProductVariant, ProductVariantSet};
+use DB;
 
 class ProductController  extends FrontController
 {
@@ -74,7 +75,20 @@ class ProductController  extends FrontController
             }
         }
         $sets = array();
+
+        if ($request->has('variants') && $request->has('options')) {
+            $selected_variant = DB::table('product_variant_sets')->join('product_variants', 'product_variants.id', '=', 'product_variant_sets.product_variant_id')->where('product_variant_sets.product_id', $product->id)
+            ->whereIn('variant_option_id', $request->options)
+            ->whereIn('variant_type_id', $request->variants)
+            ->groupBy('product_variant_id')
+            ->havingRaw("COUNT(DISTINCT variant_option_id) = ". count($request->options). " " )
+            ->havingRaw("COUNT(DISTINCT variant_type_id) = ".count($request->variants)." ")
+            ->select('product_variant_sets.*', 'product_variants.price', 'product_variants.price', 'product_variants.compare_at_price', 'product_variants.quantity')
+            ->first();
+        }
+
         //pr($pv_ids);
+        $selected_variant_title = $request->selected_title;
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
         $availableSets = Product::with(['variantSet.variantDetail','variantSet.option2'=>function($q)use($product, $pv_ids){
             $q->where('product_variant_sets.product_id', $product->id)->whereIn('product_variant_id', $pv_ids);
@@ -82,7 +96,21 @@ class ProductController  extends FrontController
         //return $product;
         ->select('id')
         ->where('products.id', $product->id)->first();
-        $data['availableSets'] = $availableSets->variantSet;
+        // Assuming $availableSets is an array of objects with a 'title' property
+        foreach ($availableSets->variantSet as $key => $sets) {
+            if ($sets->variantDetail->title === $selected_variant_title) {
+                unset($availableSets->variantSet[$key]);
+            }
+        }
+        // Convert the object to an array
+        $availableSets = json_decode(json_encode($availableSets->variantSet), true);
+
+        usort($availableSets, function ($a, $b) {
+            return $a['variant_detail']['position'] - $b['variant_detail']['position'];
+        });
+
+        $availableSets = json_decode(json_encode($availableSets), false);
+        $data['availableSets'] = $availableSets;
         if($pv_ids){
             $variantData = ProductVariant::with(['product.media.image', 'product.addOn', 'media.pimage.image', 'checkIfInCart'])
             ->select('id', 'sku', 'quantity', 'price', 'compare_at_price', 'barcode', 'product_id')
@@ -133,6 +161,7 @@ class ProductController  extends FrontController
                 $data['variant'] = $variantData;
                 $data['tokenAmount'] = $tokenAmount;
                 $data['is_token_enable'] = $is_token_enable;
+                $data['selected_variant'] = $selected_variant;
 
                 return response()->json(array('status' => 'Success', 'data' => $data));
             }

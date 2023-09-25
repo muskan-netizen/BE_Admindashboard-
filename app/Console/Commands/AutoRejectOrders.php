@@ -171,8 +171,6 @@ class AutoRejectOrders extends Command
                 }
                  DB::disconnect($database_name);
             } else {
-               //  DB::disconnect($database_name);
-                //// Log::info("checking cart  end: {$database_name}!");
             }
         }
     }

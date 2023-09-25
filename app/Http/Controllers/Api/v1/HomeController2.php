@@ -232,7 +232,6 @@ class HomeController2 extends BaseController
 
             return $this->successResponse($homeData);
         } catch (Exception $e) {
-            \Log::info($e->getMessage());
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
@@ -298,10 +297,6 @@ class HomeController2 extends BaseController
             $allVendorData = clone $vendorData;
             $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->limit(100)->get();
             $venderIds  = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
-            
-            // //\Log::info($vendorData->toSql());
-            // //\Log::info($venderIds);
-            // //\Log::info($ses_vendors);
 
 
             $timezone = $user->timezone ?? 'Asia/Kolkata';

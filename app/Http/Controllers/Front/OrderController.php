@@ -83,10 +83,11 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\LalaMovesController;
 use Illuminate\Support\Facades\Http;
+use App\Http\Traits\MargTrait;
 
 class OrderController extends FrontController
 {
-    use ApiResponser, CartManager, SquareInventoryManager,VendorTrait,OrderTrait;
+    use ApiResponser, CartManager, SquareInventoryManager,VendorTrait,OrderTrait,MargTrait;
 
     /**
      * Display a listing of the resource.
@@ -285,6 +286,7 @@ class OrderController extends FrontController
                     } else {
                         $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
                     }
+                    $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;                   
                 }
                 if ($vendor->delivery_fee > 0) {
                     $order_pre_time = ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0;
@@ -341,6 +343,7 @@ class OrderController extends FrontController
                     } else {
                         $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
                     }
+                    $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;                  
                 }
                 if ($vendor->dineInTable) {
                     $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
@@ -386,6 +389,7 @@ class OrderController extends FrontController
                     } else {
                         $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
                     }
+                    $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;                   
                 }
                 if ($vendor->dineInTable) {
                     $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
@@ -455,6 +459,7 @@ class OrderController extends FrontController
                             $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
                         }
                     }
+                    $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;              
                 }
                 if ($vendor->dineInTable) {
                     $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
@@ -902,6 +907,7 @@ class OrderController extends FrontController
         }
         $latitude = ($address) ? $address->latitude : '';
         $longitude = ($address) ? $address->longitude : '';
+       
         $cartData = CartProduct::with([
             'vendor',
             'coupon' => function ($qry) use ($cart_id) {
@@ -1128,6 +1134,8 @@ class OrderController extends FrontController
         // return view('frontend/orderPayment')->with(['navCategories' => $navCategories, 'first_name' => $request->first_name, 'last_name' => $request->last_name, 'email_address' => $request->email_address, 'phone' => $request->phone, 'total_amount' => $request->total_amount, 'address_id' => $request->address_id]);
         // }
 
+        
+
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
          if($request->payment_option_id=='52'){
             if($primaryCurrency->currency->iso_code!='QAR'){
@@ -1146,14 +1154,15 @@ class OrderController extends FrontController
 
             return $this->successResponse($response->data, __('Order placed successfully.'), 201);
         } else {
-            return $this->errorResponse($response->message, 400);
+            
+            return $this->errorResponse($response->message, $response->code ?? 400);
         }
     }
 
     public function orderSave($request, $paymentStatus)
     {
 
-
+        // dd($request->all());
         try {
             $latitude = '';
             $longitude = '';
@@ -1177,7 +1186,7 @@ class OrderController extends FrontController
             $editlimit_datetime = Carbon::now()->toDateTimeString();
             $order_edit_before_hours = 0;
             $is_service_product_price_from_dispatch = 0;
-            $additionalPreferences = getAdditionalPreference(['is_tax_price_inclusive','is_gift_card','is_service_product_price_from_dispatch','order_edit_before_hours','is_show_vendor_on_subcription','is_service_price_selection']);
+            $additionalPreferences = getAdditionalPreference(['is_tax_price_inclusive','is_gift_card','is_service_product_price_from_dispatch','order_edit_before_hours','is_show_vendor_on_subcription','is_service_price_selection','stock_notification_before','stock_notification_qunatity']);
 
             if(($action == 'on_demand') && ($additionalPreferences['is_service_product_price_from_dispatch'] ==1)){
                 $getOnDemandPricingRule = getOnDemandPricingRule($action, Session::get('onDemandPricingSelected'),$additionalPreferences);
@@ -1222,6 +1231,21 @@ class OrderController extends FrontController
                     'editingOrder.orderStatusVendor',
                     'cartvendor'
                 ])->first();
+                if(!isset($cart)){
+                    return $this->errorResponse(__('Product is removed as it is no longer available.'), 404);
+                }
+                $cart_product_removed =    CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
+                    $q->whereIn('is_live',[0,2]);
+                })->pluck('id');
+               
+                if(count($cart_product_removed)){
+                     CartProduct::whereIn('id',$cart_product_removed)->delete();
+                     if(CartProduct::where('cart_id',$cart->id)->count() == 0){
+                        Cart::find($cart->id)->delete();
+                     }
+                     DB::commit();
+                     return $this->errorResponse(__('Product is removed as it is no longer available.'), 404);
+                }
             /* Get Currencies of client and customer */
             $customerCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
             $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
@@ -1334,6 +1358,7 @@ class OrderController extends FrontController
             /* Save initial details of order */
             $order->save();
 
+        
             /* Updating order prescription if any */
             $cart_prescriptions = CartProductPrescription::where('cart_id', $cart->id)->get();
             foreach ($cart_prescriptions as $cart_prescription) {
@@ -2358,7 +2383,8 @@ class OrderController extends FrontController
                 52,
                 53,
                 54,
-                56
+                56,
+                22
             ]; // stripe, mobbex,yoco,pointcheckout,razorpay,simplified,square,pagarme, checkout,Authourize, stripe_fpx,KongaPay, cashfree,easubuzz,vnpay, payu,mycash,Stipre_oxxo,stripe_ideal, obo
 
             if (! in_array($request->payment_option_id, $ex_gateways) || (isset($request->is_postpay) && $request->is_postpay == 1)) {
@@ -2449,8 +2475,19 @@ class OrderController extends FrontController
                             'vendor_id' => $vendor_value->vendor_id
                         ])->pluck('user_id');
                         if ($request->payment_option_id == 1 || $order->is_postpay == 1 || $order->payment_status == 1) {
+                            
                             $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
                         }
+
+                        
+
+                        if(!empty($additionalPreferences->stock_notification_before) && $additionalPreferences->stock_notification_before == 1){
+                            $vendor_id=$this->CheckProductStockLimit($order->id,$additionalPreferences->stock_notification_qunatity);
+                            if(!empty($vendor_id)){
+                              $this->sendProductStockOutPushNotificationVendors($vendor_id,$vendor_order_detail);
+                            }
+                        }
+
                     }
                     $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
                     $super_admin = User::where('is_superadmin', 1)->pluck('id');
@@ -2491,7 +2528,14 @@ class OrderController extends FrontController
 
             DB::commit();
             $this->sendSuccessSMS($request, $order);
+            $hub_key = @getAdditionalPreference(['is_marg_enable']);
 
+            if(isset($hub_key) && $hub_key['is_marg_enable'] == 1){
+         
+              $this->ProductVariantStock($order->id);
+          
+              $this->makeInsertOrderMargApi($order);
+            }
             return $this->successResponse($order);
         } catch (Exception $e) {
             DB::rollback();
@@ -2584,11 +2628,13 @@ class OrderController extends FrontController
                 $from = $client_preferences->vendor_fcm_server_key;
                 $data['registration_ids'] = $vendorAppUserDevices;
 
-                $result = sendFcmCurlRequest($data);
+                $result = sendFcmCurlRequest($data,$from);
                 //// Log::info($result);
             }
         }
     }
+
+   
 
     public function makePayment(Request $request)
     {
@@ -2760,6 +2806,7 @@ class OrderController extends FrontController
                 if (getAdditionalPreference([
                     'is_tracking_url'
                 ])['is_tracking_url'] == 1) {
+                    \Log::info('test');
                     $this->sendTrackingUrlSMS($orderData);
                 }
             }

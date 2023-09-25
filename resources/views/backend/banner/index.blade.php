@@ -166,7 +166,6 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                                         </tbody>
                                     </table>
                                 </div>
-
                                 <form action="{{ route('banner.draw.circle.with.radius') }}" method="post">
                                     @csrf()
                                     <input type="hidden" name="type" value="1" />
@@ -221,7 +220,7 @@ $timezone = Auth::user()->timezone ? Auth::user()->timezone : 'UTC';
                                     <td><a class="openBannerModal" userId="{{$ban->id}}" href="#"> {{ $ban->name }}</a> </td>
                                     <td> <span class="text-center d-inline-block">
                                         @if(isset($ban->start_date_time) && isset($ban->end_date_time))
-                                        {{ dateTimeInUserTimeZone($ban->start_date_time, $timezone)}} <br/> to <br/> {{dateTimeInUserTimeZone($ban->end_date_time, $timezone)}}
+                                        {{ $ban->start_date_time}} <br/> to <br/> {{$ban->end_date_time}}
                                         @else
                                         -
                                         @endif

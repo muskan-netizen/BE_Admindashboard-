@@ -13,6 +13,8 @@ use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Http\Traits\ApiResponser;
 use App\Http\Traits\ValidatorTrait;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB as FacadesDB;
 use Illuminate\Support\Facades\Redis;
 use Session;
 
@@ -71,8 +73,9 @@ class ClientPreferenceController extends BaseController{
 
         $productDeliveryFeeByRole = ProductDeliveryFeeByRole::groupBy('role_id')->get()->pluck('role_id')->toArray();
 
-        $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds','is_service_product_price_from_dispatch','is_file_cart_instructions','is_user_kyc_for_registration','add_to_cart_btn','chat_button','call_button','is_tracking_url','is_tracking_sms_url','is_place_order_delivery_zero','is_cust_success_signup_email','is_admin_vendor_rating','square_enable_status', 'square_credentials','is_long_term_service','is_influencer_refer_and_earn','is_show_vendor_on_subcription','is_postpay_enable','is_order_edit_enable','order_edit_before_hours','is_enable_compare_product','is_bid_enable','update_order_product_price','is_service_price_selection', 'is_particular_driver', 'pickup_notification_before', 'pickup_notification_before_hours', 'pickup_notification_before2', 'pickup_notification_before2_hours','is_enable_curb_side','is_recurring_booking','is_map_search_perticular_country']);
-
+        $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds','is_service_product_price_from_dispatch','is_file_cart_instructions','is_user_kyc_for_registration','add_to_cart_btn','chat_button','call_button','is_tracking_url','is_tracking_sms_url','is_place_order_delivery_zero','is_cust_success_signup_email','is_admin_vendor_rating','square_enable_status', 'square_credentials','is_long_term_service','is_influencer_refer_and_earn','is_show_vendor_on_subcription','is_postpay_enable','is_order_edit_enable','order_edit_before_hours','is_enable_compare_product','is_bid_enable','update_order_product_price','is_service_price_selection', 'is_particular_driver', 'pickup_notification_before', 'pickup_notification_before_hours', 'pickup_notification_before2', 'pickup_notification_before2_hours','is_enable_curb_side','is_recurring_booking','is_map_search_perticular_country','marg_access_token', 'is_marg_enable', 'marg_company_code', 'marg_decrypt_key','marg_date_time','stock_notification_qunatity','stock_notification_before','marg_company_url']);
+        $client_detail = Client::first();
+      
         return view('backend/setting/config')->with([
                                                 'tags' => $tags,
                                                 'slots'=>$slots,
@@ -91,6 +94,7 @@ class ClientPreferenceController extends BaseController{
                                                 'productDeliveryFeeByRole'=> $productDeliveryFeeByRole,
                                                 'accounting'=> $accounting,
                                                 'getAdditionalPreference'=> $getAdditionalPreference,
+                                                'client_detail' => $client_detail
 
                                             ]);
     }
@@ -202,6 +206,7 @@ class ClientPreferenceController extends BaseController{
             }
 
         try {
+            
             $this->updatePreferenceAdditional($request);
 
             if($request->has('token_currency'))
@@ -992,5 +997,48 @@ class ClientPreferenceController extends BaseController{
             }
         }
 
+    }
+
+    public function toggleDatabase(Request $request)
+    {
+ 
+        $default = [
+            'driver' => env('DB_CONNECTION', 'mysql'),
+            'host' => env('DB_HOST'),
+            'port' => env('DB_PORT'),
+            'database' =>'royoorders',
+            'username' => env('DB_USERNAME'),
+            'password' => env('DB_PASSWORD'),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => false,
+            'engine' => null
+        ];
+        Config::set("database.connections.royoorders", $default);
+        FacadesDB::setDefaultConnection('royoorders');
+
+
+        $client = Client::first();
+ 
+       
+        if($request->has('db_toggle'))
+        {
+
+           if($request->db_toggle == '245bae')
+           {
+            $client->database_name = 'salesdemo';
+           }
+           elseif($request->db_toggle == '2d98b5')
+           {
+            $client->database_name = 'ace';
+           }
+            $client->save();
+           \Illuminate\Support\Facades\Redis::flushall();
+
+           return redirect()->back()->with('success', 'Client settings updated successfully!');
+        }
+       
     }
 }

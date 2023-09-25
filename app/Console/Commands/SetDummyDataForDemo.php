@@ -52,7 +52,6 @@ class SetDummyDataForDemo extends Command
         $code_array = ['d8473d','574467','c8fbba'];
         $domain_array = ['voltaic','elixir','homeric'];
         $clients = Client::select('database_name', 'sub_domain')->whereIN('code',$code_array)->whereIN('sub_domain',$domain_array)->get();
-       // Log::info($clients);
         foreach ($clients as $client) {
                 $this->migrateDefaultDataDaily($client);
             }
@@ -65,7 +64,6 @@ class SetDummyDataForDemo extends Command
     {
         try {
             $database_name = 'royo_' . $client->database_name;
-            //// Log::info("checking cart start: {$database_name}!");
             $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME =  ?";
             $db = DB::select($query, [$database_name]);
             if ($db) {
@@ -179,7 +177,6 @@ class SetDummyDataForDemo extends Command
                 ClientPreference::on($schemaName)->where('id', 1)->update(['is_hyperlocal' => 0]);
                 
                 DB::disconnect($schemaName);
-               // Log::info("import dummy data: {$schemaName}!");
             }
         } catch (\PDOException $e) {
             DB::connection($schemaName)->rollBack();

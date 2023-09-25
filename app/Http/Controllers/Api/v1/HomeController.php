@@ -65,10 +65,8 @@ class HomeController extends BaseController
                         $vendorMode[] = $vendorData;
                     }
             }
-
             $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo','is_service_price_selection','is_particular_driver','is_enable_curb_side','is_enable_variant_set_v2']);
     
-            //pr($vendorMode);
             //mohit sir branch code updated by sohail farm meat
             $homeData['profile']->preferences->vendorMode = $vendorMode;
 
@@ -78,10 +76,7 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->is_enable_curb_side = (int) $getAdditionalPreference['is_enable_curb_side'];
             $homeData['profile']->preferences->is_user_kyc_for_registration = (int) $getAdditionalPreference['is_user_kyc_for_registration'];
             $homeData['profile']->preferences->rating_check = $preferences->preferences->rating_check;
-            //dd($homeData['profile']);
-
-
-            
+           
 
             $homeData['profile']->preferences->advance_booking_amount = 0;
             $homeData['profile']->preferences->advance_booking_amount_percentage = 0;
@@ -441,10 +436,6 @@ class HomeController extends BaseController
             $allVendorData = clone $vendorData;
             $vendorData = $vendorData->with('slot', 'slotDate')->where('status', 1)->limit(100)->get();
             $venderIds  = $allVendorData->with('slot', 'slotDate')->where('status', 1)->pluck('id');
-
-            // //\Log::info($vendorData->toSql());
-            // //\Log::info($venderIds);
-            // //\Log::info($ses_vendors);
 
 
             $timezone = $user->timezone ?? 'Asia/Kolkata';
@@ -1039,7 +1030,7 @@ class HomeController extends BaseController
                 foreach ($value->variant as $k => $v) {
                     $value->variant[$k]->multiplier = $currency ? $currency->doller_compare : 1;
                 }
-                if(isset($value->variant) && $value->variant->first()->compare_at_price > 0){
+                if(isset($value->variant) && @$value->variant->first()->compare_at_price > 0){
                     $value->offers = ($value->variant->first()->compare_at_price - $value->variant->first()->price) / $value->variant->first()->compare_at_price * 100;
                 }else{
                     $value->offers = 0;
@@ -1047,7 +1038,6 @@ class HomeController extends BaseController
 
             }
         }
-       // Log::info($products);
         return $products;
     }
 

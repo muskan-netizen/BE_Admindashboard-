@@ -650,6 +650,7 @@ $(document).ready(function () {
     });
 
     function productRemove(product_id, cartproduct_id, vendor_id) {
+        
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -686,6 +687,7 @@ $(document).ready(function () {
                     if($(`#add_button_href${cartproduct_id}`).length > 0){
                         $(`#add_button_href${cartproduct_id}`).show();
                         $(`#added_button_href${cartproduct_id}`).hide();
+                        $(`#add_button_href${cartproduct_id}`).text('Add');
                     }
                     if($(`#add_button_href${product_id}`).length > 0){
                         $(`#add_button_href${product_id}`).show();
@@ -977,7 +979,7 @@ $(document).ready(function () {
 
     }
     $(document).on("click", "#order_placed_btn", async function () {
-        
+
         if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val()!=$("#schedule_datetime").val())){
             success_error_alert('error', error_unchanged_schedule_date, ".cart_response");
             $("#schedule_datetime").val($("#edit_order_schedule_datetime").val());
@@ -1011,6 +1013,19 @@ $(document).ready(function () {
                 //footer: '<a href="">Why do I have this issue?</a>'
             });
             return false;
+        }
+
+        if ($("#agree_term_check").length > 0) {
+            var checkbox = document.getElementById("agree_term_check");
+            if (!checkbox.checked) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please accept terms and conditions.',
+                    //footer: '<a href="">Why do I have this issue?</a>'
+                });
+                return false;
+            }
         }
 
         var delivery_type = 'D';
@@ -1250,7 +1265,7 @@ $(document).ready(function () {
                             },
                             error: function (error) {
                                 var response = $.parseJSON(error.responseText);
-                                
+
                                 let error_messages = response.message;
                                 $.each(error_messages, function (key, error_message) {
                                     $('#min_order_validation_error_' + error_message.vendor_id).html(error_message.message).show();
@@ -1859,6 +1874,12 @@ $(document).ready(function () {
                     success_error_alert('error', response.message, ".cart_response");
                     $("#order_placed_btn, .proceed_to_pay").removeAttr("disabled");
                 }
+                if (response.code == 404) {
+                setTimeout(function () {
+                    window.location.reload();
+                }, 2000)
+            }
+                
             },
             complete: function (data) {
                 $('.spinner-overlay').hide();
@@ -2138,7 +2159,7 @@ $(document).ready(function () {
                 success_error_alert('error', 'Invalid credit card information', "#powertrans_card_error");
                 return false;
             }
-      
+
         }
 
         if ((payment_option_id == undefined || payment_option_id <= 0) && (payment_method_required_error_msg != undefined)) {
@@ -2375,7 +2396,6 @@ $(document).ready(function () {
         OrderStorage.setStorageSingle('RecurringBookingAdded','');
         OrderStorage.setStorageSingle('cartFirstProductId','');
         OrderStorage.setStorageSingle('cartAddressId','');
-        OrderSessionStorage.setStorageSingle('dispatcher_agent_id','')
         $.ajax({
             data: { address_id: address_id, schedule_date_delivery: $("#schedule_datetime").val()},
             type: "get",
@@ -2995,9 +3015,9 @@ $(document).ready(function () {
         $('#add_new_address_btn').show();
         $('#add_new_address_form').hide();
     });
-    $(document).on("click", "#add_new_address_btn", function () {
+    $(document).on("click", "#add_new_address_btn a.add-address", function () {
         if(auth){
-        $(this).hide();
+        // $(this).hide();
         initialize();
         $("#add_new_address_form_modal").modal('show');
         $('#add_new_address_form').show();
@@ -3242,7 +3262,7 @@ $(document).ready(function () {
 
 
        // Recuring booking code
-        
+
 
 
         // if($('#is_recurring_bookingss').val() > 0){
@@ -3973,7 +3993,6 @@ $(document).ready(function () {
                 }
             },
             error: function (error) {
-                console.log(error);
                 var response = $.parseJSON(error.responseText);
                 alert(response.message);
                 success_error_alert('error', response.message, ".cart_response");
@@ -5094,7 +5113,7 @@ $(document).ready(function () {
             case 56:
                 paymentViaOboPay('', payment_option_id);
             break;
-            
+
             case 57:
                 payWithPesapal(payment_option_id,'');
             break;
@@ -5102,7 +5121,11 @@ $(document).ready(function () {
             case 58:
                 payWithPowerTrans(payment_option_id,'');
             break;
-                
+
+            case 59:
+                payWithLivees(payment_option_id);
+                break;
+
         }
 
     }
@@ -5638,7 +5661,7 @@ $(document).ready(function () {
                 }else{
                     return false;
                 }
-            break; 
+            break;
 
             case '57':
               var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
@@ -5653,6 +5676,13 @@ $(document).ready(function () {
               var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
               if (order != '') {
                 payWithPowerTrans(payment_option_id, order);
+              }
+            break;
+
+            case '59':
+              var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+              if (order != '') {
+                payWithLivees(address_id, payment_option_id, order);
               }
             break;
         }
@@ -5681,26 +5711,10 @@ $(document).ready(function () {
                                 card: card,
                             }).then(stripePaymentMethodHandler);
                             // paymentViaStripeSource(result.source.id, address_id, payment_option_id,delivery_type, order);
-                        // }else{
-                        //     stripe.createToken(card).then(function(result) {
-                        //         if (result.error) {
-                        //             $('#stripe_card_error').html(result.error.message);
-                        //             $(".topup_wallet_confirm").attr("disabled", false);
-                        //         } else {
-                        //             paymentViaStripe(result.token.id, '', payment_option_id, '', '');
-                        //         }
-                        //     });
-                        // }
+                       
                     }
                 });
-                // stripe.createToken(card).then(function (result) {
-                //     if (result.error) {
-                //         $('#stripe_card_error').html(result.error.message);
-                //         $(".topup_wallet_confirm").attr("disabled", false);
-                //     } else {
-                //         paymentViaStripe(result.token.id, '', payment_option_id, '', '');
-                //     }
-                // });
+
             break;
 
             case 5:
@@ -5904,13 +5918,17 @@ $(document).ready(function () {
 
             case 56:
                 paymentViaOboPay('', payment_option_id);
-            
+
             case 57:
                 payWithPesapal(payment_option_id,'');
             break;
-            
+
             case 58:
                 payWithPowerTrans(payment_option_id,'');
+            break;
+
+             case 59: console.log("here");
+                payWithLivees(payment_option_id,payment_from='wallet');
             break;
         }
     }
@@ -5924,3 +5942,81 @@ function numberWithCommas(x) {
 //   var number = 213242.3412;
 //   alert(numberWithCommas(number));
 $(".related-css").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"20px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}}]});
+
+$('#add_edit_address').on('hidden.bs.modal', function () {
+    $("html").removeClass("intro");
+  });
+
+$(".add_edit_address_btn").click(function(){
+    $("html").addClass("intro");
+  });
+
+
+// nine template slider 
+$('.categories_slider').slick({
+    slidesToShow: 7,
+    slidesToScroll: 1,
+    arrows: true,
+    dots: false,
+    speed: 300,
+    infinite: true,
+    autoplaySpeed: 5000,
+    autoplay: true,
+    responsive: [
+        {
+            breakpoint: 991,
+            settings: {
+            slidesToShow: 4,
+            }
+        },
+        {
+            breakpoint: 767,
+            settings: {
+            slidesToShow: 3,
+            }
+        },
+        {
+            breakpoint: 576,
+            settings: {
+            slidesToShow: 2,
+            }
+        }
+    ]
+});
+
+$('.featured_slider').slick({
+    slidesToShow: 5,
+    slidesToScroll: 1,
+    arrows: true,
+    dots: false,
+    speed: 300,
+    infinite: true,
+    autoplaySpeed: 5000,
+    autoplay: true,
+    responsive: [
+        {
+            breakpoint: 1440,
+            settings: {
+            slidesToShow: 4,
+            }
+        },
+        {
+            breakpoint: 991,
+            settings: {
+            slidesToShow: 3,
+            }
+        },
+        {
+            breakpoint: 767,
+            settings: {
+            slidesToShow: 2,
+            }
+        },
+        {
+            breakpoint: 576,
+            settings: {
+            slidesToShow: 1,
+            }
+        }
+    ]
+});

@@ -260,7 +260,7 @@ class CartController extends FrontController
         $orders_per_slot = $vendor->orders_per_slot??0;
         $orderCount = 0;
         // Get Vendor orders
-        $orderVendors = OrderVendor::where('vendor_id', $vendor->id)->get();
+        $orderVendors = OrderVendor::where('vendor_id', $vendor_id)->get();
         // dd($orderVendors);
         foreach($orderVendors as $orderVendor){
             // Get orders of current vendor where scheduled_slot and schedule_pickup_datetime is same as received from frontend.
@@ -301,7 +301,6 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
-        
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
         try {
@@ -581,7 +580,6 @@ class CartController extends FrontController
 
             return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!','cart_product_id' => $cartProduct->id,'cart_quantity'=>$quantityCart??0,'product_id' => $cartProduct->product_id]);
         } catch (Exception $e) {
-            \Log::info($e->getMessage());
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
     }
@@ -1219,13 +1217,13 @@ class CartController extends FrontController
                                 $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
                                 if (count($deliveries)>1) {
                                     foreach ($deliveries as $k=> $opt) {
-                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$opt['rate'].'</option>';
+                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.decimal_format($opt['rate']).'</option>';
                                         //$select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['rate'].'</option>';
                                     }
                                 } else {
                                     foreach ($deliveries as $k=> $opt) {
                                         //$select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$opt['rate'].'</option>';
-                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['rate'].'</option>';
+                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.decimal_format($opt['rate']).'</option>';
                                     }
                                 }
                                 $select .= '</select>';
@@ -1459,20 +1457,14 @@ class CartController extends FrontController
                     $delivery_status = 0;
                 }
 
-
-
-
-
                 $total_payable_amount = $total_payable_amount + $payable_amount;
                 $total_taxable_amount = $total_taxable_amount + $taxable_amount;
                 $total_discount_amount = $total_discount_amount + $discount_amount;
                 $total_discount_percent = $total_discount_percent + $discount_percent;
                 $total_subscription_discount = $total_subscription_discount + $subscription_discount;
 
-
                 $vendorData->is_promo_code_available = $is_promo_code_available;
             }
-            //dd($is_promo_code_available)
             $is_percent = 0;
             $amount_value = 0;
             if ($cart->coupon) {
@@ -2102,6 +2094,19 @@ class CartController extends FrontController
         } else {
             $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type', 'order_id','address_id')->with(['coupon.promo', 'editingOrder'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
         }
+        if($cart && !empty($cart)){
+        $cart_product_removed =    CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
+            $q->whereIn('is_live',[0,2]);
+        })->pluck('id');
+    }
+       
+        if(count($cart_product_removed)){
+            CartProduct::whereIn('id',$cart_product_removed)->delete();
+            if(CartProduct::where('cart_id',$cart->id)->count() == 0){
+            Cart::find($cart->id)->delete();
+            }
+        }
+      
 
         $address_id = $request->has("address_id") ? $request->address_id : (  @$cart->address_id ?? '') ;
         if (isset( $address_id) && !empty( $address_id)) {
@@ -2241,6 +2246,7 @@ class CartController extends FrontController
 
     public function getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del='', $dispatcher_tags='',$totalRoute = '1')
     {
+        // dd($address);
         $option = array();
         $delivery_count = 0;
         try {
@@ -2306,8 +2312,7 @@ class CartController extends FrontController
                     $option = array_merge($option,$optionKwikApi);
                 }
                 //End Kwik Delivery changes code
-
-
+                
                 //Lalamove Delivery changes code
                 $lalamove = new LalaMovesController();
                 $deliver_lalmove_fee = $lalamove->getDeliveryFeeLalamove($vendorData->vendor_id);
@@ -2372,6 +2377,29 @@ class CartController extends FrontController
                         $option = array_merge($option,$optionDunzo);
                     }
                 }
+                
+                //Roadie Delivery changes code
+                $roadie = new RoadieController();
+                if($roadie->roadie_status){
+                    $deliver_roadie_fee = $roadie->getEstimate($vendorData,$address);
+                    if($deliver_roadie_fee['price'] > 0){
+                        $deliver_charge_roadie = decimal_format($deliver_roadie_fee['price']);
+                        $optionRoadie[] = array(
+                            'type'=>'RO',
+                            'courier_name'=>__('Roadie'),
+                            'rate' => $deliver_charge_roadie,
+                            'courier_company_id' => 0,
+                            'etd' => 0,
+                            'etd_hours' => 0,
+                            'duration' => 0,
+                            'estimated_delivery_days' => 0,
+                            'code' => 'RO_0'
+                        );
+                        $option = array_merge($option,$optionRoadie);
+                    }
+                }
+
+
                 // //\Log::info($vendorData->vendor->ahoy_location);
                 if(isset($vendorData->vendor->ahoy_location)){
                     //getAhoy (Masa) Delivery fee changes code

@@ -2209,7 +2209,6 @@ class VendorController extends BaseController{
             $product_category_ids = $product_category_ids->isNotEmpty() ? $product_category_ids->toArray() : [];
             
             if($vendor->vendor_templete_id == 5){
-
             $vendor_categories = Category::select('categories.id','categories.type_id', 'types.title as redirect_to')->join('types', 'types.id', 'categories.type_id')->whereHas('vendorCategory',function ($q)use($vid){
                 $q->where('vendor_id',$vid)->where('status', 1);
             })->whereHas('data',function ($q)use($vid){
@@ -2225,7 +2224,7 @@ class VendorController extends BaseController{
                         },
                        'media.image', 
                         'translation' => function($q) use($langId){
-                        $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description','language_id','body_html as translation_description')->where('language_id', $langId)->orderBy('body_html','desc');
+                        $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description','language_id','body_html as translation_description')->where('language_id', $langId)->orderBy('updated_at','desc');
                         },
                         'variant' => function($q) use($langId, $multipli){
                             $q->select('id','sku', 'product_id', 'quantity', 'price', 'markup_price','barcode', 'compare_at_price',DB::raw("'$multipli' as multiplier"),)->orderBy('quantity', 'desc');
@@ -2293,7 +2292,7 @@ class VendorController extends BaseController{
                     ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 
                     'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant',
                      'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id', 'products.minimum_order_count', 
-                     'products.batch_count',DB::raw("'$multipli' as variant_multiplier"),'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.mode_of_service','products.tags','products.is_recurring_booking')->distinct()
+                     'products.batch_count',DB::raw("'$multipli' as variant_multiplier"),'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.mode_of_service','products.tags','products.is_recurring_booking','products.inquiry_only')->distinct()
                     ->where('products.vendor_id', $vid)
                     ->where('products.is_live', 1)->withCount(['variantSet','addOn']);
                     

@@ -77,9 +77,13 @@
                                         <label for="primary_color">{{ __("Primary Color") }}</label>
                                         <input type="text" id="primary_color_option" name="primary_color" class="form-control ss_form_submit" value="{{ old('primary_color', $client_preferences->web_color ?? 'cccccc')}}">
                                     </div>
-                                    <div class="form-group mb-0">
+                                    <div class="form-group mb-3">
                                         <label>{{ __("Top Header Color") }}</label>
                                         <input type="text" id="site_top_header_color" name="site_top_header_color" class="form-control ss_form_submit" value="{{ old('site_top_header_color', $client_preferences->site_top_header_color ?? '#4c4c4c')}}">
+                                    </div>
+                                    <div class="form-group mb-0">
+                                        <label>{{ __("Dashboard Theme Color") }}</label>
+                                        <input type="text" id="dashboard_theme_color" name="dashboard_theme_color" class="form-control ss_form_submit" value="{{ old('dashboard_theme_color', $client_preferences->dashboard_theme_color ?? '#4c4c4c')}}">
                                     </div>
                                 </div>
 
@@ -144,21 +148,23 @@
                                 <h4 class="header-title">{{ __("Home Page Style") }}</h4>
                                 <div class="row mt-3">
                                     @foreach($homepage_style_options as $homepage_style)
-                                    <div class="col-xl-4 col-lg-6 col-md-6 mb-3 alThemeDemoSec">
-                                        <div class="card mb-0">
-                                            <div class="card-body p-0">
-                                                <div class="col-sm-12 custom-control custom-radio radio_new p-0">
-                                                    <input type="radio" {{$homepage_style->is_selected == 1 ? 'checked' : ''}} value="{{$homepage_style->id}}" onchange="submitHomePageForm(this.id)" id="{{$homepage_style->id}}" name="home_styles" class="custom-control-input " }}>
-                                                    <label class="custom-control-label" for="{{$homepage_style->id}}">
-                                                        <span class="card-img-top img-fluid" style="background-image: url( {{('../images/'.$homepage_style->image)}})"></span>
-                                                        <!-- <img  src="{{url('images/'.$homepage_style->image)}}" alt="Card image cap"> -->
-
-                                                    </label>
+                                        @if (!($client_preference_detail->business_type == "emart" && ($homepage_style->name == "On Demand Service" || $homepage_style->name == "p2p")))
+                                            <div class="col-xl-4 col-lg-6 col-md-6 mb-3 alThemeDemoSec">
+                                                <div class="card mb-0">
+                                                    <div class="card-body p-0">
+                                                        <div class="col-sm-12 custom-control custom-radio radio_new p-0">
+                                                            <input type="radio" {{$homepage_style->is_selected == 1 ? 'checked' : ''}} value="{{$homepage_style->id}}" onchange="submitHomePageForm(this.id)" id="{{$homepage_style->id}}" name="home_styles" class="custom-control-input " }}>
+                                                            <label class="custom-control-label" for="{{$homepage_style->id}}">
+                                                                <span class="card-img-top img-fluid" style="background-image: url( {{('../images/'.$homepage_style->image)}})"></span>
+                                                                <!-- <img  src="{{url('images/'.$homepage_style->image)}}" alt="Card image cap"> -->
+                        
+                                                            </label>
+                                                        </div>
+                                                    </div>
                                                 </div>
+                                                <span class="alTemplateName mt-3 w-100">{{$homepage_style->name}}</span>
                                             </div>
-                                        </div>
-                                        <span class="alTemplateName mt-3 w-100">{{$homepage_style->name}}</span>
-                                    </div>
+                                        @endif
                                     @endforeach
                                 </div>
                             </div>
@@ -833,6 +839,12 @@ $(document).on('click', '.deletePickupSection', function() {
 
     $(document).ready(function() {
         var color1 = new jscolor('#site_top_header_color', options);
+
+    });
+
+    $(document).ready(function() {
+        var color1 = new jscolor('#dashboard_theme_color', options);
+
     });
     $("#save_home_page").click(function(event) {
         event.preventDefault();

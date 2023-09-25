@@ -565,6 +565,11 @@ body.al_body_template_six.aloverFlow {
     position: relative;
     padding-right: 20px;
 }
+.alLocation.homepage-address i {
+    bottom: -1px;
+    display: inline-block;
+    position: relative;
+}
 
 /*===================== add to cart css ===================*/
 .alShoppingList {
@@ -1161,25 +1166,112 @@ body .royo_whatsapp_img {
     fill: #fff!important;
     opacity: 1;
 }
+.fixed-bar li.add_post a span {
+    color: #000;
+}
+.dark .fixed-bar li.add_post a span {
+    color: #fff;
+}
+/*hotfix product page css*/
 
-@media (max-width:576px) {
-    .rightHead {
-        order: 2;
+@media (max-width:1600px){
+    li.alShoppingBag.mx-md-4.mx-2.dropdown {
+        margin: 0 15px!important;
     }
-
-    .al_body_template_six .cart-price .tip_label {
-        padding: 5px 8px;
+    li.add_post.pr-3 {
+        padding-right: 8px!important;
     }
-    .al_desktop_banner span.carousel-control-prev-icon, span.carousel-control-next-icon{display: none;}
-    body.al_body_template_six .d-inline-flex.al_searchType.align-items-center.justify-content-start.px-2.position-relative{padding:10px;}
+}
+@media (max-width:1500px){
+    .nav-tabs.navigation-tab_al.nav-material .nav-link{
+        padding: 5px;
+        font-size: 12px;
+    }
+    li.alShoppingBag.mx-md-4.mx-2.dropdown {
+        margin: 0 20px!important;
+    }
 }
 
-/*hotfix product page css*/
+@media (max-width:1370px){
+    .alFindSec{
+        max-width: 270px;
+        padding: 0 5px;
+    }
+    .alFindSec .px-2 {
+        padding: 0 0px!important;
+    }
+    .alFindSec li.pr-3 {
+        padding-right: 0px!important;
+    }
+    .alFindSec li.alLocationArea{
+        max-width: 150px;
+        margin-right: 5px!important;
+    }
+    .alFindSec span{
+        font-size: 12px;
+    }
+    .al_searchType .form-control{
+        font-size: 12px;
+        padding:5px!important;
+    }
+}
+
+@media (max-width:1150px){
+    .logo a.navbar-brand img.logo-image{
+        height: 40px!important;
+    }
+    .alFindSec li.alLocationArea{
+        max-width: 120px;
+    }
+    .alFindSec {
+        max-width: 230px;
+        padding: 0 5px;
+    }
+    .nav-tabs.navigation-tab_al.nav-material .nav-link{
+        font-size: 11px;
+    }
+    li.add_post.pr-3 {
+        padding-right:5px!important;
+    }
+    li.alShoppingBag.mx-md-4.mx-2.dropdown {
+        margin: 0 10px!important;
+    }
+}
+@media (max-width:1024px){
+    .nav-tabs.navigation-tab_al.nav-material {
+        width: 300px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding: 5px 10px!important;
+    }
+    .nav-tabs.navigation-tab_al.nav-material span.al_textTabsText {
+        width: max-content!important;
+        display: inline-block;
+        max-width: 100%!important;
+        min-width: inherit!important;
+        text-align: center;
+    }
+}
+@media (max-width:991px){
+    li.alShoppingBag.mx-md-4.mx-2.dropdown {
+        margin: 0 10px!important;
+    }
+    .nav-tabs.navigation-tab_al.nav-material{
+        padding: 4px!important;
+    }
+    .nav-tabs.navigation-tab_al.nav-material{
+        width: 270px!important;
+    }
+}
 @media (max-width:767px){
+    .al_body_template_six .al_count_tabs_new_design {
+        margin: 10px 0 0;
+    }
     body.al_body_template_six .logo a.navbar-brand img {
         width: 100px;
-        /* height: 40px !important; */
-        height: auto !important;
+        height: 30px !important;
+        object-fit: contain;
+        /* height: auto !important; */
     }
     body.al_body_template_six .alTesimonialsText, .alLgFontSize {
         text-align: left;
@@ -1215,13 +1307,20 @@ body .royo_whatsapp_img {
     .product_tag_filter {
         width: 100%;
     }
-    body.al_body_template_six .nav-tabs.navigation-tab_al.nav-material{
-        width: 368px;
+    body.al_body_template_six .nav-tabs.navigation-tab_al.nav-material {
+        width: 100%!important;
         flex-wrap: nowrap;
-        overflow-x: auto;padding:0px;
+        overflow-x: auto;
+        padding: 0px;
+        margin: 0 auto;
+        max-width: 470px;
+    }
+    .vendor_mods_section {
+        order: 2;
+        margin: 0 auto;
     }
     body.al_body_template_six .nav-tabs.navigation-tab_al.nav-material li {
-        margin: 10px;
+        margin: 5PX;
     }
     body.al_body_template_six .nav-tabs.navigation-tab_al.nav-material .nav-link {
         padding: 10px;
@@ -1358,8 +1457,72 @@ body .royo_whatsapp_img {
     }
 }
 
-    /* .al_body_template_six .vendor_mods_section {
-        width: 100%;
+@media (max-width:576px) {
+    .rightHead {
+        order: 2;
+    }
+    li.alLocationArea.mr-2 {
+        display: none;
+    }
+    .al_body_template_six .logo a.navbar-brand{
+        margin-right: 5px;
     }
 
-} */
+    .al_body_template_six .cart-price .tip_label {
+        padding: 5px 8px;
+    }
+    li.alShoppingBag.mx-md-4.mx-2.dropdown{
+        margin: 0 8px!important;
+    }
+    .alMenuIcon svg {
+        width: 25px;
+    }
+    .al_desktop_banner span.carousel-control-prev-icon, span.carousel-control-next-icon{display: none;}
+    body.al_body_template_six .d-inline-flex.al_searchType.align-items-center.justify-content-start.px-2.position-relative{padding:10px;}
+    body.al_body_template_six .alFindSec{
+        width: 170px;
+        padding: 0 5px!important;
+    }
+    body.al_body_template_six .al_searchType .form-control{
+        width: 100%;
+    }
+    li.add_post.pr-3 {
+        padding-right: 5px!important;
+    }
+    li.add_post a span {
+        color: #fff;
+        font-size: 11px;
+    }
+    body.al_body_template_six .al_searchType .form-control{
+        width: 100%!important;
+    }
+    body.al_body_template_six .alFindSec{
+        width: 150px!important;
+    }
+    li.add_post a span{
+        position: relative;
+        font-size: 0;
+    }
+    li.add_post a span::before {
+        content: '+';
+        font-size: 25px;
+        line-height: 1;
+        display: inline-flex;
+        align-items: center;
+        padding-top: 5px;
+    }
+}
+
+@media (max-width:400px) {
+    body.al_body_template_six .al_searchType .form-control{
+        width: 100%!important;
+    }
+    body.al_body_template_six .alFindSec {
+        width: 120px!important;
+    }
+}
+@media (max-width:360px) {
+    body.al_body_template_six .alFindSec{
+        display: none!important;
+    }
+}

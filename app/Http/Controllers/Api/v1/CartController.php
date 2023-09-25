@@ -92,7 +92,6 @@ class CartController extends BaseController
 
             return $this->successResponse($cartData);
         } catch (Exception $e) {
-            \Log::info($e->getMessage());
             return $this->successResponse([]);
         }
     }
@@ -799,6 +798,7 @@ class CartController extends BaseController
             $total_service_fee = 0;
             $product_out_of_stock = 0;
             $PromoFreeDeliver = 0;
+            $coupon_apply_price=0;
             $PromoDelete = 0;
             $couponApplied = 0;
             $total_container_charges = 0 ;
@@ -894,7 +894,23 @@ class CartController extends BaseController
                 $if_previousdeliveryfee_added = 0;
                 $vendorTotalDeliveryFee = 0;
                 $previousdeliveryfee = 0;
-                
+                //get Coupon Discount for product case
+                $coupon_product_ids = [];
+                $coupon_vendor_ids = [];
+                $coupon_product_discount = 0;
+                $in_or_not = 0;
+                $rate = 0;
+                if (isset($vendorData->coupon) && !empty($vendorData->coupon) && isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)){                  
+                    if($vendorData->coupon->promo->restriction_on == 0)
+                    { 
+                        $coupon_product_ids = $vendorData->coupon->promo->details->pluck('refrence_id')->toArray();
+                        $in_or_not = $vendorData->coupon->promo->restriction_type; 
+                    }
+                    elseif($vendorData->coupon->promo->restriction_on == 1){
+                        $coupon_vendor_ids = $vendorData->coupon->promo->details->pluck('refrence_id')->toArray();
+                        $in_or_not = $vendorData->coupon->promo->restriction_type;
+                    }
+                }
                 foreach ($vendorData->vendorProducts as $pkey => $prod) {
                     
                     //mohit sir branch code updated by sohail farm meat
@@ -1063,7 +1079,24 @@ class CartController extends BaseController
                             if($prod->product->dropoff_delay_hrs_min > $delay_date)
                             $dropoff_delay_date = $prod->product->dropoff_delay_hrs_min;
                         }
-
+                        //Check product promo code is valid for this product
+                        
+                        $checkProductPromoCodeController = new PromoCodeController();
+                        $productPromoRequest = new Request();
+                        $productPromoRequest->setMethod('POST');
+                        $productPromoRequest->request->add(['cart_id' => $cartID, 'product_id' => $prod->product_id]);
+                        $productPromoCodeResponse = $checkProductPromoCodeController->postProductPromoCodeCheck($productPromoRequest)->getData();                       
+                        if($productPromoCodeResponse->status == 'Success'){
+                            $coupon_apply_price+=$price_in_currency * $prod->quantity;
+                        }
+                        if(($in_or_not == 0 && in_array($prod->product_id,$coupon_product_ids))
+                            || ($in_or_not == 1 && !in_array($prod->product_id,$coupon_product_ids))
+                            || ($in_or_not == 0 && in_array($vendorData->vendor_id, $coupon_vendor_ids))
+                            || ($in_or_not == 1 && !in_array($vendorData->vendor_id, $coupon_vendor_ids))
+                            ){
+                                $coupon_product_discount = $coupon_product_discount + $quantity_price + $quantity_container_charges;  
+                        }
+                        
                         if ($prod->pvariant) {
                             $variantsData['price']              = $price_in_currency;
                             $variantsData['id']                 = $prod->pvariant->id;
@@ -1103,6 +1136,14 @@ class CartController extends BaseController
                                     $order_sub_total = $order_sub_total + $opt_quantity_price;
                                     $opt_quantity_price_new += $opt_quantity_price;
                                     $quantity_price = $quantity_price + $opt_quantity_price;
+                                    if(($in_or_not == 0 && in_array($prod->product_id,$coupon_product_ids))
+                                        || ($in_or_not == 1 && !in_array($prod->product_id,$coupon_product_ids))
+                                        || ($in_or_not == 0 && in_array($vendorData->vendor_id, $coupon_vendor_ids))
+                                        || ($in_or_not == 1 && !in_array($vendorData->vendor_id, $coupon_vendor_ids))
+                                        ){
+                                            $coupon_apply_price+=$opt_price_in_currency;
+                                            $coupon_product_discount = $coupon_product_discount + $opt_quantity_price;
+                                    }
                                 }
                             }
                             $variantsData['discount_amount'] = $pro_disc;
@@ -1244,7 +1285,6 @@ class CartController extends BaseController
                         $prod->variants = $variantsData;
                         $prod->variant_options = $variant_options;
                         $prod->product_addons = $vendorAddons;
-
                         $product = Product::with([
                             'variant' => function ($sel) {
                                 $sel->groupBy('product_id');
@@ -1270,11 +1310,7 @@ class CartController extends BaseController
                 if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
                     $payable_amount = $payable_amount + decimal_format($prod->slot_price);
                 }
-                // echo $payable_amount ;
-                // exit();
-                $couponGetAmount = $payable_amount ;
                 if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
-                    //pr($vendorData->coupon->promo);
                     if (isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)) {
                         if($vendorData->coupon->promo->first_order_only==1){
                             if(Auth::user()){
@@ -1315,7 +1351,11 @@ class CartController extends BaseController
                                    // $payable_amount -= $total_discount_percent;
                                     $discount_amount = $total_discount_percent;
                                 } else {
-                                    $dis_amt = $percentage_amount = ($only_products_amount * $vendorData->coupon->promo->amount / 100);
+                                    $gross_coupon_amount = $payable_amount;
+                                    if($vendorData->coupon->promo->restriction_on == 0 ){
+                                        $gross_coupon_amount = $coupon_apply_price;
+                                    }
+                                    $dis_amt = $percentage_amount = ($gross_coupon_amount * $vendorData->coupon->promo->amount / 100);
                                     // $payable_amount -= $percentage_amount;
                                     $discount_amount = $percentage_amount;
                                 }
@@ -1348,15 +1388,12 @@ class CartController extends BaseController
                             }
                         }
                     }
-                    if(isset($rate) && $discount_amount > 0 ){
-                        $discount = ($discount_amount*$rate) / 100;
+                  /*  if($rate > 0 && $discount_amount > 0 ){
+                        $discount = ($discount_amount * $rate) / 100;
                         $taxable_amount -= $discount;
-                    }
+                    }*/
                 }
-
-
                 $payable_amount = $payable_amount + $vendorTotalDeliveryFee ;
-
                 $deliver_charge = $vendorTotalDeliveryFee * $clientCurrency->doller_compare;
                 $vendorData->proSum = $proSum;
                 $vendorData->addonSum = $ttAddon;
@@ -1693,7 +1730,7 @@ class CartController extends BaseController
         } else {
             $cart->total_payable_amount = ($total_paying  + $cart->total_tax) - ($total_disc_amount + $loyalty_amount_saved);
         }
-        //Log::info("total_payable_amount 1".$total_taxable_amount);
+        
         /* if($total_taxable_amount>0){
             $cart->total_payable_amount = $cart->total_payable_amount +$total_taxable_amount;
         } */
@@ -1781,8 +1818,6 @@ class CartController extends BaseController
 
         }catch(\Exception $ex)
         {
-            //\Log::info('get Cart in api error');
-            //\Log::info($ex->getMessage());
             return [];
         }
     }

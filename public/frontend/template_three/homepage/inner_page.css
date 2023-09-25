@@ -2641,7 +2641,11 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
     height: auto!important;
     max-height: 400px;
 }
-
+.al_body_template_three .img-outer-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 @media (min-width: 1024px) {
     .ds {
         position: absolute;
@@ -3663,6 +3667,10 @@ body[dir] .third-temp-lan {
         margin-top: 30px!important;
         margin-left: 0!important;
     }
+    html .al_body_template_three .vendor-design_new{
+        margin-top: 0!important;
+    }
+
 }
 @media (max-width:767px) {
     body.al_body_template_three.dark .sm-horizontal {

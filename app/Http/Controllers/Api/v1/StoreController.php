@@ -141,7 +141,8 @@ class StoreController extends BaseController{
 	    					'qty' => $product->quantity,
 							'category_type' => $product->product->category->categoryDetail->type->title ?? '',
 							'product_id' => $product->product_id,
-							'title' => $product->product_name,
+	    				    'title' => isset($product->translation)?$product->translation->title:$product->product_name
+	    				,
 	    				);
     				}
 				}
@@ -246,7 +247,6 @@ class StoreController extends BaseController{
 			return $this->successResponse(__('Order is removed.'));
 		}catch(\Exception $e)
 		{
-			\Log::info($e->getMessage());
 		}
 	}
 
@@ -347,8 +347,8 @@ class StoreController extends BaseController{
 	    					'qty' => $product->quantity,
 							'category_type' => $product->product->category->categoryDetail->type->title ?? '',
 							'product_id' => $product->product_id,
-							'title' => $product->product_name,
-							'category_name' => (!empty($product->product->categoryName->name))?$product->product->categoryName->name:'',
+	    				    'title' => isset($product->translation)?$product->translation->title:$product->product_name,
+							'category_name' => (!empty($product->product->categoryName->name))?$product->product->categoryName->name:''
 	    				);
     				}
 				}
@@ -483,8 +483,8 @@ class StoreController extends BaseController{
 	    					'qty' => $product->quantity,
 							'category_type' => $product->product->category->categoryDetail->type->title ?? '',
 							'product_id' => $product->product_id,
-							'title' => $product->product_name,
-							'category_name' => (!empty($product->product->categoryName->name))?$product->product->categoryName->name:'',
+	    				    'title' => isset($product->translation)?$product->translation->title:$product->product_name,
+							'category_name' => (!empty($product->product->categoryName->name))?$product->product->categoryName->name:''
 	    				);
 
 						$total_markup_Price += $product->markup_price;
@@ -965,7 +965,6 @@ class StoreController extends BaseController{
                                 else {
 									$value_arr = @$value['value'];
 									
-									// //\Log::info($option['option_id']);
                                     foreach($value['option'] as $option_key => $option) {
                                         if(!empty($value['type']) && $value['type'] == 4 ) { // textbox
 											$insert_arr[$insert_count]['product_id'] = $request->product_id;
@@ -2066,7 +2065,6 @@ class StoreController extends BaseController{
 			}
 		}
 		catch(\Exception $e) {
-			//\Log::info($e);
 			return $this->errorResponse('Exception occured', 500);
 		}
 	}
@@ -2263,9 +2261,9 @@ class StoreController extends BaseController{
 						
 								$insert_arr = [];
 								$insert_count = 0;
-								// \Log::info($attribute);
+								
 								foreach($attribute as $key => $value) {
-									// \Log::info($value);
+									
 									if( !empty($value) && !empty($value['option'] && is_array($value) )) {
 										
 										if(!empty($value['type']) && $value['type'] == 1 ) { // dropdown
@@ -2289,7 +2287,6 @@ class StoreController extends BaseController{
 										else {
 											$value_arr = @$value['value'];
 											
-											// \Log::info($option['option_id']);
 											foreach($value['option'] as $option_key => $option) {
 												if(!empty($value['type']) && $value['type'] == 4 ) { // textbox
 													$insert_arr[$insert_count]['product_id'] = $product->id;
@@ -2302,7 +2299,7 @@ class StoreController extends BaseController{
 													$insert_arr[$insert_count]['is_active'] = 1;
 												}
 												elseif(!empty($value['type']) && $value['type'] == 6) {
-													\Log::info($option);
+													
 													$insert_arr[$insert_count]['product_id'] = $product->id;
 													$insert_arr[$insert_count]['attribute_id'] = $value['id'];
 													$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
@@ -2313,7 +2310,6 @@ class StoreController extends BaseController{
 													$insert_arr[$insert_count]['is_active'] = 1;
 												}
 												elseif( @in_array($option['option_id'], $value_arr) ) {
-													// \Log::info($option);
 													$insert_arr[$insert_count]['product_id'] = $product->id;
 													$insert_arr[$insert_count]['attribute_id'] = $value['id'];
 													$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];

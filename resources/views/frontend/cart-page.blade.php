@@ -67,6 +67,7 @@
 </style>
 
 @php
+
     $serviceType = Session::get('vendorType');
 
     $additionalPreference = $getAdditionalPreference;
@@ -196,6 +197,8 @@
                         $other_taxes_string = $cart_details->other_taxes_string;
                     @endphp
                     @foreach ($cart_details->products as $product)
+
+                    
                         <div id="thead_{{ $product->vendor->id }}" class="mt-2 px-0">
                             <div class="row">
 
@@ -444,12 +447,9 @@
                                                           id="error_prescription_{{ $vendor_product->product->id }}"
                                                          style="display:none;">Prescription required</span>
                                                             @if ($vendor_product->cart_product_prescription > 0)
-                                                                <h4 class="mt-0 mb-1"
-                                                                    style="word-wrap: break-word; line-height:20px">
-                                                                    <strong>{{ $vendor_product->cart_product_prescription }}
-                                                                        {{ __('Prescription Added') }}</strong></h4>
-                                                   
-                                                                            @endif
+                                                                <h4 class="mt-0 mb-1 text-left" style="clear:both;line-height:30px" >
+                                                                    <strong>{{ $vendor_product->cart_product_prescription }}{{ __('Prescription Added') }}</strong></h4>
+                                                            @endif
                                                         @endif
                                                     @endif
 
@@ -769,7 +769,7 @@
                                                 <label class="m-0 radio">
                                                     {{ __('Processor Name') }} :</label>
                                             </div>
-                                            <div class="col-7">
+                                            <div class="col-7 text-right">
                                                 {!! ($product->processor_product ? $product->processor_product->name : '') !!}
                                             </div>
                                         </div>
@@ -778,7 +778,7 @@
                                                 <label class="m-0 radio">
                                                     {{ __('Processor Date') }} :</label>
                                             </div>
-                                            <div class="col-7">
+                                            <div class="col-7 text-right">
                                                 {!! $product->processor_product->date !!}
                                             </div>
                                         </div>
@@ -798,7 +798,7 @@
                                                 <label class="m-0 radio">
                                                     {{getDynamicTypeName('Fixed Fee')}} :</label>
                                             </div>
-                                            <div class="col-7">
+                                            <div class="col-7 text-right">
                                                 @if ($additionalPreference['is_token_currency_enable'])
                                                     {{ getInToken($product->vendor->fixed_fee_amount) }}@else{{ $product->vendor->fixed_fee_amount }}
                                                 @endif
@@ -1137,7 +1137,7 @@
                                     {{-- <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->sub_total - $cart_details->bid_total_discount)}}</b></div> --}}
                                     <div class="col-6 text-right"><b>
                                             @if ($additionalPreference['is_token_currency_enable'])
-                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->sub_total)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->sub_total) }}
+                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->sub_total)) }}@else{{ Session::get('currencySymbol') ." ". decimal_format($cart_details->sub_total) }}
                                             @endif
                                         </b>
                                     </div>
@@ -1149,7 +1149,7 @@
                                     <div class="col-6">{{ __('Total Delivery Fee') }}</div>
                                     <div class="col-6 text-right"><b>
                                             @if ($additionalPreference['is_token_currency_enable'])
-                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->delivery_charges)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->delivery_charges) }}
+                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!} {{ getInToken(decimal_format($cart_details->delivery_charges)) }}@else{{ Session::get('currencySymbol') ." ". decimal_format($cart_details->delivery_charges) }}
                                             @endif
                                         </b>
                                     </div>
@@ -1615,8 +1615,9 @@
                                         value="{{ $schedule_slots_edit }}">
                                 @endif
                                 @if ($serviceType == 'rental')
+                                    @php $agree_term_text = getNomenclatureName('Agree Term', true); @endphp
                                     <div class="text-sm-left mb-2">
-                                        <input type="checkbox" name="agree_term_check" id="agree_term_check" value="" disabled> <a href="javascript:void(0);" class="agree_term_btn">Agree Term</a>
+                                        <input type="checkbox" name="agree_term_check" id="agree_term_check" value=""> <a href="javascript:void(0);" class="agree_term_btn">{{$agree_term_text}}</a>
                                     </div>
                                 @endif
                                 @php
@@ -1811,10 +1812,6 @@
                 }
             }]
         });
-        var serviceType = "{{$serviceType}}";
-        if(serviceType == "rental"){
-            $("#order_placed_btn").attr('disabled', true);
-        }
     });
 
     $(document).on('click', '.agree_term_btn', function(){
@@ -1826,8 +1823,6 @@
 
     $(document).on('click', '#agree_btn', function(){
         $('#agree_term_check').prop('checked', true);
-        $('#agree_term_check').attr('disabled', false);
-        $("#order_placed_btn").attr('disabled', false);
         $('#consent_form_rental').modal('hide');
     });
 

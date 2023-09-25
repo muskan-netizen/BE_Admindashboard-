@@ -535,12 +535,15 @@ if (!function_exists('productvariantQuantity')) {
 if (!function_exists('checkImageExtension')) {
     function checkImageExtension($image)
     {
-        $ch =  substr($image, strpos($image, ".") + 1);
         $ex = "@webp";
-        if ($ch == 'svg') {
-            $ex = "";
+        if(!empty($image))
+        {
+            $ch =  substr($image, strpos($image, ".") + 1);
+            if ($ch == 'svg') {
+                $ex = "";
+            }
         }
-        return $ex;
+            return $ex;
     }
 }
 
@@ -1250,6 +1253,7 @@ if (!function_exists('decimal_format')) {
     // Number Format according to Client preferences
     function decimal_format($number,$format="")
     {
+        $number = is_numeric($number)?$number:0;
         $preference = session()->get('preferences');
         $digits = $preference['digit_after_decimal'] ?? 2;
         return number_format($number,$digits,'.',$format);
@@ -1381,6 +1385,9 @@ if (!function_exists('getCategoryTypes')) {
             case "p2p":
                 $typeArray = ['p2p'];
                 break;
+            case "emart":
+                $typeArray = ['delivery'];
+                break;
             case "super_app":
                 $typeArray = ['delivery', 'dinein', 'takeaway', 'rental', 'pick_drop', 'on_demand', 'appointment', 'p2p' ];
                 break;
@@ -1390,6 +1397,7 @@ if (!function_exists('getCategoryTypes')) {
         return $typeArray;
     }
 }
+
 if (!function_exists('getCategoryTypesServices')) {
     /**
      * config('constants.ServiceTypes')
@@ -1573,6 +1581,7 @@ if( !function_exists('clientPrefrenceModuleStatus') ) {
 if( !function_exists('p2p_module_status') ) {
     function p2p_module_status() {
         $additional_preference = getAdditionalPreference(['is_attribute']);
+        
         if(clientPrefrenceModuleStatus('p2p_check') && $additional_preference['is_attribute']) {
             return true;
         }

@@ -79,11 +79,19 @@ class PaymentController extends FrontController{
         $ex_codes = ['cod'];
         //mohit sir branch code added by sohail
         $serviceType =  Session::get('vendorType');
-        $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage']);
+        $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','is_cod_payment','is_prepaid_payment']);
         if($serviceType == 'takeaway' && !empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101) ){
             $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->where('status', 1)->where('id', '!=', 1)->get();
         }else{
             $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->where('status', 1)->get();
+        }
+                 
+        if(@$getAdditionalPreference['is_cod_payment']==1 && @$getAdditionalPreference['is_prepaid_payment']==1){
+            $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->where('status', 1)->get();
+        }elseif(@$getAdditionalPreference['is_prepaid_payment']==1){
+            $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->where('status', 1)->where('id', '!=', 1)->get();
+        }elseif(@$getAdditionalPreference['is_cod_payment']==1){
+            $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->where('status', 1)->where('id', '=', 1)->get();
         }
         //till here
         foreach ($payment_options as $k => $payment_option) {
@@ -111,6 +119,8 @@ class PaymentController extends FrontController{
                     $payment_option->title = __('Credit/Debit Card');
                 }elseif($payment_option->code == 'obo'){
                     $payment_option->title = __("MoMo, Airtel Money, Credit/Debit Cards by O'Pay");
+                }elseif($payment_option->code == 'livee'){
+                    $payment_option->title = __("Livees");
                 }
                 $payment_option->title = __($payment_option->title);
                 unset($payment_option->credentials);
@@ -154,7 +164,6 @@ class PaymentController extends FrontController{
     {
         if($gateway == 'mycash'){
             $data = $request->all();
-            // //\Log::info($data);
             return view('frontend.payment_gatway.mycash_otp_verify', compact('data'));
         }
     }

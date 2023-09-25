@@ -263,7 +263,6 @@ class ShiprocketController extends Controller
 				'weight' => ($weightSum>0)? $weightSum : $this->weight,
 			  );
 		}
-			//\Log::info(json_encode($data));
     	$orderSuc = $this->createOrder($token->token,$data);
 		if($orderSuc->status_code == 1)
 		{

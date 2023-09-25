@@ -343,33 +343,38 @@ input[type=number]::-webkit-outer-spin-button {
                     
                     @if($is_cab_pooling == 1 || $is_bid_ride_enable == 1 || $is_particular_driver == 1)
                         <div class="pool_radio_controls text-center">
-                            <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_booking" name="is_cab_pooling_radio"
-                                value="0" checked>
-                            <label class="pool_label mb-0  my-2 active " for="cab_booking" id="label_cab_booking">
-                                <h5 class="m-0" id="pool_5">{{ __('Booking') }}</h5>
-                            </label>
-
-                            @if ($is_cab_pooling == 1 )
-                                <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_pooling" name="is_cab_pooling_radio"
-                                    value="1">
-                                <label class="pool_label mb-0  my-2" for="cab_pooling" id="label_cab_pooling">
-                                    <h5 class="m-0" id="pool_5">{{ __('Pooling') }}</h5>
+                            <div class="item">
+                                <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_booking" name="is_cab_pooling_radio"
+                                    value="0" checked>
+                                <label class="pool_label mb-0  my-2 active " for="cab_booking" id="label_cab_booking">
+                                    <h5 class="m-0" id="pool_5">{{ __('Booking') }}</h5>
                                 </label>
-                            @endif
-
-                            @if($is_bid_ride_enable == 1)
-                                <input type="radio" id="bid_radio"  name="is_cab_pooling_radio" value="0">
-                                <label class="mb-0  my-2" >
-                                    <h5 class="m-0" id="">Bid</h5>
-                                </label>
-                            @endif
-
-                            @if($is_particular_driver == 1)
-                                <input type="radio" id="particular_driver_radio"  name="is_cab_pooling_radio" value="2">
-                                <label class="mb-0  my-2" >
-                                    <h5 class="m-0" id="">Request to Driver</h5>
-                                </label>
-                            @endif
+                            </div>
+                            <div class="item">
+                                @if ($is_cab_pooling == 1 )
+                                    <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_pooling" name="is_cab_pooling_radio"
+                                        value="1">
+                                    <label class="pool_label mb-0  my-2" for="cab_pooling" id="label_cab_pooling">
+                                        <h5 class="m-0" id="pool_5">{{ __('Pooling') }}</h5>
+                                    </label>
+                                @endif
+                            </div>
+                            <div class="item">
+                                @if($is_bid_ride_enable == 1)
+                                    <input type="radio" id="bid_radio"  name="is_cab_pooling_radio" value="0">
+                                    <label class="mb-0  my-2" >
+                                        <h5 class="m-0" id="">Bid</h5>
+                                    </label>
+                                @endif
+                            </div>
+                            <div class="item">
+                                @if($is_particular_driver == 1)
+                                    <input type="radio" id="particular_driver_radio"  name="is_cab_pooling_radio" value="2">
+                                    <label class="mb-0  my-2" >
+                                        <h5 class="m-0" id="">Request to Driver</h5>
+                                    </label>
+                                @endif
+                            </div>
                         </div>
                     @endif
 
@@ -1133,18 +1138,18 @@ input[type=number]::-webkit-outer-spin-button {
                         <div class="col-md-12 mt-3 mb-3 powertrans_element_wrapper option-wrapper d-none">
                             <div class="row no-gutters">
                                 <div class="col-6">
-                                    <input type="number" min="16" maxlength="16" style=" border-right: none;" class="form-control" id="card-element-powertrans" placeholder="Enter card Number" required 
+                                    <input type="number" min="16" maxlength="16" style=" border-right: none;" class="form-control" id="card-element-powertrans" placeholder="Enter card Number" required
                                     oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
                                 </div>
                                 <div class="col-3">
-                                    <input type="number" style=" border-left: none; border-right: none;" class="form-control" maxLength="4"  id="date-element-powertrans" placeholder="YYMM" required 
+                                    <input type="number" style=" border-left: none; border-right: none;" class="form-control" maxLength="4"  id="date-element-powertrans" placeholder="YYMM" required
                                     oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
                                 </div>
                                 <div class="col-3">
                                     <input type="password" maxLength="4" style=" border-left: none;"  class="form-control" id="cvv-element-powertrans" placeholder="CVV" required />
                                 </div>
                             </div>
-    
+
                             <span class="error text-danger" id="card_error_powertrans"></span>
                         </div>
                     <% } %>
@@ -1537,11 +1542,11 @@ input[type=number]::-webkit-outer-spin-button {
                     <div class="col-md-12 mt-3 mb-3 powertrans_element_wrapper option-wrapper d-none">
                         <div class="row no-gutters">
                             <div class="col-6">
-                                <input type="number" min="16" maxlength="16" style=" border-right: none;" class="form-control" id="card-element-powertrans" placeholder="Enter card Number" required 
+                                <input type="number" min="16" maxlength="16" style=" border-right: none;" class="form-control" id="card-element-powertrans" placeholder="Enter card Number" required
                                 oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
                             </div>
                             <div class="col-3">
-                                <input type="number" style=" border-left: none; border-right: none;" class="form-control" maxLength="4"  id="date-element-powertrans" placeholder="YYMM" required 
+                                <input type="number" style=" border-left: none; border-right: none;" class="form-control" maxLength="4"  id="date-element-powertrans" placeholder="YYMM" required
                                 oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
                             </div>
                             <div class="col-3">
@@ -1695,6 +1700,7 @@ input[type=number]::-webkit-outer-spin-button {
         var create_bid_url = "{{route('createBid')}}";
         var driver_biding_list_url = "{{route('getBidsRelatedToOrderRide')}}";
         var accept_bid_by_customer = "{{route('acceptBidByCustomer')}}";
+        var livee_payment_url="{{route('livee.pay')}}";
 
         @if ($client_preference_detail->distance_unit_for_time == 'mile')
             var distance_unit = "IMPERIAL";

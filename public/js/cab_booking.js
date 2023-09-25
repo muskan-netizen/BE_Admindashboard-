@@ -250,8 +250,8 @@ $(document).ready(function () {
            $('#azul-cvv-element').val('');
         }
     });
-    
-    
+
+
     $(document).on('keypress','#driver_unique_id', function(e){
         if(e.which === 32){
             return false;
@@ -262,8 +262,10 @@ $(document).ready(function () {
     // please order dispatcher
     $(document).on("click", "#pickup_now, #pickup_now_bid, #pickup_later",function() {
         var bookingType = $(this).attr('booking-type');
+        var bid_task_type = '';
         if(bookingType == 'bid')
         {
+			bid_task_type = 'bid_task_type';
             var payid = $('#payment-method-for-bid').val();
         }else if(bookingType == 'driver_request'){
             var unique_id = $('#driver_unique_id').val();
@@ -279,7 +281,7 @@ $(document).ready(function () {
                 $('#driver_request_error').show();
                 return false;
             }
-            
+
         }else{
             var payid = $(this).attr('data-payment_method');
         }
@@ -404,7 +406,7 @@ $(document).ready(function () {
             type: "POST",
             dataType: 'json',
             url: cab_booking_create_order,
-            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id, coupon_id: coupon_id, amount: amount, tollamount:tollamount, servicechargeamount:servicechargeamount, totalamount:totalamount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime, type:type, friendName:friendName, friendPhoneNumber:friendPhoneNumber, no_seats_for_pooling:no_seats_for_pooling, is_cab_pooling:is_cab_pooling,driver_id,unique_id},
+            data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id, coupon_id: coupon_id, amount: amount, tollamount:tollamount, servicechargeamount:servicechargeamount, totalamount:totalamount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:schedule_datetime, type:type, friendName:friendName, friendPhoneNumber:friendPhoneNumber, no_seats_for_pooling:no_seats_for_pooling, is_cab_pooling:is_cab_pooling,driver_id,unique_id,bid_task_type},
             success: function(response) {
                 $('#pickup_now').attr('disabled', false);
                 $('#pickup_later').attr('disabled', false);
@@ -488,6 +490,8 @@ $(document).ready(function () {
                     }
                     else if(payment_option_id == 58){
                         payWithPowerTrans(payment_option_id,response.data);
+                    }else if(payment_option_id == 59){
+                        payWithLivees(payment_option_id,'',response.data);
                     }
                     cabBookingPaymentOptions(payment_option_id, response.data);
                 }
@@ -1302,48 +1306,7 @@ $(document).ready(function () {
 
             $('#search_product_main_div').attr("style", "display: block !important");
             $('.location-list').attr("style", "display: none !important");
-        /* if($('.check-pickup').css('display') == 'block')
-        {
-            $('#pickup_location').val(currentLocation);
-            $('#pickup_location_latitude').val(currentLocationLatitude);
-            $('#pickup_location_longitude').val(currentLocationLongitude);
 
-            // initMap2();
-            var pickupLocationLatitude  = currentLocation;
-            var pickupLocationLongitude = currentLocationLatitude;
-            var currentUrl              = window.location.href;
-            var queryString             = removeURLParameter(currentUrl, 'pickup_location');
-            var perm                    = "?pickup_location=" + currentLocation + "&pickup_location_latitude=" + pickupLocationLatitude +"&pickup_location_longitude=" + pickupLocationLongitude + (queryString != '' ? "&" + queryString : '');
-            window.history.replaceState(null, null, perm);
-
-            $(".check-pick-first").css("display", "none");
-            $("#pickup-where-from").html(" "+currentLocation);
-            $(".check-dropoff-secpond").css("display", "block");
-            $('.check-pickup').attr("style", "display: none !important");
-            $(".check-dropoff").css("display", "block");
-
-            getLocation();
-        }else if($('.check-dropoff').css('display') == 'block'){
-            $('#destination_location').val(currentLocation);
-            $('#destination_location_latitude').val(currentLocationLatitude);
-            $('#destination_location_longitude').val(currentLocationLongitude);
-
-            var currentUrl  = window.location.href;
-            var queryString = removeURLParameter(currentUrl, 'destination_location');
-            var perm        = "?" + (queryString != '' ? queryString : '') + "&destination_location=" + currentLocation  + "&destination_location_latitude=" + currentLocationLatitude +"&destination_location_longitude=" + currentLocationLongitude;
-            window.history.replaceState(null, null, perm);
-
-            $("#dropoff-where-to").html(" "+currentLocation);
-            $('.where-to-first').attr("style", "display: none !important");
-            $('.check-dropoff').attr("style", "display: none !important");
-            $(".where-to-second").css("display", "block");
-            $('.add-more-location').attr("style", "display: block !important");
-
-            $('#search_product_main_div').attr("style", "display: block !important");
-            $('.location-list').attr("style", "display: none !important");
-
-
-            getLocation(); */
         }else{
             $('#destination_location_add_temp').find('input[name="destination_location_name[]"]').map(function(){
                 if(this.value == ''){
@@ -1392,9 +1355,7 @@ $(document).ready(function () {
         $('.scheduled-ride-list').attr("style", "display: block !important");
 
         $(".scheduled-footer").html('<button class="btn btn-solid w-100" id="check-schedule-date-time">Select</button>');
-        // var fromDate = moment();
-        // var toDate   = moment().add(31, 'days');
-       // enumerateDaysBetweenDates(fromDate, toDate);
+       
     });
 
     var enumerateDaysBetweenDates = function(startDate, endDate) {

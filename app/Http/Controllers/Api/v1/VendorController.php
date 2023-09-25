@@ -2030,7 +2030,7 @@ class VendorController extends BaseController{
                     cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
                     sin( radians(' . $latitude . ') ) *
                     sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->withAvg('product', 'averageRating');
-            $vendorData = $vendorData->whereIn('id', $ses_vendors);
+            $vendorData = $vendorData->whereIn('id', $ses_vendors)->orderBy('vendorToUserDistance', 'ASC');
             //if($venderFilternear && ($venderFilternear == 1) ){
                 //->orderBy('vendorToUserDistance', 'ASC')
                 // $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
@@ -2313,7 +2313,7 @@ class VendorController extends BaseController{
                         'tags.tag.translations' => function ($q) use ($langId) {
                             $q->where('language_id', $langId);
                         }
-                    ])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id', 'products.minimum_order_count', 'products.batch_count','products.is_recurring_booking')
+                    ])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id', 'products.minimum_order_count', 'products.batch_count','products.is_recurring_booking','products.inquiry_only')
                     ->where('products.vendor_id', $vid)
                     ->where('products.is_live', 1)->withCount(['variantSet','addOn'])->paginate($limit, $page);
                 if(!empty($products)){
@@ -2367,9 +2367,6 @@ class VendorController extends BaseController{
             $userid = $user->id;
              $limit = $request->has('limit') ? $request->limit : 12;
             $langId = $user->language;
-
-
-
             $variantSets =  ProductVariantSet::with(['options' => function($zx) use($langId){
                                 $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id');
                                 $zx->select('variant_options.*', 'vt.title');

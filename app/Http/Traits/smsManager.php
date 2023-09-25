@@ -42,7 +42,6 @@ trait smsManager{
         $response = curl_exec($curl);
 
         curl_close($curl);
-       // Log::info(print_r($response, true));
         return $response;
 
         // $api_url = " https://mazinhost.com/smsv1/sms/api";

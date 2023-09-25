@@ -124,7 +124,7 @@ class ReportController extends BaseController{
                 $dateT = $date[1] ?? $date[0];
                     $products->withCount([
                         'UserWishlist' => function ($query) use ($dateF, $dateT) {
-                            $query->whereBetween('products.added_on', [$dateF. " 00:00:00", $dateT. " 00:00:00"]);
+                            $query->whereBetween('added_on', [$dateF. " 00:00:00", $dateT. " 00:00:00"]);
                         }])->having('user_wishlist_count', '>', 0);
             else:
                     $products->withCount('UserWishlist')->having('user_wishlist_count', '>', 0);
@@ -155,7 +155,7 @@ class ReportController extends BaseController{
                 $dateT = $date[1] ?? $date[0];
                     $products->withCount([
                         'OrderReturnRequest' => function ($query) use ($dateF, $dateT) {
-                            $query->whereBetween('products.added_on', [$dateF. " 00:00:00", $dateT. " 00:00:00"]);
+                            $query->whereBetween('added_on', [$dateF. " 00:00:00", $dateT. " 00:00:00"]);
                         }])->having('order_return_request_count', '>', 0);
             else:
                     $products->withCount('OrderReturnRequest')->having('order_return_request_count', '>', 0);

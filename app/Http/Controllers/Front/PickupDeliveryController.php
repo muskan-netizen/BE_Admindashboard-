@@ -47,7 +47,9 @@ class PickupDeliveryController extends FrontController{
             }elseif($option->code == 'obo'){
                 $option->title = __("MoMo, Airtel Money, Credit/Debit Cards by O'Pay");
             }
-
+            elseif($option->code == 'livee'){
+                $option->title = __("Livees");
+            }
             $option->title = __($option->title);
             $option->slug = strtolower(str_replace(' ', '_', $option->title));
         }
@@ -182,7 +184,7 @@ class PickupDeliveryController extends FrontController{
         $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
         $product->image_url = $image_url;
         $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
-       
+
 
         $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
 
@@ -464,7 +466,7 @@ class PickupDeliveryController extends FrontController{
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             if ($dispatch_domain && $dispatch_domain != false) {
                 $all_location = array();
-                $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del, 'toll_passes' => ((!empty($product) && $product->is_toll_tax == 1)?$product->tollpass->toll_pass:'IN_FASTAG'), 'VehicleEmissionType' => ((!empty($product) && $product->is_toll_tax == 1)?$product->emissiontype->emission_type:'GASOLINE'), 'travelMode' => ((!empty($product) && $product->is_toll_tax == 1)?$product->travelmode->travelmode:'TAXI')];
+                $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del, 'toll_passes' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->tollpass)?$product->tollpass->toll_pass:'IN_FASTAG':'IN_FASTAG'), 'VehicleEmissionType' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->emissiontype)?$product->emissiontype->emission_type:'GASOLINE':'GASOLINE'), 'travelMode' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->travelmode)?$product->travelmode->travelmode:'TAXI':'TAXI')];
                 $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post($url.'/api/get-delivery-fee',
@@ -485,8 +487,8 @@ class PickupDeliveryController extends FrontController{
     # check if last mile delivery on
     public function checkIfPickupDeliveryOn(){
         $preference = ClientPreference::first();
-        if($preference->need_dispacher_ride == 1 && !empty($preference->pickup_delivery_service_key) && !empty($preference->pickup_delivery_service_key_code) && !empty($preference->pickup_delivery_service_key_url))
-            return $preference;
+        if($preference->need_dispacher_ride == 1 && !empty($preference->pickup_delivery_service_key) && !empty($preference->pickup_delivery_service_key_code) && !empty($preference->pickup_delivery_service_key_url)){
+            return $preference;}
         else
             return false;
     }
@@ -494,7 +496,7 @@ class PickupDeliveryController extends FrontController{
      * create order for booking
     */
      public function createOrder(Request $request){
-       
+
         try {
             DB::beginTransaction();
             if(isset($request->schedule_datetime) && !empty($request->schedule_datetime))
@@ -529,7 +531,7 @@ class PickupDeliveryController extends FrontController{
                         $device_token = UserDevice::whereUserId($user->id)->orderBy('id','desc')->value('device_token');
                         sendNotificationToCustomer($device_token,$order_number);
                     }
-                    
+
                      //Send message if ride is booked for friend
                   /*  if($request->type == 1 && isset($request->friendPhoneNumber))
                     {
@@ -592,8 +594,9 @@ class PickupDeliveryController extends FrontController{
     public function orderUpdateAfterPaymentPickupDelivery($request){
 
           try {
+            $order_number =  isset($request->order_number) ? $request->order_number : ($request->order_id ?? "");
 
-            $order = Order::where('order_number',$request->order_number)->with('orderLocation')->first();
+            $order = Order::where('order_number',$order_number)->with('orderLocation')->first();
 
            if($order && $order->orderLocation){
 
@@ -626,8 +629,6 @@ class PickupDeliveryController extends FrontController{
                 $payment->save();
             }
             $request_to_dispatch = $this->placeRequestToDispatch($request,$order,$request->vendor_id);
-            //Log::info("Request To Dispatch");
-           //// Log::info($request_to_dispatch);
 
             if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                 $user = User::find($order->user_id);
@@ -713,7 +714,7 @@ class PickupDeliveryController extends FrontController{
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
                     $schedule_datetime_del  =$request->schedule_time ;// Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
-               
+
                 $order->scheduled_date_time = $schedule_datetime_del;
                 /*book for a friend*/
                 $order->type                = $request->type;
@@ -991,14 +992,17 @@ class PickupDeliveryController extends FrontController{
                     $notify_hour = $client_preferences_addional['pickup_notification_before_hours'] ?? 1;
                     $reminder_hour = $client_preferences_addional['pickup_notification_before2_hours'] ?? 1;
                 }
-
+                $allocation_type = 'a';
+                if(isset($request->unique_id) || isset($request->driver_id)){
+                    $allocation_type = 'm';
+                }
                 $postdata =  [
                     'order_number' =>  $order->order_number,
                     //'order_type' =>  $order->type,
                     // 'order_friend_name' =>  $order->friend_name,
                     // 'order_number' =>  $order->friend_phone_number,
                     'barcode' => '',
-                    'allocation_type' => $request->unique_id ? 'notify' : 'a',
+                    'allocation_type' => $allocation_type,
                     'task' => $request->tasks,
                     'order_team_tag' => $team_tag,
                     'task_type' => $task_type,
@@ -1035,7 +1039,12 @@ class PickupDeliveryController extends FrontController{
                     'notify_hour' => $notify_hour ?? 0,
                     'reminder_hour' => $reminder_hour ?? 0,
                     'app_call' => 0,
+                    'call_notification' => 0
                 ];
+
+                if(isset($request->bid_task_type) && !empty($request->bid_task_type)){
+                    $postdata['bid_task_type']    = $request->bid_task_type;
+                }
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post($url.'/api/task/create',['form_params' => ($postdata)]);
@@ -1216,7 +1225,7 @@ class PickupDeliveryController extends FrontController{
     {
         {
             DB::beginTransaction();
-            try 
+            try
             {
                 $vendor = Vendor::where('id', $request->vendor_id)->first();
                 $product = Product::where('id', $request->product_id)->first();
@@ -1224,11 +1233,11 @@ class PickupDeliveryController extends FrontController{
                 if(!$vendor || !$product){
                     return response()->json(['status' => 201, 'message' => __('No record found.')], 404);
                 }
-    
+
                 $getAdditionalPreference = getAdditionalPreference(['bid_expire_time_limit_seconds']);
                 $expiryseconds = ($getAdditionalPreference['bid_expire_time_limit_seconds'] > 0) ? $getAdditionalPreference['bid_expire_time_limit_seconds'] : 30;
-                
-    
+
+
                 $UserBidRideRequest                         = new UserBidRideRequest();
                 $UserBidRideRequest->user_id                = Auth::user()->id;
                 $UserBidRideRequest->product_id             = $request->product_id;
@@ -1238,7 +1247,7 @@ class PickupDeliveryController extends FrontController{
                 $UserBidRideRequest->web_hook_code          = uniqid(Auth::user()->id.$request->vendor_id);
                 $UserBidRideRequest->expired_at             = Carbon::now()->addSeconds($expiryseconds)->format('Y-m-d H:i:s');
                 $UserBidRideRequest->save();
-                
+
                 $request_to_dispatch = $this->placeRequestForDriverBidsToDispatch($request, $product, $UserBidRideRequest);
                 if($UserBidRideRequest){
                     DB::commit();
@@ -1257,14 +1266,14 @@ class PickupDeliveryController extends FrontController{
     }
 
     public function placeRequestForDriverBidsToDispatch($request, $product, $UserBidRideRequest){
-        try 
+        try
         {
             $getAdditionalPreference = getAdditionalPreference(['bid_expire_time_limit_seconds']);
             $expiryseconds = ($getAdditionalPreference['bid_expire_time_limit_seconds'] > 0) ? $getAdditionalPreference['bid_expire_time_limit_seconds'] : 30;
 
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             $customer = Auth::user();
-            if($dispatch_domain && $dispatch_domain != false && !empty($UserBidRideRequest)) 
+            if($dispatch_domain && $dispatch_domain != false && !empty($UserBidRideRequest))
             {
                 $unique = Auth::user()->code;
                 $client_do = Client::orderBy('id', 'asc')->first();
@@ -1274,9 +1283,9 @@ class PickupDeliveryController extends FrontController{
                 }else{
                     $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
                 }
-                
+
                 $call_back_url = "https://".$domain."/dispatch/driver/bids/update/".$UserBidRideRequest->web_hook_code;
-                
+
                 $postdata =  [
                             'tasks'                   => $request->tasks,
                             'call_back_url'           => $call_back_url??null,
@@ -1347,7 +1356,6 @@ class PickupDeliveryController extends FrontController{
             return $this->successResponse($update, "Request accepted successfully", 200);
         }
         catch (\Exception $e) {
-            \Log::error($e->getMessage());
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }

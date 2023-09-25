@@ -501,8 +501,7 @@ class OrderController extends BaseController
                                             $order_vendor->user_to_vendor_time = intval($delivery_duration);
                                         }
                                         else if ($vendor_cart_product->vendor->timeofLineOfSightDistance > 0) {
-                                           //// Log::info($vendor_cart_product->vendor->timeofLineOfSightDistance);
-                                           //// Log::info($order_vendor->order_pre_time);
+                                           
                                            //$OrderVendor->order_pre_time = ($vendor_cart_product->vendor->order_pre_time > 0) ? $vendor_cart_product->vendor->order_pre_time : 0;
                                             if($order_vendor->order_pre_time)
                                             $order_vendor->user_to_vendor_time = $vendor_cart_product->vendor->timeofLineOfSightDistance - $order_vendor->order_pre_time;
@@ -1154,6 +1153,10 @@ class OrderController extends BaseController
 
                         $autoaccept = $this->autoAcceptOrderIfOn($order->id);
                     }
+
+                    //Create an order at margApi side also
+                    // $this->makeInsertOrderMargApi($order);
+                    
                     return $this->successResponse($order, __('Order placed successfully.'), 201);
 
                 }
@@ -1238,7 +1241,6 @@ class OrderController extends BaseController
             }
              } catch(\Exception $e){
              DB::rollback();
-             Log::info($e->getMessage());
             }
         }
     }
@@ -1255,7 +1257,6 @@ class OrderController extends BaseController
         $checkOrder = Order::findOrFail($request->order_id);
             if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 || $is_place_order_delivery_zero == 1)){
                 $order_ship = $ship->createOrderRequestShippo($checkdeliveryFeeAdded);
-                // //\Log::info($order_ship);
             }
             if ($order_ship->object_id){
                     $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])->update([
@@ -1617,7 +1618,7 @@ class OrderController extends BaseController
                 // $customerno = ($customer->phone_number) ? '+' . $customer->dial_code . $customer->phone_number : rand(111111, 11111) ;
                 $customerno = ($customer->phone_number) ? $customer->phone_number : rand(111111, 11111);
             }
-            //Log::info("order Pre Time is ".$vendor_details->order_pre_time);
+            
             $postdata =  [
                 'order_number' =>  $order->order_number,
                 'customer_name' => $customer->name ?? 'Customer',
@@ -1652,7 +1653,6 @@ class OrderController extends BaseController
                 $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
             }
 
-           //// Log::info($postdata);
             $client = new GCLIENT([
                 'headers' => [
                     'personaltoken' => $dispatch_domain->delivery_service_key,
@@ -2095,12 +2095,11 @@ class OrderController extends BaseController
                 if ($email_template) {
 
                     $email_template_content = $email_template->content;
-                    if ($vendor_id == "") {
-
+                  //  if ($vendor_id == "") {
                         $returnHTML = view('email.newOrderProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
-                    } else {
-                        $returnHTML = view('email.newOrderVendorProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
-                    }
+                  //  } else {
+                   //     $returnHTML = view('email.newOrderVendorProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
+                  //  }
                     $email_template_content = str_ireplace("{description}",'', $email_template_content);
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);
@@ -2135,8 +2134,6 @@ class OrderController extends BaseController
                 dispatch(new \App\Jobs\SendOrderSuccessEmailJob($email_data))->onQueue('verify_email');
                 $notified = 1;
             } catch (\Exception $e) {
-               // Log::info("send order mail error".$e->getmessage());
-
             }
         }
     }
@@ -2228,7 +2225,7 @@ class OrderController extends BaseController
                 });
                 break;
         }
-        $orders = $orders->with(['orderDetail.editingInCart', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'products.productReturn',
+        $orders = $orders->with(['orderDetail.editingInCart', 'products.product.translation', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'products.productReturn',
         'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request','products.Routes','products.order_product_status','products.product.category.categoryDetail'=>function ($q){
             $q->select('id','type_id');
         }
@@ -2362,7 +2359,8 @@ class OrderController extends BaseController
                     'qty' => $product->quantity,
                     'category_type' => $product->product->category->categoryDetail->type->title ?? '',
                     'product_id' => $product->product_id,
-                    'title' => $product->product_name,
+                    'title' =>$product->translation->title,
+                    'product_title' => $product->translation->title,
                     'routes' => $product->routes,
                     'dispatcher_agent' => $dispatcher_agent,
                     'scheduled_date_time' => dateTimeInUserTimeZone($product->scheduled_date_time, $user->timezone),
@@ -2606,6 +2604,7 @@ class OrderController extends BaseController
                     $product_addons = [];
                     $vendor->vendor_name = $vendor->vendor->name;
                     foreach ($vendor->products as  $product) {
+                        
                         $product->longTermSchedule = array();
                         $product->recurring_date_count = 1;
                         if($product->product->is_long_term_service ==1){
@@ -2643,6 +2642,7 @@ class OrderController extends BaseController
                             $product->processor_date = '';
                             $product->address = '';
                         }
+                        $product->product_name = isset($product->translation)?$product->translation->title:$product->product_name;                        
                         //till here
                         $product->scheduled_date_time = (($product->scheduled_date_time!=null)?dateTimeInUserTimeZone($product->scheduled_date_time, $user->timezone):null);
                         $product_addons = [];
@@ -2784,8 +2784,6 @@ class OrderController extends BaseController
                     $response = Http::get($new_dispatch_traking_url);
 
                 } catch (\Exception $ex) {
-                    //\Log::info('Error:');
-                    //\Log::info(json_encode($ex->getMessage()));
                 }
 
 
@@ -2813,8 +2811,6 @@ class OrderController extends BaseController
 
            // $order['user_document_value'] =  $user_docs;
 
-
-        //   // Log::info('order'.json_encode($order));
             if(auth()->user()->is_admin){
                 $order['total_amount'] = $order->total_amount  - $total_markup_Price;
                 $order['payable_amount'] = $order->payable_amount  - $total_markup_Price;
@@ -3180,7 +3176,7 @@ class OrderController extends BaseController
                                 if (($action == 'delivery' || $action == 'on_demand') && ( $is_service_product_price_from_dispatch!=1)) {
                                     if ((!empty($vendor_cart_product->product->Requires_last_mile)) && ($vendor_cart_product->product->Requires_last_mile == 1)) {
                                         $delivery_fee = $this->getDeliveryFeeDispatcher($vendor_cart_product->vendor_id, $user->id);
-                                        //Log::info($delivery_fee);
+                                        
                                         if (!empty($delivery_fee) && $delivery_count == 0) {
                                             $delivery_count = 1;
                                             $vendor_cart_product->delivery_fee = decimal_format($delivery_fee);
@@ -3616,7 +3612,6 @@ class OrderController extends BaseController
 
            // $vendor_order_status = VendorOrderStatus::where('order_id', $order_id)->where('vendor_id', $vendor_id)->first();
             $currentOrderStatus = OrderVendor::where(['vendor_id' => $request->vendor_id, 'order_id' => $request->order_id])->first();
-            //Log::info(($currentOrderStatus ? $currentOrderStatus->order_status_option_id : 'no'));
 
             if ($currentOrderStatus->order_status_option_id == 3 ) {
                 //$request->status_option_id == 2){
@@ -3857,17 +3852,11 @@ class OrderController extends BaseController
         // Individual Vendor App User Token
         $vendorAppUserDevices = UserDevice::where('is_vendor_app', 1)->whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
 
-        //// Log::info('vendorAppUserDevices');
-        //// Log::info($vendorAppUserDevices);
-        //// Log::info('vendor_fcm_server_key');
-        //// Log::info($client_preferences->vendor_fcm_server_key);
         if(!empty($vendorAppUserDevices) && !empty($client_preferences->vendor_fcm_server_key)) {
             $from = $client_preferences->vendor_fcm_server_key;
             $data['registration_ids'] = $vendorAppUserDevices;
 
             $result = sendFcmCurlRequest($data,$from );
-            //// Log::info('Vendor order notification');
-            //// Log::info($result);
         }
     }
 

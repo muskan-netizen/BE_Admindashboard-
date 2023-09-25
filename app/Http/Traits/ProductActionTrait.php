@@ -8,7 +8,9 @@ use Carbon\Carbon;
 use DB;
 use Grimzy\LaravelMysqlSpatial\Types\Point;
 use App\Http\Controllers\Front\FrontController;
-
+use DateTime;
+use DateTimeZone;
+use Carbon\CarbonPeriod;
 
 trait ProductActionTrait{
 
@@ -542,7 +544,7 @@ trait ProductActionTrait{
             // }
 
             // $returnArray = $products;
-            //pr($returnArray);
+          
             return $returnArray;
         }
         catch (\Exception $e) {
@@ -555,6 +557,7 @@ trait ProductActionTrait{
     }
     public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude, $vendor_ids = [], $set_template = NULL,$venderFilterOpenClose=null,$venderFilterbest=null)
     {
+        
         try 
         {
             $mytime = Carbon::now()->setTimezone($timezone);
@@ -606,7 +609,7 @@ trait ProductActionTrait{
             
 
             
-            $mainQuery .= " GROUP BY `vendors`.`id` ";
+            $mainQuery .= " GROUP BY `vendors`.`id` ORDER BY `lineOfSightDistance` ASC";
 
             //------based on hyper location------------
             if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
@@ -634,6 +637,12 @@ trait ProductActionTrait{
             $vendors = DB::select( DB::raw($mainQuery));
             
             $vendor_ids = [];
+            $user = Auth::user();
+            $timezone = isset($user) && $user->timezone ?  $user->timezone : 'Asia/Kolkata';
+            $start_date = new DateTime("now", new  DateTimeZone($timezone) );
+            $start_date =  $start_date->format('Y-m-d');
+            $end_date = Date('Y-m-d', strtotime('+13 days'));
+
             foreach ($vendors as $key => $value) {
                 $vendor_ids[] = $value->id;
                 // get or update rating
@@ -682,6 +691,32 @@ trait ProductActionTrait{
                             }
                         }
                     }
+                }
+
+                $slotsDate = 0;
+                $value->date_with_slots = [];
+                if($value->closed_store_order_scheduled == 1){
+                    $slotsDate = findSlot('',$value->id,$type );
+                    $value->delaySlot = $slotsDate;
+                    $value->closed_store_order_scheduled = (($slotsDate)?$value->closed_store_order_scheduled:0);
+
+                    if(!empty($slotsDate)){
+                        $period = CarbonPeriod::create($start_date, $end_date);
+                        $slotWithDate = [];
+                        foreach($period as $key => $date){
+                            $slotDate = trim(date('Y-m-d', strtotime($date)));
+                            $slots = showSlot($slotDate,$value->id,'delivery');
+                            if(!empty($slots)){
+                                $slotData['date']  =  $slotDate;
+                                $slotData['slots'] = $slots;
+                                $slotWithDate[] = $slotData;
+                            }
+                        }
+                        $value->date_with_slots = $slotWithDate;
+                    }
+                }else{
+                    $value->delaySlot = 0;
+                    $value->closed_store_order_scheduled = 0;
                 }
 
                 if($value->closed_store_order_scheduled == 1){

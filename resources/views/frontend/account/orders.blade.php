@@ -678,6 +678,7 @@ $timezone = Auth::user()->timezone;
     });
     var ajaxCall = 'ToCancelPrevReq';
     var payment_obo_url = "{{route('obo.pay')}}";
+    var livee_payment_url="{{route('livee.pay')}}"
     var credit_tip_url = "{{ route('user.tip_after_order') }}";
     var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
     var payment_stripe_url = "{{ route('payment.stripe') }}";
@@ -724,7 +725,7 @@ $timezone = Auth::user()->timezone;
     var confirm_discard_edit_order_desc = "{{__('You want to discard editing Order.')}}";
     var success_error_container = ".order_response";
     var payment_option_list_url = "{{route('payment.option.list')}}";
-    var user_cards_url = "{{ route('payment.azulpay.getCards') }}";  
+    var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
     var powertrans_payment_url = "{{ route('powertrans.payment') }}";
     var data_trans_url = "{{route('payment.payByDataTrans')}}";
     var create_mtn_momo_token = "{{route('mtn.momo.createToken')}}";

@@ -104,32 +104,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
         <div class="col-sm-12 mb-2">
             <div class="row align-items-center ">
                 <div class="col">
-                    <div class="page-title-box page-title-box text-left pt-2">
-                        <a class="return-btn mr-1" href="{{route('backend.order.returns',['Pending'])}}">
-                            <b>{{ __("Return Request") }} <sup class="total-items">({{$return_requests}})</sup>
-                                <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
-                            </b>
-                        </a>
-                        <a class="mr-2" href="{{route('cancel-order.requests')}}">
-                            <b>{{ __("Cancel Order Request") }}<sup class="total-items">({{$cancel_order_requests}})</sup>
-                                <i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
-                            </b>
-                        </a>
-                        @if ($client_preferences->business_type == 'laundry')
-                        <a class="return-btn" href="{{route('rescheduled.orders')}}">
-                            <b>{{ __("Rescheduled Orders") }} <sup class="total-items">({{$rescheduleOrderCount}})</sup>
-                                <i class="fa fa-arrow-circle-right ml-1" aria-hidden="true"></i>
-                            </b>
-                        </a>
-                        @endif
-                        @if ($client_preferences->business_type == 'rental' || $client_preferences->business_type == 'super_app')
-                        <a class="return-btn" href="{{route('return.dispatcher.form')}}">
-                            <b>{{ __("Rental Return Order Form") }} <sup class="total-items">({{$returnFormRequestCount}})</sup>
-                                <i class="fa fa-arrow-circle-right ml-1" aria-hidden="true"></i>
-                            </b>
-                        </a>
-                        @endif
-                    </div>
+                    
                 </div>
 
             </div>
@@ -148,6 +123,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 <div class="col-12">
     <div class="row order-list-spinner">
         <div class="tab-product pl-2 pr-2 flex-grow-1">
+            <div class="item">
             <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link active" id="pending_order-tab" data-toggle="tab" href="#pending_orders" role="tab" aria-selected="false" data-rel="pending_orders">
@@ -200,8 +176,40 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 </li>
                
             </ul>
+            <div class="page-title-box page-title-box text-left ">
+                <a class="return-btn mr-1" href="{{route('backend.order.returns',['Pending'])}}">
+                    <b>{{ __("Return Request") }} 
+                        <span class="total-items">({{$return_requests}})</span>
+                        {{-- <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> --}}
+                    </b>
+                </a>
+                <a class="mr-2" href="{{route('cancel-order.requests')}}">
+                    <b>{{ __("Cancel Order Request") }}
+                        <span class="total-items">({{$cancel_order_requests}})</span>
+                        {{-- <i class="fa fa-arrow-circle-right" aria-hidden="true"></i> --}}
+                    </b>
+                </a>
+                @if ($client_preferences->business_type == 'laundry')
+                <a class="return-btn" href="{{route('rescheduled.orders')}}">
+                    <b>{{ __("Rescheduled Orders") }} 
+                        <span class="total-items">({{$rescheduleOrderCount}})</span>
+                        {{-- <i class="fa fa-arrow-circle-right ml-1" aria-hidden="true"></i> --}}
+                    </b>
+                </a>
+                @endif
+                @if ($client_preferences->business_type == 'rental' || $client_preferences->business_type == 'super_app')
+                <a class="return-btn" href="{{route('return.dispatcher.form')}}">
+                    <b>{{ __("Rental Return Order Form") }} 
+                        <span class="total-items">({{$returnFormRequestCount}})</span>
+                        {{-- <i class="fa fa-arrow-circle-right ml-1" aria-hidden="true"></i> --}}
+                    </b>
+                </a>
+                @endif
+            </div>
         </div>
-        <div class="pl-2 pr-2">
+        </div>
+        
+        <div class="col-12 pl-2 pr-2">
             <div class="tabs_radio_controls">
                 @php
                     $index = 1;
@@ -627,11 +635,11 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     that.prop("disabled",false);
                 }else{
                     Swal.fire({
-                    title: "{{__('Are you Sure?')}}",
+                    title: "{{__('Proceed with Accepting Order')}}",
                     // icon: 'info',
                     text: alertMessage,
                     showCancelButton: true,
-                    confirmButtonText: 'Ok',
+                    confirmButtonText: 'Yes',
                     }).then((result) => {
                         if (result.value) {
                             $.ajax({
@@ -743,11 +751,11 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             var alertMessage = "";
             
             Swal.fire({
-                title: "{{__('Are you Sure?')}}",
+                title: "{{__('Proceed with Accepting Order')}}",
                 // icon: 'info',
                 text: alertMessage,
                 showCancelButton: true,
-                confirmButtonText: 'Ok',
+                confirmButtonText: 'Yes',
             }).then((result) => {
                 if (result.value) {
                     $.ajax({

@@ -442,8 +442,28 @@ border-right: 1px solid var(--theme-deafult) !important;}
 .rating-form label:focus~label .fa-star,
 .rating-form input[type='radio']:checked~label .fa-star{opacity: 1;}
 footer#footer{position: absolute;bottom: 0;width: 100%;}
+ul.product_list_order_page {
+    display: grid;
+    grid-template-columns: 50px 1fr;
+    justify-content: flex-start;
+    align-items: center;
+    grid-gap:10px 15px;
+}
+ul.product_list_order_page .items_price{
+    text-align: left;
+}
+.product_list_item {
+    height: 140px;
+    overflow-y: auto;
+    padding-top: 8px;
+}
 
 
+@media (max-width: 1366px){
+    .al_body_template_eight  .home-serivces .side-card .product-order .shopping-cart .alVendorProductDetails {
+        width: 100%;
+    }
+}
 @media (max-width: 1100px){
     .vender-icon img.rounded-circle.avatar-lg{
         width: 75px!important;

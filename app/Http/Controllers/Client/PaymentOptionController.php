@@ -834,6 +834,17 @@ class PaymentOptionController extends BaseController
                                 'powertrans_password' => $request->powertrans_password,
                             ));
                         break;
+
+                        case 'livee':
+                            $request->validate([
+                                'livee_merchant_key' => 'required',
+                                'livee_resource_key' => 'required',
+                            ]);
+                            $json_creds = json_encode(array(
+                                'livee_merchant_key' => $request->livee_merchant_key,
+                                'livee_resource_key' => $request->livee_resource_key,
+                            ));
+                        break;
                     }
                 }
             }

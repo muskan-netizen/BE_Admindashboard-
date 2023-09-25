@@ -59,8 +59,8 @@
                                             <li>
                                                 <a data-toggle="tooltip" data-placement="top" title="Start Chat"
                                                     class="start_chat btn-info" data-vendor_order_id="{{ $vendor->id }}"
-                                                    data-vendor_id="{{ $vendor['vendor_id'] }}>"
-                                                    data-orderId="{{ $order['order_id'] }}>"
+                                                    data-vendor_id="{{ $vendor['vendor_id'] }}"
+                                                    data-orderId="{{ $order['order_id'] }}"
                                                     data-order_id="{{ $order['id'] }}"><svg
                                                         xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                         fill="currentColor" class="bi bi-chat-dots-fill"
@@ -159,7 +159,7 @@
                                                         </div>
 
                                                         <label class="items_price">
-                                                            ({{ $product['product_name'] }})
+                                                            ({{ $product['product_title'] }})
                                                             {{ $clientCurrency->currency->symbol }}{{ decimal_format($product['price']) }}</label>
                                                     </div>
                                                 @endforeach

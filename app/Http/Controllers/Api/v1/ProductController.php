@@ -12,6 +12,7 @@ use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVarian
 use Validation;
 use DB;
 use App\Http\Traits\{ApiResponser,ProductTrait, ProductActionTrait};
+use App\Models\ProductInquiry;
 
 class ProductController extends BaseController
 {
@@ -140,6 +141,7 @@ class ProductController extends BaseController
                             $z->join('variant_translations as vt','vt.variant_id','vr.id');
                             $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
                             $z->where('vt.language_id', $langId);
+                            $z->orderBy('vr.position');
                         },
                         'variantSet.options' => function($zx) use($langId, $pvIds, $pid){
                             $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id')
@@ -159,7 +161,7 @@ class ProductController extends BaseController
                         },
 
                     ]);
-                    $product = $product->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min', 'returnable', 'replaceable', 'return_days', 'is_long_term_service','service_duration','is_show_dispatcher_agent','is_slot_from_dispatch','tags','mode_of_service','is_recurring_booking');
+                    $product = $product->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min', 'returnable', 'replaceable', 'return_days', 'is_long_term_service','service_duration','is_show_dispatcher_agent','is_slot_from_dispatch','tags','mode_of_service','is_recurring_booking','inquiry_only');
                     
 
                     $product = $product->where('id', $pid)
@@ -694,11 +696,35 @@ class ProductController extends BaseController
                 'message' => 'Variant not Found!'
             ]); 
         } catch (Exception $e) {
-            //\Log::info('getFreeLincerFromDispatcher error');
-            \Log::info($e->getMessage());
             return response()->json([
                 'status' => 400,
                 'message' => 'Somthing Went wrong!'
+            ]); 
+        }
+    }
+    
+    public function storeProductInquiry(Request $request, $domain = '')
+    {
+        try {
+            $request->validate([
+                'agree' =>'accepted',
+                'name' => 'required',
+                'email' => 'required',
+                'number1' => 'required',
+                'message' => 'required',
+            ], [
+                'name.required' => __('The name field is required.'),
+                'agree.accepted' => __('The agree must be accepted.'),
+                'email.required' => __('The email field is required.'),
+                'number1.required' => __('The number field is required.'),
+                'message.required' => __('The message field is required.'),
+            ]);
+            ProductInquiry::create(['name' => $request->name, 'email' => $request->email, 'phone_number' => $request->number1, 'company_name' => $request->company_name, 'message' => $request->message, 'product_id' => $request->product_id, 'vendor_id' => $request->vendor_id, 'product_variant_id' => $request->variant_id]);
+            return response()->json(array('status' => 'Success', 'message' => __('Inquiry Submitted Successfully')));
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 400,
+                'message' => $e->getMessage()
             ]); 
         }
     }
