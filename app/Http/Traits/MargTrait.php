@@ -123,6 +123,11 @@ trait MargTrait{
                         $proVariant->quantity = $request->stock;            
                         $proVariant->barcode = $this->generateBarcodeNumber();
                         $proVariant->save();
+                    }else{
+                        $productVariant->price = $request->MRP;            
+                        $productVariant->quantity = $request->stock;            
+                        $productVariant->barcode = $this->generateBarcodeNumber();
+                        $productVariant->save();
                     }
                     
 
