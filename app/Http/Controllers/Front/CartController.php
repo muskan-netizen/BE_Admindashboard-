@@ -1457,20 +1457,14 @@ class CartController extends FrontController
                     $delivery_status = 0;
                 }
 
-
-
-
-
                 $total_payable_amount = $total_payable_amount + $payable_amount;
                 $total_taxable_amount = $total_taxable_amount + $taxable_amount;
                 $total_discount_amount = $total_discount_amount + $discount_amount;
                 $total_discount_percent = $total_discount_percent + $discount_percent;
                 $total_subscription_discount = $total_subscription_discount + $subscription_discount;
 
-
                 $vendorData->is_promo_code_available = $is_promo_code_available;
             }
-            //dd($is_promo_code_available)
             $is_percent = 0;
             $amount_value = 0;
             if ($cart->coupon) {
@@ -2100,9 +2094,11 @@ class CartController extends FrontController
         } else {
             $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type', 'order_id','address_id')->with(['coupon.promo', 'editingOrder'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
         }
+        if($cart && !empty($cart)){
         $cart_product_removed =    CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
             $q->whereIn('is_live',[0,2]);
         })->pluck('id');
+    }
        
         if(count($cart_product_removed)){
             CartProduct::whereIn('id',$cart_product_removed)->delete();

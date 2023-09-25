@@ -350,7 +350,7 @@ class UserhomeController extends FrontController
             $for_no_product_found_html = clone $CabBookingLayout;
             $enable_layout             = clone $CabBookingLayout;
             $enable_layout = $enable_layout->orderBy('order_by','asc')->pluck('slug')->toArray();
-            $homePageData = $this->postHomePageData($request, $set_template, $enable_layout, $additionalPreference);
+            $homePageData = $this->postHomePageDataV2($request, $set_template, $enable_layout, $additionalPreference);
 
             $home_page_labels = $home_page_labels->map(function($da) use ($homePageData, $navCategories) {
                 if($da->slug!='pickup_delivery' && $da->slug!='dynamic_page' ){

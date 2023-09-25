@@ -206,6 +206,7 @@ class CategoryController extends FrontController{
         }else{
             if($page == 'laundry' || $service_type == 'rental_service')
                 $page = 'product';
+                
             if(view()->exists('frontend/cate-'.$page.'s')){
                 return view('frontend/cate-'.$page.'s')->with(['maxPrice'=>$maxPrice,'listData' => $listData, 'category' => $category, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'productAttributes'=> $productAttributes]);
             }else{

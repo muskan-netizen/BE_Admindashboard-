@@ -285,9 +285,9 @@ $(document).ready(function() {
                             }else{
                                 if(typeof value.translation.title =="undefined")
                                 {
-                                    var product_name = value.title+' ('+value.sku+')';
+                                    var product_name = value.title ;
                                 }else{
-                                    var product_name = value.translation[0].title+' ('+value.sku+')';
+                                    var product_name = value.translation[0].title;
                                 }
                             }
                             if(tabid == 1)

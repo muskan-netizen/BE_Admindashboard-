@@ -1616,6 +1616,8 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
 
 <script>
     var timeout= null;
+    var width =250;
+    var height = 250;
     function imageZoom(imgID, resultID) {
         var img, lens, result, cx, cy;
         img = document.getElementById(imgID);
@@ -1626,8 +1628,8 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
         /*insert lens:*/
         img.parentElement.insertBefore(lens, img);
         /*calculate the ratio between result DIV and lens:*/
-        cx = result.offsetWidth / lens.offsetWidth;
-        cy = result.offsetHeight / lens.offsetHeight;
+        cx = result.offsetWidth / width;
+        cy = result.offsetHeight / height;
         console.log(cx+4);
         /*set background properties for the result DIV:*/
 
@@ -1649,9 +1651,9 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
           x = pos.x - (lens.offsetWidth / 2);
           y = pos.y - (lens.offsetHeight / 2);
           /*prevent the lens from being positioned outside the image:*/
-          if (x > img.width - lens.offsetWidth) {x = img.width - lens.offsetWidth;}
+          if (x > img.width - lens.offsetWidth) {x = img.width - width;}
           if (x < 0) {x = 0;}
-          if (y > img.height - lens.offsetHeight) {y = img.height - lens.offsetHeight;}
+          if (y > img.height - lens.offsetHeight) {y = img.height - height;}
           if (y < 0) {y = 0;}
           /*set the position of the lens:*/
           lens.style.left = x + "px";

@@ -79,7 +79,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         // get Category kyc document
         Route::post('category_kyc_document', 'Api\v1\CategoryController@getcategoryKycDocument');
         Route::post('submit_category_kyc', 'Api\v1\CartController@updateCartCategoryKyc');
-
+        Route::post('inquiry-mode/store', 'Api\v1\ProductController@storeProductInquiry');
         Route::post('search/{type}/{id?}', 'Api\v1\HomeController@globalSearch');
         Route::post('cms/page/detail', 'Api\v1\CMSPageController@getPageDetail');
         Route::post('brand/filters/{id?}', 'Api\v1\BrandController@brandFilters');

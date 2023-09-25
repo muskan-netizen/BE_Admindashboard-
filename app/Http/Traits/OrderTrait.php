@@ -152,6 +152,33 @@ trait OrderTrait
         return 1;
     }
 
+    public function inventryProductQuantityIncrease($order_id){
+   
+        $order = Order::with(['vendors.products.pvariant'])->find($order_id);
+        if( isset($order->vendors )){
+            foreach ($order->vendors as $vendor) {
+                foreach ($vendor->products as $product) {
+                    $client_preferences = ClientPreference::first();
+        $client = new \GuzzleHttp\Client([
+            'headers' => [
+                'shortcode' => $client_preferences->inventory_service_key_code,
+                'content-type' => 'application/json'
+            ]
+        ]);
+        $url = $client_preferences->inventory_service_key_url;
+
+        $request = $client->post($url . '/api/v1/product-qunatity-increase', [
+            'json' => ['product_variant' =>$product->variant_id ,'product_quantity'=>$product->quantity]
+        ]);
+
+        $response = json_decode($request->getBody());
+
+                }
+            }
+        }
+        return 1 ;
+    }
+
     public function ProductVariantStockIncreaseByOrderId($order_id, $rental = '')
     {
         $order = Order::with(['vendors.products.pvariant'])->find($order_id);
@@ -1129,7 +1156,9 @@ trait OrderTrait
             }
         }
 
-        $tracking_url = url('/order/track/' . $user['id'] . '/' . $order['order_number'] . '');
+        $tracking_url = $order->ordervendor->dispatch_traking_url;
+        \Log::info('tracking');
+        \Log::info($tracking_url);
         $tracking_url = get_tiny_url($tracking_url);
 
         $keyData = ['{user_name}' => $user['name'] ?? '', '{order_number}' => $order['order_number'] ?? '', '{track_url}' => $tracking_url ?? '', '{order_status}' => $order_status ?? ''];

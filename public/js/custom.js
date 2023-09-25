@@ -650,6 +650,7 @@ $(document).ready(function () {
     });
 
     function productRemove(product_id, cartproduct_id, vendor_id) {
+        
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -686,6 +687,7 @@ $(document).ready(function () {
                     if($(`#add_button_href${cartproduct_id}`).length > 0){
                         $(`#add_button_href${cartproduct_id}`).show();
                         $(`#added_button_href${cartproduct_id}`).hide();
+                        $(`#add_button_href${cartproduct_id}`).text('Add');
                     }
                     if($(`#add_button_href${product_id}`).length > 0){
                         $(`#add_button_href${product_id}`).show();
@@ -3013,9 +3015,9 @@ $(document).ready(function () {
         $('#add_new_address_btn').show();
         $('#add_new_address_form').hide();
     });
-    $(document).on("click", "#add_new_address_btn", function () {
+    $(document).on("click", "#add_new_address_btn a.add-address", function () {
         if(auth){
-        $(this).hide();
+        // $(this).hide();
         initialize();
         $("#add_new_address_form_modal").modal('show');
         $('#add_new_address_form').show();
@@ -5940,3 +5942,81 @@ function numberWithCommas(x) {
 //   var number = 213242.3412;
 //   alert(numberWithCommas(number));
 $(".related-css").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"20px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}}]});
+
+$('#add_edit_address').on('hidden.bs.modal', function () {
+    $("html").removeClass("intro");
+  });
+
+$(".add_edit_address_btn").click(function(){
+    $("html").addClass("intro");
+  });
+
+
+// nine template slider 
+$('.categories_slider').slick({
+    slidesToShow: 7,
+    slidesToScroll: 1,
+    arrows: true,
+    dots: false,
+    speed: 300,
+    infinite: true,
+    autoplaySpeed: 5000,
+    autoplay: true,
+    responsive: [
+        {
+            breakpoint: 991,
+            settings: {
+            slidesToShow: 4,
+            }
+        },
+        {
+            breakpoint: 767,
+            settings: {
+            slidesToShow: 3,
+            }
+        },
+        {
+            breakpoint: 576,
+            settings: {
+            slidesToShow: 2,
+            }
+        }
+    ]
+});
+
+$('.featured_slider').slick({
+    slidesToShow: 5,
+    slidesToScroll: 1,
+    arrows: true,
+    dots: false,
+    speed: 300,
+    infinite: true,
+    autoplaySpeed: 5000,
+    autoplay: true,
+    responsive: [
+        {
+            breakpoint: 1440,
+            settings: {
+            slidesToShow: 4,
+            }
+        },
+        {
+            breakpoint: 991,
+            settings: {
+            slidesToShow: 3,
+            }
+        },
+        {
+            breakpoint: 767,
+            settings: {
+            slidesToShow: 2,
+            }
+        },
+        {
+            breakpoint: 576,
+            settings: {
+            slidesToShow: 1,
+            }
+        }
+    ]
+});
