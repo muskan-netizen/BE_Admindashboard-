@@ -30,7 +30,7 @@ use Log;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use App\Models\{LoyaltyCard, VendorOrderCancelReturnPayment};
-
+use App\Http\Controllers\ShipEngineController;
 class OrderController extends BaseController
 {
     private $folderName = '/order/reports';
@@ -1121,6 +1121,8 @@ class OrderController extends BaseController
                     } elseif ($orderData->shipping_delivery_type == 'SH') {
                         //Create Shipping place order request for Shippo Masa
                         $orderPlaced = $this->placeOrderRequestShippo($request);
+                    }elseif ($orderData->shipping_delivery_type == 'SE') {
+                        $orderPlaced = $this->placeOrderRequestShipEngine($request,$orderData);
                     }elseif ($orderData->shipping_delivery_type == 'RO') {
                         //Create Roadies place order request for Roadies
                         if ($orderData && ($orderData->delivery_fee > 0.00 )) {
@@ -1374,6 +1376,27 @@ class OrderController extends BaseController
                 $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrderData->id, 'vendor_id' => $request->vendor_id])
                     ->update([
                         'roadie_tracking_url' => $roadie_tracking_url
+                    ]);
+                return 1;
+            }
+        }
+        return false;
+    }
+
+    public function placeOrderRequestShipEngine($request){
+        $shipEngine = new ShipEngineController();
+        $checkOrderData = Order::with(['vendors.products.product', 'user', 'ordervendor.vendor'])->findOrFail($request->order_id);
+        if (@$checkOrderData) {
+            $createLabeleData = $shipEngine->placeOrderRequest($checkOrderData);
+            if (isset($createLabeleData['label_id'])) {
+                $tracking_url = $shipEngine->trackingUrl($createLabeleData['label_id']);
+                OrderVendor::where(['order_id' => $checkOrderData->id, 'vendor_id' => $request->vendor_id])
+                    ->update([
+                        'dispatch_traking_url' => $tracking_url,
+                        'courier_id' => $createLabeleData['carrier_code'],
+                        'ship_shipment_id' => $createLabeleData['shipment_id'],
+                        'label_id' => $createLabeleData['label_id'],
+                        'label_pdf' => $createLabeleData['label_download']['pdf']
                     ]);
                 return 1;
             }

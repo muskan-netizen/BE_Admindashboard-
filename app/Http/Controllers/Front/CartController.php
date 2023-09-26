@@ -2435,7 +2435,7 @@ class CartController extends FrontController
                 if(isset($vendorData->vendor)){
                     $shipEngine = new ShipEngineController();
                     if($shipEngine->status){
-                        $deliver_fee = $shipEngine->getShippingFee($vendorData);
+                        $deliver_fee = $shipEngine->getEstimateFee($vendorData);
                         if($deliver_fee>0)
                         {
                             $optionAhoy[] = array(

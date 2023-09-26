@@ -13,6 +13,7 @@ trait ShipEngineTrait
     public $header;
     public $service_code;
     public $status;
+    public $carrier_ids;
     
     public function __construct()
     {
@@ -29,6 +30,7 @@ trait ShipEngineTrait
                 'Content-Type' => 'application/json',
             ];
             $this->status = $creds->status ?? 0;
+            $this->carrier_ids = $creds_arr->carrier_ids;
         } 
     }
 
@@ -50,37 +52,58 @@ trait ShipEngineTrait
         return $response;
     }
 
-    public function shipEngineRateEstimate()
+    public function shipEngineRateEstimate($data)
     {
-        // \Log::info(['address' => $address]);
+        $vendor = $data['vendor'];
+
+        $total_weight = 0;
+
+        foreach ($data->vendorProducts as $key => $vendor_product) {
+            $total_weight += $vendor_product['product']['weight'] ?? 0;
+        }
+                
+        $user_address = UserAddress::where('user_id', auth()->user()->id)->where('status',1)->orderBy('is_primary','Desc')->first();
+
         $response =  Http::withHeaders($this->header)->post($this->url.'/rates/estimate',[
             "carrier_ids" => [
-                "se-5298717"
+                $this->carrier_ids
             ],
-            "from_country_code" => "US",
-            "from_postal_code" => "78756",
-            "to_country_code" => "US",
-            "to_postal_code" => "95128",
-            "to_city_locality" => "San Jose",
-            "to_state_province" => "CA",
+            "service_codes" => [
+                $this->service_code
+            ],
+            "from_postal_code" =>  $vendor['pincode'],
+            "from_country_code" =>  $vendor['country_code'],
+            "to_city_locality" => $user_address['city'],
+            "to_state_province" => $user_address['state_code'],
+            "to_postal_code" => $user_address['pincode'],
+            "to_country_code" => $user_address['country_code'],
             "weight" => [
-                "value" => 1.0,
+                "value" => $total_weight,
                 "unit" => "ounce"
             ],
             "confirmation" => "none",
             "address_residential_indicator" => "no"
             
         ])->json();
+        // dd($response);
         // \Log::info($response);
-        return $response;
+        return $response[0]['shipping_amount']['amount'];
     }
 
     public function shipEngineWebhooks()
     {
         // \Log::info(['address' => $address]);
+        $response =  Http::withHeaders($this->header)->get($this->url.'/shipments/se-786508496')->json();
+        // \Log::info($response);
+        return $response;
+    }
+
+    public function webhookTrack()
+    {
+        // \Log::info(['address' => $address]);
         $response =  Http::withHeaders($this->header)->post($this->url.'/environment/webhooks',[
-            "url" => "https://webhook.site/7a5ab76c-0862-4538-999a-b2112f3fba29",
-            "event" => "batch"
+            "resource_url" => $this->url."/tracking?carrier_code=usps&tracking_number=9400111298370264401222",
+            "resource_type" => "API_TRACK"
         ])->json();
         // \Log::info($response);
         return $response;
@@ -93,21 +116,20 @@ trait ShipEngineTrait
 
     public function getLabelFee($data)
     {
-        $vendor = $data['vendor'];
-
+        $vendor = $data['ordervendor']['vendor'];
         $total_weight = 0;
 
-        foreach ($data->vendorProducts as $key => $vendor_product) {
-            $total_weight += $vendor_product['product']['weight'] ?? 0;
+        foreach ($data->products as $key => $order_product) {
+            $total_weight += $order_product['product']['weight'] ?? 0;
         }
                 
-        $user_address = UserAddress::where('user_id', auth()->user()->id)->where('status',1)->orderBy('is_primary','Desc')->first();
+        $user_address = UserAddress::where('user_id', $data['user_id'])->where('status',1)->orderBy('is_primary','Desc')->first();
 
         $response =  Http::withHeaders($this->header)->post($this->url.'/labels',[
             "shipment" => [
                 "service_code" => $this->service_code,
                 "ship_to" => [
-                    "name" => auth()->user()->name,
+                    "name" => $data['user']['name'],
                     "address_line1" => explode(',',$user_address['address'])[0],
                     "city_locality" => $user_address['city'],
                     "state_province" => $user_address['state_code'],
@@ -136,14 +158,17 @@ trait ShipEngineTrait
                 ]
             ]
         ]);
-        // \Log::info(['response' => $response]);
+        // \Log::info(['response' => $response['errors'][0]['message']]);
         if (isset($response['errors'])) {
             return ['status' => 208,'message' => $response['errors'][0]['message']];
         }
 
-        return [
-            'amount' => $response['shipment_cost']['amount'],
-            'response' => $response,
-        ];
+        return $response;
+    }
+
+    public function trackingUrlByLabelId($label_id)
+    {
+        $response = Http::withHeaders($this->header)->get($this->url.'/labels/'.$label_id.'/track/');
+        return $response['tracking_url'];
     }
 }

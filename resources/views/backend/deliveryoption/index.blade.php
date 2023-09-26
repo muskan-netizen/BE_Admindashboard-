@@ -1091,6 +1091,7 @@
                             $creds = json_decode($shipEngineOption->credentials);
                             $api_key = (isset($creds->api_key)) ? $creds->api_key : '';
                             $service_code = (isset($creds->service_code)) ? $creds->service_code : '';
+                            $carrier_ids = (isset($creds->carrier_ids)) ? $creds->carrier_ids : '';
                             
                             $base_price = (isset($creds->base_price)) ? $creds->base_price : '0';
                             $distance = (isset($creds->distance)) ? $creds->distance : '0';
@@ -1136,6 +1137,12 @@
                                         <div class="form-group mb-0">
                                             <label for="service_code" class="mr-3">{{ __("Service Code") }}</label>
                                             <input type="text" name="service_code" id="service_code" class="form-control" value="{{$service_code}}" @if($shipEngineOption->status == 1) required @endif autofill="off">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group mb-0">
+                                            <label for="carrier_ids" class="mr-3">{{ __("Carrier Id") }}</label>
+                                            <input type="text" name="carrier_ids" id="carrier_ids" class="form-control" value="{{$carrier_ids}}" @if($shipEngineOption->status == 1) required @endif autofill="off">
                                         </div>
                                     </div>
                                 </div>

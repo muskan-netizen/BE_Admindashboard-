@@ -555,6 +555,7 @@ Route::group(['middleware' => ['domain']], function () {
     Route::post('vendor-time-slot', 'Front\CartController@VendorTimeSlot')->name('recurring.booking.vendor.slot');
 	Route::post('get_price_from_dispatcher', 'Front\ProductController@getFreeLincerFromDispatcher')->name('product.get_price_from_dispatcher');
 	Route::post('get_gerenal_slot', 'Front\ProductController@getGerenalSlot')->name('getGerenalSlot');
+	Route::post('shipEngine-webhook', 'Front\ShipEngineController@webhook');
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
 

@@ -372,14 +372,16 @@ class DeliveryOptionController extends Controller
 
                 if ((isset($method_name_arr)) && (strtolower($method_name_arr) == 'shipengine')) {
 
-                    $validatedData = $request->validate([
+                    $request->validate([
                         'api_key' => 'required',
                         'service_code' => 'required',
+                        'carrier_ids' => 'required',
                     ]);
 
                     $json_creds = array(
                         'api_key' => $request->api_key,
                         'service_code' => $request->service_code,
+                        'carrier_ids' => $request->carrier_ids,
                     );
 
                     if ((isset($base_active)) && ($base_active == 'on')) {
