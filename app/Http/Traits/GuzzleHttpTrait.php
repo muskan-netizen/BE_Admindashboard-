@@ -2,8 +2,6 @@
 namespace App\Http\Traits;
 use GuzzleHttp\Client as Guzzle;
 
-
-
 trait GuzzleHttpTrait{
 
 
