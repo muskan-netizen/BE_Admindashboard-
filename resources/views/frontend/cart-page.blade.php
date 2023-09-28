@@ -481,12 +481,9 @@
                                                           id="error_prescription_{{ $vendor_product->product->id }}"
                                                          style="display:none;">Prescription required</span>
                                                             @if ($vendor_product->cart_product_prescription > 0)
-                                                                <h4 class="mt-0 mb-1"
-                                                                    style="word-wrap: break-word; line-height:20px">
-                                                                    <strong>{{ $vendor_product->cart_product_prescription }}
-                                                                        {{ __('Prescription Added') }}</strong></h4>
-                                                   
-                                                                            @endif
+                                                                <h4 class="mt-0 mb-1 text-left" style="clear:both;line-height:30px" >
+                                                                    <strong>{{ $vendor_product->cart_product_prescription }}{{ __('Prescription Added') }}</strong></h4>
+                                                            @endif
                                                         @endif
                                                     @endif
 

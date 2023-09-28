@@ -538,9 +538,6 @@
     </div>
 </div>
 
-
-
-
 <div class="col-md-4">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="is_user_kyc_for_registration_switch"
@@ -726,5 +723,18 @@
         </span>
         <input type="hidden" @if (@$getAdditionalPreference['is_vendor_marg_configuration'] == 1) value="1" @else value="0" @endif
             name="is_vendor_marg_configuration" id="is_vendor_marg_configuration" />
+    </div>
+</div>
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_vendor_marg_configuration" class="mr-2 mb-0">{{ __('Manage Roles & Permission') }}<small
+                class="d-block pr-5">{{ __('Enable role and permission for users.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_role_and_permission_enable"
+                id="is_role_and_permission_enable_switch" class="form-control checkbox_change"
+                data-className="is_role_and_permission_enable" data-color="#43bee1"
+                @if (@$getAdditionalPreference['is_role_and_permission_enable']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['is_role_and_permission_enable'] == 1) value="1" @else value="0" @endif
+            name="is_role_and_permission_enable" id="is_role_and_permission_enable" />
     </div>
 </div>

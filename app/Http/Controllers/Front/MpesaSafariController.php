@@ -31,9 +31,9 @@ use App\Models\NotificationTemplate;
 class MpesaSafariController extends Controller
 {
     use ApiResponser,OrderTrait, Mpesa;
-    
+
     //Initiate STK Push
-    
+
     public function orderNumber($request)
     {
         $time = time();
@@ -60,7 +60,7 @@ class MpesaSafariController extends Controller
                 'date' => date('Y-m-d'),
                 'user_id' => $user_id,
                 'payment_from'=>$request->come_from??'web'
-                
+
             ]);
         } elseif ($request->action == 'tip') {
             $time = $request->order_number. time();
@@ -72,7 +72,7 @@ class MpesaSafariController extends Controller
                 'date' => date('Y-m-d'),
                 'user_id' => $user_id,
                 'payment_from'=>$request->come_from??'web'
-                
+
             ]);
         } elseif ($request->action == 'subscription') {
             $time = $request->subscription_id?$request->subscription_id: time();
@@ -84,7 +84,7 @@ class MpesaSafariController extends Controller
                 'date' => date('Y-m-d'),
                 'user_id' => $user_id,
                 'payment_from'=>$request->come_from??'web'
-                
+
             ]);
         } else if ($request->action == 'pickup_delivery') {
             $time = $request->order_id??$request->order_number;
@@ -96,12 +96,12 @@ class MpesaSafariController extends Controller
                 'date' => date('Y-m-d'),
                 'user_id' => $user_id,
                 'payment_from'=>$request->come_from??'web'
-                
+
             ]);
         }
         return $time;
     }
-    
+
     public function createPayment(Request $request)
     {
         $amount = $request->amt??$request->amount;
@@ -121,7 +121,7 @@ class MpesaSafariController extends Controller
         $phone = $this->formatPhone(auth()->user()->phone_number);
         $response = $this->express($amount,$phone,$accountReference,'Payment');
         $response = json_decode($response);
-        if(isset($response->ResponseCode)){            
+        if(isset($response->ResponseCode)){
             if($response->ResponseCode == 0){
                $payment = Payment::where('transaction_id',$accountReference)->first();
                $payment->viva_order_id = $response->CheckoutRequestID;
@@ -161,7 +161,7 @@ class MpesaSafariController extends Controller
         }
         return $this->errorResponse('Server Error', 400);
     }
-    
+
     public function formatPhone($phone)
     {
         $phone = 'hfhsgdgs' . $phone;
@@ -174,8 +174,10 @@ class MpesaSafariController extends Controller
         return $phone;
     }
 
-    public function successPage(Request $request,$domain = '')
-    { 
+    public function successPage(Request $request)
+    {
+        \Log::info("webhook success");
+        \Log::info($request->all());
          if (isset($request->Body) && isset($request->Body['stkCallback']) && isset($request->Body['stkCallback']['ResultCode'])) {
              if($request->Body['stkCallback']['ResultCode'] == 0){
                 $payment = Payment::where('viva_order_id', $request->Body['stkCallback']['CheckoutRequestID'])->first();
@@ -200,9 +202,9 @@ class MpesaSafariController extends Controller
                          if(!empty($currentOrderStatus)){
                              $currentOrderStatus->order_status_option_id = 3;
                              $currentOrderStatus->save();
-                             $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $order,$currentOrderStatus->order_status_option_id);                          
+                             $this->sendStatusChangePushNotificationCustomer([$currentOrderStatus->user_id], $order,$currentOrderStatus->order_status_option_id);
                          }
-                     } 
+                     }
                  }
              }
          }else{
@@ -210,7 +212,7 @@ class MpesaSafariController extends Controller
              \Log::info($request->all());
          }
     }
-    
+
     public function completeOrderCart($request, $payment)
     {
         $order = Order::where('order_number', $payment->transaction_id)->first();
@@ -226,10 +228,10 @@ class MpesaSafariController extends Controller
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=mpesasafari'.'&status=200&order='.$order->order_number;
                 return redirect($returnUrl);
             }*/
-        } 
+        }
     }
-    
-    
+
+
     public function completeOrderWallet($request, $payment)
     {
         //if (isset($request) && ($request->get('statusId') == '2')){
@@ -252,7 +254,7 @@ class MpesaSafariController extends Controller
 //             }
 //         }
     }
-    
+
     public function completeOrderTip($request, $payment)
     {
        // if (isset($request) && ($request->get('statusId') == '2')){
@@ -278,8 +280,8 @@ class MpesaSafariController extends Controller
 //             }
 //         }
     }
-    
-    
+
+
     public function completeOrderSubs(Request $request,$payment)
     {
         //if (isset($request) && ($request->get('statusId') == '2')){
@@ -303,9 +305,9 @@ class MpesaSafariController extends Controller
 //             }else{
 //                 return Redirect::to(route('user.subscription.plans'))->with('error',$request->message);
 //             }
-//         }        
+//         }
     }
-    
+
     public function completePickupDelivery($request, $payment)
     {
         $order = Order::where('order_number', $payment->transaction_id)->first();
@@ -313,7 +315,7 @@ class MpesaSafariController extends Controller
             $request->request->add(['order_number'=> $order->order_number, 'payment_option_id' => 62, 'amount' => $order->payable_amount, 'transaction_id' => $request->TransID]);
             $plaseOrderForPickup = new PickupDeliveryController();
             $res = $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
-            
+
           /*  if($payment->payment_from=='app')
             {
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=mpesasafari'.'&status=200&order='.$payment->transaction_id;
@@ -327,11 +329,11 @@ class MpesaSafariController extends Controller
 //             return Redirect::to(route('front.booking.details'))->with('error',$request->message);
 //         }
     }
-    
+
     public function sendStatusChangePushNotificationCustomer($user_ids, $orderData, $order_status_id)
     {
         $devices = UserDevice::whereNotNull('device_token')->whereIn('user_id', $user_ids)->pluck('device_token')->toArray();
-        
+
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
             if ($order_status_id == 2) {

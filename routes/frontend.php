@@ -40,7 +40,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::any('webhook/roadie', [RoadieController::class, 'roadieWebhook'])->name('roadieWebhook');
 	Route::get('webhook/user_rating', 'Front\UserRatingController@userRatingWebhook')->name('user_rating_webhook');
     Route::any('livee/success','LiveePaymentController@afterPayment')->name('livee.payment');
-    Route::any('webhook/mpesa','Front\MpesaSafariController@successPage')->name('safari.payment');
+    Route::any('webhook/success-page','Front\MpesaSafariController@successPage')->name('safari.payment');
     
 	// order dispatcher order web hooks
 	Route::get('dispatch-order-status-update/{id?}', 'Front\DispatcherController@dispatchOrderStatusUpdate')->name('dispatch-order-update'); // Order Status update Dispatch

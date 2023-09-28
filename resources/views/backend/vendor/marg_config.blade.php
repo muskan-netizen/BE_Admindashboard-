@@ -30,7 +30,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
 <div class="col-xl-4 col-lg-4 mb-3">
     <!-- Social Logins title start -->
     <div class="page-title-box">
-        <h4 class="page-title text-uppercase">Marg</h4>
+        <h4 class="page-title text-uppercase">{{ __("Marg")}}</h4>
     </div><!-- Social Logins title end -->
 
     <form method="POST" action="{{ route('vendorMargConfig.update',$vendor_id) }}">
@@ -57,9 +57,9 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                             @if (isset($vendorMargConfig->is_marg_enable) == 1) value="1" @else value="0" @endif
                             name="is_marg_enable" id="is_marg_enable_hidden" />
 
-                        @if (isset($vendorMargConfig->is_marg_enable) == 1 && $vendorMargConfig->marg_date_time)
+                        @if (isset($vendorMargConfig->is_marg_enable) == 1 && $vendorMargConfig->marg_last_date_time)
                             <label for="" id="sycn_time" class="ml-3">{{ __('Last Sync Date & Time :') }}
-                            {{ convertDateTimeInClientTimeZone($vendorMargConfig->marg_date_time, 'd-m-Y h:i:s') }}</label >
+                            {{ convertDateTimeInClientTimeZone($vendorMargConfig->marg_last_date_time, 'd-m-Y h:i:s') }}</label >
                         @endif
 
                     </div>
@@ -75,11 +75,11 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                     <div class="form-group mb-2 mt-2">
                         <label for="marg_company_url">{{ __('Marg Company Url') }}</label>
                         <input type="text" name="marg_company_url" id="marg_company_url" 
-                        @if ($getAdditionalPreference['marg_company_url'])
+                        @if ($getAdditionalPreference['marg_company_url'] || $getAdditionalPreference['marg_company_url'] != '0')
                             readonly        
                         @endif
                             placeholder="" class="form-control" required
-                            value="{{ $getAdditionalPreference['marg_company_url'] ??  old('marg_company_url', $vendorMargConfig->marg_company_url ?? '') }}">
+                            value="{{ $getAdditionalPreference['marg_company_url'] == 0 ? old('marg_company_url', $vendorMargConfig->marg_company_url ?? '') : $getAdditionalPreference['marg_company_url'] }}">
                         @if ($errors->has('marg_company_url'))
                             <span class="text-danger" role="alert">
                                 <strong>{{ $errors->first('marg_company_url') }}</strong>
@@ -95,7 +95,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                 <div class="col-12">
                     <div class="form-group mb-2 mt-2">
                         <label for="marg_company_code">{{ __('Company Code') }}</label>
-                        <input type="password" name="marg_company_code" id="marg_company_code" required
+                        <input type="text" name="marg_company_code" id="marg_company_code" required
                             placeholder="" class="form-control"
                             value="{{ old('marg_company_code', $vendorMargConfig->marg_company_code ?? '') }}">
                         @if ($errors->has('marg_company_code'))
@@ -111,7 +111,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                 <div class="col-12">
                     <div class="form-group mb-2 mt-2">
                         <label for="marg_access_token">{{ __('Marg ID') }}</label>
-                        <input type="password" name="marg_access_token" id="marg_access_token" required
+                        <input type="text" name="marg_access_token" id="marg_access_token" required
                             placeholder="" class="form-control"
                             value="{{ old('marg_access_token', $vendorMargConfig->marg_access_token ?? '') }}">
                         @if ($errors->has('marg_access_token'))
@@ -127,7 +127,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                 <div class="col-12">
                     <div class="form-group mb-2 mt-2">
                         <label for="marg_decrypt_key">{{ __('Decrypt Key') }}</label>
-                        <input type="password" name="marg_decrypt_key" id="marg_decrypt_key" placeholder=""
+                        <input type="text" name="marg_decrypt_key" id="marg_decrypt_key" placeholder=""
                             class="form-control" required
                             value="{{ old('marg_decrypt_key', $vendorMargConfig->marg_decrypt_key ?? '') }}">
                         @if ($errors->has('marg_decrypt_key'))
@@ -143,9 +143,9 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                 style="{{ isset($vendorMargConfig->is_marg_enable) && $vendorMargConfig->is_marg_enable == 1 ? '' : 'display:none;' }}">
                 <div class="col-12">
                     <div class="form-group mb-2 mt-2">
-                        <label for="marg_date_time">{{ __('Date Time') }}</label>
-                        <input type="datetime-local" name="marg_date_time" id="marg_date_time" placeholder=""
-                            class="form-control" required
+                        <label for="marg_date_time">{{ __('Date Time (yyyy-mm-dd 00:00:00)') }}</label>
+                        <input type="text" name="marg_date_time" id="marg_date_time" placeholder=""
+                            class="form-control"
                             value="{{ old('marg_date_time', $vendorMargConfig->marg_date_time ?? '') }}">
                         @if ($errors->has('marg_date_time'))
                             <span class="text-danger" role="alert">
@@ -155,27 +155,25 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                     </div>
                 </div>
             </div>
-
     </form>
-    <div class="row marg_row"
-        style="{{ isset($vendorMargConfig->is_marg_enable) && $vendorMargConfig->is_marg_enable == 1 ? '' : 'display:none;' }}">
+    
+    <div class="row marg_row"style="{{ isset($vendorMargConfig->is_marg_enable) && $vendorMargConfig->is_marg_enable == 1 ? '' : 'display:none;' }}">
         <div class="col-12">
-    @php
-{
-    
-        $marg_order =  App\Models\Order::where('marg_status', '=',null)->
-          where('marg_max_attempt', '>',2)->first();
-         $class= "";
-         if($marg_order){
-            $class= "disabled";
-         }
-    
-         
-}    
-@endphp
+        @php
+            {
+                $marg_order =  App\Models\Order::whereHas('vendors',function($q) use($vendor_id){
+                    $q->where('vendor_id', $vendor_id);
+                })->where('marg_status', '=',null)->where('marg_max_attempt', '>',2)->first();
 
+                $vendor_config = App\Models\VendorMargConfig::where('vendor_id',$vendor_id)->first();
+                $class= "";
+                if($marg_order || (!$vendor_config)){
+                    $class= "disabled";
+                }                
+            }    
+        @endphp
 
-        <button class="btn btn-info btn-block" id="sync_marg_btn" >{{ __('Sync Data') }} </button>
+        <button class="btn btn-info btn-block" id="sync_marg_btn" {{ $class }} >{{ __('Sync Data') }} </button>
 
         </div>
     </div>
@@ -183,7 +181,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
 
 @endsection
 @section('script')
-
+<script src="https://cdn.jsdelivr.net/gh/AmagiTech/JSLoader/amagiloader.js"></script>
 <script>
     var is_marg_enable = $('#is_marg_enable');
 
@@ -199,22 +197,25 @@ if (is_marg_enable.length > 0) {
 }
 
 $(document).on("click", "#sync_marg_btn", function(e) {
-            e.preventDefault();
-            $.ajax({
-                type: "GET",
-                dataType: 'json',
-                url: "{{ route('sync.margVendor',$vendor_id) }}",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                },
-                success: function(response) {
-                    $('#sycn_time').html(response.time);
-                    sweetAlert.success('Data Sycn Successfully!');
-                },
-                error: function(response) {
-                    sweetAlert.error('Error!','Marg api - '+response.responseJSON.message);
-                }
-            });
+        AmagiLoader.show();
+        e.preventDefault();
+        $.ajax({
+            type: "GET",
+            dataType: 'json',
+            url: "{{ route('sync.margVendor',$vendor_id) }}",
+            data: {
+                _token: "{{ csrf_token() }}",
+            },
+            success: function(response) {
+                $('#sycn_time').html(response.time);
+                AmagiLoader.hide();
+                sweetAlert.success('Data Sycn Successfully!');
+            },
+            error: function(response) {
+                AmagiLoader.hide();
+                sweetAlert.error('Error!','Marg api - '+response.responseJSON.message);
+            }
         });
+    });
 </script>
 @endsection

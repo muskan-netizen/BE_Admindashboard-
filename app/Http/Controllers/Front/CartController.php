@@ -1457,20 +1457,14 @@ class CartController extends FrontController
                     $delivery_status = 0;
                 }
 
-
-
-
-
                 $total_payable_amount = $total_payable_amount + $payable_amount;
                 $total_taxable_amount = $total_taxable_amount + $taxable_amount;
                 $total_discount_amount = $total_discount_amount + $discount_amount;
                 $total_discount_percent = $total_discount_percent + $discount_percent;
                 $total_subscription_discount = $total_subscription_discount + $subscription_discount;
 
-
                 $vendorData->is_promo_code_available = $is_promo_code_available;
             }
-            //dd($is_promo_code_available)
             $is_percent = 0;
             $amount_value = 0;
             if ($cart->coupon) {
