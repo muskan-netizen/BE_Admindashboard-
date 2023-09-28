@@ -25,7 +25,7 @@ use GuzzleHttp\Client;
 use App\Models\Client as CP;
 use App\Models\Transaction;
 use App\Models\AutoRejectOrderCron;
-use App\Http\Traits\{ApiResponser,OrderTrait};
+use App\Http\Traits\{ApiResponser,OrderTrait, TaxJarTrait};
 use Log;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -35,12 +35,15 @@ class OrderController extends BaseController
 {
     private $folderName = '/order/reports';
 
-    use ApiResponser,OrderTrait;
+    use ApiResponser,OrderTrait,TaxJarTrait{
+        TaxJarTrait::__construct as TaxJarTraitConstruct;
+    }
     public $from_date;
     public $to_date;
     public $setWeekDate;
     function __construct()
     {
+        $this->TaxJarTraitConstruct();
         $this->from_date = Carbon::now()->startOfDay()->subDays(7);
         $this->to_date = Carbon::now()->endOfDay();
         $this->setWeekDate =  $this->from_date->format('d M Y') . ' to '. $this->to_date->format('d M Y');
@@ -1131,6 +1134,10 @@ class OrderController extends BaseController
                     }
                     $orderData->accepted_by = Auth::user()->id;
                     $orderData->save();
+                }
+
+                if ($request->status_option_id == 2 && taxJarEnable()) {
+                    $this->createTaxJarOrder($orderData);
                 }
 
                 if ($request->status_option_id == 4  && $orderData->shipping_delivery_type == 'L') {

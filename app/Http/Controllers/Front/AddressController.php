@@ -69,9 +69,10 @@ class AddressController extends FrontController{
         $address->type = $request->type;
         $address->city = $request->city??"";
         $address->state = $request->state??"";
+        $address->state_code = $request->state_code??"";
         $address->street = $request->street;
         $address->country = $country->name;
-        $address->country_code = $country->code;
+        $address->country_code = $country->code??'US';
         $address->user_id = Auth::user()->id;
         $address->address = $request->address;
         $address->pincode = $request->pincode??"";
@@ -80,18 +81,21 @@ class AddressController extends FrontController{
         $address->house_number = $request->house_number??"";
         $address->extra_instruction = $request->extra_instruction??"";
 
-        $res = $this->shipEngineAddressValidate($address);
-        // \Log::warning($res);
-        if ($res[0]['status'] == 'verified') {
-            $address->state_code = $res[0]['matched_address']['state_province'];
-            $address->save();
+        $msg = __('Address Has Been Added Successfully');
+        $status = 'success';
 
-            $msg = __('Address Has Been Added Successfully');
-            $status = 'success';
+        if (shipEngineEnable()) {
+            $res = $this->shipEngineAddressValidate($address);
+            if ($res[0]['status'] == 'verified') {
+                // $address->state_code = $res[0]['matched_address']['state_province'];
+                $address->save();
+            }else{
+                $msg = $res['message'];
+                $status = 'error';
+            }  
         }else{
-            $msg = $res['message'];
-            $status = 'error';
-        }       
+            $address->save();
+        }     
         
         if($request->ajax()){
             return response()->json(['status' => $status, 'message' => $msg, 'address' => $address]);

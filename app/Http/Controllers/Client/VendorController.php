@@ -444,7 +444,9 @@ class VendorController extends BaseController
         $vendor->pincode = $request->pincode;
         $vendor->city = $request->city;
         $vendor->state = $request->state;
+        $vendor->state_code = $request->state_code;
         $vendor->country = $request->country;
+        $vendor->country_code = $request->country_code??'US';
         if(@$this->roleId=='5')
         {
             $vendor->refference_id = auth()->id();
@@ -452,17 +454,18 @@ class VendorController extends BaseController
         $vendor->slug = Str::slug($request->name, "-");
         if(Vendor::where('slug',$vendor->slug)->count() > 0)
         $vendor->slug = Str::slug($request->name, "-");
-
-        $country = Country::where('name',$request->country)->first();
-        $vendor->country_code = $country->code;
         
-        $res = $this->shipEngineAddressValidate($vendor->toArray());
-        if ($res[0]['status'] == 'verified') {
-            $vendor->state_code = $res[0]['matched_address']['state_province'];
-            $vendor->save();
+        if (shipEngineEnable()) {
+            $res = $this->shipEngineAddressValidate($vendor->toArray());
+            if ($res[0]['status'] == 'verified') {
+                $vendor->state_code = $res[0]['matched_address']['state_province'];
+                $vendor->save();
+            }else{
+                return ['status' => 'shipEngineAdressError','message' => $res['message']];
+            }  
         }else{
-            return ['status' => 'shipEngineAdressError','message' => $res['message']];
-        }  
+            $vendor->save();
+        }
 
         if(@$this->roleId=='5')
         {

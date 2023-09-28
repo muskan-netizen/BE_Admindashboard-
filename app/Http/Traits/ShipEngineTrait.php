@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Http;
 
 trait ShipEngineTrait
 {
+    use TaxJarTrait{
+        TaxJarTrait::__construct as TaxJarTraitConstruct;
+    }
     public $ship_engine_api_key;
     public $url;
     public $header;
@@ -17,6 +20,7 @@ trait ShipEngineTrait
     
     public function __construct()
     {
+        $this->TaxJarTraitConstruct();
         $creds = ShippingOption::select('credentials', 'test_mode','status')->where('code', 'shipengine')->where('status', 1)->first();
 
         if(isset($creds) && !empty($creds)){
@@ -123,7 +127,7 @@ trait ShipEngineTrait
             $total_weight += $order_product['product']['weight'] ?? 0;
         }
                 
-        $user_address = UserAddress::where('user_id', $data['user_id'])->where('status',1)->orderBy('is_primary','Desc')->first();
+        $user_address = UserAddress::where('id', $data['address_id'])->first();
 
         $response =  Http::withHeaders($this->header)->post($this->url.'/labels',[
             "shipment" => [

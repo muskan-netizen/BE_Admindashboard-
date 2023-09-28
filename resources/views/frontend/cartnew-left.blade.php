@@ -256,6 +256,7 @@
                                     <div class="col-md-6 mb-3">
                                         <label for="state">{{__('State')}}</label>
                                         <input type="text" class="form-control" id="state" placeholder="{{__('State')}}" value="">
+                                        <input type="hidden" class="form-control" id="state_code" placeholder="" value="">
                                         <span class="text-danger" id="state_error"></span>
                                     </div>
                                     <div class="col-md-6 mb-3">

@@ -2342,6 +2342,7 @@ $(document).ready(function () {
                         }
                         if (mapAddress.types[0] == "administrative_area_level_1") {
                             document.getElementById('state').value = mapAddress.long_name;
+                            document.getElementById('state_code').value = mapAddress.short_name;
                         }
                         if (mapAddress.types[0] == "postal_code") {
                             document.getElementById('pincode').value = mapAddress.long_name;
@@ -3083,6 +3084,7 @@ $(document).ready(function () {
     $(document).on("click", "#save_address", function () {
         let city = $('#add_new_address_form #city').val();
         let state = $('#add_new_address_form #state').val();
+        let state_code = $('#add_new_address_form #state_code').val();
         let street = $('#add_new_address_form #street').val();
         let address = $('#add_new_address_form #address').val();
         let country = $('#add_new_address_form #country').val();
@@ -3109,7 +3111,8 @@ $(document).ready(function () {
                     "latitude": latitude,
                     "longitude": longitude,
                     "house_number": house_number,
-                    "extra_instruction": extra_instruction
+                    "extra_instruction": extra_instruction,
+                    "state_code":state_code
                 },
                 beforeSend: function () {
                     if ($("#cart_table").length > 0) {

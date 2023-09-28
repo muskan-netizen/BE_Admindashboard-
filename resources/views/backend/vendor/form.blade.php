@@ -135,6 +135,7 @@
                 <div class="form-group mb-3">
                     {!! Form::label('title', __('State'),['class' => 'control-label']) !!}
                     <input type="text" name="state" id="state" placeholder="State" class="form-control" value="{{$vendor->state}}">
+                    <input type="hidden" name="state_code" id="state_code" placeholder="" class="form-control" value="{{$vendor->state_code}}">
                     @if($errors->has('state'))
                     <span class="text-danger" role="alert">
                         <strong>{{ $errors->first('state') }}</strong>
@@ -146,6 +147,7 @@
                 <div class="form-group mb-3">
                     {!! Form::label('title', __('Country'),['class' => 'control-label']) !!}
                     <input type="text" name="country" id="country" placeholder="Country" class="form-control" value="{{$vendor->country}}">
+                    <input type="hidden" name="country" id="country_code" placeholder="" class="form-control" value="{{$vendor->country_code}}">
                     @if($errors->has('country'))
                     <span class="text-danger" role="alert">
                         <strong>{{ $errors->first('country') }}</strong>
