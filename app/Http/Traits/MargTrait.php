@@ -169,15 +169,15 @@ trait MargTrait{
 		try{
 			// DB::beginTransaction();
             $url_slug = $this->validateSlug($request->name);
-            $product = Product::findOrFail($product->id);           
+            $product = Product::select('id','sku','url_slug','title')->findOrFail($product->id);           
 
             if($product->id){
                 $product->sku = $request->code;      // $request->sku;
                 $product->url_slug = $url_slug;             // $request->url_slug;
                 $product->title = $request->name;           // $request->product_name;             
-                $client_lang = ClientLanguage::where('is_primary', 1)->first();
+                $client_lang = ClientLanguage::select('is_primary','is_active','language_id')->where('is_primary', 1)->first();
                 if (!$client_lang) {
-                    $client_lang = ClientLanguage::where('is_active', 1)->first();
+                    $client_lang = ClientLanguage::select('is_primary','is_active','language_id')->where('is_active', 1)->first();
                 }
                 $product->save();
 
@@ -185,7 +185,7 @@ trait MargTrait{
             
             if ($product->id > 0)
             {
-                    $marg_product  =  MargProduct::whereCode($request->code)->first();
+                    $marg_product  =  MargProduct::select('id','product_id','rid','code','name','stock','MRP')->whereCode($request->code)->first();
                     if($marg_product){
                         $marg_product->product_id   =       $product->id;
                         $marg_product->rid          =       $request->rid;           
@@ -196,7 +196,7 @@ trait MargTrait{
                         $marg_product->save();
                     }
 
-                $proVariant = ProductVariant::where('sku', $request->code)->first();
+                $proVariant = ProductVariant::select('id','price','quantity')->where('sku', $request->code)->first();
                 if(isset($request->ProductCode) && isset($request->name) && !is_null($proVariant)){
 
                     $proVariant->price = $request->MRP;            

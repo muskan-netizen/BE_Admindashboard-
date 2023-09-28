@@ -828,12 +828,7 @@ class VendorController extends BaseController
                         })->where('status', 1)->orderBy('position', 'asc')
                         ->orderBy('id', 'asc')
                         ->orderBy('parent_id', 'asc')->get();
-        $products = Product::with(['media.image', 'primary', 'category.cat', 'category.categoryDetail', 'brand', 'variant' => function ($v) {
-            $v->select('id', 'product_id', 'quantity', 'price')->groupBy('product_id');
-        }])->select('id', 'sku', 'vendor_id', 'is_live', 'is_new', 'is_featured', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'Requires_last_mile', 'averageRating', 'brand_id','minimum_order_count','batch_count', 'title','category_id')
-            ->where(['vendor_id'=> $id])->whereHas('category.categoryDetail', function ($query) {
-                $query->where('type_id','!=','7');
-            })->get()->sortBy('primary.title', SORT_REGULAR, false);
+
         $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
             ->where('id', '>', '1')
             // ->where('is_core', 1)
