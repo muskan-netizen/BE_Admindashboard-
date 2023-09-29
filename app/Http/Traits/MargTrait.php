@@ -6,7 +6,7 @@ use Auth;
 use HttpRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use App\Models\{Client as CP, Order, ProductAddon, ProductAttribute, ProductCelebrity, ProductCrossSell, ProductRelated, ProductTag, ProductUpSell, SubscriptionInvoicesVendor};
+use App\Models\{Client as CP, Order, ProductAddon, ProductAttribute, ProductCelebrity, ProductCrossSell, ProductRelated, ProductTag, ProductUpSell, SubscriptionInvoicesVendor, VendorMargConfig};
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -42,23 +42,26 @@ trait MargTrait{
     }
 
 
-    public function addProduct($request)
+    public function addProduct($request,$vendor_id = null)
 	{
         try{
             DB::beginTransaction();	
-            $is_exist = Product::where('sku', $request->code)->first();
+          
+            $is_exist = Product::where(['sku' => $request->code.'_'.$vendor_id, 'vendor_id' => $vendor_id])->first();
+            // $mega_vendor_id = $is_exist->vendor->mega_vendor_id;
+            $vendor_id = $vendor_id ?? 8;
 
-			if(isset($request->ProductCode) && isset($request->name) && is_null($is_exist)){
+            if(isset($request->ProductCode) && isset($request->name) && is_null($is_exist)){
                 $url_slug = $this->validateSlug($request->name);
                 $request->catcode = 5;
 
                 $product = new Product();
-                $product->sku = $request->code;      // $request->sku;
-                $product->url_slug = $url_slug;             // $request->url_slug;
+                $product->sku = $request->code.'_'.$vendor_id;      // $request->sku;
+                $product->url_slug = $url_slug.'_'.$vendor_id;             // $request->url_slug;
                 $product->title = $request->name;           // $request->product_name;        
                 $product->category_id = $request->catcode;  // $request->category_id;
                 $product->type_id = 1;
-                $product->vendor_id = 8;                    //$request->vendor_id;
+                $product->vendor_id = $vendor_id;                    //$request->vendor_id;
                 $client_lang = ClientLanguage::where('is_primary', 1)->first();
                 if (!$client_lang) {
                     $client_lang = ClientLanguage::where('is_active', 1)->first();
@@ -68,6 +71,7 @@ trait MargTrait{
                 if ($product->id > 0) {
                         $marg_product  =  new MargProduct();
                         $marg_product->product_id   =       $product->id;
+                        $marg_product->vendor_id    =       $vendor_id;
                         $marg_product->rid          =       $request->rid;
                         $marg_product->catcode      =       $request->catcode;               
                         $marg_product->code         =       $request->code;               
@@ -109,19 +113,30 @@ trait MargTrait{
                     $product_category->category_id = $request->catcode; // $request->category_id;
                     $product_category->save();
 
-                    $proVariant = new ProductVariant();
-                    $proVariant->sku = $request->code; // $request->sku;
-                    $proVariant->product_id = $product->id;            
-                    $proVariant->price = $request->MRP;            
-                    $proVariant->quantity = $request->stock;            
-                    $proVariant->barcode = $this->generateBarcodeNumber();
-                    $proVariant->save();
+                    $productVariant = ProductVariant::where(['sku' => $request->code.'_'.$vendor_id])->first();
+
+                    if (is_null($productVariant)) {
+                        $proVariant = new ProductVariant();
+                        $proVariant->sku = $request->code.'_'.$vendor_id; // $request->sku;
+                        $proVariant->product_id = $product->id;            
+                        $proVariant->price = $request->MRP;            
+                        $proVariant->quantity = $request->stock;            
+                        $proVariant->barcode = $this->generateBarcodeNumber();
+                        $proVariant->save();
+                    }else{
+                        $productVariant->price = $request->MRP;            
+                        $productVariant->quantity = $request->stock;            
+                        $productVariant->barcode = $this->generateBarcodeNumber();
+                        $productVariant->save();
+                    }
+                    
 
                     ProductTranslation::insert($datatrans);
 
                     if(@$request->Is_Deleted)
                     {
                         $product->delete();
+                        isset($proVariant) ? $proVariant->delete() : '';
                     }
 
                 // \Log::info('Insert MargProduct code --'.$request->code);
@@ -133,6 +148,8 @@ trait MargTrait{
                     'name'=>$request->name
                 ];
                 //Update Stock Details
+
+                $request->code = $request->code.'_'.$vendor_id; 
                 $this->updateProduct($request,$is_exist);
             }
 
@@ -256,15 +273,17 @@ trait MargTrait{
 		}else{
 			foreach($order->products as $product)
 			{
-				$productCode[] = $product->product->sku;
+				$productCode[] = $product->sku;
 				$productQuantity[] = $product->quantity;
 			}
             $rid  = MargProduct::first();
 		} 
 		  
-        $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code','marg_company_url']);
+        // $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code','marg_company_url']);
+        $hub_key = VendorMargConfig::where('vendor_id',$order->ordervendor->vendor_id)->first()->toArray();
 
-        if($hub_key['is_marg_enable'] == 1){
+
+        if($hub_key && $hub_key['is_marg_enable'] == 1){
             $decryptionKey  = $hub_key['marg_decrypt_key'];
             $MargID  = $hub_key['marg_access_token'];
             $CompanyCode  = $hub_key['marg_company_code'];
@@ -293,7 +312,7 @@ trait MargTrait{
 				$updateOrder->marg_max_attempt =$updateOrder->marg_max_attempt + 1;
 				$updateOrder->save();
                 session()->flash('success',$encryptedData->Message??'Somthing Went Wrong!');
-                return false;
+                return $encryptedData->Message;
             }
             return true;
 

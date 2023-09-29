@@ -141,9 +141,11 @@ trait ApiResponser
 		return response()->json([
 			'status' => 'Error',
 			'message' => $message,
-			'data' => $data
+			'data' => $data,
+			'code' => $code
 		], $code);
 	}
+	
 
 	protected function updateaverageRating($product_id, $message = null, $code = 200)
 	{

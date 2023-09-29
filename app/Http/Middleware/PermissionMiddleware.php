@@ -20,37 +20,44 @@ class PermissionMiddleware
     public function handle($request, Closure $next, $permission = null, $guard = null)
     {
 
-        $user = auth()->user();
-        $authGuard = app('auth')->guard($guard);
-        $permissionArray = $this->permissionUser($user);
+        $checkPermissionEnable = @getAdditionalPreference(['is_role_and_permission_enable'])['is_role_and_permission_enable'];
+                if($checkPermissionEnable)
+                {
+                    // dd('ddd');
+                        $user = auth()->user();
+                        $authGuard = app('auth')->guard($guard);
+                        $permissionArray = $this->permissionUser($user);
 
-            $page = $request->route()->action['controller'];
-            $check = explode('\\',$page);
-            $cnt = count($check);
-            $pageUrl = $check[$cnt-1];
-            $check = explode('@',$pageUrl);
-            $page = $check[0];
+                            $page = $request->route()->action['controller'];
+                            $check = explode('\\',$page);
+                            $cnt = count($check);
+                            $pageUrl = $check[$cnt-1];
+                            $check = explode('@',$pageUrl);
+                            $page = $check[0];
 
-            $permissions = [];
-            if(isset($permissionArray[$page]) && count($permissionArray[$page])>0)
-            {
-                $permissions =  $permissionArray[$check[0]];
+                            $permissions = [];
+                            if(isset($permissionArray[$page]) && count($permissionArray[$page])>0)
+                            {
+                                $permissions =  $permissionArray[$check[0]];
+                            }else{
+                                if(@$user->is_superadmin || @$user->is_admin){
+                                    return $next($request);
+                                }
+                            // dd($page);
+
+                                throw UnauthorizedException::forPermissions($permissions);
+                            }
+
+                        foreach ($permissions as $permission) {
+                            if ($authGuard->user()->can($permission)) {
+                                return $next($request);
+                            }
+                        }
+
+                        throw UnauthorizedException::forPermissions($permissions);
             }else{
-                if(@$user->is_superadmin || @$user->is_admin){
-                    return $next($request);
-                }
-            // dd($page);
-
-                throw UnauthorizedException::forPermissions($permissions);
-            }
-
-        foreach ($permissions as $permission) {
-            if ($authGuard->user()->can($permission)) {
                 return $next($request);
             }
-        }
-
-        throw UnauthorizedException::forPermissions($permissions);
     }
 
 

@@ -23,10 +23,11 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\{BaseController, VendorPayoutController};
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\AhoyController;
-use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, AddonSetTranslation, Bid, BidRequest, ProductTranslation, Client, ClientPreference, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia,CsvQrcodeImport,VendorFacilty,Facilty, OrderVendorProduct, RoleOld, VendorSection,VendorMultiBanner, VendorMinAmount, VendorAdditionalInfo};
+use App\Models\{AddonOption, AddonOptionTranslation, CsvProductImport, Vendor, CsvVendorImport, VendorSlot, VendorDineinCategory, VendorBlockDate, Category, ServiceArea, ClientLanguage, ClientCurrency, AddonSet, AddonSetTranslation, Bid, BidRequest, ProductTranslation, Client, ClientPreference, Country, EstimateAddonOption, EstimateProduct, Product, Type, VendorCategory,UserPermissions, VendorDocs, SubscriptionPlansVendor, SubscriptionInvoicesVendor, SubscriptionInvoiceFeaturesVendor, SubscriptionFeaturesListVendor, VendorDineinTable, Woocommerce,TaxCategory, PayoutOption, VendorConnectedAccount, OrderVendor, ProductAddon,ProductVariant, ProductCategory, ProductImage, ShippingOption, VendorPayout,VendorRegistrationSelectOption,TaxRate, VendorMedia,CsvQrcodeImport,VendorFacilty,Facilty, OrderVendorProduct, RoleOld, VendorSection,VendorMultiBanner, VendorMinAmount, VendorAdditionalInfo};
 use GuzzleHttp\Client as GCLIENT;
 use App\Exports\VendorSimpelExport;
 use App\Exports\VendorProductExport;
+use App\Http\Traits\ShipEngineTrait;
 use DB,Log;
 use App\Models\VendorRegistrationDocument;
 use App\Services\InventoryService;
@@ -39,11 +40,16 @@ class VendorController extends BaseController
     use ToasterResponser;
     use ApiResponser;
     use VendorTrait;
+    use ShipEngineTrait{
+        ShipEngineTrait::__construct as __ShipEngineConstruct;
+    }
     public $is_payout_enabled;
     private $folderName = '/vendor/extra_docs';
     public $roleId;
 
     public function __construct(){
+        $this->__ShipEngineConstruct();
+
         $code = Client::orderBy('id','asc')->value('code');
         $this->folderName = '/'.$code.'/vendor/extra_docs';
         $payoutOption = PayoutOption::where('status', 1)->first();
@@ -180,7 +186,8 @@ class VendorController extends BaseController
 
         $user = Auth::user();
         $csvVendors = CsvVendorImport::orderBy('id','desc')->get();
-
+        $preferences = ClientPreference::first();
+        $EnabledLuxuryOptions = $this->geteEnabledLuxuryOptions($preferences);
        // pr($csvVendors->toArray());
         $vendor_docs = collect(new VendorDocs);
         $client_preferences = ClientPreference::first();
@@ -304,6 +311,13 @@ class VendorController extends BaseController
         $vendor      = new Vendor();
         $saveVendor = $this->save($request, $vendor, 'false');
 
+        if (isset($saveVendor['status']) && $saveVendor['status'] == 'shipEngineAdressError') { 
+            return response()->json([
+                'status' => 'error',
+                'message' => __($saveVendor['message']),
+            ]);
+        }
+
         // Add vendor additional data
         $additionalData = [];
         if(@$getAdditionalPreference['is_gst_required_for_vendor_registration'] == 1){
@@ -340,6 +354,21 @@ class VendorController extends BaseController
             ]);
         }
     }
+
+    public function geteEnabledLuxuryOptions($clientPreference){
+        $LuxuryOptions = [];
+       // $enabled_vendor_types = [];
+            foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
+                $clientVendorTypes = $vendor_typ_key.'_check';
+                    if($clientPreference->$clientVendorTypes == 1){
+                        $vendor_type_name = $vendor_typ_key == "dinein" ? 'dine_in' : $vendor_typ_key;
+                       // $enabled_vendor_types[] = $vendor_type_name;
+                        $LuxuryOptions[] = config('constants.VendorTypesLuxuryOptions.'.$vendor_typ_key);
+                    }
+            }
+            return $LuxuryOptions;
+           // pr($LuxuryOptions);
+       }
 
     /**
      * Display the specified resource.
@@ -415,7 +444,9 @@ class VendorController extends BaseController
         $vendor->pincode = $request->pincode;
         $vendor->city = $request->city;
         $vendor->state = $request->state;
+        $vendor->state_code = $request->state_code;
         $vendor->country = $request->country;
+        $vendor->country_code = $request->country_code??'US';
         if(@$this->roleId=='5')
         {
             $vendor->refference_id = auth()->id();
@@ -423,7 +454,18 @@ class VendorController extends BaseController
         $vendor->slug = Str::slug($request->name, "-");
         if(Vendor::where('slug',$vendor->slug)->count() > 0)
         $vendor->slug = Str::slug($request->name, "-");
-        $vendor->save();
+        
+        if (shipEngineEnable()) {
+            $res = $this->shipEngineAddressValidate($vendor->toArray());
+            if ($res[0]['status'] == 'verified') {
+                $vendor->state_code = $res[0]['matched_address']['state_province'];
+                $vendor->save();
+            }else{
+                return ['status' => 'shipEngineAdressError','message' => $res['message']];
+            }  
+        }else{
+            $vendor->save();
+        }
 
         if(@$this->roleId=='5')
         {
@@ -537,6 +579,14 @@ class VendorController extends BaseController
         $validation  = Validator::make($request->all(), $rules)->validate();
         $vendor = Vendor::where('id', $id)->first();
         $saveVendor = $this->save($request, $vendor, 'true');
+
+        if (isset($saveVendor['status']) && $saveVendor['status'] == 'shipEngineAdressError') { 
+            return response()->json([
+                'status' => 'error',
+                'message' => __($saveVendor['message']),
+            ]);
+        }
+
         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
         if ($vendor_registration_documents->count() > 0) {
             foreach ($vendor_registration_documents as $vendor_registration_document) {
@@ -769,7 +819,7 @@ class VendorController extends BaseController
     /**   show vendor page - catalog tab      */
     public function vendorCatalog($domain = '', $id){
 
-        if(!auth()->user()->can('vendor-add') && !auth()->user()->is_superadmin)
+        if(!auth()->user()->can('vendor-catalog') && !auth()->user()->is_superadmin)
         {
             return redirect('client/dashboard')->with('error','You do not have permission to do this task.');
         }
@@ -1099,9 +1149,16 @@ class VendorController extends BaseController
                         ->orWhereHas('category.cat', function($q) use($search){
                             $q->where('name', 'LIKE', '%'.$search.'%');
                         });
-
                     });
                 }
+                
+                $instance->where(function($query) use($request) {
+                    $is_live = $request->get('is_live');
+                    if (isset($is_live)) {
+                        $query->where('is_live',$is_live);
+                    }
+                });
+
                 $instance->where(function($query) use($request) {
                     $ordring = 'asc';
                     if(!empty($request->order)){

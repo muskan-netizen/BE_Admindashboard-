@@ -182,7 +182,7 @@ $timezone = Auth::user()->timezone;
                                 @if(isset($order->vendors) && isset($vendor->dispatch_traking_url) && $vendor->dispatch_traking_url!=null)
                                 <div class="col-lg-6">
                                     <div class="mb-4">
-                                        <h5 class="mt-0">{{ __('Tracking ID') }}:</h5>
+                                        <h5 class="mt-0">{{ __('Tracking ID') }}: </h5>
                                         <p>
                                             @php
                                             $track = explode('/', $vendor->dispatch_traking_url);
@@ -190,6 +190,9 @@ $timezone = Auth::user()->timezone;
                                             @endphp
                                             <a href="{{ $vendor->dispatch_traking_url }}" target="_blank">#{{ $track_code }}</a>
                                         </p>
+                                        @if (isset($vendor->label_pdf))
+                                            <a href="{{ $vendor->label_pdf }}" target="_blank">{{ __("Label PDF")}}</a>
+                                        @endif
                                     </div>
                                 </div>
                                 @elseif(isset($order->vendors) &&

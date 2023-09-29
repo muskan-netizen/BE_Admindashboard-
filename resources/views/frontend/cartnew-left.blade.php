@@ -105,20 +105,11 @@
         <div class="view_all_address d-none" id="view_all_address_div">
         @endif
 
-
         @if((($k+1)%2)==0)
             <div class="row w-100">
         @endif
 
-
-
-
-
-
-
-
         {{-- @if($k ==2)
-
 
         <div class="view_all_address d-none" id="view_all_address_div" >
         @endif
@@ -256,6 +247,7 @@
                                     <div class="col-md-6 mb-3">
                                         <label for="state">{{__('State')}}</label>
                                         <input type="text" class="form-control" id="state" placeholder="{{__('State')}}" value="">
+                                        <input type="hidden" class="form-control" id="state_code" placeholder="" value="">
                                         <span class="text-danger" id="state_error"></span>
                                     </div>
                                     <div class="col-md-6 mb-3">

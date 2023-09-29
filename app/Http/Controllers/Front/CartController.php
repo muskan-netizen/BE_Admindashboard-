@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\{ApiResponser,CartManager, KwikApi,BiddingCartTrait, CartManagerV2};
 use App\Http\Controllers\Client\ShippoController;
-use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController, RoadieController};
+use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController, RoadieController, ShipEngineController};
 use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate, Page,WebStylingOption, ProductDeliveryFeeByRole};
 use DateTime;
 use Http\Message\Cookie;
@@ -1457,20 +1457,14 @@ class CartController extends FrontController
                     $delivery_status = 0;
                 }
 
-
-
-
-
                 $total_payable_amount = $total_payable_amount + $payable_amount;
                 $total_taxable_amount = $total_taxable_amount + $taxable_amount;
                 $total_discount_amount = $total_discount_amount + $discount_amount;
                 $total_discount_percent = $total_discount_percent + $discount_percent;
                 $total_subscription_discount = $total_subscription_discount + $subscription_discount;
 
-
                 $vendorData->is_promo_code_available = $is_promo_code_available;
             }
-            //dd($is_promo_code_available)
             $is_percent = 0;
             $amount_value = 0;
             if ($cart->coupon) {
@@ -2101,6 +2095,17 @@ class CartController extends FrontController
         } else {
             $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type', 'order_id','address_id')->with(['coupon.promo', 'editingOrder'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
         }
+        $cart_product_removed =    CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
+            $q->whereIn('is_live',[0,2]);
+        })->pluck('id');
+       
+        if(count($cart_product_removed)){
+            CartProduct::whereIn('id',$cart_product_removed)->delete();
+            if(CartProduct::where('cart_id',$cart->id)->count() == 0){
+            Cart::find($cart->id)->delete();
+            }
+        }
+      
 
         $address_id = $request->has("address_id") ? $request->address_id : (  @$cart->address_id ?? '') ;
         if (isset( $address_id) && !empty( $address_id)) {
@@ -2419,6 +2424,29 @@ class CartController extends FrontController
                     }
                 }
 
+
+                //ShipEngine Delivery fee changes code
+                if(isset($vendorData->vendor)){
+                    $shipEngine = new ShipEngineController();
+                    if($shipEngine->status){
+                        $deliver_fee = $shipEngine->getEstimateFee($vendorData);
+                        if($deliver_fee>0)
+                        {
+                            $optionAhoy[] = array(
+                                'type'=>'SE',
+                                'courier_name'=>__('ShipEngine'),
+                                'rate' => decimal_format($deliver_fee),
+                                'courier_company_id' => 0,
+                                'etd' => 0,
+                                'etd_hours' => 0,
+                                'duration' => 0,
+                                'estimated_delivery_days' => 0,
+                                'code' => 'SE_0'
+                            );
+                            $option = array_merge($option,$optionAhoy);
+                        }
+                    }
+                }
 
                 }elseif($preferences->static_delivey_fee == 1 &&  $vendorData->vendor->order_amount_for_delivery_fee != 0){
                 # for static fees

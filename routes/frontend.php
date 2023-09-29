@@ -20,6 +20,7 @@ Route::get('/order-marg', [MargController::class, 'makeInsertOrderMargApi']);
 // Route::get('/margcmd', [MargController::class, 'margcmd'])->name('sync.marg');
 Route::match(['get','post'],'payment/payByDataTrans','Front\DataTransController@payByDataTrans')->name('payment.payByDataTrans');
 Route::get('/sync-marg', [MargController::class, 'syncmarg'])->name('sync.marg');
+Route::get('/sync-marg/{vendor_id}', [MargController::class, 'syncmargVendor'])->name('sync.margVendor');
 Route::get('/order-marg', [MargController::class, 'makeInsertOrderMargApi']);
 Route::get('/debug-sentry', function () {		
 	echo \Hash::make('dispatcher@765');
@@ -39,7 +40,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::any('webhook/roadie', [RoadieController::class, 'roadieWebhook'])->name('roadieWebhook');
 	Route::get('webhook/user_rating', 'Front\UserRatingController@userRatingWebhook')->name('user_rating_webhook');
     Route::any('livee/success','LiveePaymentController@afterPayment')->name('livee.payment');
-
+    Route::any('webhook/success-page','Front\MpesaSafariController@successPage')->name('safari.payment');
+    
 	// order dispatcher order web hooks
 	Route::get('dispatch-order-status-update/{id?}', 'Front\DispatcherController@dispatchOrderStatusUpdate')->name('dispatch-order-update'); // Order Status update Dispatch
 	Route::get('dispatch-pickup-delivery/{id?}', 'Front\DispatcherController@dispatchPickupDeliveryUpdate')->name('dispatch-pickup-delivery'); // pickup delivery update from dispatch
@@ -186,7 +188,10 @@ Route::group(['middleware' => ['domain']], function () {
 
     //azulpay
     Route::match(['get','post'],'payment/nmi','Front\NmiPaymentController@beforePayment')->name('nmi.pay');
-
+    
+    //mpesasafari
+    Route::match(['get','post'],'payment/mpesa','Front\MpesaSafariController@createPayment')->name('mpesasafari.pay');
+    
     // obo-pay
     Route::post('before-payment/obo','Front\OboPaymentController@beforePayment')->name('obo.pay');
     Route::get('after-payment/obo','Front\OboPaymentController@afterPayment')->name('after.obo.payment');
@@ -281,7 +286,7 @@ Route::group(['middleware' => ['domain']], function () {
 	//ccavenue-pay
 	Route::get('ccavenue/pay', 'Front\CcavenueController@payForm')->name('ccavenue.pay');
 	Route::any('ccavenue/success', 'Front\CcavenueController@successForm')->name('ccavenue.success');
-	Route::any('payment/ccavenue/api', '    Front\CcavenueController@payFormWebView')->name('ccavenue.webview');
+	Route::any('payment/ccavenue/api', 'Front\CcavenueController@payFormWebView')->name('ccavenue.webview');
 
 	// EasypaisaController routes
 	Route::get('easypaisa/pay', 'Front\EasypaisaController@create_token')->name('easypaisa.create.token');
@@ -422,7 +427,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::get('/autocomplete-search', 'Front\SearchController@postAutocompleteSearch')->name('autocomplete');
 	Route::get('/search-all/{keyword}', 'Front\SearchController@showSearchResults')->name('showSearchResults');
 	Route::get('/', 'Front\UserhomeController@index')->name('userHome');
-
+	
 	Route::get('/setSessionIndex', 'Front\UserhomeController@setSessionIndex')->name('setSessionIndex');
 
 	Route::get('/updateLocation', 'Front\UserhomeController@setHyperlocalAddress')->name('updateLocation');
@@ -550,6 +555,7 @@ Route::group(['middleware' => ['domain']], function () {
     Route::post('vendor-time-slot', 'Front\CartController@VendorTimeSlot')->name('recurring.booking.vendor.slot');
 	Route::post('get_price_from_dispatcher', 'Front\ProductController@getFreeLincerFromDispatcher')->name('product.get_price_from_dispatcher');
 	Route::post('get_gerenal_slot', 'Front\ProductController@getGerenalSlot')->name('getGerenalSlot');
+	Route::post('shipEngine-webhook', 'Front\ShipEngineController@webhook');
 });
 Route::group(['middleware' => ['domain', 'webAuth']], function () {
 
