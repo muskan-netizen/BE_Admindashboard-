@@ -22,7 +22,9 @@ class Kernel extends ConsoleKernel
         Commands\MargApiProductUpdateCron::class,
         Commands\MargApiOrderUpdate::class,
         Commands\RecurringBooking::class,
-        Commands\MakeTrait::class
+        Commands\MakeTrait::class,
+        Commands\CloneDatabase::class
+
         //
     ];
 
