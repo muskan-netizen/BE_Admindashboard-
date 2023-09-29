@@ -106,7 +106,6 @@ class MargController extends Controller
 
         // Get the encrypted data from the request
         $encryptedData = $this->getData($MargMST2017, $reqData);
-
         // Decrypt the data using the DLL wrapper
         $decryptedData = $this->DecryptLogic->Decrypt($encryptedData,$decryptionKey);
         $collectionData = collect( json_decode($decryptedData));
@@ -128,6 +127,7 @@ class MargController extends Controller
         // collect($collectionData["Details"]->pro_N)->chunk(100, function ($products) use ($vendor_id) {
             $addMargProductsArray = [];
             $productCategoryArray = [];
+            \Log::info(count($collectionData["Details"]->pro_N));
             foreach($collectionData["Details"]->pro_N as $key => $product){
                 $request = $product;
                 try{
@@ -212,7 +212,7 @@ class MargController extends Controller
                             ProductTranslation::insert($datatrans);
                             ProductCategory::insert($productCategoryArray);
                             MargProduct::insert($addMargProductsArray);
-        
+
                             if(@$request->Is_Deleted)
                             {
                                 $product->delete();
@@ -221,7 +221,6 @@ class MargController extends Controller
         
                         }
                     }else{
-        
                         $request->code = $request->code.'_'.$vendor_id; 
                         $this->updateProduct($request,$is_exist);
                     }
