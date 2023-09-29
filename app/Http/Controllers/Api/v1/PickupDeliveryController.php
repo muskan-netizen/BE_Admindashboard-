@@ -1088,7 +1088,7 @@ class PickupDeliveryController extends BaseController{
                             'recipient_phone' => $request->phone_number ?? $customerno,
                             'recipient_email' => $request->email ?? $customer->email,
                             'task_description' => $request->task_description??null,
-                            'allocation_type' =>$allocation_type,
+                            'allocation_type' => @$request->unique_id ? 'notify' : 'a',
                             'task_type' => $task_type,
                             'schedule_time' => $schedule_datetime_del ?? null,
                             'cash_to_be_collected' => $payable_amount??0.00,
