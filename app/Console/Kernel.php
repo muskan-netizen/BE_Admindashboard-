@@ -21,7 +21,8 @@ class Kernel extends ConsoleKernel
         Commands\HubSpotSyncData::class,
         Commands\MargApiProductUpdateCron::class,
         Commands\MargApiOrderUpdate::class,
-        Commands\RecurringBooking::class
+        Commands\RecurringBooking::class,
+        Commands\MakeTrait::class
         //
     ];
 
