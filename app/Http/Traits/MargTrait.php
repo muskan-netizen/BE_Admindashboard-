@@ -248,7 +248,7 @@ trait MargTrait{
     public function generateBarcodeNumber()
     {
         $random_string = substr(md5(microtime()), 0, 14);
-        while (ProductVariant::where('barcode', $random_string)->exists()) {
+        while (\DB::table('product_variants')->select('id','barcode')->where('barcode', $random_string)->exists()) {
             $random_string = substr(md5(microtime()), 0, 14);
         }
         return $random_string;
