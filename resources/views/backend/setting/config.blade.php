@@ -2189,25 +2189,13 @@
                     <option @if($marg_cron_schedular_time === "monthly") selected @endif value="monthly">{{ __("monthly")}}</option>
                 </select>
 
-                <div class="row mt-2" id="stock_notification_div"
-                    style="display:@if (@$getAdditionalPreference['stock_notification_before'] == 1) @else none @endif;">
-                    <div class="col-8">
-                        <label for="" class="mr-3">{{ __('Reminder For Minimum Product Quantity') }}</label>
-                    </div>
-                    <div class="col-4">
-                        <input type="number" name="stock_notification_qunatity" id="stock_notification_qunatity"
-                            placeholder="" class="form-control"
-                            value="{{ old('stock_notification_qunatity', @$getAdditionalPreference['stock_notification_qunatity'] ?? '') }}">
-                    </div>
-                    <hr />
-                </div>
             </div>
-                </form>
-            </div>
+        </form>
         </div>
+    </div>
 
-
-     <div class="col-xl-4 col-lg-4 mb-3">
+    
+    <div class="col-xl-4 col-lg-4 mb-3">
         <div class="page-title-box">
             <h4 class="page-title text-uppercase">{{ __('Vendor Notification Product Stock') }}</h4>
         </div>
@@ -2226,8 +2214,6 @@
             <p class="sub-header">
                 {{ __('Send Vendor Notification when Product Stock Out.') }}
             </p>
-
-            <div class="col-12">
 
                 <div class="form-group mb-0 d-flex switchery-demo">
                     <label for="" class="mr-3">{{ __('Notification Enable') }}</label>
@@ -2251,10 +2237,72 @@
                     </div>
                     <hr />
                 </div>
-        </div>
-                </form>
             </div>
+        </form>
         </div>
+    </div>
+</div>
+
+    <div class="col-xl-4 col-lg-4 mb-3">
+        <div class="page-title-box">
+            <h4 class="page-title text-uppercase">{{ __("Tax-Jar")}}</h4>
+        </div>
+
+        <form method="POST" action="{{ route('additional.update') }}">
+            @csrf
+            <div class="card-box h-100">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group mb-0 switchery-demo">
+                            <label for="fb_login" class="d-flex align-items-center justify-content-between">
+                                <h5 class="social_head"><i style="font-size: 24px;" class="mdi mdi-marg"></i>
+                                    <span>{{ __('Tax-Jar Api') }}</span>
+                                </h5>
+
+                                <button class="btn btn-info btn-block save_btn" name="taxjar_submit" type="submit">{{ __('Save') }} </button>
+                            </label>
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <label for="is_taxjar_enable" class="mr-3">{{ __('Enable') }}</label>
+                                    <input type="checkbox" data-plugin="switchery" id="is_taxjar_enable" class="form-control checkbox_change" data-className="is_taxjar_enable_hidden" data-color="#43bee1"
+                                        @if (@$getAdditionalPreference['is_taxjar_enable'] == '1') checked='checked' value="1" @endif>
+                                        <input type="hidden" @if (isset($getAdditionalPreference['is_taxjar_enable']) == 1) value="1" @else value="0" @endif
+                                        name="is_taxjar_enable" id="is_taxjar_enable_hidden" />
+                                </div>
+
+                                <div>
+                                    <label for="taxjar_testmode" class="mr-3">{{ __('Sandbox') }}</label>
+                                    <input type="checkbox" data-plugin="switchery" id="taxjar_testmode" class="form-control checkbox_change" data-className="taxjar_testmode_hidden" data-color="#43bee1"
+                                        @if (@$getAdditionalPreference['taxjar_testmode'] == '1') checked='checked' value="1" @endif>
+                                        <input type="hidden" @if (isset($getAdditionalPreference['taxjar_testmode']) == 1) value="1" @else value="0" @endif
+                                        name="taxjar_testmode" id="taxjar_testmode_hidden" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row taxjar_row"
+                    style="{{ isset($getAdditionalPreference['is_taxjar_enable']) && $getAdditionalPreference['is_taxjar_enable'] == 1 ? '' : 'display:none;' }}">
+                    <div class="col-12">
+                        <div class="form-group mb-2 mt-2">
+                            <label for="taxjar_api_token">{{ __('Api Token') }}</label>
+                            <input type="text" name="taxjar_api_token" id="taxjar_api_token"
+                                placeholder="" class="form-control"
+                                value="{{ old('taxjar_api_token', $getAdditionalPreference['taxjar_api_token'] ?? '') }}">
+                            @if ($errors->has('taxjar_api_token'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('taxjar_api_token') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+        </form>
+        
+    </div>
+
          @if( Request::get('google_tag'))
         <div class="col-xl-4 col-lg-4 mb-3">
             <!-- Social Logins title start -->
@@ -2262,6 +2310,7 @@
                 <h4 class="page-title text-uppercase">{{ __('Google Analytics') }}</h4>
             </div><!-- Social Logins title end -->
                             <div class="card-box">
+
 
             <form method="POST" action="{{ route('additional.update') }}">
                 <input type="hidden" name="crm" id="crm" value="1">
@@ -3283,6 +3332,18 @@
                 $('#order_edit_before_hours').val(0);
             } else {
                 $('#edit_order_time_limit_div').show();
+            }
+        }
+
+        var is_taxjar_enable = $('#is_taxjar_enable');
+        if (is_taxjar_enable.length > 0) {
+            is_taxjar_enable[0].onchange = function() {
+
+                if ($('#is_taxjar_enable:checked').length != 1) {
+                    $('.taxjar_row').hide();
+                } else {
+                    $('.taxjar_row').show();
+                }
             }
         }
 
