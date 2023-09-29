@@ -1191,6 +1191,7 @@
                                 </div>
                                 <hr class="my-2">
                             @endif
+
                             @if ($serviceType == 'rental' || $serviceType == 'p2p')
                                 <div class="row">
                                     <div class="col-6">{{ __('Security Amount') }}</div>
@@ -1625,6 +1626,17 @@
                             @endif
                             {{-- till date --}}
                             <hr class="my-2">
+
+                            @if (isset($cart_details->ship_engine_error))
+                                <div class="row">
+                                    <div class="col-6">{{ __('ShipEngine Error') }}</div>
+                                    <div class="col-6 text-danger"><b>
+                                        {{ $cart_details->ship_engine_error }}
+                                        </b>
+                                    </div>
+                                </div>
+                                <hr class="my-2">
+                            @endif
 
                         </div>
 

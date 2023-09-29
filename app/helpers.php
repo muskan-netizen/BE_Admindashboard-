@@ -2080,4 +2080,26 @@ if (!function_exists('recurringCalculationFunction')) {
             ];
 
     }
+
+    if (!function_exists('shipEngineEnable')) {
+        function shipEngineEnable(){
+            $shipping_option = ShippingOption::select('id', 'code','status')->where(['code' => 'shipengine', 'status' => 1])->first();
+            if ($shipping_option) {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    if (!function_exists('taxJarEnable')) {
+        function taxJarEnable(){
+            $key = ['is_taxjar_enable','taxjar_testmode','taxjar_api_token'];
+            $creds = ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
+            $creds = array_column($creds->toArray(), 'key_value', 'key_name');
+            if(isset($creds) && !empty($creds) && $creds['is_taxjar_enable'] == 1){
+                return true;
+            }
+            return false;
+        }
+    }
 }
