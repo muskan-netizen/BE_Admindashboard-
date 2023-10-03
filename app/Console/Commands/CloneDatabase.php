@@ -44,9 +44,7 @@ class CloneDatabase extends Command
 
             $old_db = $this->argument('old_db'); 
             $database_name = 'royo_'.$this->argument('old_db'); 
-            $new_db = 'new_ace'; 
 
-            
 
             $result = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", [$database_name]);
             if (!empty($result)) {
@@ -68,24 +66,20 @@ class CloneDatabase extends Command
             $db = DB::select($query, [$database_name]);
             if ($db) {
                 $schemaName = $database_name;
-                $database_host = '127.0.0.1';
-                $database_port = '3306';
-                $database_username = 'root';
-                $database_password = '';
 
                 $default = [
-                'driver' => 'mysql',
-                'host' => $database_host,
-                'port' => $database_port,
-                'database' => $schemaName,
-                'username' => $database_username,
-                'password' => $database_password,
-                'charset' => 'utf8mb4',
-                'collation' => 'utf8mb4_unicode_ci',
-                'prefix' => '',
-                'prefix_indexes' => true,
-                'strict' => false,
-                'engine' => null
+                    'driver' => env('DB_CONNECTION', 'mysql'),
+                    'host' => env('DB_HOST','127.0.0.1'),
+                    'port' => env('DB_PORT','3306'),
+                    'database' => $database_name,
+                    'username' => env('DB_USERNAME','root'),
+                    'password' => env('DB_PASSWORD',''),
+                    'charset' => 'utf8mb4',
+                    'collation' => 'utf8mb4_unicode_ci',
+                    'prefix' => '',
+                    'prefix_indexes' => true,
+                    'strict' => false,
+                    'engine' => null
                 ];
            
                 Config::set("database.connections.$schemaName", $default);
@@ -93,14 +87,6 @@ class CloneDatabase extends Command
             
                 DB::connection($schemaName)->beginTransaction();
                 DB::connection($schemaName)->statement("SET foreign_key_checks=0");
-
-                // Variant::on($schemaName)->drop();
-                // Schema::dropIfExists('variants');
-                // DB::connection($schemaName)->statement("DROP TABLE variants");
-
-                // Product::on($schemaName)->truncate();
-                // AddonSet::on($schemaName)->truncate();
-                // Category::on($schemaName)->truncate();
 
                 $sqlFile = public_path('sql_files/'.$old_db.'.sql');
                 $sql = file_get_contents($sqlFile);
