@@ -123,117 +123,168 @@ class MargController extends Controller
             //     dispatch(new \App\Jobs\SyncFromMarg($data))->onQueue('sync_data_from_marg');
             // }
         // ---------------------- Without Dispatch ------------------
-        
-        // collect($collectionData["Details"]->pro_N)->chunk(100, function ($products) use ($vendor_id) {
-            $addMargProductsArray = [];
-            $productCategoryArray = [];
-            \Log::info(count($collectionData["Details"]->pro_N));
-            foreach($collectionData["Details"]->pro_N as $key => $product){
-                $request = $product;
-                try{
-                    \DB::beginTransaction();	
-              
-                    $is_exist = Product::select('id','sku','vendor_id')->where(['sku' => $request->code.'_'.$vendor_id, 'vendor_id' => $vendor_id])->withTrashed()->first();
-                    // $mega_vendor_id = $is_exist->vendor->mega_vendor_id;
-                    $vendor_id = $vendor_id ?? 8;
-        
-                    if(isset($request->ProductCode) && isset($request->name) && is_null($is_exist)){
+                    
+            // \Log::info(count($collectionData["Details"]->pro_N));
+            
+            // $chunks = array_chunk($collectionData["Details"]->pro_N, 1000);
+
+            $client_lang = \DB::table('client_languages')->select('language_id','is_primary')->where('is_primary', 1)->first();
+            if (!$client_lang) {
+                $client_lang = \DB::table('client_languages')->select('language_id','is_active')->where('is_active', 1)->first();
+            }    
+            
+
+            collect($collectionData["Details"]->pro_N)->chunk(2000)->each(function($produts) use ($vendor_id,$client_lang){
+                $addMargProductsArray = [];
+                $productCategoryArray = [];
+                $productTrans = [];
+                $productVariantArray = [];
+    
+                $productTransUpdate = [];
+                $productVariantArrayUpdate = [];
+                $addMargProductsArrayUpdate = [];
+                $productUpdateArray = [];
+
+                foreach($produts as $key => $product){
+                    $request = $product;
+                    try{
+                        \DB::beginTransaction();	
+                
+                        $is_exist = \DB::table('products')->select('id','sku','vendor_id')->where(['sku' => $request->code.'_'.$vendor_id, 'vendor_id' => $vendor_id])->where(function($q){
+                            $q->where('deleted_at', null)->orWhere('deleted_at','!=', null);
+                        })->first();
+
+                        $vendor_id = $vendor_id ?? 8;
+
                         $url_slug = $this->validateSlug($request->name);
-                        $request->catcode = 5;
-        
-                        $product = new Product();
-                        $product->sku = $request->code.'_'.$vendor_id;      // $request->sku;
-                        $product->url_slug = $url_slug.'_'.$vendor_id;             // $request->url_slug;
-                        $product->title = $request->name;           // $request->product_name;        
-                        $product->category_id = $request->catcode;  // $request->category_id;
-                        $product->type_id = 1;
-                        $product->is_live = 1;
-                        $product->vendor_id = $vendor_id;                    //$request->vendor_id;
-                        $client_lang = ClientLanguage::select('language_id','is_primary')->where('is_primary', 1)->first();
-                        if (!$client_lang) {
-                            $client_lang = ClientLanguage::select('language_id','is_active')->where('is_active', 1)->first();
-                        }
-                        $product->save();
-                        
-                        if ($product->id > 0) {
+            
+                        if(isset($request->ProductCode) && isset($request->name) && is_null($is_exist)){
+                            $request->catcode = 5;
+
+                            $product = \DB::table('products')->insert([
+                                'sku' => $request->code . '_' . $vendor_id,
+                                'url_slug' => $url_slug . '_' . $vendor_id,
+                                'title' => $request->name,
+                                'category_id' => $request->catcode,
+                                'type_id' => 1,
+                                'is_live' => 1,
+                                'vendor_id' => $vendor_id,
+                                'created_at' => now(),
+                                'updated_at' => now()
+                            ]);
+                            $product_id = \DB::getPdo()->lastInsertId();
+                                                    
+                            if ($product_id > 0) {
                                 $addMargProductsArray[] = [
-                                    "product_id"   =>       $product->id,
-                                    "vendor_id"    =>       $vendor_id,
-                                    "rid"          =>       $request->rid,
-                                    "catcode"      =>       $request->catcode,
-                                    "code"         =>       $request->code,
-                                    "name"         =>       $request->name,
-                                    "stock"        =>       $request->stock,
-                                    "remark"       =>       $request->remark,
-                                    "company"      =>       $request->company,
-                                    "shopcode"     =>       $request->shopcode,
-                                    "MRP"          =>       $request->MRP,
-                                    "Rate"         =>       $request->Rate,
-                                    "Deal"         =>       $request->Deal,
-                                    "Free"         =>       $request->Free,
-                                    "PRate"        =>       $request->PRate,
-                                    "Is_Deleted"   =>       $request->Is_Deleted,
-                                    "curbatch"     =>       $request->curbatch,
-                                    "exp"          =>       $request->exp,
-                                    "gcode"        =>       $request->gcode,
-                                    "MargCode"     =>       $request->MargCode,
-                                    "Conversion"   =>       $request->Conversion,
-                                    "Salt"         =>       $request->Salt,
-                                    "ENCODE"       =>       $request->ENCODE,
-                                    "remarks"      =>       $request->remarks,
-                                    "Gcode6"       =>       $request->Gcode6,
-                                    "ProductCode"  =>       $request->ProductCode,
+                                    "product_id"   =>   $product_id,
+                                    "vendor_id"    =>   $vendor_id,
+                                    "rid"          =>   $request->rid,
+                                    "catcode"      =>   $request->catcode,
+                                    "code"         =>   $request->code,
+                                    "name"         =>   $request->name,
+                                    "stock"        =>   $request->stock,
+                                    "remark"       =>   $request->remark,
+                                    "company"      =>   $request->company,
+                                    "shopcode"     =>   $request->shopcode,
+                                    "MRP"          =>   $request->MRP,
+                                    "Rate"         =>   $request->Rate,
+                                    "Deal"         =>   $request->Deal,
+                                    "Free"         =>   $request->Free,
+                                    "PRate"        =>   $request->PRate,
+                                    "Is_Deleted"   =>   $request->Is_Deleted,
+                                    "curbatch"     =>   $request->curbatch,
+                                    "exp"          =>   $request->exp,
+                                    "gcode"        =>   $request->gcode,
+                                    "MargCode"     =>   $request->MargCode,
+                                    "Conversion"   =>   $request->Conversion,
+                                    "Salt"         =>   $request->Salt,
+                                    "ENCODE"       =>   $request->ENCODE,
+                                    "remarks"      =>   $request->remarks,
+                                    "Gcode6"       =>   $request->Gcode6,
+                                    "ProductCode"  =>   $request->ProductCode
                                 ];
-        
-                            $datatrans[] = [
-                                'title' => $request->name??null, // $request->product_name??null,
+            
+                                $productTrans[] = [
+                                    'title' => $request->name??null,
+                                    'body_html' => '',
+                                    'meta_title' => '',
+                                    'meta_keyword' => '',
+                                    'meta_description' => '',
+                                    'product_id' => $product_id,
+                                    'language_id' => $client_lang->language_id
+                                ];
+                
+                                $productCategoryArray[] = [
+                                    "product_id" => $product_id,
+                                    "category_id" => $request->catcode,
+                                ];
+                                
+                                $productVariantArray[] = [
+                                    'sku' => $request->code . '_' . $vendor_id,
+                                    'product_id' => $product_id,
+                                    'price' => $request->MRP,
+                                    'quantity' => $request->stock,
+                                    'barcode' => $this->generateBarcodeNumber()
+                                ];
+            
+                            }
+                        }else{
+
+                            $productUpdateArray[] =[
+                                'id' => $is_exist->id,
+                                'sku' => $request->code.'_'.$vendor_id,
+                                'url_slug' => $url_slug,
+                                'title' => $request->name,
+                            ];
+
+                            $ddMargProductsArrayUpdate[] = [
+                                'product_id' => $is_exist->id,
+                                'rid' => $request->rid,
+                                'code' => $request->code,
+                                'name' => $request->name,
+                                'stock' => $request->stock,
+                                'MRP' => $request->MRP,
+                            ];
+
+                            $productVariantArrayUpdate[] = [
+                                'product_id' => $is_exist->id,
+                                'price' => $request->MRP,
+                                'quantity' => $request->stock,
+                            ];
+
+                            $productTransUpdate[] = [
+                                'title' => $request->name??null,
                                 'body_html' => '',
                                 'meta_title' => '',
                                 'meta_keyword' => '',
                                 'meta_description' => '',
-                                'product_id' => $product->id,
+                                'product_id' => $is_exist->id,
                                 'language_id' => $client_lang->language_id
                             ];
-            
-                            $productCategoryArray[] = [
-                                "product_id" => $product->id,
-                                "category_id" => $request->catcode,
-                            ];                            
-                
-                            $proVariant = new ProductVariant();
-                            $proVariant->sku = $request->code.'_'.$vendor_id; // $request->sku;
-                            $proVariant->product_id = $product->id;            
-                            $proVariant->price = $request->MRP;            
-                            $proVariant->quantity = $request->stock;            
-                            $proVariant->barcode = $this->generateBarcodeNumber();
-                            $proVariant->save();
                             
-        
-                            ProductTranslation::insert($datatrans);
-                            ProductCategory::insert($productCategoryArray);
-                            MargProduct::insert($addMargProductsArray);
-
-                            if(@$request->Is_Deleted)
-                            {
-                                $product->delete();
-                                isset($proVariant) ? $proVariant->delete() : '';
-                            }
-        
                         }
-                    }else{
-                        $request->code = $request->code.'_'.$vendor_id; 
-                        $this->updateProduct($request,$is_exist);
-                    }
-        
-                    \DB::commit();
-    
-                } catch (\Exception $e) {
-                    \Log::info($e->getMessage());
-                    \DB::rollback();
 
-                    return $e->getMessage();
+                        \DB::commit();
+        
+                    } catch (\Exception $e) {
+                        \Log::error($e->getMessage() . ' '. $e->getLine());
+                        \DB::rollback();
+
+                        return $e->getMessage();
+                    }
                 }
-            }
+
+                \DB::table('product_translations')->insert($productTrans);
+                \DB::table('product_variants')->insert($productVariantArray);
+                \DB::table('product_categories')->insert($productCategoryArray);
+                \DB::table('marg_products')->insert($addMargProductsArray);
+
+                \DB::table('product_translations')->upsert($productTransUpdate,['product_id']);
+                \DB::table('product_variants')->upsert($productVariantArrayUpdate,['product_id']);
+                \DB::table('marg_products')->upsert($addMargProductsArrayUpdate,['product_id','code']);
+                \DB::table('products')->upsert($productUpdateArray,['product_id']);
+            });
+
         // });
         }
 
