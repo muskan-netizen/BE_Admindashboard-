@@ -111,7 +111,7 @@ class MargApiProductUpdateCron extends Command
                         $MargID  = $hub_key['marg_access_token'];
                         $CompanyCode  = $hub_key['marg_company_code'];
                         $url  = $hub_key['marg_company_url'];
-                        $margDateTime = $hub_key['marg_date_time']??date('Y-m-d H:i:s');
+                        $margDateTime = $hub_key['marg_date_time']??'';
 
                         $MargMST2017 = $url."/api/eOnlineData/MargMST2017";
                         $reqData = ["CompanyCode" => $CompanyCode,"MargID" => $MargID,"Datetime" => $margDateTime, "index" => 0];
@@ -131,7 +131,7 @@ class MargApiProductUpdateCron extends Command
                     // }
 
                     $hub_key->update([
-                        'marg_date_time' => $hub_key['marg_date_time']??date('Y-m-d H:i:s')
+                        'marg_date_time' => $hub_key['marg_date_time']??''
                     ]);
                     // Get the encrypted data from the request
                     $encryptedData = $this->getData($MargMST2017, $reqData);

@@ -59,7 +59,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
 
                         @if (isset($vendorMargConfig->is_marg_enable) == 1 && $vendorMargConfig->marg_last_date_time)
                             <label for="" id="sycn_time" class="ml-3">{{ __('Last Sync Date & Time :') }}
-                            {{ convertDateTimeInClientTimeZone($vendorMargConfig->marg_last_date_time, 'd-m-Y h:i:s') }}</label >
+                            {{ convertDateTimeInClientTimeZone($vendorMargConfig->marg_last_date_time, 'Y-m-d h:i:s') }}</label >
                         @endif
 
                     </div>
@@ -79,7 +79,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 285px;}
                             readonly        
                         @endif
                             placeholder="" class="form-control" required
-                            value="{{ $getAdditionalPreference['marg_company_url'] == 0 ? old('marg_company_url', $vendorMargConfig->marg_company_url ?? '') : $getAdditionalPreference['marg_company_url'] }}">
+                            value="{{ $getAdditionalPreference['marg_company_url'] == '0' ? old('marg_company_url', $vendorMargConfig->marg_company_url ?? '') : $getAdditionalPreference['marg_company_url'] }}">
                         @if ($errors->has('marg_company_url'))
                             <span class="text-danger" role="alert">
                                 <strong>{{ $errors->first('marg_company_url') }}</strong>
