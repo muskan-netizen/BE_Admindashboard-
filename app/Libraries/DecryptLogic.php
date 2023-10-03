@@ -3,7 +3,7 @@ namespace App\Libraries;
 
 class DecryptLogic
 {
-    public static function Decrypt($data, $key = '5Z6HWPTG3O4K')
+    public static function Decrypt($data, $key)
     {
         $encrypted= $data;
         // $key = $decryptionKey;
