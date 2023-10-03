@@ -21,6 +21,7 @@ class DispatcherController extends FrontController
     /******************    ---- order status update from dispatch (Need to dispatcher_status_option_id ) -----   ******************/
     public function dispatchOrderStatusUpdate(DispatchOrderStatusUpdateRequest $request, $domain = '', $web_hook_code)
     {
+     
         try {
             DB::beginTransaction();
             $checkiftokenExist = OrderVendor::where('web_hook_code',$web_hook_code)->first();
@@ -130,13 +131,13 @@ class DispatcherController extends FrontController
 
              $data = ['order'=>$update,'vendor_detail'=>$code->vendorDetail??[]];
              $orderData = Order::find($checkiftokenExist->order_id);
-            DB::commit();
+              DB::commit();
 
                 $blockchain_route = ClientPreferenceAdditional::where('key_name','blockchain_route_formation')->first();
     
                 if(isset($blockchain_route) && ($blockchain_route->key_value == 1))
-                {
-                    @$this->moveOrderToWarehouse($orderData);
+                { 
+                    @$this->moveOrderToWarehouse($orderData,$request ?? null);
 
                 }
                     $message = "Order status updated.";

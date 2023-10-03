@@ -734,7 +734,7 @@ class OrderController extends BaseController
 
     public function getOrderDetail($domain = '', $order_id, $vendor_id)
     {
-        //  dd($vendor_id);
+       
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
         $vendor_order_status_option_ids = [];
@@ -3288,6 +3288,48 @@ class OrderController extends BaseController
         
 
     }
+ 
+    public function getBlockchainOrderDetail(Request $request)
+    {
+        $api_domain = ClientPreferenceAdditional::where('key_name', 'blockchain_api_domain')->first();
+        $from_id = ClientPreferenceAdditional::where('key_name', 'blockchain_address_id')->first();
+        $client = ClientData::first();
+        $data = [
+            "orderID" => $request->order_id,
+            "address_f" => $from_id->key_value ?? '',
+        ];
+    
+        \Log::info('post data');
+        \Log::info($data);
+        
+        $headers = [
+            'Content-Type' => 'application/json',
+        ];
+    
+        if (isset($api_domain)) {
+            $apiUrl = $api_domain->key_value . '/getOrderNew';
 
-
+            $response = Http::get($apiUrl, [
+                'headers' => $headers,
+                'query' => $data,
+            ]);           
+            
+            $responseData = $response->json();
+            
+            \Log::info('new order data');
+            \Log::info($response);
+    
+            return response()->json([
+                'message' => 'Order Retrieved successfully',
+                'data' => $data ?? '',
+                'api_response' => $responseData ?? '',
+            ], 200);
+        } else {
+            // Handle the case where $api_domain is not set
+            return response()->json([
+                'message' => 'Blockchain API domain is not configured.',
+            ], 500); // You can choose an appropriate HTTP status code here
+        }
+    }
+    
 }

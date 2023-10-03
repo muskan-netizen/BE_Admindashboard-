@@ -374,8 +374,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('order/updateReport', 'Client\OrderController@uploadReport')->name('order.upload.report');
         Route::get('orderReport/delete/{id}', 'Client\OrderController@deleteReport')->name('order.report.delete');
         Route::post('order/delay_time', 'Client\OrderController@addExtraPrepTimeToOrder')->name('order.delay_time');
-
-
+        Route::get('orders/getBlockchainOrderDetail', 'Client\OrderController@getBlockchainOrderDetail')->name('orders.getBlockchainOrderDetail');
+        
         // Admin Service Area Routes
         Route::post('admin/serviceArea', 'Client\AdminServiceAreaController@store')->name('admin.serviceArea');
         Route::get('admin/serviceArea', 'Client\AdminServiceAreaController@index')->name('admin.serviceArea.index');

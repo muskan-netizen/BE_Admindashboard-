@@ -1042,11 +1042,11 @@ $(document).ready(function () {
 
 
         //$("input[name='category_kyc_ids']").length > 0 ||
-        if( ($("input[name='without_category_kyc']").val() !=1 ) ){
-            success_error_alert('error', 'User Place Order is required! kindly fill the details.', ".cart_response");
-            return false;
+        // if( ($("input[name='without_category_kyc']").val() !=1 ) ){
+        //     success_error_alert('error', 'User Place Order is required! kindly fill the details.', ".cart_response");
+        //     return false;
 
-        }
+        // }
 
         var returnData = await checkSlotValidation();
         if(returnData==0){

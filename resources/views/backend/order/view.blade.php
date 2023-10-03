@@ -1026,6 +1026,11 @@ $timezone = Auth::user()->timezone;
                 </p>
                 @endif
             </div>
+            <div class="card-body">
+                <h4 class="header-title mb-3">{{ __('Blockchain Order Information') }}</h4>
+                <button type="button" id="blockchain_order_data" data-id="{{ $order->id }}" >Get Blockchain Order Data</span>
+                </button>
+            </div>
 
 
             <div class="card-body">
@@ -1601,6 +1606,33 @@ $timezone = Auth::user()->timezone;
             }, 10);
         }
 
+        $(document).on('click','#blockchain_order_data', function(e) {
+
+            var order_id = $(this).data('id');
+                     $.ajax({
+                        type: "GET",
+                        data: {
+                            order_id: order_id,
+                        },
+                        url: "{{ route('orders.getBlockchainOrderDetail') }}",
+                        headers: {
+                            Accept: "application/json"
+                        },
+                        success: function(response) {
+                             console.log('here');
+                        },
+                        error: function(response) {
+                            let error = response.responseJSON;
+                            Swal.fire({
+                                text: error.message,
+                                icon: "error",
+                                button: "OK",
+                            });
+                            return false;
+                        }
+                    });
+
+        });
         $(document).on('click', '.buffer_time_btn', function(e) {
             var time = $("#buffer_time").val();
             var order_id = $(this).data('order_id');
