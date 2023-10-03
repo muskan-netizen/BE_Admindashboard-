@@ -3298,9 +3298,6 @@ class OrderController extends BaseController
             "orderID" => $request->order_id,
             "address_f" => $from_id->key_value ?? '',
         ];
-    
-        \Log::info('post data');
-        \Log::info($data);
         
         $headers = [
             'Content-Type' => 'application/json',
@@ -3315,9 +3312,6 @@ class OrderController extends BaseController
             ]);           
             
             $responseData = $response->json();
-            
-            \Log::info('new order data');
-            \Log::info($response);
     
             return response()->json([
                 'message' => 'Order Retrieved successfully',
