@@ -1286,24 +1286,8 @@ $timezone = Auth::user()->timezone;
     </div>
 
 
-    <div class="modal fade" id="blockchain_order_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
-            </div>
-        </div>
-        </div>
+  
+
 
 
     <!-- Order Invoice Code -->
@@ -1313,6 +1297,30 @@ $timezone = Auth::user()->timezone;
     <!--End Order Invoice Code -->
     @endsection
     @section('script')
+
+
+
+    
+
+     <div class="modal fade" id="blockchain_order_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                ...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+            </div>
+        </div>
+        </div>
     <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
     <script>
         $('body').on('click', '.show-return-product-modal', function(event) {
@@ -1670,8 +1678,7 @@ $timezone = Auth::user()->timezone;
                     return response.json();
                 })
                 .then(function(data) {
-                    console.log('here');
-                    // Handle the successful response data here
+                     $('#blockchain_order_modal').modal('show');
                 })
                 .catch(function(error) {
                     Swal.fire({

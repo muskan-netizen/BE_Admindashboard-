@@ -3305,18 +3305,19 @@ class OrderController extends BaseController
     
         if (isset($api_domain)) {
             $apiUrl = $api_domain->key_value . '/getOrderNew';
-
-            $response = Http::get($apiUrl, [
-                'headers' => $headers,
-                'query' => $data,
-            ]);           
+            $response = '';
+            // $response = Http::get($apiUrl, [
+            //     'headers' => $headers,
+            //     'query' => $data,
+            // ]);           
             
-            $responseData = $response->json();
-    
+            // $responseData = $response->json() ?? null;
+            
             return response()->json([
                 'message' => 'Order Retrieved successfully',
                 'data' => $data ?? '',
-                'api_response' => $responseData ?? 'Data',
+                'api_response' =>  'Data',
+                // 'api_response' => $responseData ?? 'Data',
             ], 200);
         } else {
             // Handle the case where $api_domain is not set
