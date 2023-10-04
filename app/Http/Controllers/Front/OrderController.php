@@ -921,8 +921,8 @@ class OrderController extends FrontController
                     ->where('vendor_id', $vendor->vendor_id)
                     ->orderBy('id', 'DESC')
                     ->first();
-
-                $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+                // dd($vendor->OrderStatusOption->getStatusName($order->luxury_option_id));
+                $vendor->order_status = $vendor->OrderStatusOption->getStatusName($order->luxury_option_id);
 
                 foreach ($vendor->products as $product) {
                     $product = $this->gettimeSlotName($product);

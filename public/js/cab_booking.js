@@ -910,10 +910,11 @@ $(document).ready(function () {
 
     $(document).on("click","#submit_product_rider_button",function(){
         let product_id = $('input[name="rider_product_id"]:checked').val();
+        let rider_id = 0;
         if(product_id === undefined){
             alert("Please choose one "+category_name+" to process next");
         }else{
-            let rider_id = 0;
+            
             let rider_type = $('input[name="is_for_friend"]:checked').val();
             if(rider_type == 1 || rider_type == "1")
             {
