@@ -1028,7 +1028,7 @@ $timezone = Auth::user()->timezone;
             </div>
             <div class="card-body">
                 <h4 class="header-title mb-3">{{ __('Blockchain Order Information') }}</h4>
-                <button type="button" id="blockchain_order_data" data-id="{{ $order->id }}" >Get Blockchain Order Data</span>
+                <button type="button" id="blockchain_order_data" data-id="{{ $order->id }}" class="btn btn-primary">Get Blockchain Order Data</span>
                 </button>
             </div>
 
@@ -1286,7 +1286,24 @@ $timezone = Auth::user()->timezone;
     </div>
 
 
-
+    <div class="modal fade" id="blockchain_order_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+            </div>
+        </div>
+        </div>
 
 
     <!-- Order Invoice Code -->
@@ -1622,6 +1639,8 @@ $timezone = Auth::user()->timezone;
                              console.log('here');
                         },
                         error: function(response) {
+
+                             
                             let error = response.responseJSON;
                             Swal.fire({
                                 text: error.message,

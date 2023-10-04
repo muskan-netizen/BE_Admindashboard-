@@ -3316,7 +3316,7 @@ class OrderController extends BaseController
             return response()->json([
                 'message' => 'Order Retrieved successfully',
                 'data' => $data ?? '',
-                'api_response' => $responseData ?? '',
+                'api_response' => $responseData ?? 'Data',
             ], 200);
         } else {
             // Handle the case where $api_domain is not set
