@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Godpanel;
 
+use App\Models\LumenClient;
 use DB;
 use App\Http\Controllers\Controller;
 use App\Models\{BillingPlan, BillingPlanType, BillingTimeframe, BillingPricing, BillingSubscription, Client, BillingPaymentTransation};
@@ -9,6 +10,7 @@ use App\Http\Controllers\Client\BaseController;
 use App\Http\Traits\BillingPlanManager;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class DashBoardController extends Controller
 {
@@ -122,6 +124,54 @@ class DashBoardController extends Controller
     {
         //
     }
+
+    public function lumen()
+    {
+        $clients = LumenClient::get();
+
+        return view('godpanel/lumen',compact('clients'));
+    }
+    public function lumenClientSave(Request $request)
+{
+    try {
+        // Validation rules (same as before)
+
+        // Validate the input data
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        // Check if a record with the same code already exists
+        $existingClient = LumenClient::where('code', $request->input('code'))->first();
+
+        if ($existingClient) {
+            // Client with the same code already exists
+            return redirect()->back()
+                ->with('error', 'A client with the same code already exists.');
+        }
+
+        // Create a new LumenClient model and save it
+        $model = new LumenClient();
+        $model->domain = $request->input('domain');
+        $model->code = $request->input('code');
+        $model->database_name = $request->input('database_name');
+        $model->lumen_access_token = $request->input('lumen_access_token_v1');
+        $model->save();
+
+        // Success message
+        return redirect()->route('lumen') // Change to the appropriate route
+            ->with('success', 'Lumen client saved successfully.');
+
+    } catch (\Exception $e) {
+        // Error message
+        return redirect()->back()
+            ->with('error', 'An error occurred while saving the Lumen client: ' . $e->getMessage());
+    }
+}
 
     
 }

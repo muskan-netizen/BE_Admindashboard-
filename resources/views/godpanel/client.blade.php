@@ -72,6 +72,12 @@
                                       
                                         
                                     </td>
+                                    <td>
+                                        <button class="btn btn-toggle" data-client-id="{{ $client->id }}" data-enabled="true">
+                                            <i class="mdi mdi-square-edit-outline"></i>
+                                        </button>
+                                    </td>
+                                    
                                   
                                 </tr>
                                 @endforeach
