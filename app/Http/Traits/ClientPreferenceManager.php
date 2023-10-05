@@ -6,6 +6,7 @@ use App\Models\{ClientPreference,ClientPreferenceAdditional,Client, ProductDeliv
 use GuzzleHttp\Client as GCLIENT;
 use Log;
 use Storage;
+use Illuminate\Support\Facades\Cache;
 
 trait ClientPreferenceManager{
 
@@ -59,6 +60,7 @@ trait ClientPreferenceManager{
     $validated_keys = $request->only($this->client_preference_fillable_key);
     $client = Client::first();
 
+    $cacheKey = 'client_preferences_additional_'.json_encode($this->client_preference_fillable_key);
     Cache::forget($cacheKey);
     foreach($validated_keys as $key => $value){
       if ($key == 'saller_platform_logo') {
