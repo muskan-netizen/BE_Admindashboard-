@@ -174,9 +174,9 @@ class DashBoardController extends Controller
     }
 }
 
- public function enableLumenService(Request $request)
- {
-    $api_domain = ClientPreferenceAdditional::where('key_name','lumen_domain_url')->first();
+public function enableLumenService(Request $request)
+{
+    $api_domain = ClientPreferenceAdditional::where('key_name', 'lumen_domain_url')->first();
     $client = Client::find($request->client_id);
 
     $data = [
@@ -187,35 +187,47 @@ class DashBoardController extends Controller
         'database_name' => $client->database_name,
         'name' => $client->name,
         'email' => $client->email,
-        'password' => rand(11111111,9999999)
+        'password' => rand(11111111, 9999999)
     ];
 
-     
-
-    
     \Log::info('post data');
     \Log::info($data);
+
     $headers = [
         'Content-Type' => 'application/json',
     ];
-    if(isset($api_domain))
-    {
+
+    if (isset($api_domain)) {
         \Log::info('api domain');
         \Log::info($api_domain->key_value);
-        $response = Http::withHeaders($headers)->post($api_domain->key_value.'/api/v1/createLumenClient', $data);
-    
-        $responseData = $response->json();
+
+        $response = Http::withHeaders($headers)->post($api_domain->key_value . '/api/v1/createLumenClient', $data);
+
+        if ($response->status() === 200) {
+            $responseData = $response->json();
+            
+            // Extract the API key from the response and save it in the database
+            if (isset($responseData['api_key'])) {
+                $client->lumen_access_token = $responseData['api_key'];
+                $client->is_lumen_enabled = $request->is_lumen;
+                $client->save();
+            }
+        } else {
+            $responseData = null;
+        }
+    } else {
+        $responseData = null;
     }
 
     \Log::info('create lumen client');
     \Log::info($responseData);
+
     return response()->json([
         'message' => 'Order created successfully',
         'data' => $data ?? '',
         'api_response' => $responseData ?? '',
     ], 200);
-
- }
+}
 
     
 }
