@@ -59,6 +59,7 @@ trait ClientPreferenceManager{
     $validated_keys = $request->only($this->client_preference_fillable_key);
     $client = Client::first();
 
+    Cache::forget($cacheKey);
     foreach($validated_keys as $key => $value){
       if ($key == 'saller_platform_logo') {
         if ($request->hasFile('saller_platform_logo')) { /* upload logo file */
@@ -67,7 +68,9 @@ trait ClientPreferenceManager{
         }
       }
    
-        ClientPreferenceAdditional::updateOrCreate(
+
+      Cache::forget('client_preferences_additional_["'.$key.'"]');
+      ClientPreferenceAdditional::updateOrCreate(
             ['key_name' => $key, 'client_code' => $client->code],
             ['key_name' => $key, 'key_value' => $value,'client_code' => $client->code,'client_id'=> $client->id]);
     }
