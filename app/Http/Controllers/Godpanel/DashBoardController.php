@@ -195,7 +195,10 @@ public function enableLumenService(Request $request)
 
     $headers = [
         'Content-Type' => 'application/json',
+        'X-API-Key' => $client->lumen_access_token ?? '12345abcd',
+        'code' => $client->code
     ];
+
 
     if (isset($api_domain)) {
         \Log::info('api domain');

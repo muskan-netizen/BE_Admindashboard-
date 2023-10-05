@@ -79,8 +79,8 @@
                                                 <label for="lumen" class="mr-2 mb-0">{{__("Enable")}} </label>
                                                 <div class="d-flex align-items-center justify-content-between mb-2">
                                                     <div class="custom-control custom-switch">
-                                                        <input type="checkbox" class="custom-control-input " id="is_lumen_enabled" name="is_lumen_enabled" data-id = "{{$client->id}}">
-                                                        <label class="custom-control-label" for="is_lumen_enabled"></label>
+                                                        <input type="checkbox" class="custom-control-input is_lumen" id="is_lumen_enabled{{$client->id}}" name="is_lumen_enabled" data-id = "{{$client->id}}">
+                                                        <label class="custom-control-label" for="is_lumen_enabled{{$client->id}}"></label>
                                                     </div>
                                                 </div>
                                             </div>
@@ -128,7 +128,7 @@
         });
     }); 
 
-    $('#is_lumen_enabled').on('change',function(){
+    $('.is_lumen').on('change',function(){
         var is_lumen  = 0;
         var client_id  = $(this).data('id');
         if ($(this).is(":checked")) {
