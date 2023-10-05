@@ -23,18 +23,11 @@ class OrderStatusOption extends Model
         foreach(config('constants.VendorTypesLuxuryOptions') as $ids)
         {
           // return $this->id;
-          //$luxury option id is  == 5 for pick and drop (taxi) we change status delivered to Completed
+          //$luxury option id is  == 5 for pick and drop (taxi flow) we change status delivered to Completed
           if(($ids == $luxury) && $luxury == '5' && $this->id == 5){
-              return 'completed';
+              return 'Completed';
           }
         }
-        // return $val;
-          //  if(auth()->user() !=null){
-          //    if($this->id == 2)
-          //    {
-          //      return  'Done'
-          //    }
-          //  }
            return $this->title;
        }
 
