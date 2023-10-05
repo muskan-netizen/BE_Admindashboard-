@@ -64,6 +64,7 @@ Route::group(['prefix' => '/godpanel'], function () {
 		Route::get('chatsocket/deleteSocketUrl/{id}', 'Godpanel\chatSocketController@deleteSocketUrl')->name('chatsocket.delete');
         Route::get('/lumen','Godpanel\DashBoardController@lumen')->name('lumen');
         Route::post('/lumen-client-save','Godpanel\DashBoardController@lumenClientSave')->name('lumen-client-save');
+        Route::post('/enable-lumen-service','Godpanel\DashBoardController@enableLumenService')->name('enable-lumen-service');
 		/** */
 		
 	});

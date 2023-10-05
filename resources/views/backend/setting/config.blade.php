@@ -2240,6 +2240,72 @@
             </div>
         </form>
         </div>
+
+        <div class="col-md-4 mb-3">
+            <form method="POST" class="h-100" action="{{ route('additional.update')}}">
+            @csrf
+                <input type="hidden" name="is_lumen" value="1">
+                <div class="card-box h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h4 class="header-title text-uppercase mb-0">{{__("Lumen")}}</h4>
+                        <button class="btn btn-outline-info d-block" type="submit"> {{__('Save')}} </button>
+                    </div>
+                    <div class="row align-items-start">
+                        <div class="col-md-12">
+                            <div class="form-group d-flex justify-content-between mb-3">
+                                <label for="lumen" class="mr-2 mb-0">{{__("Enable")}} </label>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input " id="is_lumen_enabled" name="is_lumen_enabled" {{ ($getAdditionalPreference['is_lumen_enabled'] && ($getAdditionalPreference['is_lumen_enabled'] == 'on'))  ? 'checked':'' }}>
+                                        <label class="custom-control-label" for="is_lumen_enabled"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="row lumen-field" style="display:{{ ($getAdditionalPreference['is_lumen_enabled'] && ($getAdditionalPreference['is_lumen_enabled'] == 'on'))  ? 'block':'none' }}">
+                <div class="col-12 ">
+                    <div class="form-group mb-3">
+                        <div class="domain-outer border-0 d-flex align-items-center justify-content-between">
+                            <label for="lumen_domain_url">{{ __('LUMEN DOMAIN URL') }}</label>
+
+                        </div>
+                        <input type="text" name="lumen_domain_url" id="lumen_domain_url"
+                            placeholder="" class="form-control"
+                            value="{{ old('lumen_domain_url', $getAdditionalPreference['lumen_domain_url'] ?? '') }}">
+                        @if ($errors->has('lumen_domain_url'))
+                            <span class="text-danger" role="alert">
+                                <strong>{{ $errors->first('lumen_domain_url') }}</strong>
+                            </span>
+                        @endif
+                    </div>
+                </div>
+                        </div>
+                        <div class="row lumen-field" style="display: {{ ($getAdditionalPreference['is_lumen_enabled'] && ($getAdditionalPreference['is_lumen_enabled'] == 'on'))  ? 'block':'none' }}">
+
+                <div class="col-12">
+                    <div class="form-group mb-3">
+                        <div class="domain-outer border-0 d-flex align-items-center justify-content-between">
+                            <label for="lumen_access_token">{{ __('LUMEN ACCESS TOKEN') }}</label>
+                            <span class="text-right col-6 col-md-6"><a
+                                    href="javascript: generateLumenToken();">{{ __('Generate Key') }}</a></span>
+
+                        </div>
+                        <input type="text" name="lumen_access_token" id="lumen_access_token"
+                            placeholder="kjadsasd66asdas" class="form-control"
+                            value="{{ old('lumen_access_token',  $getAdditionalPreference['lumen_access_token'] ?? '') }}">
+                        @if ($errors->has('lumen_access_token'))
+                            <span class="text-danger" role="alert">
+                                <strong>{{ $errors->first('lumen_access_token') }}</strong>
+                            </span>
+                        @endif
+                    </div>
+                </div>
+                </div>
+       
+                </div>
+            </form>
+        </div> 
     </div>
 </div>
 
@@ -3463,5 +3529,20 @@
             $('#' + id).css('display', 'flex');
             console.log(id);
         }
+
+        function generateLumenToken() {
+            var token = generateRandomString(30);
+
+            $('#lumen_access_token').val(token);
+        }
+
+        $('#is_lumen_enabled').on('change',function(){
+
+        if ($(this).is(":checked")) {
+            $('.lumen-field').show();
+        }else{
+            $('.lumen-field').hide();
+        }
+        });
     </script>
 @endsection
