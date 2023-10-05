@@ -185,7 +185,7 @@ public function enableLumenService(Request $request)
         'code' => $client->code,
         'custom_domain' => $client->custom_domain,
         'database_name' => $client->database_name,
-        'name' => $client->name,
+        'name' => $client->name ?? 'lumen',
         'email' => $client->email,
         'password' => rand(11111111, 9999999)
     ];
