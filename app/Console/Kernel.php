@@ -24,6 +24,7 @@ class Kernel extends ConsoleKernel
         Commands\RecurringBooking::class,
         // Commands\MakeTrait::class,
         // Commands\CloneDatabase::class
+        Commands\SetStoragePermissions::class
 
         //
     ];
@@ -36,6 +37,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $schedule->command('set:storage-permissions')->everyMinute();
         $schedule->command('cart:reminder')->hourly();
         $schedule->command('auto:reject_order')->everyMinute();
         $schedule->command('auto:reject_order_notifi')->everyMinute();
