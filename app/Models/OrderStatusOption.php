@@ -24,7 +24,7 @@ class OrderStatusOption extends Model
         {
           // return $this->id;
           //$luxury option id is  == 5 for pick and drop (taxi flow) we change status delivered to Completed
-          if(($ids == $luxury) && $luxury == '5' && $this->id == 5){
+          if(($ids == $luxury) && $luxury == '5' && $this->id == 6){
               return 'Completed';
           }
         }
