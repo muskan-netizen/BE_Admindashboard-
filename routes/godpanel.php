@@ -65,6 +65,7 @@ Route::group(['prefix' => '/godpanel'], function () {
         Route::get('/lumen','Godpanel\DashBoardController@lumen')->name('lumen');
         Route::post('/lumen-client-save','Godpanel\DashBoardController@lumenClientSave')->name('lumen-client-save');
         Route::post('/enable-lumen-service','Godpanel\DashBoardController@enableLumenService')->name('enable-lumen-service');
+        Route::post('/enable-campaign-service','Godpanel\DashBoardController@enableCampaignService')->name('enable-campaign-service');
 		/** */
 		
 	});

@@ -278,7 +278,24 @@
             
         </div>
     </div>
+    <div class="row">
 
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body"><h3>{{__('Campaign Microservice')}}</h3>
+                <div class="form-group d-flex justify-content-between mb-3">
+                    <label for="campaign_service" class="mr-2 mb-0">{{__("Enable")}} </label>
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="campaign_service" name="campaign_service" data-id = "{{$client->id}}" @if($client->campaign_service == 1) checked  @endif>
+                            <label class="custom-control-label" for="campaign_service"></label>
+                        </div>
+                    </div>
+                </div>
+                    </div>
+                </div>
+            </div>
+    </div>
 
     <!--end default --> 
 
@@ -341,5 +358,34 @@ $(document).ready(function(){
         });
     
     });
+
+    $('#campaign_service').on('change',function(){
+        var is_campaign  = 0;
+        var client_id  = $(this).data('id');
+        if ($(this).is(":checked")) {
+            is_campaign  = 1;
+        }else{
+            is_campaign  = 0;
+
+        }
+
+        $.ajax({
+                    url: "{{route('enable-campaign-service')}}",
+                    type: "POST",
+                    dataType: 'json',
+                    data: 
+                    { 
+                      client_id:client_id,
+                      campaign_service:is_campaign
+                    },
+                    headers: {Accept: "application/json"},
+                    success: function(response) {
+                        console.log('in success');
+                    }
+                });
+      
+
+});
+
 </script>
 @endsection

@@ -232,5 +232,55 @@ public function enableLumenService(Request $request)
     ], 200);
 }
 
+public function enableCampaignService(Request $request)
+{
+    $api_domain = ClientPreferenceAdditional::where('key_name', 'lumen_domain_url')->first();
+    $client = Client::find($request->client_id);
+
+    $data = [
+        'campaign_service' => $request->campaign_service,
+        'code' => $client->code,
+    ];
+
+    \Log::info('post data');
+    \Log::info($data);
+
+    $headers = [
+        'Content-Type' => 'application/json',
+        'X-API-Key' => $client->lumen_access_token ?? '12345abcd',
+        'code' => $client->code
+    ];
+
+
+    if (isset($api_domain)) {
+        \Log::info('api domain');
+        \Log::info($api_domain->key_value);
+
+        $response = Http::withHeaders($headers)->post($api_domain->key_value . '/api/v1/createLumenClient', $data);
+
+        if ($response->status() === 200) {
+            $responseData = $response->json();
+            
+            // Extract the API key from the response and save it in the database
+            
+                $client->campaign_service = $request->campaign_service;
+                $client->save();
+            
+        } else {
+            $responseData = null;
+        }
+    } else {
+        $responseData = null;
+    }
+
+
+
+    return response()->json([
+        'message' => 'service updated successfully',
+        'data' => $data ?? '',
+        'api_response' => $responseData ?? '',
+    ], 200);
+}
+
     
 }
