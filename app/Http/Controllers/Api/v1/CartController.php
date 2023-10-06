@@ -2492,4 +2492,18 @@ class CartController extends BaseController
         return response()->json(['status'=>'Success', 'message'=>'Success']);
      }
 
+     public function updateCartWalletAmount(Request $request)
+    {
+        try {
+            $cart = Cart::findOrFail($request->cart_id);
+            $cart->update(['pay_via_wallet' => $request->paid_via_wallet]);
+
+            return response()->json([
+                "message" => __("Wallet amount added successfully."),
+                'data' => array(),
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => __('User cart not exist.')], 404);
+        }
+    }
 }

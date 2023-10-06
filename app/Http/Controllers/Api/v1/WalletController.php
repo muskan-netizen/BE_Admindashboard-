@@ -1,12 +1,13 @@
 <?php
 
 namespace App\Http\Controllers\Api\v1;
+use App\Models\VendorConnectedAccount;
 use Auth;
 use Session;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
-use App\Models\{User, Transaction, Payment};
+use App\Models\{User, Transaction, Payment, PayoutOption, Vendor};
 use App\Http\Controllers\Controller;
 
 class WalletController extends Controller{
@@ -131,5 +132,67 @@ class WalletController extends Controller{
         catch(Exception $ex){
             return $this->errorResponse($ex->getMessage(), $ex->getCode);
         }
+    }
+
+    public function payoutConnectDetails(Request $request)
+    {
+        
+        $client = Client::with('country')->orderBy('id','asc')->first();
+   
+        if(isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain){
+            $server_url =  "https://" . $client->custom_domain . '/';
+        }else{
+            $server_url =  "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . '/';
+        }
+
+        //stripe connected account details
+        $codes = $this->paymentOptionArray('payout');
+       
+        $payout_creds = PayoutOption::whereIn('code', $codes)->where('status', 1)->get();
+      
+        if ($payout_creds) {
+            foreach ($payout_creds as $creds) {
+                $creds_arr = json_decode($creds->credentials);
+                if($creds->code != 'cash'){
+                    if ($creds->code == 'stripe') {
+                        $creds->stripe_connect_url = '';
+                        if( (isset($creds_arr->client_id)) && !empty($creds_arr->client_id) ){
+                            $stripe_redirect_url = $server_url."client/verify/oauth/token/stripe";
+                            $creds->stripe_connect_url = 'https://connect.stripe.com/oauth/v2/authorize?response_type=code&state='.$request->vendor.'&client_id='.$creds_arr->client_id.'&scope=read_write&redirect_uri='.$stripe_redirect_url;
+                        }
+
+                        // Check if vendor has connected account
+                        $checkIfStripeAccountExists = VendorConnectedAccount::where(['vendor_id' => $request->vendor, 'payment_option_id' => $creds->id])->first();
+                        if($checkIfStripeAccountExists && (!empty($checkIfStripeAccountExists->account_id))){
+                            $creds->is_connected = 1;
+                        }else{
+                            $creds->is_connected = 0;
+                        }
+                        
+                    }else if($creds->code == 'razorpay'){
+                        $creds->is_connected = 0;
+                        $vendors = Vendor::find($request->vendor);
+                        if(@$vendors->vendor_bank_json->id)
+                        {
+                            $creds->is_connected = 1;
+                        }
+                    }
+
+                    
+                }
+            }
+            // dd($payout_creds->toArray());
+        }
+
+        // $ex_countries = ['INDIA'];
+
+        // if((!empty($payout_creds->credentials)) && ($client_id != '') && (!in_array($client->country->name, $ex_countries))){
+        //     $stripe_redirect_url = 'http://local.myorder.com/client/verify/oauth/token/stripe'; //$server_url."client/verify/oauth/token/stripe";
+        //     $stripe_connect_url = 'https://connect.stripe.com/oauth/v2/authorize?response_type=code&state='.$id.'&client_id='.$client_id.'&scope=read_write&redirect_uri='.$stripe_redirect_url;
+        // }else{
+        //     $stripe_connect_url = route('create.custom.connected-account.stripe', $id);
+        // }
+
+        return $payout_creds;
     }
 }

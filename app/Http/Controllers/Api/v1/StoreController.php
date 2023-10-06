@@ -12,7 +12,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Pagination\Paginator;
-use App\Models\{User, Vendor, Order, UserVendor, ProductAvailability, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption, ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, Category, OrderQrcodeLinks, ProductVariantImage, RescheduleOrder, UserWishlist, ProductAttribute, Attribute, Client};
+use App\Models\{User, Vendor, Order, UserVendor, ProductAvailability, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption, ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, Category, OrderQrcodeLinks, ProductVariantImage, RescheduleOrder, UserWishlist, ProductAttribute, Attribute, Client, Notification, NotificationTemplate, OrderProduct, UserDevice};
 use Log;
 
 
@@ -2076,9 +2076,11 @@ class StoreController extends BaseController
 	{
 		
 		try {
+		
 			$validator = Validator::make($request->all(), [
 				// 'sku' => 'required|unique:products',
 				// 'url_slug' => 'required|unique:products',
+				'image' => 'array|max:10',
 				'category_id' => 'required',
 				'product_name' => 'required',
 				// 'vendor_id'	=>	'required'
@@ -2392,6 +2394,9 @@ class StoreController extends BaseController
 							}
 
 						}
+
+						$this->sendNotification($user->id);
+
 						return $this->successResponse($data, 'Product added successfully!', 200);
 					} else {
 						return $this->errorResponse('Sorry, You are not a vendor.', 500);
@@ -2408,7 +2413,126 @@ class StoreController extends BaseController
 			return $this->errorResponse('Exception occured', 500);
 		}
 	
-	
-
 }
+
+	public function destroy(Request $request)
+		{
+			$product = Product::find($request->id);
+			$current_date = date('Y-m-d');
+			if (!empty($product)) {
+				$order_vendor_product = OrderProduct::where('product_id',$request->id)->get();
+				if(!empty($order_vendor_product)){
+					foreach($order_vendor_product as $orders){
+					if($orders->end_date_time > $current_date){
+						return $this->errorResponse('You Cannot Delete this Product Becuase it is Booked For Future Dates.',500);
+					}
+					}
+				}
+				$delete_product = Product::where('id', $request->id)->delete();
+				return $this->successResponse($delete_product, 'Product Has been Deleted Sucessfully!', 200);
+			} else {
+				return $this->errorResponse('Product Not Found', 500);
+			}
+		}
+public function sendNotification($user_id){
+	$devices = UserDevice::whereNotNull('device_token')
+	->where('user_id', $user_id)
+	->pluck('device_token')
+	->toArray();
+	
+	if (empty($devices)) {
+		return true;
+	}
+	$client_preferences = ClientPreference::select('fcm_server_key', 'favicon', 'vendor_fcm_server_key')->first();
+	$from = (!empty($client_preferences->fcm_server_key)) ? $client_preferences->fcm_server_key : '';
+
+	$notification_content = NotificationTemplate::where('id', 16)->first();
+	$title = $notification_content ? $notification_content->subject : "New Listing Created";
+	$body_content = $notification_content ? $notification_content->content : "Yay! Your product has been successfully listed. View your product under Account->My Posts";
+	
+	$data = [
+		"registration_ids" => $devices,
+		"notification" => [
+			'title' => $title,
+			'body'  => $body_content,
+			'sound' => "notification.wav",
+			"icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+			"android_channel_id" => "sound-channel-id"
+		],
+		"data" => [
+			'title' => $title,
+			'body'  => $body_content,
+			'type' => "order_status_change"
+		],
+		"priority" => "high"
+	];
+	if (!empty($from)) {
+		// helper function
+		sendFcmCurlRequest($data);
+		$notification = new Notification();
+		$notification->order_id = 0;
+		$notification->title = $title;
+		$notification->message = $body_content;
+		$notification->user_id = $user_id;
+		$notification->notification_template_id = 16;
+		$notification->save();
+	}
+}
+
+public function send_notification(Request $request)
+    {
+	
+		
+        if(empty($request->user_id)){
+            $user = User::where('id',$request->user_id)->first();
+        }
+          
+        $devices = UserDevice::where('user_id', 2)->pluck('device_token')->toArray();
+	
+        if (!empty($devices)) 
+        {
+            $from = '';
+            $client_preferences = ClientPreference::select('fcm_server_key', 'favicon', 'vendor_fcm_server_key')->first();
+			
+            if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
+                $from = $client_preferences->fcm_server_key;
+            }
+
+            $notification_content = "User raise a issue in chat";
+            if ($notification_content && empty($vendorIds)) {
+                $body_content =  $notification_content ;
+				$title = "User raise a issue";
+            }else{
+                $title = "User raise a issue";
+                $body_content = "Raise a Issue";
+            }
+                $data = [
+                    "registration_ids" => $devices,
+                    "notification" => [
+                        'title' => $title,
+                        'body'  => $body_content,
+                        'sound' => "notification.wav",
+                        "icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                        //'click_action' => route('order.index'),
+                        "android_channel_id" => "sound-channel-id"
+                    ],
+                    "data" => [
+                        'title' => $title,
+                        'body'  => $notification_content,
+                        'type' => "raise_issue"
+                    ],
+                    "priority" => "high"
+                ];
+			
+                if(!empty($from)){
+				
+                    // helper function
+                    sendFcmCurlRequest($data);
+					return true;
+                }
+        }else{
+            return false;
+        }
+    }
+
 }

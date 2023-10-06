@@ -179,32 +179,32 @@ class ProductController extends BaseController
                 return response()->json(['error' => 'No record found.'], 404);
             }
 
-            if(@$product->product_availability && @$product->OrderProduct){
+            // if(@$product->product_availability && @$product->OrderProduct){
 
-                foreach($product->OrderProduct as $OrderProducts){
-                    // dd($OrderProducts);
-                    $dates = [];
-                    if(@$OrderProducts->start_date_time && @$OrderProducts->end_date_time){
-                        $period = CarbonPeriod::create(date('Y-m-d',strtotime($OrderProducts->start_date_time)), date('Y-m-d',strtotime($OrderProducts->end_date_time)));
+            //     foreach($product->OrderProduct as $OrderProducts){
+            //         // dd($OrderProducts);
+            //         $dates = [];
+            //         if(@$OrderProducts->start_date_time && @$OrderProducts->end_date_time){
+            //             $period = CarbonPeriod::create(date('Y-m-d',strtotime($OrderProducts->start_date_time)), date('Y-m-d',strtotime($OrderProducts->end_date_time)));
 
-                        foreach ($period as $date) {
-                            $dates[] =  $date->format('Y-m-d');
-                        }
+            //             foreach ($period as $date) {
+            //                 $dates[] =  $date->format('Y-m-d');
+            //             }
 
-                        if(@$dates){
-                            foreach($product->product_availability as $product_availability){
-                                foreach($dates as $date){
-                                    if( date('Y-m-d',strtotime($product_availability->date_time)) == $date){
-                                        $product_availability->not_available = 1;
-                                    }
-                                }
+            //             if(@$dates){
+            //                 foreach($product->product_availability as $product_availability){
+            //                     foreach($dates as $date){
+            //                         if( date('Y-m-d',strtotime($product_availability->date_time)) == $date){
+            //                             $product_availability->not_available = 1;
+            //                         }
+            //                     }
 
-                            }
-                        }
-                }
-            }
+            //                 }
+            //             }
+            //     }
+            // }
 
-            }
+            // }
 
             $product->is_rented = 0;
             if(@$product->OrderProduct[0]->end_date_time){

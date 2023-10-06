@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{Client, Type, User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, ClientPreference, ClientLanguage, Vendor, Brand, VendorCategory, PermissionsOld, UserPermissions, UserVendor, VendorDocs, VendorRegistrationDocument, EmailTemplate, Country, OrderReturnRequest, Order, VendorOrderStatus, LuxuryOption,OrderVendor, OrderStatusOption, VendorAdditionalInfo};
+use App\Models\{Client, Type, User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, ClientPreference, ClientLanguage, Vendor, Brand, VendorCategory, PermissionsOld, UserPermissions, UserVendor, VendorDocs, VendorRegistrationDocument, EmailTemplate, Country, OrderReturnRequest, Order, VendorOrderStatus, LuxuryOption,OrderVendor, OrderStatusOption, VendorAdditionalInfo, VendorBankDetail};
 use Log;
 class VendorController extends BaseController{
     use ApiResponser;
@@ -2774,5 +2774,35 @@ class VendorController extends BaseController{
         'message' => 'Connected',
         'data' => $request->toArray()]);
     }
+    public function saveVenderBankDetails(Request $request){
+        $user = Auth::user();
+         // Define validation rules for the request data
+        $rules = [
+            'name' => 'required|string|max:56',
+            'bank_name' => 'required|string|max:56',
+            'address' => 'required|nullable|string',
+        ];
 
+        // Create a Validator instance and apply the rules
+        $validator = Validator::make($request->all(), $rules);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return $this->errorResponse($validator->errors()->all(), 400);
+        }
+        try{
+            $data = VendorBankDetail::create([
+                'vendor_id' => Auth::user()->userVendor->vendor_id,
+                'name' => $request->input('name'),
+                'bank_name' => $request->input('bank_name'),
+                'IBAN' => $request->input('IBAN'),
+                'address' => $request->input('address'),
+            ]);
+            $this->sendCustomerAddIBANDetailEmail($user);
+            return $this->successResponse($data, '', 200);
+        }
+        catch (Exception $e) {
+            return $this->errorResponse($e->getMessage().''.$e->getLineNo(), $e->getCode());
+        }
+    }
 }

@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use Log;
-use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule, WebStylingOption,Bid, OrderNotificationsLogs, ProcessorProduct,OrderFiles, VendorMargConfig};
+use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule, WebStylingOption,Bid, Notification, OrderNotificationsLogs, ProcessorProduct,OrderFiles, OrderVendorProduct, ProductAvailability, VendorMargConfig};
 
 use App\Models\AutoRejectOrderCron;
 
@@ -2283,11 +2283,11 @@ class OrderController extends BaseController
             })
             ->orderBy('id', 'Desc')
             ->paginate($paginate);
-        $orders =    $this->orderlistLoop($orders, $user ,$request);
+        $orders =    $this->orderlistLoop($orders, $user ,$request, 'borrower');
         return $this->successResponse($orders, '', 201);
     }
 
-    public function orderlistLoop($orders,   $user ,$request){
+    public function orderlistLoop($orders,   $user ,$request, $type = null){
         $additionalPreferences   =  @getAdditionalPreference(['is_postpay_enable','is_order_edit_enable','order_edit_before_hours']);
         $is_postpay_enable       =  $additionalPreferences['is_postpay_enable'];
         $is_order_edit_enable    =  $additionalPreferences['is_order_edit_enable'];
@@ -2322,6 +2322,7 @@ class OrderController extends BaseController
                 if(checkColumnExists('orders', 'is_postpay')){
                     $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
                 }
+                $order->type = $type;
                 if(checkColumnExists('orders', 'is_edited')){
                     $order->is_edited   = (isset($order->orderDetail->is_edited)) ? $order->orderDetail->is_edited : 0;
                 }
@@ -4258,11 +4259,74 @@ class OrderController extends BaseController
 
     public function orderVenderStatusUpdate(Request $request)
     {
+        $code = $request->header('code') ?? '';
         try
         {
-      
             $response = OrderVendor::where('id', $request->order_vendor_id)->update(['order_status_option_id' => $request->order_status_option_id]);
-            $response = OrderVendor::where('id', $request->order_vendor_id)->first();
+            $response = OrderVendor::with('vendor.userVendor', 'user')->where('id', $request->order_vendor_id)->first();
+            $order_data = $response->orderDetail;
+            $order_user = $response->user;
+            $userVendor = $response->vendor->userVendor;
+            $credit_amount = $response->payable_amount;
+
+            $user = User::find($userVendor->user_id);
+            $wallet = $user->wallet;
+            if($order_data->payment_option_id == 1 && $request->order_status_option_id == 4){
+                $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for order number <b>'.$order_data->order_number.'</b>']);
+
+                $order_data->payment_status = 1;
+                $order_data->save();
+            }
+            if($order_data->payment_intent_id && $request->order_status_option_id == 4){
+                $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for order number <b>'.$order_data->order_number.'</b>']);
+
+                $secret_key = stripePaymentCredentials()->secret_key;
+                \Stripe\Stripe::setApiKey($secret_key);
+                $paymentIntent = \Stripe\PaymentIntent::retrieve($order_data->payment_intent_id);
+                $paymentIntent->capture();
+            }
+
+            if ($request->order_status_option_id == 6) {
+                $order = Order::select('id', 'loyalty_points_earned_order')->find($response->order_id);
+
+                if ($order) {
+                    $data = ["loyalty_points_earned" => $order->loyalty_points_earned_order];
+                    // Add this line to check the $data variable
+                    Order::where('id', $order->id)->update($data);
+                } 
+            }
+
+            if($request->order_status_option_id == 6 || $request->order_status_option_id == 4){
+                $this->sendOrderStatusChangeNotification($request, $order_data);
+            }
+
+            $vendor_id = [$response->vendor_id];
+            $user_id = OrderVendor::where(['id' => $request->order_vendor_id])->pluck('user_id');
+            VendorOrderStatus::updateOrCreate(['order_id' => $request->order_id,'order_vendor_id' => $request->order_vendor_id,'order_status_option_id' => $request->order_status_option_id, 'vendor_id' => $response->vendor_id]);
+            // $this->sendOrderStatusChangePushNotificationCustomer($user_id,$order_data,$request->order_status_option_id,$code);
+            // $this->sendOrderStatusChangePushNotificationCustomer($vendor_id,$order_data,$request->order_status_option_id,$code,1);
+
+            if($request->order_status_option_id == 6){ /// if completed rental
+                $orderVendorProduct = OrderVendorProduct::where('order_id', $response->order_id)->first();
+                if($orderVendorProduct){
+
+                    $carbonDate1 = \Carbon\Carbon::parse(date('Y-m-d'));
+                    $carbonDate2 = \Carbon\Carbon::parse(date('Y-m-d', strtotime($orderVendorProduct->end_date_time)));
+
+                    if ($carbonDate1->lessThan($carbonDate2)) {
+                        $datesInRange = [];
+                        while ($carbonDate1->lessThanOrEqualTo($carbonDate2)) {
+                            $datesInRange[] = $carbonDate1->toDateString();
+                            $carbonDate1->addDay();
+                        }
+
+                        if($datesInRange){
+                            $datesInRange = array_reverse($datesInRange);
+                            ProductAvailability::where('product_id', $orderVendorProduct->product_id)->whereIn(\DB::raw('DATE(date_time)'), $datesInRange)->update(['not_available' => 0]);
+                        }
+                    }
+                }
+            }
             return $response;
         }
         catch (\Exception $e) {
@@ -4315,7 +4379,7 @@ class OrderController extends BaseController
                     });
                 break;
             case 'active':
-                $orders->whereNotIn('order_status_option_id', [6, 3, 9]);
+                $orders->whereNotIn('order_status_option_id', [6,9]);
                     $orders->whereHas('products', function ($q) use ($additionalPreference) {
                          if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
                             $q->whereNotIn('dispatcher_status_option_id',[1,5,6]); //1=pending,5= complete,6 reject
@@ -4323,12 +4387,15 @@ class OrderController extends BaseController
                     });
                 break;
             case 'past':
-                $orders->whereIn('order_status_option_id', [6, 3, 9]);
+                $orders->whereIn('order_status_option_id', [6]);
                 if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
                     $orders->whereHas('products', function ($q) {
                         $q->where('dispatcher_status_option_id',5); //1=pending,5= complete,6 reject
                     });
                 }
+                break;
+            case 'cancel':
+                $orders->where('order_status_option_id', 3);
                 break;
             case 'schedule':
                 $order_status_options = [10];
@@ -4337,7 +4404,9 @@ class OrderController extends BaseController
                 });
                 break;
         }
-        $orders = $orders->with(['orderDetail.editingInCart', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'products.productReturn',
+        $orders = $orders->with(['orderDetail.editingInCart', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing','user'=>function ($qq){
+            $qq->select('id','name');
+        },  'products.productReturn','cancelledBy.userVendor',
         'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request','products.Routes','products.order_product_status','products.product.category.categoryDetail'=>function ($q){
             $q->select('id','type_id');
         },'products.product.translation'
@@ -4368,6 +4437,7 @@ class OrderController extends BaseController
         $paginate = $request->has('limit') ? $request->limit : 2;
         $type = $request->has('type') ? $request->type : 'all';
         $user_type = $request->has('user_type') ? $request->user_type : '';
+        $additionalPreference =getAdditionalPreference(['is_service_product_price_from_dispatch']);
 
         $vendorUser =  UserVendor::select('vendor_id')->where('user_id', $user->id)->first();
         $orders = OrderVendor::with('products')->orderBy('id', 'DESC');
@@ -4395,7 +4465,16 @@ class OrderController extends BaseController
                     });
                 break;
         
-           
+            case 'past':
+
+                    $orders->where('order_status_option_id', 6);
+                    // dd($orders->get());
+                    if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+                        $orders->whereHas('products', function ($q) {
+                            $q->where('dispatcher_status_option_id',5); //1=pending,5= complete,6 reject
+                        });
+                    }
+                break;
             case 'schedule':
                 $order_status_options = [10];
                 $orders->whereHas('status', function ($query) use ($order_status_options) {
@@ -4403,7 +4482,9 @@ class OrderController extends BaseController
                 });
                 break;
         }
-        $orders = $orders->with(['orderDetail.editingInCart', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'products.productReturn',
+        $orders = $orders->with(['orderDetail.editingInCart', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'user'=>function ($qq){
+            $qq->select('id','name');
+        }, 'products.productReturn',
         'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request','products.Routes','products.order_product_status','products.product.category.categoryDetail'=>function ($q){
             $q->select('id','type_id');
         },'products.product.translation'
@@ -4418,13 +4499,22 @@ class OrderController extends BaseController
             case 'all': // which order not assign yet indriver
             $lender->whereHas('products');
                 break;
-                case 'upcoming': // which order not assign yet indriver
+            case 'upcoming': // which order not assign yet indriver
             $lender->whereHas('products');
             $lender->whereIn('order_status_option_id', [1,2]);
                 break;
-                case 'ongoing': // which order not assign yet indriver
+            case 'ongoing': // which order not assign yet indriver
                 $lender->whereHas('products');
             $lender->whereIn('order_status_option_id', [4]);
+                    break;
+             case 'past':
+                    $lender->where('order_status_option_id', 6);
+                    // dd($orders->get());
+                    if($additionalPreference['is_service_product_price_from_dispatch'] ==1){
+                        $lender->whereHas('products', function ($q) {
+                            $q->where('dispatcher_status_option_id',5); //1=pending,5= complete,6 reject
+                        });
+                    }
                     break;
             case 'pending': // which order not assign yet indriver
             $lender->whereHas('products', function ($q1) {
@@ -4438,7 +4528,9 @@ class OrderController extends BaseController
                 });
                 break;
         }
-        $lender = $lender->with(['orderDetail.editingInCart', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'products.productReturn',
+        $lender = $lender->with(['orderDetail.editingInCart', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'user'=>function ($qq){
+            $qq->select('id','name');
+        }, 'products.productReturn',
         'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request','products.Routes','products.order_product_status','products.product.category.categoryDetail'=>function ($q){
             $q->select('id','type_id');
         },'products.product.translation'
@@ -4446,12 +4538,12 @@ class OrderController extends BaseController
         ->orderBy('id', 'Desc')
             
         ->take($paginate)->get();
-        $orderdata['lender'] = $this->orderlistLoop($lender, $user ,$request);
+        $orderdata['lender'] = $this->orderlistLoop($lender, $user ,$request,'lender');
         }else{
             $orderdata['lender'] = [];
         }
         
-        $orderdata['borrower'] = $this->orderlistLoop($orders, $user ,$request);
+        $orderdata['borrower'] = $this->orderlistLoop($orders, $user ,$request, 'borrower');
         
         return $this->successResponse($orderdata, '', 201);
     }
@@ -4548,8 +4640,16 @@ class OrderController extends BaseController
                             $q2->whereIn('payment_option_id', [1,38]);
                         });
                     });
+                    
                     if(!$user->is_admin){
-                        $order = $order->where('user_id', $user->id);
+                        $order = $order->where(function ($q1) use ($user){
+                            $q1->where('user_id', $user->id);
+                            $q1->orWhere(function ($q2) use ($user) {
+                                $q2->whereHas('orderVendorProduct.product', function($q) use ($user){
+                                    $q->where('vendor_id',$user->userVendor->vendor_id);
+                                });
+                        });
+                    });
                     }
                     $order = $order->where('id', $order_id)->select('*', 'id as total_discount_calculate')
                     ->first();
@@ -4621,7 +4721,7 @@ class OrderController extends BaseController
                             }
                         }
                         $product->rental_price = $rental_price;
-
+                        $order['payable_amount'] = $product->price;
 
                         $product->longTermSchedule = array();
                         $product->recurring_date_count = 1;
@@ -4814,6 +4914,18 @@ class OrderController extends BaseController
                 $order->total_other_taxes =  decimal_format($total_other_taxes??0);
                 $order['user_document_list'] =  $user_registration_documents;
                 $order['category_KYC_document'] = $category_KYC_document??null;
+
+                $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $order->ordervendor->vendor_id)->orderBy('id', 'DESC')->first();
+                if ($vendor_order_status) {
+                    $order_sts = OrderStatusOption::where('id',$order->ordervendor->order_status_option_id)->first();
+                    if(@$order->ordervendor->exchanged_to_order->order_status_option_id && $order->ordervendor->exchanged_to_order->order_status_option_id== 6){
+                        $order['order_status'] =  ['current_status' => ['id' => 6, 'title' => __("Replaced")]];
+                    }else{
+                        $order['order_status'] =  ['current_status' => ['id' => @$order_sts->id ?? '', 'title' => __(@$order_sts->title)]];
+                    }
+                } else {
+                    $order->current_status = null;
+                }
                 $order->slot_based_Price =  $slot_based_Price??0;
             }
             // 12345
@@ -4868,6 +4980,45 @@ class OrderController extends BaseController
 
             return $this->successResponse($order, null, 201);
         } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function notificationList(Request $request)
+    {
+        try{
+            $userId = Auth::id();
+          
+            $perPage =10;
+
+            if($request->limit)
+            {
+                $perPage =$request->limit ;
+            }
+            $notifications = Notification::where('user_id', $userId)->orderBy('id','desc')
+                ->paginate($perPage);
+                
+            return $this->successResponse($notifications, null, 200);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+       
+    }
+    public function deleteNotification(Request $request)
+    {
+        try {
+            $userId = Auth::id();
+    
+            $notifications = Notification::where('user_id', $userId);
+    
+            if ($request->id) {
+                $notifications->where('id', $request->id);
+            }
+    
+            $deletedCount = $notifications->delete();
+    
+            return $this->successResponse(null, 'Notification(s) Deleted Successfully.', 200);
+        } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
