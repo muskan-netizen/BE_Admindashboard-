@@ -418,6 +418,11 @@ class UserhomeController extends FrontController
                 $view_page = "home-template-test-nine";
             }
 
+            elseif(isset($set_template) && $set_template->template_id == 10)
+{
+            $view_page = "yacht.index";
+       
+}
             $is_service_product_price_from_dispatch_forOnDemand = 0;
           
             $getOnDemandPricingRule = getOnDemandPricingRule($vendor_type, Session::get('onDemandPricingSelected'),$additionalPreference);

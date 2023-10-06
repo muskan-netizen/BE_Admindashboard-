@@ -11,6 +11,7 @@ trait YachtTrait
 {
     public function productSearch($request, $pickup, $dropOff)
     {
+
         $pickup_time = $pickup->time ?? '';
         $drop_time = $dropOff->time ?? '';
         $clientPreference = \App\Models\ClientPreference::where(['id' => 1])->first();
@@ -31,6 +32,7 @@ trait YachtTrait
             });
         }
         $category = Category::where('slug', $request->service)->first();
+ 
         $data['products'] = [];
         if ($category) {
             $data['products'] = Product::with([

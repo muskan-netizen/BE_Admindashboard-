@@ -1,5 +1,5 @@
 @extends('layouts.car-rental', [
-'title' => (!empty($category->translation) && isset($category->translation[0])) ? $category->translation[0]->name : $category->slug,
+'title' => 'test',
 ])
 @section('content')
 <section class="current_location">
@@ -23,8 +23,11 @@
 <section class="result_item">
     <div class="container">
         <div class="heading d-flex align-items-center justify-content-between">
+            @if (!empty($products)) 
+           
             @if($products->count())
             <h2>Available {{$service == 'yacht' ? ucfirst($service) : 'Cars'}}</h2>
+            @endif
             @else
             <h2>No Available {{$service == 'yacht' ? ucfirst($service) : 'Cars'}}</h2>
             @endif
@@ -41,6 +44,7 @@
             </span>
         </div>
         <div class="row">
+            @if(!empty($products))
             @foreach ($products as $product)
             @php
             if ($service == 'airport') {
@@ -116,6 +120,9 @@
                 </div>
             </div>
             @endforeach
+            @endif
+
+        
         </div>
     </div>
     </div>
@@ -161,6 +168,7 @@
                 <input type="submit" value="submit">
             </div>
         </form>
+       
     </div>
 </div>
 @endsection

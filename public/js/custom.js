@@ -3391,6 +3391,7 @@ $(document).ready(function () {
     }
 
     function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='', sele_slot_id='', sele_slot_price='', delivery_date='',recurringformPost='') {
+       
         var returnResponse = false;
         $.ajax({
             type: "post",
@@ -3419,13 +3420,17 @@ $(document).ready(function () {
             },
             success: function (response) {
                 if (response.status == 'success') {
+                    
                     //$(".shake-effect").effect("shake", { times: 3 }, 1200);
                     returnResponse = true;
                     cartHeader();
+                 
                     if($("#pickup_service").is(":checked")){
                         location.href =  '/category/cabservice?destination_location='+response.vendor.address+'&destination_location_latitude'+response.vendor.latitude+'&destination_location_longitude'+response.vendor.longitude+'&yacht_id='+product_id;
                     }
-                    if(vendor_type == 'rental') {
+                    console.log(response.vendor.rental);
+                    if(response.vendor.rental == 1) {
+                      
                        location.href =  '/viewcart';
                     }
                 } else {

@@ -306,7 +306,7 @@
         <input type="hidden" name="product_id" id="product_id" value="{{$product->id}}" />
         <input type="hidden" name="prod_variant_id" id="prod_variant_id" value="" />
         <div id="selected_slot"></div>
-        @include('frontend.product-part.booking-slot')
+         {{-- @include('frontend.product-part.booking-slot') --}}
         {{-- <h3>Car specifications</h3>
         <ul class="specifications_list">
             <li>Stunning swimming pool and Gym access</li>

@@ -921,42 +921,42 @@
     }
 
     // Check Slot Availability
-    function checkSlotAvailability(obj)
-    {
+    // function checkSlotAvailability(obj)
+    // {
 
-        var url = "{{route('checkSlotOrders')}}"
-        var schedule_datetime = $(obj).closest('.vendor_slot_cart').find('.vendor_schedule_datetime').val();
-        var schedule_slot = $(obj).val();
-        var vendor_id = $(obj).data('vendor_id');
-        $.ajax({
-            type: "GET",
-            data: {
-                "schedule_datetime": schedule_datetime,
-                "schedule_slot":     schedule_slot,
-                "vendor_id":         vendor_id,
-            },
-            url: url,
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(output) {
-                console.log("checkSlotAvai");
-                // Check if orderCount is greaten equal to orders_per_slot //&& (output.orders_per_slot !=0)
-                if(output.orderCount >= output.orders_per_slot  ){
-                    success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
-                    // Disable the place order button
-                    $('#order_placed_btn').attr("disabled", true);
-                    return false;
-                }else{
-                    // Enable the place order button
-                    $('#order_placed_btn').attr("disabled", false);
-                }
-            },
-            error: function(output) {
-                // console.log(output);
-            },
-        });
-    }
+    //     var url = "{{route('checkSlotOrders')}}"
+    //     var schedule_datetime = $(obj).closest('.vendor_slot_cart').find('.vendor_schedule_datetime').val();
+    //     var schedule_slot = $(obj).val();
+    //     var vendor_id = $(obj).data('vendor_id');
+    //     $.ajax({
+    //         type: "GET",
+    //         data: {
+    //             "schedule_datetime": schedule_datetime,
+    //             "schedule_slot":     schedule_slot,
+    //             "vendor_id":         vendor_id,
+    //         },
+    //         url: url,
+    //         headers: {
+    //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    //         },
+    //         success: function(output) {
+    //             console.log("checkSlotAvai");
+    //             // Check if orderCount is greaten equal to orders_per_slot //&& (output.orders_per_slot !=0)
+    //             if(output.orderCount >= output.orders_per_slot  ){
+    //                 success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
+    //                 // Disable the place order button
+    //                 $('#order_placed_btn').attr("disabled", true);
+    //                 return false;
+    //             }else{
+    //                 // Enable the place order button
+    //                 $('#order_placed_btn').attr("disabled", false);
+    //             }
+    //         },
+    //         error: function(output) {
+    //             // console.log(output);
+    //         },
+    //     });
+    // }
 
     $(document).delegate('#view_all_address', 'click', function() {
 
@@ -1194,8 +1194,8 @@
             </div>
             <div class="row">
                 <div class="col-sm-12 p-0 d-flex flex-fill">
-                    <button type="button" style="width:100%;" class="btn btn-solid ml-1 proceed_to_pay">{{__('Place Order')}}
-                        <img style="width:5%; display:none;" id="proceed_to_pay_loader" src="{{asset('assets/images/loader.gif')}}"/>
+                    <button type="button"  class="btn btn-solid ml-1 proceed_to_pay">{{__('Place Order')}}
+                        <img style="width:5%;" id="proceed_to_pay_loader" src="{{asset('assets/images/loader.gif')}}"/>
                     </button>
                 </div>
             </div>

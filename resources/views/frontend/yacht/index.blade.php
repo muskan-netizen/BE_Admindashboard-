@@ -57,22 +57,22 @@
                                 </label>
                                 <span></span>
                             </div>
-                            <div class="form-group">
+                            {{-- <div class="form-group">
                                 <input type="radio" value="airport" name="service" placeholder="" id="Airport">
                                 <label for="Airport">
                                     <img src="yacht-images/icons/2.png" alt="">
                                     Airport Pick and Drop
                                 </label>
                                 <span></span>
-                            </div>
-                            <div class="form-group">
+                            </div> --}}
+                            {{-- <div class="form-group">
                                 <input type="radio" value="yacht" name="service" placeholder="" id="Yacht">
                                 <label for="Yacht">
                                     <img src="yacht-images/icons/2.png" alt="">
                                     Yacht Pick and Drop
                                 </label>
                                 <span></span>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                     <div id="tabs-content">

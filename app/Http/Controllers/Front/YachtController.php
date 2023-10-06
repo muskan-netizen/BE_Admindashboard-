@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Session;
 use App\Http\Traits\ApiResponser;
 use App\Models\ClientPreference;
 use App\Http\Controllers\Front\FrontController;
+use App\Models\VendorCities;
 use App\Http\Traits\HomePage\HomePageTrait;
 use App\Http\Traits\OrderTrait;
 use App\Http\Traits\ProductActionTrait;
@@ -50,7 +51,7 @@ class YachtController extends FrontController
 
     public function yacht(Request $request)
     {
-        try {
+        // try {
             $home = array();
             $vendor_ids = array();
             if ($request->has('ref')) {
@@ -157,14 +158,15 @@ class YachtController extends FrontController
             // if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
             //     $is_service_product_price_from_dispatch_forOnDemand =1;
             // }
-
+           
             $homeData = ['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $client_preferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData ,'is_service_product_price_from_dispatch_forOnDemand'=> $is_service_product_price_from_dispatch_forOnDemand];
             return view('frontend.yacht.index')->with($homeData);
-
-        } catch (\Exception $e) {
-            pr($e->getCode());
-            die;
-        }
+            // $view = view('frontend.yacht.index')->with($homeData)->render();
+                
+        // } catch (\Exception $e) {
+        //     pr($e->getCode());
+        //     die;
+        // }
     }
 
     public function rentalProducts(Request $request,$set_template,$enable_layout,$additionalPreference)
@@ -183,7 +185,8 @@ class YachtController extends FrontController
         $latitude = Session::get('latitude');
         $longitude = Session::get('longitude');
         $clientdata = Session::get('clientdata');
-        $preferences = $this->client_preferences;
+        $preferences = ClientPreference::first() ;
+      
 
         if( (empty($latitude)) && (empty($longitude)) ){
             $latitude = (!empty($preferences->Default_latitude)) ? floatval($preferences->Default_latitude) : 0;
@@ -366,6 +369,24 @@ class YachtController extends FrontController
         }
 
         return $this->successResponse($data);
+    }
+
+
+
+    public function getCities($language_id){
+        $this->cities =  VendorCities::with(['translations'=> function ($q) use($language_id) {
+                            $q->where('language_id', $language_id);
+                        }])->where(function ($q)  {
+                            $q->where('latitude','!=', null);
+                            $q->where('longitude','!=', null);
+                        })->get();
+
+        $this->cities = $this->cities->map(function($da) {
+            $da->title = $da->translations->first() ? $da->translations->first()->name : $da->slug ;
+            unset($da->translations);
+            return $da;
+         });
+         return $this->cities;
     }
 
     public function productsSearchResult(Request $request)
