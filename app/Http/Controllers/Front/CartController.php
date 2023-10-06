@@ -2095,17 +2095,19 @@ class CartController extends FrontController
         } else {
             $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type', 'order_id','address_id')->with(['coupon.promo', 'editingOrder'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
         }
-        $cart_product_removed =    CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
-            $q->whereIn('is_live',[0,2]);
-        })->pluck('id');
+        
+        if(@$cart->id){
+            $cart_product_removed =    CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
+                $q->whereIn('is_live',[0,2]);
+            })->pluck('id');
        
-        if(count($cart_product_removed)){
-            CartProduct::whereIn('id',$cart_product_removed)->delete();
-            if(CartProduct::where('cart_id',$cart->id)->count() == 0){
-            Cart::find($cart->id)->delete();
+            if(count($cart_product_removed)){
+                CartProduct::whereIn('id',$cart_product_removed)->delete();
+                if(CartProduct::where('cart_id',$cart->id)->count() == 0){
+                Cart::find($cart->id)->delete();
+                }
             }
         }
-      
 
         $address_id = $request->has("address_id") ? $request->address_id : (  @$cart->address_id ?? '') ;
         if (isset( $address_id) && !empty( $address_id)) {
