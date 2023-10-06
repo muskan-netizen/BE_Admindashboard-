@@ -305,6 +305,15 @@
 <script src="{{asset('assets/libs/jquery-toast-plugin/jquery-toast-plugin.min.js')}}"></script>
 <script src="{{asset('assets/js/pages/toastr.init.js')}}"></script>
 <script type="text/javascript">
+
+$(document).ready(function() {
+        $.ajaxSetup({
+            headers: {'X-CSRF-TOKEN': $('input[name="_token"]').val()}
+        });
+
+    });
+
+    
 $(document).ready(function(){
     var update_status_chat = "{{route('client.socketUpdateAction', ':id')}}";
 
