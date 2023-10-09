@@ -81,7 +81,7 @@ class PaymentResourceController extends BaseController
             $customerResponse = \Stripe\Customer::create(array(  
                 'description' => 'Creating Customer',
                 'name' => $user->name,
-                'email' => $user->email,
+                'email' => $user->email, 
                 'metadata' => [
                     'user_id' => $user->id,
                     'phone_number' => $user->phone_number

@@ -25,7 +25,7 @@ use Stripe\PaymentMethod;
 
 trait StripeTrait
 {
-    use ApiResponser, StripeTrait;
+    use ApiResponser;
 
     public $gateway;
     public $API_KEY;
