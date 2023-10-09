@@ -880,7 +880,7 @@
                 if( (output.orderCount >= output.orders_per_slot) && (output.orders_per_slot != 0) ){
                     success_error_alert('error', 'All slots are full for the selected date & slot please choose another date or slot.', ".cart_response");
                     // Disable the place order button
-                    $('#order_placed_btn').attr("disabled", true);
+                    // $('#order_placed_btn').attr("disabled", true);
                 }else{
                     // Enable the place order button
                     $('#order_placed_btn').attr("disabled", false);

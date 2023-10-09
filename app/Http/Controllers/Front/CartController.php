@@ -83,6 +83,7 @@ class CartController extends FrontController
         if ($cart) {
             $cartData = CartProduct::where('status', [0, 1])->where('cart_id', $cart->id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
         }
+    
         $navCategories = $this->categoryNav($langId);
 
         $subscription_features = array();
@@ -2110,7 +2111,6 @@ class CartController extends FrontController
         } else {
             $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type', 'order_id','address_id')->with(['coupon.promo', 'editingOrder'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
         }
-
         $address_id = $request->has("address_id") ? $request->address_id : (  @$cart->address_id ?? '') ;
    
         if (isset( $address_id) && !empty( $address_id)) {
@@ -2198,7 +2198,7 @@ class CartController extends FrontController
             }
             $cart_details->currency_code=$currency_code;
             $addon = AddonSet::with('option', 'translation')->where('vendor_id', $cart_details->vendor_id)->where('status',1)->get();
-           
+                  
             $mycartView = view('frontend.yacht.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message, 'addons' => $addon])->render();
         }
        

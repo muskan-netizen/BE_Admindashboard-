@@ -317,6 +317,7 @@ trait CartManagerV2{
 
         $this->is_service_product_price_from_dispatch =0;
         $action = (session()->has('vendorType')) ? session()->get('vendorType') : 'delivery';
+   
         $is_service_product_price_from_dispatch = 0;
         if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( $action == 'on_demand')){
             $onDemandPricingSelected = (session()->has('onDemandPricingSelected')) ? session()->get('onDemandPricingSelected') : 'vendor';
@@ -513,6 +514,7 @@ trait CartManagerV2{
 
                 /* Getting vendor details */
                 if($action != 'delivery') {
+                
                     $vendor_details['vendor_address'] = $vendorData->vendor->select('id','latitude','longitude','address')->where('id', $vendorData->vendor_id)->first();
                     if($action == 'dine_in') {
                         $vendor_tables = VendorDineinTable::where('vendor_id', $vendorData->vendor_id)->with('category')->get();
@@ -535,6 +537,7 @@ trait CartManagerV2{
                 $coupon_vendor_ids = [];
                 $coupon_product_discount = 0;
                 $in_or_not = 0;
+                $vendor_details['vendor_address'] = $vendorData->vendor->select('id','latitude','longitude','address')->where('id', $vendorData->vendor_id)->first();
                 if (isset($vendorData->coupon) && !empty($vendorData->coupon) && isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)){
                     if($vendorData->coupon->promo->restriction_on == 0)
                     {

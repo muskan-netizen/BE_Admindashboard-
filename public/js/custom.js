@@ -2464,8 +2464,8 @@ $(document).ready(function () {
                                 }
                                 //initialize();
                                 if (cart_details.deliver_status == 0) {
-                                    $("#order_placed_btn").attr("disabled", true);
-                                    $("#order_placed_btn").addClass("d-none");
+                                    // $("#order_placed_btn").attr("disabled", true);
+                                    // $("#order_placed_btn").addClass("d-none");
                                 } else {
 
                                     $("#order_placed_btn").removeAttr("disabled");

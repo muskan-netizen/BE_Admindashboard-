@@ -421,7 +421,8 @@ $serviceType = Session::get('serviceType');
 
             </div>
             <div class="confirm_cta">
-                    <button type="button" style="width:100%;" class="btn btn-solid ml-1" id="order_placed_btn">{{__('Confirm and Pay')}}<i class="fa fa-angle-right"></i>
+                
+                    <button type="button" style="width:100%;" class="btn btn-solid" id="order_placed_btn">{{__('Confirm and Pay')}}<i class="fa fa-angle-right"></i>
                         <img style="width:5%; display:none;" id="proceed_to_pay_loader" src="{{asset('assets/images/loader.gif')}}"/>
                     </button>
             </div>
