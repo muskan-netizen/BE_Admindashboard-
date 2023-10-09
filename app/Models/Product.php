@@ -520,11 +520,10 @@ class Product extends Model implements Auditable
     return $this->belongsToMany('App\Models\DeliverySlot', 'delivery_slots_product', 'product_id', 'delivery_slot_id')->withTimestamps();
   }
 
-<<<<<<< HEAD
   public function product_availability()
   {
     return $this->hasMany('App\Models\ProductAvailability');
-=======
+  }
   public function getAvailableSeatsAttribute()
   {
     $booking_seats = OrderProduct::where('product_id',$this->id)->sum('booking_seats');
@@ -533,7 +532,6 @@ class Product extends Model implements Auditable
       return $available_seats;
     }
     return 0;
->>>>>>> RajatDevCarRental
   }
 
   public function bookingOptions(){
