@@ -165,6 +165,10 @@
                                             @endforeach
                                         </select>
                                     </div>
+
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="custom_allergic_items" placeholder="Enter Custom Allergic Items" value="{{ auth()->user()->custom_allergic_items ?? ''}}">
+                                    </div>
                                 @endif
 
                                 @if (count($user_registration_documents) > 0)    
