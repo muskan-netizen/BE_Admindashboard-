@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, VendorCategory, ProductCategory, Client, ClientPreference};
+use App\Models\{User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, VendorCategory, ProductCategory, Client, ClientPreference, UserVendor};
 
 class P2PController extends BaseController
 {
@@ -81,6 +81,13 @@ class P2PController extends BaseController
     public function listData($langId, $category_id, $type = '', $userid, $product_list, $mod_type, $mode_of_service = null, $limit = 12, $page = 1, $request)
     { 
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area')->where('id', '>', 0)->first();
+
+        if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+            $latitude = ($request->latitude) ? $request->latitude : $preferences->Default_latitude;
+            $longitude = ($request->longitude) ? $request->longitude : $preferences->Default_longitude;
+            $servicearea = $this->getServiceArea($request->latitude, $request->longitude, $mod_type);
+      
+        }
 
         if ($type == 'vendor' && $product_list == 'false') {
             $user = Auth::user();
@@ -264,7 +271,8 @@ class P2PController extends BaseController
 
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $multipli = $clientCurrency ? $clientCurrency->doller_compare : 1;
-                
+            $vendorIds = UserVendor::where('user_id', $userid)->pluck('vendor_id')->toArray();
+            $now = Carbon::now();
             $products = Product::has('vendor')->with(['ProductAttribute',
                 'category.categoryDetail', 'media.image',
                 'translation' => function ($q) use ($langId) {
@@ -280,22 +288,25 @@ class P2PController extends BaseController
                 }, 'inwishlist' => function ($qry) use ($userid) {
                     $qry->where('user_id', $userid);
                 }
-            ])->where('products.category_id', $category_id)
+            ])->whereHas('product_availability', function ($q) use ($now, $vendorIds) {
+                $q->where(function($qq) use ($now, $vendorIds){
+                    $qq->where('date_time', '>', $now);
+                    $qq->where('not_available', 0);
+                });
+                $q->orWhereIn('vendor_id', $vendorIds);
+            })->where('products.category_id', $category_id)
                 ->where('products.is_live', 1); 
                
             if( clientPrefrenceModuleStatus('p2p_check') && $request->has('attributes') && count($request['attributes']) > 0) {
                 $attributes = $request['attributes'];
-               
+                
                 $products = $products->whereHas('ProductAttribute', function($q) use($attributes){
-                    
                     foreach($attributes as $key=>$attribute){
-                        foreach($attribute['options'] as $option){
-                        $q->where('attribute_id', $attribute['attribute_id'])->where('attribute_option_id' , $option);
+                        foreach($attribute['options'] as $key=>$option){
+                            $q->where('attribute_id', $attribute['attribute_id'])->where('attribute_option_id' , $option)->orWhere('key_value', $option);
+                        }
                     }
-                }
-                   
                 });
-
             }
 
 
@@ -385,6 +396,25 @@ class P2PController extends BaseController
             $categories = $categories->where('type_id', '!=', 5);   # if celebrity mod off .
 
         $categories = $categories->get();
+
+        return $this->successResponse($categories);
+    }
+
+    public function getRentalCategories()
+    {
+
+        $celebrity_check = ClientPreference::first()->value('celebrity_check');
+        $categories = Category::with('translation_one','type')->where('id', '>', '1')
+        ->whereHas('type', function($q){
+            $q->where('service_type', 'rental_service');
+        })
+        ->where('is_core', 1)->orderBy('parent_id', 'asc')->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1);
+
+        if ($celebrity_check == 0)
+            $categories = $categories->where('type_id', '!=', 5);   # if celebrity mod off .
+
+        $categories = $categories->paginate();
+
 
         return $this->successResponse($categories);
     }

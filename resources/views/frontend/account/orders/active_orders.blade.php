@@ -147,6 +147,11 @@
                                                                                             <a class="start_chat_driver chat-icon btn btn-solid" data-driver_details_api="{{$vendor->dispatch_traking_url}}" data-vendor_order_id="{{$vendor->id}}" data-vendor_id="{{$vendor->vendor_id}}" data-orderid="" data-order_id="{{$order->id}}">{{__('Driver Chat')}}</a>
                                                                                             @endif
                                                                                         @endif
+
+                                                                                        @if(@$order->recurring_day_data)
+                                                                                            <a class="btn btn-solid recurringBtn" data-recurring_slot="{{$order->recurring_booking_time}}"  data-recurring_day_data="{{$order->recurring_day_data}}">{{getNomenclatureName('Recurring', true)}}</a>
+                                                                                        @endif
+
                                                                                     </div>
                                                                                 @endif
                                                                                 <span class="left_arrow pulse"></span>
@@ -180,7 +185,7 @@
                                                                                                     @if(@$order->reqCancelOrder->status == 'Pending')
                                                                                                         {{__('Cancel Order Pending')}}
                                                                                                     @else
-                                                                                                        @if (@$luxury_option_name == 'Dine-In' && @$vendor->order_status == 'out for delivery')
+                                                                                                        @if (@$luxury_option_name == 'Dine-In' && $vendor->order_status == 'out for delivery')
                                                                                                         {{__( ucfirst('Ready for Delivery')) }}
                                                                                                         @else
                                                                                                         {{__( ucfirst( $vendor->order_status)) }}

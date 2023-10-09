@@ -171,7 +171,6 @@ class UserSubscriptionController extends BaseController
      */
     public function purchaseSubscriptionPlan(Request $request, $slug)
     {
-        
 
         try{
             $validator = Validator::make($request->all(), [
@@ -200,7 +199,6 @@ class UserSubscriptionController extends BaseController
                 $subscription_invoice->subscription_id = $subscription_plan->id;
                 $subscription_invoice->slug = strtotime(Carbon::now()).'_'.$slug;
                 $subscription_invoice->payment_option_id = $request->payment_option_id;
-                // $subscription_invoice->status_id = 2;
                 $subscription_invoice->frequency = $subscription_plan->frequency;
                 $subscription_invoice->payment_option_id = $request->payment_option_id;
                 $subscription_invoice->transaction_reference = $request->transaction_id;

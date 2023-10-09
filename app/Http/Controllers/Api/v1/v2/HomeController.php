@@ -15,15 +15,16 @@ use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Traits\HomePage\HomePageTrait;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Http\Traits\{OrderTrait, ProductActionTrait, VendorTrait};
+use App\Http\Traits\{OrderTrait, ProductActionTrait, VendorTrait, RedisCacheTrait};
 use App\Models\{Banner, Brand, CabBookingLayout, CabBookingLayoutTranslation, Category, Client, ClientPreference, Vendor, VendorCategory, Product, ClientCurrency, HomePageLabel, HomeProduct, MobileBanner, OnboardSetting, Order, ProductCategory, SubscriptionInvoicesVendor, UserVendor, VendorCities, VendorOrderStatus, WebStylingOption};
+use Illuminate\Support\Facades\Redis;
 
 /**
  * HomeController
  */
 class HomeController extends BaseController
 {
-    use ApiResponser, HomePageTrait, OrderTrait, ProductActionTrait, VendorTrait;
+    use ApiResponser, HomePageTrait, OrderTrait, ProductActionTrait, VendorTrait, RedisCacheTrait;
     public $cities = [];
     private $curLang = 0;
     private $field_status = 2;
@@ -31,6 +32,7 @@ class HomeController extends BaseController
     public $client_preferences = [];
     public $venderFilterOpenClose = null;
     public $venderFilterbest = null;
+    public $loc_key = 'geo_fence:locations:mobile';
 
 
     public function __construct(Request $request)
@@ -48,10 +50,71 @@ class HomeController extends BaseController
         
     }
 
+    public function config()
+    {
+        $this->additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating', 'is_service_product_price_from_dispatch','is_service_price_selection','is_cache_enable_for_home','cache_reset_time_for_home','cache_radius_for_home']);
+        $this->cache_minutes =  ($this->additionalPreference['cache_reset_time_for_home']!='') ? $this->additionalPreference['cache_reset_time_for_home'] :  $this->cache_minutes;
+        $this->radius =  ($this->additionalPreference['cache_radius_for_home']!='') ? $this->additionalPreference['cache_radius_for_home'] :  $this->radius;       
+    }
 
+
+
+    public function categoriesAll(Request $request, $domain='')
+    {
+
+        try {
+            $user = Auth::user();
+            $langId = $user->language;
+
+            $latitude = Session::get('latitude') ?? null;
+            $longitude = Session::get('longitude') ?? null;
+            $type = $request->has('type') ? $request->type : 'delivery';
+
+            if (empty($type))
+            $type = 'delivery';
+
+            $categoryTypes = getServiceTypesCategory($type);
+            $preferences = Session::get('preferences');
+            $vendorData = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+                $q->whereIn('type_id',$categoryTypes);
+            })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','id as is_vendor_closed' ,'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
+
+
+        
+
+            if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
+                $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+                $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
+                //3961 for miles and 6371 for kilometers
+                $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
+                $vendorData = $vendorData->select('*', DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
+                        cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
+                        sin( radians(' . $latitude . ') ) *
+                        sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->withAvg('product', 'averageRating');
+                $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $type);
+                $vendorData = $vendorData->whereIn('id', $ses_vendors);
+                //if($venderFilternear && ($venderFilternear == 1) ){
+                    //->orderBy('vendorToUserDistance', 'ASC')
+                    $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
+                //}
+            }
+        
+            
+            $venderIds  = $vendorData->where('status', 1)->pluck('id');
+
+            $navCategories = $this->categoryNav($langId, $venderIds, $type , $request);
+            $homeData['navCategories'] = $navCategories;
+            return $this->successResponse($homeData);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+
+    }
     public function homepage(Request $request, $domain = '')
     {
         try {           
+            $this->config();
             $home = array();
             $vendor_ids = array();
             if ($request->has('ref')) {
@@ -90,6 +153,65 @@ class HomeController extends BaseController
                     $longitude = $clientPreferences->Default_longitude;
                 }
             }
+
+
+            // $banners = Banner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
+            //     ->where(function ($q) {
+            //         $q->whereNull('start_date_time')->orWhere(function ($q2) {
+            //             $q2->whereDate('start_date_time', '<=', Carbon::now())
+            //                 ->whereDate('end_date_time', '>=', Carbon::now());
+            //         });
+            //     });
+            // if (isset($clientPreferences->is_service_area_for_banners) && ($clientPreferences->is_service_area_for_banners == 1) && ($clientPreferences->is_hyperlocal == 1)) {
+            //     if (!empty($latitude) && !empty($longitude)) {
+            //         $banners = $banners->whereHas('geos.serviceArea', function ($query) use ($latitude, $longitude) {
+            //             $query->select('id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
+            //         });
+            //     }
+            // }
+            // $banners = $banners->orderBy('sorting', 'asc')->get();
+
+            $clientPreferences = ClientPreference::first();
+
+
+            $count = 0;
+            if ($clientPreferences) {
+                foreach (config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value) {
+                    $clientVendorTypes = $vendor_typ_key . '_check';
+                    if ($clientPreferences->$clientVendorTypes == 1) {
+                        $count++;
+                    }
+                }
+
+                if (empty($latitude) && empty($longitude)) {
+                    $latitude = $clientPreferences->Default_latitude;
+                    $longitude = $clientPreferences->Default_longitude;
+                }
+            }
+
+            if($clientPreferences->is_hyperlocal == 1) {
+                
+                $this->loc_key = $this->loc_key.":hyperlocal:".$type.":".$clientPreferences->client_code;
+                $cacheKey = $this->loc_key.":{$latitude}:{$longitude}";
+                
+                $find_key = $this->isPointInRadius($latitude, $longitude, $this->radius, $this->loc_key);
+
+
+            } else {
+                $this->loc_key = $this->loc_key.':'.$type.':'.$clientPreferences->client_code;
+                $cacheKey = $this->loc_key;
+                $cachedResult = Redis::get($this->loc_key);
+                //$cachedResult['cacheKey'] = $cacheKey??'';
+                if ($cachedResult) {
+                    $find_key['data'] = json_decode($cachedResult);
+                } 
+
+            }
+
+            if ($this->additionalPreference['is_cache_enable_for_home'] == 1 && @$find_key['data']) {
+                $homeData = $find_key['data'];
+            } else {
+
 
             $mobile_banners = MobileBanner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
                 ->where(function ($q) {
@@ -206,6 +328,25 @@ class HomeController extends BaseController
             //$homeData['banners'] = $banners??[];
             $homeData['banner_image'] = $banners??[];
             //$homeData['categories'] = $categories;
+            $homeData['cacheKey'] = $cacheKey??'';
+
+            $locations = [
+                [
+                    'latitude' => $latitude,
+                    'longitude' => $longitude,
+                    'key' => $cacheKey,
+                    //'data' => json_encode($homeData)
+                ]
+            ];
+            //pr($cacheKey);
+            if($clientPreferences->is_hyperlocal == 1) {
+                $this->storeLocations($locations,$homeData,$this->loc_key);
+
+            } else {
+                Redis::set($this->loc_key, json_encode($homeData));
+                Redis::expire($this->loc_key, $this->cache_minutes);
+            }
+        }
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -351,6 +492,7 @@ class HomeController extends BaseController
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
+
 
 
 

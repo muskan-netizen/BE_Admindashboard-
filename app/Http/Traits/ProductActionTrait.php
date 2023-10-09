@@ -484,6 +484,7 @@ trait ProductActionTrait{
                 `products`.`is_featured`,
                 `products`.`is_new`,  
                 `products`.`category_id`,  
+                `products`.`calories`,  
                 `categories`.`id` as `category_id` ,
                 `categories`.`type_id`,
                 `product_images`.`media_id`,

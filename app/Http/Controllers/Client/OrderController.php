@@ -12,7 +12,7 @@ use App\Http\Controllers\Client\BaseController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\ShiprocketController;
 use App\Http\Controllers\DunzoController;
-use App\Http\Controllers\Front\RoadieController;
+use App\Http\Controllers\RoadieController;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Models\RescheduleOrder;
@@ -25,22 +25,25 @@ use GuzzleHttp\Client;
 use App\Models\Client as CP;
 use App\Models\Transaction;
 use App\Models\AutoRejectOrderCron;
-use App\Http\Traits\{ApiResponser,OrderTrait};
+use App\Http\Traits\{ApiResponser,OrderTrait, MargTrait, TaxJarTrait};
 use Log;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-use App\Models\{LoyaltyCard, VendorOrderCancelReturnPayment};
-
+use App\Models\{LoyaltyCard,VendorMargConfig, VendorOrderCancelReturnPayment};
+use App\Http\Controllers\ShipEngineController;
 class OrderController extends BaseController
 {
     private $folderName = '/order/reports';
 
-    use ApiResponser,OrderTrait;
+    use ApiResponser,OrderTrait,MargTrait,TaxJarTrait{
+        TaxJarTrait::__construct as TaxJarTraitConstruct;
+    }
     public $from_date;
     public $to_date;
     public $setWeekDate;
     function __construct()
     {
+        $this->TaxJarTraitConstruct();
         $this->from_date = Carbon::now()->startOfDay()->subDays(7);
         $this->to_date = Carbon::now()->endOfDay();
         $this->setWeekDate =  $this->from_date->format('d M Y') . ' to '. $this->to_date->format('d M Y');
@@ -943,9 +946,9 @@ class OrderController extends BaseController
 
         $recurring_booking = '';
         if(!empty($order->recurring_booking_time)){
-            $recurring_booking = OrderLongTermServiceSchedule::where(['order_number'=>$order->order_number,'type'=>2])->get();
+            $recurring_booking = OrderLongTermServiceSchedule::where(['order_number'=>$order->order_number])->get();
         }
-        //    pr( $order['total_other_taxes'][14]);
+        //    pr($recurring_booking);
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id,
             'order' => $order,
@@ -1055,7 +1058,7 @@ class OrderController extends BaseController
                 }
 
 
-                $orderData = OrderVendor::with('orderDetail')->where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
+                $orderData = OrderVendor::with(['vendor', 'products.product', 'orderDetail'])->where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->first();
                 if(@$orderData->exchanged_of_order){
                     $return = OrderReturnRequest::where('order_id', $orderData->exchanged_of_order->order_id)->first();
                     if (@$return && $request->status_option_id == 2) { //accept exchange
@@ -1122,12 +1125,20 @@ class OrderController extends BaseController
                     } elseif ($orderData->shipping_delivery_type == 'SH') {
                         //Create Shipping place order request for Shippo Masa
                         $orderPlaced = $this->placeOrderRequestShippo($request);
+                    }elseif ($orderData->shipping_delivery_type == 'SE') {
+                        $orderPlaced = $this->placeOrderRequestShipEngine($request,$orderData);
                     }elseif ($orderData->shipping_delivery_type == 'RO') {
                         //Create Roadies place order request for Roadies
-                        $orderPlaced = $this->placeOrderRequestRoadies($request);
+                        if ($orderData && ($orderData->delivery_fee > 0.00 )) {
+                            $orderPlaced = $this->placeOrderRequestRoadies($request, $orderData);
+                        }
                     }
                     $orderData->accepted_by = Auth::user()->id;
                     $orderData->save();
+                }
+
+                if ($request->status_option_id == 2 && taxJarEnable()) {
+                    $this->createTaxJarOrder($orderData);
                 }
 
                 if ($request->status_option_id == 4  && $orderData->shipping_delivery_type == 'L') {
@@ -1216,6 +1227,11 @@ class OrderController extends BaseController
 
                 if ($request->status_option_id == 2) {
                     $this->ProductVariantStock($request->order_id, $request);
+
+                    $hub_key = VendorMargConfig::where('vendor_id',$orderData->vendor_id ?? 0)->first();
+                    if(isset($hub_key) && $hub_key->is_marg_enable == 1){
+                      $this->makeInsertOrderMargApi($orderData->orderDetail);
+                    }
                 }
 
                 if ($currentOrderStatus->order_status_option_id == 2 && $request->status_option_id == 3) {
@@ -1363,14 +1379,40 @@ class OrderController extends BaseController
         return 2;
     }
 
-    public function placeOrderRequestRoadies($request){
+    public function placeOrderRequestRoadies($request, $orderData){
         $roadie = new RoadieController();
-        $checkdeliveryFeeAdded = OrderVendor::with(['vendor', 'products.product', 'orderDetail'])->where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
-        // dd($checkdeliveryFeeAdded);
         $checkOrderData = Order::with(['vendors.products.product', 'user', 'address'])->findOrFail($request->order_id);
-        if ($checkdeliveryFeeAdded && ($checkdeliveryFeeAdded->delivery_fee > 0.00 )) {
-            $order_ship_roadie = $roadie->createShipmentRequestRoadie($checkdeliveryFeeAdded, $checkOrderData);
-            return $order_ship_roadie;
+        if (@$checkOrderData) {
+            $order_ship_roadie = $roadie->createShipmentRequestRoadie($orderData, $checkOrderData);
+            if ($order_ship_roadie) {
+                $roadie_tracking_url = "https://www.roadie.com/tracking?tracking_number=".$order_ship_roadie->tracking_number;
+                $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrderData->id, 'vendor_id' => $request->vendor_id])
+                    ->update([
+                        'roadie_tracking_url' => $roadie_tracking_url
+                    ]);
+                return 1;
+            }
+        }
+        return false;
+    }
+
+    public function placeOrderRequestShipEngine($request){
+        $shipEngine = new ShipEngineController();
+        $checkOrderData = Order::with(['vendors.products.product', 'user', 'ordervendor.vendor'])->findOrFail($request->order_id);
+        if (@$checkOrderData) {
+            $createLabeleData = $shipEngine->placeOrderRequest($checkOrderData);
+            if (isset($createLabeleData['label_id'])) {
+                $tracking_url = $shipEngine->trackingUrl($createLabeleData['label_id']);
+                OrderVendor::where(['order_id' => $checkOrderData->id, 'vendor_id' => $request->vendor_id])
+                    ->update([
+                        'dispatch_traking_url' => $tracking_url,
+                        'courier_id' => $createLabeleData['carrier_code'],
+                        'ship_shipment_id' => $createLabeleData['shipment_id'],
+                        'label_id' => $createLabeleData['label_id'],
+                        'label_pdf' => $createLabeleData['label_download']['pdf']
+                    ]);
+                return 1;
+            }
         }
         return false;
     }

@@ -95,6 +95,8 @@
 	@endif
 @endif
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/common/commonall.css')}}">
+<!-- rental p2p css -->
+<link rel="stylesheet" href="{{asset('frontend/common/rental_p2p.css')}}">
 
 
 @yield('css-links')
@@ -131,3 +133,12 @@
     @endif
 </style>
   @yield('css')
+@php
+if(@getAdditionalPreference(['is_enable_google_analytics'])['is_enable_google_analytics'] == 1){ 
+$header_script = getAdditionalPreference(['header_script'])['header_script'];
+
+@endphp
+{!! $header_script !!}
+
+  
+ @php } @endphp

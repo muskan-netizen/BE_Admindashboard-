@@ -16,7 +16,7 @@ $(document).on('change', '#wallet_payment_methods input[name="wallet_payment_met
     }
 
     if (code == 'yoco') {
-        // $("#wallet_payment_methods .yoco_element_wrapper").removeClass('d-none');
+        
         // Create a new dropin form instance
 
         var yoco_amount_payable = $("input[name='wallet_amount']").val();

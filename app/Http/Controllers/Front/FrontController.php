@@ -21,6 +21,7 @@ use Twilio\Rest\Client as TwilioClient;
 use App\Models\{Client, Category, Product,Type, SmsTemplate, ClientPreference,EmailTemplate, ClientCurrency, UserDevice, UserLoyaltyPoint, Wallet, UserSavedPaymentMethods, SubscriptionInvoicesUser,Country,UserAddress,CartProduct, Vendor, VendorCategory, ClientLanguage, LoyaltyCard, Nomenclature, NomenclatureTranslation, Order};
 use App\Models\PermissionsOld;
 use App\Models\UserPermissions;
+use Illuminate\Support\Facades\Cache;
 
 class FrontController extends Controller
 {
@@ -30,15 +31,13 @@ class FrontController extends Controller
     private $field_status = 2;
     protected function sendSms($provider="", $sms_key="", $sms_secret="", $sms_from="", $to, $body){
         try{
-
             $client_preference =  getClientPreferenceDetail();
+           
             if($client_preference->sms_provider == 1)
             {
                 if(!empty($client_preference->sms_secret) && !empty($client_preference->sms_from)){
                     $client = new TwilioClient($client_preference->sms_key, $client_preference->sms_secret);
                     $send =  $client->messages->create($to, ['from' => $client_preference->sms_from, 'body' => $body]);
-                    //// Log::info('SMS twilio respons');
-                    //// Log::info($send);
                 }else{
                     return 2;
                 }
@@ -50,7 +49,7 @@ class FrontController extends Controller
             }elseif($client_preference->sms_provider == 3) //for mazinhost gateway
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
-                $send = $this->mazinhost($to,$body,$crendentials);
+                $send = $this->mazinhost_sms($to,$body,$crendentials);
             }elseif($client_preference->sms_provider == 4) //for unifonic gateway
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
@@ -97,8 +96,8 @@ class FrontController extends Controller
             //return $send;
         }
         catch(\Exception $e){
-            //// Log::info('SMS logs');
-            //// Log::info($e->getMessage());
+            Log::info('SMS logs');
+            Log::info($e->getMessage());
             return '2';
         }
         return '1';
@@ -127,7 +126,7 @@ class FrontController extends Controller
             }elseif($client_preference->sms_provider == 3) //for mazinhost gateway
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
-                $send = $this->mazinhost($to,$body,$crendentials);
+                $send = $this->mazinhost_sms($to,$body,$crendentials);
             }elseif($client_preference->sms_provider == 4) //for unifonic gateway
             {
                 $crendentials = json_decode($client_preference->sms_credentials);
@@ -198,7 +197,83 @@ class FrontController extends Controller
         $send = $this->sendSms($provider, $prefer->sms_key, $prefer->sms_secret, $prefer->sms_from, $to, $body);
         pr($send);
     }
+
     public function categoryNav($lang_id,$only_id = false)
+    {
+        // return $this->categoryNavOld($lang_id,$only_id = false);
+
+        $preferences = session()->get('preferences');
+        $vendorType = session()->get('vendorType');
+        $categoryTypes = getServiceTypesCategory($vendorType);
+        $primary = ClientLanguage::orderBy('is_primary', 'desc')->first();
+        $status = $this->field_status;
+        $include_categories = [4, 8]; // type 4 for brands
+        $celebrity_check = 0;
+        
+        // Check if celebrity_check is set in preferences
+        if ($preferences && isset($preferences->celebrity_check) && $preferences->celebrity_check == 1) {
+            $celebrity_check = 1;
+            $include_categories[] = 5; // type 5 for celebrity
+        }
+        
+        // Check if request_from is set and get vendors accordingly
+        if (isset($_REQUEST['request_from']) && $_REQUEST['request_from'] == 1) {
+            $vendors = $this->getServiceAreaVendors();
+        } else {
+            $vendors = (session()->has('vendors')) ? session()->get('vendors') : $this->getServiceAreaVendors();
+        }
+
+    // Define a unique cache key based on your criteria
+    $cacheKey = 'categories_query_' . implode('_', $categoryTypes) . '_' . $lang_id . '_celeb_' . $celebrity_check;
+    // dd($cacheKey);
+    // Define the cache duration in minutes (adjust as needed)
+    $cacheDuration = 60; // Cache for 60 minutes
+
+    $categories = Cache::remember($cacheKey, $cacheDuration, function () use ($categoryTypes, $status, $lang_id, $primary, $celebrity_check,$only_id,$vendors,$include_categories) {
+         $cat = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
+            ->select('categories.id', 'categories.icon', 'categories.icon_two', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.type_id')
+            ->when($vendors, function ($query) use($vendors , $include_categories) {
+            $query->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
+                    ->where(function ($q1) use ($vendors , $include_categories) {
+                        $q1->whereIn('vct.vendor_id', $vendors)
+                            ->where('vct.status', 1)
+                            ->orWhere(function ($q2) use($include_categories) {
+                                $q2->whereIn('categories.type_id', $include_categories);
+                            });
+                    });
+            })
+            ->whereIn('categories.type_id', $categoryTypes)
+            ->where('categories.id', '>', 1) // Exclude categories with id <= 1
+            ->whereNotNull('categories.type_id')
+            ->where('categories.is_visible', 1)
+            ->where('categories.is_core', 1)
+            ->where('categories.status', '!=', $status)
+            ->where('cts.language_id', $lang_id)
+            ->where(function ($qrt) use ($lang_id, $primary) {
+                $qrt->where('cts.language_id', $lang_id)->orWhere('cts.language_id', $primary->language_id);
+            })
+            ->whereNull('categories.vendor_id')
+            ->when($celebrity_check == 0, function ($query) {
+                // Conditionally add the where clause if $celebrity_check is 0
+                $query->where('categories.type_id', '!=', 5);
+            })
+            ->orderBy('categories.parent_id', 'asc')
+            ->groupBy('categories.id')
+            ->distinct('categories.slug');
+
+            if ($only_id) {
+               return $cat->pluck('id')->toArray();
+            } else {
+                $cat = $cat->get();
+                return $cat = $this->buildTree($cat);
+            }
+    });
+
+        return $categories;
+    }
+
+
+    public function categoryNavOld($lang_id,$only_id = false)
     {
         $preferences = Session::get('preferences');
         // get selected vendor type
@@ -225,14 +300,14 @@ class FrontController extends Controller
                 } else {
                     $vendors = (Session::has('vendors')) ? Session::get('vendors') : $this->getServiceAreaVendors();
                 }
-                $categories = $categories->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
-                    ->where(function ($q1) use ($vendors , $include_categories) {
-                        $q1->whereIn('vct.vendor_id', $vendors)
-                            ->where('vct.status', 1)
-                            ->orWhere(function ($q2) use($include_categories) {
-                                $q2->whereIn('categories.type_id', $include_categories);
-                            });
-                    });
+                // $categories = $categories->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
+                //     ->where(function ($q1) use ($vendors , $include_categories) {
+                //         $q1->whereIn('vct.vendor_id', $vendors)
+                //             ->where('vct.status', 1)
+                //             ->orWhere(function ($q2) use($include_categories) {
+                //                 $q2->whereIn('categories.type_id', $include_categories);
+                //             });
+                //     });
         }
         $categories = $categories->leftjoin('types', 'types.id', 'categories.type_id')
                                 ->where('categories.id', '>', '1')
@@ -264,6 +339,7 @@ class FrontController extends Controller
 
         return $categories;
     }
+
 
     public function fixedFee($lang_id){
         if(Nomenclature::where('label','Fixed Fee')->exists()){
@@ -349,6 +425,7 @@ class FrontController extends Controller
                     $query->select('vendor_id')
                     ->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(".$latitude." ".$longitude.")'))");
                 });
+
 
                 if (isset($preferences->slots_with_service_area) && ($preferences->slots_with_service_area == 1)) {
                     $slot_vendors = clone $serviceAreaVendors;
