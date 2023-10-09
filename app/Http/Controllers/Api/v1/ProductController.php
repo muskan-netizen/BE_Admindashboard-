@@ -117,7 +117,7 @@ class ProductController extends BaseController
             $userid = $user->id;
             $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
             $limit = 6; // Number of frequently bought products to retrieve
-            $product = Product::with(['inwishlist' => function($qry) use($userid){
+            $product = Product::with(['variant','inwishlist' => function($qry) use($userid){
                             $qry->where('user_id', $userid);
                         },'product_availability',
                         'category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
@@ -241,7 +241,7 @@ class ProductController extends BaseController
             }
 
 
-            $product->is_wishlist = @$product->category->categoryDetail->show_wishlist;
+            $product->is_wishlist = @$product->inwishlist ? 1 : 0;
             $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
             foreach ($product->variant as $key => $value) {
                 $product->variant[$key]->multiplier = $clientCurrency->doller_compare;

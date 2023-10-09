@@ -165,16 +165,18 @@ class ChatController extends BaseController
     public function startChat(Request $request){
         try {
             $data = $request->all();
-
-            
             $vendor_id = $data['vendor_id'];
+            $order_number = $data['order_number'];
             $vendor_order_id = $data['order_vendor_id'] ?? '';
             $order_id = $data['order_id'] ?? '';
+            $isRaiseIssue = $data['isRaiseIssue'] ?? 0 ;
             $server_name = $_SERVER['SERVER_NAME'];
             $product_id = $data['product_id'] ?? null;
             $agent_db = '';
             $agent_id = '';
             $socket_url = $this->client_data->socket_url;
+
+           
             $c_type = $data['type'] ?? null;
             $p2p_id = null;
             $vendor_name = null;
@@ -222,8 +224,10 @@ class ChatController extends BaseController
                 }
             }
           
-
-            $response =   Http::post($socket_url.'/api/room/createRoom', [
+ 
+            $url = $socket_url.'/api/room/createRoom';
+            
+            $params = [
                 'room_id' => $room_id,
                 'room_name' => $room_name,
                 'order_vendor_id'=> $vendor_order_id,
@@ -242,9 +246,19 @@ class ChatController extends BaseController
                 'product_price' => $product_price,
                 'agent_id'=>@$agent_id,
                 'agent_db'=>@$agent_db,
-            ]);
+                'isRaiseIssue'=> $isRaiseIssue
+            ];
+
+            \Log::info('url');
+            \Log::info($url);
+            \Log::info('params');
+            \Log::info($params);
 
 
+
+            $response =   Http::post($url,$params);
+            
+            
             $statusCode = $response->getStatusCode();
             if($statusCode == 200) {
                 $roomData = $response['roomData'];
