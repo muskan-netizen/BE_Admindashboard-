@@ -137,7 +137,6 @@ class CartController extends BaseController
 
             return $this->successResponse($cartData);
         } catch (Exception $e) {
-            \Log::info($e->getMessage());
             return $this->successResponse([]);
         }
     }
@@ -1693,7 +1692,6 @@ class CartController extends BaseController
 
         }catch(\Exception $ex)
         {
-            \Log::info($ex->getMessage());
             return [];
         }
     }

@@ -11,8 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client, ClientPreferenceAdditional, Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, OrderVendorProduct, ProductFaq, ProductFaqSelectOption, UserBidRideRequest, PickDropDriverBid, TaxRate, UserDevice};
-use App\Http\Traits\{ApiResponser,OrderTrait,GuzzleHttpTrait};
+use App\Models\{AddonOption, Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client, ClientPreferenceAdditional, Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, OrderProductAddon, OrderVendorProduct, ProductFaq, ProductFaqSelectOption, UserBidRideRequest, PickDropDriverBid, UserDevice};
+use App\Http\Traits\ApiResponser;
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Validator;
@@ -74,6 +74,19 @@ class PickupDeliveryController extends BaseController{
                         },'ProductFaq.selection.translations' => function ($qs) use($langId){
                             $qs->where('language_id',$langId);
                         },
+                        'ProductAttribute',
+                        'ProductAttribute.attributeOption',
+                        'addOn' => function ($q1) use ($langId) {
+                            $q1->join('addon_sets as set', 'set.id', 'product_addons.addon_id');
+                            $q1->join('addon_set_translations as ast', 'ast.addon_id', 'set.id');
+                            $q1->select('product_addons.product_id', 'set.min_select', 'set.max_select', 'ast.title', 'product_addons.addon_id');
+                            $q1->where('set.status', 1)->where('ast.language_id', $langId);
+                        },
+                        'addOn.setoptions' => function ($q2) use ($langId) {
+                            $q2->join('addon_option_translations as apt', 'apt.addon_opt_id', 'addon_options.id');
+                            $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
+                            $q2->where('apt.language_id', $langId);
+                        }
                     ])->join('product_categories as pc', 'pc.product_id', 'products.id')
                     ->whereNotIn('pc.category_id', function($qr) use($vid){
                                 $qr->select('category_id')->from('vendor_categories')
@@ -113,6 +126,20 @@ class PickupDeliveryController extends BaseController{
                             $product->service_charge_amount  = $product->tags_price * $product->vendor->service_fee_percent/100;
                         }
                     }
+
+                    $fields = [];
+                    foreach ($product->ProductAttribute as $productAttribute) {
+                        if ($productAttribute->attributeOption()->exists()) {
+                            if(!empty($title = $productAttribute->attributeOption->title)){
+                                $fields[$productAttribute->key_name] = $title;
+                            }else{
+                                $fields[$productAttribute->key_name] = $productAttribute->key_value;
+                            }
+                        }
+                    }
+                    $product->no_of_luggage = $fields['No of luggage'] ?? '';
+                    $product->no_of_seats = $fields['Seats'] ?? '0' .' Seats';
+
 
                     $product->toll_fee   = $tags_price['toll_fee']??0;
                     $product->tags_price = $tags_price['delivery_fee']??0;
@@ -635,7 +662,10 @@ class PickupDeliveryController extends BaseController{
 
         }catch(\Exception $e)
         {
-            \Log::info($e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
         }
 
 
@@ -660,6 +690,7 @@ class PickupDeliveryController extends BaseController{
             $total_service_fee = 0;
             $total_toll_amount = 0;
             $redeem_points_per_primary_currency = '';
+            $loyalty_points_used = 0;
             $loyalty_card = LoyaltyCard::where('status', '0')->first();
             if ($loyalty_card) {
                 $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
@@ -683,20 +714,20 @@ class PickupDeliveryController extends BaseController{
             }
             $cart = Product::where('id', $request->product_id)->first();
             if ($cart) {
-                $loyalty_points_used;
-                $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
-                if ($order_loyalty_points_earned_detail) {
-                    $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
-                    if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
-                        $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
-                    }
+                $addons = null;
+                if(!empty($request->addons_ids) && is_array($request->addons_ids)){
+                    $addons = AddonOption::whereIN('id', $request->addons_ids)->get();
                 }
-
+                // $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
+                // if ($order_loyalty_points_earned_detail) {
+                //     $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
+                //     if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
+                //         $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
+                //     }
+                // }
+                $payment_option = $request->payment_option_id;
                 if($request->payment_option_id == 2){
                     $payment_option = 1;
-                }
-                else{
-                    $payment_option = $request->payment_option_id;
                 }
 
                 $order = new Order;
@@ -735,6 +766,18 @@ class PickupDeliveryController extends BaseController{
                     $order->scheduled_date_time = $schedule_datetime_del;
 
                 }
+
+                $returnBookingTime = null;
+                if (!empty($request->return_booking_time)) {
+                    $returnBookingTime = Carbon::parse($request->return_booking_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                }
+                $order->scheduled_date_time = $schedule_datetime_del??NULL;
+                $order->specific_instructions = $request->task_description;
+                $order->recurring_booking_time = $returnBookingTime;
+                $order->recurring_week_type = $returnBookingTime ? 2 : null; //once
+                $order->flight_no = $request->flight_number;
+                $order->adults = $request->number_of_adult;
+                $order->name_sign_board = $request->name_sign_board;
                 $order->save();
 
                 // save pickup delivery task
@@ -744,7 +787,7 @@ class PickupDeliveryController extends BaseController{
                 $order_location->vendor_id = $request->vendor_id;
                 $order_location->phone_number = $request->phone_number ?? null;
                 $order_location->email = $request->email ?? null;
-                $order_location->tasks = json_encode($request->tasks );
+                $order_location->tasks = json_encode($request->tasks);
                 $order_location->save();
 
                 $customerCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
@@ -811,16 +854,31 @@ class PickupDeliveryController extends BaseController{
 
                 $order_product->is_one_push_booking = isset($request->is_one_push_booking)?$request->is_one_push_booking:0;
 
-                if(isset($request->user_product_order_form) && !empty($request->user_product_order_form))
-                $user_product_order_form = json_encode($request->user_product_order_form);
-                else
-                $user_product_order_form = null;
+                if(isset($request->user_product_order_form) && !empty($request->user_product_order_form)){
+                    $user_product_order_form = json_encode($request->user_product_order_form);
+                }
+                else{
+                    $user_product_order_form = null;
+                }
 
                 $order_product->user_product_order_form = $user_product_order_form;
                 if ($product->pimage) {
                     $order_product->image = $product->pimage->first() ? $product->pimage->first()->path : '';
                 }
                 $order_product->save();
+
+                if(!empty($addons)){
+                    foreach($addons as $addon){
+                        $orderAddon = new OrderProductAddon();
+                        $orderAddon->addon_id = $addon->addon_id;
+                        $orderAddon->option_id = $addon->id;
+                        $orderAddon->order_product_id = $order_product->id;
+                        $orderAddon->save();
+                        $payable_amount += $addon->price;
+                    }
+                }
+
+
                 $coupon_id = null;
                 $coupon_name = null;
                 $actual_amount = $vendor_payable_amount;
@@ -874,7 +932,7 @@ class PickupDeliveryController extends BaseController{
                 $order_status->order_vendor_id = $order_vendor->id;
                 $order_status->save();
 
-                $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
+                // $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
                 $order->total_amount = $total_amount;
                 $order->total_discount = $total_discount;
                 $order->taxable_amount = $taxable_amount;
@@ -911,8 +969,8 @@ class PickupDeliveryController extends BaseController{
                 }
 
 
-                $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
-                $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
+                $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'] ?? 0;
+                $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'] ?? 0;
                 if (isset($request->transaction_id) && (!empty($request->transaction_id))) {
                     $order->payment_status = 1;
                 }
@@ -1344,9 +1402,10 @@ class PickupDeliveryController extends BaseController{
             $q->where('category_translations.language_id', $langId);
         }])
         ->select('*','dispatcher_status_option_id as dispatcher_status')->first();
+        
         $dispatch_traking_url = ($request->has('new_dispatch_traking_url') && !empty($request->new_dispatch_traking_url)) ? $request->new_dispatch_traking_url : $order->dispatch_traking_url;
         $dispatch_traking_url = str_replace('/order/', '/order-details/', $dispatch_traking_url);
-        $response = Http::get($dispatch_traking_url, [
+        $response = http::get($dispatch_traking_url, [
             'headers' => [
                 'timezone' => $user->timezone
             ]
@@ -1390,7 +1449,7 @@ class PickupDeliveryController extends BaseController{
                 $files = [];
                 // $dispatch_domain->pickup_delivery_service_key_code ='745e3f';
                 // $dispatch_domain->pickup_delivery_service_key = 'icDerSAVT4Fd795DgPsPfONXahhTOA';
-                // $dispatch_domain->pickup_delivery_service_key_url ='http://192.168.96.20:8010';
+                // $dispatch_domain->pickup_delivery_service_key_url ='https://192.168.96.20:8010';
                 $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key, 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code]]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
 

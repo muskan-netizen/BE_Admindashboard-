@@ -38,8 +38,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('social/info', 'Api\v1\SocialController@getKeys');
         Route::post('social/login/{driver}', 'Api\v1\SocialController@login');
         Route::post('get_product_price_from_dispatcher',   'Api\v1\ProductController@getFreeLincerFromDispatcher');
-        Route::post('connecttowallet', 'Api\v1\WalletController@payoutConnectDetails');
-
+        Route::post('product/search',   'Api\v1\YachtController@productsSearchResult');
     });
     Route::group(['middleware' => ['dbCheck', 'AppAuth']], function() {
 

@@ -17,9 +17,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\{ApiResponser,CartManager, KwikApi,BiddingCartTrait, CartManagerV2};
 use App\Http\Controllers\Client\ShippoController;
-use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController, RoadieController, ShipEngineController};
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate, Page,WebStylingOption, ProductDeliveryFeeByRole};
-use DateTime;
+use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
+use App\Models\{AddonSet, BookingOption, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, CartBookingOption, CartRentalProtection, VerificationOption,VendorSlotDate,TaxRate, Page,WebStylingOption, ProductDeliveryFeeByRole, ProductRentalProtection, RentalProtection};
 use Http\Message\Cookie;
 
 
@@ -84,6 +83,7 @@ class CartController extends FrontController
         if ($cart) {
             $cartData = CartProduct::where('status', [0, 1])->where('cart_id', $cart->id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
         }
+    
         $navCategories = $this->categoryNav($langId);
 
         $subscription_features = array();
@@ -159,9 +159,16 @@ class CartController extends FrontController
                 $nomenclatureProductOrderForm = $nomenclatureTranslation->name ?? null;
             }
         }
-
-        return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data,$nomenclatureProductOrderForm,$client_preference_detail,$client_detail);
-       // return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
+        $template = WebStylingOption::where('is_selected','1')->first();
+   
+        if($template->template_id == 10){
+          
+        return view('frontend.yacht.summary',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data,$nomenclatureProductOrderForm,$client_preference_detail,$client_detail);
+        }else{
+            return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data,$nomenclatureProductOrderForm,$client_preference_detail,$client_detail);
+        }
+        // 
+        // return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
         // return view('frontend.cartnew')->with(['navCategories' => $navCategories, 'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user]);
     }
 
@@ -301,8 +308,10 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
+  
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
+        $vendor = Vendor::find($request->vendor_id);
         try {
             $cart_detail = [];
             $user = Auth::user();
@@ -578,7 +587,7 @@ class CartController extends FrontController
             }
             $quantityCart = CartProduct::where('cart_id',$cart_detail->id)->sum('quantity');
 
-            return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!','cart_product_id' => $cartProduct->id,'cart_quantity'=>$quantityCart??0,'product_id' => $cartProduct->product_id]);
+            return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!','cart_product_id' => $cartProduct->id,'cart_quantity'=>$quantityCart??0,'product_id' => $cartProduct->product_id,'vendor' => $vendor]);
         } catch (Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
@@ -873,7 +882,7 @@ class CartController extends FrontController
                 $qry->select('addon_options.id', 'addon_options.price', 'apt.title', 'addon_options.addon_id', 'apt.language_id');
                 $qry->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
                 // $qry->where('language_id', $langId);
-            }, 'vendorProducts.product.taxCategory.taxRate',
+            }, 'vendorProducts.product.taxCategory.taxRate'
         ])->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
 
         //dd($cartData->toArray());
@@ -1982,7 +1991,8 @@ class CartController extends FrontController
         CartProduct::where('id', $request->cartproduct_id)->delete();
         CartCoupon::where('vendor_id', $request->vendor_id)->delete();
         CartAddon::where('cart_product_id', $request->cartproduct_id)->delete();
-
+        CartRentalProtection::where('cart_id', $cartProd->cart_id)->delete();
+        CartBookingOption::where('cart_id', $cartProd->cart_id)->delete();
         if(!empty($cartProd)){
             $cartpro_count = CartProduct::where('cart_id', $cartProd->cart_id)->count();
             if($cartpro_count == 0){
@@ -2110,6 +2120,7 @@ class CartController extends FrontController
       
 
         $address_id = $request->has("address_id") ? $request->address_id : (  @$cart->address_id ?? '') ;
+   
         if (isset( $address_id) && !empty( $address_id)) {
            // $address_id $address_id = $request->address_id;
             $address = UserAddress::where('user_id', $user->id)->update(['is_primary' => 0]);
@@ -2194,10 +2205,9 @@ class CartController extends FrontController
                 $currency_code=$currency->currency->iso_code;
             }
             $cart_details->currency_code=$currency_code;
-
-           
-
-            $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message])->render();
+            $addon = AddonSet::with('option', 'translation')->where('vendor_id', $cart_details->vendor_id)->where('status',1)->get();
+                  
+            $mycartView = view('frontend.yacht.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message, 'addons' => $addon])->render();
         }
        
         $tokenAmount = 1;
@@ -2207,6 +2217,7 @@ class CartController extends FrontController
             $cart_details->is_token_enable = $is_token_enable;
             $cart_details->tokenAmount = $tokenAmount;
         }
+        
         // till here
         return response()->json(['loggedIn' => Auth::check() ? 'true' : 'false','status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'', 'cart_error_message' => $error_message,'wishListCount'=>$wishListCount]);//'token_val' => $tokenAmount , 'is_token_enable' => $is_token_enable
     }
@@ -2640,6 +2651,7 @@ class CartController extends FrontController
             $client_timezone = DB::table('clients')->first('timezone');
             $user->timezone = $client_timezone->timezone ?? $user->timezone;
             $new_session_token = session()->get('_token');
+            $langId = Session::get('customerLanguage')??'1';
             if ($user) {
                 $cart_detail = Cart::where('user_id', $user->id)->first();
             } else {
@@ -2663,7 +2675,106 @@ class CartController extends FrontController
                 if(count($presciptionProducts)){
                     return response()->json(['status'=>'error_prescription', 'presciptionProducts'=>$presciptionProducts]);
                 }
+
+            }
+            $addon_ids = [];
+            if($request->has('addonID')){
+                $addon_ids = $request->addonID;
+            }
+            $addon_options = [];
+            if($request->has('addonoptID')){
+                $addon_options = $request->addonoptID;
+            }
+            $addonSets = [];
+            foreach($addon_options as $key => $opt){
+                if(isset($addon_ids[$key])){
+                    $addonSets[$addon_ids[$key]][] = $opt;
                 }
+            }
+
+            foreach($addonSets as $key => $value){
+                $addon = AddonSet::join('addon_set_translations as ast', 'ast.addon_id', 'addon_sets.id')
+                            ->select('addon_sets.id', 'addon_sets.min_select', 'addon_sets.max_select', 'ast.title')
+                            ->where('ast.language_id', $langId)
+                            ->where('addon_sets.status', '!=', '2')
+                            ->where('addon_sets.id', $key)->first();
+                if(!$addon){
+                    return response()->json(["status" => "error", 'message' => 'Invalid addon or delete by admin. Try again with remove some.'], 404);
+                }
+            }
+            $cartProduct = CartProduct::where('cart_id', $cart_detail->id)->first();
+            $isnew = 0;
+            if(!$cartProduct){
+                $isnew = 1;
+            }else{
+                $checkaddonCount = CartAddon::where('cart_product_id', $cartProduct->id)->count();
+                if(count($addon_ids) != $checkaddonCount){
+                    $isnew = 1;
+                }else{
+                    foreach ($addon_options as $key => $opts) {
+                        $cart_addon = CartAddon::where('cart_product_id', $cartProduct->id)
+                                    ->where('addon_id', $addon_ids[$key])
+                                    ->where('option_id', $opts)->first();
+
+                        if(!$cart_addon){
+                            $isnew = 1;
+                        }
+                    }
+                }
+            }
+            
+            if($isnew){
+                if(!empty($addon_ids) && !empty($addon_options)){
+                    $saveAddons = array();
+                    foreach ($addon_options as $key => $opts) {
+                        if(isset($addon_ids[$key])){
+                            $saveAddons[] = [
+                                'option_id' => $opts,
+                                'cart_id' => $cart_detail->id,
+                                'addon_id' => $addon_ids[$key],
+                                'cart_product_id' => $cartProduct->id,
+                            ];
+                        }
+                    }
+                    if(!empty($saveAddons)){
+                        CartAddon::insert($saveAddons);
+                    }
+                }
+            }
+
+            if($request->has('rentalProtectionId')){
+                $saveProtections = [];
+                foreach($request->rentalProtectionId as $protectionId){
+                    $rentalProtection = RentalProtection::find($protectionId);
+                    if($rentalProtection){
+                        $saveProtections[] = [
+                            'cart_id' => $cart_detail->id,
+                            'rental_protection_id' => $rentalProtection->id,
+                            'product_id' => $cartProduct->id,
+                        ];
+                    }
+                }
+                if(!empty($saveProtections)){
+                    CartRentalProtection::insert($saveProtections);
+                }
+            }
+
+            if($request->has('bookingOptionId')){
+                $saveBooking = [];
+                foreach($request->bookingOptionId as $bookingId){
+                    $bookingOption = BookingOption::find($bookingId);
+                    if($bookingOption){
+                        $saveBooking[] = [
+                            'cart_id' => $cart_detail->id,
+                            'booking_option_id' => $bookingOption->id,
+                            'product_id' => $cartProduct->id,
+                        ];
+                    }
+                }
+                if(!empty($saveBooking)){
+                    CartBookingOption::insert($saveBooking);
+                }
+            }
 
             if ($user || $new_session_token) {
                 if($request->task_type == 'now'){

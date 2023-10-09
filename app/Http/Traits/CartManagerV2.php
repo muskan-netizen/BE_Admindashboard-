@@ -318,6 +318,7 @@ trait CartManagerV2{
 
         $this->is_service_product_price_from_dispatch =0;
         $action = (session()->has('vendorType')) ? session()->get('vendorType') : 'delivery';
+   
         $is_service_product_price_from_dispatch = 0;
         if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( $action == 'on_demand')){
             $onDemandPricingSelected = (session()->has('onDemandPricingSelected')) ? session()->get('onDemandPricingSelected') : 'vendor';
@@ -377,6 +378,9 @@ trait CartManagerV2{
                 $qry->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
                 // $qry->where('language_id', $langId);
             }, 'vendorProducts.product.taxCategory.taxRate',
+            'vendorProducts.product.bookingOptions.bookingOption',
+            'vendorProducts.product.rentalProtections.rentalProtection',
+            'vendorProducts.product.ProductAttribute.attributeOption'
         ]);
         
        // $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','cart_id','delivery_date','slot_price','slot_id')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
@@ -403,8 +407,8 @@ trait CartManagerV2{
         $user_subscription = null;
         if($user){
           //Get earn and used loyalty amount
-          $loyaltyCheck = $this->getOrderLoyalityAmountV2($user);
-          $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
+        //   $loyaltyCheck = $this->getOrderLoyalityAmountV2($user);
+        //   $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
           //d Get user subscription
           $user_subscription = $this->userSubscriptionV2($user->id);
           $cart->scheduled_date_time = convertDateTimeInTimeZone($cart->scheduled_date_time, $user->timezone, 'Y-m-d\TH:i');
@@ -511,6 +515,7 @@ trait CartManagerV2{
 
                 /* Getting vendor details */
                 if($action != 'delivery') {
+                
                     $vendor_details['vendor_address'] = $vendorData->vendor->select('id','latitude','longitude','address')->where('id', $vendorData->vendor_id)->first();
                     if($action == 'dine_in') {
                         $vendor_tables = VendorDineinTable::where('vendor_id', $vendorData->vendor_id)->with('category')->get();
@@ -533,6 +538,7 @@ trait CartManagerV2{
                 $coupon_vendor_ids = [];
                 $coupon_product_discount = 0;
                 $in_or_not = 0;
+                $vendor_details['vendor_address'] = $vendorData->vendor->select('id','latitude','longitude','address')->where('id', $vendorData->vendor_id)->first();
                 if (isset($vendorData->coupon) && !empty($vendorData->coupon) && isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)){
                     if($vendorData->coupon->promo->restriction_on == 0)
                     {
@@ -745,9 +751,9 @@ trait CartManagerV2{
                    
                     $total_container_charges = $container_charges_in_currency * $prod->quantity;
                     $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
-
-                    $sub_total+=$quantity_price+$quantity_container_charges;
-                    
+                    if($prod->is_cart_checked == 1){
+                        $sub_total+=$quantity_price + $quantity_container_charges;
+                    }
                     $prod->pvariant->price_in_cart = $prod->pvariant->price??0;
                    
                     $total_quantity += $prod->quantity;
@@ -1470,16 +1476,15 @@ trait CartManagerV2{
 
             $cart->total_subscription_discount = decimal_format(($total_subscription_discount_admin + $total_subscription_discount_vendor + $total_subscription_discount_delivery)??0);
 
-            $total_payable_amount = $total_payable_amount - $total_discount_amount;
-            if ($loyalty_amount_saved > 0) {
-                if ($loyalty_amount_saved > $total_payable_amount) {
-                    $loyalty_amount_saved =  $total_payable_amount;
-                }
-                $total_payable_amount = $total_payable_amount - $loyalty_amount_saved;
-            }
+            // $total_payable_amount = $total_payable_amount - $total_discount_amount;
+            // if ($loyalty_amount_saved > 0) {
+            //     if ($loyalty_amount_saved > $total_payable_amount) {
+            //         $loyalty_amount_saved =  $total_payable_amount;
+            //     }
+            //     $total_payable_amount = $total_payable_amount - $loyalty_amount_saved;
+            // }
             $wallet_amount_available = 0;
             $wallet_amount_used = 0;
-            //pr($cart->toArray());
             if($user){
 
                 if($user->balanceFloat > 0){
@@ -1695,6 +1700,7 @@ trait CartManagerV2{
             $cart->totalQuantity = $total_quantity;
             $cart->user_allAddresses = $user_allAddresses??[];
             $cart->guest_user = $guest_user??0;
+            $cart->vendor_detail = $vendor_details;
             if($requestType == 1){
                 $cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $this->user_allAddresses??[], 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id, 'processorProduct' => $processorProduct, 'preferences' => $preferences])->render();
             }
