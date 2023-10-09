@@ -296,6 +296,7 @@
         });*/
 
         async function check_product_availibility(formData){
+        
           if(formData.variant_option_id == undefined){
             formData.variant_option_id = '';
           }
@@ -306,7 +307,7 @@
 
                 if(response.data.success){
                   if(!data.variant_product_quantity){
-                    $("a#add_to_cart_btn").removeClass("addToCart");
+                    // $("a#add_to_cart_btn").removeClass("addToCart");
                     await sweetAlert.error('','Not available yet!'); 
                     return false;
                   }
@@ -315,11 +316,12 @@
                   var end_time = data.end_time;
                   var start_time = data.start_time;
                   if(available_product_variant) {
-                    console.log('adfdaffa');
-                    $("a#add_to_cart_btn").addClass("addToCart");
+                  
+                    // $("a#add_to_cart_btn").addClass("addToCart");
                     $('#available_product_variant').val(available_product_variant);
                     $('#start_time').val(start_time);
                     $('#end_time').val(end_time);
+                
                     product_variant_data = data.product_variant_data;
                     if(product_variant_data) {
                       var incremental_hrs = document.getElementById('incremental_hrs').value;

@@ -374,8 +374,8 @@ $serviceType = Session::get('serviceType');
                     @endif
                     <ul>
                         <img src="/yacht-images/6.png">
-                        <li><img src="/yacht-images/4.png" alt=""><span>{{$cart_details->vendor_detail->vendor_address->address}}</span> Pickup</li>
-                        <li><img src="/yacht-images/5.png" alt=""><span>{{$cart_details->vendor_detail->vendor_address->address}} </span>DROP</li>
+                        <li><img src="/yacht-images/4.png" alt=""><span>{{$cart_details->vendor_detail->vendor_address->address ?? ""}}</span> Pickup</li>
+                        <li><img src="/yacht-images/5.png" alt=""><span>{{$cart_details->vendor_detail->vendor_address->address ?? ""}} </span>DROP</li>
                     </ul>
                 </div>
                 <div class="rental_item">

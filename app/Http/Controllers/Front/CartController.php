@@ -161,6 +161,7 @@ class CartController extends FrontController
         $template = WebStylingOption::where('is_selected','1')->first();
    
         if($template->template_id == 10){
+          
         return view('frontend.yacht.summary',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data,$nomenclatureProductOrderForm,$client_preference_detail,$client_detail);
         }else{
             return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data,$nomenclatureProductOrderForm,$client_preference_detail,$client_detail);
@@ -306,6 +307,7 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
+  
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
         $vendor = Vendor::find($request->vendor_id);
@@ -2078,6 +2080,7 @@ class CartController extends FrontController
      */
     public function getCartData($domain = '', Request $request)
     {
+  
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'order_edit_before_hours', 'is_gift_card', 'is_token_currency_enable','is_service_product_price_from_dispatch','token_currency','advance_booking_amount', 'advance_booking_amount_percentage','is_file_cart_instructions','is_service_price_selection']);
                 
         $wishListCount = 0;
@@ -2109,6 +2112,7 @@ class CartController extends FrontController
         }
 
         $address_id = $request->has("address_id") ? $request->address_id : (  @$cart->address_id ?? '') ;
+   
         if (isset( $address_id) && !empty( $address_id)) {
            // $address_id $address_id = $request->address_id;
             $address = UserAddress::where('user_id', $user->id)->update(['is_primary' => 0]);
@@ -2194,6 +2198,7 @@ class CartController extends FrontController
             }
             $cart_details->currency_code=$currency_code;
             $addon = AddonSet::with('option', 'translation')->where('vendor_id', $cart_details->vendor_id)->where('status',1)->get();
+           
             $mycartView = view('frontend.yacht.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message, 'addons' => $addon])->render();
         }
        

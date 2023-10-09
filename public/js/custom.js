@@ -3351,6 +3351,8 @@ $(document).ready(function () {
                 var service_date            =  $('#service_date').val();
                 var service_start_time      =  $('#service_start_time').val();
 
+               
+
                 if (((sVendorResponse.isSingleVendorEnabled == 1) && (sVendorResponse.otherVendorExists == 1)) || (OrderStorage.getStorage('LongTermServiceAdded') == 1 ) || (OrderStorage.getStorage('cartProductCount') > 0 &&  addLongTerm ==1 ) ) {
                     var modelText = _language.getLanString('You can only buy products for single vendor. Do you want to remove all your cart products to continue ?');
                     if(OrderStorage.getStorage('LongTermServiceAdded') == 1 || addLongTerm ==1 ){
@@ -3376,6 +3378,7 @@ $(document).ready(function () {
                     // }
                     var variant_id = $('#prod_variant_id').val();
                     var start_date =  $('#start_time').val();
+                
                     var end_date =  $('#end_time').val();
                     var quantity = $('.quantity_count').val();
                     var incremental_hrs =  $('#incremental_hrs').val();
@@ -3391,7 +3394,7 @@ $(document).ready(function () {
     }
 
     function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='', sele_slot_id='', sele_slot_price='', delivery_date='',recurringformPost='') {
-       
+          
         var returnResponse = false;
         $.ajax({
             type: "post",

@@ -298,15 +298,15 @@
 <section class="product_dis_list d-none">
     <div class="container">
         <input type="hidden" name="available_product_variant" id="available_product_variant" value="{{$product->variant[0]->id}}">
-        <input type="hidden" name="start_time" id="start_time" value="">
-        <input type="hidden" name="end_time" id="end_time" value="">
+        <input type="hidden" name="start_time" id="start_time" value="{{$pickup_time}}">
+        <input type="hidden" name="end_time" id="end_time" value="{{$drop_time}}">
         <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
         <input type="hidden" name="sele_slot_id" id="sele_slot_id" value="" />
         <input type="hidden" name="sele_slot_price" id="sele_slot_price" value="" />
         <input type="hidden" name="product_id" id="product_id" value="{{$product->id}}" />
         <input type="hidden" name="prod_variant_id" id="prod_variant_id" value="" />
         <div id="selected_slot"></div>
-         {{-- @include('frontend.product-part.booking-slot') --}}
+          @include('frontend.product-part.booking-slot')
         {{-- <h3>Car specifications</h3>
         <ul class="specifications_list">
             <li>Stunning swimming pool and Gym access</li>
