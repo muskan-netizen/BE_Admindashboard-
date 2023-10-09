@@ -178,6 +178,14 @@ $applocale = session()->get('applocale');
                                 </div>
                             </div>
                         {{-- </div> --}}
+
+                        @if (auth()->user()->custom_allergic_items)
+                            <div class="page-title">
+                                <h2>{{__('Custom Allergic Items')}}</h2>
+                            </div>
+
+                            {{ auth()->user()->custom_allergic_items }}
+                        @endif
                     </div>
                 </div>
             </div>
