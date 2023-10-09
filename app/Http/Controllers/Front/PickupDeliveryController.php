@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
-use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, ClientPreferenceAdditional, OrderLongTermServiceSchedule, PaymentOption, PickDropDriverBid, TaxRate, UserBidRideRequest, UserDevice};
-use App\Http\Traits\{ApiResponser, GuzzleHttpTrait, OrderTrait, PaymentTrait};
+use App\Models\{AddonOption, Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, ClientPreferenceAdditional, OrderProductAddon, PaymentOption, PickDropDriverBid, UserBidRideRequest, UserDevice};
+use App\Http\Traits\{ApiResponser,PaymentTrait};
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
@@ -203,6 +203,7 @@ class PickupDeliveryController extends FrontController{
                         },'variant' => function($q) use($language_id){
                             $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode');
                             $q->groupBy('product_id');
+<<<<<<< HEAD
                         }])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags', 'products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id','products.tax_category_id')->where('products.id', $product_id)->where('products.is_live', 1)->first();
         $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
         $product->image_url = $image_url;
@@ -215,6 +216,14 @@ class PickupDeliveryController extends FrontController{
             $product->selectedCustomdates = $recurring->selectedCustomdates;
             $product->schedule_time = $recurring->schedule_time;
         }
+=======
+                        },
+                        'addOn.addOnName.option'
+                        ])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags', 'products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id','seats')->where('products.id', $product_id)->where('products.is_live', 1)->first();
+        $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
+        $product->image_url = $image_url;
+        $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
+>>>>>>> RajatDevCarRental
 
         // $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
 
@@ -356,6 +365,15 @@ class PickupDeliveryController extends FrontController{
                 }
             }
         }
+<<<<<<< HEAD
+=======
+        if(isset($request->yacht_id)){
+            $yacht = Product::with(['pimage','variant'])->select('id','title')->find($request->yacht_id);
+            $product->yacht = $yacht;
+            $image_url = $yacht->media->first() ? $yacht->media->first()->image->path['image_fit'].'360/360'.$yacht->media->first()->image->path['image_path'] : '';
+            $product->yacht->image_url = $image_url;
+        }
+>>>>>>> RajatDevCarRental
         return $this->successResponse($product);
     }
     # get all vehicles category by vendor
@@ -583,6 +601,25 @@ class PickupDeliveryController extends FrontController{
                 $request->merge(['schedule_time' => $given->format("Y-m-d H:i:s")]);
             }
 
+<<<<<<< HEAD
+=======
+            $product = Product::find($request->product_id);
+            if($product && $product->available_seats < $request->seats){
+                return response()->json(['status' => 203, 'message' => $request->seats.' Seats not Availeble']);
+            }
+
+            if($product->extra_time)
+            {
+                $beforeTime = ($product->extra_time + ($request->duration_time * 2));
+                $scheduleDatetime = Carbon::parse($product->pickup_time)->subMinute($beforeTime);
+                $timezone = $request->time_zone;
+                $given = new DateTime($scheduleDatetime, new DateTimeZone($timezone));
+                $given->setTimezone(new DateTimeZone("UTC"));
+                $request->merge(['schedule_time' => $given->format("Y-m-d H:i:s")]);
+            }
+
+           // pr($request->all());
+>>>>>>> RajatDevCarRental
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
 
@@ -602,7 +639,7 @@ class PickupDeliveryController extends FrontController{
                 $request_to_dispatch = $this->placeRequestToDispatch($request, $order, $request->vendor_id);
                 if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
                     $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
-                    $order_place['data']['invalid_agent'] = $request_to_dispatch['invalid_agent'];
+                    // $order_place['data']['invalid_agent'] = $request_to_dispatch['invalid_agent'];
                     $order_place['data']['user_name'] = $user->email;
                     $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
 
@@ -733,6 +770,8 @@ class PickupDeliveryController extends FrontController{
         $taxable_amount = 0;
         $payable_amount = 0;
         $user = Auth::user();
+        $loyalty_points_used = 0;
+        $loyalty_points_earned = 0;
         $currency_id = Session::get('customerCurrency');
         $action = 'pick_drop';
         $luxury_option = LuxuryOption::where('title', $action)->first();
@@ -766,14 +805,17 @@ class PickupDeliveryController extends FrontController{
             }
             $cart = Product::where('id', $request->product_id)->first();
             if ($cart) {
-                $loyalty_points_used;
-                $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
-                if ($order_loyalty_points_earned_detail) {
-                    $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
-                    if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
-                        $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
-                    }
+                $addons = null;
+                if(!empty($request->addons_ids) && is_array($request->addons_ids)){
+                    $addons = AddonOption::whereIN('id', $request->addons_ids)->get();
                 }
+                // $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
+                // if ($order_loyalty_points_earned_detail) {
+                //     $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
+                //     if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
+                //         $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
+                //     }
+                // }
 
                 if($request->payment_option_id == 2){
                     $payment_option = 1;
@@ -792,6 +834,7 @@ class PickupDeliveryController extends FrontController{
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
                     $schedule_datetime_del  =$request->schedule_time ;// Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
+<<<<<<< HEAD
 
                 if(@$request->payment_option_id == '60')
                 {
@@ -819,11 +862,25 @@ class PickupDeliveryController extends FrontController{
                 }
 
                
+=======
+                $returnBookingTime = null;
+                if (!empty($request->return_booking_time)) {
+                    $returnBookingTime = Carbon::parse($request->return_booking_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                }
+                $order->scheduled_date_time = $schedule_datetime_del;
+>>>>>>> RajatDevCarRental
                 /*book for a friend*/
                 $order->type                = $request->type;
                 $order->friend_name         = $request->friendName;
                 $order->friend_phone_number = $request->friendPhoneNumber;
                 $order->luxury_option_id    = $luxury_option->id;
+
+                $order->specific_instructions = $request->task_description ?? '';
+                $order->recurring_booking_time = $returnBookingTime;
+                $order->recurring_week_type = $returnBookingTime ? 2 : null; //once
+                $order->flight_no = $request->flight_number ?? '';
+                $order->adults = $request->number_of_adult ?? 0;
+                $order->name_sign_board = $request->name_sign_board ?? '';
                 $order->save();
 
 
@@ -888,6 +945,7 @@ class PickupDeliveryController extends FrontController{
                 $order_product->product_name         = $product->sku;
                 $order_product->no_seats_for_pooling = (isset($request->is_cab_pooling) && $request->is_cab_pooling== 1 && isset($request->no_seats_for_pooling))?$request->no_seats_for_pooling:0;
                 $order_product->is_cab_pooling       = isset($request->is_cab_pooling)?$request->is_cab_pooling:0;
+                $order_product->booking_seats        = $request->seats ?? 0;
 
                 if(isset($request->user_product_order_form) && !empty($request->user_product_order_form))
                 $user_product_order_form             = json_encode($request->user_product_order_form);
@@ -899,6 +957,18 @@ class PickupDeliveryController extends FrontController{
                     $order_product->image            = $product->pimage->first() ? $product->pimage->first()->path : '';
                 }
                 $order_product->save();
+
+                if(!empty($addons)){
+                    foreach($addons as $addon){
+                        $orderAddon = new OrderProductAddon();
+                        $orderAddon->addon_id = $addon->addon_id;
+                        $orderAddon->option_id = $addon->id;
+                        $orderAddon->order_product_id = $order_product->id;
+                        $orderAddon->save();
+                        $payable_amount += $addon->price;
+                    }
+                }
+                
                 $coupon_id     = null;
                 $coupon_name   = null;
                 $actual_amount = $vendor_payable_amount;
@@ -952,7 +1022,7 @@ class PickupDeliveryController extends FrontController{
                 $order_status->order_vendor_id = $order_vendor->id;
                 $order_status->save();
 
-                $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
+                // $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
                 $order->total_amount = $total_amount;
                 $order->total_discount = $total_discount;
                 $order->taxable_amount = $taxable_amount;
@@ -990,8 +1060,8 @@ class PickupDeliveryController extends FrontController{
                     $order->subscription_discount = $request->amount - $request->subscription_payable_amount;
                 }
 
-                $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
-                $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
+                $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'] ?? 0;
+                $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'] ?? 0;
                 if (($request->has('transaction_id')) && (!empty($request->transaction_id))) {
                     $order->payment_status = 1;
                 }

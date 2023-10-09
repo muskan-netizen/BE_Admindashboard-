@@ -2436,9 +2436,6 @@ class StoreController extends BaseController
 			}
 		}
 		} catch (\Exception $e) {
-			\Log::info($e->getLine());
-			\Log::info($e);
-			\Log::info($e->getMessage());
 			return $this->errorResponse('Exception occured', 500);
 		}
 	

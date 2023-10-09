@@ -1,4 +1,4 @@
-
+  
 $(function () {
     $(".al_main_category").hover(
         function () {
@@ -996,6 +996,24 @@ $(document).ready(function () {
 
     }
     $(document).on("click", "#order_placed_btn", async function () {
+        
+        $('.adone_item .item').each(function(index, element){
+            let min = $(this).data('min');
+            let max = $(this).data('max');
+            let checkedBox = $(this).find('input[type="checkbox"]:checked').length
+            if(checkedBox < min || checkedBox > max){
+                
+                $(this).css('transition','border 0.2s ease-in-out');
+                $(this).css('border','1px solid red');
+
+                setTimeout(() => {
+                    $(this).css('border','none');
+                    $(this).css('transition','none');
+                }, 3000);
+            }
+        });
+        
+        // return true;
 
         if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val()!=$("#schedule_datetime").val())){
             success_error_alert('error', error_unchanged_schedule_date, ".cart_response");
@@ -1062,6 +1080,7 @@ $(document).ready(function () {
 
 
         //$("input[name='category_kyc_ids']").length > 0 ||
+        
         if( ($("input[name='without_category_kyc']").val() !=1 ) ){
             success_error_alert('error', 'User Place Order is required! kindly fill the details.', ".cart_response");
             return false;
@@ -1078,7 +1097,6 @@ $(document).ready(function () {
             })
             return false;
         }
-
 
         var vendorScheduleDatetime = $('.vendor_schedule_datetime').length
         if(vendorScheduleDatetime > 0){
@@ -1097,6 +1115,7 @@ $(document).ready(function () {
             $("#login_modal").modal("show");
             return false;
         }
+            
         var address = $("input[name='address_id']").val();
         if ((vendor_type == 'delivery' || vendor_type == 'on_demand' || vendor_type == 'rental') && ((address == '') || (address < 1) || ($("input[name='address_id']").length < 1))) {
             success_error_alert('error', 'Please add a valid address to continue', ".cart_response");
@@ -1201,6 +1220,7 @@ $(document).ready(function () {
                 return false;
             }
         }
+        
         if (cartAmount == 0) {
             var params = [specific_instructions, task_type, schedule_dropoff, schedule_pickup, schedule_dt, comment_for_pickup_driver, comment_for_dropoff_driver, comment_for_vendor, delivery_type, slot, address];
             // Save Cart Page Detail Forcely If user is paying from his cart.
@@ -1214,7 +1234,7 @@ $(document).ready(function () {
                 type: "POST",
                 dataType: 'json',
                 url: update_cart_schedule,
-                data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, dropoff_scheduled_slot : slot_dropoff, address: address,payable_amount : cartAmount },
+                data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, dropoff_scheduled_slot : slot_dropoff, address: address,payable_amount : cartAmount,bookingOptions : bookingOptionId, rental_protection : rentalProtectionId, addonID : addonsId, addonoptID : addonsOptionId , rentalProtectionId: rentalProtectionId, bookingOptionId: bookingOptionId},
                 success: function (response) {
                     $(".error_prescription").attr("style", "display:none");
                     if(response.status == "passbase_submitted"){
@@ -2441,7 +2461,6 @@ $(document).ready(function () {
             dataType: 'json',
             url: cart_product_url,
             success: function (response) {
-                console.log(response);
                 if (response.status == "success") {
                     if(response.wishListCount > 0){
                         $('.wishListCount').removeClass('fa-heart-o');
@@ -2478,7 +2497,6 @@ $(document).ready(function () {
                     var client_preference_detail = response.client_preference_detail;
                     var is_token_enable = response.is_token_enable;
                     var token_val = response.token_val;
-                    // console.log(cart_details);
                     if (cart_details!= undefined) {
                         // if((response.is_token_enable == 1) && (response.token_val > 0) ){
                         //     response.token_val;
@@ -2497,9 +2515,9 @@ $(document).ready(function () {
                             //map array  cart_details.products.map(checkIfInCart);
                             var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail, is_token_enable:is_token_enable, token_val:token_val });
 
-                             let header_cart_template = _.template($('#header_cart_template').html());
+                            //  let header_cart_template = _.template($('#header_cart_template').html());
 
-                             $("#header_cart_main_ul").append(header_cart_template(headerCartData));
+                            //  $("#header_cart_main_ul").append(header_cart_template(headerCartData));
                             if (response.cart_details.totalQuantity>0) {
                                 $('#expected_vendors').html('');
                                 $('#expected_vendors').html(response.expected_vendor_html);
@@ -2511,10 +2529,10 @@ $(document).ready(function () {
                                        displayMapLocation(latitude, longitude, 'vendor-address-map');
                                     }
                                 }
-                                initialize();
+                                //initialize();
                                 if (cart_details.deliver_status == 0) {
-                                    $("#order_placed_btn").attr("disabled", true);
-                                    $("#order_placed_btn").addClass("d-none");
+                                    // $("#order_placed_btn").attr("disabled", true);
+                                    // $("#order_placed_btn").addClass("d-none");
                                 } else {
 
                                     $("#order_placed_btn").removeAttr("disabled");
@@ -2552,7 +2570,6 @@ $(document).ready(function () {
 
                             }
                             cartTotalProductCount();
-
                             if ($("#header_cart_template_ondemand").length != 0) {
                                 $("#header_cart_main_ul_ondemand").html('');
                                 let header_cart_template_ondemand = _.template($('#header_cart_template_ondemand').html());
@@ -2620,6 +2637,7 @@ $(document).ready(function () {
                         }
 
                     }
+                    
                     $.each($('.vendor_schedule_slot'), function() {
                         if($(this).val()!=''){
                             $responst = checkSlotAvailability(this);
@@ -2701,9 +2719,10 @@ $(document).ready(function () {
                                 }
                             }
                             cartTotalProductCount();
-
+                            
                             if ($("#header_cart_template_ondemand").length != 0) {
                                 $("#header_cart_main_ul_ondemand").html('');
+                                
                                 let header_cart_template_ondemand = _.template($('#header_cart_template_ondemand').html());
                                 var CartTemplateOndemandData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url });
 
@@ -3295,15 +3314,15 @@ $(document).ready(function () {
             return false;
         }
 
-        if($('#sele_slot_id').val() == ''){
+        // if($('#sele_slot_id').val() == ''){
 
-            Swal.fire({
-                text: _language.getLanString('Please select delivery slot to continue'),
-                icon: "warning",
-                button: "OK",
-            });
-            return false;
-        }
+        //     Swal.fire({
+        //         text: _language.getLanString('Please select delivery slot to continue'),
+        //         icon: "warning",
+        //         button: "OK",
+        //     });
+        //     return false;
+        // }
 
         if($('#is_long_term_service').length > 0){
             addLongTerm =1;
@@ -3409,6 +3428,8 @@ $(document).ready(function () {
                 var service_date            =  $('#service_date').val();
                 var service_start_time      =  $('#service_start_time').val();
 
+               
+
                 if (((sVendorResponse.isSingleVendorEnabled == 1) && (sVendorResponse.otherVendorExists == 1)) || (OrderStorage.getStorage('LongTermServiceAdded') == 1 ) || (OrderStorage.getStorage('cartProductCount') > 0 &&  addLongTerm ==1 ) ) {
                     var modelText = _language.getLanString('You can only buy products for single vendor. Do you want to remove all your cart products to continue ?');
                     if(OrderStorage.getStorage('LongTermServiceAdded') == 1 || addLongTerm ==1 ){
@@ -3419,8 +3440,22 @@ $(document).ready(function () {
                     }
                    showRemoveCart(modelText);
                 } else {
+                    // if(serviceType == 'yacht'){
+                        
+                    //     var booking_duration = $('input[name="booking_duration"]');
+                    //     let isDurationSelected = false;
+
+                    //     booking_duration.each(function(inbdex, element){
+                    //         if(element.checked){
+                    //             let isDurationSelected = false;
+                    //             console.log(element.value)
+                    //         }
+                    //     })
+                    //     return false;
+                    // }
                     var variant_id = $('#prod_variant_id').val();
                     var start_date =  $('#start_time').val();
+                
                     var end_date =  $('#end_time').val();
                     var quantity = $('.quantity_count').val();
                     var incremental_hrs =  $('#incremental_hrs').val();
@@ -3436,6 +3471,7 @@ $(document).ready(function () {
     }
 
     function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='', sele_slot_id='', sele_slot_price='', delivery_date='',recurringformPost='') {
+          
         var returnResponse = false;
         $.ajax({
             type: "post",
@@ -3467,7 +3503,13 @@ $(document).ready(function () {
                     // $(".shake-effect").effect("shake", { times: 3 }, 1200);
                     returnResponse = true;
                     cartHeader();
-                    if(vendor_type == 'rental') {
+                 
+                    if($("#pickup_service").is(":checked")){
+                        location.href =  '/category/cabservice?destination_location='+response.vendor.address+'&destination_location_latitude'+response.vendor.latitude+'&destination_location_longitude'+response.vendor.longitude+'&yacht_id='+product_id;
+                    }
+                    console.log(response.vendor.rental);
+                    if(response.vendor.rental == 1) {
+                      
                        location.href =  '/viewcart';
                     }
                 } else {
