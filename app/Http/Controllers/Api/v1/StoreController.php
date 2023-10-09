@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Pagination\Paginator;
 use App\Models\{User, Vendor, Order, UserVendor, ProductAvailability, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption, ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, Category, OrderQrcodeLinks, ProductVariantImage, RescheduleOrder, UserWishlist, ProductAttribute, Attribute, Client, Notification, NotificationTemplate, OrderProduct, UserDevice};
+use Carbon\CarbonPeriod;
 use Log;
 
 
@@ -1619,6 +1620,7 @@ class StoreController extends BaseController
 
 	public function getVendorProductsWithCategoryList(Request $request, $vendor_id)
 	{
+
 		try {
 			$user = Auth::user();
 			$langId = $user->language;
@@ -1629,15 +1631,17 @@ class StoreController extends BaseController
 			$client_currency_detail = ClientCurrency::where('currency_id', $user->currency)->first();
 			$selected_category_id = $request->has('selected_category_id') ? $request->selected_category_id : '';
 
-			$products = Product::select('id', 'sku', 'url_slug', 'is_live', 'category_id')->has('vendor')
+			$products = Product::select('id', 'sku', 'url_slug', 'is_live', 'category_id','latitude','longitude','address')->has('vendor')
 				->with([
 					'media.image',
 					'categoryName',
+					'productcategory',
+					'product_availability',
 					'translation' => function ($q) use ($langId) {
 						$q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
 					},
 					'variant' => function ($q) use ($langId) {
-						$q->select('sku', 'product_id', 'quantity', 'price', 'markup_price', 'barcode');
+						$q->select('sku', 'product_id', 'quantity', 'price', 'markup_price', 'barcode','week_price','month_price','emirate','price','cost_price','compare_at_price');
 						$q->groupBy('product_id');
 					},
 				])->orderBy('id', 'DESC');
@@ -1653,7 +1657,34 @@ class StoreController extends BaseController
 				$products = $products->paginate($limit, $page);
 			}
 
+			// foreach ($products as $product) {
+			// 	foreach ($product->variant as $k => $v) {
+			// 		$product->variant[$k]->multiplier = $client_currency_detail->doller_compare;
+			// 	}
+			// }
+
 			foreach ($products as $product) {
+				foreach ($product->orderProduct as $OrderProducts) {
+					$dates = [];
+
+					if (@$OrderProducts->start_date_time && @$OrderProducts->end_date_time) {
+						$period = CarbonPeriod::create(date('Y-m-d', strtotime($OrderProducts->start_date_time)), date('Y-m-d', strtotime($OrderProducts->end_date_time)));
+
+						foreach ($period as $date) {
+							$dates[] =  $date->format('Y-m-d');
+						}
+
+						if (@$dates) {
+							foreach ($product->product_availability as $k => $product_availability) {
+								foreach ($dates as $date) {
+									if (date('Y-m-d', strtotime($product_availability->date_time)) == $date) {
+										@$product->product_availability[$date]['selected'] = true;
+									}
+								}
+							}
+						}
+					}
+				}
 				foreach ($product->variant as $k => $v) {
 					$product->variant[$k]->multiplier = $client_currency_detail->doller_compare;
 				}
@@ -2126,9 +2157,7 @@ class StoreController extends BaseController
 						$product->latitude = $request->latitude;
 					}
 
-					if (@$request->longitude) {
-						$product->latitude = $request->longitude;
-					}
+				
 					$client_lang = ClientLanguage::where('is_primary', 1)->first();
 					if (!$client_lang) {
 						$client_lang = ClientLanguage::where('is_active', 1)->first();
@@ -2161,9 +2190,9 @@ class StoreController extends BaseController
 						if (@$request->month_price) {
 							$proVariant->month_price = $request->month_price ?? 0;
 						}
-						if (@$request->emirate) {
-							$proVariant->emirate = $request->emirate;
-						}
+						// if (@$request->emirate) {
+						// 	$proVariant->emirate = $request->emirate;
+						// }
 						if (@$request->compare_at_price) {
 							$proVariant->compare_at_price = $request->compare_at_price;
 						}
