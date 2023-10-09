@@ -242,4 +242,8 @@ class Vendor extends Model implements Auditable{
     {
       return $this->vendor_promo->min('amount');
     }
+    public function userVendor()
+    {
+        return $this->hasOne(UserVendor::class, 'vendor_id', 'id');
+    }
 }

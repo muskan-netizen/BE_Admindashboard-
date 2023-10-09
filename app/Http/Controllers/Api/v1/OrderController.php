@@ -1046,7 +1046,9 @@ class OrderController extends BaseController
                     $order->total_delivery_fee = $total_delivery_fee;
                     $order->loyalty_points_used = $loyalty_points_used;
                     $order->loyalty_amount_saved = $loyalty_amount_saved;
-                    $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
+                    // $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
+                    $order->loyalty_points_earned = NULL;
+                    $order->loyalty_points_earned_order = $loyalty_card->per_order_points;
                     $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
                     $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
                     $order->scheduled_slot = $cart->scheduled_slot ?? null;
@@ -4337,9 +4339,56 @@ class OrderController extends BaseController
             return $response;
         }
         catch (\Exception $e) {
-            \Log::error($e->getMessage());
+            \Log::info($e->getMessage());
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
+    }
+
+
+    public function sendOrderStatusChangeNotification($request, $order_data){
+        // Fetch user devices with non-null device tokens
+        $devices = UserDevice::whereNotNull('device_token')
+        ->where('user_id', $order_data->user_id)
+        ->pluck('device_token')
+        ->toArray();
+        
+        // Check if there are no devices, return true (or handle accordingly)
+        if (empty($devices)) {
+            return true;
+        }
+        // Get client preferences
+        $client_preferences = ClientPreference::select('fcm_server_key', 'favicon', 'vendor_fcm_server_key')->first();
+        // Set the 'from' value based on client preferences
+        $from = (!empty($client_preferences->fcm_server_key)) ? $client_preferences->fcm_server_key : '';
+        // Fetch notification content for the given ID (23)
+        $notification_content = NotificationTemplate::where('id', 23)->first();
+        // Set the title for the notification, defaulting to "Order Status Changed"
+        $title = $notification_content ? $notification_content->subject : "Order Status Changed";
+        // Determine the status based on the 'order_status_option_id'
+        $status = ($request->order_status_option_id == 4) ? "Pickup Complete" : "DropOff Complete";
+        // Replace placeholders in the notification content
+        $body_content = str_ireplace(["{order_number}", "{status}"], ["#" . $order_data->order_number, $status], $notification_content->content);
+        // Call the function to send the notification
+        $data = [
+			"registration_ids" => $devices,
+			"notification" => [
+				'title' => $title,
+				'body'  => $body_content,
+				'sound' => "notification.wav",
+				"icon" => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+				"android_channel_id" => "sound-channel-id"
+			],
+			"data" => [
+				'title' => $title,
+				'body'  => $body_content,
+				'type' => "order_status"
+			],
+			"priority" => "high"
+		];
+		if (!empty($from)) {
+			// helper function
+			sendFcmCurlRequest($data);
+		}
     }
 
     public function getOrdersListLenderBorrower(Request $request)
