@@ -1352,11 +1352,7 @@ $(document).ready(function () {
         $.ajax({
             type: "POST",
             dataType: 'json',
-<<<<<<< HEAD
             data: {locations:locations,rider_id:rider_id, schedule_date_delivery:schedule_datetime, is_cab_pooling:is_cab_pooling, no_seats_for_pooling:no_seats_for_pooling,recurringformPost},
-=======
-            data: {locations:locations,rider_id:rider_id, schedule_date_delivery:schedule_datetime, is_cab_pooling:is_cab_pooling, no_seats_for_pooling:no_seats_for_pooling,yacht_id},
->>>>>>> RajatDevCarRental
             url: get_product_detail+'/'+product_id,
             success: function(response) {
                 console.log({response});

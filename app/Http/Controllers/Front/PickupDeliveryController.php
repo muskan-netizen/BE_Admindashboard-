@@ -203,27 +203,12 @@ class PickupDeliveryController extends FrontController{
                         },'variant' => function($q) use($language_id){
                             $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode');
                             $q->groupBy('product_id');
-<<<<<<< HEAD
-                        }])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags', 'products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id','products.tax_category_id')->where('products.id', $product_id)->where('products.is_live', 1)->first();
-        $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
-        $product->image_url = $image_url;
-        $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
-       
-        if($recurringDays) 
-        {
-            $tags_price['delivery_fee'] = decimal_format($tags_price['delivery_fee'] * $recurringDays);
-            $product->daysCnt = $recurringDays;
-            $product->selectedCustomdates = $recurring->selectedCustomdates;
-            $product->schedule_time = $recurring->schedule_time;
-        }
-=======
                         },
                         'addOn.addOnName.option'
                         ])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags', 'products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id','seats')->where('products.id', $product_id)->where('products.is_live', 1)->first();
         $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
         $product->image_url = $image_url;
         $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
->>>>>>> RajatDevCarRental
 
         // $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
 
@@ -365,15 +350,12 @@ class PickupDeliveryController extends FrontController{
                 }
             }
         }
-<<<<<<< HEAD
-=======
         if(isset($request->yacht_id)){
             $yacht = Product::with(['pimage','variant'])->select('id','title')->find($request->yacht_id);
             $product->yacht = $yacht;
             $image_url = $yacht->media->first() ? $yacht->media->first()->image->path['image_fit'].'360/360'.$yacht->media->first()->image->path['image_path'] : '';
             $product->yacht->image_url = $image_url;
         }
->>>>>>> RajatDevCarRental
         return $this->successResponse($product);
     }
     # get all vehicles category by vendor
@@ -601,8 +583,6 @@ class PickupDeliveryController extends FrontController{
                 $request->merge(['schedule_time' => $given->format("Y-m-d H:i:s")]);
             }
 
-<<<<<<< HEAD
-=======
             $product = Product::find($request->product_id);
             if($product && $product->available_seats < $request->seats){
                 return response()->json(['status' => 203, 'message' => $request->seats.' Seats not Availeble']);
@@ -619,7 +599,6 @@ class PickupDeliveryController extends FrontController{
             }
 
            // pr($request->all());
->>>>>>> RajatDevCarRental
             $user = Auth::user();
             $order_place = $this->orderPlaceForPickupDelivery($request);
 
@@ -834,7 +813,6 @@ class PickupDeliveryController extends FrontController{
                 if (isset($request->schedule_time) && !empty($request->schedule_time)) {
                     $schedule_datetime_del  =$request->schedule_time ;// Carbon::parse($request->schedule_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
-<<<<<<< HEAD
 
                 if(@$request->payment_option_id == '60')
                 {
@@ -862,13 +840,6 @@ class PickupDeliveryController extends FrontController{
                 }
 
                
-=======
-                $returnBookingTime = null;
-                if (!empty($request->return_booking_time)) {
-                    $returnBookingTime = Carbon::parse($request->return_booking_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-                }
-                $order->scheduled_date_time = $schedule_datetime_del;
->>>>>>> RajatDevCarRental
                 /*book for a friend*/
                 $order->type                = $request->type;
                 $order->friend_name         = $request->friendName;
