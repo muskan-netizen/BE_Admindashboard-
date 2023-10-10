@@ -32,6 +32,7 @@ class CategoryController extends BaseController
      */
     public function index()
     {
+     
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $celebrity_check = ClientPreference::first()->value('celebrity_check');
 
@@ -55,7 +56,7 @@ class CategoryController extends BaseController
         }
 
         $categories = Category::with('translation_one','type')->where('id', '>', '1')->where('is_core', 1)->orderBy('parent_id', 'asc')->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1);
-
+        \Log::info($categories);
         if ($celebrity_check == 0)
             $categories = $categories->where('type_id', '!=', 5);   # if celebrity mod off .
 
