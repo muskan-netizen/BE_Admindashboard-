@@ -1041,6 +1041,8 @@ class ClientPreferenceController extends BaseController{
 
            return redirect()->back()->with('success', 'Client settings updated successfully!');
         }
+
+    }
        
 
         /**
