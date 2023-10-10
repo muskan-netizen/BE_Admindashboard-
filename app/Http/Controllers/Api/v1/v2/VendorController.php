@@ -2579,7 +2579,16 @@ class VendorController extends BaseController{
                     if (!empty($order_type) && $order_type == 'popular_product') {
                         $products = $products->orderBy('order_product_count', 'desc');
                     }
-
+                    if (!empty($order_type) && ($order_type == 'cal_asc' || $order_type == 'cal_desc')) {
+                        if ($order_type == 'cal_asc') {
+                            $products = $products->orderByRaw('CAST(products.calories AS SIGNED) IS NULL')
+                            ->orderByRaw('CAST(products.calories AS SIGNED) asc');
+                        } elseif ($order_type == 'cal_desc') {
+                            $products = $products->orderByRaw('CAST(products.calories AS SIGNED) IS NULL')
+                            ->orderByRaw('CAST(products.calories AS SIGNED) desc');
+                        }
+                    }
+                    // \Log::info(['products' => $products->get()]);
                     $products = $products->groupBy('id');
                     }])
                     ->where('status', 1);
@@ -2653,7 +2662,7 @@ class VendorController extends BaseController{
                             },'tags.tag.translations' => function ($q) use ($langId) {
                                 $q->where('language_id', $langId);
                             }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
-                        ])->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count','products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.mode_of_service','products.tags','products.is_recurring_booking')
+                        ])->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count','products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.mode_of_service','products.tags','products.is_recurring_booking','products.calories')
                         ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
                         ->join('product_translations', 'product_translations.product_id', '=', 'products.id')// Or whatever the join logic is
                         ->withCount('OrderProduct');
@@ -2697,6 +2706,15 @@ class VendorController extends BaseController{
                         if (!empty($order_type) && $order_type == 'popular_product') {
 
                             $products = $products->orderBy('order_product_count', 'desc');
+                        }
+                        if (!empty($order_type) && ($order_type == 'cal_asc' || $order_type == 'cal_desc')) {
+                            if ($order_type == 'cal_asc') {
+                                $products = $products->orderByRaw('CAST(products.calories AS SIGNED) IS NULL')
+                                ->orderByRaw('CAST(products.calories AS SIGNED) asc');
+                            } elseif ($order_type == 'cal_desc') {
+                                $products = $products->orderByRaw('CAST(products.calories AS SIGNED) IS NULL')
+                                ->orderByRaw('CAST(products.calories AS SIGNED) desc');
+                            }
                         }
                     $products = $products->where('is_live', 1)->groupBy('products.id')->where('products.vendor_id', $vendor->id)->paginate($paginate);
 
