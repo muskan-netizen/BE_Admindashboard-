@@ -32,7 +32,7 @@
                                     <input id="lineRadio-{{ $opt_id }}" name="{{ 'var_' . $var_id }}"
                                     vid="{{ $var_id }}" data-option-title="{{ $variant->title }}"
                                     optid="{{ $opt_id }}" value="{{ $opt_id }}" type="radio"
-                                    class="{{ $key != $t_var - 1 ? 'changeVariant' : '' }} dataVar{{ $var_id }} changeVariant_{{ $variant->title }}"
+                                    class="{{ $key != $t_var - 1 ? 'changeVariant' : '' }} dataVar{{ $var_id }} changeVariant"
                                     {{ $checked }} data-row-key = {{$key}}>
                                 @if ($variant->type == 2)
                                     <span
