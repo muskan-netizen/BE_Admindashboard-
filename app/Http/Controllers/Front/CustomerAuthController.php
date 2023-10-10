@@ -289,6 +289,8 @@ class CustomerAuthController extends FrontController
             }
 
             $user->password = Hash::make($req->password);
+            $user->custom_allergic_items = $req->custom_allergic_items ?? null;
+
             $user->save();
 
             if ($req->allergic_item_ids && count($req->allergic_item_ids)) {

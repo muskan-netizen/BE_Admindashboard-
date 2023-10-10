@@ -491,6 +491,7 @@ class AuthController extends BaseController
         ])->get();
         $token1->setClaim('user_id', $user->id);
         $user->auth_token = $token;
+        $user->custom_allergic_items = $signReq->custom_allergic_items ?? null;
         $user->save();
 
         if ($signReq->allergic_item_ids && count($signReq->allergic_item_ids)) {

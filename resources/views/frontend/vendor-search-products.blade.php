@@ -69,7 +69,9 @@ $add_to_cart =  route('addToCart') ;
                                 <div
                                     class="d-flex align-items-start justify-content-between">
                                     <h5 class="mt-0">
-                                        {{ $prod->translation_title }}
+                                        {{ $prod->translation_title }} @if ($prod->calories)
+                                        ({{$prod->calories}} {{ __("calories") }})
+                                    @endif 
 
                                     </h5>
                                     <div class="product_variant_quantity_wrapper">
