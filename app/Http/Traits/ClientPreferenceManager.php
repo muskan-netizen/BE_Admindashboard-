@@ -55,7 +55,7 @@ trait ClientPreferenceManager{
   public function updatePreferenceAdditional($request=[]){
     $validated_keys = $request->only($this->client_preference_fillable_key);
 
-    pr($validated_keys);
+  
     
     
     $client = Client::first();
