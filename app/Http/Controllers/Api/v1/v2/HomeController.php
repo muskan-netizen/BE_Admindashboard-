@@ -1590,7 +1590,7 @@ class HomeController extends BaseController
 
         
         if(count($vendor_ids) > 0){
-            $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids,null,$this->venderFilterOpenClose,$this->venderFilterbest);
+            $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids,null,$this->venderFilterOpenClose,$this->venderFilterbest,$request->nearest_vendor);
         }
         
         $trendingVendors = [];
