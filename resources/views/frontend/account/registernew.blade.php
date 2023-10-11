@@ -344,6 +344,19 @@
                     });
                 @endif
             @endif
+
+            jQuery.validator.addMethod("indianMobile", function(value, element) {
+                var dialCode = $("#dialCode").val();
+                // Regular expression for Indian mobile numbers
+                if(dialCode == 91) {
+                    var regex = /^[6-9]\d{9}$/;
+                    return this.optional(element) || regex.test(value);
+                } else {
+                    return true;
+                }
+                
+                }, "Please enter a valid Indian mobile number.");
+
             jQuery.validator.addMethod("alphanumeric", function(value, element) {
                 return this.optional(element) || /^[a-zA-Z0-9 ]+$/i.test(value);
             }, "Name should contains alphanumeric data.");
@@ -357,7 +370,8 @@
                     },
                     phone_number: {
                         required: true,
-                        number: true
+                        //number: true,
+                        indianMobile: true
                     },
                     email: {
                         required: true,
