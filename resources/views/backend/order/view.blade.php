@@ -1631,36 +1631,6 @@ $timezone = Auth::user()->timezone;
             }, 10);
         }
 
-        // $(document).on('click','#blockchain_order_data', function(e) {
-
-        //     var order_id = $(this).data('id');
-        //              $.ajax({
-        //                 type: "GET",
-        //                 data: {
-        //                     order_id: order_id,
-        //                 },
-        //                 url: "{{ route('orders.getBlockchainOrderDetail') }}",
-        //                 headers: {
-        //                     Accept: "application/json"
-        //                 },
-        //                 success: function(response) {
-        //                      console.log('here');
-        //                 },
-        //                 error: function(response) {
-
-                             
-        //                     let error = response.responseJSON;
-        //                     Swal.fire({
-        //                         text: error.message,
-        //                         icon: "error",
-        //                         button: "OK",
-        //                     });
-        //                     return false;
-        //                 }
-        //             });
-
-        // });
-
         document.addEventListener('click', function(e) {
             if (e.target.id === 'blockchain_order_data') {
                 var order_id = e.target.getAttribute('data-id');

@@ -3297,6 +3297,7 @@ class OrderController extends BaseController
         $data = [
             "orderID" => $request->order_id,
             "address_f" => $from_id->key_value ?? '',
+            "address_short_code" => $client->code,
         ];
         
         $headers = [
@@ -3304,20 +3305,18 @@ class OrderController extends BaseController
         ];
     
         if (isset($api_domain)) {
-            $apiUrl = $api_domain->key_value . '/getOrderNew';
+            $apiUrl = $api_domain->key_value . '/fetchOrderDetails';
             $response = '';
-            // $response = Http::get($apiUrl, [
-            //     'headers' => $headers,
-            //     'query' => $data,
-            // ]);           
             
-            // $responseData = $response->json() ?? null;
+            
+            $response = Http::withHeaders($headers)->post($apiUrl,$data);           
+           
+            $responseData = $response->json();
             
             return response()->json([
                 'message' => 'Order Retrieved successfully',
                 'data' => $data ?? '',
-                'api_response' =>  'Data',
-                // 'api_response' => $responseData ?? 'Data',
+                'api_response' => $responseData ?? '',
             ], 200);
         } else {
             // Handle the case where $api_domain is not set
