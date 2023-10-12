@@ -236,7 +236,7 @@ class CustomerAuthController extends FrontController
                 ]);
                 if($req->dialCode == 91) {
                     $validator = $req->validate([
-                        'phone_number'  => 'numeric|size:11'
+                        'phone_number'  => 'numeric|min:10|max:10'
                     ]);
                 }
             }

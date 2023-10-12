@@ -34,7 +34,6 @@ trait DispatcherSlot{
                     ]
                 ]);
 
-                // echo $data['service_key']; die;
               
                 $url = $data['service_key_url'];
                 $res = $client->post(
@@ -42,15 +41,13 @@ trait DispatcherSlot{
                     ['form_params' => ($postdata)]
                 );
                 $response = json_decode($res->getBody(), true);
-                // echo"<pre>";
-                // print_r($res->getBody()); die;
+               
                 if ($response && $response['message'] == 'success') {
                     $agets =count($response['data']['agents']) > 0 ? $response['data']['agents'] : [];
                     return $response['data'];
                 }
                
         } catch (\Exception $e) {
-            print_r($e->getMessage()); die;
            // Log::info($e->getMessage());
             return [];
         }
