@@ -48,6 +48,7 @@ trait DispatcherSlot{
                 }
                
         } catch (\Exception $e) {
+            //print($e->getMessage())
            // Log::info($e->getMessage());
             return [];
         }

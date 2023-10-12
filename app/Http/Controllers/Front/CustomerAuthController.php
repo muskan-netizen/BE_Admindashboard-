@@ -239,6 +239,7 @@ class CustomerAuthController extends FrontController
                         'phone_number'  => 'numeric|min:10|max:10'
                     ]);
                 }
+                
             }
             else{
 
