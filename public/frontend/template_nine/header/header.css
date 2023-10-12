@@ -825,3 +825,10 @@ footer ul.social-links li a i{
         display: none!important;
     }
 }
+
+body.al_body_template_nine.p2p-module .top-header.site-topbar{
+    background-color:#105d72 !important;
+}
+a.common-product-box.text-center:hover{
+    box-shadow:none !important;
+}
