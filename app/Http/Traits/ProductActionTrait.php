@@ -556,7 +556,7 @@ trait ProductActionTrait{
     public function getEvenOddTime($time) {
         return ($time % 5 === 0) ? $time : ($time - ($time % 5));
     }
-    public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude, $vendor_ids = [], $set_template = NULL,$venderFilterOpenClose=null,$venderFilterbest=null)
+    public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude, $vendor_ids = [], $set_template = NULL,$venderFilterOpenClose=null,$venderFilterbest=null,$nearest_vendor=0)
     {
         try 
         {
@@ -628,6 +628,10 @@ trait ProductActionTrait{
                 if($is_admin_vendor_rating == 1 && $venderFilterbest == 1){
                     $mainQuery.= " ORDER BY admin_rating DESC";
                 }
+            }
+            
+            if (($latitude) && ($longitude) && $nearest_vendor == 1) {
+                $mainQuery.= " ORDER BY `lineOfSightDistance` ASC";
             }
             
             //if(!empty($set_template) && $set_template->template_id != 3){
