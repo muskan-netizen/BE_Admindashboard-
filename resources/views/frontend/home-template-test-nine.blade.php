@@ -774,7 +774,7 @@
 		</section> -->
 		@if( $homePageLabel->slug == 'featured_products' )
 			<section class="product-1 main-product mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-				<div class="container p2p-full-width">
+				<div class="container">
 					<div class="row">
 						<div class="col-md-12 text-center">
 							<div class="top-heading d-flex justify-content-between">
@@ -797,7 +797,7 @@
 
 		@elseif( $homePageLabel->slug == 'new_products' )
 			<section class="product-2 main-product mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-				<div class="container p2p-full-width">
+				<div class="container">
 					<div class="row">
 						<div class="col-md-12 text-center">
 							<div class="top-heading d-flex justify-content-between">
@@ -819,7 +819,7 @@
 			</section>
 		@elseif( $homePageLabel->slug == 'on_sale' )
 			<section class="main-product mb-0 render_full_{{$homePageLabel->slug}} pt-0" id="{{$homePageLabel->slug.$key}}">
-				<div class="container p2p-full-width">
+				<div class="container">
 					<div class="row">
 						<div class="col-md-12 text-center">
 							<div class="top-heading d-flex justify-content-between">
