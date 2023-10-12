@@ -938,15 +938,335 @@ class StoreController extends BaseController
 		return $output_data;
 	}
 
+	// public function updateProduct(Request $request)
+	// {
+	// 	$product = Product::where('id', $request->product_id)->firstOrFail();
+	// 	try {
+	// 		$validator = Validator::make($request->all(), [
+	// 			'product_id' => 'required',
+	// 				// 'product_name' => 'required|string',
+	// 				// 'sku' => 'required|unique:products,sku,' . $product->id,
+	// 				// 'url_slug' => 'required|unique:products,url_slug,' . $product->id,
+	// 		]);
+
+	// 		if ($validator->fails()) {
+	// 			return $this->errorResponse($validator->errors()->first(), 422);
+	// 		}
+
+	// 		// Save Product Attribute
+	// 		if (checkTableExists('product_attributes')) {
+	// 			if (!empty($request->attribute)) {
+	// 				$attribute = json_decode($request->attribute, true);
+
+	// 				if (!empty($attribute)) {
+	// 					$insert_arr = [];
+	// 					$insert_count = 0;
+
+	// 					foreach ($attribute as $key => $value) {
+	// 						if (!empty($value) && !empty($value['option'] && is_array($value))) {
+
+	// 							if (!empty($value['type']) && $value['type'] == 1) { // dropdown
+	// 								$value_arr = @$value['value'];
+									
+    //                                 foreach($value['option'] as $option_key => $option) {
+    //                                     if(!empty($value['type']) && $value['type'] == 4 ) { // textbox
+	// 										$insert_arr[$insert_count]['product_id'] = $request->product_id;
+	// 										$insert_arr[$insert_count]['attribute_id'] = $value['id'];
+	// 										$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+	// 										$insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
+	// 										$insert_arr[$insert_count]['key_value'] = (!empty($value['value']) && !empty($value['value'][0]) ? $value['value'][0] : '');
+	// 										$insert_arr[$insert_count]['is_active'] = 1;
+	// 									} elseif (@in_array($option['option_id'], $value_arr)) {
+
+	// 										$insert_arr[$insert_count]['product_id'] = $request->product_id;
+	// 										$insert_arr[$insert_count]['attribute_id'] = $value['id'];
+	// 										$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+	// 										$insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
+	// 										$insert_arr[$insert_count]['key_value'] = $option['option_id'];
+	// 										$insert_arr[$insert_count]['is_active'] = 1;
+	// 									}
+
+	// 									$insert_count++;
+	// 								}
+	// 							} else {
+	// 								$value_arr = @$value['value'];
+
+	// 								// //\Log::info($option['option_id']);
+	// 								foreach ($value['option'] as $option_key => $option) {
+	// 									if (!empty($value['type']) && $value['type'] == 4) { // textbox
+	// 										$insert_arr[$insert_count]['product_id'] = $request->product_id;
+	// 										$insert_arr[$insert_count]['attribute_id'] = $value['id'];
+	// 										$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+	// 										$insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
+	// 										$insert_arr[$insert_count]['key_value'] = (!empty($value['value']) && !empty($value['value'][0]) ? $value['value'][0] : '');
+	// 										$insert_arr[$insert_count]['is_active'] = 1;
+	// 									} elseif (@in_array($option['option_id'], $value_arr)) {
+
+	// 										$insert_arr[$insert_count]['product_id'] = $request->product_id;
+	// 										$insert_arr[$insert_count]['attribute_id'] = $value['id'];
+	// 										$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
+	// 										$insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
+	// 										$insert_arr[$insert_count]['key_value'] = $option['option_id'];
+	// 										$insert_arr[$insert_count]['is_active'] = 1;
+	// 									}
+
+	// 									$insert_count++;
+	// 								}
+	// 							}
+	// 						}
+
+
+	// 					}
+	// 					if (!empty($insert_arr)) {
+	// 						ProductAttribute::where('product_id', $request->product_id)->delete();
+	// 						ProductAttribute::insert($insert_arr);
+	// 					}
+	// 				}
+	// 			}
+	// 		}
+
+
+	// 		$client = Client::orderBy('id', 'asc')->first();
+	// 		if (isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain) {
+	// 			$sku_url =  ($client->custom_domain);
+	// 		} else {
+	// 			$sku_url =  ($client->sub_domain . env('SUBMAINDOMAIN'));
+	// 		}
+	// 		$slug = str_replace(' ', '-', $request->product_name);
+	// 		$generated_slug = $sku_url . '.' . $slug;
+	// 		$slug = generateSlug($generated_slug);
+	// 		$slug = str_replace(' ', '-', $slug);
+	// 		$generated_slug = $sku_url . '.' . $slug;
+
+	// 		$user = Auth::user();
+	// 		$productid = $product->id;
+	// 		$user_vendor = UserVendor::where('user_id', $user->id)->first();
+ 
+
+			 
+ 
+	// 		if (@$user_vendor->vendor_id) {
+			
+	// 			$product->sku = $slug;
+	// 			$product->url_slug = $generated_slug;
+	// 			$product->title = $request->product_name;
+	// 			$product->category_id = $request->category_id;
+	// 			$product->description = $request->body_html ?? '';
+	// 			$product->type_id = 1;
+	// 			$product->is_live = 1;
+	// 			$product->publish_at = date('Y-m-d H:i:s');
+	// 			$product->vendor_id = $user_vendor->vendor_id;
+			
+	// 			if (@$request->longitude) {
+	// 				$product->longitude = $request->longitude;
+	// 			}
+
+	// 			if (@$request->address) {
+	// 				$product->address = $request->address;
+	// 			}
+	// 			if (@$request->latitude) {
+	// 				$product->latitude = $request->latitude;
+	// 			}
+	// 			$product->save();
+	// 			$client_lang = ClientLanguage::where('is_primary', 1)->first();
+	// 			if (!$client_lang) {
+	// 				$client_lang = ClientLanguage::where('is_active', 1)->first();
+	// 			}
+			    	
+				
+	// 			if ($product->id > 0) {
+	// 				$datatrans[] = [
+	// 					'title' => $request->product_name ?? null,
+	// 					'body_html' => $request->body_html ?? null,
+	// 					'meta_title' => '',
+	// 					'meta_keyword' => '',
+	// 					'meta_description' => '',
+	// 					'product_id' => $product->id,
+	// 					'language_id' => $client_lang->language_id
+	// 				];
+	// 				$product_category =  ProductCategory::where('product_id',$request->product_id)->first();
+				
+	// 				// if(@$request->category_id){
+	// 				// $product_category->product_id = $product->id;
+	// 				// $product_category->category_id = $request->category_id;
+	// 				// $product_category->save();
+	// 				// }
+	// 				$proVariant =  ProductVariant::where('product_id',$request->product_id)->first();
+					
+	// 				$proVariant->price = $request->price ?? 0;
+
+	// 				$proVariant->week_price = $request->week_price ?? 0;
+	// 				$proVariant->month_price = $request->month_price ?? 0;
+
+	// 				if (@$request->emirate) {
+	// 					$proVariant->emirate = $request->emirate;
+	// 				}
+	// 				if (@$request->compare_at_price) {
+	// 					$proVariant->compare_at_price = $request->compare_at_price;
+	// 				}
+
+	// 				if (@$request->minimum_duration) {
+	// 					$proVariant->minimum_duration = $request->minimum_duration * 24;
+	// 				}
+	// 				$proVariant->sku = $slug;
+	// 				$proVariant->title = $slug . '-' .  empty($request->product_name) ? $slug : $request->product_name;
+	// 				$proVariant->product_id = $product->id;
+	// 				$proVariant->quantity = 1;
+	// 				$proVariant->status = 1;
+	// 				$proVariant->barcode = $this->generateBarcodeNumber();
+	// 				$proVariant->save();
+	// 				ProductTranslation::insert($datatrans);
+
+	// 				$product_detail = Product::where('id', $product->id)->firstOrFail();
+
+	// 				$data = ['product_detail' => $product_detail];
+
+	// 			}
+
+	// 		}
+
+	// 		if ($request->has('file')) {
+	// 			ProductImage::where('product_id',$product->id)->delete();
+	// 			$imageId = '';
+	// 			$files = $request->file('file');
+	// 			if (is_array($files)) {
+	// 				foreach ($files as $file) {
+	// 					$img = new VendorMedia();
+	// 					$img->media_type = 1;
+	// 					$img->vendor_id = $product->vendor_id;
+	// 					$img->path = Storage::disk('s3')->put($this->folderName, $file, 'public');
+	// 					$img->save();
+	// 					$path1 = $img->path['proxy_url'] . '40/40' . $img->path['image_path'];
+	// 					if ($img->id > 0) {
+	// 						$imageId = $img->id;
+	// 						$image = new ProductImage();
+	// 						$image->product_id = $product->id;
+	// 						$image->is_default = 1;
+	// 						$image->media_id = $imageId;
+	// 						$image->save();
+	// 						// if($image->id > 0 && $variant_id!="")
+	// 						// {
+	// 						// 	$varientimage = new ProductVariantImage();
+	// 						// 	$varientimage->product_variant_id = $variant_id;
+	// 						// 	$varientimage->product_image_id = $image->id;
+	// 						// 	$varientimage->save();
+	// 						// }							
+	// 					}
+	// 				}
+	// 				//return response()->json(['htmlData' => $resp]);
+	// 			} else {
+	// 				$img = new VendorMedia();
+	// 				$img->media_type = 1;
+	// 				$img->vendor_id = $product->vendor_id;
+	// 				$img->path = Storage::disk('s3')->put($this->folderName, $files, 'public');
+	// 				$img->save();
+	// 				if ($img->id > 0) {
+	// 					$imageId = $img->id;
+	// 					$image = new ProductImage();
+	// 					$image->product_id = $product->id;
+	// 					$image->is_default = 1;
+	// 					$image->media_id = $img->id;
+	// 					$image->save();
+	// 					// if($image->id > 0 && $variant_id!="")
+	// 					// {
+	// 					// 	$varientimage = new ProductVariantImage();
+	// 					// 	$varientimage->product_variant_id = $variant_id;
+	// 					// 	$varientimage->product_image_id = $image->id;
+	// 					// 	$varientimage->save();
+	// 					// }						
+	// 				}
+	// 			}
+	// 		}
+
+
+	// 		if ($request->has('file_360')) {
+	// 			$imageId = '';
+	// 			$files = $request->file('file_360');
+	// 			if (is_array($files)) {
+	// 				foreach ($files as $file) {
+	// 					$img = new VendorMedia();
+	// 					$img->media_type = 4;
+	// 					$img->vendor_id = $product->vendor_id;
+	// 					$img->path = Storage::disk('s3')->put($this->folderName, $file, 'public');
+	// 					$img->save();
+	// 					$path1 = $img->path['proxy_url'] . '40/40' . $img->path['image_path'];
+	// 					if ($img->id > 0) {
+	// 						$imageId = $img->id;
+	// 						$image = new ProductImage();
+	// 						$image->product_id = $product->id;
+	// 						$image->is_default = 1;
+	// 						$image->media_id = $imageId;
+	// 						$image->save();
+	// 						// if($image->id > 0 && $variant_id!="")
+	// 						// {
+	// 						// 	$varientimage = new ProductVariantImage();
+	// 						// 	$varientimage->product_variant_id = $variant_id;
+	// 						// 	$varientimage->product_image_id = $image->id;
+	// 						// 	$varientimage->save();
+	// 						// }							
+	// 					}
+	// 				}
+	// 				//return response()->json(['htmlData' => $resp]);
+	// 			} else {
+	// 				$img = new VendorMedia();
+	// 				$img->media_type = 4;
+	// 				$img->vendor_id = $product->vendor_id;
+	// 				$img->path = Storage::disk('s3')->put($this->folderName, $files, 'public');
+	// 				$img->save();
+	// 				if ($img->id > 0) {
+	// 					$imageId = $img->id;
+	// 					$image = new ProductImage();
+	// 					$image->product_id = $product->id;
+	// 					$image->is_default = 1;
+	// 					$image->media_id = $img->id;
+	// 					$image->save();
+	// 					// if($image->id > 0 && $variant_id!="")
+	// 					// {
+	// 					// 	$varientimage = new ProductVariantImage();
+	// 					// 	$varientimage->product_variant_id = $variant_id;
+	// 					// 	$varientimage->product_image_id = $image->id;
+	// 					// 	$varientimage->save();
+	// 					// }						
+	// 				}
+	// 			}
+	// 		}
+	// 			if(@$request->date_availability){
+	// 			// $dates = array_column($request->date_availability, 'date_time');
+	// 			ProductAvailability::where('product_id', $product->id)->where('not_available', 0)->delete();
+	// 			if (@$request->date_availability && is_array($request->date_availability)) {
+	// 				$date_availability_data = [];
+	// 				foreach ($request->date_availability as $date_availability) {
+	// 					$productAvailability = ProductAvailability::where('product_id', $product->id)->whereDate('date_time', $date_availability['date_time'])->first();
+	// 					if ($productAvailability)
+	// 						continue;
+	// 					$date_availability_data[] = [
+	// 						'product_id' => $product->id,
+	// 						'date_time' => $date_availability['date_time'],
+	// 						'not_available' => $date_availability['not_available'],
+	// 						'created_at' => Carbon::now(),
+	// 						'updated_at' => Carbon::now()
+	// 					];
+	// 				}
+	// 				if (@$date_availability_data) {
+	// 					ProductAvailability::insert($date_availability_data);
+	// 				}
+	// 			}
+	// 		}
+			
+
+	// 		$data = Product::with('brand', 'variant.set', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSet', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities')->where('id', $product->id)->firstOrFail();
+	// 		return $this->successResponse($data, 'Product Updated successfully!', 200);
+	// 	} catch (Exception $e) {
+	// 		return $this->errorResponse($e->getMessage(), $e->getCode());
+	// 	}
+	// }
+
 	public function updateProduct(Request $request)
 	{
 		$product = Product::where('id', $request->product_id)->firstOrFail();
 		try {
 			$validator = Validator::make($request->all(), [
 				'product_id' => 'required',
-					// 'product_name' => 'required|string',
-					// 'sku' => 'required|unique:products,sku,' . $product->id,
-					// 'url_slug' => 'required|unique:products,url_slug,' . $product->id,
 			]);
 
 			if ($validator->fails()) {
@@ -967,25 +1287,17 @@ class StoreController extends BaseController
 
 								if (!empty($value['type']) && $value['type'] == 1) { // dropdown
 									$value_arr = @$value['value'];
-									
-                                    foreach($value['option'] as $option_key => $option) {
-                                        if(!empty($value['type']) && $value['type'] == 4 ) { // textbox
-											$insert_arr[$insert_count]['product_id'] = $request->product_id;
-											$insert_arr[$insert_count]['attribute_id'] = $value['id'];
-											$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
-											$insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
-											$insert_arr[$insert_count]['key_value'] = (!empty($value['value']) && !empty($value['value'][0]) ? $value['value'][0] : '');
-											$insert_arr[$insert_count]['is_active'] = 1;
-										} elseif (@in_array($option['option_id'], $value_arr)) {
+
+									foreach ($value['option'] as $key1 => $val1) {
+										if (@in_array($val1['option_id'], $value_arr)) {
 
 											$insert_arr[$insert_count]['product_id'] = $request->product_id;
 											$insert_arr[$insert_count]['attribute_id'] = $value['id'];
 											$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
-											$insert_arr[$insert_count]['attribute_option_id'] = $option['option_id'];
-											$insert_arr[$insert_count]['key_value'] = $option['option_id'];
+											$insert_arr[$insert_count]['attribute_option_id'] = $val1['option_id'];
+											$insert_arr[$insert_count]['key_value'] = $val1['option_id'];
 											$insert_arr[$insert_count]['is_active'] = 1;
 										}
-
 										$insert_count++;
 									}
 								} else {
@@ -1014,8 +1326,6 @@ class StoreController extends BaseController
 									}
 								}
 							}
-
-
 						}
 						if (!empty($insert_arr)) {
 							ProductAttribute::where('product_id', $request->product_id)->delete();
@@ -1024,8 +1334,6 @@ class StoreController extends BaseController
 					}
 				}
 			}
-
-
 			$client = Client::orderBy('id', 'asc')->first();
 			if (isset($client->custom_domain) && !empty($client->custom_domain) && $client->custom_domain != $client->sub_domain) {
 				$sku_url =  ($client->custom_domain);
@@ -1039,12 +1347,8 @@ class StoreController extends BaseController
 			$generated_slug = $sku_url . '.' . $slug;
 
 			$user = Auth::user();
-			$productid = $product->id;
 			$user_vendor = UserVendor::where('user_id', $user->id)->first();
- 
-
-			 
- 
+		
 			if (@$user_vendor->vendor_id) {
 			
 				$product->sku = $slug;
@@ -1124,7 +1428,7 @@ class StoreController extends BaseController
 				}
 
 			}
-
+		
 			if ($request->has('file')) {
 				ProductImage::where('product_id',$product->id)->delete();
 				$imageId = '';
@@ -1256,11 +1560,10 @@ class StoreController extends BaseController
 
 			$data = Product::with('brand', 'variant.set', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSet', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities')->where('id', $product->id)->firstOrFail();
 			return $this->successResponse($data, 'Product Updated successfully!', 200);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			return $this->errorResponse($e->getMessage(), $e->getCode());
 		}
 	}
-
 	public function deleteProduct(Request $request)
 	{
 		try {

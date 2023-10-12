@@ -355,7 +355,7 @@ class BaseController extends Controller{
                 $include_categories[] = 5; // type 5 for celebrity
             }
            if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
-            
+
                 // $categories = $categories->when($vends, function ($query) use($vends , $include_categories) {
                 //         $query->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
                 //                 ->where(function ($q1) use ($vends , $include_categories) {
@@ -1158,16 +1158,12 @@ class BaseController extends Controller{
 
     public function getServiceArea($lat = 0, $lng = 0, $type = 'delivery')
     {
-
         $preferences = ClientPreference::where('id', '>', 0)->first();
         $user = Auth::user();
-
         $latitude = ($user->latitude) ? $user->latitude : $lat;
         $longitude = ($user->longitude) ? $user->longitude : $lng;
-
         $vendorType = $user->vendorType ? $user->vendorType : $type;
         $serviceAreaVendors = Vendor::select('id', 'show_slot');
-
         $vendors = [];
         if ($vendorType) {
             $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);
@@ -1175,12 +1171,9 @@ class BaseController extends Controller{
         if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
             $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
             $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
-
             if (!empty($latitude) && !empty($longitude)) {
-
                 $serviceAreaVendors = ServiceArea::whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")
                              ->pluck('id');
-
                 // if (isset($preferences->slots_with_service_area) && ($preferences->slots_with_service_area == 1)) {
                 //     $slot_vendors = clone $serviceAreaVendors;
                 //     $data = $slot_vendors->get();
@@ -1200,7 +1193,6 @@ class BaseController extends Controller{
             }
         }
     
-
         if ($serviceAreaVendors->isNotEmpty()) {
             foreach ($serviceAreaVendors as $value) {
           
