@@ -8,7 +8,7 @@ use Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\Models\{Attribute, User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag,DeliverySlotProduct, DeliverySlot,UserAddress};
+use App\Models\{Attribute, User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag,DeliverySlotProduct, DeliverySlot, OrderProductRating, UserAddress};
 use Validation;
 use DB;
 use Carbon\CarbonPeriod;
@@ -113,7 +113,7 @@ class ProductController extends BaseController
 
     public function productById(Request $request, $pid)
     {
-        // try{
+        try{
             $pvIds = array();
             $user = Auth::user();
             $langId = $user->language;
@@ -241,7 +241,7 @@ class ProductController extends BaseController
             }
             $allReviews = array_column($product->vendor->products()->with('reviews')->get()->toArray(),'reviews');
             $rating = array_sum(array_column($allReviews,'rating'));
-            $product->vendor_rating = $rating;
+            $product->vendor_rating = $rating; 
 
             $slotsDate = 0;
             if($product->vendor->is_vendor_closed){
@@ -509,7 +509,7 @@ class ProductController extends BaseController
             return response()->json([
                 'data' => $response,
             ]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
 

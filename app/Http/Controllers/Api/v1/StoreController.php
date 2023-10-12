@@ -2105,6 +2105,8 @@ class StoreController extends BaseController
 
 	function addProductWithAttribute(Request $request)
 	{
+
+		
 		
 		try {
 		
@@ -2128,7 +2130,8 @@ class StoreController extends BaseController
 			} else {
 				$sku_url = ($client->sub_domain . env('SUBMAINDOMAIN'));
 			}
-
+ 
+			
 			$slug = str_replace(' ', '-', $request->product_name);
 			$generated_slug = $sku_url . '.' . $slug;
 			$slug = generateSlug($generated_slug);
@@ -2137,6 +2140,7 @@ class StoreController extends BaseController
 
 			$user = Auth::user();
 			$user_vendor = UserVendor::where('user_id', $user->id)->first();
+			
 			if (@$user_vendor->vendor_id) {
 				$product = new Product();
 				$product->sku = $slug;
@@ -2150,6 +2154,7 @@ class StoreController extends BaseController
 				$product->vendor_id = $user_vendor->vendor_id;
 				if (@$request->address) {
 					$product->address = $request->address;
+				  }
 					if (@$request->longitude) {
 						$product->longitude = $request->longitude;
 					}
@@ -2433,7 +2438,8 @@ class StoreController extends BaseController
 				} else {
 					return $this->errorResponse('Sorry, You are not a vendor.', 500);
 				}
-			}
+			
+			
 		}
 		} catch (\Exception $e) {
 			return $this->errorResponse('Exception occured', 500);
