@@ -82,6 +82,9 @@
         border: 1px solid#eee;
         border-radius: 10px !important;
     }
+   
+  
+
 </style>
 @endsection
 @section('content')
@@ -1301,26 +1304,35 @@ $timezone = Auth::user()->timezone;
 
 
     
-
-     <div class="modal fade" id="blockchain_order_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
+    <div id="blockchain_order_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="blockchain_order_modal_label" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <h5 class="modal-title" id="blockchain_order_modal_label">Order Details</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
-                </button>
+              </button>
             </div>
             <div class="modal-body">
-                ...
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Field</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody id="order_data_table">
+                </tbody>
+              </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
-            </div>
+          </div>
         </div>
-        </div>
+      </div>
+      
+     
     <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
     <script>
         $('body').on('click', '.show-return-product-modal', function(event) {
@@ -1632,33 +1644,53 @@ $timezone = Auth::user()->timezone;
         }
 
         document.addEventListener('click', function(e) {
-            if (e.target.id === 'blockchain_order_data') {
-                var order_id = e.target.getAttribute('data-id');
-                
-                fetch("{{ route('orders.getBlockchainOrderDetail') }}?order_id=" + order_id, {
-                    method: "GET",
-                    headers: {
-                        "Accept": "application/json"
-                    }
-                })
-                .then(function(response) {
-                    if (!response.ok) {
-                        throw new Error(response.statusText);
-                    }
-                    return response.json();
-                })
-                .then(function(data) {
-                     $('#blockchain_order_modal').modal('show');
-                })
-                .catch(function(error) {
-                    Swal.fire({
-                        text: error.message,
-                        icon: "error",
-                        button: "OK",
-                    });
-                });
+    if (e.target.id === 'blockchain_order_data') {
+        var order_id = e.target.getAttribute('data-id');
+
+        fetch("{{ route('orders.getBlockchainOrderDetail') }}?order_id=" + order_id, {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
             }
+        })
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
+            return response.json();
+        })
+        .then(function(data) {
+            // Clear the existing data in the modal
+            document.getElementById('order_data_table').innerHTML = '';
+
+            // Iterate over the orderData and create table rows
+            data.api_response.orderData.forEach(function(order) {
+                for (var key in order) {
+                    if (order.hasOwnProperty(key)) {
+                        var row = document.createElement('tr');
+                        var cell1 = document.createElement('td');
+                        var cell2 = document.createElement('td');
+                        cell1.textContent = key;
+                        cell2.textContent = order[key];
+                        row.appendChild(cell1);
+                        row.appendChild(cell2);
+                        document.getElementById('order_data_table').appendChild(row);
+                    }
+                }
+            });
+
+            $('#blockchain_order_modal').modal('show');
+        })
+        .catch(function(error) {
+            Swal.fire({
+                text: error.message,
+                icon: "error",
+                button: "OK",
+            });
         });
+    }
+});
+
 
         $(document).on('click', '.buffer_time_btn', function(e) {
             var time = $("#buffer_time").val();
