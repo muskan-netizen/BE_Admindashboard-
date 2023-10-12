@@ -188,7 +188,8 @@ class HomeController extends BaseController
                     $longitude = $clientPreferences->Default_longitude;
                 }
             }
-
+ 
+           
             if($clientPreferences->is_hyperlocal == 1) {
                 
                 $this->loc_key = $this->loc_key.":hyperlocal:".$type.":".$clientPreferences->client_code;
@@ -290,7 +291,11 @@ class HomeController extends BaseController
             } else {
                 $homePageData = $this->postHomePageData($request);
             }
+
+            
             $navCategories = $this->categoryNav($langId, @$homePageData['vendor_ids'], $type);
+
+           
             Session::put('navCategories', $navCategories);
 
             /***end new  */

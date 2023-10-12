@@ -17,6 +17,7 @@ class P2PController extends BaseController
     public function categoryData(Request $request, $cid = 0)
     {
         
+        
         try {
             $limit = $request->has('limit') ? $request->limit : 12;
             $page = $request->has('page') ? $request->page : 1;
@@ -72,6 +73,7 @@ class P2PController extends BaseController
             $response['category'] = $category;
             $response['filterData'] = $variantSets;
             $response['listData'] = $this->listData($langId, $cid, strtolower($category->type->redirect_to), $userid, $product_list, $mod_type, $mode_of_service, $limit, $page, $request);
+            
             return $this->successResponse($response);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());

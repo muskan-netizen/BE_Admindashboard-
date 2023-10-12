@@ -441,6 +441,8 @@ class UserhomeController extends FrontController
 
     public function index(Request $request, $domain='')
     {
+
+        
        // pr(Session::get('onDemandPricingSelected'));
         try {
             $home = array();
@@ -459,10 +461,12 @@ class UserhomeController extends FrontController
             $_REQUEST['request_from'] = 1;
 
             $navCategories = $this->categoryNav($langId);
+
+            
             Session::put('navCategories', $navCategories);
             $vendor_type = $request->has('type') ? $request->type : Session::get('vendorType');
 
-
+         
             $count = 0;
             if ($client_preferences) {
                 foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
