@@ -22,6 +22,7 @@ class CategoryController extends BaseController
     
     public function categoryData(Request $request, $cid = 0)
     {
+        
         try {
             $limit = $request->has('limit') ? $request->limit : 12;
             $page = $request->has('page') ? $request->page : 1;

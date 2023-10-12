@@ -8,7 +8,7 @@ use Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\Models\{Attribute, User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag,DeliverySlotProduct, DeliverySlot,UserAddress};
+use App\Models\{Attribute, User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag,DeliverySlotProduct, DeliverySlot, OrderProductRating, UserAddress};
 use Validation;
 use DB;
 use Carbon\CarbonPeriod;
@@ -113,7 +113,7 @@ class ProductController extends BaseController
 
     public function productById(Request $request, $pid)
     {
-        // try{
+        try{
             $pvIds = array();
             $user = Auth::user();
             $langId = $user->language;
@@ -173,9 +173,8 @@ class ProductController extends BaseController
                             $q->whereDate('end_date_time', '>', now());
                         }]);
                     }
-                    $product = $product->select('id', 'sku', 'url_slug','description', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min', 'returnable', 'replaceable', 'return_days', 'is_long_term_service','service_duration','is_show_dispatcher_agent','is_slot_from_dispatch','tags','mode_of_service','is_recurring_booking', 'latitude', 'longitude', 'address','calories','inquiry_only');
-                    $product = $product->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min', 'returnable', 'replaceable', 'return_days', 'is_long_term_service','service_duration','is_show_dispatcher_agent','is_slot_from_dispatch','tags','mode_of_service','is_recurring_booking','security_amount', 'captain_name','captain_profile', 'captain_description');
-                    
+                    $product = $product->select('id', 'sku', 'url_slug', 'description', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'minimum_order_count', 'batch_count', 'minimum_duration', 'minimum_duration_min', 'additional_increments', 'additional_increments_min', 'buffer_time_duration', 'buffer_time_duration_min', 'returnable', 'replaceable', 'return_days', 'is_long_term_service', 'service_duration', 'is_show_dispatcher_agent', 'is_slot_from_dispatch', 'tags', 'mode_of_service', 'is_recurring_booking', 'latitude', 'longitude', 'address', 'calories', 'inquiry_only', 'security_amount', 'captain_name', 'captain_profile', 'captain_description');
+
 
                     $product = $product->where('id', $pid)
                         ->first();
@@ -241,7 +240,7 @@ class ProductController extends BaseController
             }
             $allReviews = array_column($product->vendor->products()->with('reviews')->get()->toArray(),'reviews');
             $rating = array_sum(array_column($allReviews,'rating'));
-            $product->vendor_rating = $rating;
+            $product->vendor_rating = $rating; 
 
             $slotsDate = 0;
             if($product->vendor->is_vendor_closed){
@@ -482,6 +481,8 @@ class ProductController extends BaseController
             $response['suggested_brand_products'] =  $suggested_brand_products;
             $response['suggested_vendor_products'] =  $suggested_vendor_products;
 
+
+            
             $response['products'] = $product;
             $response['frequently_bought'] = $frequentlyBoughtProducts;
             $response['relatedProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'relate', $product->related, $request->service);
@@ -509,7 +510,7 @@ class ProductController extends BaseController
             return response()->json([
                 'data' => $response,
             ]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
 

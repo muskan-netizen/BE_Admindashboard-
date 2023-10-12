@@ -17,6 +17,7 @@ class P2PController extends BaseController
     public function categoryData(Request $request, $cid = 0)
     {
         
+        
         try {
             $limit = $request->has('limit') ? $request->limit : 12;
             $page = $request->has('page') ? $request->page : 1;
@@ -72,6 +73,7 @@ class P2PController extends BaseController
             $response['category'] = $category;
             $response['filterData'] = $variantSets;
             $response['listData'] = $this->listData($langId, $cid, strtolower($category->type->redirect_to), $userid, $product_list, $mod_type, $mode_of_service, $limit, $page, $request);
+            
             return $this->successResponse($response);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -89,6 +91,7 @@ class P2PController extends BaseController
       
         }
 
+     
         if ($type == 'vendor' && $product_list == 'false') {
             $user = Auth::user();
             $vendor_ids = [];
@@ -269,9 +272,53 @@ class P2PController extends BaseController
         } elseif ($type == 'product' || $type == 'appointment' || $type == 'on demand service' || strtolower($type) == 'laundry' || $type = 'rental service') {
             $vendor_ids = Vendor::where('status', 1)->pluck('id')->toArray();
 
+           
+            if (!empty($request->latitude) && !empty($request->longitude)) {
+            
+                $latitude = $request->latitude;
+                $longitude = $request->longitude ;
+               
+                $categoryTypes = getServiceTypesCategory($request->type);
+
+               
+                $vendorData = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
+                    $q->whereIn('type_id',$categoryTypes);
+                })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','id as is_vendor_closed' ,'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($request->type, 1);
+               
+                if (($preferences) && ($preferences->is_hyperlocal == 1)) {
+                   
+                    $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
+                    $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+                    $distance_unit = (!empty($preferences->distance_unit_for_time)) ? $preferences->distance_unit_for_time : 'kilometer';
+                    //3961 for miles and 6371 for kilometers
+                    $calc_value = ($distance_unit == 'mile') ? 3961 : 6371;
+                    $vendorData = $vendorData->select('*', DB::raw(' ( ' .$calc_value. ' * acos( cos( radians(' . $latitude . ') ) *
+                            cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
+                            sin( radians(' . $latitude . ') ) *
+                            sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->withAvg('product', 'averageRating');
+                            
+                    $ses_vendors = $this->getServiceAreaVendors($latitude, $longitude, $request->type);
+                    $Service_area = $this->getServiceArea($latitude, $longitude, $request->type);
+              
+                    $vendorData = $vendorData->whereIn('id', $ses_vendors);
+                    //if($venderFilternear && ($venderFilternear == 1) ){
+                        //->orderBy('vendorToUserDistance', 'ASC')
+                        $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
+                    //}
+                }
+                
+                $vendorIds  = $vendorData->where('status', 1)->pluck('id');
+            }else{
+                $vendorIds = UserVendor::where('user_id', $userid)->pluck('vendor_id')->toArray();
+
+            }
+          
+            
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $multipli = $clientCurrency ? $clientCurrency->doller_compare : 1;
-            $vendorIds = UserVendor::where('user_id', $userid)->pluck('vendor_id')->toArray();
+         
+          
+           
             $now = Carbon::now();
             $products = Product::has('vendor')->with(['ProductAttribute',
                 'category.categoryDetail', 'media.image',
@@ -296,6 +343,13 @@ class P2PController extends BaseController
                 $q->orWhereIn('vendor_id', $vendorIds);
             })->where('products.category_id', $category_id)
                 ->where('products.is_live', 1); 
+
+                
+            if(!empty($vendorIds))
+            {
+
+                $products = $products->whereIn('vendor_id',$vendorIds);
+            }
                
             if( clientPrefrenceModuleStatus('p2p_check') && $request->has('attributes') && count($request['attributes']) > 0) {
                 $attributes = $request['attributes'];
@@ -309,7 +363,7 @@ class P2PController extends BaseController
                 });
             }
 
-
+       
             $products = $products->select('products.id', 'products.sku', 'products.url_slug','products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', DB::raw("'$multipli' as variant_multiplier"))
                 ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
                 ->join('product_translations', 'product_translations.product_id', '=', 'products.id') // Or whatever the join logic is
@@ -317,6 +371,7 @@ class P2PController extends BaseController
             $products = $products->orderBy('product_translations.title', 'asc');
             
             $products = $products->withCount(['variantSet','addOn'])->groupBy('id');
+            
             $products = $products->paginate($limit, $page);
 
             if (!empty($products)) {
