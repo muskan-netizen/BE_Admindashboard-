@@ -3508,7 +3508,7 @@ $(document).ready(function () {
                         location.href =  '/category/cabservice?destination_location='+response.vendor.address+'&destination_location_latitude'+response.vendor.latitude+'&destination_location_longitude'+response.vendor.longitude+'&yacht_id='+product_id;
                     }
                     console.log(response.vendor.rental);
-                    if(response.vendor.rental == 1) {
+                    if(response.vendor.rental == 0) {
                       
                        location.href =  '/viewcart';
                     }
