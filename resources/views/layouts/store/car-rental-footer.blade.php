@@ -57,8 +57,8 @@
     </div>
     <div class="d-none" id ="nearmap">
 </footer>
-@section('script')
-<script src="{{asset('js/custom.js')}}"></script>
+ @section('script')
+{{-- <script src="{{asset('js/custom.js')}}"></script>
 <script src="{{asset('js/location.js')}}"></script>
 <script src="{{asset('assets/libs/moment/moment.min.js')}}"></script>
 <script src="{{asset('assets/libs/datetimepicker/daterangepicker.min.js')}}" ></script>
@@ -70,14 +70,15 @@
 <script defer type="text/javascript" src="{{asset('front-assets/js/menu.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/lazysizes.min.js')}}"></script>
 <script defer type="text/javascript" src="{{asset('front-assets/js/bootstrap.js')}}"></script>
-<script defer type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script> --}}
 <script type="text/javascript"src="{{asset('front-assets/js/slick.js')}}"></script>
-<script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
-<script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script>
+{{-- <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+<script type="text/javascript" src="{{asset('front-assets/js/jquery.elevatezoom.js')}}"></script> --}}
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="{{asset('assets/libs/select2/select2.min.js')}}"></script>
-<script>
+<script defer type="text/javascript" src="{{asset('front-assets/js/script.js')}}"></script>
+{{-- <script>
     var cart_product_url= "{{ route('getCartProducts') }}";
     var delete_cart_product_url= "{{ route('deleteCartProduct') }}";
     var digit_count = "{{$client_preference_detail->digit_after_decimal}}";
@@ -147,4 +148,4 @@
         bindMap=new google.maps.Map(document.getElementById("nearmap"), bindmapProp);
     }
     bindLatestCoords(userLatitude, userLongitude);
-</script>
+</script> --}}

@@ -1,4 +1,4 @@
-@extends('layouts.car-rental', [
+@extends('layouts.store', [
 'title' => (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : '',
 'meta_title'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_title:'',
 'meta_keyword'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_keyword:'',
@@ -299,6 +299,7 @@
     <div class="container">
         <input type="hidden" name="available_product_variant" id="available_product_variant" value="{{$product->variant[0]->id}}">
         <input type="hidden" name="start_time" id="start_time" value="{{$pickup_time}}">
+        <input type="hidden" name="is_template" id="is_template" value="1">
         <input type="hidden" name="end_time" id="end_time" value="{{$drop_time}}">
         <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
         <input type="hidden" name="sele_slot_id" id="sele_slot_id" value="" />

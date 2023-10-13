@@ -1,4 +1,4 @@
-@extends('layouts.car-rental', [
+@extends('layouts.store', [
 'title' => 'Summary',
 ])
 @section('css')

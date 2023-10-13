@@ -98,6 +98,10 @@
 <!-- rental p2p css -->
 <link rel="stylesheet" href="{{asset('frontend/common/rental_p2p.css')}}">
 
+<link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+<link href="{{asset('assets/libs/flatpickr/flatpickr.min.css')}}" rel="stylesheet" type="text/css" />
+<script src="{{asset('assets/libs/flatpickr/flatpickr.min.js')}}"></script>
+
 
 @yield('css-links')
 <style type="text/css">

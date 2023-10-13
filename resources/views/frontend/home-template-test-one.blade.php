@@ -331,11 +331,12 @@ $preference = $client_preference_detail;
 @endif
 
 
+
 <section class="section-b-space ratio_asos  pt-0 mt-0 pb-0 mt-0" id="our_vendor_main_div">
    <div class="vendors">
       @foreach($homePageLabels as $key => $homePageLabel)
          @if($homePageLabel->slug == 'pickup_delivery')
-            @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories))
+            @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories) && $vendor_type!="car_rental")
                @include('frontend.booking.cabbooking-single-module')
             @endif
          @elseif($homePageLabel->slug == 'dynamic_page')
@@ -574,6 +575,10 @@ $preference = $client_preference_detail;
       </div>
    </div>
 </div>
+
+@if($vendor_type=="car_rental")
+   @include('frontend.yacht.rental');
+@endif
 
 <script type="text/template" id="desktop_banners_template">
 	<div class="carousel-inner">
