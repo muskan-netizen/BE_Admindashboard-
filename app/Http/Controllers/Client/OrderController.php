@@ -3291,6 +3291,10 @@ class OrderController extends BaseController
  
     public function getBlockchainOrderDetail(Request $request)
     {
+
+        
+
+        
         $api_domain = ClientPreferenceAdditional::where('key_name', 'blockchain_api_domain')->first();
         $from_id = ClientPreferenceAdditional::where('key_name', 'blockchain_address_id')->first();
         $client = ClientData::first();
@@ -3303,27 +3307,26 @@ class OrderController extends BaseController
         $headers = [
             'Content-Type' => 'application/json',
         ];
-    
-        if (isset($api_domain)) {
-            $apiUrl = $api_domain->key_value . '/fetchOrderDetails';
-            $response = '';
+        
+        
+         $jsonData = '{"message":"Order Retrieved successfully","data":{"orderID":"407","address_f":"0xFa25BfD23E31EdEb17056B1ca116A7FE84E81009","address_short_code":"2d98b5"},"api_response":{"orderData":[{"_id":"6527bd3866afcd084b31e30a","address_short_code":"2d98b5","status":"Placed","orderID":407,"orderDetail":"{\"\\u0000*\\u0000casts\":{\"total_amount\":\"float\"},\"\\u0000*\\u0000fillable\":[\"total_delivery_fee\",\"total_waiting_price\",\"total_waiting_time\"],\"\\u0000*\\u0000connection\":\"royo_ace\",\"\\u0000*\\u0000table\":\"orders\",\"\\u0000*\\u0000primaryKey\":\"id\",\"\\u0000*\\u0000keyType\":\"int\",\"incrementing":true,\"\\u0000*\\u0000with\":[],\"\\u0000*\\u0000withCount\":[],\"preventsLazyLoading\":false,\"\\u0000*\\u0000perPage\":15,\"exists":true,\"wasRecentlyCreated":false,\"\\u0000*\\u0000escapeWhenCastingToString\":false,\"\\u0000*\\u0000attributes\":{\"id\":407,\"user_id\":1},\"\\u0000*\\u0000original\":{\"id":407,\"user_id\":1},\"\\u0000*\\u0000changes\":[],\"\\u0000*\\u0000classCastCache\":[],\"\\u0000*\\u0000attributeCastCache\":[],\"\\u0000*\\u0000dates\":[],\"\\u0000*\\u0000dateFormat":null,\"\\u0000*\\u0000appends\":[],\"\\u0000*\\u0000dispatchesEvents\":[],\"\\u0000*\\u0000observables\":[],\"\\u0000*\\u0000relations\":{\"ordervendor\":{\"id\":407,\"order_id\":407,\"vendor_id\":3,\"vendor_dinein_table_id\":null,\"user_id\":1,\"delivery_fee\":\"61.60000000\",\"status\":0,\"coupon_id\":null,\"coupon_code\":null,\"taxable_amount\":\"0.00000000\",\"subtotal_amount\":\"13.00000000\",\"payable_amount\":\"74.60000000\",\"discount_amount\":\"0.00000000\",\"web_hook_code\":null,\"admin_commission_percentage_amount\":\"0.00000000\",\"admin_commission_fixed_amount\":\"0.00000000\",\"coupon_paid_by\":1,\"payment_option_id\":1,\"dispatcher_status_option_id\":null,\"order_status_option_id\":1,\"created_at\":\"2023-10-12T09:32:18.000000Z\",\"updated_at\":\"2023-10-12T09:32:18.000000Z\",\"dispatch_traking_url":null,\"order_pre_time":0,\"user_to_vendor_time":0,\"reject_reason":null,\"service_fee_percentage_amount\":\"0.00000000\",\"cancelled_by":null,\"lalamove_tracking_url":null,\"shipping_delivery_type\":\"D\",\"courier_id\":\"0\",\"ship_order_id":null,\"ship_shipment_id":null,\"ship_awb_id":null,\"total_container_charges\":\"0.0000\",\"accepted_by":null,\"driver_id":null,\"scheduled_date_time\":\"0000-00-00 00:00:00\",\"schedule_slot":"","is_restricted":0,"total_markup_price":"0.00","fixed_fee":"0.0000","additional_price":"0.0000","fixed_service_charge_amount":"0.00000000","toll_amount":"0.00000000","return_reason_id":null,"is_exchanged_or_returned":0,"exchange_order_vendor_id":null,"delivery_response":null,"subscription_discount_admin":"0.00","subscription_discount_vendor":"0.00","bid_discount":0,"subscription_invoices_vendor_id":0,"extra_time":null,"waiting_time":"0.00","waiting_price":"0.00","roadie_tracking_url":null,"label_id":null,"label_pdf":null,"dispatcher_status":"","order_status_option":{"id":1,"title":"Placed","type":1,"status":1,"created_at":"2021-09-29T13:16:33.000000Z","updated_at":"2021-09-29T13:16:33.000000Z"}}},"\\u0000*\\u0000touches":[],"timestamps":true,"\\u0000*\\u0000hidden":[],"\\u0000*\\u0000visible":[],"\\u0000*\\u0000guarded":["*"],"\\u0000*\\u0000excludedAttributes":[],"auditEvent":null,"auditCustomOld":null,"auditCustomNew":null,"isCustomEvent":false"}],"status":true,"statusCode":200,"message":"Record found!"}';
+ 
+          
+      
+        
+
+        // if (isset($api_domain)) {
+        //     $apiUrl = $api_domain->key_value . '/fetchOrderDetails';
+        //     $response = '';
             
             
-            $response = Http::withHeaders($headers)->post($apiUrl,$data);           
+        //     $response = Http::withHeaders($headers)->post($apiUrl,$data);           
            
-            $responseData = $response->json();
+        //     $responseData = $response->json();
             
-            return response()->json([
-                'message' => 'Order Retrieved successfully',
-                'data' => $data ?? '',
-                'api_response' => $responseData ?? '',
-            ], 200);
-        } else {
-            // Handle the case where $api_domain is not set
-            return response()->json([
-                'message' => 'Blockchain API domain is not configured.',
-            ], 500); // You can choose an appropriate HTTP status code here
-        }
+           
+        // }
+        return view('backend.order.blockchain-order-data',compact('jsonData') );
     }
     
 }

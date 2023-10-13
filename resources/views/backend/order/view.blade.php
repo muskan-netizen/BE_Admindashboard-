@@ -1031,8 +1031,9 @@ $timezone = Auth::user()->timezone;
             </div>
             <div class="card-body">
                 <h4 class="header-title mb-3">{{ __('Blockchain Order Information') }}</h4>
-                <button type="button" id="blockchain_order_data" data-id="{{ $order->id }}" class="btn btn-primary">Get Blockchain Order Data</span>
-                </button>
+                <a href="{{ route('orders.getBlockchainOrderDetail', ['order_id' => $order->id]) }}">
+                    <button type="button" id="blockchain_order_data" data-id="{{ $order->id }}" class="btn btn-primary">Get Blockchain Order Data</button>
+                </a>
             </div>
 
 
@@ -1643,53 +1644,7 @@ $timezone = Auth::user()->timezone;
             }, 10);
         }
 
-        document.addEventListener('click', function(e) {
-    if (e.target.id === 'blockchain_order_data') {
-        var order_id = e.target.getAttribute('data-id');
-
-        fetch("{{ route('orders.getBlockchainOrderDetail') }}?order_id=" + order_id, {
-            method: "GET",
-            headers: {
-                "Accept": "application/json"
-            }
-        })
-        .then(function(response) {
-            if (!response.ok) {
-                throw new Error(response.statusText);
-            }
-            return response.json();
-        })
-        .then(function(data) {
-            // Clear the existing data in the modal
-            document.getElementById('order_data_table').innerHTML = '';
-
-            // Iterate over the orderData and create table rows
-            data.api_response.orderData.forEach(function(order) {
-                for (var key in order) {
-                    if (order.hasOwnProperty(key)) {
-                        var row = document.createElement('tr');
-                        var cell1 = document.createElement('td');
-                        var cell2 = document.createElement('td');
-                        cell1.textContent = key;
-                        cell2.textContent = order[key];
-                        row.appendChild(cell1);
-                        row.appendChild(cell2);
-                        document.getElementById('order_data_table').appendChild(row);
-                    }
-                }
-            });
-
-            $('#blockchain_order_modal').modal('show');
-        })
-        .catch(function(error) {
-            Swal.fire({
-                text: error.message,
-                icon: "error",
-                button: "OK",
-            });
-        });
-    }
-});
+     
 
 
         $(document).on('click', '.buffer_time_btn', function(e) {
