@@ -1,5 +1,5 @@
 
-<link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+<link rel="stylesheet" href="{{ asset('css/rental.css') }}">
 <link href="{{asset('assets/libs/flatpickr/flatpickr.min.css')}}" rel="stylesheet" type="text/css" />
 <script src="{{asset('assets/libs/flatpickr/flatpickr.min.js')}}"></script>
 
