@@ -78,7 +78,7 @@
     
             $rating = array_sum(array_column($allReviews,'rating'));
             @endphp
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="item">
                     <a class="common-product-box text-center" href="{{ $link }}" target="_blank">
                         <div class="image">

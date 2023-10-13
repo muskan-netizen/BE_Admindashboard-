@@ -1,4 +1,4 @@
-<footer class="site_footer">
+<!-- <footer class="site_footer">
     <div class="container">
         <div class="footer_row">
             <div class="item">
@@ -56,7 +56,7 @@
         </div>
     </div>
     <div class="d-none" id ="nearmap">
-</footer>
+</footer> -->
  @section('script')
 {{-- <script src="{{asset('js/custom.js')}}"></script>
 <script src="{{asset('js/location.js')}}"></script>

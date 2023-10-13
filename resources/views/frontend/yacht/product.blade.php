@@ -93,7 +93,7 @@
     <div class="right col-md-5">
         <div class="text">
             <h2>{{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : ''}}</h2>
-            <h6 class="sold-by mt-4">
+            <h6 class="sold-by mt-2">
                 <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}100/100{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a>
             </h6>
 
@@ -110,7 +110,7 @@
                 </ul>
             </div>
 
-            <div class="booking-option mt-4">
+            <div class="booking-option mt-1">
                 <h5>Booking Option</h5>
             </div>
             <div class="product_price">
@@ -155,7 +155,7 @@
                         @endforeach
                     </ul>
                 
-                    <div>
+                    <div class="mb-2">
                         <p><b>Rental Start Time:-</b> <span>{{$pickup_time}}</span></p>
                         <p><b>Rental End Time:- </b>{{$drop_time}}</p>
                     </div>
