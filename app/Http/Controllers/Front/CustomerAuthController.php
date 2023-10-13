@@ -83,7 +83,7 @@ class CustomerAuthController extends FrontController
         }
     }
 
-    public function loginForm($domain = '')
+    public function loginForm(Request $request,$domain = '')
     {
         $curId = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
@@ -102,7 +102,7 @@ class CustomerAuthController extends FrontController
         return view('frontend.'.$login_page)->with(['navCategories' => $navCategories]);
     }
 
-    public function registerForm($domain = '', Request $request)
+    public function registerForm(Request $request,$domain = '')
     {
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
@@ -300,7 +300,7 @@ class CustomerAuthController extends FrontController
                 }
                 UserAllergicItem::insert($data);
             }
-
+            
             // Save User Kyc Details
             if(@$req->kyc){
                 InfluencerTrait::saveKycData($req, $user->id);
@@ -391,6 +391,8 @@ class CustomerAuthController extends FrontController
 
                 if( getClientPreferenceDetail()->p2p_check ) {
 
+                    $user->assignRole(4); // by default make this user as vendor
+                    
                     $user->is_admin = 1;
                     $user->save();
 

@@ -445,6 +445,10 @@ class UserhomeController extends FrontController
         
        // pr(Session::get('onDemandPricingSelected'));
         try {
+
+            $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
+
+            
             $home = array();
             $vendor_ids = array();
             if ($request->has('ref')) {
