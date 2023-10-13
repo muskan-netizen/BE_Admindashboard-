@@ -43,6 +43,7 @@
 				  </ul> <!-- END tabs-nav --> --}}
                 <form action="{{ route('productSearch') }}" method="GET">
                     @csrf
+
                     <div class="tab">
                         <div class="d-flex align-items-center">
                             <div class="form-group">
