@@ -36,7 +36,7 @@ class YachtController extends Controller
             if($request->service == 'rental'){
                 $products->transmission = $fields['Transmission'] ?? '';
                 $products->fuel_type = $fields['Fuel Type'] ?? '';
-                $products->Seats = $fields['Seats'] .' Seats'?? '';
+                $products->Seats = $fields['Seats']  ?? '';
             }else{
                 $products->cabins = $fields['Cabins']. ' Cabins' ?? '0' ;
                 $products->baths = $fields['Baths']. ' Baths' ?? '0' ;
