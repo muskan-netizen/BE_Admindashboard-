@@ -160,11 +160,12 @@ class CartController extends FrontController
             }
         }
         $template = WebStylingOption::where('is_selected','1')->first();
-   
+     
         if($template->template_id == 10){
           
         return view('frontend.yacht.summary',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data,$nomenclatureProductOrderForm,$client_preference_detail,$client_detail);
         }else{
+            
             return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data,$nomenclatureProductOrderForm,$client_preference_detail,$client_detail);
         }
         // 

@@ -78,6 +78,20 @@ $clientData = \App\Models\Client::select('socket_url')->first();
     .review-images img {width: 100%;max-width: 100px;margin: 10px 10px 10px 0px;}
     .label-disabled {pointer-events: none;opacity: 0.5;}
 
+    .flex-container {
+    display: flex;
+    justify-content: space-between; /* Distribute items evenly */
+}
+
+.item-price {
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 10px;
+    flex: 1; /* Distribute available space evenly */
+    background-color: #f7f7f7;
+}
 
 #summary-table {
     width: 100%;
@@ -352,7 +366,20 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                     @endif
                                         
 
-
+                                    <div class="flex-container">
+                                        <div class="item-price">
+                                            <h2>Daily</h2>
+                                            <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->price, 2)}}</p>
+                                        </div>
+                                        <div class="item-price">
+                                            <h2>7 Days+</h2>
+                                            <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->week_price, 2)}}</p>
+                                        </div>
+                                        <div class="item-price">
+                                            <h2>30 Days+</h2>
+                                            <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->month_price, 2)}}</p>
+                                        </div>
+                                    </div>
                                         
                                         @if( is_category_p2p($product->category) || is_attribute_enabled())
                                             @if( !empty($attr_array) )
@@ -438,7 +465,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             @include('frontend.product-part.recurring-booking')
                                         @endif
                                         @if(@getAdditionalPreference(['is_rental_weekly_monthly_price'])['is_rental_weekly_monthly_price'] && $product->category->categoryDetail->type_id == 10)
-                                            @include('frontend.product-part.booking-slot-p2p-rental')
+                                            {{-- @include('frontend.product-part.booking-slot-p2p-rental') --}}
                                         @elseif($product->category->categoryDetail->type_id == 10)
                                             {{-- @include('frontend.product-part.booking-slot') --}}
                                         @endif
@@ -645,7 +672,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                         @endphp
 
                                         @if( $product->category->categoryDetail->type_id != 13 )
-                                        <div class="btn-wrapper">
+                                        <div class="btn-wrapper mt-3">
                                             <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'inline-block'; ?>">
                                                 @if($product->inquiry_only == 0)
                                                 <div class="product-description border-product pb-0">
@@ -1665,12 +1692,14 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
 
 
         var enableDates = {!! $productAvailability !!};
+     
+      
+        
         if (typeof enableDates === 'string') {
             enableDates = enableDates.split(',').map(function(dateString) {
                 return dateString.trim();
             });
         }
-        console.log(enableDates)
         $("#range-datepicker").flatpickr({
                 dateFormat: "Y-m-d",
                 mode: "range",
@@ -1684,24 +1713,21 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
             function updateSummary(selectedDates) {
                 const startDate = selectedDates[0];
                 const endDate = selectedDates[selectedDates.length - 1];
-                const platformFeePercentage = {{$product->plateform_fee_percentage}};
                 const days = Math.round((endDate - startDate) / (24 * 60 * 60 * 1000)) + 1;
                 
                 let dailyRate;
                 if (days < 7) {
                     dailyRate = {{$product->variant[0]->price}};
                 } else if (days >= 7 && days < 30) {
-                    dailyRate = {{$product->variant[0]->week_price}};
+                    dailyRate = {{$product->variant[0]->week_price ?? 0 }};
                 } else {
-                    dailyRate = {{$product->variant[0]->month_price}};
+                    dailyRate = {{$product->variant[0]->month_price ?? 0 }};
                 }
-                const platformFee = (days * dailyRate) * platformFeePercentage / 100;
-                const totalAmount = days * dailyRate + platformFee;
+                const totalAmount = days * dailyRate ;
                 // Update values in the template
                 $(".summary-box").show();
                 $(".days-count").text(days);
                 $(".applied-price").text(showCurrencySymbol(dailyRate));
-                $(".platform-fee").text(showCurrencySymbol(platformFee));
                 $(".date-range").text(startDate.toDateString() + " - " + endDate.toDateString());
                 $(".total-amount").text(showCurrencySymbol(totalAmount));
             }

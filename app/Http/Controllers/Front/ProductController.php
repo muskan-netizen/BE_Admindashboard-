@@ -13,6 +13,8 @@ use App\Models\{AddonSet, Cart, CartAddon, CartProduct, User, Product, ClientCur
 
 use Carbon\Carbon;
 use App\Http\Traits\{ProductActionTrait, ProductTrait,ProductVariantActionTrait};
+use Carbon\CarbonPeriod;
+
 class ProductController extends FrontController{
     private $field_status = 2;
     use ProductActionTrait,ProductTrait,ProductVariantActionTrait;
@@ -32,6 +34,7 @@ class ProductController extends FrontController{
     public function index(Request $request, $domain = '',$vendor,$url_slug){
 
       
+     
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
         $pickup_time = $request->pickup;
         $drop_time = $request->drop;
@@ -88,7 +91,7 @@ class ProductController extends FrontController{
         $productAvailability = ProductAvailability::where('product_id', $product->id)
         ->selectRaw('DATE_FORMAT(date_time, "%Y-%m-%d") as formatted_date')
         ->pluck('formatted_date');
-        
+      
         if(@$product->product_availability && @$product->OrderProduct){
             $product_notavailability = [];
             foreach($product->OrderProduct as $OrderProducts){
@@ -117,6 +120,12 @@ class ProductController extends FrontController{
     }
 
         $product_availability = json_encode($product->product_availability->pluck('date_time'));
+
+      
+        $productAvailability = json_encode(ProductAvailability::where('product_id', $product->id)
+        ->where('not_available', 0)
+        ->selectRaw('DATE_FORMAT(date_time, "%Y-%m-%d") as formatted_date')
+        ->pluck('formatted_date'));
         if($this->checkTemplateForAction(8)){
             $this->RecentView($p_id);
         }
