@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\{ApiResponser,CartManager, KwikApi,BiddingCartTrait, CartManagerV2};
 use App\Http\Controllers\Client\ShippoController;
 use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
-use App\Models\{AddonSet, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, VerificationOption,VendorSlotDate,TaxRate, Page,WebStylingOption, ProductDeliveryFeeByRole};
+use App\Models\{AddonSet, BookingOption, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor,PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard,CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot,ProductFaq,CaregoryKycDoc, CartBookingOption, CartRentalProtection, VerificationOption,VendorSlotDate,TaxRate, Page,WebStylingOption, ProductDeliveryFeeByRole, ProductRentalProtection, RentalProtection};
 use Http\Message\Cookie;
 
 
@@ -83,6 +83,7 @@ class CartController extends FrontController
         if ($cart) {
             $cartData = CartProduct::where('status', [0, 1])->where('cart_id', $cart->id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
         }
+    
         $navCategories = $this->categoryNav($langId);
 
         $subscription_features = array();
@@ -158,9 +159,16 @@ class CartController extends FrontController
                 $nomenclatureProductOrderForm = $nomenclatureTranslation->name ?? null;
             }
         }
-
-        return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data,$nomenclatureProductOrderForm,$client_preference_detail,$client_detail);
-       // return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
+        $template = WebStylingOption::where('is_selected','1')->first();
+     
+        if($template->template_id == 10){
+          
+        return view('frontend.yacht.summary',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data,$nomenclatureProductOrderForm,$client_preference_detail,$client_detail);
+        }else{
+            return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data,$nomenclatureProductOrderForm,$client_preference_detail,$client_detail);
+        }
+        // 
+        // return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
         // return view('frontend.cartnew')->with(['navCategories' => $navCategories, 'cartData' => $cartData, 'addresses' => $addresses, 'countries' => $countries, 'subscription_features' => $subscription_features, 'guest_user'=>$guest_user]);
     }
 
@@ -259,7 +267,7 @@ class CartController extends FrontController
         $orders_per_slot = $vendor->orders_per_slot??0;
         $orderCount = 0;
         // Get Vendor orders
-        $orderVendors = OrderVendor::where('vendor_id', $vendor->id)->get();
+        $orderVendors = OrderVendor::where('vendor_id', $vendor_id)->get();
         // dd($orderVendors);
         foreach($orderVendors as $orderVendor){
             // Get orders of current vendor where scheduled_slot and schedule_pickup_datetime is same as received from frontend.
@@ -300,9 +308,10 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
-        
+  
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
+        $vendor = Vendor::find($request->vendor_id);
         try {
             $cart_detail = [];
             $user = Auth::user();
@@ -421,7 +430,7 @@ class CartController extends FrontController
             }
             $oldquantity = $isnew = 0;
             $service_start_date   = '';
-            $start_date  = $request->has('start_date') ? $request->start_date : null;
+            // $start_date  = $request->has('start_date') ? $request->start_date : null;
             $isLongTermProduct =0;
             if( $request->has('service_start_time') && !empty($request->service_start_time)){
                 $isLongTermProduct  = 1;
@@ -444,8 +453,8 @@ class CartController extends FrontController
                 'variant_id'          => $request->variant_id,
                 'currency_id'         => $client_currency->currency_id,
                 'luxury_option_id'    => ($luxury_option) ? $luxury_option->id : 0,
-                'start_date_time'     => $start_date,
-                'end_date_time'       => $request->has('end_date') ? $request->end_date : null,
+                'start_date_time'     => $request->start_date_time,
+                'end_date_time'       => $request->end_date_time,
                 'additional_increments_hrs_min' => $request->has('incremental_hrs') ? $request->incremental_hrs : null,
                 'total_booking_time'  => $total_booking_time,
                 'service_day'         => $request->has('service_day') ? $request->service_day : null,
@@ -578,7 +587,7 @@ class CartController extends FrontController
             }
             $quantityCart = CartProduct::where('cart_id',$cart_detail->id)->sum('quantity');
 
-            return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!','cart_product_id' => $cartProduct->id,'cart_quantity'=>$quantityCart??0,'product_id' => $cartProduct->product_id]);
+            return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!','cart_product_id' => $cartProduct->id,'cart_quantity'=>$quantityCart??0,'product_id' => $cartProduct->product_id,'vendor' => $vendor]);
         } catch (Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
@@ -873,7 +882,7 @@ class CartController extends FrontController
                 $qry->select('addon_options.id', 'addon_options.price', 'apt.title', 'addon_options.addon_id', 'apt.language_id');
                 $qry->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
                 // $qry->where('language_id', $langId);
-            }, 'vendorProducts.product.taxCategory.taxRate',
+            }, 'vendorProducts.product.taxCategory.taxRate'
         ])->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
 
         //dd($cartData->toArray());
@@ -1217,13 +1226,13 @@ class CartController extends FrontController
                                 $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
                                 if (count($deliveries)>1) {
                                     foreach ($deliveries as $k=> $opt) {
-                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$opt['rate'].'</option>';
+                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.decimal_format($opt['rate']).'</option>';
                                         //$select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['rate'].'</option>';
                                     }
                                 } else {
                                     foreach ($deliveries as $k=> $opt) {
                                         //$select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$opt['rate'].'</option>';
-                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['rate'].'</option>';
+                                        $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.decimal_format($opt['rate']).'</option>';
                                     }
                                 }
                                 $select .= '</select>';
@@ -1457,20 +1466,14 @@ class CartController extends FrontController
                     $delivery_status = 0;
                 }
 
-
-
-
-
                 $total_payable_amount = $total_payable_amount + $payable_amount;
                 $total_taxable_amount = $total_taxable_amount + $taxable_amount;
                 $total_discount_amount = $total_discount_amount + $discount_amount;
                 $total_discount_percent = $total_discount_percent + $discount_percent;
                 $total_subscription_discount = $total_subscription_discount + $subscription_discount;
 
-
                 $vendorData->is_promo_code_available = $is_promo_code_available;
             }
-            //dd($is_promo_code_available)
             $is_percent = 0;
             $amount_value = 0;
             if ($cart->coupon) {
@@ -1988,7 +1991,8 @@ class CartController extends FrontController
         CartProduct::where('id', $request->cartproduct_id)->delete();
         CartCoupon::where('vendor_id', $request->vendor_id)->delete();
         CartAddon::where('cart_product_id', $request->cartproduct_id)->delete();
-
+        CartRentalProtection::where('cart_id', $cartProd->cart_id)->delete();
+        CartBookingOption::where('cart_id', $cartProd->cart_id)->delete();
         if(!empty($cartProd)){
             $cartpro_count = CartProduct::where('cart_id', $cartProd->cart_id)->count();
             if($cartpro_count == 0){
@@ -2071,7 +2075,8 @@ class CartController extends FrontController
      */
     public function getCartData($domain = '', Request $request)
     {
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'order_edit_before_hours', 'is_gift_card', 'is_token_currency_enable','is_service_product_price_from_dispatch','token_currency','advance_booking_amount', 'advance_booking_amount_percentage','is_file_cart_instructions','is_service_price_selection']);
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'order_edit_before_hours', 'is_gift_card', 'is_token_currency_enable','is_service_product_price_from_dispatch','token_currency','advance_booking_amount', 'advance_booking_amount_percentage','is_file_cart_instructions','is_service_price_selection', 'is_rental_weekly_monthly_price']);
+
                 
         $wishListCount = 0;
         $cart_details = null;
@@ -2100,8 +2105,22 @@ class CartController extends FrontController
         } else {
             $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time','schedule_pickup','schedule_dropoff','scheduled_slot','shipping_delivery_type', 'order_id','address_id')->with(['coupon.promo', 'editingOrder'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
         }
+        if($cart && !empty($cart)){
+        $cart_product_removed =    CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
+            $q->whereIn('is_live',[0,2]);
+        })->pluck('id');
+    }
+       
+        if(count($cart_product_removed)){
+            CartProduct::whereIn('id',$cart_product_removed)->delete();
+            if(CartProduct::where('cart_id',$cart->id)->count() == 0){
+            Cart::find($cart->id)->delete();
+            }
+        }
+      
 
         $address_id = $request->has("address_id") ? $request->address_id : (  @$cart->address_id ?? '') ;
+   
         if (isset( $address_id) && !empty( $address_id)) {
            // $address_id $address_id = $request->address_id;
             $address = UserAddress::where('user_id', $user->id)->update(['is_primary' => 0]);
@@ -2186,10 +2205,9 @@ class CartController extends FrontController
                 $currency_code=$currency->currency->iso_code;
             }
             $cart_details->currency_code=$currency_code;
-
-           
-
-            $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message])->render();
+            $addon = AddonSet::with('option', 'translation')->where('vendor_id', $cart_details->vendor_id)->where('status',1)->get();
+                  
+            $mycartView = view('frontend.yacht.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message, 'addons' => $addon])->render();
         }
        
         $tokenAmount = 1;
@@ -2199,8 +2217,9 @@ class CartController extends FrontController
             $cart_details->is_token_enable = $is_token_enable;
             $cart_details->tokenAmount = $tokenAmount;
         }
+        
         // till here
-        return response()->json(['status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'', 'cart_error_message' => $error_message,'wishListCount'=>$wishListCount]);//'token_val' => $tokenAmount , 'is_token_enable' => $is_token_enable
+        return response()->json(['loggedIn' => Auth::check() ? 'true' : 'false','status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html,'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail,'mycart'=>$mycartView??'', 'cart_error_message' => $error_message,'wishListCount'=>$wishListCount]);//'token_val' => $tokenAmount , 'is_token_enable' => $is_token_enable
     }
 
 
@@ -2239,6 +2258,7 @@ class CartController extends FrontController
 
     public function getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $schedule_datetime_del='', $dispatcher_tags='',$totalRoute = '1')
     {
+        // dd($address);
         $option = array();
         $delivery_count = 0;
         try {
@@ -2304,8 +2324,7 @@ class CartController extends FrontController
                     $option = array_merge($option,$optionKwikApi);
                 }
                 //End Kwik Delivery changes code
-
-
+                
                 //Lalamove Delivery changes code
                 $lalamove = new LalaMovesController();
                 $deliver_lalmove_fee = $lalamove->getDeliveryFeeLalamove($vendorData->vendor_id);
@@ -2370,6 +2389,29 @@ class CartController extends FrontController
                         $option = array_merge($option,$optionDunzo);
                     }
                 }
+                
+                //Roadie Delivery changes code
+                $roadie = new RoadieController();
+                if($roadie->roadie_status){
+                    $deliver_roadie_fee = $roadie->getEstimate($vendorData,$address);
+                    if($deliver_roadie_fee['price'] > 0){
+                        $deliver_charge_roadie = decimal_format($deliver_roadie_fee['price']);
+                        $optionRoadie[] = array(
+                            'type'=>'RO',
+                            'courier_name'=>__('Roadie'),
+                            'rate' => $deliver_charge_roadie,
+                            'courier_company_id' => 0,
+                            'etd' => 0,
+                            'etd_hours' => 0,
+                            'duration' => 0,
+                            'estimated_delivery_days' => 0,
+                            'code' => 'RO_0'
+                        );
+                        $option = array_merge($option,$optionRoadie);
+                    }
+                }
+
+
                 // //\Log::info($vendorData->vendor->ahoy_location);
                 if(isset($vendorData->vendor->ahoy_location)){
                     //getAhoy (Masa) Delivery fee changes code
@@ -2395,6 +2437,29 @@ class CartController extends FrontController
                     }
                 }
 
+
+                //ShipEngine Delivery fee changes code
+                if(isset($vendorData->vendor)){
+                    $shipEngine = new ShipEngineController();
+                    if($shipEngine->status){
+                        $deliver_fee = $shipEngine->getEstimateFee($vendorData);
+                        if($deliver_fee>0)
+                        {
+                            $optionAhoy[] = array(
+                                'type'=>'SE',
+                                'courier_name'=>__('ShipEngine'),
+                                'rate' => decimal_format($deliver_fee),
+                                'courier_company_id' => 0,
+                                'etd' => 0,
+                                'etd_hours' => 0,
+                                'duration' => 0,
+                                'estimated_delivery_days' => 0,
+                                'code' => 'SE_0'
+                            );
+                            $option = array_merge($option,$optionAhoy);
+                        }
+                    }
+                }
 
                 }elseif($preferences->static_delivey_fee == 1 &&  $vendorData->vendor->order_amount_for_delivery_fee != 0){
                 # for static fees
@@ -2586,6 +2651,7 @@ class CartController extends FrontController
             $client_timezone = DB::table('clients')->first('timezone');
             $user->timezone = $client_timezone->timezone ?? $user->timezone;
             $new_session_token = session()->get('_token');
+            $langId = Session::get('customerLanguage')??'1';
             if ($user) {
                 $cart_detail = Cart::where('user_id', $user->id)->first();
             } else {
@@ -2609,7 +2675,106 @@ class CartController extends FrontController
                 if(count($presciptionProducts)){
                     return response()->json(['status'=>'error_prescription', 'presciptionProducts'=>$presciptionProducts]);
                 }
+
+            }
+            $addon_ids = [];
+            if($request->has('addonID')){
+                $addon_ids = $request->addonID;
+            }
+            $addon_options = [];
+            if($request->has('addonoptID')){
+                $addon_options = $request->addonoptID;
+            }
+            $addonSets = [];
+            foreach($addon_options as $key => $opt){
+                if(isset($addon_ids[$key])){
+                    $addonSets[$addon_ids[$key]][] = $opt;
                 }
+            }
+
+            foreach($addonSets as $key => $value){
+                $addon = AddonSet::join('addon_set_translations as ast', 'ast.addon_id', 'addon_sets.id')
+                            ->select('addon_sets.id', 'addon_sets.min_select', 'addon_sets.max_select', 'ast.title')
+                            ->where('ast.language_id', $langId)
+                            ->where('addon_sets.status', '!=', '2')
+                            ->where('addon_sets.id', $key)->first();
+                if(!$addon){
+                    return response()->json(["status" => "error", 'message' => 'Invalid addon or delete by admin. Try again with remove some.'], 404);
+                }
+            }
+            $cartProduct = CartProduct::where('cart_id', $cart_detail->id)->first();
+            $isnew = 0;
+            if(!$cartProduct){
+                $isnew = 1;
+            }else{
+                $checkaddonCount = CartAddon::where('cart_product_id', $cartProduct->id)->count();
+                if(count($addon_ids) != $checkaddonCount){
+                    $isnew = 1;
+                }else{
+                    foreach ($addon_options as $key => $opts) {
+                        $cart_addon = CartAddon::where('cart_product_id', $cartProduct->id)
+                                    ->where('addon_id', $addon_ids[$key])
+                                    ->where('option_id', $opts)->first();
+
+                        if(!$cart_addon){
+                            $isnew = 1;
+                        }
+                    }
+                }
+            }
+            
+            if($isnew){
+                if(!empty($addon_ids) && !empty($addon_options)){
+                    $saveAddons = array();
+                    foreach ($addon_options as $key => $opts) {
+                        if(isset($addon_ids[$key])){
+                            $saveAddons[] = [
+                                'option_id' => $opts,
+                                'cart_id' => $cart_detail->id,
+                                'addon_id' => $addon_ids[$key],
+                                'cart_product_id' => $cartProduct->id,
+                            ];
+                        }
+                    }
+                    if(!empty($saveAddons)){
+                        CartAddon::insert($saveAddons);
+                    }
+                }
+            }
+
+            if($request->has('rentalProtectionId')){
+                $saveProtections = [];
+                foreach($request->rentalProtectionId as $protectionId){
+                    $rentalProtection = RentalProtection::find($protectionId);
+                    if($rentalProtection){
+                        $saveProtections[] = [
+                            'cart_id' => $cart_detail->id,
+                            'rental_protection_id' => $rentalProtection->id,
+                            'product_id' => $cartProduct->id,
+                        ];
+                    }
+                }
+                if(!empty($saveProtections)){
+                    CartRentalProtection::insert($saveProtections);
+                }
+            }
+
+            if($request->has('bookingOptionId')){
+                $saveBooking = [];
+                foreach($request->bookingOptionId as $bookingId){
+                    $bookingOption = BookingOption::find($bookingId);
+                    if($bookingOption){
+                        $saveBooking[] = [
+                            'cart_id' => $cart_detail->id,
+                            'booking_option_id' => $bookingOption->id,
+                            'product_id' => $cartProduct->id,
+                        ];
+                    }
+                }
+                if(!empty($saveBooking)){
+                    CartBookingOption::insert($saveBooking);
+                }
+            }
 
             if ($user || $new_session_token) {
                 if($request->task_type == 'now'){
@@ -2722,13 +2887,27 @@ class CartController extends FrontController
         DB::beginTransaction();
         try{
             $user = Auth::user();
+            $cartProduct=CartProduct::where('id', $request->cart_product_id)->first();
             if ($user) {
                 if($request->task_type == 'now'){
                     $request->schedule_dt = Carbon::now()->format('Y-m-d H:i:s');
                 }else{
+                    if(!empty($request->schedule_time) ){
+                        $slot_time = explode("-",$request->schedule_time);
+                        $start_time = $slot_time[0];
+                        $end_time = !empty($slot_time[1]) ? $slot_time[1]: $slot_time[0];
+                        $request->schedule_dt =date('d-m-Y H:i:s',strtotime( date('Y-m-d',strtotime($request->schedule_dt)). " " . $start_time));
+                    }else{
+                        if(isset($cartProduct->schedule_slot)){
+                            $start_scheduled_time = date('H:i',strtotime($request->schedule_dt));
+                            $interval = isset($cartProduct->vendor) &&  $cartProduct->vendor->slot_minutes > 0 ?  $cartProduct->vendor->slot_minutes : 30;
+                            $request->schedule_time = $start_scheduled_time. " - ". date('H:i',strtotime($start_scheduled_time.' + '.$interval.' minute')); 
+                 }
+                }
+
                     $request->schedule_dt = Carbon::parse($request->schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
                 }
-                CartProduct::where('id', $request->cart_product_id)->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt,'schedule_slot' => $request->schedule_time,'dispatch_agent_id' => $request->dispatch_agent_id]);
+              $cartProduct->update(['schedule_type' => $request->task_type, 'scheduled_date_time' => $request->schedule_dt,'schedule_slot' => $request->schedule_time,'dispatch_agent_id' => $request->dispatch_agent_id]);
 
 
                 // $cartProductDetails = CartProduct::where('id', $request->cart_product_id)->get()->first();
