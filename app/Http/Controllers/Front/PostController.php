@@ -580,9 +580,7 @@ class PostController extends FrontController
                 $proVariant->status = 1;
                 $proVariant->week_price = $request->week_price ?? 0;
                 $proVariant->month_price = $request->monthly_price ?? 0;
-                if (@$request->emirate) {
-                    $proVariant->emirate = $request->emirate;
-                }
+               
                 if (@$request->compare_at_price) {
                     $proVariant->compare_at_price = $request->compare_at_price;
                 }
