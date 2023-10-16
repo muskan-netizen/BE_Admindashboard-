@@ -2020,6 +2020,14 @@ if (!function_exists('getDatesBetweenTwoDates')) {
     }
 }
 
+if(!function_exists('getDaysBetweenTwoDates')){
+    function getDaysBetweenTwoDates($startDate, $endDate){
+        $startDate = Carbon::parse($startDate);
+        $endDate = Carbon::parse($endDate);
+        return $startDate->diffInDays($endDate) + 1;
+}
+
+}
 if (!function_exists('recurringCalculationFunction')) {    
     function recurringCalculationFunction($request)
     {

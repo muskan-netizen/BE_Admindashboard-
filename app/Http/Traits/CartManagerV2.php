@@ -307,7 +307,7 @@ trait CartManagerV2{
         $crossSell_products = collect();
         $couponGetAmount=0;
         $loyalty_amount_saved = 0;
-        $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency','is_price_by_role','is_service_product_price_from_dispatch']);
+        $additionalPreference = getAdditionalPreference(['is_token_currency_enable','token_currency','is_price_by_role','is_service_product_price_from_dispatch','agent_commison', 'service_amount_percentage', 'agent_commison_amount_percentage']);
         $client_timezone = DB::table('clients')->first('timezone');
         $user_timezone = $client_timezone->timezone ?? 'Asia/Kolkata';
         
@@ -671,6 +671,19 @@ trait CartManagerV2{
                         }
                         // dd($security_amount);
                    // } ///// Notable
+
+                   $variantsData = $taxData = $vendorAddons = array();
+                    $divider = (empty($prod->doller_compare) || $prod->doller_compare < 0) ? 1 : $prod->doller_compare;
+                    $price_in_currency = $prod->pvariant ? $prod->pvariant->price : 0;
+                   if (@$prod->pvariant->month_price && $prod->pvariant->week_price) {
+                        $schedule_days = $prod->additional_increments_hrs_min / 24;
+                        if ($schedule_days >= 7 && $schedule_days < 30) {
+                            $price_in_currency = $prod->pvariant->week_price;
+                        } elseif ($schedule_days >= 30) {
+                            $price_in_currency = $prod->pvariant->month_price;
+                        }
+                    }
+
                     //  GET PRICE from driver
                     if($is_service_product_price_from_dispatch ==1){
                             $price_in_currency = isset($prod->dispatch_agent_price) ? $prod->dispatch_agent_price : 0 ;
@@ -1177,6 +1190,25 @@ trait CartManagerV2{
                     $prod->dispatchAgents =  $dispatchAgents;
                     $prod->vendorStartDate = $vendorStartDate;
                 }
+
+                $rental_price = 0;
+                if (@$prod->start_date_time && @$prod->end_date_time) {
+                    $start_date_time  = new Carbon($prod->start_date_time);
+                    $end_date_time  = new Carbon($prod->end_date_time);
+                    $prod->days = $start_date_time->diff($end_date_time)->days + 1;
+                    $rental_price = $prod->pvariant ? $prod->pvariant->price : 0;
+                    if (isset($prod->pvariant->month_price) && !empty($prod->pvariant->month_price)  && isset($prod->pvariant->week_price)) {
+                        if ($prod->days >= 7 && $prod->days < 30) {
+                            $rental_price = $prod->pvariant->week_price;
+                        } elseif ($prod->days >= 30) {
+                            $rental_price = $prod->pvariant->month_price;
+                        }
+                    }
+                    $prod->price = $rental_price;
+                    $rental_price = $rental_price * $prod->days;
+                }
+
+
                     $product = Product::with([
                         'variant' => function ($sel) {
                             $sel->groupBy('product_id');
@@ -1333,6 +1365,8 @@ trait CartManagerV2{
 
                 //end applying service fee on vendor products total
                 $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount + $vendor_fixed_service_charge_amount;
+
+                $rental_price = $rental_price + $total_service_fee;
 
                 $vendorData->coupon_amount_used = decimal_format($coupon_amount_used);
                 $vendorData->service_fee_percentage_amount = decimal_format($vendor_service_fee_percentage_amount);
@@ -1656,6 +1690,18 @@ trait CartManagerV2{
             $cart->gross_amount = ($gross_amount < 0) ? decimal_format(0) : decimal_format($gross_amount);
             $cart->new_gross_amount = decimal_format($total_payable_amount + $total_discount_amount);
             $cart->is_long_term_service = $is_long_term_service ;
+
+            if (@$rental_price) {
+                $cart->total_payable_amount = $rental_price;
+            } else {
+                if ($cart->other_taxes > 0) {
+                    $cart->total_payable_amount = $cart->total_payable_amount + $cart->other_taxes;
+                }
+                if ($cart->total_fixed_fee_amount) {
+                    $cart->total_payable_amount = $cart->total_payable_amount + $cart->total_fixed_fee_amount;
+                }
+            }
+
             if(!$this->additionalPreferences->is_tax_price_inclusive){
                 $cartTotalPay = decimal_format($total_payable_amount);
                // pr( $cartTotalPay);
@@ -1667,7 +1713,7 @@ trait CartManagerV2{
                 }
                 //end  gift card calculation
 
-                $cart->total_payable_amount =  $cartTotalPay ;
+                // $cart->total_payable_amount =  $cartTotalPay ;
             }else{
                 $cartTotalPay = decimal_format($total_payable_amount - $total_taxable_amount - $other_taxes);
                 // gift card calculation
@@ -1677,7 +1723,7 @@ trait CartManagerV2{
                     $giftCardUsed  = @$calCulateGiftCard['used_GiftCardAmount'];
                 }
                 //end  gift card calculation
-                $cart->total_payable_amount =  $cartTotalPay;
+                // $cart->total_payable_amount =  $cartTotalPay;
                 $cart->payy = decimal_format(($total_payable_amount - $total_taxable_amount - $other_taxes) + $cart->other_taxes);
             }
 
@@ -1712,6 +1758,16 @@ trait CartManagerV2{
             $cart->scheduled_date_time = $myDate;
             $cart->giftCardUsedAmount = $giftCardUsed;
             $cart->security_amount = $security_amount;
+
+
+            if($additionalPreference['agent_commison'] == 1){
+                
+                $cart->plateform_fee = $cart->total_payable_amount * $additionalPreference['service_amount_percentage']/100;
+                $cart->agent_commison = $cart->total_payable_amount * $additionalPreference['agent_commison_amount_percentage']/100;
+                $cart->total_payable_amount  = $cart->total_payable_amount + $cart->plateform_fee ;
+            }
+ 
+
 
             if($preferences->scheduling_with_slots == 1 && $preferences->business_type == 'laundry'){
                 if($cart->pickupSlotsCnt==0){
@@ -1748,12 +1804,12 @@ trait CartManagerV2{
 
             }
 
-
+            $cart->sub_total = @$rental_price;
             $cart->pickup_delay_date =  $pickup_delay_date??0;
             $cart->dropoff_delay_date =  $dropoff_delay_date??0;
             $cart->delivery_type =  $code??'D';
-            $sub_total = $sub_total??0 ;
-            $cart->sub_total =  $sub_total - $cart->bid_total_discount;
+            // $sub_total = $sub_total??0 ;
+            // $cart->sub_total =  $sub_total - $cart->bid_total_discount;
             $cart->sub_total_inc_tax =  decimal_format($cart->sub_total + $total_taxable_amount);
             $cart->is_token =  $additionalPreference['is_token_currency_enable'] ? 1 : 0;
             $cart->token_value = $additionalPreference['token_currency'] ?? 0;

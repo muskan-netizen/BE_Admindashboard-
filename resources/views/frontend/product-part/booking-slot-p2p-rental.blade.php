@@ -139,7 +139,7 @@
        actual_price = '{{@$product->variant[0]->actual_price}}';
        default_currency = "{{Session::get('currencySymbol')}}";
        default_step = timeConvertCal('{{$product->additional_increments}}','{{$product->additional_increments_min}}');
-        product_availability = JSON.parse(<?php echo json_encode($product_availability); ?>);
+        product_availability = JSON.parse(<?php echo json_encode($product_availability ?? ''); ?>);
         console.log(product_availability[0]);
        min_dur_hrs = '{{ $product->minimum_duration }}';
        min_dur_min = '{{ $product->minimum_duration_min }}';

@@ -77,6 +77,35 @@ $clientData = \App\Models\Client::select('socket_url')->first();
     .customer_review_item_row h4{margin-bottom:0;font-size:18px;font-weight:600;padding-left:15px;margin-top:0;}
     .review-images img {width: 100%;max-width: 100px;margin: 10px 10px 10px 0px;}
     .label-disabled {pointer-events: none;opacity: 0.5;}
+
+    .flex-container {
+    display: flex;
+    justify-content: space-between; /* Distribute items evenly */
+}
+
+.item-price {
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 10px;
+    flex: 1; /* Distribute available space evenly */
+    background-color: #f7f7f7;
+}
+
+#summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 30px 0px;
+}
+#summary-table  > th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+#summary-table > .text-right {
+    text-align: right;
+}
     </style>
 
 @endsection
@@ -337,7 +366,20 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                     @endif
                                         
 
-
+                                    <div class="flex-container">
+                                        <div class="item-price">
+                                            <h2>Daily</h2>
+                                            <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->price, 2)}}</p>
+                                        </div>
+                                        <div class="item-price">
+                                            <h2>7 Days+</h2>
+                                            <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->week_price, 2)}}</p>
+                                        </div>
+                                        <div class="item-price">
+                                            <h2>30 Days+</h2>
+                                            <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->month_price, 2)}}</p>
+                                        </div>
+                                    </div>
                                         
                                         @if( is_category_p2p($product->category) || is_attribute_enabled())
                                             @if( !empty($attr_array) )
@@ -392,16 +434,40 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
 
 
                                         <div id="variant_response">
-                                            <span class="text-danger mb-2 mt-2"></span>
+                                            <input type="text" class="form-control" name="booking_availability" id="range-datepicker" placeholder="{{date('Y-m-d')}}">
+                                        </div>
+                                        <div class="summary-box" style="display:none;">
+                                            <table id="summary-table">
+                                                <tr>
+                                                    <th>Description</th>
+                                                    <th class="text-right">Amount</th>
+                                                </tr>
+                                                <tr>
+                                                    <td>Days <span class="days-count"></span></td>
+                                                    <td class="text-right date-range"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><span class="applied-price"></span> x <span class="days-count"></span> Days</td>
+                                                    <td class="text-right total-amount"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Platform Fee</td>
+                                                    <td class="text-right platform-fee">$200</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Total</strong></td>
+                                                    <td class="text-right"><strong class="total-amount"></strong></td>
+                                                </tr>
+                                            </table>
                                         </div>
 
                                         @if($product->is_recurring_booking == 1)
                                             @include('frontend.product-part.recurring-booking')
                                         @endif
                                         @if(@getAdditionalPreference(['is_rental_weekly_monthly_price'])['is_rental_weekly_monthly_price'] && $product->category->categoryDetail->type_id == 10)
-                                            @include('frontend.product-part.booking-slot-p2p-rental')
+                                            {{-- @include('frontend.product-part.booking-slot-p2p-rental') --}}
                                         @elseif($product->category->categoryDetail->type_id == 10)
-                                            @include('frontend.product-part.booking-slot')
+                                            {{-- @include('frontend.product-part.booking-slot') --}}
                                         @endif
 
 
@@ -606,7 +672,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                         @endphp
 
                                         @if( $product->category->categoryDetail->type_id != 13 )
-                                        <div class="btn-wrapper">
+                                        <div class="btn-wrapper mt-3">
                                             <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'inline-block'; ?>">
                                                 @if($product->inquiry_only == 0)
                                                 <div class="product-description border-product pb-0">
@@ -1623,6 +1689,51 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
                 $('#review-rating-form-modal').html(markup);
             });
         });
+
+
+        var enableDates = {!! $productAvailability !!};
+     
+      
+        
+        if (typeof enableDates === 'string') {
+            enableDates = enableDates.split(',').map(function(dateString) {
+                return dateString.trim();
+            });
+        }
+        $("#range-datepicker").flatpickr({
+                dateFormat: "Y-m-d",
+                mode: "range",
+                enable : enableDates,
+                onChange: function (selectedDates, dateStr, instance) {
+                    // Update the summary-data template
+                    updateSummary(selectedDates);
+                }
+            });
+            // Function to update summary data
+            function updateSummary(selectedDates) {
+                const startDate = selectedDates[0];
+                const endDate = selectedDates[selectedDates.length - 1];
+                const days = Math.round((endDate - startDate) / (24 * 60 * 60 * 1000)) + 1;
+                
+                let dailyRate;
+                if (days < 7) {
+                    dailyRate = {{$product->variant[0]->price}};
+                } else if (days >= 7 && days < 30) {
+                    dailyRate = {{$product->variant[0]->week_price ?? 0 }};
+                } else {
+                    dailyRate = {{$product->variant[0]->month_price ?? 0 }};
+                }
+                const totalAmount = days * dailyRate ;
+                // Update values in the template
+                $(".summary-box").show();
+                $(".days-count").text(days);
+                $(".applied-price").text(showCurrencySymbol(dailyRate));
+                $(".date-range").text(startDate.toDateString() + " - " + endDate.toDateString());
+                $(".total-amount").text(showCurrencySymbol(totalAmount));
+            }
+            function showCurrencySymbol(amount){
+                return "{{Session::get('currencySymbol')}}" + amount;
+            }
     });
 </script>
 

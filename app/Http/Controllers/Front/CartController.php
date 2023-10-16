@@ -165,6 +165,7 @@ class CartController extends FrontController
             return view('frontend.yacht.summary', compact('public_key_yoco', 'cart', 'client_detail', 'data', 'ageVerify', 'terms', 'privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data, $nomenclatureProductOrderForm, $client_preference_detail, $client_detail);
         } else {
             return view('frontend.cartnew', compact('public_key_yoco', 'cart', 'client_detail', 'data', 'ageVerify', 'terms', 'privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data, $nomenclatureProductOrderForm, $client_preference_detail, $client_detail);
+
         }
         // 
         // return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
@@ -431,6 +432,7 @@ class CartController extends FrontController
             $start_date  = $request->has('start_date') ? $request->start_date : null;
             $isLongTermProduct = 0;
             if ($request->has('service_start_time') && !empty($request->service_start_time)) {
+
                 $isLongTermProduct  = 1;
 
                 $time = '2022-10-27 ' . $request->service_start_time;
@@ -453,8 +455,8 @@ class CartController extends FrontController
                 'variant_id'          => $request->variant_id,
                 'currency_id'         => $client_currency->currency_id,
                 'luxury_option_id'    => ($luxury_option) ? $luxury_option->id : 0,
-                'start_date_time'     => $start_date,
-                'end_date_time'       => $request->has('end_date') ? $request->end_date : null,
+                'start_date_time'     => $request->start_date_time,
+                'end_date_time'       => $request->end_date_time,
                 'additional_increments_hrs_min' => $request->has('incremental_hrs') ? $request->incremental_hrs : null,
                 'total_booking_time'  => $total_booking_time,
                 'service_day'         => $request->has('service_day') ? $request->service_day : null,
