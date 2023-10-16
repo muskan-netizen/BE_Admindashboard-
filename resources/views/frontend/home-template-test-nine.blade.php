@@ -788,6 +788,8 @@
 				<div class="product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 					<div class="featured_slider">
 								@foreach ($homePageData[$homePageLabel->slug] as $product )
+
+								
 								@include('frontend.home_page_9.product')
 								@endforeach
 						</div>
@@ -834,6 +836,8 @@
 					<div class="featured_slider">
 						{{-- @dd($homePageData[$homePageLabel->slug]) --}}
 								@foreach ($homePageData[$homePageLabel->slug] as $product )
+
+								
 								@include('frontend.home_page_9.product')
 								@endforeach
 						</div>

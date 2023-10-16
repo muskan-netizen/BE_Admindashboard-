@@ -355,18 +355,30 @@
                                             @endif
                                             @if (!empty(@$vendor_product->quantity_price))
                                                 <div class="col-6 col-md-2 text-left order-md-4">
-                                                    @if ($serviceType == 'p2p')
-                                                        @php
-                                                            $additionalPrice = $vendor_product->quantity_price;
-                                                        @endphp
-                                                        <div class="items-price">
-                                                            @if ($additionalPreference['is_token_currency_enable'])
-                                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($vendor_product->price * ($vendor_product->days ?? 1))) }}
-                                                            @else
-                                                            {{ Session::get('currencySymbol') . decimal_format($vendor_product->price * ($vendor_product->days ?? 1)) }}
-                                                            @endif
-                                                        </div>
-                                                    @elseif ($serviceType == 'rental')
+                                            @if ($serviceType == 'p2p')
+                                                    @php
+                                                    $additionalPrice = 0;
+                                                    if ($vendor_product->pvariant->incremental_price_per_min > 0) {
+                                                        $additionalPrice = ($vendor_product->additional_increments_hrs_min/(60*24)) * $vendor_product->quantity_price;
+                                                    }
+                                                    if($vendor_product->days <= 7){
+                                                        $price = $vendor_product->price;
+                                                    }elseif($vendor_product->days >= 7 && $vendor_product->days < 30){
+                                                        $price = $vendor_product->week_price;
+                                                    }else{
+                                                        $price = $vendor_product->month_price;
+                                                    }
+
+                                                  
+                                                @endphp
+                                                <div class="items-price">
+                                                    @if ($additionalPreference['is_token_currency_enable'])
+                                                        {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($price * ($vendor_product->days ?? 1))) }}
+                                                    @else
+                                                        {{ Session::get('currencySymbol') . decimal_format($price * ($vendor_product->days ?? 1)) }}
+                                                    @endif
+                                                </div>
+                                             @elseif ($serviceType == 'rental')
                                                         @php
                                                             $additionalPrice = 0;
                                                             if ($vendor_product->pvariant->incremental_price_per_min > 0) {
