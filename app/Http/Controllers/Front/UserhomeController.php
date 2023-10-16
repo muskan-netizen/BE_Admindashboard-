@@ -448,6 +448,7 @@ class UserhomeController extends FrontController
 
             $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
 
+            
             $home = array();
             $vendor_ids = array();
             if ($request->has('ref')) {
@@ -462,9 +463,8 @@ class UserhomeController extends FrontController
             $selectedAddress = Session::get('selectedAddress');
             $client_preferences = $this->client_preferences;
             $_REQUEST['request_from'] = 1;
-              
+
             $navCategories = $this->categoryNav($langId);
-          
 
             
             Session::put('navCategories', $navCategories);
@@ -472,7 +472,6 @@ class UserhomeController extends FrontController
 
          
             $count = 0;
-           
             if ($client_preferences) {
                 foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
                     $clientVendorTypes = $vendor_typ_key.'_check';
@@ -487,7 +486,7 @@ class UserhomeController extends FrontController
                 }
 
             }
-            if(count($navCategories) > 0 && ($vendor_type =='pick_drop') &&  ($count!=1) && ($vendor_type =='car_rental')  ){
+            if(count($navCategories) > 0 && ($vendor_type =='pick_drop') &&  ($count!=1) ){
                 $categoriesSlug = $navCategories[0]->slug;
                 return redirect()->route('categoryDetail',$categoriesSlug);
             }
@@ -601,7 +600,7 @@ class UserhomeController extends FrontController
             //     $is_service_product_price_from_dispatch_forOnDemand =1;
             // }
             
-            $homeData = ['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $client_preferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData ,'is_service_product_price_from_dispatch_forOnDemand'=> $is_service_product_price_from_dispatch_forOnDemand,'vendor_type'=>$vendor_type];
+            $homeData = ['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $client_preferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData ,'is_service_product_price_from_dispatch_forOnDemand'=> $is_service_product_price_from_dispatch_forOnDemand];
             return view('frontend.'.$view_page)->with($homeData);
 
         } catch (Exception $e) {

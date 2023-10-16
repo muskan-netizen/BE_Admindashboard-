@@ -28,7 +28,7 @@
                                         <span>Filter:</span>
                                         <select name="category-filter" id="category_filter" value="">
                                             <option value="all">All</option>
-                                            <option value="10">Rental</option>
+                                            <option value="10">Rent</option>
                                             <option value="13">Sell</option>
                                         </select>
                                     </div>
