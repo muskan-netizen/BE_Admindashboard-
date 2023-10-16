@@ -3902,3 +3902,12 @@ body.al_body_template_nine.p2p-module section.section-b-space.alSingleProducts.p
     box-shadow: 0px 0px 11px 2px rgb(0 0 0 / 14%) !important;
     background-color: #fff !important;
 }
+body.al_body_template_nine.p2p-module.p2p_module_enable section.section-b-space.alSingleProducts.product_ddetails_page h2 {
+    padding: 0;
+    font-size: 18px;
+    margin: 6px 4px;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable .item-price {
+    margin: 10px 4px !important;
+    padding:10px 4px !important;
+}

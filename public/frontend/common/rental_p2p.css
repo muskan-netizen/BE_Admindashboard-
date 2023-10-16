@@ -554,3 +554,7 @@ body.al_body_template_nine.p2p-module.p2p_module_enable .exzoom_nav.side_nav_img
     height: 550px;
     overflow-y: scroll;
 }
+body.al_body_template_nine.p2p-module.p2p_module_enable .alPostBoxOuter ul {
+    padding-left: 38px !important;
+    padding-right: 40px !important;
+}
