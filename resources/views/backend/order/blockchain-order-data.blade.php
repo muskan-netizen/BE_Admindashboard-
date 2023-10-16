@@ -104,6 +104,15 @@ body {
                             <td>{{ $data['orderID'] }}</td>
                         </tr>
                         <tr>
+                            <td>Order Details:</td>
+                            <td>
+                             @foreach($order_detail as $order)
+                              
+                              
+                             @endforeach
+                            </td>
+                        </tr>
+                        <tr>
                             <td>Status:</td>
                             <td>{{ $data['status'] }}</td>
                         </tr>
@@ -126,6 +135,10 @@ body {
                         <tr>
                             <td>To Address:</td>
                             <td>{{ $data['to_address'] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Movement:</td>
+                            <td>{{ $data['movement'] }}</td>
                         </tr>
                         <tr>
                             <td>Created Date:</td>

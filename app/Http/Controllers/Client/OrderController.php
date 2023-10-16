@@ -3318,10 +3318,14 @@ class OrderController extends BaseController
            
             $responseData = $response->json();
             $data = $responseData['orderData'][0];
+            $order_detail = json_decode($data['orderDetail'],true);
            
         }
+ 
+ 
+       
         
-        return view('backend.order.blockchain-order-data',compact('data') );
+        return view('backend.order.blockchain-order-data',compact(['data','order_detail']) );
     }
     
 }

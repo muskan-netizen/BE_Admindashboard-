@@ -173,7 +173,7 @@ class CartController extends FrontController
     }
 
     public function postCartRequestFromEstimation(Request $request)
-    {
+    { 
         $js = json_decode($request->addonoptID);
         $addonAr = array();
         $addonsoptAr = array();
