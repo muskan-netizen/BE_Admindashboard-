@@ -745,6 +745,9 @@ if (!function_exists('showSlot')) {
                 return $q->where('day', $mytime)->where('laundry', '1');
             })->get();
         } else {
+            if(!empty($type) && $type == 'car_rental'){
+                $type ='rental';
+            }
             $slots = VendorSlot::where('vendor_id', $vid)
                     ->whereHas('days', function ($q) use ($mytime, $type) {
                         return $q->where('day', $mytime)->where($type, '1');

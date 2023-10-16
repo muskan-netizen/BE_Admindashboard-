@@ -122,6 +122,7 @@ class CartController extends FrontController
             'action'=>$action,
             'fixedFee'=>$fixedFee
         );
+     
         $client_preference_detail = ClientPreference::first();
         if(!empty($client_preference_detail)){
             $client_preference_detail->is_postpay_enable = getAdditionalPreference(['is_postpay_enable'])['is_postpay_enable'];
@@ -160,12 +161,11 @@ class CartController extends FrontController
             }
         }
         $template = WebStylingOption::where('is_selected','1')->first();
-   
-        if($template->template_id == 10){
-          
+         
+        if($action=="car_rental"){   
         return view('frontend.yacht.summary',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data,$nomenclatureProductOrderForm,$client_preference_detail,$client_detail);
         }else{
-            return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data,$nomenclatureProductOrderForm,$client_preference_detail,$client_detail);
+        return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail','data','ageVerify','terms','privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data,$nomenclatureProductOrderForm,$client_preference_detail,$client_detail);
         }
         // 
         // return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
@@ -2075,9 +2075,7 @@ class CartController extends FrontController
      */
     public function getCartData($domain = '', Request $request)
     {
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'order_edit_before_hours', 'is_gift_card', 'is_token_currency_enable','is_service_product_price_from_dispatch','token_currency','advance_booking_amount', 'advance_booking_amount_percentage','is_file_cart_instructions','is_service_price_selection', 'is_rental_weekly_monthly_price']);
-
-                
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'order_edit_before_hours', 'is_gift_card', 'is_token_currency_enable','is_service_product_price_from_dispatch','token_currency','advance_booking_amount', 'advance_booking_amount_percentage','is_file_cart_instructions','is_service_price_selection', 'is_rental_weekly_monthly_price']);           
         $wishListCount = 0;
         $cart_details = null;
         $user = Auth::user();
@@ -2206,7 +2204,7 @@ class CartController extends FrontController
             }
             $cart_details->currency_code=$currency_code;
             $addon = AddonSet::with('option', 'translation')->where('vendor_id', $cart_details->vendor_id)->where('status',1)->get();
-                  
+            
             $mycartView = view('frontend.yacht.cart-page')->with(['cart_details' => (($cart_details)?json_decode($cart_details):[]), 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm , 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message, 'addons' => $addon])->render();
         }
        

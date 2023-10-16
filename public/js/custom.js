@@ -3427,6 +3427,7 @@ $(document).ready(function () {
                 var service_day             =  $('#service_day').val();
                 var service_date            =  $('#service_date').val();
                 var service_start_time      =  $('#service_start_time').val();
+                var is_template             = $('#is_template').val();
 
                
 
@@ -3464,13 +3465,13 @@ $(document).ready(function () {
                     var sele_slot_id = $("#sele_slot_id").val();
                     var sele_slot_price = $("#sele_slot_price").val();
                     var delivery_date = $("#date_input").val();
-                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date, sele_slot_id, sele_slot_price, delivery_date,recurringformPost);
+                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date, sele_slot_id, sele_slot_price, delivery_date,recurringformPost,is_template);
                 }
             }
         }
     }
 
-    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='', sele_slot_id='', sele_slot_price='', delivery_date='',recurringformPost='') {
+    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='', sele_slot_id='', sele_slot_price='', delivery_date='',recurringformPost='',is_template='') {
           
         var returnResponse = false;
         $.ajax({
@@ -3496,7 +3497,8 @@ $(document).ready(function () {
                 "recurringformPost":recurringformPost,
                  "sele_slot_id":sele_slot_id,
                  "delivery_date":delivery_date,
-                 "sele_slot_price":sele_slot_price
+                 "sele_slot_price":sele_slot_price,
+                 "is_template" : is_template
             },
             success: function (response) {
                 if (response.status == 'success') {
@@ -3508,7 +3510,7 @@ $(document).ready(function () {
                         location.href =  '/category/cabservice?destination_location='+response.vendor.address+'&destination_location_latitude'+response.vendor.latitude+'&destination_location_longitude'+response.vendor.longitude+'&yacht_id='+product_id;
                     }
                     console.log(response.vendor.rental);
-                    if(response.vendor.rental == 1) {
+                    if(response.vendor.rental == 0) {
                       
                        location.href =  '/viewcart';
                     }

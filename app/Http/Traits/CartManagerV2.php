@@ -318,7 +318,6 @@ trait CartManagerV2{
 
         $this->is_service_product_price_from_dispatch =0;
         $action = (session()->has('vendorType')) ? session()->get('vendorType') : 'delivery';
-   
         $is_service_product_price_from_dispatch = 0;
         if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( $action == 'on_demand')){
             $onDemandPricingSelected = (session()->has('onDemandPricingSelected')) ? session()->get('onDemandPricingSelected') : 'vendor';
@@ -390,7 +389,7 @@ trait CartManagerV2{
 
 
         $cartData = $cartData->select('vendor_id', 'luxury_option_id', 'vendor_dinein_table_id', 'id as cart_product_id', 'schedule_type', 'scheduled_date_time', 'schedule_slot','total_booking_time','product_id','cart_id','recurring_booking_type','recurring_week_day','recurring_week_type','recurring_day_data','recurring_booking_time','delivery_date', 'slot_price', 'slot_id','dispatch_agent_id', 'is_cart_checked')->where('status', [0, 1])->where('cart_id', $cart_id)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
-        
+ 
 
 
        //Get All Taxes
@@ -454,6 +453,8 @@ trait CartManagerV2{
             $container_charges_tax = 0;
             $processorProduct     = array();
 
+          
+
             // if(!empty($user)){
             //     $client_timezone = DB::table('clients')->first('timezone');
             //     $user->timezone = $user->timezone ?? $client_timezone->timezone;
@@ -483,8 +484,9 @@ trait CartManagerV2{
                 // }else{
                 //     $vendorData->scheduled_date_time = date('Y-m-d',strtotime($vendorData->scheduled_date_time)) ;
                 // }
+               
                 $slotsRes = getShowSlot($vendorData->scheduled_date_time,$vendorData->vendor_id,'delivery',"60",0,'',$cart_id);
-
+              
                 $slots = (object)$slotsRes['slots'];
                 // this variable for get slot from dispatc
                 $slotsdate = $slotsRes['date'];
@@ -515,7 +517,7 @@ trait CartManagerV2{
 
                 /* Getting vendor details */
                 if($action != 'delivery') {
-                
+            
                     $vendor_details['vendor_address'] = $vendorData->vendor->select('id','latitude','longitude','address')->where('id', $vendorData->vendor_id)->first();
                     if($action == 'dine_in') {
                         $vendor_tables = VendorDineinTable::where('vendor_id', $vendorData->vendor_id)->with('category')->get();
