@@ -1031,7 +1031,7 @@ $timezone = Auth::user()->timezone;
             </div>
             <div class="card-body">
                 <h4 class="header-title mb-3">{{ __('Blockchain Order Information') }}</h4>
-                <a href="{{ route('orders.getBlockchainOrderDetail', ['order_id' => $order->id]) }}">
+                <a href="{{ route('orders.getBlockchainOrderDetail', ['order_id' => $order->id]) }}" target="_blank">
                     <button type="button" id="blockchain_order_data" data-id="{{ $order->id }}" class="btn btn-primary">Get Blockchain Order Data</button>
                 </a>
             </div>

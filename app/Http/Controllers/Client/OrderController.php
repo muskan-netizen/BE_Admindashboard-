@@ -3308,7 +3308,7 @@ class OrderController extends BaseController
             'Content-Type' => 'application/json',
         ];
         
-
+        $order_detail = [];
         if (isset($api_domain)) {
             $apiUrl = $api_domain->key_value . '/fetchOrderDetails';
             $response = '';
@@ -3321,11 +3321,17 @@ class OrderController extends BaseController
             $order_detail = json_decode($data['orderDetail'],true);
            
         }
- 
- 
-       
         
-        return view('backend.order.blockchain-order-data',compact(['data','order_detail']) );
+        $orderDetail = array_values($order_detail); // Get the values with numeric keys
+      
+        if (array_key_exists('24', $orderDetail)) {
+            $newValue = $orderDetail['24'];
+            $orderDetail = $newValue['ordervendor'];
+        }
+      
+     
+       
+        return view('backend.order.blockchain-order-data',compact(['data','orderDetail']) );
     }
     
 }

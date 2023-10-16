@@ -33,7 +33,7 @@ body {
     background: rgba(0, 0, 0, 0.8);
     border: 1px solid #ccc;
     border-radius: 10px;
-    width: 800px;
+    width: 1000px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin: 0 auto;
     color: rgba(255, 255, 255, 0.8);
@@ -57,7 +57,16 @@ body {
     }
     
    
-    
+    /* Add this CSS to style the tables */
+.outer-table {
+    width: 100%;
+}
+
+.inner-table {
+    width: 100%;
+    border: none; /* Remove border for inner tables */
+}
+
     .card-header {
         background-color: #007bff;
         color: #fff;
@@ -84,7 +93,10 @@ body {
         width: 40%;
     }
 
-    
+    .scrollable-table {
+    max-height: 300px; /* Adjust the maximum height as needed */
+    overflow: auto;
+}
     
 </style>
 </head>
@@ -106,12 +118,40 @@ body {
                         <tr>
                             <td>Order Details:</td>
                             <td>
-                             @foreach($order_detail as $order)
-                              
-                              
-                             @endforeach
+                                <div class="scrollable-table">
+                                <table border="1" class="outer-table">
+                                    <?php
+                                    foreach ($orderDetail as $key => $value) {
+                                        if (($value == null) || $value==  '') {
+                                           continue;
+                                        }
+                                        echo '<tr>';
+                                        echo '<td>' . htmlspecialchars($key) . '</td>';
+                                        echo '<td>';
+                                        
+                                        if (is_array($value)) {
+                                            echo '<table border="1" class="inner-table">';
+                                            foreach ($value as $subKey => $subValue) {
+                                                echo '<tr>';
+                                                echo '<td>' . htmlspecialchars($subKey) . '</td>';
+                                                echo '<td>' . htmlspecialchars($subValue) . '</td>';
+                                                echo '</tr>';
+                                            }
+                                            echo '</table>';
+                                        } else {
+                                            echo htmlspecialchars($value);
+                                        }
+                                        
+                                        echo '</td>';
+                                        echo '</tr>';
+                                    }
+                                    ?>
+                                </table>
+                                </div>
                             </td>
                         </tr>
+                        
+                        
                         <tr>
                             <td>Status:</td>
                             <td>{{ $data['status'] }}</td>
