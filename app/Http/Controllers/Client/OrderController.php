@@ -30,7 +30,7 @@ use Log;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use App\Models\{LoyaltyCard,VendorMargConfig, VendorOrderCancelReturnPayment};
-use App\Http\Controllers\ShipEngineController;
+use App\Http\Controllers\Front\ShipEngineController;
 class OrderController extends BaseController
 {
     private $folderName = '/order/reports';
