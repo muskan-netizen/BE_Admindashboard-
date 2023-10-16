@@ -138,6 +138,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('account/order/filter', [OrderController::class, 'filter'])->name('account.order.filter');
         Route::get('account/order/margfilter', [OrderController::class, 'margFilter'])->name('account.order.margFilter');
         Route::get('sync-marg-order/{order_id}', [OrderController::class, 'syncMargOrder'])->name('sync-marg-order');
+        Route::post('sync-marg-all-order', [OrderController::class, 'syncMargAllOrder'])->name('sync-marg-all-order');
 
         Route::get('account/order/getOrderCalculations', [OrderController::class, 'getOrderVendorCalculations'])->name('account.order.calculations');
         Route::get('account/loyalty/filter', [LoyaltyController::class, 'filter'])->name('account.loyalty.filter');
@@ -456,6 +457,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('shippo/updateAll', 'Client\ShippoController@updateAll')->name('shippo.updateAll');
         Route::post('kwikapi/updateAll', 'Client\DeliveryOptionController@updateKwikapi')->name('kwikapi.updateAll');
         Route::post('payoutUpdateAll', 'Client\PaymentOptionController@payoutUpdateAll')->name('payoutOption.payoutUpdateAll');
+        Route::post('shipengine/updateAll', 'Client\DeliveryOptionController@updateShipEngine')->name('shipengine.updateAll');
         Route::resource('inquiry', 'Client\ProductInquiryController');
         Route::get('inquiry/filter', [ProductInquiryController::class, 'show'])->name('inquiry.filter');
 
@@ -502,7 +504,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
             Route::post('updateCreateVendorInDispatchAppointment', 'Client\VendorController@updateCreateVendorInDispatchAppointment')->name('update.Create.Vendor.In.Dispatch.Appointment');
         });
 
-
+        Route::get('vendor-marg-config/{vendor_id}',  'Client\ClientPreferenceController@vendorMargConfig')->name("vendor.margConfig");
+        Route::post('vendor-marg-config-update/{vendor_id}',  'Client\ClientPreferenceController@vendorMargConfigUpdate')->name("vendorMargConfig.update");
+        
         Route::get('reports/productperformance', 'Client\ReportController@productPerformance')->name('report.productperformance');
         Route::post('reports/searchproduct', 'Client\ReportController@getOrdersListAjax')->name('report.searchproduct');
         Route::post('reports/productreport', 'Client\ReportController@getProductReportAjax')->name('report.loadproductreport');

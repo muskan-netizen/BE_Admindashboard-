@@ -22,7 +22,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Front\CustomerAuthController;
 use App\Http\Requests\{LoginRequest, SignupRequest};
 use App\Http\Controllers\Client\VendorController;
-use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate, SmsTemplate, UserRegistrationDocuments,UserDocs, Vendor, PermissionsOld, UserPermissions, Type, Category, SubscriptionInvoicesUser, VendorCategory,UserAddress,UserPaymentCards};
+use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate, SmsTemplate, UserRegistrationDocuments,UserDocs, Vendor, PermissionsOld, UserPermissions, Type, Category, SubscriptionInvoicesUser, VendorCategory,UserAddress,UserPaymentCards,UserAllergicItem};
 use Log;
 use App\Http\Traits\CustomerSignupSuccessEmailTrait;
 use App\Http\Traits\InfluencerTrait;
@@ -491,7 +491,19 @@ class AuthController extends BaseController
         ])->get();
         $token1->setClaim('user_id', $user->id);
         $user->auth_token = $token;
+        $user->custom_allergic_items = $signReq->custom_allergic_items ?? null;
         $user->save();
+
+        if ($signReq->allergic_item_ids && count($signReq->allergic_item_ids)) {
+            foreach($signReq->allergic_item_ids as $key => $id){
+                $data[$key] = [
+                    'user_id' => $user->id,
+                    'allergic_item_id' => $id,
+                ];
+            }
+            UserAllergicItem::insert($data);
+        }
+
         if ($user->id > 0) {
             if ($signReq->refferal_code) {
                 $refferal_amounts = ClientPreference::first();

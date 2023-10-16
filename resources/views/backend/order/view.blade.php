@@ -182,7 +182,7 @@ $timezone = Auth::user()->timezone;
                                 @if(isset($order->vendors) && isset($vendor->dispatch_traking_url) && $vendor->dispatch_traking_url!=null)
                                 <div class="col-lg-6">
                                     <div class="mb-4">
-                                        <h5 class="mt-0">{{ __('Tracking ID') }}:</h5>
+                                        <h5 class="mt-0">{{ __('Tracking ID') }}: </h5>
                                         <p>
                                             @php
                                             $track = explode('/', $vendor->dispatch_traking_url);
@@ -190,6 +190,9 @@ $timezone = Auth::user()->timezone;
                                             @endphp
                                             <a href="{{ $vendor->dispatch_traking_url }}" target="_blank">#{{ $track_code }}</a>
                                         </p>
+                                        @if (isset($vendor->label_pdf))
+                                            <a href="{{ $vendor->label_pdf }}" target="_blank">{{ __("Label PDF")}}</a>
+                                        @endif
                                     </div>
                                 </div>
                                 @elseif(isset($order->vendors) &&
@@ -534,7 +537,7 @@ $timezone = Auth::user()->timezone;
 
                                             {{-- mohit sir branch code added by sohail --}}
                                             @php
-                                                $getAdditionalPreference = getAdditionalPreference(['update_order_product_price']);
+                                                $getAdditionalPreference = getAdditionalPreference(['update_order_product_price','is_enable_allergic_items']);
                                             @endphp
                                             @if( @getAdditionalPreference(['update_order_product_price'])['update_order_product_price'] == '1')
                                                 <a href="javascript:void(0);" data-toggle="modal" data-target="#addModal" class="badge badge-info ml-3 update_product_price" data-or_prod_old_price="{{decimal_format($product->total_amount)}}" data-or_vend_prod_id="{{$product->id}}">Update Price <img src=""> </a>
@@ -1070,6 +1073,7 @@ $timezone = Auth::user()->timezone;
 
             </div>
 
+            @if ($getAdditionalPreference['is_enable_allergic_items'] == 1)
             <div class="card-body">
                 @if (count($order->user->allergicItems))
                     <h4 class="header-title mb-3 "> {{ __('Customer Allergic Items')}} </h4>
@@ -1079,7 +1083,13 @@ $timezone = Auth::user()->timezone;
                 @empty
                     <b>{{ __('No Allergic Item Found')}}</b><br>
                 @endforelse
+                
+                @if ($order->user->custom_allergic_items)
+                    <h4 class="header-title mb-3 "> {{ __('Custom Allergic Items')}} </h4>
+                    {{ $order->user->custom_allergic_items }}
+                @endif
             </div>
+            @endif
 
         </div>
     </div>

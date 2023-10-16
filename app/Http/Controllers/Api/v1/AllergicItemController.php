@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Models\AllergicItem;
+use App\Models\User;
 use App\Models\UserAllergicItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,6 +24,8 @@ class AllergicItemController extends Controller
             $q->where('user_id', Auth::id());
         })->get();
 
+        $data['custom_allergic_items'] = auth()->user()->custom_allergic_items;
+        
         return response()->json(['status' => 200, 'message' => 'List of user allergic items','data' => $data]);
     }
 
@@ -47,6 +50,11 @@ class AllergicItemController extends Controller
         }
 
         UserAllergicItem::where('user_id', Auth::id())->whereNotIn('allergic_item_id',$request->allergic_item_ids)->delete();
+
+        User::where('id',Auth::id())->first()->update([
+            'custom_allergic_items' => $request->custom_allergic_items
+        ]);
+
         return response()->json(['status' => 200, 'message' => 'Update your items']);
     }
 

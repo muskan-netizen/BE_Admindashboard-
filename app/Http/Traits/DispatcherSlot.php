@@ -15,13 +15,15 @@ trait DispatcherSlot{
     {
       
         try {
+
                 $postdata =  [ 
                                 "latitude"  => $data['latitude'], 
                                 "longitude" => $data['longitude'], 
                                 "tags"      => $data['tags'], 
                                 "schedule_date" => $data['schedule_date'] ,
                                 "service_time" => $data['service_time'] ?? "30",
-                                "slot_start_time" => $data['slot_start_time'] ?? "30"
+                                "slot_start_time" => $data['slot_start_time'] ?? "30",
+                                "team_email" => $data['team_email']
                             ];
                 
                 $client = new GClient([
@@ -31,6 +33,7 @@ trait DispatcherSlot{
                         'content-type'  => 'application/json'
                     ]
                 ]);
+
               
                 $url = $data['service_key_url'];
                 $res = $client->post(
@@ -38,12 +41,14 @@ trait DispatcherSlot{
                     ['form_params' => ($postdata)]
                 );
                 $response = json_decode($res->getBody(), true);
+               
                 if ($response && $response['message'] == 'success') {
                     $agets =count($response['data']['agents']) > 0 ? $response['data']['agents'] : [];
                     return $response['data'];
                 }
                
         } catch (\Exception $e) {
+            //print($e->getMessage())
            // Log::info($e->getMessage());
             return [];
         }

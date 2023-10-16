@@ -12,8 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
 use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client, ClientPreferenceAdditional, Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, OrderVendorProduct, ProductFaq, ProductFaqSelectOption, UserBidRideRequest, PickDropDriverBid, TaxRate, UserDevice};
-use App\Http\Traits\ApiResponser;
-use App\Http\Traits\OrderTrait;
+use App\Http\Traits\{ApiResponser,OrderTrait,GuzzleHttpTrait};
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Validator;
@@ -22,7 +21,7 @@ use Illuminate\Support\Facades\Log as FacadesLog;
 
 class PickupDeliveryController extends BaseController{
 
-    use ApiResponser,OrderTrait;
+    use ApiResponser,OrderTrait,GuzzleHttpTrait;
     private $riderObj;
     public function __construct()
     {
@@ -478,7 +477,7 @@ class PickupDeliveryController extends BaseController{
                 if ($dispatch_domain && $dispatch_domain != false)
                 {
                     $all_location = array();
-                    $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del, 'toll_passes' => ((!empty($product) && $product->is_toll_tax == 1)?$product->tollpass->toll_pass:'IN_FASTAG'), 'VehicleEmissionType' => ((!empty($product) && $product->is_toll_tax == 1)?$product->emissiontype->emission_type:'GASOLINE'), 'travelMode' => ((!empty($product) && $product->is_toll_tax == 1)?$product->travelmode->travelmode:'TAXI')];
+                    $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del, 'toll_passes' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->tollpass)?$product->tollpass->toll_pass:'IN_FASTAG':'IN_FASTAG'), 'VehicleEmissionType' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->emissiontype)?$product->emissiontype->emission_type:'GASOLINE':'GASOLINE'), 'travelMode' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->travelmode)?$product->travelmode->travelmode:'TAXI':'TAXI')];                   
                     $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
                                                 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
                                                 'content-type' => 'application/json']
@@ -1079,6 +1078,7 @@ class PickupDeliveryController extends BaseController{
                     $allocation_type = 'm';
                 }
                 $postdata =  [
+                            'notify_all' => $request->send_to_all ?1: 0,
                             'order_number' =>  $order->order_number,
                             'customer_name' => $customer->name ?? 'Dummy Customer',
                             'customer_phone_number' => $customerno??rand(111111,11111),
@@ -1087,7 +1087,7 @@ class PickupDeliveryController extends BaseController{
                             'recipient_phone' => $request->phone_number ?? $customerno,
                             'recipient_email' => $request->email ?? $customer->email,
                             'task_description' => $request->task_description??null,
-                            'allocation_type' =>$allocation_type,
+                            'allocation_type' => @$request->unique_id ? 'notify' : 'a',
                             'task_type' => $task_type,
                             'schedule_time' => $schedule_datetime_del ?? null,
                             'cash_to_be_collected' => $payable_amount??0.00,
@@ -1107,9 +1107,9 @@ class PickupDeliveryController extends BaseController{
                             'order_id' => $order->id,
                             'customer_id' => $order->user_id,
                             'user_icon' => $customer->image,
-                            'toll_passes' => ((!empty($product) && $product->is_toll_tax == 1)?$product->tollpass->toll_pass:'IN_FASTAG'),
-                            'VehicleEmissionType' => ((!empty($product) && $product->is_toll_tax == 1)?$product->emissiontype->emission_type:'GASOLINE'),
-                            'travelMode' => ((!empty($product) && $product->is_toll_tax == 1)?$product->travelmode->travelmode:'TAXI'),
+                            'toll_passes' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->tollpass)?$product->tollpass->toll_pass:'IN_FASTAG':'IN_FASTAG'),
+                            'VehicleEmissionType' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->emissiontype)?$product->emissiontype->emission_type:'GASOLINE':'GASOLINE'),
+                            'travelMode' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->travelmode)?$product->travelmode->travelmode:'TAXI':'TAXI'),
                             'no_seats_for_pooling' =>(isset($request->is_cab_pooling) && $request->is_cab_pooling== 1 && isset($request->no_seats_for_pooling))?$request->no_seats_for_pooling:0,
                             'is_cab_pooling' => isset($request->is_cab_pooling)?$request->is_cab_pooling:0,
                             'is_one_push_booking' => isset($request->is_one_push_booking)?$request->is_one_push_booking:0,
@@ -1128,18 +1128,11 @@ class PickupDeliveryController extends BaseController{
                     $postdata['bid_task_type']    = $request->bid_task_type;
                     $postdata['accept_bid_price'] = $order->payable_amount;
                 }
-                $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
-                                                    'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
-                                                    'content-type' => 'application/json']
-                                                        ]);
-                $url = $dispatch_domain->pickup_delivery_service_key_url;
-                $res = $client->post(
-                    $url.'/api/task/create',
-                    ['form_params' => (
-                            $postdata
-                        )]
-                );
-                $response = json_decode($res->getBody(), true);
+
+                //use Guzzle for send request at other panel
+                $endPoints = '/api/task/create';
+                $response = $this->guzzlePost($endPoints,$dispatch_domain,$postdata);
+
                 if ($response && isset($response['task_id']) && $response['task_id'] > 0) {
                     $dispatch_traking_url = $response['dispatch_traking_url']??'';
                     $up_web_hook_code = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])

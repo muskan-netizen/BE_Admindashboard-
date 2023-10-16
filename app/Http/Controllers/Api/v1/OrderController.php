@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use Log;
-use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule, WebStylingOption,Bid, OrderNotificationsLogs, ProcessorProduct,OrderFiles};
+use App\Models\{Order, OrderProduct,UserDocs, SmsTemplate, UserRegistrationDocuments,OrderTax, Cart, CartAddon, CartProduct, CartProductPrescription, TempCart, TempCartProduct, TempCartAddon, Product, OrderProductAddon, ClientPreference, ClientCurrency, ClientLanguage, OrderVendor, OrderProductPrescription, UserAddress, CartCoupon, CartDeliveryFee, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, ProductVariantSet,CaregoryKycDoc,CategoryKycDocuments, VerificationOption,OrderLongTermServices,OrderLongTermServicesAddon,OrderLongTermServiceSchedule, WebStylingOption,Bid, OrderNotificationsLogs, ProcessorProduct,OrderFiles, VendorMargConfig};
 
 use App\Models\AutoRejectOrderCron;
 
@@ -1189,13 +1189,13 @@ class OrderController extends BaseController
 
                         $autoaccept = $this->autoAcceptOrderIfOn($order->id);
                     }
-                    $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code','marg_date_time']);
-
-                    if(isset($hub_key) && $hub_key['is_marg_enable'] == 1){
+                    // $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code','marg_date_time']);
+                    // $hub_key = VendorMargConfig::where('vendor_id',$order->ordervendor->vendor_id ?? 0)->first();
+                    // if(isset($hub_key) && $hub_key->is_marg_enable == 1){
     
-                        //Create an order at margApi side also
-                        $this->makeInsertOrderMargApi($order);
-                    }
+                    //     //Create an order at margApi side also
+                    //     $this->makeInsertOrderMargApi($order);
+                    // }
                     return $this->successResponse($order, __('Order placed successfully.'), 201);
 
                 }
@@ -2134,12 +2134,12 @@ class OrderController extends BaseController
                 if ($email_template) {
 
                     $email_template_content = $email_template->content;
-                    if ($vendor_id == "") {
-
+                   // if ($vendor_id == "") {
                         $returnHTML = view('email.newOrderProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
-                    } else {
-                        $returnHTML = view('email.newOrderVendorProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
-                    }
+                   // } else {
+                   //     $returnHTML = view('email.newOrderVendorProducts')->with(['user'=>$user,'cartData' => $cartDetails, 'order' => $order, 'id' => $vendor_id, 'currencySymbol' => $currSymbol, 'luxuryOptionTitle' => $luxuryOptionTitle])->render();
+                   // }
+
                     $email_template_content = str_ireplace("{description}",'', $email_template_content);
                     $email_template_content = str_ireplace("{customer_name}", ucwords($user->name), $email_template_content);
                     $email_template_content = str_ireplace("{order_id}", $order->order_number, $email_template_content);

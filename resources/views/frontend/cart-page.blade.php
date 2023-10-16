@@ -481,12 +481,9 @@
                                                           id="error_prescription_{{ $vendor_product->product->id }}"
                                                          style="display:none;">Prescription required</span>
                                                             @if ($vendor_product->cart_product_prescription > 0)
-                                                                <h4 class="mt-0 mb-1"
-                                                                    style="word-wrap: break-word; line-height:20px">
-                                                                    <strong>{{ $vendor_product->cart_product_prescription }}
-                                                                        {{ __('Prescription Added') }}</strong></h4>
-                                                   
-                                                                            @endif
+                                                                <h4 class="mt-0 mb-1 text-left" style="clear:both;line-height:30px" >
+                                                                    <strong>{{ $vendor_product->cart_product_prescription }}{{ __('Prescription Added') }}</strong></h4>
+                                                            @endif
                                                         @endif
                                                     @endif
 
@@ -1175,7 +1172,7 @@
                                     {{-- <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->sub_total - $cart_details->bid_total_discount)}}</b></div> --}}
                                     <div class="col-6 text-right"><b>
                                             @if ($additionalPreference['is_token_currency_enable'])
-                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->sub_total)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->sub_total) }}
+                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->sub_total)) }}@else{{ Session::get('currencySymbol') ." ". decimal_format($cart_details->sub_total) }}
                                             @endif
                                         </b>
                                     </div>
@@ -1187,13 +1184,14 @@
                                     <div class="col-6">{{ __('Total Delivery Fee') }}</div>
                                     <div class="col-6 text-right"><b>
                                             @if ($additionalPreference['is_token_currency_enable'])
-                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->delivery_charges)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->delivery_charges) }}
+                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!} {{ getInToken(decimal_format($cart_details->delivery_charges)) }}@else{{ Session::get('currencySymbol') ." ". decimal_format($cart_details->delivery_charges) }}
                                             @endif
                                         </b>
                                     </div>
                                 </div>
                                 <hr class="my-2">
                             @endif
+
                             @if ($serviceType == 'rental' || $serviceType == 'p2p')
                                 <div class="row">
                                     <div class="col-6">{{ __('Security Amount') }}</div>
@@ -1628,6 +1626,17 @@
                             @endif
                             {{-- till date --}}
                             <hr class="my-2">
+
+                            @if (isset($cart_details->ship_engine_error))
+                                <div class="row">
+                                    <div class="col-6">{{ __('ShipEngine Error') }}</div>
+                                    <div class="col-6 text-danger"><b>
+                                        {{ $cart_details->ship_engine_error }}
+                                        </b>
+                                    </div>
+                                </div>
+                                <hr class="my-2">
+                            @endif
 
                         </div>
 

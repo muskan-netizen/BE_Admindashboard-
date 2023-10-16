@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Models\AllergicItem;
+use App\Models\User;
 use App\Models\UserAllergicItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,6 +37,10 @@ class AllergicItemController extends Controller
         }
 
         UserAllergicItem::where('user_id', Auth::id())->whereNotIn('allergic_item_id',$request->allergic_item_ids)->delete();
+
+        User::where('id',Auth::id())->first()->update([
+            'custom_allergic_items' => $request->custom_allergic_items
+        ]);
         return back();
     }
 

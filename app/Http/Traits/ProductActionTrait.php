@@ -8,7 +8,9 @@ use Carbon\Carbon;
 use DB;
 use Grimzy\LaravelMysqlSpatial\Types\Point;
 use App\Http\Controllers\Front\FrontController;
-
+use DateTime;
+use DateTimeZone;
+use Carbon\CarbonPeriod;
 
 trait ProductActionTrait{
 
@@ -554,7 +556,7 @@ trait ProductActionTrait{
     public function getEvenOddTime($time) {
         return ($time % 5 === 0) ? $time : ($time - ($time % 5));
     }
-    public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude, $vendor_ids = [], $set_template = NULL,$venderFilterOpenClose=null,$venderFilterbest=null)
+    public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude, $vendor_ids = [], $set_template = NULL,$venderFilterOpenClose=null,$venderFilterbest=null,$nearest_vendor=0)
     {
         try 
         {
@@ -628,6 +630,10 @@ trait ProductActionTrait{
                 }
             }
             
+            if (($latitude) && ($longitude) && $nearest_vendor == 1) {
+                $mainQuery.= " ORDER BY `lineOfSightDistance` ASC";
+            }
+            
             //if(!empty($set_template) && $set_template->template_id != 3){
                 $mainQuery .= " LIMIT 10";
             //}
@@ -635,6 +641,12 @@ trait ProductActionTrait{
             $vendors = DB::select( DB::raw($mainQuery));
             
             $vendor_ids = [];
+            $user = Auth::user();
+            $timezone = isset($user) && $user->timezone ?  $user->timezone : 'Asia/Kolkata';
+            $start_date = new DateTime("now", new  DateTimeZone($timezone) );
+            $start_date =  $start_date->format('Y-m-d');
+            $end_date = Date('Y-m-d', strtotime('+13 days'));
+
             foreach ($vendors as $key => $value) {
                 $vendor_ids[] = $value->id;
                 // get or update rating
@@ -683,6 +695,32 @@ trait ProductActionTrait{
                             }
                         }
                     }
+                }
+
+                $slotsDate = 0;
+                $value->date_with_slots = [];
+                if($value->closed_store_order_scheduled == 1){
+                    $slotsDate = findSlot('',$value->id,$type );
+                    $value->delaySlot = $slotsDate;
+                    $value->closed_store_order_scheduled = (($slotsDate)?$value->closed_store_order_scheduled:0);
+
+                    if(!empty($slotsDate)){
+                        $period = CarbonPeriod::create($start_date, $end_date);
+                        $slotWithDate = [];
+                        foreach($period as $key => $date){
+                            $slotDate = trim(date('Y-m-d', strtotime($date)));
+                            $slots = showSlot($slotDate,$value->id,'delivery');
+                            if(!empty($slots)){
+                                $slotData['date']  =  $slotDate;
+                                $slotData['slots'] = $slots;
+                                $slotWithDate[] = $slotData;
+                            }
+                        }
+                        $value->date_with_slots = $slotWithDate;
+                    }
+                }else{
+                    $value->delaySlot = 0;
+                    $value->closed_store_order_scheduled = 0;
                 }
 
                 if($value->closed_store_order_scheduled == 1){

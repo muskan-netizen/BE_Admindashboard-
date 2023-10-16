@@ -284,6 +284,7 @@ class ProductController extends BaseController
 
         $otherProducts                      = Product::with('primary')->select('id', 'sku')->where('is_live', 1)->where('id', '!=', $product->id)->where('vendor_id', $product->vendor_id)->get();
         $configData                         = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch','age_restriction_on_product_mode','need_appointment_service')->first();
+
         $celebrities                        = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
         $configData->is_cab_pooling         = $getAdditionalPreference['is_cab_pooling'];
         $configData->is_one_push_book_enable= $getAdditionalPreference['is_one_push_book_enable'];
@@ -481,7 +482,7 @@ class ProductController extends BaseController
                 }
 
             }
-
+          
             $product->sku = $request->sku;
             $product->markup_price = $request->markup_price;
             $product->url_slug = $request->url_slug;
@@ -869,6 +870,8 @@ class ProductController extends BaseController
     /**      Make variant rows          */
     public function makeVariantRows(Request $request)
     {
+
+        // dd($request->all());
         //return $request->all();
         $multiArray = array();
         $variantNames = array();
@@ -1290,27 +1293,22 @@ class ProductController extends BaseController
       public function getDispatcherTags($vendor_id){
         try {
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
-                if ($dispatch_domain && $dispatch_domain != false) {
-
-                    $unique = Auth::user()->code;
-                    $email =  $unique.$vendor_id."_royodispatch@dispatch.com";
-
-                    $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
-                                                        'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
-                                                        'content-type' => 'application/json']
-                                                            ]);
-                            $url = $dispatch_domain->pickup_delivery_service_key_url;
-                            $res = $client->get($url.'/api/get-agent-tags?email_set='.$email);
-                            $response = json_decode($res->getBody(), true);
-                            if($response && $response['message'] == 'success'){
-                                return $response['tags'];
-                            }
-
+            if ($dispatch_domain && $dispatch_domain != false) {
+                $unique = Auth::user()->code;
+                $email =  $unique.$vendor_id."_royodispatch@dispatch.com";
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
+                                                    'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
+                                                    'content-type' => 'application/json']
+                                                        ]);
+                $url = $dispatch_domain->pickup_delivery_service_key_url;
+                $res = $client->get($url.'/api/get-agent-tags?email_set='.$email);
+                $response = json_decode($res->getBody(), true);
+                if($response && $response['message'] == 'success'){
+                    return $response['tags'];
                 }
             }
-            catch(\Exception $e){
-
-            }
+        }catch(\Exception $e){
+        }
     }
 
     public function getDeliveryDispatcherTags($vendor_id)

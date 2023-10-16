@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
 use App\Models\{Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, ClientPreferenceAdditional, OrderLongTermServiceSchedule, PaymentOption, PickDropDriverBid, TaxRate, UserBidRideRequest, UserDevice};
-use App\Http\Traits\{ApiResponser, OrderTrait, PaymentTrait};
+use App\Http\Traits\{ApiResponser, GuzzleHttpTrait, OrderTrait, PaymentTrait};
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
@@ -21,7 +21,7 @@ use Log,DateTime,DateTimeZone;
 
 class PickupDeliveryController extends FrontController{
 
-    use ApiResponser,PaymentTrait,OrderTrait;
+    use ApiResponser,PaymentTrait,OrderTrait,GuzzleHttpTrait;
 
     public function getPaymentOptions(Request $request, $domain = '')
     {
@@ -543,7 +543,7 @@ class PickupDeliveryController extends FrontController{
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             if ($dispatch_domain && $dispatch_domain != false) {
                 $all_location = array();
-                $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del, 'toll_passes' => ((!empty($product) && $product->is_toll_tax == 1)?$product->tollpass->toll_pass:'IN_FASTAG'), 'VehicleEmissionType' => ((!empty($product) && $product->is_toll_tax == 1)?$product->emissiontype->emission_type:'GASOLINE'), 'travelMode' => ((!empty($product) && $product->is_toll_tax == 1)?$product->travelmode->travelmode:'TAXI')];
+                $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del, 'toll_passes' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->tollpass)?$product->tollpass->toll_pass:'IN_FASTAG':'IN_FASTAG'), 'VehicleEmissionType' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->emissiontype)?$product->emissiontype->emission_type:'GASOLINE':'GASOLINE'), 'travelMode' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->travelmode)?$product->travelmode->travelmode:'TAXI':'TAXI')];
                 $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
                 $res = $client->post($url.'/api/get-delivery-fee',
@@ -596,7 +596,6 @@ class PickupDeliveryController extends FrontController{
                 ]);
             }
 
-           
             if( ( $order_place && $order_place['status'] == 200 && ($request->payment_option_id == 1) ) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) ){
                 $data = [];
                 $order = $order_place['data'];
@@ -672,8 +671,9 @@ class PickupDeliveryController extends FrontController{
     public function orderUpdateAfterPaymentPickupDelivery($request){
 
           try {
+            $order_number =  isset($request->order_number) ? $request->order_number : ($request->order_id ?? "");
 
-            $order = Order::where('order_number',$request->order_number)->with('orderLocation')->first();
+            $order = Order::where('order_number',$order_number)->with('orderLocation')->first();
 
            if($order && $order->orderLocation){
 
@@ -1106,7 +1106,10 @@ class PickupDeliveryController extends FrontController{
                 }
                 $postdata =  [
                     'order_number' =>  $order->order_number,
-
+                    //'order_type' =>  $order->type,
+                    // 'order_friend_name' =>  $order->friend_name,
+                    // 'order_number' =>  $order->friend_phone_number,
+                    'notify_all' => $request->send_to_all ?1: 0,
                     'barcode' => '',
                     'allocation_type' => @$request->unique_id ? 'notify' : 'a',
                     'task' => $request->tasks??null,
@@ -1151,10 +1154,12 @@ class PickupDeliveryController extends FrontController{
                 if(isset($request->bid_task_type) && !empty($request->bid_task_type)){
                     $postdata['bid_task_type']    = $request->bid_task_type;
                 }
-                $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
-                $url = $dispatch_domain->pickup_delivery_service_key_url;
-                $res = $client->post($url.'/api/task/create',['form_params' => ($postdata)]);
-                $response = json_decode($res->getBody(), true);
+                
+
+                //use Guzzle for send request at other panel
+                $endPoints = '/api/task/create';
+                $response = $this->guzzlePost($endPoints,$dispatch_domain,$postdata);
+
                 if ($response && isset($response['task_id']) && $response['task_id'] > 0) {
                     $dispatch_traking_url = $response['dispatch_traking_url']??'';
                     $up_web_hook_code = OrderVendor::where(['order_id' => $order->id,'vendor_id' => $vendor])
@@ -1185,7 +1190,7 @@ class PickupDeliveryController extends FrontController{
         }catch(\Exception $e){
                 $data = [];
                 $data['status'] = 400;
-                $data['message'] =  $e->getMessage();
+                $data['message'] =  $e->getMessage().'- line-'.$e->getLine();
                 return $data;
             }
     }

@@ -84,7 +84,9 @@ $getAdditionalPreference = getAdditionalPreference(['is_gift_card','is_token_cur
             @endif
             <li class="last {{ (request()->is('user/notification')) ? 'active' : '' }}"><a href="{{route('user.notification')}}">{{ __('Notification') }}</a></li>
             <li class="last {{ (request()->is('user/my-ads')) ? 'active' : '' }}"><a href="{{route('user.productList')}}">{{__('My Ads')}}</a></li>
-            <li class="last {{ (request()->is('user/allergic-items')) ? 'active' : '' }}"><a href="{{route('list.allergicItems')}}">{{__('Allergic Items')}}</a></li>
+            @if(@getAdditionalPreference(['is_enable_allergic_items'])['is_enable_allergic_items'])
+                <li class="last {{ (request()->is('user/allergic-items')) ? 'active' : '' }}"><a href="{{route('list.allergicItems')}}">{{__('Allergic Items')}}</a></li>
+            @endif
             @if(is_p2p_vendor())
                 <li class=""><a href="{{route('posts.index', ['fullPage'=>1])}}">{{ __('Add Post') }}</a></li>
     @endif

@@ -236,7 +236,7 @@ $(document).ready( async function () {
         //var id = $(this).attr('id');
         type = $(this).attr('vendortype');
         sessionType = $(this).data("sessiontype");
-        console.log(type, sessionType);
+      
         if(type == sessionType){
             window.location.href = home_page_url;
             return false;
@@ -252,7 +252,7 @@ $(document).ready( async function () {
         // if(!$.hasAjaxRunning()){
         //     vendorType(latitude, longitude, type);
         // }
-        //setSession(type);
+        setSession(type);
     });
 
     $('#remove_cart_modal').on("hide.bs.modal", function() {

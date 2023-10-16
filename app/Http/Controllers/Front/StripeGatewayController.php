@@ -158,13 +158,17 @@ class StripeGatewayController extends FrontController
                     'payment_method'       => $json_obj->payment_method_id,
                     'amount'               => $total_amount * 100,
                     'currency'             => $this->currency,
-                    'confirmation_method'  => 'manual',
+                    // 'confirmation_method'  => 'manual',
                     'confirm'              => true,
                     'customer'             => $customer_id,
                     'metadata' => [
                         'user_id' => $user->id,
                         'payment_form' => $payment_form
-                    ]
+                    ],
+                    'automatic_payment_methods' => array(
+                        'enabled'         => true,
+                        'allow_redirects' => 'never'
+                    )
                 );
 
                 $user_address = UserAddress::where('is_primary', 1)->first();
@@ -221,12 +225,15 @@ class StripeGatewayController extends FrontController
                 }
                  $intent = \Stripe\PaymentIntent::create($postdata);
             }
+
+         
             if (isset($json_obj->payment_intent_id)) {
                 $intent = \Stripe\PaymentIntent::retrieve(
                     $json_obj->payment_intent_id
                 );
                 $intent->confirm();
             }
+           
             $this->generateResponse($intent, $parameters);
         } catch (\Stripe\Exception\ApiErrorException $e) {
             # Display error on client

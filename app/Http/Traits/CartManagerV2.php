@@ -29,9 +29,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Traits\{ProductTrait};
 use App\Models\WebStylingOption;
-
+use App\Http\Traits\ShipEngineTrait;
 trait CartManagerV2{
-  use ProductTrait;
+  use ProductTrait,ShipEngineTrait;
+
   public function configV2($obj=array())
   {
     $this->user = auth()->user();
@@ -1042,27 +1043,27 @@ trait CartManagerV2{
 
 
                                 if (isset($deliveries[0])) {
-                                    $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
                                     if (count($deliveries)>1) {
+                                        $select .= '<select name="vendorDeliveryFee" class="form-control delivery-fee select">';
                                         foreach ($deliveries as $k=> $opt) {
                                             if($prod->product->individual_delivery_fee == 1) {
-                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)):($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)).'</option>';
+                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)):decimal_format($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)).'</option>';
                                             }else{
                                                 if($if_previousdeliveryfee_added == 0 && $opt['rate'] > 0){
                                                     $delivery_to_add = $opt['rate'];
                                                 }else{$delivery_to_add = 0;}
-                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $delivery_to_add)):($vendorTotalDeliveryFee + $delivery_to_add)).'</option>';
+                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.($additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($vendorTotalDeliveryFee + $delivery_to_add)):decimal_format($vendorTotalDeliveryFee + $delivery_to_add)).'</option>';
                                             }
                                         }
                                     } else {
                                         foreach ($deliveries as $k=> $opt) {
                                             if($prod->product->individual_delivery_fee == 1) {
-                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)):($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)).'</option>';
+                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)):decimal_format($vendorTotalDeliveryFee + $opt['rate']*$prod->quantity)).'</option>';
                                             }else{
                                                 if($if_previousdeliveryfee_added == 0 && $opt['rate'] > 0){
                                                     $delivery_to_add = $opt['rate'];
                                                 }else{$delivery_to_add = 0;}
-                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($additionalPreference ['is_token_currency_enable'] ? getInToken(($vendorTotalDeliveryFee + $delivery_to_add)):($vendorTotalDeliveryFee + $delivery_to_add)).'</option>';
+                                                $select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.($additionalPreference ['is_token_currency_enable'] ? getInToken(decimal_format($vendorTotalDeliveryFee + $delivery_to_add)):decimal_format($vendorTotalDeliveryFee + $delivery_to_add)).'</option>';
                                             }
                                         }
                                     }
@@ -1749,6 +1750,13 @@ trait CartManagerV2{
             $cart->is_token =  $additionalPreference['is_token_currency_enable'] ? 1 : 0;
             $cart->token_value = $additionalPreference['token_currency'] ?? 0;
             $cart->products = $cartData->toArray();
+
+            if (taxJarEnable() && count($cart->products)) {
+                $cart->total_taxable_amount = $this->taxRateEstimate($cart);
+                $cart->total_payable_amount += $cart->total_taxable_amount;
+                $cart->other_taxes_string = $other_taxes_string.',taxjar_fee:'.$cart->total_taxable_amount;
+            }
+
         }
         return $cart;
     }

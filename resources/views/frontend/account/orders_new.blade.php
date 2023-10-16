@@ -916,7 +916,7 @@ $timezone = Auth::user()->timezone;
                                                         <span><a class="text-capitalize">{{ $order->user->name }}</a></span>
                                                     </div>
                                                     @if ($client_preference_detail->business_type != 'taxi')
-                                                    <div class="col-md-3">
+                                                    <div class="col-md-3 alOrderStatus">
                                                         <h4>{{ __('Address') }}</h4>
                                                         @if($order->luxury_option_id == 3)
 
