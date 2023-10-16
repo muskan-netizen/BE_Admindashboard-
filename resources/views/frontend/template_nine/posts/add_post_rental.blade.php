@@ -33,7 +33,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <ul class=" p-0 m-0 no-gutters view-all_cats">
+                                <ul class=" p-0 m-0 no-gutters view-all_cats slider category_responsive">
                                     @if (@$categories)
                                         @foreach ($categories as $key => $category)
                                             @php  $icon = $category['icon']['proxy_url'] . '200/200' . $category['icon']['image_path'];  @endphp

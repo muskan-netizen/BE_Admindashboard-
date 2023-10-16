@@ -524,3 +524,33 @@ html body header .header-dropdown li a.sell-btn span  i{
 }
 
 }
+
+
+body.al_body_template_nine.p2p-module.p2p_module_enable .start_form_register {
+    padding: 40px 0;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable .cate-item img{
+    width: 170px;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable .category_responsive .slick-next:before, .slick-prev:before {
+    font-size: 14px;
+    color: #fff !important;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable .category_responsive .slick-next, .slick-prev {
+    top: 35% !important;
+    background: #000 !important;
+    color: #fff !important;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable .category_responsive .slick-next.slick-disabled:before, .slick-prev.slick-disabled:before {
+    opacity: 1;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable .category_responsive .slick-next {
+    right: 0;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable .exzoom_nav.side_nav_img {
+    height: 550px;
+    overflow-y: scroll;
+}

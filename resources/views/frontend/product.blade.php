@@ -344,8 +344,19 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                     @if(!empty($product->translation) && isset($product->translation->first()->body_html))
                                         <div class="border-product al_disc">
                                             <h6 class="product-title">{{__('Product Details')}}</h6>
-                                            <p></p>
+
+
+                                            <div id="readmore">
+                                                <span class="readmore__content">
+                                                    {!! $product->translation->first()->body_html !!}
+                                                </span>
+                                                <button class="readmore__toggle" role="switch" aria-checked="true">
+                                                    Show more
+                                                </button>
+                                            </div>
+                                            <!-- <p>
                                             {!! $product->translation->first()->body_html !!}
+                                            </p> -->
                                         </div>
                                     @endif
 
@@ -436,30 +447,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                         <div id="variant_response">
                                             <input type="text" class="form-control" name="booking_availability" id="range-datepicker" placeholder="{{date('Y-m-d')}}">
                                         </div>
-                                        <div class="summary-box" style="display:none;">
-                                            <table id="summary-table">
-                                                <tr>
-                                                    <th>Description</th>
-                                                    <th class="text-right">Amount</th>
-                                                </tr>
-                                                <tr>
-                                                    <td>Days <span class="days-count"></span></td>
-                                                    <td class="text-right date-range"></td>
-                                                </tr>
-                                                <tr>
-                                                    <td><span class="applied-price"></span> x <span class="days-count"></span> Days</td>
-                                                    <td class="text-right total-amount"></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Platform Fee</td>
-                                                    <td class="text-right platform-fee">$200</td>
-                                                </tr>
-                                                <tr>
-                                                    <td><strong>Total</strong></td>
-                                                    <td class="text-right"><strong class="total-amount"></strong></td>
-                                                </tr>
-                                            </table>
-                                        </div>
+                                        
 
                                         @if($product->is_recurring_booking == 1)
                                             @include('frontend.product-part.recurring-booking')
@@ -805,6 +793,34 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
 
                                     </div>
 
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="summary-box" style="display:none;">
+                                                <table id="summary-table">
+                                                    <tr>
+                                                        <th>Description</th>
+                                                        <th class="text-right">Amount</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Days <span class="days-count"></span></td>
+                                                        <td class="text-right date-range"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><span class="applied-price"></span> x <span class="days-count"></span> Days</td>
+                                                        <td class="text-right total-amount"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Platform Fee</td>
+                                                        <td class="text-right platform-fee">$200</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>Total</strong></td>
+                                                        <td class="text-right"><strong class="total-amount"></strong></td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
                                 </div>
                                 @if( !is_category_p2p($product->category) && @$set_template->template_id == '8' )
                                     @include('frontend.product-coupon')
