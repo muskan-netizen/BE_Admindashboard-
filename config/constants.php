@@ -24,7 +24,7 @@ return [
     'laundry'      => 'Laundry',            // Laundry related products are mentioned in this flow.
     'appointment'  => 'Appointment',        // appointment related products are mentioned in this flow.
     'p2p'          => 'P2P',
-    'car_rental'   => 'car_rental'
+    'car_rental'   => 'Car-Rental'
  
   ],
   // VendorTypes database

@@ -98,7 +98,9 @@ if($cartProduct){
     $startDate = Carbon::parse($vendorProduct->start_date_time);
     $endDate = Carbon::parse($vendorProduct->end_date_time);
     $difference = $startDate->diffInDays($endDate);
+
 }
+  
 
 $serviceType = Session::get('serviceType');
 @endphp

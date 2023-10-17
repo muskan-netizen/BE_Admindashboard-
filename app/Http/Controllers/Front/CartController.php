@@ -459,8 +459,8 @@ class CartController extends FrontController
                 'variant_id'          => $request->variant_id,
                 'currency_id'         => $client_currency->currency_id,
                 'luxury_option_id'    => ($luxury_option) ? $luxury_option->id : 0,
-                'start_date_time'     => $request->start_date_time,
-                'end_date_time'       => $request->end_date_time,
+                'start_date_time'     => $request->start_date ?? $request->start_date_time,
+                'end_date_time'       => $request->end_date ?? $request->end_date_time,
                 'additional_increments_hrs_min' => $request->has('incremental_hrs') ? $request->incremental_hrs : null,
                 'total_booking_time'  => $total_booking_time,
                 'service_day'         => $request->has('service_day') ? $request->service_day : null,
@@ -472,6 +472,7 @@ class CartController extends FrontController
                 'delivery_date'  => $request->has('delivery_date') ? $request->delivery_date : null,
                 'slot_price'  => $request->has('sele_slot_price') ? $request->sele_slot_price : null
             ];
+
             //Check if 
 
             if ($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData)) {
@@ -2193,7 +2194,7 @@ class CartController extends FrontController
             $action = (Session::has('vendorType')) ? Session::get('vendorType') : 'delivery';
             if ($action == 'car_rental') {
                 $addon = AddonSet::with('option', 'translation')->where('vendor_id', $cart_details->vendor_id)->where('status', 1)->get();
-
+                
                 $mycartView = view('frontend.yacht.cart-page')->with(['cart_details' => (($cart_details) ? json_decode($cart_details) : []), 'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm, 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message, 'addons' => $addon])->render();
             } else {
 
@@ -2633,6 +2634,7 @@ class CartController extends FrontController
     {
         DB::beginTransaction();
         try {
+           
             $user = Auth::user();
             $client_timezone = DB::table('clients')->first('timezone');
             $user->timezone = $client_timezone->timezone ?? $user->timezone;
@@ -2643,12 +2645,14 @@ class CartController extends FrontController
             } else {
                 $cart_detail = Cart::where('unique_identifier', $new_session_token)->first();
             }
+
             $productIds = CartProduct::where('cart_id', $cart_detail->id)->whereHas('cartProduct', function ($q) {
                 $q->where('pharmacy_check', 1);
             })->pluck('product_id');
+          
 
             if (count($productIds) > 0) {
-
+         
                 $presciptionProducts = [];
                 foreach ($productIds as $product_id) {
 
@@ -2662,6 +2666,7 @@ class CartController extends FrontController
                     return response()->json(['status' => 'error_prescription', 'presciptionProducts' => $presciptionProducts]);
                 }
             }
+           
             $addon_ids = [];
             if ($request->has('addonID')) {
                 $addon_ids = $request->addonID;
@@ -2677,6 +2682,8 @@ class CartController extends FrontController
                 }
             }
 
+          
+
             foreach ($addonSets as $key => $value) {
                 $addon = AddonSet::join('addon_set_translations as ast', 'ast.addon_id', 'addon_sets.id')
                     ->select('addon_sets.id', 'addon_sets.min_select', 'addon_sets.max_select', 'ast.title')
@@ -2688,6 +2695,7 @@ class CartController extends FrontController
                 }
             }
             $cartProduct = CartProduct::where('cart_id', $cart_detail->id)->first();
+    
             $isnew = 0;
             if (!$cartProduct) {
                 $isnew = 1;

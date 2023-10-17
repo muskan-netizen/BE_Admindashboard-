@@ -303,23 +303,27 @@
               axios.post(`/booking/checkProductAvailibility`, formData)
               .then(async response => {
                   var data = response.data.variant_data;
-  
+                   console.log(data);
                   if(response.data.success){
+                    var end_time = data.end_time;
+                    var start_time = data.start_time;
+                   
+                    $('#start_time').val(start_time);
+                      $('#end_time').val(end_time);
                     if(!data.variant_product_quantity){
                       // $("a#add_to_cart_btn").removeClass("addToCart");
-                      await sweetAlert.error('','Not available yet!'); 
+                      // await sweetAlert.error('','Not available yet!'); 
                       return false;
                     }
   
                     var available_product_variant = data.available_product_variant;
-                    var end_time = data.end_time;
-                    var start_time = data.start_time;
+
+              
                     if(available_product_variant) {
-                      console.log('adfdaffa');
+                   
                       // $("a#add_to_cart_btn").addClass("addToCart");
                       $('#available_product_variant').val(available_product_variant);
-                      $('#start_time').val(start_time);
-                      $('#end_time').val(end_time);
+                  
                       product_variant_data = data.product_variant_data;
                       if(product_variant_data) {
                         var incremental_hrs = document.getElementById('incremental_hrs').value;
