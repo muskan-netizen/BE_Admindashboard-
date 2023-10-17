@@ -35,19 +35,23 @@ class MvodafoneController extends FrontController
    public function __construct()
   {
        $viva = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'mvodafone')->where('status', 1)->first();
-       $json = json_decode($viva->credentials);
-       $this->secret_key = $json->secret_key;
-       $this->client_id = $json->client_id;
-       $this->test_mode = $viva->test_mode;
+       if(@$viva->status){
+           $json = json_decode($viva->credentials);
+           $this->secret_key = $json->secret_key;
+           $this->client_id = $json->client_id;
+           $this->test_mode = $viva->test_mode;
+       }
   }
 
    public function credentials()
    {
         $viva = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'mvodafone')->where('status', 1)->first();
-        $json = json_decode($viva->credentials);
-        $this->secret_key = $json->secret_key;
-        $this->client_id = $json->client_id;
-        $this->test_mode = $viva->test_mode;
+        if(@$viva->status){
+            $json = json_decode($viva->credentials);
+            $this->secret_key = $json->secret_key;
+            $this->client_id = $json->client_id;
+            $this->test_mode = $viva->test_mode;
+        }
    }
 
    public function createToken()

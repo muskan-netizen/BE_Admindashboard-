@@ -33,7 +33,7 @@ class BookingController extends FrontController
         $navCategories = $this->categoryNav($langId);
         $user_addresses = UserAddress::get();
         $order = Order::where('order_number',$order_id)->where('user_id',Auth::id())->first();
-        $order->vendors->first()->dispatch_traking_url;
+        // $order->vendors->first()->dispatch_traking_url;
         $route = route('front.booking.orderplacedetails',$order->id);
         
         

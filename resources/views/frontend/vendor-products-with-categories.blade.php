@@ -32,7 +32,7 @@ span.alPriceValue, span.alPriceValue i {
 @php
 $add_to_cart =  route('addToCart') ;
 $is_service_product_price_from_dispatch_forOnDemand = 0;
-$additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch','is_service_price_selection']);
+$additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch','is_service_price_selection','is_enable_allergic_items']);
 $getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'), (@Session::get('onDemandPricingSelected') ?? ''),$additionalPreference);
 $category_type_idForNotShowshPlusMinus = ['12'];
 if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
@@ -91,6 +91,10 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                                                 <option value="high_to_low">{{ __('Cost : High to Low') }}</option>
                                                 <option value="rating">{{ __('Avg. Customer Review') }}</option>
                                                 <option value="newly_added">{{ __('Newest Arrivals') }}</option>
+                                                @if ($additionalPreference['is_enable_allergic_items'] == 1)
+                                                    <option value="cal_asc">{{ __('Calories : Low to High') }}</option>
+                                                    <option value="cal_desc">{{ __('Calories : High to Low') }}</option>
+                                                @endif
                                             </select>
                                         </div>
                                     </div>
@@ -174,7 +178,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                                                                                         $cart_id = 0;
                                                                                         $vendor_id = 0;
                                                                                         $product_id = $data->id;
-                                                                                        $variant_id = $data->variant[0] ? $data->variant[0]->id : 0;
+                                                                                        $variant_id = ((isset($data->variant[0]))?$data->variant[0]->id : 0);
                                                                                         $variant_price = 0;
                                                                                         $variant_quantity = $prod->variant_quantity;
                                                                                         $isAddonExist = 0;
@@ -378,14 +382,13 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                                                                         @if($is_service_product_price_from_dispatch_forOnDemand !=1) 
                                                                         {{-- price  not showing in vencor type in on demand and get price from dispatche--}}
                                                                             {{ Session::get('currencySymbol') . decimal_format($prod->variant_price * $prod->variant_multiplier,',') }}
-                                                                            @if ($prod->variant[0]->compare_at_price > 0)
+                                                                            @if (@$prod->variant[0]->compare_at_price > 0)
                                                                                 <span
                                                                                     class="org_price ml-1  font-14">{{ Session::get('currencySymbol') .decimal_format($prod->variant[0]->compare_at_price * $prod->variant_multiplier) }}</span>
                                                                             @endif
                                                                         @endif
                                                                     </p>
                                                                     <div class="member_no d-block mb-0">
-
                                                                         <span>{!! $prod->translation_description !!}</span>
                                                                     </div>
                                                                     <div id="product_variant_options_wrapper">
@@ -1115,7 +1118,6 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                 success: function(response) {
                     if (response.status == 'Success') {
                         response = response.data;
-                        // console.log(response);
                         $(that).parents('.product_row').find(".variant_response span").html('');
                         if (response.variant != '') {
 

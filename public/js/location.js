@@ -210,7 +210,7 @@ $(document).ready( async function () {
     }
 
     //$(".navigation-tab-item").click(function() {
-    $(document).on('click','.navigation-tab-item > a',function() {
+    $(document).on('click','.navigation-tab-item > a', async function() {
         // if($.hasAjaxRunning()){
         //     return false;
         // }
@@ -234,9 +234,9 @@ $(document).ready( async function () {
         let type = "";
         let sessionType = "";
         //var id = $(this).attr('id');
-        type = $(this).attr('VendorType');
+        type = $(this).attr('vendortype');
         sessionType = $(this).data("sessiontype");
-        console.log(type, sessionType);
+      
         if(type == sessionType){
         window.location.href = home_page_url;
         return false;
@@ -273,7 +273,7 @@ $(document).ready( async function () {
             $(".nav-tabs.vendor_mods").attr("data-mod", type);
             return false;
         }
-        $.ajax({
+        await $.ajax({
             type: "get",
             dataType: 'json',
             url: `/setSessionIndex?type=${type}`,
@@ -1196,6 +1196,10 @@ function initMap() {
         const autocomplete = new google.maps.places.Autocomplete(input);
         autocomplete.bindTo('bounds', bindMap);
         autocomplete.key = fieldKey;
+        if(is_map_search_perticular_country){
+            autocomplete.setComponentRestrictions({'country': [is_map_search_perticular_country]});
+        }
+
         autocompletes.push({ input: input, map: map, marker: marker, autocomplete: autocomplete });
     }
 
@@ -1204,7 +1208,7 @@ function initMap() {
         let autocomplete = autocompletes[i].autocomplete;
         const map = autocompletes[i].map;
         const marker = autocompletes[i].marker;
-
+    
         google.maps.event.addListener(autocomplete, 'place_changed', function () {
             marker.setVisible(false);
             const place = autocomplete.getPlace();
@@ -1326,6 +1330,9 @@ $(document).delegate("#edit-address #address-input", "focus", function(){
   function initializeNewCabHome(random_id,rel) {
     var input = document.getElementById(random_id);
     var autocomplete = new google.maps.places.Autocomplete(input);
+    if(is_map_search_perticular_country){
+        autocomplete.setComponentRestrictions({'country': [is_map_search_perticular_country]});
+    }
     autocomplete.bindTo('bounds', bindMap);
 
     google.maps.event.addListener(autocomplete, 'place_changed', function () {

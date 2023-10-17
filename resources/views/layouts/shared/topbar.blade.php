@@ -8,7 +8,12 @@ if($clientData){
 $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'];
 }
 
+$is_map_search_perticular_country = getMapConfigrationPreference();
 @endphp
+<script>
+    let is_map_search_perticular_country = '';
+     is_map_search_perticular_country = '{{ $is_map_search_perticular_country }}';
+</script>
 <!-- Topbar Start -->
 <audio id="orderAudio">
     <source src="{{ asset('assets/sounds/notification.ogg')}}" type="audio/ogg">
@@ -240,7 +245,7 @@ $urlImg = $clientData->logo['image_fit'].'200/80'.$clientData->logo['image_path'
                         <span>{{ __("Change Password") }}</span>
                     </a>
 
-                    <a class="dropdown-item notify-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"> <i class="fe-log-out"></i> <span>Logout</span>
+                    <a class="dropdown-item notify-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"> <i class="fe-log-out"></i> <span>{{ __("Logout") }}</span>
                     </a>
 
                     <form id="logout-form" action="{{route('client.logout')}}" method="POST">

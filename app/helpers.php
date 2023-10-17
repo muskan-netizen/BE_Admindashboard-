@@ -18,6 +18,7 @@ use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Cache;
 
 if (!function_exists('setUserCode')) {
     function setUserCode(){
@@ -38,11 +39,18 @@ if (!function_exists('checkColumnExists')) {
      * @param string @columnName
      * @return boolean true or false
      */
-    function checkColumnExists($tableName, $columnName){
-        if (Schema::hasColumn($tableName, $columnName)){
-            return true;
-        }else{
-            return false;
+        function checkColumnExists($tableName, $columnName)
+        {
+            if (Schema::hasColumn($tableName, $columnName)){
+                $cacheKey = "$tableName$columnName";
+                $columnExists = Cache::remember($cacheKey, 60 * 60, function () use($tableName, $columnName) {
+                    return Schema::hasColumn($tableName, $columnName);
+                });
+            if ($columnExists){
+                return true;
+            }else{
+                return false;
+            }
         }
     }
 }
@@ -54,12 +62,18 @@ if (!function_exists('getAdditionalPreference')) {
      * @param  mixed $key
      * @return void
      */
-    function getAdditionalPreference($key=array()){
+    function getAdditionalPreference($key=array() , $time = '60'){
         setUserCode();
         $return = [];
         $dbreturn= [];
         if(sizeof($key)){
-            $result = ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
+            	
+            // $result = ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
+            $cacheKey = 'client_preferences_additional_'.json_encode($key);
+
+            $result = Cache::remember($cacheKey, $time, function () use ($key) {
+                return ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
+            });
             $return = array_column($result->toArray(), 'key_value', 'key_name');
             if (sizeof($result)) {
                 $dbreturn = array_column($result->toArray(), 'key_value', 'key_name');
@@ -69,6 +83,24 @@ if (!function_exists('getAdditionalPreference')) {
             $return = array_merge($emptyArr, $dbreturn);
         }
         return $return;
+    }
+}
+
+if (!function_exists('getMapConfigrationPreference')) {
+    /**
+     * getMapConfigrationPreference
+     *
+     * @param  mixed $key
+     * @return void
+     */
+
+    function getMapConfigrationPreference(){
+        $iso3 = '';
+        $mapConfigration =  getAdditionalPreference(['is_map_search_perticular_country']);
+        if(isset($mapConfigration) && $mapConfigration['is_map_search_perticular_country'] == 1){
+            $iso3 = ClientData::first()->country->iso3 ?? '';
+        }
+        return $iso3;
     }
 }
 
@@ -187,6 +219,35 @@ if (!function_exists('sendFcmCurlRequest')) {
             return $result;
         } else {
             return false;
+        }
+    }
+}
+
+if (! function_exists('sendNotificationToCustomer')) {
+    function sendNotificationToCustomer($devices,$order_number=''){
+        $client_preferences = ClientPreference::select('fcm_server_key','favicon')->first();
+        if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
+            $data = [
+                "registration_ids" => $devices,
+                "notification" => [
+                    'title'     => 'Order Received',
+                    'body'      => 'Your order no. #'.$order_number.' has been received!',
+                    'sound' => "default",
+                    "icon"  => (!empty($client_preferences->favicon)) ? $client_preferences->favicon['proxy_url'] . '200/200' . $client_preferences->favicon['image_path'] : '',
+                    "android_channel_id" => "default-channel-id"
+                ],
+                "data" => [
+                    'title'     => 'Order Received',
+                    'body'      => 'Your order no. #'.$order_number.' has been received!',
+                    'data'  => 'received_order',
+                    'type'  => ""
+                ],
+                "priority" => "high"
+            ];
+                    
+            $response = sendFcmCurlRequest($data,$client_preferences->fcm_server_key);
+            $result = json_decode($response); 
+            return $result;
         }
     }
 }
@@ -488,12 +549,15 @@ if (!function_exists('productvariantQuantity')) {
 if (!function_exists('checkImageExtension')) {
     function checkImageExtension($image)
     {
-        $ch =  substr($image, strpos($image, ".") + 1);
         $ex = "@webp";
-        if ($ch == 'svg') {
-            $ex = "";
+        if(!empty($image))
+        {
+            $ch =  substr($image, strpos($image, ".") + 1);
+            if ($ch == 'svg') {
+                $ex = "";
+            }
         }
-        return $ex;
+            return $ex;
     }
 }
 
@@ -658,7 +722,7 @@ if (!function_exists('SplitTime')) {
 }
 
 if (!function_exists('showSlot')) {
-    function showSlot($myDate = null, $vid, $type = 'delivery', $duration="60", $slot_type=0, $request_from='')
+    function showSlot($myDate = null, $vid, $type = 'delivery', $duration="60", $slot_type=0, $request_from='',$cart_id = 0)
     {
         $type = empty($type)? "delivery": $type;
         $slotDuration = Vendor::select('slot_minutes')->where('id', $vid)->first();
@@ -691,7 +755,11 @@ if (!function_exists('showSlot')) {
         // check if vendor has added slots. if not added then no need to execute this.
         if (isset($slots) && count($slots)>0) {
             $min[] = '';
-            $cart = CartProduct::where('vendor_id', $vid)->get();
+            $cart = CartProduct::where('vendor_id', $vid);
+            if(!empty($cart_id)){
+                $cart->where('cart_id',$cart_id);
+            }
+            $cart = $cart->get();
             if (isset($cart) && $cart->count()>0) {
                 foreach ($cart as $product) {
                     $delayHr= isset($product->product->delay_order_hrs) ? ($product->product->delay_order_hrs) : 0;
@@ -699,7 +767,6 @@ if (!function_exists('showSlot')) {
                     $min[] = (($delayHr * 60) + $delayMin);
                 }
             }
-
             if (isset($slots) && count($slots)>0) {
                 $slotss = [];
                 foreach ($slots as $slott) {
@@ -745,7 +812,7 @@ function showPriceWithCurrency($price = 0,$compare = 0)
             $is_token_currency = getAdditionalPreference(['is_token_currency_enable'])['is_token_currency_enable'];
             $redis->set("ifTCurrency_".session()->get('userCode'), $is_token_currency, 'EX', 36000);
         }
-        
+        $is_token_currency = 0;
         if($is_token_currency == 1)
         {
             $currencysymbol = "<i class='fa fa-money' aria-hidden='true'></i> ";
@@ -786,21 +853,21 @@ if (!function_exists('showNumericPrice')) {
     }
 
 if (!function_exists('getShowSlot')) {
-    function getShowSlot($myDate = null, $vid, $type = 'delivery', $duration="60", $slot_type=0, $request_from='')
+    function getShowSlot($myDate = null, $vid, $type = 'delivery', $duration="60", $slot_type=0, $request_from='',$cart_id = 0)
     {
-        $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+        $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type,'', $cart_id);
         if(count((array)$slots) == 0){
             $myDate  = date('Y-m-d',strtotime('+1 day'));
-            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type,'', $cart_id);
         }
         if(count((array)$slots) == 0){
             $myDate  = date('Y-m-d',strtotime('+2 day'));
-            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type,'', $cart_id);
         }
 
         if(count((array)$slots) == 0){
             $myDate  = date('Y-m-d',strtotime('+3 day'));
-            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type);
+            $slots = (object)showSlot($myDate,$vid,$type,$duration, $slot_type,'', $cart_id);
         }
         $response['slots']=$slots;
         $response['date']=$myDate;
@@ -926,26 +993,26 @@ if (!function_exists('SplitTimeTemp')) {
 
 
 if (!function_exists('findSlot')) {
-    function findSlot($myDate = null, $vid, $type = 'delivery', $api = null)
+    function findSlot($myDate = null, $vid, $type = 'delivery', $api = null,$cart_id = 0)
     {
         $type = empty($type) ? 'delivery' :$type;
         $myDate  = date('Y-m-d');
         $type = ((session()->get('vendorType'))?session()->get('vendorType'):$type);
-        $slots = showSlot($myDate, $vid,  $type);
+        $slots = showSlot($myDate, $vid,  $type,"60",0,'',$cart_id);
 
         if (count((array)$slots) == 0) {
             $myDate  = date('Y-m-d', strtotime('+1 day'));
-            $slots = showSlot($myDate, $vid, $type);
+            $slots = showSlot($myDate, $vid, $type,"60",0,'',$cart_id);
         }
 
         if (count((array)$slots) == 0) {
             $myDate  = date('Y-m-d', strtotime('+2 day'));
-            $slots = showSlot($myDate, $vid, $type);
+            $slots = showSlot($myDate, $vid, $type,"60",0,'',$cart_id);
         }
 
         if (count((array)$slots) == 0) {
             $myDate  = date('Y-m-d', strtotime('+3 day'));
-            $slots = showSlot($myDate, $vid, $type);
+            $slots = showSlot($myDate, $vid, $type,"60",0,'',$cart_id);
         }
         if (isset($slots) && count((array)$slots)>0) {
             $time = explode(' - ', $slots[0]['value']);
@@ -1200,6 +1267,7 @@ if (!function_exists('decimal_format')) {
     // Number Format according to Client preferences
     function decimal_format($number,$format="")
     {
+        $number = is_numeric($number)?$number:0;
         $preference = session()->get('preferences');
         $digits = $preference['digit_after_decimal'] ?? 2;
         return number_format($number,$digits,'.',$format);
@@ -1254,6 +1322,10 @@ if (!function_exists('getServiceTypesCategory')) {
                 'p2p'          => ['p2p'],
                 'home_service' => ['on_demand_service', 'appointment_service'],
             ];
+            $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
+            if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                $alltypes['p2p'] = ['p2p', 'rental_service'];
+            }
             
             if ($vendorType == 'delivery' || $vendorType == 'dine_in' || $vendorType == 'takeaway' || $vendorType == 'rental' || $vendorType == 'pick_drop' || $vendorType == 'on_demand' || $vendorType == 'laundry' || $vendorType == 'appointment' || $vendorType == 'p2p') {
                 $service_types = $alltypes[$vendorType];
@@ -1261,6 +1333,10 @@ if (!function_exists('getServiceTypesCategory')) {
 
             if ($client_preference->business_type == 'taxi' || $client_preference->business_type == 'laundry' || $client_preference->business_type == 'home_service' || $client_preference->business_type == 'p2p') {
                 $service_types = $alltypes[$client_preference->business_type];
+            }
+            $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
+            if($client_preference->business_type == 'p2p' && @$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                $service_types = $alltypes['p2p'];
             }
             /* if ($vendorType == "delivery" || $vendorType == "dine_in" || $vendorType == "takeaway") {
                 $service_types = ['products_service'];
@@ -1331,6 +1407,9 @@ if (!function_exists('getCategoryTypes')) {
             case "p2p":
                 $typeArray = ['p2p'];
                 break;
+            case "emart":
+                $typeArray = ['delivery'];
+                break;
             case "super_app":
                 $typeArray = ['delivery', 'dinein', 'takeaway', 'rental', 'pick_drop', 'on_demand', 'appointment', 'p2p' ];
                 break;
@@ -1340,6 +1419,7 @@ if (!function_exists('getCategoryTypes')) {
         return $typeArray;
     }
 }
+
 if (!function_exists('getCategoryTypesServices')) {
     /**
      * config('constants.ServiceTypes')
@@ -1462,8 +1542,6 @@ if (!function_exists('inventorySyncOnOff')) {
             ]);
 
             $response = json_decode($request->getBody());
-            // \Log::info('Response Data');
-            // \Log::info(json_encode($response));
             if ($response->status) {
                 return $response->msg;
             }
@@ -1845,6 +1923,7 @@ if( !function_exists('get_file_path') ) {
       if(!empty($url)){
         $img = $url;
       }
+
       $ex = checkImageExtension($img);
       $return_url = $values =  \Config::get('app.'.$type);
 
@@ -1918,5 +1997,109 @@ if (!function_exists('getOnDemandPricingRule')) {
                 }
             }
             return $return;
+    }
+
+}
+if (!function_exists('getDatesBetweenTwoDates')) { 
+    function getDatesBetweenTwoDates($start_date, $end_date)
+    {
+        $period = CarbonPeriod::create($start_date, $end_date);
+
+        // Convert the period to an array of dates
+        $dates = $period->toArray();
+        return $dates;
+    }
+}
+
+if (!function_exists('recurringCalculationFunction')) {    
+    function recurringCalculationFunction($request)
+    {
+        $recurringformPost = (object)$request->recurringformPost;
+        $weekTypes ='';
+        $daysCnt ='';
+        if(!empty($recurringformPost->weekDay)){
+            $weekTypes = implode(',',$recurringformPost->weekDay);
+        }
+
+        $startDate = $recurringformPost->startDate;
+        $endDate = $recurringformPost->endDate;
+
+        $selectedCustomdates = [];
+        
+        if($recurringformPost->action=='2' || $recurringformPost->action=='1'){
+            $startDate = $recurringformPost->startDate;
+            $endDate = $recurringformPost->endDate;
+            
+            if($recurringformPost->action=='1'){
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            } else {
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate,$recurringformPost->weekDay);
+            }
+            
+            $daysCnt =count($selectedCustomdates);
+            $selectedCustomdates = implode(',',$selectedCustomdates);
+        }elseif($recurringformPost->action=='3'){
+            $startDate = Carbon::now()->addDays(1);
+            $endDate = Carbon::now()->addDays(1);
+            $endDate = $endDate->addMonths($recurringformPost->month_number);
+            $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            $daysCnt =count($selectedCustomdates);
+            $selectedCustomdates = implode(',',$selectedCustomdates);
+        }elseif($recurringformPost->action=='4'){
+            if(!empty($recurringformPost->selectedCustomdates)){
+                $daysCnt =count($recurringformPost->selectedCustomdates);
+                $selectedCustomdates = implode(',',$recurringformPost->selectedCustomdates);
+            }
+        }elseif($recurringformPost->action=='6'){
+            $startDate = $recurringformPost->startDate;
+            $endDate = $recurringformPost->endDate;
+            if($recurringformPost->action=='1'){
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            } else {
+                $selectedCustomdates = getDaysArrayBetweenTwoDates($startDate,$endDate,$recurringformPost->weekDay,'A');
+            }
+            
+            $daysCnt =count($selectedCustomdates);
+            $selectedCustomdates = implode(',',$selectedCustomdates);
+        }
+
+
+        if(empty($daysCnt)){
+            $days = getDaysArrayBetweenTwoDates($startDate,$endDate);
+            $daysCnt =count($days);
+        }
+
+            return (object)[
+                'weekTypes' => @$weekTypes,
+                'selectedCustomdates' => @$selectedCustomdates,
+                'startDate' => @$startDate,
+                'endDate' => @$endDate,
+                'action'  => @$recurringformPost->action,
+                'schedule_time'=>@$recurringformPost->schedule_time??'10:00',
+                'daysCnt'=>@$daysCnt??'1'
+            ];
+
+    }
+
+    if (!function_exists('shipEngineEnable')) {
+        function shipEngineEnable(){
+            $shipping_option = ShippingOption::select('id', 'code','status')->where(['code' => 'shipengine', 'status' => 1])->first();
+            if ($shipping_option) {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    if (!function_exists('taxJarEnable')) {
+        function taxJarEnable(){
+            $key = ['is_taxjar_enable','taxjar_testmode','taxjar_api_token'];
+            $creds = ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
+            $creds = array_column($creds->toArray(), 'key_value', 'key_name');
+            if(isset($creds) && !empty($creds) && $creds['is_taxjar_enable'] == 1){
+                return true;
+            }
+            return false;
+        }
     }
 }

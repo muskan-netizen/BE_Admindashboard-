@@ -14,12 +14,14 @@ class TelrController extends Controller
 	use \App\Http\Traits\ApiResponser;
 	public function __construct()
   	{
-		$this->telr_creds = PaymentOption::select('credentials','test_mode')->where('code', 'telr')->where('status', 1)->first(); 
+		$this->telr_creds = PaymentOption::select('credentials','test_mode')->where('code', 'telr')->where('status', 1)->first();
+        if(@$this->telr_creds && !empty($this->telr_creds->credentials)){ 
 	    $this->creds_arr = json_decode($this->telr_creds->credentials);
 	    $this->merchant_id = $this->creds_arr->merchant_id ?? '';
 	    $this->api_key = $this->creds_arr->api_key ?? '';
 	    $this->url = url('payment/telr');
         $this->is_test = $this->telr_creds->test_mode ? true : false;
+        }
 	}
 	public function beforePayment(Request $request)
     {

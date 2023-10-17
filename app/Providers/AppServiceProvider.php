@@ -52,8 +52,13 @@ class AppServiceProvider extends ServiceProvider
 
         $payment_codes = ['stripe', 'stripe_fpx', 'yoco', 'checkout', 'cashfree','payphone','stripe_oxxo','stripe_ideal','khalti','data_trans'];
         $stripe_publishable_key = $yoco_public_key = $checkout_public_key = $stripe_fpx_publishable_key = $cashfree_test_mode = $stripe_oxxo_publishable_key = $stripe_ideal_publishable_key = $khalti_api_key = '';
-        $payment_options = PaymentOption::select('code','credentials','test_mode')->whereIn('code', $payment_codes)->where('status', 1)->get();
-        if($payment_options){
+        if(checkColumnExists('payment_options', 'test_mode')){
+            $payment_options = PaymentOption::select('code','credentials','test_mode')->whereIn('code', $payment_codes)->where('status', 1)->get();
+        }else{
+            $payment_options = PaymentOption::select('code','credentials')->whereIn('code', $payment_codes)->where('status', 1)->get();
+        }
+       
+        if(@$payment_options){
             foreach($payment_options as $option){
           
                 $creds = json_decode($option->credentials);

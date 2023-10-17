@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Rider extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id','first_name','last_name','dial_code','phone_number'];
+    protected $fillable = ['user_id','first_name','last_name','dial_code','phone_number','email'];
 
     public function createRider($data)
     {
@@ -18,7 +18,8 @@ class Rider extends Model
             'dial_code' => $data['dial_code']??'',
     		'user_id' => $data['user_id'],
     		'first_name' => $data['first_name'],
-    		'last_name' => $data['last_name']
+    		'last_name' => $data['last_name'],
+    		'email' => $data['email']??null
     	]);
     }
     public function deleteRider($id)

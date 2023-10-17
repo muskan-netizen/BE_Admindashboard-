@@ -219,6 +219,7 @@ header#al_new_design .main-menu .al_count_tabs_new_design.d-none.d-sm-block ul#t
 .dark .main-menu {
     border-bottom: 1px solid #232323;
 }
+.dark .al_count_tabs_new_design li a.nav-link{color:#fff;}
 
 .container_fluid_al {
     max-width: 100%;
@@ -267,7 +268,7 @@ header#al_new_design .main-menu .al_count_tabs_new_design.d-none.d-sm-block ul#t
 }
 
 .dark .al_count_tabs_new_design li a.nav-link .al_tabsIcons {
-    background-color: #232323;
+    background-color: #fff;
 }
 
 .al_count_tabs_new_design li a.nav-link .al_tabsIcons {
@@ -282,6 +283,7 @@ header#al_new_design .main-menu .al_count_tabs_new_design.d-none.d-sm-block ul#t
     border-radius: 50%;
     margin-bottom: 0px
 }
+.dark .al_clock b{color:#fff;}
 
 .al_count_tabs_new_design li a.nav-link {
     display: flex;
@@ -502,7 +504,7 @@ li {
 }
 
 .sm ul.al_main_category_list {
-    z-index: 9;
+    z-index: -1;
     display: block;
     opacity: 0;
     list-style: none;
@@ -511,8 +513,8 @@ li {
     direction: ltr;
     text-align: left;
     padding: 0;
-    transition: all 0.1s!important;
-    transform: translateY(-20px);
+    transition:  0.01s!important;
+    transform: translateY(0);
     visibility: hidden;
 }
 
@@ -905,7 +907,7 @@ li.onhover-div.pl-0.shake-effect a.btn.btn-solid.d-flex.align-items-center {
 }
 .menu-navigation.alThreeMenu .slick-slider .slick-next{
     right: -50px;
-    top: 8px;
+    top: 10px;
 }
 .menu-navigation.alThreeMenu .slick-slider .slick-prev{
     left: -50px;
@@ -1058,8 +1060,7 @@ header#al_new_design.site-header.fixed-bar .menu-navigation.alThreeMenu ul.al_ma
 }
 
 body.al_body_template_eight #al_new_design .pixelstrap ul {
-    top: 24px;
-    /* top:40px; */
+    top: 100%;    
     box-shadow: none;
 }
 
@@ -1199,7 +1200,7 @@ body.al_body_template_eight ul#header_cart_main_ul li .total {
         display: none !important;
     }
     .al_body_template_eight .al_toggle-menu {
-        top: -6px;
+        top: -0;
     }
     header#al_new_design.site-header.fixed-bar {
         z-index: 10;
@@ -1229,7 +1230,7 @@ body.al_body_template_eight ul#header_cart_main_ul li .total {
     }
     .al_body_template_eight .al_new_cart {
         margin-top: 5px;
-        z-index: 999999;
+        /* z-index: 999999; */
         font-size: 20px;
     }
     .al_body_template_eight .al_custom_head_map_box {

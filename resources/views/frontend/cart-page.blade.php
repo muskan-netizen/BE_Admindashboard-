@@ -149,14 +149,18 @@
                     </div>
 
                     <div class="row border-bottom product_title_add py-1 no-gutters">
-                        <div class="col-md-4 col">
+                        <div class="col-md-1 col">
+                            
+                        </div>
+
+                        <div class="col-md-3 col">
                             <span>{{ __('Product Details') }}</span>
                         </div>
 
                         <div class="col-md-2 col text-center">
                             <span>{{ __('Price') }}</span>
                         </div>
-                        @if ($serviceType == 'rental')
+                        @if ($serviceType == 'rental' || $serviceType == 'p2p')
                             <div class="col-md-2 col text-center">
                                 <span>Duration By(min)</span>
                             </div>
@@ -261,12 +265,39 @@
                         <div id="tbody_{{ $product->vendor->id }}">
 
                             @foreach ($product->vendor_products as $vendor_product)
+                            @php
+                             $rental_price = 0;
+                            if(@$vendor_product->start_date_time && @$vendor_product->end_date_time){
+                                
+                                $start_date_time  = new \Carbon\Carbon($vendor_product->start_date_time);
+                                $end_date_time  = new \Carbon\Carbon($vendor_product->end_date_time);
+                                $vendor_product->days = $start_date_time->diff($end_date_time)->days + 1;
+                               
+                                $rental_price = $vendor_product->pvariant ? $vendor_product->pvariant->price : 0;
+                                if(@$vendor_product->pvariant->month_price && @$vendor_product->pvariant->week_price){
+                                    
+                                    if($vendor_product->days >= 7 && $vendor_product->days < 30){
+                                        $rental_price = $vendor_product->pvariant->week_price;
+                                    }elseif($vendor_product->days >= 30){
+                                        $rental_price = $vendor_product->pvariant->month_price;
+                                    }
+                                }
+                                $vendor_product->price = $rental_price;
+                                $cart_details->loyalty_amount = $cart_details->tip_5_percent = 0;
+                               $vendor_product->quantity_price = $product->product_total_amount = $cart_details->total_payable_amount =  $cart_details->sub_total = $cart_details->gross_amount = $vendor_product->pvariant->actual_price = $vendor_product->pvariant->price =  $rental_price = $rental_price *$vendor_product->days;
+                            }
+
+                    @endphp
                                 {{-- @php
                                 pr($vendor_product->schedule_slot_name);
                                 @endphp --}}
                                 <div class="row al align-items-md-center vendor_products_tr alFourTemplateCartPage"
                                     id="tr_vendor_products_{{ $vendor_product->id }}">
-                                    <div class="product-img col-3 col-md-2">
+                                    <div class="product-img col-1 col-md-1">
+                                        <input type="checkbox" name="checked_cart_product" class="checked-cart-product" id="checked_cart_product" value="{{$vendor_product->id}}" {{ $vendor_product->is_cart_checked ? 'checked' : '' }} >
+                                        <i class="fa fa-spinner fa-pulse d-none" id="fa_spinner_{{$vendor_product->id}}" aria-hidden="true" style="color: var(--theme-deafult)"></i>
+                                    </div>
+                                    <div class="product-img col-2 col-md-1">
                                         @if (!empty($vendor_product->pvariant->media_one))
                                             <img class='blur-up lazyload w-100'
                                                 data-src="{{ $vendor_product->pvariant->media_one->pimage->image->path->proxy_url . '200/200' . $vendor_product->pvariant->media_one->pimage->image->path->image_path }}">
@@ -317,7 +348,18 @@
                                             @endif
                                             @if (!empty(@$vendor_product->quantity_price))
                                                 <div class="col-6 col-md-2 text-left order-md-4">
-                                                    @if ($serviceType == 'rental')
+                                                    @if ($serviceType == 'p2p')
+                                                        @php
+                                                            $additionalPrice = $vendor_product->quantity_price;
+                                                        @endphp
+                                                        <div class="items-price">
+                                                            @if ($additionalPreference['is_token_currency_enable'])
+                                                                SADS{!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($additionalPrice)) }}
+                                                            @else
+                                                                {{ Session::get('currencySymbol') . decimal_format($additionalPrice) }}
+                                                            @endif
+                                                        </div>
+                                                    @elseif ($serviceType == 'rental')
                                                         @php
                                                             $additionalPrice = 0;
                                                             if ($vendor_product->pvariant->incremental_price_per_min > 0) {
@@ -344,7 +386,7 @@
                                             @endif
 
 
-                                            @if ($serviceType == 'rental')
+                                            @if ($serviceType == 'rental' || $serviceType == 'p2p')
                                                 <div class="col-10 col-md-4 text-md-center order-md-3">
                                                     <div class="number d-flex justify-content-md-center border-0">
                                                         <div style="display: none !important;"
@@ -435,11 +477,12 @@
                                                                 data-cart="{{ $vendor_product->cart_id }}"
                                                                 data-product="{{ $vendor_product->product->id }}"
                                                                 data-vendor_id="{{ $vendor_product->vendor_id }}">{{ __('Add Prescription') }}</button>
+                                                                 <span class="alert-danger error_prescription bg-transparent"
+                                                          id="error_prescription_{{ $vendor_product->product->id }}"
+                                                         style="display:none;">Prescription required</span>
                                                             @if ($vendor_product->cart_product_prescription > 0)
-                                                                <h4 class="mt-0 mb-1"
-                                                                    style="word-wrap: break-word; line-height:20px">
-                                                                    <strong>{{ $vendor_product->cart_product_prescription }}
-                                                                        {{ __('Prescription Added') }}</strong></h4>
+                                                                <h4 class="mt-0 mb-1 text-left" style="clear:both;line-height:30px" >
+                                                                    <strong>{{ $vendor_product->cart_product_prescription }}{{ __('Prescription Added') }}</strong></h4>
                                                             @endif
                                                         @endif
                                                     @endif
@@ -461,25 +504,26 @@
                                             </div>
 
                                         </div>
-                                        
-                                        @if($serviceType == 'rental')
-                                            <hr class="my-2">
-                                            <div class="row align-items-md-center alRentalStartDate">
-                                                <div class="col-3">
-                                                    <h6 class="m-0 pl-0">{{ __('Start Date') }}</h6>
-                                                    <p>{{ date('m/d/Y g:i A', strtotime($vendor_product->start_date_time)) }}
-                                                    </p>
+                                        @if($serviceType == 'rental' || $serviceType == 'p2p')
+                                            @if(!empty($vendor_product->start_date_time) && !empty($vendor_product->end_date_time))
+                                                <hr class="my-2">
+                                                            <div class="row align-items-md-center alRentalStartDate">
+                                                    <div class="col-3">
+                                                        <h6 class="m-0 pl-0">{{ __('Start Date') }}</h6>
+                                                        <p>{{ date('m/d/Y g:i A', strtotime($vendor_product->start_date_time)) }}
+                                                        </p>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <h6 class="m-0 pl-0">{{ __('End Date') }}</h6>
+                                                        <p>{{ date('m/d/Y g:i A', strtotime($vendor_product->end_date_time)) }}
+                                                        </p>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <h6 class="m-0 pl-0" style="font-weight: 600;">{{ __('Security Amount') }}</h6>
+                                                        <p>{{ Session::get('currencySymbol') . decimal_format($vendor_product->product->security_amount) }}</p>
+                                                    </div>
                                                 </div>
-                                                <div class="col-3">
-                                                    <h6 class="m-0 pl-0">{{ __('End Date') }}</h6>
-                                                    <p>{{ date('m/d/Y g:i A', strtotime($vendor_product->end_date_time)) }}
-                                                    </p>
-                                                </div>
-                                                <div class="col-3">
-                                                    <h6 class="m-0 pl-0" style="font-weight: 600;">{{ __('Security Amount') }}</h6>
-                                                    <p>{{ Session::get('currencySymbol') . decimal_format($vendor_product->product->security_amount) }}</p>
-                                                </div>
-                                            </div>
+                                            @endif
                                         @endif
                                         
                                         @if (count($vendor_product->addon) != 0)
@@ -787,7 +831,7 @@
                                         <div class="row mb-1 d-flex align-items-center">
                                             <div class="col-5 text-lg-right">
                                                 <label class="m-0 radio">
-                                                    {{ __('Fixed Fee') }} :</label>
+                                                    {{getDynamicTypeName('Fixed Fee')}} :</label>
                                             </div>
                                             <div class="col-7">
                                                 @if ($additionalPreference['is_token_currency_enable'])
@@ -1128,7 +1172,7 @@
                                     {{-- <div class="col-6 text-right"><b> {{Session::get('currencySymbol')}}{{decimal_format($cart_details->sub_total - $cart_details->bid_total_discount)}}</b></div> --}}
                                     <div class="col-6 text-right"><b>
                                             @if ($additionalPreference['is_token_currency_enable'])
-                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->sub_total)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->sub_total) }}
+                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->sub_total)) }}@else{{ Session::get('currencySymbol') ." ". decimal_format($cart_details->sub_total) }}
                                             @endif
                                         </b>
                                     </div>
@@ -1140,14 +1184,15 @@
                                     <div class="col-6">{{ __('Total Delivery Fee') }}</div>
                                     <div class="col-6 text-right"><b>
                                             @if ($additionalPreference['is_token_currency_enable'])
-                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($cart_details->delivery_charges)) }}@else{{ Session::get('currencySymbol') . decimal_format($cart_details->delivery_charges) }}
+                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!} {{ getInToken(decimal_format($cart_details->delivery_charges)) }}@else{{ Session::get('currencySymbol') ." ". decimal_format($cart_details->delivery_charges) }}
                                             @endif
                                         </b>
                                     </div>
                                 </div>
                                 <hr class="my-2">
                             @endif
-                            @if ($serviceType == 'rental')
+
+                            @if ($serviceType == 'rental' || $serviceType == 'p2p')
                                 <div class="row">
                                     <div class="col-6">{{ __('Security Amount') }}</div>
                                     <div class="col-6 text-right">
@@ -1211,7 +1256,7 @@
                                 }
                             @endphp
                             <input type="hidden" id="other_taxes_string" value="{{ $other_taxes_string }}">
-                            @if ($serviceType == 'rental')
+                            @if ($serviceType == 'rental' || $serviceType == 'p2p')
                                 {{-- <div class="row">
                     <div class="col-6">{{__('Extended Duration')}}</div>
                     <div class="col-6 text-right"><b>{{Session::get('currencySymbol')}}<span id="gross_amount">{{ decimal_format($vendor_product->pvariant->incremental_price * $vendor_product->additional_increments_hrs_min)}}</b></span>
@@ -1420,7 +1465,7 @@
                             @endif
                             <div class="row {{ $hidden_token }}">
                                 <div class="col-6 d-flex">
-                                    <p class="total_amt m-0">{{ __('Amount Payable') }}
+                                    <p class="total_amt m-0">{{ __('Amount Payable') }} 
                                         @if ($other_taxes)
                                             <small>({{ __('incl. tax') }})</small>
                                         @endif
@@ -1582,6 +1627,17 @@
                             {{-- till date --}}
                             <hr class="my-2">
 
+                            @if (isset($cart_details->ship_engine_error))
+                                <div class="row">
+                                    <div class="col-6">{{ __('ShipEngine Error') }}</div>
+                                    <div class="col-6 text-danger"><b>
+                                        {{ $cart_details->ship_engine_error }}
+                                        </b>
+                                    </div>
+                                </div>
+                                <hr class="my-2">
+                            @endif
+
                         </div>
 
                         {{-- Schedual code Start at down --}}
@@ -1606,13 +1662,14 @@
                                         value="{{ $schedule_slots_edit }}">
                                 @endif
                                 @if ($serviceType == 'rental')
+                                    @php $agree_term_text = getNomenclatureName('Agree Term', true); @endphp
                                     <div class="text-sm-left mb-2">
-                                        <input type="checkbox" name="agree_term_check" id="agree_term_check" value="" disabled> <a href="javascript:void(0);" class="agree_term_btn">Agree Term</a>
+                                        <input type="checkbox" name="agree_term_check" id="agree_term_check" value=""> <a href="javascript:void(0);" class="agree_term_btn">{{$agree_term_text}}</a>
                                     </div>
                                 @endif
                                 @php
                                     $disablePlaceBtn = '';
-                                    if(count($cart_details->user_allAddresses) == 0 || $serviceType == 'rental'){
+                                    if(count($cart_details->user_allAddresses) == 0 || $serviceType == 'rental' || $serviceType == 'p2p'){
                                         $disablePlaceBtn = 'disabled';
                                     }
                                 @endphp
@@ -1727,7 +1784,7 @@
                                             <p class="border-bottom pb-1">In {{ $product->category_name }}</p>
                                             <div class="d-flex align-items-center justify-content-between">
                                                 <b>
-                                                    @if ($product->inquiry_only == 0)
+                                                    @if ($product->inquiry_only == 0  &&  is_numeric($product->variant_price))
                                                         {{ Session::get('currencySymbol') }}{{ decimal_format($product->variant_price) }}
                                                     @endif
                                                 </b>
@@ -1744,7 +1801,7 @@
     </div>
 
 @endif
-@if ($serviceType == "rental")
+@if ($serviceType == "rental" || $serviceType == 'p2p')
     @include('frontend.cart.rentalConsentFormModal')
 @endif
 
@@ -1802,10 +1859,6 @@
                 }
             }]
         });
-        var serviceType = "{{$serviceType}}";
-        if(serviceType == "rental"){
-            $("#order_placed_btn").attr('disabled', true);
-        }
     });
 
     $(document).on('click', '.agree_term_btn', function(){
@@ -1817,8 +1870,6 @@
 
     $(document).on('click', '#agree_btn', function(){
         $('#agree_term_check').prop('checked', true);
-        $('#agree_term_check').attr('disabled', false);
-        $("#order_placed_btn").attr('disabled', false);
         $('#consent_form_rental').modal('hide');
     });
 

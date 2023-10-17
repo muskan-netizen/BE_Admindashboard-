@@ -24,7 +24,7 @@
                 </div>
                 <div class="col-md-3 alOrderStatus">
                     <h4>{{ __('Customer') }}</h4>
-                    <span>{{ $order['user']['name'] }}</span>
+                    <span>{{ @$order['user']['name']??'' }}</span>
                 </div>
                 @if (Auth::user()->is_superadmin || $client_preference_detail->hide_order_address == 0)
                     <div class="col-md-3">
@@ -59,8 +59,8 @@
                                             <li>
                                                 <a data-toggle="tooltip" data-placement="top" title="Start Chat"
                                                     class="start_chat btn-info" data-vendor_order_id="{{ $vendor->id }}"
-                                                    data-vendor_id="{{ $vendor['vendor_id'] }}>"
-                                                    data-orderId="{{ $order['order_id'] }}>"
+                                                    data-vendor_id="{{ $vendor['vendor_id'] }}"
+                                                    data-orderId="{{ $order['order_id'] }}"
                                                     data-order_id="{{ $order['id'] }}"><svg
                                                         xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                         fill="currentColor" class="bi bi-chat-dots-fill"
@@ -159,7 +159,7 @@
                                                         </div>
 
                                                         <label class="items_price">
-                                                            ({{ $product['product_name'] }})
+                                                            ({{ $product['product_title'] }})
                                                             {{ $clientCurrency->currency->symbol }}{{ decimal_format($product['price']) }}</label>
                                                     </div>
                                                 @endforeach
@@ -286,7 +286,7 @@
 
                                         @if ($vendor['order_status_option_id'] == 1)
                                             @if ($order->vendors->first()->exchanged_of_order)
-                                                <button class="update-status btn-info"
+                                                <button class="update-status-ar btn-info"
                                                     data-full_div="#full-order-div{{ $k }}"
                                                     data-single_div="#single-order-div{{ $k . $ve }}"
                                                     data-count="{{ $ve }}" data-order_id="{{ $order->id }}"
@@ -295,7 +295,7 @@
                                                     data-is_alert="{{ $vendor->isAlert }}"
                                                     data-alert_message="{{ $vendor->alertMessage }}">{{ __('Exchange Accept') }}</button>
                                             @else
-                                                <button class="update-status btn-info"
+                                                <button class="update-status-ar btn-info"
                                                     data-full_div="#full-order-div{{ $k }}"
                                                     data-single_div="#single-order-div{{ $k . $ve }}"
                                                     data-count="{{ $ve }}"
@@ -306,7 +306,7 @@
                                                     data-alert_message="{{ $vendor->alertMessage }}">{{ __('Accept') }}</button>
                                             @endif
                                         @elseif($vendor->order_status_option_id == 2)
-                                            <button class="update-status btn-warning"
+                                            <button class="update-status-ar btn-warning"
                                                 data-full_div="#full-order-div{{ $k }}"
                                                 data-single_div="#single-order-div{{ $k . $ve }}"
                                                 data-count="{{ $ve }}" data-order_id="{{ $order->id }}"
@@ -314,7 +314,7 @@
                                                 data-order_vendor_id="{{ $vendor->id }}"
                                                 data-order_luxury_option="{{ $order->luxury_option_id }}">{{ __('Processing') }}</button>
                                         @elseif($vendor->order_status_option_id == 4)
-                                            <button class="update-status btn-success"
+                                            <button class="update-status-ar btn-success"
                                                 data-full_div="#full-order-div{{ $k }}"
                                                 data-single_div="#single-order-div{{ $k . $ve }}"
                                                 data-count="{{ $ve }}" data-order_id="{{ $order->id }}"
@@ -327,7 +327,7 @@
                                                 @endif
                                             </button>
                                         @elseif($vendor->order_status_option_id == 5)
-                                            <button class="update-status btn-info"
+                                            <button class="update-status-ar btn-info"
                                                 data-full_div="#full-order-div{{ $k }}>"
                                                 data-single_div="#single-order-div{{ $k . $ve }}"
                                                 data-count="{{ $ve }}" data-order_id="{{ $order->id }}"
@@ -341,7 +341,7 @@
                                                     $vendor->order_status_option_id != 3 &&
                                                     $vendor->order_status_option_id != 9))
                                             @if ($order->vendors->first()->exchanged_of_order)
-                                                <button class="update-status btn-danger" id="reject"
+                                                <button class="update-status-ar btn-danger" id="reject"
                                                     data-full_div="#full-order-div{{ $k }}"
                                                     data-single_div="#single-order-div{{ $k . $ve }}"
                                                     data-count="{{ $ve }}"
@@ -349,7 +349,7 @@
                                                     data-vendor_id="{{ $vendor->vendor_id }}" data-status_option_id="3"
                                                     data-order_vendor_id="{{ $vendor->id }}">{{ __('Exchange Reject') }}</button>
                                             @else
-                                                <button class="update-status btn-danger" id="reject"
+                                                <button class="update-status-ar btn-danger" id="reject"
                                                     data-full_div="#full-order-div{{ $k }}"
                                                     data-single_div="#single-order-div{{ $k }}{{ $ve }}"
                                                     data-count="{{ $ve }}"

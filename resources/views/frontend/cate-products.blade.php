@@ -9,6 +9,132 @@
 <style type="text/css">
 .main-menu .brand-logo {display: inline-block;padding-top: 20px;padding-bottom: 20px;}.slick-track{margin-left: 0px;}.product-box .product-detail h4, .product-box .product-info h4{font-size: 16px;}
 </style>
+<style type="text/css">
+    .main-menu .brand-logo {display: inline-block;padding-top: 20px;padding-bottom: 20px;}.slick-track{margin-left: 0px;}.product-box .product-detail h4, .product-box .product-info h4{font-size: 16px;}
+    .main-fillter .side_fillter {
+        background: transparent !important;
+        border-top: 1px solid #D9D9D9;
+        /* margin-top: 18px !important; */
+        overflow-y: auto !important;
+        border-right: 1px solid #D9D9D9;
+        height: 600px;
+        overflow-x: hidden !important;
+    }
+    .p2p-sidebar {
+        padding: 20px;
+    }
+    
+    .p2p-sidebar label.control-label {
+        margin: 10px 0 10px;
+        color: #000;
+        font-size: 18px;
+        font-weight: 500;
+    }
+    .p2p-sidebar .checkbox.checkbox-success {
+        align-items: center;
+        justify-content: flex-start;
+        display: inline-flex;
+        margin-bottom: 10px;
+        width: 100%;
+    }
+    .p2p-sidebar .checkbox.checkbox-success label {
+        margin-bottom: 0;
+        padding-left: 10px;
+    }
+    .p2p-sidebar .form-check-inline label {
+        margin: 0;
+        padding-left: 10px;
+    }
+    .p2p-sidebar .form-check-inline {
+        display: inline-flex;
+        align-items: center;
+        padding-left: 0;
+        margin-right: 0;
+        width: 49%;
+    }
+    .p2p-sidebar .form-check-inline.d-block {
+        width: 100%;
+    }
+    .p2p-sidebar .custom-search {
+        width: 100%;
+        margin-bottom: 14px;
+        background-color: white;
+        border: 1px solid #aaa;
+        border-radius: 4px;
+        cursor: text;
+        height: 40px;
+    }
+    .p2p-sidebar .select2-container{width:100% !important;}
+    .select2-container--default .select2-results>.select2-results__options li {
+        display: block !important;
+        color: #222;
+    }
+    .select2-container--default .select2-selection--multiple .select2-selection__rendered li {
+        list-style: none;
+        color: #000;
+    }
+    .custom_filtter {
+        border-bottom: 1px solid #D9D9D9;
+    }
+    .collection-product-wrapper .product-top-filter{border:none !important;}
+    .custom_filtter ul {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    .custom_filtter ul li span {
+        font-weight: 500;
+        font-size: 20px;
+        line-height: 24px;
+        color: #0A0A0A;
+        position: relative;
+    }
+    /* .custom_filtter ul li span:after {
+        content: '';
+        background: #D9D9D9;
+        height: 1px;
+        position: absolute;
+        left: -49px;
+        width: 37px;
+        bottom: -13px;
+    } */
+    .custom_filtter ul li {
+        flex-grow: 1;
+        min-width: 0;
+        max-width: 100%;
+        line-height: 50px;
+    }
+    .custom_filtter ul li a.active {
+        color: #E9248D;
+    }
+     .custom_filtter ul li a.active:after {
+        content: '';
+        background: #E9248D;
+        width: 50px;
+        height: 2px;
+        position: absolute;
+        left: 0;
+        bottom: -13px;
+    }
+    .custom_filtter ul li a {
+        font-style: normal;
+        font-weight: 400;
+        font-size: 18px;
+        line-height: 22px;
+        color: #6F6F6F;
+        position: relative;
+    }
+    .main-fillter {
+        margin-top: 8px;
+    }
+    .product-image img{
+        height: 200px !important;
+        object-fit: cover;
+    }
+    .irs-to {
+        left: 85% !important;
+    }
+</style>
 <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/price-range.css')}}">
 @endsection
 @section('content')
@@ -54,7 +180,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
                     </div>
                 </div>
             </div>
-            <div class="row mb-5 homepageSix">
+            <div class="row mb-4 homepageSix">
                 <div class="collection-filter col-lg-3 main-fillter">
                         <!-- <ul class="breadcrumb p-0 mb-2 mt-3">
                             <li class="breadcrumb-item align-items-center"><a href="javascript:void(0)">Home <i class="fa fa-angle-right" aria-hidden="true"></i> <span>Pharmacy <i class="fa fa-angle-right" aria-hidden="true"></i>
@@ -149,13 +275,20 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
     @endif
 </script>
 <script>
+    $(document).on("change",".attr_radio", function() {
+        var parentClass = $(this).parent().prop('className');
+        var attr_radio_class = $(this).data('class');
+        $("."+parentClass+" .attr_radio").prop('checked', false);
+        $(this).prop('checked', true);
+    });
+
     $('.js-range-slider').ionRangeSlider({
         type: 'double',
         grid: false,
         min: 0,
-        max: {{ $maxPrice??50000 }},
+        max: {{ $maxPrice??0 }},
         from: 0,
-        to: {{ $maxPrice??50000 }},
+        to: {{ $maxPrice??0 }},
         prefix: " "
     });
     var ajaxCall = 'ToCancelPrevReq';
@@ -181,11 +314,50 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
         filterProducts();
     });
 
+    $('.attr_radio, .dynamic_checkbox, .dropdown_select, .text_field').change(function() {
+        filterProducts();
+    });
+
     function filterProducts(page='', limit=''){
         var brands = [];
         var variants = [];
         var options = [];
         var vendor_id =$("#vendor_id").val();
+        var dropdown_options = {};
+        var dynamic_options = {};
+        var radio_option = {};
+        var checkbox_option_arr = {};
+        var text_field_search = {};
+
+        $('.dropdown_select').each(function(i, obj) {
+            dropdown_options[$(this).data('key')] = $(this).val();
+        });
+        $('.text_field').each(function(i, obj) {
+            text_field_search[$(this).data('key')] = $(this).val();
+        });
+
+        $('.attr_radio').each(function(i, obj){
+            if(this.checked) {
+                radio_option[$(this).data('key')] = $(this).val();
+            }
+        });
+        
+        $('.dynamic_checkbox').each(function(i, obj){
+            
+            var dataType = typeof checkbox_option_arr[$(this).data('key')];
+            if(dataType == 'undefined') {
+                checkbox_option_arr[$(this).data('key')] = [];
+            }
+            if(this.checked) {
+                checkbox_option_arr[$(this).data('key')].push($(this).val());
+            }
+        });
+        
+        dynamic_options['dropdown_options'] = dropdown_options;
+        dynamic_options['radio_option'] = radio_option;
+        dynamic_options['checkbox_option_arr'] = checkbox_option_arr;
+        dynamic_options['text_field_search'] = text_field_search;
+
         $('.productFilter').each(function () {
             var that = this;
             if(this.checked == true){
@@ -200,6 +372,8 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
         });
         var range = $('.rangeSliderPrice').val();
         var order_type = $('.sortingFilter').val();
+        var latitude = $('#latitude').val();
+        var longitude = $('#longitude').val();
         var ajaxData = {
             "_token": "{{ csrf_token() }}",
             "brands": brands,
@@ -208,6 +382,10 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
             "options": options,
             "range": range,
             "order_type" : order_type,
+            "dynamic_options" : dynamic_options,
+            "filter_type" : 1,
+            "latitude" : latitude,
+            "longitude" : longitude
         };
 
         if(limit != ''){

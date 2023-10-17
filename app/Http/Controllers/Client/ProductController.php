@@ -9,7 +9,7 @@ use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, RoleOld as Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole, TollPassOrigin, TravelMode, VehicleEmissionType, Attribute, ProductAttribute,LongTermServiceProductAddons, ProcessorProduct, OrderProduct,DeliverySlot, Pincode};
+use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, RoleOld as Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole, TollPassOrigin, TravelMode, VehicleEmissionType, Attribute, ProductAttribute,LongTermServiceProductAddons, ProcessorProduct, OrderProduct,DeliverySlot, MargProduct, Pincode};
 
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
@@ -20,6 +20,8 @@ use App\Imports\ProductsImport;
 use App\Imports\QrcodesImport;
 use GuzzleHttp\Client as GCLIENT;
 use Carbon\Carbon;
+use App\Jobs\ProductImportCsvJob;
+use Illuminate\Support\Facades\File;
 class ProductController extends BaseController
 {
     use ApiResponser, SquareInventoryManager;
@@ -185,7 +187,7 @@ class ProductController extends BaseController
      */
     public function edit($domain = '', $id)
     {
-        // $this->searchCatalogObjects();
+        // $this->testfun1();
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module', 'is_cab_pooling', 'is_one_push_book_enable','is_service_product_price_from_dispatch']);
 
         $with_array = ['brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles'];
@@ -282,6 +284,7 @@ class ProductController extends BaseController
 
         $otherProducts                      = Product::with('primary')->select('id', 'sku')->where('is_live', 1)->where('id', '!=', $product->id)->where('vendor_id', $product->vendor_id)->get();
         $configData                         = ClientPreference::select('celebrity_check', 'pharmacy_check', 'need_dispacher_ride', 'need_delivery_service', 'enquire_mode','need_dispacher_home_other_service','delay_order','product_order_form','business_type','minimum_order_batch','age_restriction_on_product_mode','need_appointment_service')->first();
+
         $celebrities                        = Celebrity::select('id', 'name')->where('status', '!=', 3)->get();
         $configData->is_cab_pooling         = $getAdditionalPreference['is_cab_pooling'];
         $configData->is_one_push_book_enable= $getAdditionalPreference['is_one_push_book_enable'];
@@ -367,8 +370,13 @@ class ProductController extends BaseController
         }
         //mohit sir branch code added by sohail
         $processorProduct = ProcessorProduct::where('product_id', $product->id)->first();
+        $margProduct = MargProduct::where('product_id', $product->id)->first();
+        if(@$margProduct && isset($margProduct))
+        {
+            $margProduct = $margProduct->toArray()??[];
+        }
 
-        return view('backend/product/edit', ['delivery_slots'=> $delivery_slots, 'product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'processorProduct' => $processorProduct,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value, 'attribute_latitude' => $attribute_latitude, 'attribute_longitude' => $attribute_longitude]);
+        return view('backend/product/edit', ['delivery_slots'=> $delivery_slots, 'product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'processorProduct' => $processorProduct,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value, 'attribute_latitude' => $attribute_latitude, 'attribute_longitude' => $attribute_longitude,'margProduct' => $margProduct??[]]);
     }
 
     /**
@@ -412,7 +420,11 @@ class ProductController extends BaseController
             if ($product->is_live == 0) {
                 $product->publish_at = ($request->is_live == 1) ? date('Y-m-d H:i:s') : '';
             }
-            foreach ($request->only('country_origin_id', 'weight', 'weight_unit', 'is_live', 'brand_id') as $k => $val) {
+            // dd($request->all());
+            // foreach ($request->only('country_origin_id', 'weight', 'weight_unit', 'is_live', 'brand_id', 'length', 'breadth', 'height', 'packaging_weight', 'packaging_weight_unit', 'packaging_length', 'packaging_breadth', 'packaging_height') as $k => $val) {
+            //     $product->{$k} = $val;
+            // }
+            foreach ($request->only('country_origin_id', 'weight', 'weight_unit', 'is_live', 'brand_id', 'length', 'breadth', 'height', 'packaging_weight', 'packaging_weight_unit', 'packaging_length', 'packaging_breadth', 'packaging_height') as $k => $val) {
                 $product->{$k} = $val;
             }
             if( clientPrefrenceModuleStatus('p2p_check') || is_attribute_enabled() ) {
@@ -470,7 +482,7 @@ class ProductController extends BaseController
                 }
 
             }
-
+          
             $product->sku = $request->sku;
             $product->markup_price = $request->markup_price;
             $product->url_slug = $request->url_slug;
@@ -507,6 +519,7 @@ class ProductController extends BaseController
             $product->minimum_order_count        = $request->minimum_order_count??0;
             $product->batch_count        = $request->batch_count??1;
             $product->return_days        = $request->return_days??0;
+            $product->calories        = $request->calories;
 
             // product pickup date by vendor vendor FramMeat priyal by sohail
             $product->product_pickup_date  = isset($request->product_pickup_date) ? $request->product_pickup_date : '';
@@ -804,7 +817,6 @@ class ProductController extends BaseController
             return redirect()->back()->with('toaster', $toaster);
         } catch (\Exception $e) {
             DB::rollback();
-            \Log::info($e->getMessage());
             $toaster = $this->errorToaster(__('ERROR'),$e->getMessage() );
             return redirect()->back()->with('toaster', $toaster);
 
@@ -858,6 +870,8 @@ class ProductController extends BaseController
     /**      Make variant rows          */
     public function makeVariantRows(Request $request)
     {
+
+        // dd($request->all());
         //return $request->all();
         $multiArray = array();
         $variantNames = array();
@@ -1188,6 +1202,48 @@ class ProductController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    public function importCsvNew(Request $request){
+        $validated = $request->validate([
+            'product_excel' => 'required|mimes:csv,txt'
+        ]);
+        $vendor_id = $request->vendor_id;
+        $fileModel = new CsvProductImport;
+        if($request->file('product_excel')) {
+            $fileName = time().'_'.$request->file('product_excel')->getClientOriginalName();
+            $filePath = $request->file('product_excel')->storeAs('csv_products', $fileName, 'public');
+            $fileModel->vendor_id = $request->vendor_id;
+            $fileModel->name = $fileName;
+            $fileModel->path = 'storage/' . $filePath;
+            $fileModel->status = 1;
+            $fileModel->save();
+            //  $files = CsvProductImport::where('status', 1)->where('type', 0)->first();
+            //foreach ($files as $file) {
+            if (File::exists($fileModel->storage_url)) {
+                $csv = file($fileModel->storage_url);
+                $chunks = array_chunk($csv, 1000);
+                $header = [];
+                $flag = 0;
+                foreach ($chunks as $key => $chunk) {
+                    $data = array_map('str_getcsv', $chunk);
+                    if ($key == 0) {
+                        $header = $data[0];
+                        unset($data[0]);
+                    }
+                    $flag = ProductImportCsvJob::dispatch($fileModel->vendor_id, $fileModel->id, json_encode($data), $header);
+                }
+                if ($flag) {
+                    unlink($fileModel->storage_url);
+                }
+            }
+            //  }
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Product import file uploaded successfully!'
+            ]);
+        }
+    }
+    
     public function importCsv(Request $request){
         $validated = $request->validate([
             'product_excel' => 'required|mimes:csv,txt'
@@ -1237,27 +1293,22 @@ class ProductController extends BaseController
       public function getDispatcherTags($vendor_id){
         try {
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
-                if ($dispatch_domain && $dispatch_domain != false) {
-
-                    $unique = Auth::user()->code;
-                    $email =  $unique.$vendor_id."_royodispatch@dispatch.com";
-
-                    $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
-                                                        'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
-                                                        'content-type' => 'application/json']
-                                                            ]);
-                            $url = $dispatch_domain->pickup_delivery_service_key_url;
-                            $res = $client->get($url.'/api/get-agent-tags?email_set='.$email);
-                            $response = json_decode($res->getBody(), true);
-                            if($response && $response['message'] == 'success'){
-                                return $response['tags'];
-                            }
-
+            if ($dispatch_domain && $dispatch_domain != false) {
+                $unique = Auth::user()->code;
+                $email =  $unique.$vendor_id."_royodispatch@dispatch.com";
+                $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
+                                                    'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
+                                                    'content-type' => 'application/json']
+                                                        ]);
+                $url = $dispatch_domain->pickup_delivery_service_key_url;
+                $res = $client->get($url.'/api/get-agent-tags?email_set='.$email);
+                $response = json_decode($res->getBody(), true);
+                if($response && $response['message'] == 'success'){
+                    return $response['tags'];
                 }
             }
-            catch(\Exception $e){
-
-            }
+        }catch(\Exception $e){
+        }
     }
 
     public function getDeliveryDispatcherTags($vendor_id)
@@ -1321,7 +1372,6 @@ class ProductController extends BaseController
                                 
                                 $retResponse['tags'] = $response['tags'];
                             }
-            //               // Log::info($response);
                 }
                 return $retResponse;
             }
@@ -1350,11 +1400,9 @@ class ProductController extends BaseController
                             if($response && $response['message'] == 'success'){
                                 return $response['tags'];
                             }
-            //               // Log::info($response);
                 }
             }
             catch(\Exception $e){
-                //// Log::info($e->getMessage());
             }
     }
     # check if last mile delivery on

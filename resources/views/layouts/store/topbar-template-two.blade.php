@@ -51,7 +51,7 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                     <ul class="header-dropdown">
                         <!-- <li class="mobile-wishlist d-inline d-sm-none">
                             <a href="{{route('user.wishlists')}}">
-                                <i class="fa fa-heart" aria-hidden="true"></i>
+                                <i class="fa fa-heart-o wishListCount" aria-hidden="true"></i>
                             </a>
                         </li> -->
                        
@@ -201,10 +201,17 @@ $pages = \App\Models\Page::with(['translations' => function($q) {$q->where('lang
                             @endif
                         </ul>
                     </li>
+                    @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
+                    <li class="add_post"><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn">
+                        <span>
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                            {{ __('') }}</span>
+                        </a></li>
+                    @endif
                     @if($client_preference_detail->show_wishlist == 1)
                     <li class="mobile-wishlist d-inline d-sm-none">
                         <a href="{{route('user.wishlists')}}">
-                            <i class="fa fa-heart" aria-hidden="true"></i>
+                            <i class="fa fa-heart-o wishListCount"  aria-hidden="true"></i>
                         </a>
                     </li>
                     @endif

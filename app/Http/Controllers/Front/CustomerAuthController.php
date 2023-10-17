@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AppStyling, UserRegistrationDocuments, AppStylingOption,VendorCategory, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,PermissionsOld, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page,UserDocs,WebStylingOption,Type, VendorAdditionalInfo};
+use App\Models\{AllergicItem, AppStyling, UserRegistrationDocuments, AppStylingOption,VendorCategory, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,PermissionsOld, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page,UserDocs,WebStylingOption,Type, UserAllergicItem, VendorAdditionalInfo};
 
 use Kutia\Larafirebase\Facades\Larafirebase;
 use App\Http\Controllers\Client\VendorController;
@@ -32,6 +32,8 @@ use Math;
 use SimpleXMLElement;
 use Log;
 use App\Http\Traits\ProductActionTrait;
+use App\Observers\OrderObserver;
+use App\Observers\UserObserver;
 
 class CustomerAuthController extends FrontController
 {
@@ -136,10 +138,13 @@ class CustomerAuthController extends FrontController
         }else{
             $register_page = "account.registernew";
         }
+        
+        $allergic_items = AllergicItem::get();
+        //echo $register_page; die;
         if (!Session::get('referrer')) {
-            return view('frontend.'.$register_page)->with(['navCategories' => $navCategories,'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents]);
+            return view('frontend.'.$register_page)->with(['navCategories' => $navCategories,'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents,'allergic_items' => $allergic_items]);
         } else {
-            return view('frontend.account.'.$register_page)->with(['navCategories' => $navCategories, 'code' => Session::get('referrer'),'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents]);
+            return view('frontend.account.'.$register_page)->with(['navCategories' => $navCategories, 'code' => Session::get('referrer'),'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents,'allergic_items' => $allergic_items]);
         }
     }
 
@@ -221,7 +226,7 @@ class CustomerAuthController extends FrontController
         try {
             $phonenumber= str_replace('-', '', $req->phone_number);
             $req->phone_number = str_replace(' ', '', $phonenumber);
-            if( (empty($req->email)) && (empty($req->phone_number)) ){
+            if( (empty($req->email)) && (empty($req->phone_number)) ) {
                 $validator = $req->validate([
                     'email'  => 'required',
                     'phone_number'  => 'required|unique:users'
@@ -229,6 +234,12 @@ class CustomerAuthController extends FrontController
                     "email.required" => __('The email field is required.'),
                     "phone_number.required" => __('The phone number field is required.'),
                 ]);
+                if($req->dialCode == 91) {
+                    $validator = $req->validate([
+                        'phone_number'  => 'numeric|min:10|max:10'
+                    ]);
+                }
+                
             }
             else{
 
@@ -246,6 +257,9 @@ class CustomerAuthController extends FrontController
                     ]);
                 }
             }
+            
+            $getAdditionalPreference = getAdditionalPreference(['is_user_pre_signup']);
+            
             $user = new User();
             $county = Country::where('code', strtoupper($req->countryData))->first();
             $client_timezone = Client::where('id', '>', 0)->value('timezone');
@@ -257,6 +271,14 @@ class CustomerAuthController extends FrontController
             $user->status = 1;
             $user->role_id = 1;
             $user->name = $req->name;
+            
+            if(isset($getAdditionalPreference) && ($getAdditionalPreference['is_user_pre_signup'] == 1))
+            {
+                $user->is_presignup = 1;
+            }else{
+                $user->is_presignup = 0;
+                
+            }
             $user->email = $email;
             $user->is_email_verified = 0;
             $user->is_phone_verified = 0;
@@ -268,8 +290,25 @@ class CustomerAuthController extends FrontController
             $user->phone_token_valid_till = $sendTime;
             $user->email_token_valid_till = $sendTime;
             $user->timezone = $client_timezone;
+
+            if(session()->get('company_id')){
+                $user->company_id = base64_decode(session()->get('company_id'));
+            }
+
             $user->password = Hash::make($req->password);
+            $user->custom_allergic_items = $req->custom_allergic_items ?? null;
+
             $user->save();
+
+            if ($req->allergic_item_ids && count($req->allergic_item_ids)) {
+                foreach($req->allergic_item_ids as $key => $id){
+                    $data[$key] = [
+                        'user_id' => $user->id,
+                        'allergic_item_id' => $id,
+                    ];
+                }
+                UserAllergicItem::insert($data);
+            }
 
             // Save User Kyc Details
             if(@$req->kyc){
@@ -376,14 +415,8 @@ class CustomerAuthController extends FrontController
                     $vendor->phone_no = $user->phone_number ?? '';
                     $vendor->slug = Str::slug($user->name, "-");
                     $vendor->save();
-
-                    $permission_details = PermissionsOld::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
-
                     UserVendor::create(['user_id' => $user->id, 'vendor_id' => $vendor->id]);
-
-                    foreach ($permission_details as $permission_detail) {
-                        UserPermissions::create(['user_id' => $user->id, 'permission_id' => $permission_detail->id]);
-                    }
+                    $user->createPermissionsUser();
                     $p2p_type = Type::where('service_type', 'p2p')->first();
                     if( !empty($p2p_type) ) {
                         $category_id = Category::where('type_id', $p2p_type->id)->get();
@@ -519,6 +552,9 @@ class CustomerAuthController extends FrontController
                 $this->LoginActionRecentView($userid);
             }
             
+            //Login Observer
+            UserObserver::signIn(auth()->user());
+            
             $message = ('Logged in successfully');
             $redirect_to = '';
      
@@ -542,7 +578,6 @@ class CustomerAuthController extends FrontController
 
     /*** Login user via username ***/
     public function loginViaUsername(Request $request, $domain = ''){
-       
         try{
             $errors = array();
 
@@ -581,16 +616,16 @@ class CustomerAuthController extends FrontController
                 $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
                 if(!$user){
                     if(session()->get("locale") == "ar"){
-                        return $this->errorResponse(__('أنت غير مسجل معنا. يرجى الاشتراك.'), 404);
+                        return $this->errorResponse(__('أنت غير مسجل معنا. يرجى الاشتراك'), 404);
                     }
-                   // return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404, ['user_exists' => false]);
+                    return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404);
 
-                    $registerUser = $this->registerViaPhone($request)->getData();
+                  /*  $registerUser = $this->registerViaPhone($request)->getData();
                     if($registerUser->status == 'Success'){
                         $user = $registerUser->data;
                     }else{
                         return $this->errorResponse(__('Invalid data'), 404);
-                    }
+                    }*/
                 }else{
                     $user->phone_token = $phoneCode;
                     $user->phone_token_valid_till = $sendTime;
@@ -649,6 +684,10 @@ class CustomerAuthController extends FrontController
                 }
                 $username = str_ireplace(' ', '', $username);
                 if (Auth::attempt(['email' => $username, 'password' => $request->password, 'status' => 1])) {
+
+                    //Login Observer
+                     UserObserver::signIn(auth()->user());
+
                     $userid = Auth::id();
                     $Authuser = Auth::user();
                     $update_last_login = User::where('id',$userid)->update(['last_login_at' => Carbon::now()->toDateTimeString()]);

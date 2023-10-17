@@ -154,12 +154,23 @@ $preference = $client_preference_detail;
                                                     <a href="{{route('user.logout')}}" data-lng="es">{{__('Logout')}}</a>
                                                 </li>
                                             @else
-                                            <li>
-                                                <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
-                                            </li>
-                                            <li>
-                                                <a href="{{route('customer.register')}}" data-lng="es">{{__('Register')}}</a>
-                                            </li>
+                                              @php
+                                $getAdditionalPreference = getAdditionalPreference(['is_user_pre_signup']);
+                                @endphp
+                                @if(isset($getAdditionalPreference) && ($getAdditionalPreference['is_user_pre_signup'] == 1))
+                                
+                                 <li>
+                                    <a href="{{route('customer.register')}}" data-lng="es">{{__('Pre Signup')}}</a>
+                                </li>
+                               @else
+                                  
+                                <li>
+                                    <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
+                                </li>
+                                <li>
+                                    <a href="{{route('customer.register')}}" data-lng="es">{{__('Register')}}</a>
+                                </li>
+                                @endif
                                             @endif
                                         </ul>
                                     </li>
@@ -378,7 +389,7 @@ $preference = $client_preference_detail;
                 @if($client_preference_detail->show_wishlist == 1)
                 <li class="mobile-wishlist d-inline d-sm-none">
                     <a href="{{route('user.wishlists')}}">
-                        <i class="fa fa-heart" aria-hidden="true"></i>
+                        <i class="fa fa-heart-o wishListCount" aria-hidden="true"></i>
                     </a>
                 </li>
                 @endif

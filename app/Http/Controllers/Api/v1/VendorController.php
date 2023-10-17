@@ -560,7 +560,7 @@ class VendorController extends BaseController{
                                 $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                             },
                             'variant' => function ($q) use ($langId) {
-                                $q->select('id', 'sku', 'product_id', 'title', 'quantity', 'price','markup_price', 'barcode');
+                            $q->select('id', 'sku', 'product_id', 'title', 'quantity', 'price','markup_price', 'barcode', 'compare_at_price');
                             // $q->groupBy('product_id');
                             }, 'variant.checkIfInCartApp', 'checkIfInCartApp',
                         ])->select('id', 'sku', 'description', 'requires_shipping', 'sell_when_out_of_stock', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'Requires_last_mile', 'averageRating', 'inquiry_only');
@@ -1392,15 +1392,22 @@ class VendorController extends BaseController{
                 if($client_preference->delivery_check == 1){$count++;}
             }
             if($count > 1){
-                $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 'on') ? 1 : 0;
-                $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 'on') ? 1 : 0;
-                $vendor->delivery = ($request->has('delivery') && $request->delivery == 'on') ? 1 : 0;
+                $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 1) ? 1 : 0;
+                $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 1) ? 1 : 0;
+                $vendor->delivery = ($request->has('delivery') && $request->delivery == 1) ? 1 : 0;
             }
             else{
                 $vendor->dine_in = $client_preference->dinein_check == 1 ? 1 : 0;
                 $vendor->takeaway = $client_preference->takeaway_check == 1 ? 1 : 0;
                 $vendor->delivery = $client_preference->delivery_check == 1 ? 1 : 0;
             }
+
+            $vendor->rental = ($client_preference->rental_check == 1 && $request->rental == 1) ? 1 : 0;
+            $vendor->appointment = ($client_preference->appointment_check == 1 && $request->appointment == 1) ? 1 : 0;
+            $vendor->p2p = ($client_preference->p2p_check == 1 && $request->p2p == 1) ? 1 : 0;
+            $vendor->pick_drop = ($client_preference->pick_drop_check == 1 && $request->pick_drop == 1) ? 1 : 0;
+            $vendor->on_demand = ($client_preference->on_demand_check == 1 && $request->on_demand == 1) ? 1 : 0;
+
             $vendor->logo = 'default/default_logo.png';
             $vendor->banner = 'default/default_image.png';
             if ($request->hasFile('upload_logo')) {
@@ -2087,7 +2094,7 @@ class VendorController extends BaseController{
 
             $vendor->is_show_category = ($vendor->vendor_templete_id == 2 || $vendor->vendor_templete_id == 4) ? 1 : 0;
 
-            $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $vendor->id)->where('status', 1)->get();
+            $vendorCategories = VendorCategory::with('category.translation_one')->where('vendor_id', $vendor->id)->where('status', 1)->groupBy('category_id')->get();
             $categoriesList = '';
             foreach ($vendorCategories as $key => $category) {
                 if ($category->category) {
@@ -2313,7 +2320,7 @@ class VendorController extends BaseController{
                         'tags.tag.translations' => function ($q) use ($langId) {
                             $q->where('language_id', $langId);
                         }
-                    ])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id', 'products.minimum_order_count', 'products.batch_count','products.is_recurring_booking')
+                    ])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id', 'products.minimum_order_count', 'products.batch_count','products.is_recurring_booking','products.inquiry_only')
                     ->where('products.vendor_id', $vid)
                     ->where('products.is_live', 1)->withCount(['variantSet','addOn'])->paginate($limit, $page);
                 if(!empty($products)){

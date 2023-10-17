@@ -304,7 +304,9 @@
             autocomplete[name] = new google.maps.places.Autocomplete(document.getElementById(name + "-address"), {
                 types: ['geocode']
             });
-
+            if(is_map_search_perticular_country){
+                autocomplete[name].setComponentRestrictions({'country': [is_map_search_perticular_country]});
+            }
             google.maps.event.addListener(autocomplete[name], 'place_changed', function() {
                 var place = autocomplete[name].getPlace();
                 if (!place.geometry) {
@@ -341,6 +343,7 @@
                         }
                         if (mapAddress.types[0] == "administrative_area_level_1") {
                             document.getElementById('state').value = mapAddress.long_name;
+                            document.getElementById('state_code').value = mapAddress.short_name;
                         }
                         if (mapAddress.types[0] == "postal_code") {
                             document.getElementById('pincode').value = mapAddress.long_name;
@@ -349,6 +352,7 @@
                         }
                         if (mapAddress.types[0] == "country") {
                             document.getElementById('country').value = mapAddress.long_name.toUpperCase();
+                            document.getElementById('country_code').value = mapAddress.short_name;
 
                         }
                     }
@@ -673,7 +677,15 @@
             contentType: false,
             processData: false,
             success: function(response) {
-
+                if (response.status == 'error') {
+                    Swal.fire({
+                        title: "Warning!",
+                        text: response.message,
+                        icon: "Warning!",
+                        button: "OK",
+                    });
+                return 
+                }
                 if (response.status == 'success') {
                     $(".modal .close").click();
                     location.reload();
@@ -734,6 +746,15 @@
             contentType: false,
             processData: false,
             success: function(response) {
+                if (response.status == 'error') {
+                    Swal.fire({
+                        title: "Warning!",
+                        text: response.message,
+                        icon: "Warning!",
+                        button: "OK",
+                    });
+                return 
+                }
                 if (response.status == 'success') {
                     $(".modal .close").click();
                     location.reload();

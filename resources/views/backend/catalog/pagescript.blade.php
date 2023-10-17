@@ -128,13 +128,14 @@
     $(document).on('click', '.addOptionRow-Add', function(e) {
         var d = new Date();
         var n = d.getTime();
-        var $tr = $('.optionTableAdd tbody>tr:first').next('tr');
-        console.log('asasd');
+        var $tr = $('.optionTableAddVarient tbody tr').next('tr');
         var $clone = $tr.clone();
         $clone.find(':text').val('');
+        $clone.find(':hidden').val('');
         $clone.find('.hexa-colorpicker').attr("id", "hexa-colorpicker-" + n);
         $clone.find('.lasttd').html('<a href="javascript:void(0);" class="action-icon deleteCurRow"> <i class="mdi mdi-delete"></i></a>');
-        $('.optionTableAdd').append($clone);
+        $('.optionTableAddVarient').append($clone);
+        $('.hexa-colorpicker').colorpicker();
         var picker = new jscolor("#hexa-colorpicker-" + n, options);
     });
 

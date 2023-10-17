@@ -22,7 +22,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Front\CustomerAuthController;
 use App\Http\Requests\{LoginRequest, SignupRequest};
 use App\Http\Controllers\Client\VendorController;
-use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate, SmsTemplate, UserRegistrationDocuments,UserDocs, Vendor, PermissionsOld, UserPermissions, Type, Category, VendorCategory,UserAddress,UserPaymentCards};
+use App\Models\{User,UserVendor, Client, ClientPreference, BlockedToken, Otp, Country, ShowSubscriptionPlanOnSignup, UserDevice, UserVerification, ClientLanguage, CartProduct, Cart, UserRefferal, EmailTemplate, SmsTemplate, UserRegistrationDocuments,UserDocs, Vendor, PermissionsOld, UserPermissions, Type, Category, SubscriptionInvoicesUser, VendorCategory,UserAddress,UserPaymentCards,UserAllergicItem};
 use Log;
 use App\Http\Traits\CustomerSignupSuccessEmailTrait;
 use App\Http\Traits\InfluencerTrait;
@@ -336,32 +336,24 @@ class AuthController extends BaseController
                 $rules[$user_registration_document->primary->slug] = 'required';
             }
         }
-
-        $validator = Validator::make($signReq->all(), $rules);
-
+        
         if( (empty($signReq->email)) && (empty($signReq->phone_number)) ){
-            $validator = Validator::make($signReq->all(), [
-                'email'  => 'required',
-                'phone_number'  => 'required'
-            ],[
-                "email.required" => __('The email or phone number field is required.'),
-                "phone_number.required" => __('The email or phone number field is required.'),
-            ]);
+            $rules['email']  = 'required';
+            $rules['phone_number']  = 'required';
         }
         else{
             if(!empty($signReq->email) && ($preferences->verify_email == 0)){
-                $validator = Validator::make($signReq->all(), [
-                    'email'  => 'email|unique:users'
-                ]);
+                $rules['email'] = 'email|unique:users';
             }
-
+            
             if(!empty($signReq->phone_number) && ($preferences->verify_phone == 0)){
-
-                $validator = Validator::make($signReq->all(), [
-                    'phone_number' => 'string|min:7|max:15|unique:users'
-                ]);
+                $rules['phone_number'] = 'string|min:7|max:15|unique:users';
             }
         }
+        $message['email.required'] = __('The email or phone number field is required.');
+        $message['phone_number.required'] = __('The email or phone number field is required.');
+        $validator = Validator::make($signReq->all(), $rules,$message);
+
         if ($validator->fails()) {
             foreach ($validator->errors()->toArray() as $error_key => $error_value) {
                 $errors['error'] = __($error_value[0]);
@@ -499,10 +491,47 @@ class AuthController extends BaseController
         ])->get();
         $token1->setClaim('user_id', $user->id);
         $user->auth_token = $token;
+        $user->custom_allergic_items = $signReq->custom_allergic_items ?? null;
         $user->save();
+
+        if ($signReq->allergic_item_ids && count($signReq->allergic_item_ids)) {
+            foreach($signReq->allergic_item_ids as $key => $id){
+                $data[$key] = [
+                    'user_id' => $user->id,
+                    'allergic_item_id' => $id,
+                ];
+            }
+            UserAllergicItem::insert($data);
+        }
+
         if ($user->id > 0) {
             if ($signReq->refferal_code) {
                 $refferal_amounts = ClientPreference::first();
+
+                $dispatch_domain = $this->checkIfLastMileOn();
+                $postdata = [
+                    'refferal_code' => $signReq->refferal_code,
+                    'user_name' => $user->name ?? ''
+                ];
+                if ($dispatch_domain && $dispatch_domain != false)
+                {
+                    $client = new GCLIENT(['headers' => [
+                        'personaltoken' => $dispatch_domain->pickup_delivery_service_key,
+                        'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
+                        'content-type' => 'application/json']
+                    ]);
+                    $url = $dispatch_domain->pickup_delivery_service_key_url;
+                    $res = $client->post($url.'/api/auth/get-driver-refferal',
+                        ['form_params' => ($postdata)]
+                    );
+                    $response = json_decode($res->getBody(), true);
+                    if($response && $response['message'] == 'success'){
+                        $refferal_amount = $response['refferal_amount'];
+                        $wallet->deposit($refferal_amount, ['You used referal code of <b>' . $response['refer_by_name'] . '</b>']);
+                        $wallet->balance;
+                    }
+                }
+
                 if ($refferal_amounts) {
                     if ($refferal_amounts->reffered_by_amount != null && $refferal_amounts->reffered_to_amount != null) {
                         $reffered_by = UserRefferal::where('refferal_code', $signReq->refferal_code)->first();
@@ -511,10 +540,10 @@ class AuthController extends BaseController
                         if ($user_refferd_by) {
                             //user reffered by amount
                             $wallet_user_reffered_by = $user_refferd_by->wallet;
-                            $wallet_user_reffered_by->deposit($refferal_amounts->reffered_by_amount, ['Referral code used by <b>' . $signReq->name . '</b>']);
+                            $wallet_user_reffered_by->depositFloat($refferal_amounts->reffered_by_amount, ['Referral code used by <b>' . $signReq->name . '</b>']);
                             $wallet_user_reffered_by->balance;
                             //user reffered to amount
-                            $wallet->deposit($refferal_amounts->reffered_to_amount, ['You used referal code of <b>' . $user_refferd_by->name . '</b>']);
+                            $wallet->depositFloat($refferal_amounts->reffered_to_amount, ['You used referal code of <b>' . $user_refferd_by->name . '</b>']);
                             $wallet->balance;
                         }
                     }
@@ -633,14 +662,9 @@ class AuthController extends BaseController
                 $vendor->phone_no = $user->phone_number ?? '';
                 $vendor->slug = Str::slug($user->name, "-");
                 $vendor->save();
-            
-                $permission_details = PermissionsOld::whereIn('id', [1,2,3,12,17,18,19,20,21])->get();
-            
+                        
                 UserVendor::create(['user_id' => $user->id, 'vendor_id' => $vendor->id]);
-            
-                foreach ($permission_details as $permission_detail) {
-                    UserPermissions::create(['user_id' => $user->id, 'permission_id' => $permission_detail->id]);
-                }
+                $user->createPermissionsUser();
 
                 $response['vendor_id'] = $vendor->id;
                 $p2p_type = Type::where('service_type', 'p2p')->first();
@@ -1156,14 +1180,16 @@ class AuthController extends BaseController
                 $user = User::where('dial_code', $dialCode)->where('phone_number', $phone_number)->first();
                // pr($user->toArray());
                 if (!$user) {
-                    //return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404, ['user_exists' => false]);
-
-                    $registerUser = $this->registerViaPhone($request)->getData();
+                    if(session()->get("locale") == "ar"){
+                        return $this->errorResponse(__('أنت غير مسجل معنا. يرجى الاشتراك'), 404);
+                    }
+                    return $this->errorResponse(__('You are not registered with us. Please sign up.'), 404);
+                 /*   $registerUser = $this->registerViaPhone($request)->getData();
                     if ($registerUser->status == 'Success') {
                         $user = $registerUser->data;
                     } else {
                         return $this->errorResponse(__('Invalid data'), 404);
-                    }
+                    }*/
                 } else {
                     $user->phone_token = $phoneCode;
                     $user->phone_token_valid_till = $sendTime;
@@ -1331,6 +1357,7 @@ class AuthController extends BaseController
                 $data['callingCode'] = $user->country ? $user->country->phonecode : '';
                 $data['refferal_code'] = $user_refferal ? $user_refferal->refferal_code : '';
                 $data['user_document'] = $user_registration_documents;
+                $data['user_subscription'] = SubscriptionInvoicesUser::where('status_id',1)->where('end_date','>=',now()->format('Y-m-d'))->count();
                 return response()->json(['data' => $data]);
             }
             else {
@@ -1456,10 +1483,10 @@ class AuthController extends BaseController
                             if ($user_refferd_by) {
                                 //user reffered by amount
                                 $wallet_user_reffered_by = $user_refferd_by->wallet;
-                                $wallet_user_reffered_by->deposit($refferal_amounts->reffered_by_amount, ['Referral code used by <b>' . $req->name . '</b>']);
+                                $wallet_user_reffered_by->depositFloat($refferal_amounts->reffered_by_amount, ['Referral code used by <b>' . $req->name . '</b>']);
                                 $wallet_user_reffered_by->balance;
                                 //user reffered to amount
-                                $wallet->deposit($refferal_amounts->reffered_to_amount, ['You used referal code of <b>' . $user_refferd_by->name . '</b>']);
+                                $wallet->depositFloat($refferal_amounts->reffered_to_amount, ['You used referal code of <b>' . $user_refferd_by->name . '</b>']);
                                 $wallet->balance;
                             }
                         }
@@ -1471,8 +1498,6 @@ class AuthController extends BaseController
                 return $this->errorResponse('Something went wrong. Please try again.', 422);
             }
         } catch (\Exception $e) {
-           // Log::info($e);
-           // Log::info($e->getMessage());
             return $this->errorResponse($e->getMessage(), 422);
         }
     }
@@ -1779,4 +1804,14 @@ class AuthController extends BaseController
         ]);
         // pr($VendorConfigrespons);
     }
+
+    public function checkIfLastMileOn()
+    {
+        $preference = ClientPreference::first();
+        if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+            return $preference;
+        else
+            return false;
+    }
+
 }

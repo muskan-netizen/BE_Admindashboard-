@@ -222,10 +222,7 @@ class ProductsImport implements ToCollection
 				if (!empty($data)) {
 				    foreach ($data as $da) {
 				        // array_map("utf8_encode", $da);
-				        $da[2] = str_replace("","’",$da[2]);
-				        \Log::info("sku query ". $da[0]);
-				        \Log::info(Product::where('sku', $da[0])->exists());
-				        
+				        $da[2] = str_replace("","’",$da[2]);				        
 				        if (!Product::where('sku', $da[0])->exists()) {
 				            $brand_id = null;
 				            $tax_category_id = null;
@@ -256,24 +253,6 @@ class ProductsImport implements ToCollection
 				                ->where('category_translations.name', 'LIKE', $category);
 				            })->where('vendor_id', $this->vendor_id)->first();
 				            
-				            \Log::info(json_encode([
-				                'type_id' => 1,
-				                'sku' => $da[0],
-				                'is_featured' => 0,
-				                'is_physical' => 0,
-				                'has_inventory' => 0,
-				                'url_slug' => $da[0],
-				                'brand_id' => $brand_id,
-				                'requires_shipping' => 0,
-				                'Requires_last_mile' => 0,
-				                'sell_when_out_of_stock' => 0,
-				                'vendor_id' => $this->vendor_id,
-				                'category_id' =>$category->category_id,
-				                'tax_category_id' => $tax_category_id,
-				                'title' => ($da[1] == "") ? "" : $da[1],
-				                'is_live' => ($da[3] == 'TRUE') ? 1 : 0,
-				                'body_html' => ($da[2] == "") ? "" : $da[2],
-				            ]));
 				            
 				            $product = Product::insertGetId([
 				                'type_id' => 1,
@@ -424,7 +403,6 @@ class ProductsImport implements ToCollection
 				                }
 				            }
 				            else{
-				                \Log::info("sku old ".$da[0]);
 				                $proVariant = new ProductVariant();
 				                $proVariant->sku = $da[0];
 				                $proVariant->product_id = $product;
@@ -484,7 +462,7 @@ class ProductsImport implements ToCollection
 				                ->where('cl.is_active', 1)
 				                ->where('category_translations.name', 'LIKE', $category);
 				            })->where('vendor_id', $this->vendor_id)->first();
-				            \Log::info("new new ");
+				            
 				            if(empty($category)){
 				                
 				            }
@@ -621,7 +599,7 @@ class ProductsImport implements ToCollection
 				}
         	} catch(\Exception $ex){
         	    $error[] = "Other: " .$ex->getMessage();
-        	    //\Log::info($ex->getMessage()."".$ex->getLine());
+				\Log::info($ex->getMessage()."".$ex->getLine());
         	}
 			$vendor_csv = CsvProductImport::where('vendor_id', $this->vendor_id)->where('id', $this->csv_product_import_id)->first();
 			if (!empty($error)) {
@@ -633,7 +611,7 @@ class ProductsImport implements ToCollection
 			$vendor_csv->save();
         } catch(\Exception $ex){
             $error[] = "Other: " .$ex->getMessage();
-            //\Log::info($ex->getMessage()."".$ex->getLine());
+			\Log::info($ex->getMessage()."".$ex->getLine());
         }
 	}
 	private function generateBarcodeNumber()

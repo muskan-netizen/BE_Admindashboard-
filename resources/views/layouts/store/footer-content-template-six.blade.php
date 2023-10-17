@@ -23,7 +23,7 @@ $applocale = session()->get('applocale');
 @if((\Request::route()->getName() != 'customer.login') && (\Request::route()->getName() != 'customer.register') && (\Request::route()->getName() != 'user.verify'))
 <footer id="footer" class="footer-light al_footer_template_six">
    <section class="section-b-space py-md-5 pt-3 pb-0">
-      <div class="container">
+      <div class="container-fluid px-4">
          <div class="row footer-theme partition-f">
             @if($client_preference_detail->show_contact_us == 1)
             <div class="col-12 d-block d-md-none">

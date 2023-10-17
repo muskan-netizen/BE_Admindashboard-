@@ -194,7 +194,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                 @if($client_preference_detail->show_wishlist == 1)
                 <li class="mobile-wishlist d-inline d-sm-none">
                     <a href="{{route('user.wishlists')}}">
-                        <i class="fa fa-heart" aria-hidden="true"></i>
+                        <i class="fa fa-heart-o wishListCount" aria-hidden="true"></i>
                     </a>
                 </li>
                 @endif
@@ -231,6 +231,14 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
 
 <div class="al_mobile_menu al_new_mobile_header">
                 <div class="al_new_cart">
+                    <div class="d-flex">
+                    @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
+                    <li class="add_post"><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn">
+                        <span>
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                            {{ __('Add Post') }}</span>
+                        </a></li>
+                    @endif
                     @if($client_preference_detail->cart_enable == 1)
                     <div class="onhover-dropdown_al onhover-div mobile-cart">
                         <a href="{{route('showCart')}}" style="position: relative">
@@ -240,6 +248,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                         <ul class="show-div shopping-cart"></ul>
                     </div>
                     @endif
+                </div>
                 </div>
                 <a class="al_toggle-menu" href="#">
                     <i></i>

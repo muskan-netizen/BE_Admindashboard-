@@ -123,13 +123,13 @@
                                 <div class="form-row">
 
                                     @if(!$user)
-                                        <div class="col-md-3 mb-3 resgiter_password" id="passwordInput" > 
+                                        <div class="item_password col-md-3 mb-3 resgiter_password" id="passwordInput" > 
                                             <label for="password">{{__('Password')}}</label>
                                             <input type="password" class="form-control" name="password" value="" required="">
                                             <span class="invalid-feedback" id="password_error"><strong></strong></span>
                                             <span toggle="#password-field" class="fa fa-eye-slash toggle-password" aria-hidden="true"></span>                                            
                                         </div>
-                                        <div class="col-md-3 mb-3 resgiter_password"  id="confirm_passwordInput">
+                                        <div class="item_password col-md-3 mb-3 resgiter_password"  id="confirm_passwordInput">
                                             <label for="confirm_password">{{__('Confirm Password')}}</label>
                                             <input type="password" class="form-control" name="confirm_password" value="" required="">
                                             <span class="invalid-feedback" id="confirm_password_error"><strong></strong></span>
@@ -662,6 +662,9 @@ function isNumberKey(evt) {
     function vendorAddressInitialize() {
         var addressInput = document.getElementById('vendor_address');
         var autocomplete = new google.maps.places.Autocomplete(addressInput);
+        if(is_map_search_perticular_country){
+                autocomplete.setComponentRestrictions({'country': [is_map_search_perticular_country]});
+            }
         google.maps.event.addListener(autocomplete, 'place_changed', function() {
             var place = autocomplete.getPlace();
             document.getElementById('vendor_longitude').value = place.geometry.location.lng();

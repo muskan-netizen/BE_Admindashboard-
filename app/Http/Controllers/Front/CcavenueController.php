@@ -28,7 +28,7 @@ class CcavenueController extends Controller
    private $access_key;
    private $merchant_id;
    private $url;
-   private $access_code; 
+   private $access_code;
 
    public function __construct()
    {
@@ -45,7 +45,7 @@ class CcavenueController extends Controller
             $this->url = 'https://secure.ccavenue.ae/transaction/transaction.do?command=initiateTransaction';
        }else{
          $this->url = 'https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction';
-        } 
+        }
         }else{
         if($json->custom_url=='ae'){
             $this->url = 'https://secure.ccavenue.ae/transaction/transaction.do?command=initiateTransaction';
@@ -56,14 +56,12 @@ class CcavenueController extends Controller
       }
 
    }
-   
+
    public function orderNumber($request)
    {
-        if($request->from == 'cart')
-        {
-            $time = $request->order_number;
-
-        }elseif($request->from == 'wallet')
+    if (($request->from == 'cart') || ($request->from == 'pickup_delivery')) {
+      $time = $request->order_number;
+    }elseif($request->from == 'wallet')
         {
             $time = ($request->transaction_id)??'W_'.time();
             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'wallet','date'=>date('Y-m-d')]);
@@ -77,16 +75,7 @@ class CcavenueController extends Controller
         {
             $time = ($request->subscription_id)??'S_'.time();
             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d')]);
-            
-        }elseif($request->from == 'pickup_delivery')
-        {
-            $time = ($request->transaction_id)??'PD_'.time();
-            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'pickup_delivery','date'=>date('Y-m-d')]);
-        }
-        elseif($request->from == 'pickup_delivery')
-        {
-            $time = ($request->transaction_id)??'PD_'.time();
-            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'pickup_delivery','date'=>date('Y-m-d')]);
+
         }
         return $time;
    }
@@ -115,13 +104,18 @@ class CcavenueController extends Controller
     $merchant_data='';
     $number = $this->orderNumber($request); // order no
     $working_key=$this->access_key;//Shared by CCAVENUES
-    $access_code=$this->access_code;//Shared by CCAVENUES
+    $access_code=$this->access_code;//Shared by CCAVENUES   
     $url=$this->url;//Shared by CCAVENUES
-	
-    $address = UserAddress::where('is_primary','1')->first();
-    $merchant_data = 'merchant_id='.$this->merchant_id.'&order_id='.$number.'&amount='.$request->amt.'&currency='.getPrimaryCurrencyName().'&redirect_url='.route('ccavenue.success').'&cancel_url='.route('ccavenue.success').'&language=EN&billing_name='.$user->name.'&billing_address='.$address->address.'&billing_city='.$address->city.'&billing_state='.$address->state.'&billing_zip='.$address->pincode.'&billing_country='.$address->country.'&billing_tel='.$user->phone_number.'&billing_email='.$user->email.'&delivery_name='.$user->name.'&delivery_address='.$address->address.'&delivery_city='.$address->city.'&delivery_state='.$address->state.'&delivery_zip='.$address->pincode.'&delivery_country='.$address->country.'&delivery_tel='.$user->phone_number.'&merchant_param1='.$number.'&merchant_param2='.$request->from.'&merchant_param3=web&merchant_param4='.auth()->id().'&merchant_param5='.$this->token.'&promo_code=&customer_identifier=&';
-    $encrypted_data=$this->encrypt($merchant_data,$working_key); // Method for encrypting the data.
-
+    if($request->from == 'pickup_delivery' && UserAddress::where('is_primary','1')->doesntExist()){
+      $address = new \stdClass();
+      $order =  Order::where('order_number',$number)->first();
+      $addressess = json_decode($order->orderLocation->tasks,true);
+      $address->address = $addressess[0]['address'];
+      }else{
+        $address = UserAddress::where('is_primary','1')->first();
+      }
+      $merchant_data = 'merchant_id='.$this->merchant_id.'&order_id='.$number.'&amount='.$request->amt.'&currency='.getPrimaryCurrencyName().'&redirect_url='.route('ccavenue.success').'&cancel_url='.route('ccavenue.success').'&language=EN&billing_name='.$user->name.'&billing_address='.$address->address.'&billing_city='.@$address->city.'&billing_state='.@$address->state.'&billing_zip='.@$address->pincode.'&billing_country='.@$address->country.'&billing_tel='.@$user->phone_number.'&billing_email='.@$user->email.'&delivery_name='.$user->name.'&delivery_address='.$address->address.'&delivery_city='.@$address->city.'&delivery_state='.@$address->state.'&delivery_zip='.@$address->pincode.'&delivery_country='.@$address->country.'&delivery_tel='.@$user->phone_number.'&merchant_param1='.$number.'&merchant_param2='.$request->from.'&merchant_param3=web&merchant_param4='.$user->id.'&merchant_param5='.$user->auth_token.'&promo_code=&customer_identifier=&';
+      $encrypted_data=$this->encrypt($merchant_data,$working_key); // Method for encrypting the data.
 
     return view('frontend.payment_gatway.ccavenue_view', compact('encrypted_data','access_code','url'));
    }
@@ -135,18 +129,23 @@ class CcavenueController extends Controller
         $user->save();
      }
      //eyJ0eXAiOiJqd3QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NDY3NDQ0OTgsImV4cCI6MTY0OTQyMjg5OCwiaXNzIjoicm95b29yZGVycy5jb20ifQ.60ADhLV0rlRHQjWtGUD1xgW6Eezs3DIwjyZoV4jILhI
-     
+
     $merchant_data='';
     $number = $this->orderNumber($request); // order no
     $working_key=$this->access_key;//Shared by CCAVENUES
     $access_code=$this->access_code;//Shared by CCAVENUES
     $url=$this->url;//Shared by CCAVENUES
     $user = auth()->user();
-    $address = UserAddress::where('is_primary','1')->first();
-    $merchant_data = 'merchant_id='.$this->merchant_id.'&order_id='.$number.'&amount='.$request->amt.'&currency='.getPrimaryCurrencyName().'&redirect_url='.route('ccavenue.success').'&cancel_url='.route('ccavenue.success').'&language=EN&billing_name='.$user->name.'&billing_address='.$address->address.'&billing_city='.$address->city.'&billing_state='.$address->state.'&billing_zip='.$address->pincode.'&billing_country='.$address->country.'&billing_tel='.$user->phone_number.'&billing_email='.$user->email.'&delivery_name='.$user->name.'&delivery_address='.$address->address.'&delivery_city='.$address->city.'&delivery_state='.$address->state.'&delivery_zip='.$address->pincode.'&delivery_country='.$address->country.'&delivery_tel='.$user->phone_number.'&merchant_param1='.$number.'&merchant_param2='.$request->from.'&merchant_param3=mob&merchant_param4=&merchant_param5='.$user->auth_token.'&promo_code=&customer_identifier=&';
-    //echo $merchant_data;die;
-    $encrypted_data=$this->encrypt($merchant_data,$working_key); // Method for encrypting the data.
-
+    if($request->from == 'pickup_delivery' && UserAddress::where('is_primary','1')->doesntExist()){
+      $address = new \stdClass();
+      $order =  Order::where('order_number',$number)->first();
+      $addressess = json_decode($order->orderLocation->tasks,true);
+      $address->address = $addressess[0]['address'];
+      }else{
+        $address = UserAddress::where('is_primary','1')->first();
+      }
+     $merchant_data = 'merchant_id='.$this->merchant_id.'&order_id='.$number.'&amount='.$request->amt.'&currency='.getPrimaryCurrencyName().'&redirect_url='.route('ccavenue.success').'&cancel_url='.route('ccavenue.success').'&language=EN&billing_name='.$user->name.'&billing_address='.$address->address.'&billing_city='.@$address->city.'&billing_state='.@$address->state.'&billing_zip='.@$address->pincode.'&billing_country='.@$address->country.'&billing_tel='.@$user->phone_number.'&billing_email='.@$user->email.'&delivery_name='.$user->name.'&delivery_address='.@$address->address.'&delivery_city='.@$address->city.'&delivery_state='.@$address->state.'&delivery_zip='.@$address->pincode.'&delivery_country='.@$address->country.'&delivery_tel='.@$user->phone_number.'&merchant_param1='.$number.'&merchant_param2='.$request->from.'&merchant_param3=mob&merchant_param4'.$user->id.'=&merchant_param5='.$user->auth_token.'&promo_code=&customer_identifier=&';
+      $encrypted_data=$this->encrypt($merchant_data,$working_key); // Method for encrypting the data.
 
     return view('frontend.payment_gatway.ccavenue_view', compact('encrypted_data','access_code','url'));
    }
@@ -155,7 +154,7 @@ class CcavenueController extends Controller
    {
        $amount = $request->amount;
        $user = auth()->user();
-       $action = isset($request->action) ? $request->action : ''; 
+       $action = isset($request->action) ? $request->action : '';
        $params = '?amt=' . $amount.'&auth_token='.$user->auth_token.'&from='.$action;
        if($action == 'cart'){
            $params = $params . '&order_number=' . $request->order_number.'&app=1';
@@ -168,9 +167,12 @@ class CcavenueController extends Controller
       }elseif($action == 'tip'){
         //app = 2 is for wallet
        $params = $params .'&app=3&order_number='.$request->order_number;
+      }elseif ($action == 'pickup_delivery') {
+        //app = 4 is for pickup delivery
+        $params = $params . '&order_number=' . $request->order_number . '&app=4';
       }
 
-       return $this->successResponse(url($request->serverUrl.'payment/ccavenue/api/'.$params)); 
+       return $this->successResponse(url($request->serverUrl.'payment/ccavenue/api/'.$params));
    }
 
    public function successForm(Request $request)
@@ -182,17 +184,17 @@ class CcavenueController extends Controller
 
 	  $dataSize=sizeof($decryptValues);
     $dataArray = array();
-    for($i = 0; $i < $dataSize; $i++) 
+    for($i = 0; $i < $dataSize; $i++)
     {
       $information=explode('=',$decryptValues[$i]);
       $request->request->add([$information[0] => $information[1]]);
     }
-    
+
     if(isset($request->merchant_param5) && !empty($request->merchant_param5)){
         $user = User::where('auth_token',$request->merchant_param5)->first();
         Auth::login($user);
      }
-  
+
         if($request->merchant_param2=='cart'){
             return $this->completeOrderCart($request);
         }elseif($request->merchant_param2=='wallet'){
@@ -201,18 +203,47 @@ class CcavenueController extends Controller
             return $this->completeOrderTip($request);
         }elseif($request->merchant_param2=='subscription'){
             return $this->completeOrderSubs($request);
+        }elseif ($request->merchant_param2 == 'pickup_delivery') {
+          return $this->completeOrderPickup($request);
         }
-
    }
 
-
+   public function completeOrderPickup(Request $request)
+   {
+   
+     $order = Order::where('order_number', $request->order_id)->first();
+     if (isset($request->order_status) && $request->order_status == 'Success') {
+       $order->payment_status = '1';
+       $order->save();
+       Payment::create(['amount' => 0, 'transaction_id' => $request->tracking_id, 'balance_transaction' => $order->payable_amount, 'type' => 'pickup_deleivery', 'date' => date('Y-m-d'), 'order_id' => $order->id]);
+       // Send Notification
+       $plaseOrderForPickup = new PickupDeliveryController();
+       $request->request->add(['transaction_id' => $request->tracking_id]);
+       $plaseOrderForPickup =   $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
+       if (isset($request->merchant_param3) && $request->merchant_param3 == 'mob') {
+         $returnUrl = route('payment.gateway.return.response').'/?gateway=ccavenue'.'&status=200&transaction_id='.$request->tracking_id;
+         return Redirect::to($returnUrl); 
+       } else {
+         return Redirect::to(route('front.booking.details', $order->order_number));
+       }
+     } else {
+       if (isset($request->merchant_param3) && $request->merchant_param3 == 'mob') {
+             $response['status'] = 200;
+             $response['msg'] = 'Success Added Pickup.';
+             $response['payment_from'] = 'pickup_delivery';
+             $response['order'] = $order;
+       } else {
+         return Redirect::to(route('user.wallet'))->with('error', $request->message);
+       }
+     }
+   }
 
    public function completeOrderCart($request)
    {
     $order = Order::where('order_number',$request->order_id)->first();
        if(isset($request->order_status) && $request->order_status == 'Success')
        {
-            //Success from cart  
+            //Success from cart
                 $order->payment_status = '1';
                 $order->save();
                 // Auto accept order
@@ -247,13 +278,13 @@ class CcavenueController extends Controller
                 if(isset($request->merchant_param3) && $request->merchant_param3=='mob')
                 {
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=ccavenue'.'&status=200&order='.$order->order_number;
-                return Redirect::to($returnUrl); 
+                return Redirect::to($returnUrl);
                 }else{
                 return Redirect::to(route('order.success',[$order->id]));
                 }
 
         }else{
-        
+
                 //Failed from cart
                 $user = auth()->user();
                 $wallet = $user->wallet;
@@ -264,12 +295,12 @@ class CcavenueController extends Controller
                 if(isset($request->merchant_param3) && $request->merchant_param3=='mob')
                 {
                 $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&order='.$order->order_number;
-                return Redirect::to($returnUrl);  
+                return Redirect::to($returnUrl);
                 }else{
                 return Redirect::to(route('showCart'))->with('error',$request->message);
                 }
 
-        }   
+        }
    }
 
 
@@ -285,12 +316,12 @@ class CcavenueController extends Controller
            if(isset($request->merchant_param3) && $request->merchant_param3=='mob')
            {
              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&transaction_id='.$request->order_id.'&action=wallet';
-             return Redirect::to($returnUrl); 
+             return Redirect::to($returnUrl);
            }else{
              return Redirect::to(route('user.wallet'));
            }
 
-           
+
          }else{
            $data = Payment::where('transaction_id',$request->order_id)->first();
            $data->delete();
@@ -298,12 +329,12 @@ class CcavenueController extends Controller
            if(isset($request->merchant_param3) && $request->merchant_param3=='mob')
            {
              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->order_id.'&action=wallet';
-             return Redirect::to($returnUrl); 
+             return Redirect::to($returnUrl);
            }else{
              return Redirect::to(route('user.wallet'))->with('error',$request->message);
            }
 
-          
+
          }
        return $this->successResponse($request->getTransactionReference());
 
@@ -324,7 +355,7 @@ class CcavenueController extends Controller
            if(isset($request->merchant_param3) && $request->merchant_param3=='mob')
            {
              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&transaction_id='.$request->order_id.'&action=subscription';
-             return Redirect::to($returnUrl); 
+             return Redirect::to($returnUrl);
            }else{
              return Redirect::to(route('user.subscription.plans'))->with('error',$request->message);
            }
@@ -334,7 +365,7 @@ class CcavenueController extends Controller
            if(isset($request->merchant_param3) && $request->merchant_param3=='mob')
            {
              $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->order_id.'&action=subscription';
-             return Redirect::to($returnUrl); 
+             return Redirect::to($returnUrl);
            }else{
              return Redirect::to(route('user.subscription.plans'))->with('error',$request->message);
            }
@@ -357,7 +388,7 @@ class CcavenueController extends Controller
            if(isset($request->merchant_param3) && $request->merchant_param3=='mob')
              {
                $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=200&order='.$order_number[2].'&action=tip';
-               return Redirect::to($returnUrl); 
+               return Redirect::to($returnUrl);
              }else{
                return Redirect::to(route('user.orders'))->with('success', $request->message);
              }
@@ -368,7 +399,7 @@ class CcavenueController extends Controller
            if(isset($request->merchant_param3) && $request->merchant_param3=='mob')
              {
                $returnUrl = route('payment.gateway.return.response').'/?gateway=kongapay'.'&status=00&transaction_id='.$request->order_id.'&action=tip';
-               return Redirect::to($returnUrl); 
+               return Redirect::to($returnUrl);
              }else{
                return Redirect::to(route('user.orders'))->with('error', $request->message);
              }
@@ -413,28 +444,28 @@ class CcavenueController extends Controller
 
    //********** Hexadecimal to Binary function for php 4.0 version ********
 
-   function hextobin($hexString) 
-       { 
-           $length = strlen($hexString); 
-           $binString="";   
-           $count=0; 
-           while($count<$length) 
-           {       
-               $subString =substr($hexString,$count,2);           
-               $packedString = pack("H*",$subString); 
+   function hextobin($hexString)
+       {
+           $length = strlen($hexString);
+           $binString="";
+           $count=0;
+           while($count<$length)
+           {
+               $subString =substr($hexString,$count,2);
+               $packedString = pack("H*",$subString);
                if ($count==0)
            {
                $binString=$packedString;
-           } 
-               
-           else 
+           }
+
+           else
            {
                $binString.=$packedString;
-           } 
-               
-           $count+=2; 
-           } 
-             return $binString; 
+           }
+
+           $count+=2;
+           }
+             return $binString;
          }
 
 

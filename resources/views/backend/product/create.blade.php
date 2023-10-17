@@ -144,7 +144,7 @@
                 </div>
 
                 <div class="card-box">
-                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Pricing Information") }}</h5>
+                    <h5 class="text-uppercase mt-0 mb-3 bg-light p-2 abc">{{ __("Pricing Information") }}</h5>
                     <div class="row mb-2">
                         <div class="col-6 mb-2">
                             {!! Form::label('title', __('Price'), ['class' => 'control-label']) !!}

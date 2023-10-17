@@ -285,6 +285,14 @@ $pages = \App\Models\Page::with([
 
                                     <div class="col-2 d-flex justify-content-end align-items-center">
                                         <div class="onhover-div pl-0 ml-xl-3 ml-lg-1 shake-effect d-block d-md-none">
+                                            <div class="d-flex">
+                                            @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
+                                                <li class="add_post pr-2"><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn">
+                                                    <span>
+                                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                                        {{ __('') }}</span>
+                                                    </a></li>
+                                            @endif
                                             @if($client_preference_detail) @if($client_preference_detail->cart_enable==1)
                                             <a class="addToCardBtn d-flex align-items-center " href="{{route('showCart')}}">
                                                 <i class="fa fa-shopping-cart mr-1 " aria-hidden="true"></i>
@@ -292,6 +300,7 @@ $pages = \App\Models\Page::with([
                                             </a> @endif @endif
                                             <script type="text/template" id="header_cart_template"> <% _.each(cart_details.products, function(product, key){%> <% _.each(product.vendor_products, function(vendor_product, vp){%> <li id="cart_product_<%=vendor_product.id %>" data-qty="<%=vendor_product.quantity %>"> <a class='media' href='<%=show_cart_url %>'> <% if(vendor_product.pvariant.media_one){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_one.pimage.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_one.pimage.image.path.image_path %>"> <%}else if(vendor_product.pvariant.media_second && vendor_product.pvariant.media_second.image != null){%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.pvariant.media_second.image.path.proxy_url %>200/200<%=vendor_product.pvariant.media_second.image.path.image_path %>"> <%}else{%> <img class='mr-2 blur-up lazyload' data-src="<%=vendor_product.image_url %>"> <%}%> <div class='media-body'> <h4><%=vendor_product.product.translation_one ? vendor_product.product.translation_one.title : vendor_product.product.sku %></h4> <h4> <span><%=vendor_product.quantity %> x <%=Helper.formatPrice(vendor_product.pvariant.price * vendor_product.pvariant.multiplier) %></span> </h4> </div></a> <div class='close-circle'> <a href="javascript::void(0);" data-product="<%=vendor_product.id %>" class='remove-product'> <i class='fa fa-times' aria-hidden='true'></i> </a> </div></li><%}); %> <%}); %> <li><div class='total'><h5>{{__('Subtotal')}}: <span id='totalCart'>{{Session::get('currencySymbol')}}<%=Helper.formatPrice(cart_details.gross_amount) %></span></h5></div></li><li><div class='buttons'><a href="<%=show_cart_url %>" class='view-cart'>{{__('View Cart')}}</a> </script>
                                             <ul class="show-div shopping-cart " id="header_cart_main_ul"></ul>
+                                        </div>
                                         </div>
                                     </div>
                                 </div>
@@ -335,6 +344,15 @@ $pages = \App\Models\Page::with([
                                     @endif
                                     @if( $is_ondemand_multi_pricing ==1 )
                                         @include('layouts.store.onDemandTopBarli')
+                                    @endif
+                                    @if (auth()->user())
+                                        @if ($client_preference_detail->show_wishlist == 1)
+                                            <li class="icon-nav mx-2 "> 
+                                                <a class="fav-button" href="{{ route('user.wishlists') }}">
+                                                    <i class="fa fa-heart" aria-hidden="true"></i> 
+                                                </a> 
+                                            </li>
+                                        @endif
                                     @endif
                                         @if($client_preference_detail->header_quick_link == 1)
 

@@ -33,9 +33,7 @@ class PromoCodeController extends Controller{
             $firstOrderCheck = 0;
             $is_from_cart = $request->is_cart ? $request->is_cart :0;
             $now = Carbon::now()->toDateTimeString();
-            $now = convertDateTimeInClientTimeZone($now);
-
-             
+            $now = convertDateTimeInClientTimeZone($now);             
             $promo_code_details = PromoCodeDetail::where('refrence_id', $product_id)->pluck('promocode_id');
             $result1 = Promocode::whereDate('expiry_date', '>=', $now)->where('restriction_on', 0)->where(function ($query) use ($promo_code_details,$firstOrderCheck) {
                 $query->where(function ($query2) use ($promo_code_details) {
@@ -67,7 +65,7 @@ class PromoCodeController extends Controller{
             return $this->errorResponse('', 400);
 
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
@@ -121,9 +119,9 @@ class PromoCodeController extends Controller{
           // $total_minimum_spend = 0;
             foreach ($cart_products as $cart_product) {
                 $total_price = 0;
-                if(isset($cart_product->product->variant) && !empty($cart_product->product->variant->first()))
+                if(isset($cart_product->pvariant) && !empty($cart_product->pvariant->actual_price))
                 {
-                    $total_price = $cart_product->product->variant->first()->price ?? 0;
+                    $total_price = $cart_product->pvariant->actual_price ?? 0;
                 }
 
                 $total_minimum_spend += $total_price * $cart_product->quantity;
@@ -204,7 +202,7 @@ class PromoCodeController extends Controller{
                 $result2 = $result2->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->get();
                 $promo_codes = $promo_codes->merge($result2);
             }
-                        
+            $total_minimum_spend = $total_minimum_spend * $doller_compare;
             foreach ($promo_codes as $key => $promo_code) {
                 $minimum_spend = 0;
                 if (isset( $promo_code->minimum_spend)) {
@@ -220,7 +218,7 @@ class PromoCodeController extends Controller{
                 }
             }
             return $this->successResponse($promo_codes, '', 200);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }

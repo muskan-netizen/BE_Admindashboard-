@@ -14,9 +14,7 @@ class OrderVendorObserver
      */
     public function created(OrderVendor $orderVendor)
     {
-        //
-       // Log::info('created');
-       // Log::info($orderVendor);
+        
     }
 
     /**
@@ -135,8 +133,6 @@ class OrderVendorObserver
      */
     public function deleted(OrderVendor $orderVendor)
     {
-        //
-       // Log::info('deleted');
     }
 
     /**
@@ -147,8 +143,6 @@ class OrderVendorObserver
      */
     public function restored(OrderVendor $orderVendor)
     {
-        //
-       // Log::info('restored');
     }
 
     /**
@@ -159,8 +153,6 @@ class OrderVendorObserver
      */
     public function forceDeleted(OrderVendor $orderVendor)
     {
-        //
-       // Log::info('force deleted');
     }
 }
         

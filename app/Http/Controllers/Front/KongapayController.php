@@ -33,9 +33,11 @@ class KongapayController extends FrontController
    public function __construct()
    {
       $konga = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'kongapay')->where('status', 1)->first();
-      $json = json_decode($konga->credentials);
-      $this->api_key = $json->api_key;
-      $this->merchant_id = $json->merchant_id;
+      if(@$konga->status){
+          $json = json_decode($konga->credentials);
+        $this->api_key = $json->api_key;
+        $this->merchant_id = $json->merchant_id;
+      }
    }
 
    public function createHash(Request $request)

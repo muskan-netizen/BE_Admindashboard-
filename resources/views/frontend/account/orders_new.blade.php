@@ -916,7 +916,7 @@ $timezone = Auth::user()->timezone;
                                                         <span><a class="text-capitalize">{{ $order->user->name }}</a></span>
                                                     </div>
                                                     @if ($client_preference_detail->business_type != 'taxi')
-                                                    <div class="col-md-3">
+                                                    <div class="col-md-3 alOrderStatus">
                                                         <h4>{{ __('Address') }}</h4>
                                                         @if($order->luxury_option_id == 3)
 
@@ -2117,7 +2117,7 @@ $timezone = Auth::user()->timezone;
                 </button>
             </div>
             <div class="modal-body text-center">
-                <h6 class="m-0 px-3">{{__('Are u sure u want to repeat same order')}}</h6>
+                <h6 class="m-0 px-3">{{__('Are you sure you want to repeat same order')}}</h6>
             </div>
             <div class="modal-footer flex-nowrap justify-content-center align-items-center">
                 <button type="button" class="btn btn-solid black-btn" data-dismiss="modal">{{__('Cancel')}}</button>
@@ -2207,6 +2207,7 @@ $timezone = Auth::user()->timezone;
     });
     var ajaxCall = 'ToCancelPrevReq';
     var payment_obo_url = "{{route('obo.pay')}}";
+    var livee_payment_url="{{route('livee.pay')}}"
     var credit_tip_url = "{{ route('user.tip_after_order') }}";
     var payment_stripe_url = "{{ route('payment.stripe') }}";
     var create_konga_hash_url = "{{route('kongapay.createHash')}}";

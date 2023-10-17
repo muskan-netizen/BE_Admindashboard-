@@ -43,7 +43,7 @@ class DashBoardController extends BaseController
             $q->where('name','Manager');
        })->get();
        $setWeekDate = $this->setWeekDate;
-
+            
         return view('backend/dashboard',compact('managers','setWeekDate'));
     }
 
@@ -380,7 +380,7 @@ class DashBoardController extends BaseController
                 }
             }
 
-            $vendorCounts = $vendors->count();
+            $vendorCounts = $vendors->where('status', 1)->count();
             $managersCount = User::whereHas('roles',function($q){
                 $q->where('name','Manager');
             })->count();
@@ -423,6 +423,12 @@ class DashBoardController extends BaseController
 
             # Revenue sum
             $orders = new Order;
+            $orders = $orders->where(function ($query){
+                $query->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
+                $query->orWhere(function ($q2) {
+                    $q2->whereIn('payment_option_id', [1,38]);
+                });
+            });
             $order_revenue = $total_revenue = clone $orders;
             if (Auth::user()->is_superadmin == 0) {
                 $orders = $orders->whereHas('vendors.vendor.permissionToUser', function ($query) {
@@ -448,8 +454,10 @@ class DashBoardController extends BaseController
             if($date_filter)
             $total_revenue = $total_revenue->whereBetween('created_at', [$from_date, $end_date]);
 
-            $total_revenue = $total_revenue->sum('payable_amount');
-//pr($total_revenue);
+            $total_revenue = $total_revenue->whereHas('orderStatusVendor', function ($q) {
+                return $q->where('order_status_option_id', 5);
+            })->sum('payable_amount');
+            // $total_revenue = $total_revenue->sum('payable_amount');
             # Customers count
             $users = new User;
             $total_customers = $users->where(['status' => 1, 'is_superadmin' => 0]);
@@ -463,12 +471,15 @@ class DashBoardController extends BaseController
             
             if (Auth::user()->is_superadmin == 0 || $request->manager_id) {
                   # Orders count
-            $vendor_orders = OrderVendor::with(['user','vendor']);
+                $vendor_orders = OrderVendor::with(['user','vendor'])->whereHas('orderDetail',function ($query){
+                    $query->where('payment_status', 1)->whereNotIn('payment_option_id', [1,38]);
+                    $query->orWhere(function ($q2) {
+                        $q2->whereIn('payment_option_id', [1,38]);
+                    });
+                });
 
             if($date_filter)
             $vendor_orders->whereBetween('created_at', [$from_date, $end_date]);
-
-
                 //  $vendor_orders = $vendor_orders->whereHas('vendor.permissionToUser', function ($query) {
                 //         $query->where('user_id', Auth::user()->id);
                 //     });
@@ -478,8 +489,7 @@ class DashBoardController extends BaseController
                     $vendor_orders = $vendor_orders->whereIn('vendor_id',$vendorIds);
                 }
 
-            $total_orders = $vendor_orders->count();
-
+                $total_orders = $vendor_orders->count();
 
             }else{
                   # Orders count

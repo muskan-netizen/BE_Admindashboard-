@@ -7,7 +7,10 @@ use Session;
 use Carbon\Carbon;
 use DB;
 use Grimzy\LaravelMysqlSpatial\Types\Point;
-
+use App\Http\Controllers\Front\FrontController;
+use DateTime;
+use DateTimeZone;
+use Carbon\CarbonPeriod;
 
 trait ProductActionTrait{
 
@@ -399,17 +402,18 @@ trait ProductActionTrait{
         }
     }
 
-    public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type = '',$Products_title = '', $p_dim = '', $preferences = NULL, $categoryTypes = NULL)
+    public function vendorProducts($venderIds, $langId, $currency = 'USD', $where = '', $type = '',$Products_title = '', $p_dim = '',$getSubCatIds='', $preferences = NULL, $categoryTypes = NULL)
     {
         try 
         {
            // pr($venderIds);
             $vendorWhereIN = ' ';
+            $getSubCatIdsIn = ' ';
             $completeWhere = ' ';
             $whereProductType = ' ';
             if(!empty($venderIds)){
                 $venid = implode(',',$venderIds);
-
+                $vendorWhereIN = ' AND `vendors`.`id` IN ('.$venid.')';
             } else{
                 $venid = '0';
             }
@@ -447,6 +451,11 @@ trait ProductActionTrait{
                 $categoryTypesArray = implode(',',$categoryTypesArray);
                 $whereProductType = ' and `categories`.`type_id`  IN ('.$categoryTypesArray.') ';
             }
+            
+            if (is_array($getSubCatIds) && count($getSubCatIds) > 0) {
+                $subCatIdsArray = implode(',',$getSubCatIds);
+                $getSubCatIdsIn = " AND `products`.`category_id` IN ($subCatIdsArray)";
+            }
 
             
             $single_category_product_ids = $this->getProductsId($where, $vendorWhereIN, $whereProductType);
@@ -475,6 +484,7 @@ trait ProductActionTrait{
                 `products`.`is_featured`,
                 `products`.`is_new`,  
                 `products`.`category_id`,  
+                `products`.`calories`,  
                 `categories`.`id` as `category_id` ,
                 `categories`.`type_id`,
                 `product_images`.`media_id`,
@@ -519,7 +529,9 @@ trait ProductActionTrait{
                         $whereComparePriceNotNull
                         $completeWhere
                                     
-                        $vendorWhereIN 
+                        $vendorWhereIN
+
+                        $getSubCatIdsIn 
 
                         $whereProductType 
                         GROUP BY `products`.`id`
@@ -544,7 +556,7 @@ trait ProductActionTrait{
     public function getEvenOddTime($time) {
         return ($time % 5 === 0) ? $time : ($time - ($time % 5));
     }
-    public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude, $vendor_ids = [], $set_template = NULL,$venderFilterOpenClose=null,$venderFilterbest=null)
+    public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude, $vendor_ids = [], $set_template = NULL,$venderFilterOpenClose=null,$venderFilterbest=null,$nearest_vendor=0)
     {
         try 
         {
@@ -563,6 +575,7 @@ trait ProductActionTrait{
                 `vendors`.`address`, 
                 `vendors`.`order_pre_time`, 
                 `vendors`.`logo`, 
+                `vendors`.`banner`, 
                 `vendors`.`slug`, 
                 `vendors`.`show_slot`,
                 `vendors`.`admin_rating`,
@@ -617,14 +630,23 @@ trait ProductActionTrait{
                 }
             }
             
+            if (($latitude) && ($longitude) && $nearest_vendor == 1) {
+                $mainQuery.= " ORDER BY `lineOfSightDistance` ASC";
+            }
+            
             //if(!empty($set_template) && $set_template->template_id != 3){
                 $mainQuery .= " LIMIT 10";
             //}
-            
-
-            
+                        
             $vendors = DB::select( DB::raw($mainQuery));
+            
             $vendor_ids = [];
+            $user = Auth::user();
+            $timezone = isset($user) && $user->timezone ?  $user->timezone : 'Asia/Kolkata';
+            $start_date = new DateTime("now", new  DateTimeZone($timezone) );
+            $start_date =  $start_date->format('Y-m-d');
+            $end_date = Date('Y-m-d', strtotime('+13 days'));
+
             foreach ($vendors as $key => $value) {
                 $vendor_ids[] = $value->id;
                 // get or update rating
@@ -675,6 +697,32 @@ trait ProductActionTrait{
                     }
                 }
 
+                $slotsDate = 0;
+                $value->date_with_slots = [];
+                if($value->closed_store_order_scheduled == 1){
+                    $slotsDate = findSlot('',$value->id,$type );
+                    $value->delaySlot = $slotsDate;
+                    $value->closed_store_order_scheduled = (($slotsDate)?$value->closed_store_order_scheduled:0);
+
+                    if(!empty($slotsDate)){
+                        $period = CarbonPeriod::create($start_date, $end_date);
+                        $slotWithDate = [];
+                        foreach($period as $key => $date){
+                            $slotDate = trim(date('Y-m-d', strtotime($date)));
+                            $slots = showSlot($slotDate,$value->id,'delivery');
+                            if(!empty($slots)){
+                                $slotData['date']  =  $slotDate;
+                                $slotData['slots'] = $slots;
+                                $slotWithDate[] = $slotData;
+                            }
+                        }
+                        $value->date_with_slots = $slotWithDate;
+                    }
+                }else{
+                    $value->delaySlot = 0;
+                    $value->closed_store_order_scheduled = 0;
+                }
+
                 if($value->closed_store_order_scheduled == 1){
                     $slotsDate = findSlot('',$value->id,$type );
                     $value->closed_store_order_scheduled = (($slotsDate)?$value->closed_store_order_scheduled:0);
@@ -683,22 +731,17 @@ trait ProductActionTrait{
                     $value->closed_store_order_scheduled = 0;
                 }
             }
-
+            $keyToFilter = 'is_vendor_closed';
+            $valueToFilter = $venderFilterOpenClose;
             // $my_array = ['foo' => 1, 'bar' => 'baz', 'hello' => 'wld'];
-            if($venderFilterOpenClose == 1 || $venderFilterOpenClose == 0) {
-                $keyToFilter = 'is_vendor_closed';
-                $valueToFilter = $venderFilterOpenClose;
-
+            if($venderFilterOpenClose === 1 || $venderFilterOpenClose === 0){
                 $filteredArray = array_filter($vendors, function($item) use ($keyToFilter, $valueToFilter) {
                     return isset($item->$keyToFilter) && $item->$keyToFilter == $valueToFilter;
-                });
-                
-                $filtered = array_values($filteredArray);
-
-            } else {
+                });  
+                $filtered = array_values($filteredArray);                    
+            }else {
                 $filtered = $vendors;
             }
-           
             return $filtered;
         }
         catch (\Exception $e) {
@@ -709,7 +752,10 @@ trait ProductActionTrait{
     public function getBrandsForHomePage($language_id, $field_status)
     {
         try 
-        {
+        {            
+            $frontController = new FrontController();
+            $navCategories = $frontController->categoryNav($language_id,true);         
+            $category_ids = implode(",", $navCategories);            
             $redirect_url = route('brandDetail', "brands_id");
             $mainQuery = "SELECT `br`.`id`,
             `br`.`image`, 
@@ -717,10 +763,10 @@ trait ProductActionTrait{
             REPLACE('".$redirect_url."', 'brands_id', `br`.`id`) AS `redirect_url`,
             (CASE WHEN `bt`.`title` IS NULL THEN `br`.`title` ELSE `bt`.`title` END) AS `translation_title`
             FROM `brands` AS `br` 
-
+            LEFT JOIN `brand_categories` AS `bc` on `bc`.`brand_id` = `br`.id
             LEFT JOIN `brand_translations` AS `bt` ON `bt`.`brand_id` = `br`.`id` AND `bt`.`language_id` = $language_id 
 
-            WHERE `br`.`status` !=$field_status
+            WHERE `br`.`status` !=$field_status AND `bc`.`category_id` in ($category_ids)
             GROUP BY `br`.`id`";
         
             $brands = DB::select( DB::raw($mainQuery));
@@ -768,7 +814,7 @@ trait ProductActionTrait{
 
                 $point = new Point($longitude, $latitude);
                 //$mainQuery .= " HAVING (SELECT `id` FROM `$banner_service_areas_table` AS `bsa` where `ba`.`id` = `bsa`.`banner_id` AND EXISTS (select `id` from `$service_area_for_banners_table` AS `safb` WHERE `bsa`.`service_area_id` = `safb`.`id` AND ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT($latitude $longitude)')) and `type` = $type) > 0) > 0 ";
-                $mainQuery .= " HAVING (SELECT `id` FROM `$banner_service_areas_table` AS `bsa` where `ba`.`id` = `bsa`.`banner_id` AND EXISTS (select `id` from `$service_area_for_banners_table` AS `safb` WHERE `bsa`.`service_area_id` = `safb`.`id` AND ST_Contains(service_areas.polygon, ST_GeomFromText($point->toWKT())) and `type` = $type) > 0) > 0 ";
+                $mainQuery .= " HAVING (SELECT `id` FROM `$banner_service_areas_table` AS `bsa` where `ba`.`id` = `bsa`.`banner_id` AND EXISTS (select `id`,'polygon' from `$service_area_for_banners_table` AS `safb` WHERE `bsa`.`service_area_id` = `safb`.`id` AND ST_Contains(safb.polygon, ST_GeomFromText('".$point->toWKT()."')) and `type` = $type) > 0) > 0 ";
             }
             
             $mainQuery.= " ORDER BY `ba`.`sorting` ASC";

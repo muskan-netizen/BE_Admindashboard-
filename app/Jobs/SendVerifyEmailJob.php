@@ -32,6 +32,7 @@ class SendVerifyEmailJob implements ShouldQueue
             $confirured = $this->setMailDetail($data->mail_driver, $data->mail_host, $data->mail_port, $data->mail_username, $data->mail_password, $data->mail_encryption);
             $this->client_name = $client->name;
             $this->mail_from = $data->mail_from;
+            $details['client_name'] = $this->client_name;
             $this->details = $details;
             $this->client_logo = $client->logo['original'];
         }

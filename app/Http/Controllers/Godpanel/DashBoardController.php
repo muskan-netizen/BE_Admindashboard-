@@ -26,8 +26,8 @@ class DashBoardController extends Controller
     public function dashboard()
     {
         $onboardclients = Client::where('status', 1)->where('is_deleted',0)->where('is_blocked', 0)->count();
-        $allclients = Client::select(DB::Raw("GROUP_CONCAT(id) as ids"))->where('status', 1)->where('is_deleted',0)->where('is_blocked', 0)->first()->ids;
-        
+        $allclients = Client::select(DB::Raw("GROUP_CONCAT(id) as ids"))->where('status', 1)->where('is_deleted',0)->where('is_blocked', 0)->first()->ids??0;
+
         $activeSubs  = BillingSubscription::join('clients', 'clients.id', '=', 'billing_subscriptions.client_id')
                                                     ->where('clients.status', 1)->where('clients.is_deleted',0)->where('clients.is_blocked', 0)
                                                     ->where(function ($q) {
@@ -37,18 +37,23 @@ class DashBoardController extends Controller
         
         $expSofSubs  = BillingSubscription::join('billing_pricings', 'billing_pricings.id', '=', 'billing_subscriptions.billing_price_id')
                                             ->join('billing_plans', 'billing_plans.id', '=', 'billing_pricings.billing_plan_id')
-                                            ->where('billing_plans.plan_type', 1)
-                                            ->whereRaw("client_id in (".$allclients.") and billing_subscriptions.id in (select MAX(id) from billing_subscriptions GROUP BY client_id) and date(end_date)< date(NOW())")
-                                            ->count();
+                                            ->where('billing_plans.plan_type', 1);
+                                            if(@$allclients && !empty($allclients)){
+                                                $expSofSubs = $expSofSubs->whereRaw("client_id in ('".$allclients."') and billing_subscriptions.id in (select MAX(id) from billing_subscriptions GROUP BY client_id) and date(end_date)< date(NOW())");
+                                            }
+                                            $expSofSubs = $expSofSubs->count();
 
         $expHosSubs  = BillingSubscription::join('billing_pricings', 'billing_pricings.id', '=', 'billing_subscriptions.billing_price_id')
                                             ->join('billing_plans', 'billing_plans.id', '=', 'billing_pricings.billing_plan_id')
-                                            ->where('billing_plans.plan_type', 2)
-                                            ->whereRaw("client_id in (".$allclients.") and billing_subscriptions.id in (select MAX(id) from billing_subscriptions GROUP BY client_id) and date(end_date)< date(NOW())")
-                                            ->count();
+                                            ->where('billing_plans.plan_type', 2);
+                                            if(@$allclients && !empty($allclients)){
+                                                $expHosSubs = $expHosSubs->whereRaw("client_id in ('".$allclients."') and billing_subscriptions.id in (select MAX(id) from billing_subscriptions GROUP BY client_id) and date(end_date)< date(NOW())");
+                                                }
+                                            $expHosSubs = $expHosSubs->count();
+
         $clientwithnosubs = Client::where('status', 1)->where('is_deleted',0)->where('is_blocked', 0)->whereRaw("(select count(*) from billing_subscriptions where billing_subscriptions.client_id = clients.id)=0")->count();
         
-        return view('godpanel/dashboard')->with(['onboardclients'=>$onboardclients, 'activeSubs'=>$activeSubs, 'expSofSubs'=>$expSofSubs, 'expHosSubs'=>$expHosSubs, 'clientwithnosubs'=>$clientwithnosubs]);;
+        return view('godpanel/dashboard')->with(['onboardclients'=>$onboardclients, 'activeSubs'=>$activeSubs, 'expSofSubs'=>$expSofSubs, 'expHosSubs'=>$expHosSubs, 'clientwithnosubs'=>$clientwithnosubs]);
         
     }
 

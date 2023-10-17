@@ -46,10 +46,12 @@ class SetDummyDataForDemo extends Command
      */
     public function handle()
     {   
-        $code_array = ['2f3120','d1b1a0','d2cca0','638bd1','d8473d','574467','c8fbba','fb78f0','6865aa','2d98b5'];
-        $domain_array = ['grub','gusto','punnet','suel','voltaic','elixir','homeric','gokab','zest','ace'];
+        // $code_array = ['2f3120','d1b1a0','d2cca0','638bd1','d8473d','574467','c8fbba','fb78f0','6865aa','2d98b5'];
+        // $domain_array = ['grub','gusto','punnet','suel','voltaic','elixir','homeric','gokab','zest','ace'];
+
+        $code_array = ['d8473d','574467','c8fbba'];
+        $domain_array = ['voltaic','elixir','homeric'];
         $clients = Client::select('database_name', 'sub_domain')->whereIN('code',$code_array)->whereIN('sub_domain',$domain_array)->get();
-       // Log::info($clients);
         foreach ($clients as $client) {
                 $this->migrateDefaultDataDaily($client);
             }
@@ -62,7 +64,6 @@ class SetDummyDataForDemo extends Command
     {
         try {
             $database_name = 'royo_' . $client->database_name;
-            //// Log::info("checking cart start: {$database_name}!");
             $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME =  ?";
             $db = DB::select($query, [$database_name]);
             if ($db) {
@@ -93,17 +94,17 @@ class SetDummyDataForDemo extends Command
                 DB::connection($schemaName)->beginTransaction();
                 DB::connection($schemaName)->statement("SET foreign_key_checks=0");
                 Cart::on($schemaName)->truncate();
-                Brand::on($schemaName)->truncate();
+                // Brand::on($schemaName)->truncate();
                 Order::on($schemaName)->truncate();
                 Banner::on($schemaName)->truncate();
                 MobileBanner::on($schemaName)->truncate();
                 Vendor::on($schemaName)->truncate();
                 SlotDay::on($schemaName)->truncate();
                 Payment::on($schemaName)->truncate();
-                Variant::on($schemaName)->truncate();
-                Product::on($schemaName)->truncate();
-                AddonSet::on($schemaName)->truncate();
-                Category::on($schemaName)->truncate();
+                // Variant::on($schemaName)->truncate();
+                // Product::on($schemaName)->truncate();
+                // AddonSet::on($schemaName)->truncate();
+                // Category::on($schemaName)->truncate();
                 OrderTax::on($schemaName)->truncate();
                 Promocode::on($schemaName)->truncate();
                 CartAddon::on($schemaName)->truncate();
@@ -112,25 +113,25 @@ class SetDummyDataForDemo extends Command
                 CartCoupon::on($schemaName)->truncate();
                 AddonOption::on($schemaName)->truncate();
                 LoyaltyCard::on($schemaName)->truncate();
-                ServiceArea::on($schemaName)->truncate();
+                // ServiceArea::on($schemaName)->truncate();
                 VendorMedia::on($schemaName)->truncate();
                 CartProduct::on($schemaName)->truncate();
                 SocialMedia::on($schemaName)->truncate();
                 Transaction::on($schemaName)->truncate();
                 OrderVendor::on($schemaName)->truncate();
-                ProductAddon::on($schemaName)->truncate();
-                ProductImage::on($schemaName)->truncate();
-                ProductUpSell::on($schemaName)->truncate();
-                VariantOption::on($schemaName)->truncate();
-                BrandCategory::on($schemaName)->truncate();
+                // ProductAddon::on($schemaName)->truncate();
+                // ProductImage::on($schemaName)->truncate();
+                // ProductUpSell::on($schemaName)->truncate();
+                // VariantOption::on($schemaName)->truncate();
+                // BrandCategory::on($schemaName)->truncate();
                 VendorSlotDate::on($schemaName)->truncate();
                 VendorCategory::on($schemaName)->truncate();
                 ProductRelated::on($schemaName)->truncate();
-                ProductVariant::on($schemaName)->truncate();
+                // ProductVariant::on($schemaName)->truncate();
                 ProductInquiry::on($schemaName)->truncate();
                 ProductCategory::on($schemaName)->truncate();
                 CsvVendorImport::on($schemaName)->truncate();
-                VariantCategory::on($schemaName)->truncate();
+                // VariantCategory::on($schemaName)->truncate();
                 PromoCodeDetail::on($schemaName)->truncate();
                 CategoryHistory::on($schemaName)->truncate();
                 CsvProductImport::on($schemaName)->truncate();
@@ -141,13 +142,13 @@ class SetDummyDataForDemo extends Command
                 VendorOrderStatus::on($schemaName)->truncate();
                 OrderProductAddon::on($schemaName)->truncate();
                 OrderProductRating::on($schemaName)->truncate();
-                ProductTranslation::on($schemaName)->truncate();
+                // ProductTranslation::on($schemaName)->truncate();
                 VariantTranslation::on($schemaName)->truncate();
                 OrderVendorProduct::on($schemaName)->truncate();
                 OrderReturnRequest::on($schemaName)->truncate();
                 AddonSetTranslation::on($schemaName)->truncate();
                 CategoryTranslation::on($schemaName)->truncate();
-                ProductVariantImage::on($schemaName)->truncate();
+                // ProductVariantImage::on($schemaName)->truncate();
                 PromocodeRestriction::on($schemaName)->truncate();
                 AddonOptionTranslation::on($schemaName)->truncate();
                 OrderProductRatingFile::on($schemaName)->truncate();
@@ -159,8 +160,8 @@ class SetDummyDataForDemo extends Command
                 CabBookingLayout::on($schemaName)->truncate();
                 CabBookingLayoutCategory::on($schemaName)->truncate();
                 CabBookingLayoutTranslation::on($schemaName)->truncate();
-                AppStyling::on($schemaName)->truncate();
-                AppStylingOption::on($schemaName)->truncate();
+                //AppStyling::on($schemaName)->truncate();
+                //AppStylingOption::on($schemaName)->truncate();
                 Tag::on($schemaName)->truncate();
                 TagTranslation::on($schemaName)->truncate();
                 ProductTag::on($schemaName)->truncate();
@@ -176,7 +177,6 @@ class SetDummyDataForDemo extends Command
                 ClientPreference::on($schemaName)->where('id', 1)->update(['is_hyperlocal' => 0]);
                 
                 DB::disconnect($schemaName);
-               // Log::info("import dummy data: {$schemaName}!");
             }
         } catch (\PDOException $e) {
             DB::connection($schemaName)->rollBack();

@@ -20,12 +20,14 @@ class AuthorizeGatewayController extends FrontController
 	private $test_mode;
 	public function __construct()
   	{
-		$anet_creds = PaymentOption::select('credentials', 'test_mode')->where('code', 'authorize_net')->where('status', 1)->first();
-	    $creds_arr = json_decode($anet_creds->credentials);
-	    $this->login_id = $creds_arr->login_id??'';
-	    $this->client_key = $creds_arr->client_key??'';
-	    $this->transaction_key = $creds_arr->transaction_key??'';
-	    $this->test_mode = $anet_creds->test_mode;
+		$anet_creds = PaymentOption::select('credentials', 'test_mode','status')->where('code', 'authorize_net')->where('status', 1)->first();
+		if(@$anet_creds->status){
+    	    $creds_arr = json_decode($anet_creds->credentials);
+    	    $this->login_id = $creds_arr->login_id??'';
+    	    $this->client_key = $creds_arr->client_key??'';
+    	    $this->transaction_key = $creds_arr->transaction_key??'';
+    	    $this->test_mode = $anet_creds->test_mode;
+		}
 	}
 	public function beforePayment(Request $request)
     {

@@ -15,12 +15,14 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, SmsProvider, Currency, Language, Country, User, SubscriptionPlansUser, SubscriptionPlanFeaturesUser, ShowSubscriptionPlanOnSignup, SubscriptionFeaturesListUser, SubscriptionInvoicesUser, Order, OrderVendor};
+use App\Http\Traits\StripeSubscription;
+use App\Models\{AdditionalAttribute, AdditionalAttributeProduct, Category, Client, ClientPreference, SmsProvider, Currency, Language, Country, User, SubscriptionPlansUser, SubscriptionPlanFeaturesUser, ShowSubscriptionPlanOnSignup, SubscriptionFeaturesListUser, SubscriptionInvoicesUser, Order, OrderVendor, PaymentOption, SubscriptionPlanUserCategory};
 use Carbon\Carbon;
+use App\Models\ClientCurrency;
 
 class SubscriptionPlansUserController extends BaseController
 {
-    use ApiResponser;
+    use ApiResponser, StripeSubscription;
     private $folderName = '/subscriptions/image';
     public function __construct()
     {
@@ -54,6 +56,19 @@ class SubscriptionPlansUserController extends BaseController
         $active_users = User::where('status', 1)->count();
         $subscribed_users_percentage = ($subscribed_users_count / $active_users) * 100;
         $subscribed_users_percentage = number_format($subscribed_users_percentage, 2);
+        $categories = Category::with('translation_one')->select('id', 'slug')
+        ->where('deleted_at', NULL)
+        ->whereIn('type_id', [
+            '1',
+            '6',
+            '8',
+            '9',
+            '11'
+        ])
+        ->where('is_core', 1)
+        ->where('status', 1)
+        ->get();
+        $additionalAttributes = AdditionalAttribute::where('type_id', 1)->where('service_type','=', 'pick_drop')->where('user_id', auth()->user()->id)->get();
         if($sub_plans){
             foreach($sub_plans as $plan){
                 $features = '';
@@ -70,9 +85,21 @@ class SubscriptionPlansUserController extends BaseController
                     $features = implode(', ', $planFeaturesList);
                 }
                 $plan->features = $features;
+                
+                $category= '';
+                if(!empty($plan->subscriptionCategory)){
+                    $planCategoryList = [];
+                    foreach($plan->subscriptionCategory as $category){
+                        $title = $category->category->slug;
+                        $planCategoryList[] = $title;
+                    }
+                    unset($plan->subscriptionCategory);
+                    $category = implode(', ', $planCategoryList);
+                }
+                $plan->subscriptionCategory = $category;
             }
         }
-        return view('backend/subscriptions/subscriptionPlansUser')->with(['features'=>$featuresList, 'showSubscriptionPlan'=>$showSubscriptionPlan, 'subscription_plans'=>$sub_plans, 'subscribed_users_count'=>$subscribed_users_count, 'subscribed_users_percentage'=>$subscribed_users_percentage]);
+        return view('backend/subscriptions/subscriptionPlansUser')->with(['features'=>$featuresList, 'showSubscriptionPlan'=>$showSubscriptionPlan, 'subscription_plans'=>$sub_plans, 'subscribed_users_count'=>$subscribed_users_count, 'subscribed_users_percentage'=>$subscribed_users_percentage, 'categories' => $categories,'additionalAttributes' => $additionalAttributes]);
     }
 
     /**
@@ -86,8 +113,9 @@ class SubscriptionPlansUserController extends BaseController
         $message = 'added';
         $rules = array(
             'title' => 'required|string|max:50',
-            'features' => 'required',
+            'type_id' => 'required',
             'price' => 'required',
+//             'features' => 'required',
             // 'period' => 'required',
             // 'sort_order' => 'required'
         );
@@ -101,12 +129,27 @@ class SubscriptionPlansUserController extends BaseController
         if ($validation->fails()) {
             return redirect()->back()->withInput()->withErrors($validation);
         }
+        $stripe_creds = PaymentOption::select('credentials', 'test_mode')->where(['code'=>'stripe','status'=>1])->whereNotNull('credentials')->first();
+        
         if(!empty($slug)){
-            $subFeatures = SubscriptionPlanFeaturesUser::where('subscription_plan_id', $plan->id)->whereNotIn('feature_id', $request->features)->delete();
+            if(!empty($request->features))
+                $subFeatures = SubscriptionPlanFeaturesUser::where('subscription_plan_id', $plan->id)->whereNotIn('feature_id', $request->features)->delete();
+            if(!empty($request->categories))
+                SubscriptionPlanUserCategory::where('subscription_id', $plan->id)->whereNotIn('category_id', $request->categories)->delete();
         }else{
             $plan = new SubscriptionPlansUser;
             $plan->slug = uniqid();
         }
+        if($stripe_creds){
+            $creds_arr = json_decode($stripe_creds->credentials);
+            $api_key = (isset($creds_arr->api_key)) ? $creds_arr->api_key : '';
+            $request->merge(['apiKey'=>$api_key]);
+            $res =   $this->createSubscriptionOnStripe($request) ;
+            if($res && isset($res->id)){
+                $plan->strip_plan_id =  $res->id;
+            }
+        }
+
         $plan->title = $request->title;
         $plan->price = $request->price;
         // $plan->period = $request->period;
@@ -120,6 +163,10 @@ class SubscriptionPlansUserController extends BaseController
         if( ($request->has('description')) && (!empty($request->description)) ){
             $plan->description = $request->description;
         }
+        if($request->has('order_limit') && !empty($request->order_limit)){
+            $plan->order_limit = $request->order_limit;
+        }
+        $plan->type_id = $request->type_id;
         $plan->save();
         $planId = $plan->id;
         if( ($request->has('features')) && (!empty($request->features)) ){
@@ -146,6 +193,59 @@ class SubscriptionPlansUserController extends BaseController
                 // }
             }
         }
+         
+        if($request->has('categories') && !empty($request->categories)){
+            foreach ($request->categories as $category) {
+                $exists = $plan->subscriptionCategory()->where('category_id', $category)->first();
+                if(!empty($exists))
+                    continue;
+                $subscriptionCategory = new SubscriptionPlanUserCategory();
+                $subscriptionCategory->category_id = $category;
+                $subscriptionCategory->subscription_id = $plan->id;
+                $subscriptionCategory->save();
+            }
+        }
+        
+        if($request->has('meal_timing') && !empty($request->meal_timing) || $request->has('meal_package') && !empty($request->meal_package)){
+            $additioanlAttribute = AdditionalAttribute::with('primary')->get();
+            if ($additioanlAttribute->count() > 0) {
+                foreach ($additioanlAttribute as $attribute) {
+                    $doc_name = str_replace(" ", "_", $attribute->primary->slug);
+                    if ($attribute->field_type != "textbox" && $attribute->field_type != "selector" && $attribute->field_type != "checkbox") {
+                        if ($request->hasFile($doc_name)) {
+                            $attributeProduct = new AdditionalAttributeProduct();
+                            $attributeProduct->user_id = Auth::id();
+                            $attributeProduct->additional_attribute_id = $attribute->id;
+                            $attributeProduct->reference_id = $plan->id;
+                            $filePath = $this->folderName . '/' . Str::random(40);
+                            $file = $request->file($doc_name);
+                            $attributeProduct->product_data = Storage::disk('s3')->put($filePath, $file, 'public');
+                            $attributeProduct->save();
+                        }
+                    } elseif ($attribute->field_type == "checkbox") {
+                        if ($request->has($doc_name)) {
+                            foreach ($request->$doc_name as $field => $value) {
+                                $attributeProduct = new AdditionalAttributeProduct();
+                                $attributeProduct->user_id = Auth::id();
+                                $attributeProduct->reference_id = $plan->id;
+                                $attributeProduct->additional_attribute_id = $attribute->id;
+                                $attributeProduct->product_data = $field;
+                                $attributeProduct->save();
+                            }
+                        }
+                    } else {
+                        if (! empty($request->$doc_name)) {
+                            $attributeProduct = new AdditionalAttributeProduct();
+                            $attributeProduct->user_id = Auth::id();
+                            $attributeProduct->additional_attribute_id = $attribute->id;
+                            $attributeProduct->reference_id = $plan->id;
+                            $attributeProduct->product_data = $request->$doc_name;
+                            $attributeProduct->save();
+                        }
+                    }
+                }
+            }
+        }
         return redirect()->back()->with('success', 'Subscription has been '.$message.' successfully.');
     }
 
@@ -161,10 +261,28 @@ class SubscriptionPlansUserController extends BaseController
         $planFeatures = SubscriptionPlanFeaturesUser::select('feature_id', 'percent_value')->where('subscription_plan_id', $plan->id)->get();
         $featuresList = SubscriptionFeaturesListUser::where('status', 1)->get();
         $subPlanFeaturesIds = array();
-        foreach($planFeatures as $feature){
-            $subPlanFeaturesIds[] = $feature->feature_id;
+        if(!empty($planFeatures)){
+            foreach($planFeatures as $feature){
+                $subPlanFeaturesIds[] = $feature->feature_id;
+            }
         }
-        $returnHTML = view('backend.subscriptions.edit-subscriptionPlanUser')->with(['features'=>$featuresList, 'plan' => $plan, 'planFeatures' => $planFeatures, 'subPlanFeaturesIds'=>$subPlanFeaturesIds])->render();
+        $additionalAttributes = AdditionalAttribute::where('type_id', 1)->where('service_type','=', 'pick_drop')->where('user_id', auth()->user()->id)->get();
+        $attributeProduct = AdditionalAttributeProduct::with('additionalAttribute')->where('user_id', auth()->user()->id)->where('reference_id', $plan->id)->get();
+        $categories = Category::with('translation_one')->select('id', 'slug')
+        ->where('deleted_at', NULL)
+        ->whereIn('type_id', [
+            '1',
+            '6',
+            '8',
+            '9',
+            '11'
+        ])
+        ->where('is_core', 1)
+        ->where('status', 1)
+        ->get();
+        
+        $subPlanCategoryIds = $plan->subscriptionCategory()->pluck('category_id')->toArray();
+        $returnHTML = view('backend.subscriptions.edit-subscriptionPlanUser')->with(['features'=>$featuresList, 'plan' => $plan, 'planFeatures' => $planFeatures, 'subPlanFeaturesIds'=>$subPlanFeaturesIds, 'subPlanCategoryIds' => $subPlanCategoryIds, 'categories' => $categories, 'additionalAttributes' => $additionalAttributes, 'attributeProduct' => $attributeProduct])->render();
         return response()->json(array('success' => true, 'html'=>$returnHTML));
     }
 

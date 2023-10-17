@@ -210,6 +210,13 @@ pr($products->toArray());
                                             <div class="vendor-search mb-sm-0 mb-2">
                                                 <input class="form-control" id="vendor_search" type="search" placeholder="Product Search" aria-controls="vendor_product_table">
                                             </div>
+                                            <div class="vendor-search mb-sm-0 mb-2">
+                                                <select class="form-control" name="product_is_live" id="product_is_live">
+                                                    <option value="">{{__("Select")}} </option>
+                                                    <option value="0">{{ __("Draft") }}</option>
+                                                    <option value="1">{{ __("Published") }}</option>
+                                                </select>
+                                            </div>
                                             @if(isset($vendor['need_sync_with_order']) && $vendor['need_sync_with_order'] != 1)
                                             <a class="btn btn-info  waves-effect waves-light text-sm-right action_product_button" dataid="0"
                                                 id="action_product_button" href="javascript:void(0);"
@@ -222,6 +229,11 @@ pr($products->toArray());
                                                 dataid="0" href="javascript:void(0);"
                                                 {{ $vendor->status == 1 ? '' : 'disabled' }}><i
                                                     class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
+                                            </a>
+                                            <a class="btn btn-info waves-effect waves-light ml-1 text-sm-right @if($vendor->status == 1)  exportProductPdf @endif  {{ $vendor->status == 1 ? '' : 'disabled' }}"
+                                                dataid="0" href="javascript:void(0);"
+                                                {{ $vendor->status == 1 ? '' : 'disabled' }}><i
+                                                    class="mdi mdi-plus-circle mr-1"></i> {{ __('Export as PDF') }}
                                             </a>
 
                                         @if(isset($vendor['need_sync_with_order']) && $vendor['need_sync_with_order'] != 1)
@@ -1321,6 +1333,8 @@ pr($products->toArray());
 @section('script')
 
     @include('backend.vendor.pagescript')
+    @include('backend.export_pdf')
+
     <script>
         var vendor_id = `{{ $vendor->id }}`;
         $(document).on('click', '.copy_link', function() {
@@ -1354,11 +1368,18 @@ pr($products->toArray());
            let search = $('#vendor_search').val();
            datatable_intent(search);
         });
+
+        $(document).on('change','#product_is_live',function() {
+            let is_live = $(this).val();
+            search = $('#vendor_search').val();
+            datatable_intent(search);
+        });
+
         function datatable_intent(search =''){
             $('#vendor_product_table').DataTable({
                 "responsive": true,
                 "bAutoWidth": false,
-                "scrollX": true,
+                // "scrollX": true,
                 "destroy": true,
                 // "processing": true,
                 "serverSide": true,
@@ -1366,6 +1387,7 @@ pr($products->toArray());
                 "lengthChange" : false,
                 "searching": false,
                 "ordering": true,
+                "dom": '<"toolbar">Bftrip',
 
                 language: {
                             search: "",
@@ -1375,6 +1397,23 @@ pr($products->toArray());
                             // 'loadingRecords': '&nbsp;',
                             // 'processing': '<div class="spinner"></div>'
                 },
+                buttons:[
+                            {
+                             extend: 'pdf',
+                                text: 'Export to PDF',
+                                className:'btn btn-success waves-effect Export_btn waves-light ml-2 d-none',
+                                id:'exp-btn',
+                                text: '<span class="btn-label"><i class="mdi mdi-export-variant"></i></span>Export PDF',
+                                orientation: 'landscape',
+                                exportOptions: {
+                                    columns: ':visible'
+                                },
+                                customize: function (doc) {
+                                doc.pageOrientation = 'landscape';
+                                doc.pageSize = 'A3'; // Set the custom page size
+                            }
+                            }
+                ],
                 drawCallback: function () {
                     $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
                 },
@@ -1382,7 +1421,8 @@ pr($products->toArray());
                 ajax: {
                     url: "{{url('client/vendor/product/list').'/'.$vendor->id}}",
                     data: function (d) {
-                        d.search = $('input[type="search"]').val();
+                        d.search = $('#vendor_search').val();
+                        d.is_live = $('#product_is_live').val();
                     }
                 },
                 columns: dataTableColumn(),
@@ -1565,6 +1605,9 @@ pr($products->toArray());
             }
         });
     }
-
+    $('.exportProductPdf').click(function(){
+            
+            $('.buttons-pdf').click();
+});
     </script>
 @endsection

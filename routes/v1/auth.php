@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 Route::group(['prefix' => 'v1/auth', 'middleware' => ['ApiLocalization']], function () {
     Route::get('country-list', 'Api\v1\AuthController@countries');
    // Route::group(['middleware' => ['dbCheck', 'AppAuth', 'apilogger']], function() {
@@ -53,6 +55,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('chat/vendorUserChatRoom', 'Api\v1\ChatController@vendorUserChatRoom');
         Route::post('chat/userAgentChatRoom', 'Api\v1\ChatController@userAgentChatRoom');
         Route::post('chat/sendNotificationToUser', 'Api\v1\ChatController@sendNotificationToUser');
+        Route::get('chat/s3-sign', 'Api\v1\ChatController@signAws');
 
        // Route::post('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
         Route::post('get-order-panel-detail', 'Api\v1\BaseController@getPanelDetail')->middleware('ConnectDbFromDispatcher');
@@ -63,6 +66,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('get/agents', 'Api\v1\PickupDeliveryController@getAgents');
         Route::get('account', 'Api\v1\ProfileController@account');
         Route::get('orders', 'Api\v1\OrderController@getOrdersList');
+        Route::get('orders-all', 'Api\v1\OrderController@getOrdersListLenderBorrower');
+        Route::get('orders_upcoming_ongoing', 'Api\v1\OrderController@getOrdersLenderBorrower');
         Route::get('RejectedOrderProduct', 'Api\v1\OrderController@getRejectedOrdersList');
         Route::post('orders/tip-after-order', 'Api\v1\OrderController@tipAfterOrder');
         Route::get('wishlists', 'Api\v1\ProfileController@wishlists');
@@ -73,8 +78,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('update/image', 'Api\v1\ProfileController@updateAvatar');
         Route::post('user/getAddress', 'Api\v1\ProfileController@getAddress');
         Route::post('order-detail', 'Api\v1\OrderController@postOrderDetail');
+        Route::post('order-detail_p2p', 'Api\v1\OrderController@postOrderDetailP2p');
         Route::post('order-update', 'Api\v1\OrderController@orderUpdate');
-
         Route::post('order-ride-bid-details', 'Api\v1\PickupDeliveryController@getBidsRelatedToOrderRide');
         Route::post('accept-ride-bid', 'Api\v1\PickupDeliveryController@acceptBidsRelatedToOrderRide');
         Route::post('decline-ride-bid', 'Api\v1\PickupDeliveryController@declineBidsRelatedToOrderRide');
@@ -135,10 +140,10 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::match(['get','post'],'payment/{gateway}', 'Api\v1\PaymentOptionController@postPayment');
       //  Route::match(['get','post'],'payment/plugnpay','Api\v1\PlugnpayGatewayController@beforePayment');
-        
+
         //azulpay
         Route::match(['get','post'],'payment/azulpay','Api\v1\AzulPaymentController@beforePayment');
-        
+
         //Route::get('payment/{gateway}', 'Api\v1\PaymentOptionController@postPayment');
         Route::post('payment/razorpay/pay/{amount}/{order}', 'Api\v1\RazorpayGatewayController@razorpayCompletePurchase')->name('payment.razorpayCompletePurchase');
         Route::post('payment/complete/paytab','Api\v1\PaytabController@completePayment');
@@ -152,7 +157,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('user/get-user-cards','Api\v1\ProfileController@getUserCards');
         Route::get('user/setDefaultCard','Api\v1\ProfileController@setDefaultCard');
         Route::get('user/deleteCard','Api\v1\ProfileController@deleteCard');
-        
+
         Route::post('payment/place/order', 'Api\v1\PaymentOptionController@postPlaceOrder');
         Route::get('user/loyalty/info', 'Api\v1\LoyaltyController@index');
         Route::post('add/vendorTable/cart','Api\v1\CartController@addVendorTableToCart');
@@ -162,7 +167,11 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('cart/checkSlotOrders', 'Api\v1\CartController@checkSlotOrders'); //Added by Surendra
         Route::post('user/editorder', 'Api\v1\OrderController@editOrderByUser');
 	    Route::post('user/discardeditorder', 'Api\v1\OrderController@discardEditOrderByUser');
+        Route::post('user/orderVenderStatusUpdate', 'Api\v1\OrderController@orderVenderStatusUpdate');
+        Route::post('order/vendorReached', 'Api\v1\OrderController@sendVendorReachedLocation');
 
+        Route::post('update-wishlist-vendor', 'Api\v1\ProfileController@updateWishlistVendor');
+        Route::get('wishlist-vendors', 'Api\v1\ProfileController@wishlistVendors');
         // Rating & review
         Route::group(['prefix' => 'rating'], function () {
             Route::post('update-product-rating', 'Api\v1\RatingController@updateProductRating');
@@ -197,7 +206,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::group(['prefix' => 'pickup-delivery'], function () {
             Route::post('get-list-of-vehicles-old/{id}', 'Api\v1\PickupDeliveryController@getListOfVehicles');
             Route::post('get-list-of-vehicles/{vid}/{cid?}', 'Api\v1\PickupDeliveryController@productsByVendorInPickupDelivery');
+		    Route::post('product-detail', 'Api\v1\PickupDeliveryController@postCabProductById');
             Route::post('create-order', 'Api\v1\PickupDeliveryController@createOrder');
+            Route::post('create-order-notifications', 'Api\v1\PickupDeliveryController@createOrderNotification');
             Route::post('cart/updateQuantity', 'Api\v1\CartController@updateQuantity');
             Route::post('promo-code/list', 'Api\v1\PickupDeliveryController@postPromoCodeList');
             Route::post('promo-code/verify', 'Api\v1\PickupDeliveryController@postVerifyPromoCode');
@@ -274,12 +285,23 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
             Route::get('get-influencer-form/{id}', 'Api\v1\InfluencerController@getInfluencerForm');
             Route::post('save-influencer-form', 'Api\v1\InfluencerController@save');
         });
-     
-        
+
+
         //-------routes for bid and ride------------------------------------
         Route::post('create/user/bid_ride_request', 'Api\v1\PickupDeliveryController@createBidRideRequest');
         Route::post('order-ride-bid-details', 'Api\v1\PickupDeliveryController@getBidsRelatedToOrderRide');
         Route::post('accept-ride-bid-request', 'Api\v1\PickupDeliveryController@acceptBidsRelatedToBidRideOrderRide');
         Route::post('decline-ride-bid', 'Api\v1\PickupDeliveryController@declineBidsRelatedToOrderRide');
-    });  
+
+        Route::group(['prefix' => 'mtn'], function () {
+            Route::post('create-token', 'Api\v1\MtnMomoController@createToken')->name('mtn.createtoken');
+            Route::get('response/{id?}', 'Api\v1\MtnMomoController@getResponse')->name('mtn.response');
+        });
+
+        Route::get('allergic-items', 'Api\v1\AllergicItemController@index');
+        Route::get('user/allergic-items', 'Api\v1\AllergicItemController@userAllergicItems');
+	    Route::post('user/add-allergic-items', 'Api\v1\AllergicItemController@addUpdateAllergicItems');
+	    Route::post('user/remove-allergic-items/{id}', 'Api\v1\AllergicItemController@destroy');
+
+    });
 });

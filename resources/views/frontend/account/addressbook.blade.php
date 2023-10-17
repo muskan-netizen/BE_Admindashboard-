@@ -57,6 +57,10 @@
         top:35px!important;
         left:0!important;
     }
+    .errors {
+        color: #F00;
+        background-color: #FFF;
+    }
 </style>
 <section class="section-b-space">
     <div class="container">
@@ -219,6 +223,9 @@
                             </div>
                         </div>
                         </div>
+                        <% if(title == 'Edit') { %>
+                        <input type="hidden" name="address_id" id="address_id" value="<%= address.id %>">
+                        <% } %>
                         <input type="hidden" name="latitude" id="latitude" value="<%= (typeof address != 'undefined') ? address.latitude : '' %>">
                         <input type="hidden" name="longitude" id="longitude" value="<%= (typeof address != 'undefined') ? address.longitude : '' %>">
                         <div class="form-row">
@@ -393,7 +400,7 @@
 
     });
 
-    $(document).on("click", "#updateAddress,#saveAddress", function () {
+    $(document).on("click", "#saveAddress", function () {
     
         var latitude = $('#add_edit_address_form #latitude').val();
         var longitude = $('#add_edit_address_form #longitude').val();
@@ -431,17 +438,17 @@
         });
     }
 
-    /*$(document).on("click","#update_address",function() {
-        let city = $('#add_new_address_form #city').val();
-        let state = $('#add_new_address_form #state').val();
-        let street = $('#add_new_address_form #street').val();
-        let address = $('#add_new_address_form #address').val();
-        let country = $('#add_new_address_form #country').val();
-        let pincode = $('#add_new_address_form #pincode').val();
-        let type = $("input[name='address_type']:checked").val();
-        let latitude = $('#add_new_address_form #latitude').val();
-        let longitude = $('#add_new_address_form #longitude').val();
-        let address_id = $('#add_new_address_form #address_id').val();
+    $(document).on("click","#updateAddress",function() {
+        let city = $('#add_edit_address_form #city').val();
+        let state = $('#add_edit_address_form #state').val();
+        let street = $('#add_edit_address_form #street').val();
+        let address = $('#add_edit_address_form #address').val();
+        let country = $('#add_edit_address_form #country').val();
+        let pincode = $('#add_edit_address_form #pincode').val();
+        let type = $('input[name="type"]:checked').val();
+        let latitude = $('#add_edit_address_form #latitude').val();
+        let longitude = $('#add_edit_address_form #longitude').val();
+        let address_id = $('#add_edit_address_form #address_id').val();
         $.ajax({
             type: "post",
             url: update_address_url.replace(':id', address_id),
@@ -476,7 +483,7 @@
                 }
             }
         });
-    });*/
+    });
 
     $(document).on('click', '.showMapHeader', function(){
         var lats = document.getElementById('latitude').value;
@@ -556,6 +563,9 @@
         // var addressMap=new google.maps.Map(document.getElementById("pick-address-map"), mapProp);
         var input = document.getElementById('address');
         var autocomplete = new google.maps.places.Autocomplete(input);
+        if(is_map_search_perticular_country){
+                autocomplete.setComponentRestrictions({'country': [is_map_search_perticular_country]});
+            }
         autocomplete.bindTo('bounds', bindMap);
 
         google.maps.event.addListener(autocomplete, 'place_changed', function () {

@@ -230,8 +230,8 @@
             // console.log(document.getElementById('incremental_hrs').value);
 
              var total1=   $('#total_hrs').val();
-              console.log('total',total_min);
-              console.log('incremental_hrs',default_step);
+             // console.log('total',total_min);
+           //   console.log('incremental_hrs',default_step);
               total_min = parseInt(total1)+parseInt(default_step);
 
               $('#total_hrs').val(total_min);
@@ -279,7 +279,7 @@
             selectedStartDate:selectedStartDate,
             selectedEndDate:selectedEndDate
           }
-          await calculateExtraTimeforproduct(selectedStartDate,selectedEndDate);
+          //await calculateExtraTimeforproduct(selectedStartDate,selectedEndDate);
 
            check_product_availibility(formData);
 
@@ -405,11 +405,14 @@
         }
         function calculateExtraTimeforproduct(selectedStartDate,selectedEndDate){
           var total_sel_min = diff_minutes(selectedStartDate,selectedEndDate);
-          console.log("asdfasdfasdf");
           // console.log(parseInt(default_minutes));
           //console.log(parseFloat(total_sel_min) - Number(default_minutes));
           var remaining = parseFloat(total_sel_min) - Number(default_minutes);
           //default_step
+          
+          if(default_step == 0){
+          	default_step = 60;
+          }
           var divide = parseInt(remaining)/default_step;
           divide = Math.floor(divide);
           var reminder = parseInt(remaining)%default_step;
@@ -417,9 +420,10 @@
             divide = parseInt(divide) + 1;
           }
           var extra_t_min = parseInt(default_step)*parseInt(divide);
-
+          //console.log("extra_t_min"), extra_t_min;
           $('#incremental_hrs').val(extra_t_min);
           var t_min_hr_min = parseInt(extra_t_min)+parseInt(default_minutes);
+           console.log("t_min_hr_min"), t_min_hr_min;
           if(t_min_hr_min< default_minutes){
             t_min_hr_min = default_minutes;
             // $checkoutInput = $('#blocktime2');
@@ -438,7 +442,7 @@
           $('#incremental_hrs_hidden').val(timeToHrMinConvertCal(t_min_hr_min));
           $('#total_hrs').val(parseInt(t_min_hr_min));
 
-           console.log(parseInt(t_min_hr_min)+parseInt(default_minutes));
+           //console.log(parseInt(t_min_hr_min)+parseInt(default_minutes));
 
         }
 

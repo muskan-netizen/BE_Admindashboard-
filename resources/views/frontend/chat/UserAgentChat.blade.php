@@ -62,6 +62,8 @@
                             <div class="chat-body row overflow-hidden shadow bg-light rounded">
                                 @include('frontend.chat.useragentpart.left')
                                 @include('frontend.chat.useragentpart.right')
+                                @include('backend.chat.mediaUpload.index')
+
                             </div>
                         </div>
                     </div>

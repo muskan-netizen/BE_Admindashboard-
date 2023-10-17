@@ -644,11 +644,11 @@ $client_preferences = \App\Models\ClientPreference::first();
                 <div class="col-md-12 mt-3 mb-3 powertrans_element_wrapper option-wrapper d-none">
                     <div class="row no-gutters">
                         <div class="col-6">
-                            <input type="number" min="16" maxlength="16" style=" border-right: none;" class="form-control" id="card-element-powertrans" placeholder="Enter card Number" required 
+                            <input type="number" min="16" maxlength="16" style=" border-right: none;" class="form-control" id="card-element-powertrans" placeholder="Enter card Number" required
                             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
                         </div>
                         <div class="col-3">
-                            <input type="number" style=" border-left: none; border-right: none;" class="form-control" maxLength="4"  id="date-element-powertrans" placeholder="YYMM" required 
+                            <input type="number" style=" border-left: none; border-right: none;" class="form-control" maxLength="4"  id="date-element-powertrans" placeholder="YYMM" required
                             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
                         </div>
                         <div class="col-3">
@@ -702,7 +702,22 @@ $client_preferences = \App\Models\ClientPreference::first();
         </div>
     <% } %>
 </script>
+<div class="modal fade" id="LiveesModal" tabindex="-1" aria-labelledby="LiveesModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title text-center" id="exampleModalLabel">Livees User Details</h3>
+          <button type="button" class="btn livees-btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-times-circle-o fa-2x" aria-hidden="true"></i></button>
+        </div>
+        <div class="livees-modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
 
+        </div>
+      </div>
+    </div>
+  </div>
 <div class="modal fade" id="proceed_to_pay_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="pay-billLabel">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -1094,6 +1109,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var off_scheduling_at_cart = "<?= $client_preferences->off_scheduling_at_cart; ?>";
     var payment_azulpay_url = "{{route('payment.azulpay.beforePayment')}}";
     var payment_plugnpay_url = "{{route('payment.plugnpay.beforePayment')}}";
+    var payment_mpesa_safari_url = "{{route('mpesasafari.pay')}}";
 </script>
 <script type="text/javascript" src="{{asset('js/developer.js')}}"></script>
 <script type="text/javascript" src="{{asset('js/payment.js')}}"></script>
@@ -1161,6 +1177,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_khalti_url = "{{route('payment.khaltiVerification')}}";
     var payment_khalti_complete_purchase = "{{route('payment.khaltiCompletePurchase')}}";
     var update_qty_url = "{{ url('product/updateCartQuantity') }}";
+    var update_cart_product_status = "{{ url('product/updateCartProductStatus') }}";
 	var user_cards_url = "{{ route('payment.azulpay.getCards') }}";
 
     var promocode_list_url = "{{ route('verify.promocode.list') }}";
@@ -1194,7 +1211,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var error_Slot_is_required = "{{__('Slot is required')}}";
     var error_Schedule_date_is_required = "{{__('Schedule date time is required')}}";
     var error_Invalid_Schedule_date = "{{__('Invalid schedule date time')}}";
-    var create_mtn_momo_token = "{{route('mtn.momo.createTocken')}}";
+    var create_mtn_momo_token = "{{route('mtn.momo.createToken')}}";
     var error_unchanged_schedule_date = "{{__('Schedule date can not be changed, Because order being edited is scheduled order. In case of multi vendor, order can not be edited.')}}";
     var discard_order_editing_url = "{{route('user.discardeditorder')}}";
     var confirm_discard_edit_order_title = "{{__('Are you sure?')}}";
@@ -1205,6 +1222,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var pesapal_payment_url = "{{ route('pesapal.payment') }}";
 
     var powertrans_payment_url = "{{ route('powertrans.payment') }}";
+    var livee_payment_url="{{route('livee.pay')}}";
 
     @if(!empty($client_preference_detail->is_postpay_enable))
         var post_pay_edit_order = "{{$client_preference_detail->is_postpay_enable}}";

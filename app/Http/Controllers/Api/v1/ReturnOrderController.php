@@ -293,7 +293,6 @@ class ReturnOrderController extends BaseController{
         try {
             $user = Auth::user();
             DB::beginTransaction();
-            //\Log::info("asdfasd", $request->all());
            
             $orderVendorProductOld = OrderProduct::find($request->order_vendor_product_id); // get exchanged order product
             
@@ -515,13 +514,13 @@ class ReturnOrderController extends BaseController{
 
                     if (!empty($currentOrderStatus->dispatch_traking_url) && ($request->status_option_id == 3)) {
                         if (isset($orderData->luxury_option->title) && $orderData->luxury_option->title == "pick_drop") {
-                            $new_dispatch_traking_url = str_replace('/order/', '/order-details/', $currentOrderStatus->dispatch_traking_url);
+                            $new_dispatch_traking_url = str_replace('/order/', '/order-cancel/', $currentOrderStatus->dispatch_traking_url);
                             $tracking_response = Http::get($new_dispatch_traking_url);
                             if ($tracking_response->status() == 200) {
                                 if (!empty($tracking_response['tasks'])) {
                                     foreach ($tracking_response['tasks'] as $order_tasks) {
                                         if ($order_tasks['task_status'] > 0 && $order_tasks['task_status'] < 5) {
-                                            return response()->json(['status' => '403', 'message' => __('Order initiated, you can not cancel this order !!!')]);
+                                            return response()->json(['status' => '403', 'message' => __('Your Order Has Been Cancelled!!!')]);
                                         }
                                     }
                                 }
@@ -537,6 +536,7 @@ class ReturnOrderController extends BaseController{
                         $wallet = $user->wallet;
                         $credit_amount = $return_response['vendor_return_amount']; //$currentOrderStatus->payable_amount;
                         $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #' . $currentOrderStatus->orderDetail->order_number . ' (' . $currentOrderStatus->vendor->name . ')']);
+                        $this->sendWalletNotification($user->id, $currentOrderStatus->orderDetail->order_number);                      
                     }
                     // }
                     // diarise loyalty 

@@ -56,6 +56,10 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
     #wallet_transfer_error_msg{
         display: none;
     }
+    .error-msg {
+        color: #F00;
+        background-color: #FFF;
+    }
 </style>
 <section class="section-b-space">
     <div class="container">
@@ -168,6 +172,24 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
         </div>
     </div>
 </section>
+
+<div class="modal fade" id="LiveesModal" tabindex="-1" aria-labelledby="LiveesModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title text-center" id="exampleModalLabel">Livees User Details</h3>
+          <button type="button" class="btn livees-btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="fa fa-times-circle-o fa-2x" aria-hidden="true"></i></button>
+        </div>
+        <div class="livees-modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+
+        </div>
+      </div>
+    </div>
+  </div>
+
 <div class="modal fade wallet_money" id="add-money" tabindex="-1" aria-labelledby="add-moneyLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -201,7 +223,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
     </div>
   </div>
 </div>
-<div class="modal fade" id="topup_wallet" tabindex="-1" aria-labelledby="topup_walletLabel" aria-hidden="true">
+<div class="modal fade" id="topup_wallet" tabindex="-1" aria-labelledby="topup_walletLabel" >
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header border-bottom">
@@ -494,11 +516,11 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                     <div class="col-md-12 mt-3 mb-3 powertrans_element_wrapper option-wrapper d-none">
                         <div class="row no-gutters">
                             <div class="col-6">
-                                <input type="number" min="16" maxlength="16" style=" border-right: none;" class="form-control" id="card-element-powertrans" placeholder="Enter card Number" required 
+                                <input type="number" min="16" maxlength="16" style=" border-right: none;" class="form-control" id="card-element-powertrans" placeholder="Enter card Number" required
                                 oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
                             </div>
                             <div class="col-3">
-                                <input type="number" style=" border-left: none; border-right: none;" class="form-control" maxLength="4"  id="date-element-powertrans" placeholder="YYMM" required 
+                                <input type="number" style=" border-left: none; border-right: none;" class="form-control" maxLength="4"  id="date-element-powertrans" placeholder="YYMM" required
                                 oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"/>
                             </div>
                             <div class="col-3">
@@ -509,6 +531,35 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                         <span class="error text-danger" id="card_error_powertrans"></span>
                     </div>
                 <% } %>
+
+                {{-- <% if(payment_option.slug =='livee'){ %>
+                    <div class="col-md-12 mt-3 mb-3 powertrans_element_wrapper option-wrapper d-none">
+                    <div class="d-flex justify-content-center mt-5">
+        <form  action="https://www.livees.net/Checkout/api4" method="POST"  class="d-flex flex-column gap-3">
+
+            <input type="hidden" name="_" value="sa4b4km6c0l9eq7y6od88cnjp62efvr6ix59u5taz2ghw0193" class="form-control">
+            <input type="hidden" name="__" value="bj65bih1kzo740snwbru2q9px3v5503fetfdaaegmc64yle58" class="form-control">
+            <input type="hidden" name=" postURL" value="{{url('/livee/success')}}" class="form-control">
+            <input type="hidden" name=" amt2" value="100" class="form-control">
+            <input type="hidden" name="currency" value="BOB" class="form-control">
+            <input type="hidden" name="invno" value="   " class="form-control">
+            <input type="text" name="name" placeholder="Enter First Name" class="form-control">
+            <input type="text" name=" lastname" placeholder="Enter lastname" class="form-control">
+            <input type="email" name="email" value="{{Auth::user()->email}}" class="form-control">
+            <select name="pais" class="form-control">
+            <option value="BO">Bolivia</option>
+            <option value="US">Estados Unidos</option>
+            </select>
+            <input type="text" name="ciudad" value="Santa Cruz de la Sierra" class="form-control">
+            <select name="estado_lbl" class="form-select">
+            <option value="La Paz">La Paz</option>
+            <option value="Santa Cruz">Santa Cruz</option>
+                <input type="submit" class="btn btn-primary" value="submit">
+            </form>
+    </div>
+</div>
+               <% } %> --}}
+
 
             <% } %>
         <% }); %>
@@ -553,12 +604,18 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var inline='';
     var powertrans_payment_url = "{{ route('powertrans.payment') }}";
     var pesapal_payment_url = "{{ route('pesapal.payment') }}";
+    var payment_mpesa_safari_url = "{{route('mpesasafari.pay')}}";
+    var livee_payment_url = "{{route('livee.pay')}}"
+    // var livee_email={{auth()->user()->email}};
 
     $('#wallet_amount').keypress(function(event) {
         if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
             event.preventDefault();
         }
     });
+    $(".livees-btn-close").on('click',function(){
+        $("#LiveesModal").modal('hide');
+    })
     $('.verifyEmail').click(function() {
         verifyUser('email');
     });
@@ -597,6 +654,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
         $('#wallet_payment_methods_error').html('');
         var method = $(this).val();
         var code = method.replace('radio-', '');
+    	console.log(code)
         if (code != '') {
             $("#wallet_payment_methods .option-wrapper").addClass('d-none');
             $("#wallet_payment_methods ."+code+"_element_wrapper").removeClass('d-none');
@@ -676,6 +734,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 
     $(document).on('blur', '#wallet_transfer_amount', function() {
         var amount = $(this).val();
+        console.log("amount is : "+amount);
         if((amount <= 0) || (amount > user_wallet_balance)){
             if(amount <= 0){
                 var msg = 'Invalid amount';
@@ -748,7 +807,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
             $("#error_dev").html(html).show();
         }
     });
-    
+
 </script>
 <script>
     var loadFile = function(event) {
@@ -771,7 +830,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
 <script>
 
 function addSlashes (element) {
-	
+
     let ele = document.getElementById(element.id);
     ele = ele.value.split('/').join('');    // Remove slash (/) if mistakenly entered.
     if(ele.length < 4 && ele.length > 0){

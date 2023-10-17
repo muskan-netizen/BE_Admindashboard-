@@ -775,6 +775,7 @@ class ReturnOrderController extends FrontController
                 $wallet = $user->wallet;
                 $credit_amount = $return_response['vendor_return_amount']; //$currentOrderStatus->payable_amount;
                 $wallet->depositFloat($credit_amount, ['Wallet has been <b>Credited</b> for return #' . $currentOrderStatus->orderDetail->order_number . ' (' . $currentOrderStatus->vendor->name . ')']);
+                $this->sendWalletNotification($user->id, $currentOrderStatus->orderDetail->order_number);
             }
             // diarise loyalty
             $orderData->loyalty_points_used    =  $orderData->loyalty_points_used - $return_response['vendor_loyalty_points'];

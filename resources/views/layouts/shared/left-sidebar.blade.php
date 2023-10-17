@@ -1,5 +1,5 @@
 @php
-    $getAdditionalPreference = getAdditionalPreference(['is_seller_module','is_gift_card']);
+    $getAdditionalPreference = getAdditionalPreference(['is_seller_module','is_gift_card','is_marg_enable','is_vendor_marg_configuration']);
 @endphp
 <div class="left-side-menu">
     <div class="logo-box m-hide d-lg-block">
@@ -134,6 +134,27 @@
                                     @endphp
                                         {{-- <span>{{getNomenclatureName('Vendors', true)}}</span> --}}
                                         <span>{{ __($vendormenulabel) }}</span>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if(@$getAdditionalPreference['is_vendor_marg_configuration'] == '1')
+                                <li>
+                                    <a href="{{route('failed-marg-orders')}}">
+                                    <span class="icon-orders"></span>
+                                    @php
+                                        $vendormenu = getNomenclatureName('Marg Failed Orders', true);
+                                        $vendor_orders_count = \App\Models\OrderVendor::select('id')->whereHas('orderDetail', function ($query){
+                                            $query->where('marg_status', '=',null);
+                                            $query->where('marg_max_attempt', '>',2);
+                                        })->whereHas('vendor.permissionToUser', function ($query){
+                                            if (auth()->user()->is_admin) {
+                                                $query->where('user_id', auth()->user()->id);
+                                            }
+                                        })->count(); 
+                                    @endphp 
+                                        {{-- <span>{{getNomenclatureName('Vendors', true)}}</span> --}}
+                                        <span>{{ __('Marg Failed Orders') }} {{ $vendor_orders_count ? '('. $vendor_orders_count .')' : '' }}</span>
                                     </a>
                                 </li>
                             @endif
@@ -279,6 +300,21 @@
 
 
                             @endif
+
+                            <li>
+                                <a href="{{route('admin.serviceArea.index')}}">
+                                    <span class="icon-customer-2"></span>
+                                    <span> {{ __('Admin Service Area') }} </span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="{{route('company.getList')}}">
+                                    <span class="icon-customer-2"></span>
+                                    <span> {{ __('Companies') }} </span>
+                                </a>
+                            </li>
+
                             @if((@auth()->user()->can('chat-view') || Auth::user()->is_superadmin == 1) && @$clientData->socket_url)
                                 <li>
                                     <a href="#chat" data-toggle="collapse">
@@ -460,6 +496,20 @@
                                 <a href="{{route('roles')}}">
                                     <i class="icon-profile"></i>
                                     <span>{{ __("Manage Roles") }}</span>
+                                </a>
+                            </li>
+                        @endif
+                        @if(Auth::user()->is_superadmin == 1)
+                            <li>  
+                                <a href="{{route('manageCache')}}">
+                                    <i class="icon-profile"></i>
+                                    <span>{{ __("Cache Control") }}</span>
+                                    </a>
+                            </li>
+                            <li class="d-none">  
+                                <a href="{{route('manage.attribute')}}">
+                                    <i class="icon-profile"></i>
+                                    <span>{{ __("Manage Attributes") }}</span>
                                 </a>
                             </li>
                         @endif

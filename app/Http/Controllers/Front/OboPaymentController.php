@@ -19,9 +19,9 @@ class OboPaymentController extends Controller
     private $obo_market_place_id;
     private $testMode;
     const TEST_MODE_TOKEN_API = 'https://www.obo-pay.co.rw/test/payments/v1/token';
-    const TOKEN_API           = "";
+    const TOKEN_API           = "https://www.obo-pay.co.rw/api/payments/v1/token";
     const TEST_MODE_URL_API   = "https://www.obo-pay.co.rw/test/payments/v1/payment";
-    const URL_API             = "";
+    const URL_API             = "https://www.obo-pay.co.rw/api/payments/v1/payment";
 
     public function __construct()
     {
@@ -86,7 +86,7 @@ class OboPaymentController extends Controller
                         "cancel_url"    => url(($request->cancelUrl) ?? ('after-payment/obo' . '?success=false')),
                         "return_url"    => url('after-payment/obo' . '?' . $urlParams),
                         "custom_pg_id"  => $this->obo_market_place_id,
-                    ], JSON_UNESCAPED_SLASHES); 
+                    ], JSON_UNESCAPED_SLASHES);
                     $responce = Http::withBody($input, 'application/json')->withHeaders($header)->post($apiUrl);
                     $responceData = json_decode($responce->body(), true);
                     if (isset($responceData['status']) && $responceData['status'] ===  "OK") {
@@ -256,27 +256,6 @@ class OboPaymentController extends Controller
                     'user_id' => $user_id,
                     'payment_from' => $request->user_from ?? 'web'
                 ]);
-            } elseif ($request->payment_from == 'tip') {
-                Payment::create([
-                    'amount' => 0,
-                    'transaction_id' => $time,
-                    'balance_transaction' => $amount,
-                    'type' => 'tip',
-                    'date' => date('Y-m-d'),
-                    'user_id' => $user_id,
-                    'payment_from' => $request->user_from ?? 'web'
-                ]);
-            } else if ($request->payment_from == 'pickup_delivery') {
-                $time = $request->order_id  ?? $request->order_number;
-                Payment::create([
-                    'amount' => 0,
-                    'transaction_id' => $time,
-                    'balance_transaction' => $amount,
-                    'type' => 'pickup_delivery',
-                    'date' => date('Y-m-d'),
-                    'user_id' => $user_id,
-                    'payment_from' => $request->user_from ?? 'web'
-                ]);
             }
             return $time;
         } catch (\Exception $e) {
@@ -289,7 +268,7 @@ class OboPaymentController extends Controller
     {
         try {
             $request->request->add(['payment_from' => $request->action, 'from' => $request->action, 'amt' => $request->amount, 'subsid' => $request->subscription_id ?? '', 'user_from' => 'app']);
-            $data =  $this->beforePayment($request, $domain, 'app');
+            $data =  $this->index($request, $domain, 'app');
             if (isset($data) && !empty($data)) {
                 return $data;
             }

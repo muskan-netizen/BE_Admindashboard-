@@ -271,11 +271,28 @@ body .rating-form .btn-reset {
 </div> -->
 
 {{-- @if(auth()->user()->can('vendor-setting') || auth()->user()->is_superadmin) --}}
+
 @php
-    $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery']);
+    $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery','is_marg_enable','is_vendor_marg_configuration']);
 @endphp
+
+@if(Auth::user()->is_admin == 1 && isset($getAdditionalPreference['is_vendor_marg_configuration']) && $getAdditionalPreference['is_vendor_marg_configuration'] == '1')
+    <div class="card-box cate-vendor">
+        <div class="row text-left">
+            <div class="col-md-12">
+                <a class="" href="{{ route('vendor.margConfig',$vendor->id) }}">
+                @php
+                    $vendormenu = getNomenclatureName('Marg Configuration', true);
+                @endphp 
+                    <span>{{ __('Marg Configuration') }}</span>
+                </a>
+            </div>
+        </div>
+    </div>
+@endif
+
 @if( !p2p_module_status() )
-<div class="card-box">
+<div class="card-box cate-vendor">
     <div class="row text-left">
         <div class="col-md-12">
             <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" id="slot-configs" method="post">
@@ -298,6 +315,12 @@ body .rating-form .btn-reset {
                         </div>
                     </div>
                     @endif
+
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('Featured'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="is_featured" class="form-control" data-color="#43bee1" @if($vendor->is_featured == 1) checked @endif>
+                    </div>
+
                     @if($client_preference_detail->business_type != 'taxi')
                     <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                         {!! Form::label('title', __('24*7 Availability'),['class' => 'control-label']) !!}
@@ -503,7 +526,8 @@ body .rating-form .btn-reset {
                             </textarea>
                         </div>
                     </div> --}}
-                   
+
+
                     @if(Auth::user()->is_superadmin == 1 && $client_preferences->is_one_push_book_enable == 1 && $vendor->pick_drop == 1)
                         <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                             {!! Form::label('title', __('Instant Booking'),['class' => 'control-label']) !!}
