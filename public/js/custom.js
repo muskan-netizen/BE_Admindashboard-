@@ -3276,6 +3276,10 @@ $(document).ready(function () {
         var Product_quantity = $('.quantity_count').val();
         var booking_time = $('#range-datepicker').val();
         var start_date_time, end_date_time;
+  
+        if(booking_time)
+        {
+
 
         if (booking_time.includes(' to ')) {
             var dateParts = booking_time.split(' to ');
@@ -3285,6 +3289,7 @@ $(document).ready(function () {
             start_date_time = booking_time;
             end_date_time = booking_time;
         }
+    }
         var addLongTerm = 0;
         var addRecurringBooking = 0;
         vendor_id = (vendor_id == undefined || vendor_id =='') ?  document.querySelector('input[name=vendor_id]').value : vendor_id;

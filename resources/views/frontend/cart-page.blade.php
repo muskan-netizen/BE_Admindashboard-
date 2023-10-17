@@ -332,16 +332,17 @@
                                                             }
                                                             $price = $vendor_product->pvariant->price;
 
+                                                          
                                                          
-                                                            if($vendor_product->days ?? 0 <= 7){
+                                                            if($vendor_product->days  <= 7){
                                                                 $price = $vendor_product->pvariant->price;
-                                                            }elseif($vendor_product->days ?? 0 >= 7 && $vendor_product->days??0 < 30){
+                                                            }elseif($vendor_product->days >= 7 && $vendor_product->days < 30){
                                                                 $price = $vendor_product->pvariant->week_price;
                                                             }else{
                                                                 $price = $vendor_product->pvariant->month_price;
                                                             }
  
-                                                        
+                                                            
                                                          
                                                         @endphp
                                                         <div class="items-price">
@@ -923,6 +924,8 @@
                                             </div>
                                         </div>
                                     @endif
+
+              
                                     <div class="row">
                                         {{-- @if ($cart_details->vendorCnt > 1) --}}
                                         <div class="col-5 text-lg-right">
@@ -937,7 +940,7 @@
                                                 @if ($additionalPreference['is_token_currency_enable'])
                                                     {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($product->product_total_amount + $product->vendor->fixed_fee_amount)) }}
                                                     @else
-                                                    {{ Session::get('currencySymbol') . decimal_format($product->product_total_amount + $product->vendor->fixed_fee_amount - $product->bid_vendor_discount ?? 0) }}
+                                                    {{ Session::get('currencySymbol') . decimal_format($cart_details->sub_total + $product->vendor->fixed_fee_amount - $product->bid_vendor_discount ?? 0) }}
                                                 @endif
                                             </p>
                                         </div>
