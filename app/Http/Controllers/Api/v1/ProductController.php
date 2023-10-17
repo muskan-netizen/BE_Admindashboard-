@@ -380,7 +380,7 @@ class ProductController extends BaseController
 
             $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = [];
 
-            $suggested_product = Product::with(['media.image','vendor', 'translation', 'variant', 'productVariantByRoles']);
+            $suggested_product = Product::with(['media.image','vendor', 'translation', 'variant', 'productVariantByRoles','productcategory']);
             if( !empty($product->category->category_id) ) {
                 $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)->groupBy('id')->orderby('id', 'desc')->limit(20)->get();
             }
@@ -409,7 +409,7 @@ class ProductController extends BaseController
             }
 
             if( !empty($product->vendor_id) ) {
-                $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);
+                $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant','productcategory'])->whereNotIn('id',[$product->id]);
                 $suggested_vendor_products = $suggested_product->where('vendor_id', $product->vendor_id)->orderby('id', 'desc')->limit(20)->get();
             }
 
@@ -488,8 +488,6 @@ class ProductController extends BaseController
             $response['relatedProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'relate', $product->related, $request->service);
             $response['upSellProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'upSell', $product->upSell, $request->service);
             $response['crossProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'cross', $product->crossSell, $request->service);
-            $response['similiar_products_by_same_user'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'similiar_product_user', $product->crossSell, $request->service,$product ?? null);
-            $response['similiar_products_in_category'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'similiar_product_category', $product->crossSell, $request->service,$product ?? null);
             $response['product_attribute'] = $product_attr;
             $response['additional_features'] = $additional;
             $response['productBookingsCount'] = $productBookingsCount;
