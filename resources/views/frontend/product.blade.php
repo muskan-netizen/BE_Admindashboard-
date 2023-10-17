@@ -6,6 +6,8 @@
 ])
 @php
 $clientData = \App\Models\Client::select('socket_url')->first();
+
+
 @endphp
 @section('css')
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"/>
@@ -296,7 +298,6 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                     </div>
                                     <div id="myresult" class="img-zoom-result"></div>
                                 </div>
-
                                 <div class="@php if(is_category_p2p($product->category)){ echo 'col-lg-6'; }elseif(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-4'; } else { echo 'col-lg-4'; } @endphp rtl-text p-0">
                                     <div class="product-right inner_spacing pl-sm-3 p-0 third-temp-lan">
                                         <h2 class="mb-0">
@@ -375,7 +376,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                         </div>
                                     @endif
                                     @endif
-                                    @if(is_category_p2p($product->category))
+                                    @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
 
                                
                                     <div class="flex-container">
@@ -447,7 +448,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
 
 
                                         <div id="variant_response">
-                                            @if(is_category_p2p($product->category) )
+                                            @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
                                             <input type="text" class="form-control" name="booking_availability" id="range-datepicker" placeholder="{{date('Y-m-d')}}">
                                             @endif
                                         </div>
