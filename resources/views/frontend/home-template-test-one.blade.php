@@ -336,11 +336,11 @@ $preference = $client_preference_detail;
    <div class="vendors">
       @foreach($homePageLabels as $key => $homePageLabel)
          @if($homePageLabel->slug == 'pickup_delivery')
-         @if(!empty($vendor_type)&& $vendor_type!="car_rental")
+  
             @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories) )
                @include('frontend.booking.cabbooking-single-module')
             @endif
-            @endif
+            
          @elseif($homePageLabel->slug == 'dynamic_page')
             @include('frontend.included_files.dynamic_page')
          @elseif($homePageLabel->slug == 'best_sellers'  && (count($homePageData[$homePageLabel->slug]) > 0))
