@@ -140,6 +140,7 @@ class CustomerAuthController extends FrontController
         }
         
         $allergic_items = AllergicItem::get();
+        //echo $register_page; die;
         if (!Session::get('referrer')) {
             return view('frontend.'.$register_page)->with(['navCategories' => $navCategories,'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents,'allergic_items' => $allergic_items]);
         } else {
@@ -225,7 +226,7 @@ class CustomerAuthController extends FrontController
         try {
             $phonenumber= str_replace('-', '', $req->phone_number);
             $req->phone_number = str_replace(' ', '', $phonenumber);
-            if( (empty($req->email)) && (empty($req->phone_number)) ){
+            if( (empty($req->email)) && (empty($req->phone_number)) ) {
                 $validator = $req->validate([
                     'email'  => 'required',
                     'phone_number'  => 'required|unique:users'
@@ -233,6 +234,12 @@ class CustomerAuthController extends FrontController
                     "email.required" => __('The email field is required.'),
                     "phone_number.required" => __('The phone number field is required.'),
                 ]);
+                if($req->dialCode == 91) {
+                    $validator = $req->validate([
+                        'phone_number'  => 'numeric|min:10|max:10'
+                    ]);
+                }
+                
             }
             else{
 
@@ -289,6 +296,8 @@ class CustomerAuthController extends FrontController
             }
 
             $user->password = Hash::make($req->password);
+            $user->custom_allergic_items = $req->custom_allergic_items ?? null;
+
             $user->save();
 
             if ($req->allergic_item_ids && count($req->allergic_item_ids)) {

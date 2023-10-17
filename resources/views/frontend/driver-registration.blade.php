@@ -164,8 +164,18 @@
                                     <strong></strong>
                                 </span>
                             </div>
+                            @elseif (strtolower($driver_registration_document->file_type) == 'selector')
+                               
+                                <div class="form-group" id="{{$driver_registration_document->slug}}InputEdit" >
+                                    <select name="{{$driver_registration_document->slug}}" class="form-control {{ (!empty($driver_registration_document->is_required))?'required':''}}">
+                                        <option value="">Select</option>
+                                        @foreach($driver_registration_document->driver_option as $key)
+                                        <option value="{{$key->driver_registartion_option_name}}">{{$key->driver_registartion_option_name}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             @else
-
+                           
                             <div class="file file--upload">
                                 <label for="input_file_logo_{{@$driver_registration_document->id}}">
                                     <span class="update_pic pdf-icon">
