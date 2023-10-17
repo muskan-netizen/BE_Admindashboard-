@@ -468,7 +468,7 @@ class UserhomeController extends FrontController
 
             
             Session::put('navCategories', $navCategories);
-            $vendor_type = $request->has('type') ? $request->type : Session::get('vendorType');
+            $vendor_type = $request->has('type') ? $request->type : Session::get('vendorType') ?? "delivery";
 
          
             $count = 0;
