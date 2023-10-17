@@ -380,7 +380,7 @@ class ProductController extends BaseController
 
             $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = [];
 
-            $suggested_product = Product::with(['media.image','vendor', 'translation', 'variant', 'productVariantByRoles','productcategory']);
+            $suggested_product = Product::with(['media.image','vendor', 'translation', 'variant', 'productVariantByRoles','categoryName']);
             if( !empty($product->category->category_id) ) {
                 $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)->groupBy('id')->orderby('id', 'desc')->limit(20)->get();
             }
@@ -409,7 +409,7 @@ class ProductController extends BaseController
             }
 
             if( !empty($product->vendor_id) ) {
-                $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant','productcategory'])->whereNotIn('id',[$product->id]);
+                $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant','categoryName'])->whereNotIn('id',[$product->id]);
                 $suggested_vendor_products = $suggested_product->where('vendor_id', $product->vendor_id)->orderby('id', 'desc')->limit(20)->get();
             }
 
