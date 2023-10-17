@@ -310,11 +310,11 @@
                    
                     $('#start_time').val(start_time);
                       $('#end_time').val(end_time);
-                    // if(!data.variant_product_quantity){
-                    //   // $("a#add_to_cart_btn").removeClass("addToCart");
-                    //   await sweetAlert.error('','Not available yet!'); 
-                    //   return false;
-                    // }
+                    if(!data.variant_product_quantity){
+                      // $("a#add_to_cart_btn").removeClass("addToCart");
+                      // await sweetAlert.error('','Not available yet!'); 
+                      return false;
+                    }
   
                     var available_product_variant = data.available_product_variant;
 
