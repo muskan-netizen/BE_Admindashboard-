@@ -15,7 +15,7 @@
             @endif
             
             @if(@$product->type_id == 13)
-            <span class="for_sale">For Rent</span>
+            <span class="for_rent">For Rent</span>
             @endif
                 <img class="blur-up lazyload" data-src="{{ get_file_path($product->path,'FILL_URL','260','260') }}" alt="" title="">
                 {{-- <div class="pref-timing"> </div> --}}

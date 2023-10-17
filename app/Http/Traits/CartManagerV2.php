@@ -1709,7 +1709,8 @@ trait CartManagerV2{
                 }
             }
 
-
+ 
+           
             if(!$this->additionalPreferences->is_tax_price_inclusive){
                 $cartTotalPay = decimal_format($total_payable_amount);
                // pr( $cartTotalPay);
@@ -1721,7 +1722,7 @@ trait CartManagerV2{
                 }
                 //end  gift card calculation
 
-                $cart->total_payable_amount =  $cartTotalPay ;
+                // $cart->total_payable_amount =  $cartTotalPay ;
             }else{
                 $cartTotalPay = decimal_format($total_payable_amount - $total_taxable_amount - $other_taxes);
                 // gift card calculation
@@ -1731,10 +1732,10 @@ trait CartManagerV2{
                     $giftCardUsed  = @$calCulateGiftCard['used_GiftCardAmount'];
                 }
                 //end  gift card calculation
-                $cart->total_payable_amount =  $cartTotalPay;
+                // $cart->total_payable_amount =  $cartTotalPay;
                 $cart->payy = decimal_format(($total_payable_amount - $total_taxable_amount - $other_taxes) + $cart->other_taxes);
             }
-
+           
             $cart->delivery_slot_amount = $delivery_slot_amount;
 
             // $cart->total_payable_amount = decimal_format($total_payable_amount);
@@ -1770,7 +1771,6 @@ trait CartManagerV2{
           
             if($additionalPreference['agent_commison'] == 1){
             
-                $cart->plateform_fee = $cart->total_payable_amount * $additionalPreference['service_amount_percentage']/100;
                 $cart->agent_commison = $cart->total_payable_amount * $additionalPreference['agent_commison_amount_percentage']/100;
                 $cart->total_payable_amount  = $cart->total_payable_amount  ;
             }
@@ -1813,7 +1813,7 @@ trait CartManagerV2{
             }
 
             $cart->sub_total = @$rental_price;
-            
+           
             $cart->pickup_delay_date =  $pickup_delay_date??0;
             $cart->dropoff_delay_date =  $dropoff_delay_date??0;
             $cart->delivery_type =  $code??'D';

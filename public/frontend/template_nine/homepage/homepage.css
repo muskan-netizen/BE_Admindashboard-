@@ -2043,7 +2043,17 @@ body.al_body_template_nine.p2p-module.chat-button{
     display:none;
 }
 body.al_body_template_nine.p2p-module span.for_sale {
-    background-color: #5EB1F4;
+    background-color: #1667c6;
+    padding: 4px 10px;
+    font-size: 14px;
+    color: #fff;
+    position: absolute;
+    bottom: 11px;
+    z-index: 999;
+    left: 10px;
+}
+body.al_body_template_nine.p2p-module span.for_rent {
+    background-color: #C361AD;
     padding: 4px 10px;
     font-size: 14px;
     color: #fff;
