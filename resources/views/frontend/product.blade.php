@@ -324,6 +324,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
 
                                         <div id="product_variant_wrapper">
                                             <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
+                                            @if(Session::get('vendorType') != 'p2p' )
                                             @if($product->inquiry_only == 0)
                                                 <h3 id="productPriceValue" class="mb-md-3">
                                                     @if($additionalPreference ['is_token_currency_enable'])
@@ -339,7 +340,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                     @endif
                                                 </h3>
                                             @endif
-                                            
+                                            @endif
                                         </div>
                                         
                                     @if(!empty($product->translation) && isset($product->translation->first()->body_html))
@@ -382,15 +383,15 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                     <div class="flex-container">
                                         <div class="item-price">
                                             <h2>Daily</h2>
-                                            <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->price, 2)}}</p>
+                                            <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->price)}}</p>
                                         </div>
                                         <div class="item-price">
                                             <h2>7 Days+</h2>
-                                            <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->week_price, 2)}}</p>
+                                            <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->week_price)}}</p>
                                         </div>
                                         <div class="item-price">
                                             <h2>30 Days+</h2>
-                                            <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->month_price, 2)}}</p>
+                                            <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->month_price)}}</p>
                                         </div>
                                     </div>
                                     @endif
@@ -799,7 +800,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                     </div>
 
                                 </div>
-                                @if(is_category_p2p($product->category))
+                                @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="summary-box" style="display:none;">
