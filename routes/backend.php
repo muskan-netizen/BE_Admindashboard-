@@ -398,6 +398,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('admin/editCompany', 'Client\CompanyController@edit')->name('company.edit');
         Route::post('admin/updateCompany/{id}', 'Client\CompanyController@update')->name('company.update');
 
+        Route::get('orders/getBlockchainOrderDetail', 'Client\OrderController@getBlockchainOrderDetail')->name('orders.getBlockchainOrderDetail');
+        
         // Admin Service Area Routes
         Route::post('admin/serviceArea', 'Client\AdminServiceAreaController@store')->name('admin.serviceArea');
         Route::get('admin/serviceArea', 'Client\AdminServiceAreaController@index')->name('admin.serviceArea.index');

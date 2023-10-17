@@ -169,6 +169,7 @@ class CartController extends FrontController
         } else {
             return view('frontend.cartnew', compact('public_key_yoco', 'cart', 'client_detail', 'data', 'ageVerify', 'terms', 'privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data, $nomenclatureProductOrderForm, $client_preference_detail, $client_detail);
 
+
         }
         // 
         // return view('frontend.cartnew',compact('public_key_yoco','cart','client_detail'))->with($data,$client_preference_detail,$client_detail);
@@ -176,7 +177,7 @@ class CartController extends FrontController
     }
 
     public function postCartRequestFromEstimation(Request $request)
-    {
+    { 
         $js = json_decode($request->addonoptID);
         $addonAr = array();
         $addonsoptAr = array();
@@ -311,7 +312,6 @@ class CartController extends FrontController
     public function postAddToCart(Request $request, $domain = '')
     {
 
-
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
         $vendor = Vendor::find($request->vendor_id);
@@ -436,6 +436,7 @@ class CartController extends FrontController
             $start_date  = $request->has('start_date') ? $request->start_date : null;
             $isLongTermProduct = 0;
             if ($request->has('service_start_time') && !empty($request->service_start_time)) {
+
 
                 $isLongTermProduct  = 1;
 
@@ -594,6 +595,7 @@ class CartController extends FrontController
             $quantityCart = CartProduct::where('cart_id', $cart_detail->id)->sum('quantity');
 
             return response()->json(['status' => 'success', 'message' => 'Product Added Successfully!', 'cart_product_id' => $cartProduct->id, 'cart_quantity' => $quantityCart ?? 0, 'product_id' => $cartProduct->product_id, 'vendor' => $vendor]);
+
         } catch (Exception $e) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
@@ -1231,6 +1233,7 @@ class CartController extends FrontController
                                             $select .= '<option value="' . $opt['code'] . '" ' . (($opt['code'] == $code) ? 'selected' : '') . '  >' . __($opt['courier_name']) . ', ' . __('Rate') . ' : ' . decimal_format($opt['rate']) . '</option>';
                                             //$select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.$opt['rate'].'</option>';
                                         }
+
                                     } else {
                                         foreach ($deliveries as $k => $opt) {
                                             //$select .= '<option value="'.$opt['code'].'" '.(($opt['code']==$code)?'selected':'').'  >'.__($opt['courier_name']).', '.__('Rate').' : '.$opt['rate'].'</option>';
@@ -1987,6 +1990,7 @@ class CartController extends FrontController
         CartRentalProtection::where('cart_id', $cartProd->cart_id)->delete();
         CartBookingOption::where('cart_id', $cartProd->cart_id)->delete();
         if (!empty($cartProd)) {
+
             $cartpro_count = CartProduct::where('cart_id', $cartProd->cart_id)->count();
             if ($cartpro_count == 0) {
                 Cart::where('id', $cartProd->cart_id)->update([
@@ -2066,6 +2070,7 @@ class CartController extends FrontController
     public function getCartData($domain = '', Request $request)
     {
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'order_edit_before_hours', 'is_gift_card', 'is_token_currency_enable', 'is_service_product_price_from_dispatch', 'token_currency', 'advance_booking_amount', 'advance_booking_amount_percentage', 'is_file_cart_instructions', 'is_service_price_selection', 'is_rental_weekly_monthly_price']);
+
         $wishListCount = 0;
         $cart_details = null;
         $user = Auth::user();
@@ -2105,11 +2110,25 @@ class CartController extends FrontController
             }
         }
         }
+        if($cart && !empty($cart)){
+        $cart_product_removed =    CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
+            $q->whereIn('is_live',[0,2]);
+        })->pluck('id');
+    }
+       
+        if(count($cart_product_removed)){
+            CartProduct::whereIn('id',$cart_product_removed)->delete();
+            if(CartProduct::where('cart_id',$cart->id)->count() == 0){
+            Cart::find($cart->id)->delete();
+            }
+        }
+      
 
         $address_id = $request->has("address_id") ? $request->address_id : (@$cart->address_id ?? '');
 
         if (isset($address_id) && !empty($address_id)) {
             // $address_id $address_id = $request->address_id;
+
             $address = UserAddress::where('user_id', $user->id)->update(['is_primary' => 0]);
             $address = UserAddress::where('user_id', $user->id)->where('id', $address_id)->update(['is_primary' => 1]);
         }
@@ -2201,6 +2220,7 @@ class CartController extends FrontController
                 // pr($cart_details);
                 $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details) ? json_decode($cart_details) : []), 'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm, 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message])->render();
             }
+
         }
 
         $tokenAmount = 1;
@@ -2212,9 +2232,9 @@ class CartController extends FrontController
         }
 
        
-  
         // till here
         return response()->json(['loggedIn' => Auth::check() ? 'true' : 'false', 'status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html, 'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail, 'mycart' => $mycartView ?? '', 'cart_error_message' => $error_message, 'wishListCount' => $wishListCount]); //'token_val' => $tokenAmount , 'is_token_enable' => $is_token_enable
+
     }
 
 
@@ -2311,6 +2331,7 @@ class CartController extends FrontController
                             'type' => 'K',
                             'courier_name' => __('KwikApi'),
                             'rate' => $deliver_fee,
+
                             'courier_company_id' => 0,
                             'etd' => 0,
                             'etd_hours' => 0,
@@ -2332,6 +2353,7 @@ class CartController extends FrontController
                             'type' => 'L',
                             'courier_name' => __('Lalamove'),
                             'rate' => $deliver_charge_lalamove,
+
                             'courier_company_id' => 0,
                             'etd' => 0,
                             'etd_hours' => 0,
@@ -2372,6 +2394,7 @@ class CartController extends FrontController
                                 'type' => 'DU',
                                 'courier_name' => __('Dunzo'),
                                 'rate' => $deliver_charge_dunzo,
+
                                 'courier_company_id' => 0,
                                 'etd' => 0,
                                 'etd_hours' => 0,
@@ -2454,6 +2477,7 @@ class CartController extends FrontController
                 } elseif ($preferences->static_delivey_fee == 1 &&  $vendorData->vendor->order_amount_for_delivery_fee != 0) {
                     # for static fees
                     if ($payable_amount >= (float)($vendorData->vendor->order_amount_for_delivery_fee)) {
+
                         $deliveryCharges = decimal_format($vendorData->vendor->delivery_fee_maximum);
                     } elseif ($payable_amount < (float)($vendorData->vendor->order_amount_for_delivery_fee)) {
                         $deliveryCharges = decimal_format($vendorData->vendor->delivery_fee_minimum);
@@ -2640,6 +2664,7 @@ class CartController extends FrontController
             $user->timezone = $client_timezone->timezone ?? $user->timezone;
             $new_session_token = session()->get('_token');
             $langId = Session::get('customerLanguage') ?? '1';
+
             if ($user) {
                 $cart_detail = Cart::where('user_id', $user->id)->first();
             } else {
@@ -2681,6 +2706,7 @@ class CartController extends FrontController
                     $addonSets[$addon_ids[$key]][] = $opt;
                 }
             }
+
 
           
 
@@ -2868,6 +2894,7 @@ class CartController extends FrontController
         try {
             $user = Auth::user();
             $cartProduct = CartProduct::where('id', $request->cart_product_id)->first();
+
             if ($user) {
                 if ($request->task_type == 'now') {
                     $request->schedule_dt = Carbon::now()->format('Y-m-d H:i:s');

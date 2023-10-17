@@ -1086,7 +1086,7 @@ $(document).ready(function () {
             success_error_alert('error', 'User Place Order is required! kindly fill the details.', ".cart_response");
             return false;
 
-        }
+        // }
 
         var returnData = await checkSlotValidation();
         if(returnData==0){
