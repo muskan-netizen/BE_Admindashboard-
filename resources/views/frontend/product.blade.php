@@ -6,6 +6,8 @@
 ])
 @php
 $clientData = \App\Models\Client::select('socket_url')->first();
+
+
 @endphp
 @section('css')
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"/>
@@ -296,7 +298,6 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                     </div>
                                     <div id="myresult" class="img-zoom-result"></div>
                                 </div>
-
                                 <div class="@php if(is_category_p2p($product->category)){ echo 'col-lg-6'; }elseif(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-4'; } else { echo 'col-lg-4'; } @endphp rtl-text p-0">
                                     <div class="product-right inner_spacing pl-sm-3 p-0 third-temp-lan">
                                         <h2 class="mb-0">
@@ -323,6 +324,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
 
                                         <div id="product_variant_wrapper">
                                             <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
+                                            @if(Session::get('vendorType') != 'p2p' )
                                             @if($product->inquiry_only == 0)
                                                 <h3 id="productPriceValue" class="mb-md-3">
                                                     @if($additionalPreference ['is_token_currency_enable'])
@@ -338,7 +340,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                     @endif
                                                 </h3>
                                             @endif
-                                            
+                                            @endif
                                         </div>
                                         
                                     @if(!empty($product->translation) && isset($product->translation->first()->body_html))
@@ -375,22 +377,24 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                         </div>
                                     @endif
                                     @endif
-                                        
+                                    @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
 
+                               
                                     <div class="flex-container">
                                         <div class="item-price">
                                             <h2>Daily</h2>
-                                            <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->price, 2)}}</p>
+                                            <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->price)}}</p>
                                         </div>
                                         <div class="item-price">
                                             <h2>7 Days+</h2>
-                                            <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->week_price, 2)}}</p>
+                                            <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->week_price)}}</p>
                                         </div>
                                         <div class="item-price">
                                             <h2>30 Days+</h2>
-                                            <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->month_price, 2)}}</p>
+                                            <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->month_price)}}</p>
                                         </div>
                                     </div>
+                                    @endif
                                         
                                         @if( is_category_p2p($product->category) || is_attribute_enabled())
                                             @if( !empty($attr_array) )
@@ -445,7 +449,9 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
 
 
                                         <div id="variant_response">
+                                            @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
                                             <input type="text" class="form-control" name="booking_availability" id="range-datepicker" placeholder="{{date('Y-m-d')}}">
+                                            @endif
                                         </div>
                                         
 
@@ -794,6 +800,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                     </div>
 
                                 </div>
+                                @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="summary-box" style="display:none;">
@@ -822,6 +829,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             </div>
                                         </div>
                                 </div>
+                                @endif
                                 @if( !is_category_p2p($product->category) && @$set_template->template_id == '8' )
                                     @include('frontend.product-coupon')
                             @endif
