@@ -456,8 +456,8 @@ class CartController extends FrontController
                 'variant_id'          => $request->variant_id,
                 'currency_id'         => $client_currency->currency_id,
                 'luxury_option_id'    => ($luxury_option) ? $luxury_option->id : 0,
-                'start_date_time'     => $request->start_date_time,
-                'end_date_time'       => $request->end_date_time,
+                'start_date_time'     => $request->start_date ?? $request->start_date_time,
+                'end_date_time'       => $request->end_date ?? $request->end_date_time,
                 'additional_increments_hrs_min' => $request->has('incremental_hrs') ? $request->incremental_hrs : null,
                 'total_booking_time'  => $total_booking_time,
                 'service_day'         => $request->has('service_day') ? $request->service_day : null,
@@ -469,6 +469,7 @@ class CartController extends FrontController
                 'delivery_date'  => $request->has('delivery_date') ? $request->delivery_date : null,
                 'slot_price'  => $request->has('sele_slot_price') ? $request->sele_slot_price : null
             ];
+
             //Check if 
 
             if ($request->has('dispatcherAgentData') && !empty($request->dispatcherAgentData)) {

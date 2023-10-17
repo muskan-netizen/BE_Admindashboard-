@@ -3480,6 +3480,7 @@ $(document).ready(function () {
     }
 
     function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='', sele_slot_id='', sele_slot_price='', delivery_date='',recurringformPost='',is_template='') {
+        alert(start_date);
           
         var returnResponse = false;
         $.ajax({

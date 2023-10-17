@@ -1843,7 +1843,9 @@ class OrderController extends FrontController
             $order_edit_before_hours = $additionalPreferences->order_edit_before_hours;
 
             $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
+          
             $luxury_option = LuxuryOption::where('title', $action)->first();
+           
             $delivery_on_vendors = array();
             if ((isset($request->user_id)) && (! empty($request->user_id))) {
                 $user = User::find($request->user_id);
@@ -2207,6 +2209,8 @@ class OrderController extends FrontController
                             }
                         }
                     }
+
+                
 
                     if(@$luxury_option->id == 4){
                         $security_amount += $vendor_cart_product->product->security_amount;
