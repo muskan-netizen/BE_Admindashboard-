@@ -1041,13 +1041,13 @@ $(document).ready(function () {
         var checkboxes = $('.checked-cart-product');
         var checkedCheckboxes = checkboxes.filter(':checked');
         if (checkedCheckboxes.length === 0) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Please select at least one product.',
-                //footer: '<a href="">Why do I have this issue?</a>'
-            });
-            return false;
+            // Swal.fire({
+            //     icon: 'error',
+            //     title: 'Oops...',
+            //     text: 'Please select at least one product.',
+            //     //footer: '<a href="">Why do I have this issue?</a>'
+            // });
+            // return false;
         }
 
         if ($("#agree_term_check").length > 0) {
@@ -3266,6 +3266,17 @@ $(document).ready(function () {
     function addToCart() {
         var breakOut = false;
         var Product_quantity = $('.quantity_count').val();
+        var booking_time = $('#range-datepicker').val();
+        var start_date_time, end_date_time;
+
+        if (booking_time.includes(' to ')) {
+            var dateParts = booking_time.split(' to ');
+            start_date_time = dateParts[0];
+            end_date_time = dateParts[1];
+        } else if (booking_time.trim() !== '') {
+            start_date_time = booking_time;
+            end_date_time = booking_time;
+        }
         var addLongTerm = 0;
         var addRecurringBooking = 0;
         vendor_id = (vendor_id == undefined || vendor_id =='') ?  document.querySelector('input[name=vendor_id]').value : vendor_id;
@@ -3465,13 +3476,13 @@ $(document).ready(function () {
                     var sele_slot_id = $("#sele_slot_id").val();
                     var sele_slot_price = $("#sele_slot_price").val();
                     var delivery_date = $("#date_input").val();
-                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date, sele_slot_id, sele_slot_price, delivery_date,recurringformPost,is_template);
+                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date, sele_slot_id, sele_slot_price, delivery_date,recurringformPost,is_template,start_date_time, end_date_time);
                 }
             }
         }
     }
 
-    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='', sele_slot_id='', sele_slot_price='', delivery_date='',recurringformPost='',is_template='') {
+    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='', sele_slot_id='', sele_slot_price='', delivery_date='',recurringformPost='',is_template='',start_date_time = '', end_date_time='') {
           
         var returnResponse = false;
         $.ajax({
@@ -3498,7 +3509,9 @@ $(document).ready(function () {
                  "sele_slot_id":sele_slot_id,
                  "delivery_date":delivery_date,
                  "sele_slot_price":sele_slot_price,
-                 "is_template" : is_template
+                 "is_template" : is_template,
+                 "start_date_time":start_date_time,
+                 "end_date_time":end_date_time,
             },
             success: function (response) {
                 if (response.status == 'success') {
@@ -3509,6 +3522,9 @@ $(document).ready(function () {
                     if($("#pickup_service").is(":checked")){
                         location.href =  '/category/cabservice?destination_location='+response.vendor.address+'&destination_location_latitude'+response.vendor.latitude+'&destination_location_longitude'+response.vendor.longitude+'&yacht_id='+product_id;
                     }
+                    if(vendor_type == 'rental' || vendor_type == 'p2p') {
+                        location.href =  '/viewcart';
+                    }   
                     console.log(response.vendor.rental);
                     if(response.vendor.rental == 0) {
                       

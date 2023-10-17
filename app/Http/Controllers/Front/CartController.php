@@ -160,8 +160,10 @@ class CartController extends FrontController
             }
         }
         $template = WebStylingOption::where('is_selected', '1')->first();
+  
+      
  
-
+      
         if ($action == "car_rental") {
             return view('frontend.yacht.summary', compact('public_key_yoco', 'cart', 'client_detail', 'data', 'ageVerify', 'terms', 'privacy', 'client_preference_detail', 'nomenclatureProductOrderForm'))->with($data, $nomenclatureProductOrderForm, $client_preference_detail, $client_detail);
         } else {
@@ -308,6 +310,7 @@ class CartController extends FrontController
 
     public function postAddToCart(Request $request, $domain = '')
     {
+
 
         $preference = ClientPreference::first();
         $luxury_option = LuxuryOption::where('title', Session::get('vendorType'))->first();
@@ -1743,6 +1746,8 @@ class CartController extends FrontController
             // dd($cart->toArray());
             $cart->products = $cartData->toArray();
         }
+          
+       
         return $cart;
     }
 
@@ -2090,7 +2095,7 @@ class CartController extends FrontController
             $cart_product_removed =    CartProduct::where('cart_id', $cart->id)->whereHas('product', function ($q) {
                 $q->whereIn('is_live', [0, 2]);
             })->pluck('id');
-        }
+       
 
         if (count($cart_product_removed)) {
             CartProduct::whereIn('id', $cart_product_removed)->delete();
@@ -2098,7 +2103,7 @@ class CartController extends FrontController
                 Cart::find($cart->id)->delete();
             }
         }
-
+        }
 
         $address_id = $request->has("address_id") ? $request->address_id : (@$cart->address_id ?? '');
 
@@ -2150,7 +2155,7 @@ class CartController extends FrontController
             ];
             $cart_details = $this->getCartsNewV2($obj, $request);
         }
-
+       
         $client_preference_detail = ClientPreference::first();
         $client_preference_detail  = $this->hideSecretKeys($client_preference_detail);
 
@@ -2191,6 +2196,8 @@ class CartController extends FrontController
 
                 $mycartView = view('frontend.yacht.cart-page')->with(['cart_details' => (($cart_details) ? json_decode($cart_details) : []), 'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm, 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message, 'addons' => $addon])->render();
             } else {
+
+               
                 $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details) ? json_decode($cart_details) : []), 'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm, 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message])->render();
             }
         }
@@ -2203,6 +2210,8 @@ class CartController extends FrontController
             $cart_details->tokenAmount = $tokenAmount;
         }
 
+       
+  
         // till here
         return response()->json(['loggedIn' => Auth::check() ? 'true' : 'false', 'status' => 'success', 'schedule_datetime' => $request->schedule_date_delivery, 'cart_details' => $cart_details, 'expected_vendor_html' => $expected_vendor_html, 'expected_vendors' => $expected_vendors, 'client_preference_detail' => $client_preference_detail, 'mycart' => $mycartView ?? '', 'cart_error_message' => $error_message, 'wishListCount' => $wishListCount]); //'token_val' => $tokenAmount , 'is_token_enable' => $is_token_enable
     }
@@ -2210,7 +2219,9 @@ class CartController extends FrontController
 
     public function searchProductExpection($cart_details)
     {
+ 
 
+       
         $langId = Session::get('customerLanguage');
 
         $all_vendors = array();
@@ -3185,7 +3196,8 @@ class CartController extends FrontController
         $endDate = $recurringformPost->endDate;
 
         $selectedCustomdates = [];
-
+ 
+       
         if ($recurringformPost->action == '2' || $recurringformPost->action == '1') {
             $startDate = $recurringformPost->startDate;
             $endDate = $recurringformPost->endDate;

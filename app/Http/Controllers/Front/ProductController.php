@@ -89,6 +89,7 @@ class ProductController extends FrontController{
         $p_id = $product->id;
         $product =  $this->getProduct($p_id,$vendor,$url_slug,$user,$langId);
         $productAvailability = ProductAvailability::where('product_id', $product->id)
+        ->where('not_available', 0)
         ->selectRaw('DATE_FORMAT(date_time, "%Y-%m-%d") as formatted_date')
         ->pluck('formatted_date');
       

@@ -808,7 +808,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                     </tr>
                                                     <tr>
                                                         <td><span class="applied-price"></span> x <span class="days-count"></span> Days</td>
-                                                        <td class="text-right total-amount"></td>
+                                                        <td class="text-right applied-total-amount"></td>
                                                     </tr>
                                                     <tr>
                                                         <td>Platform Fee</td>
@@ -1731,6 +1731,8 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
                 const endDate = selectedDates[selectedDates.length - 1];
                 const days = Math.round((endDate - startDate) / (24 * 60 * 60 * 1000)) + 1;
                 
+
+              
                 let dailyRate;
                 if (days < 7) {
                     dailyRate = {{$product->variant[0]->price}};
@@ -1740,9 +1742,12 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
                     dailyRate = {{$product->variant[0]->month_price ?? 0 }};
                 }
                 const totalAmount = days * dailyRate ;
+
+             
                 // Update values in the template
                 $(".summary-box").show();
                 $(".days-count").text(days);
+                $(".applied-total-amount").text(showCurrencySymbol(days * dailyRate));
                 $(".applied-price").text(showCurrencySymbol(dailyRate));
                 $(".date-range").text(startDate.toDateString() + " - " + endDate.toDateString());
                 $(".total-amount").text(showCurrencySymbol(totalAmount));

@@ -222,6 +222,7 @@
             data: '',
             dataType: 'json',
             success: function(data) {
+              
                 if (data.res == "null") {
                     $(".checkout-products").html(data.html);
                 } else {

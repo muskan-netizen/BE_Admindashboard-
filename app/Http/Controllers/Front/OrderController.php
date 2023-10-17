@@ -73,11 +73,11 @@ use App\Models\ {
     OrderLongTermServicesAddon,
     OrderLongTermServiceSchedule,
     Bid,
-    OrderNotificationsLogs,
-    VendorMargConfig
+    VendorMargConfig,
     CartBookingOption,
     CartRentalProtection,
-    OrderNotificationsLogs
+    OrderNotificationsLogs,
+    ProductAvailability
 };
 use App\Models\ProductVariantSet;
 use GuzzleHttp\Client as GCLIENT;
@@ -1775,6 +1775,8 @@ class OrderController extends FrontController
 
     public function placeOrder(Request $request, $domain = '')
     {
+
+       
         // dd($request->other_taxes_string);
         // $stock = $this->ProductVariantStock('18');
 
@@ -2164,6 +2166,7 @@ class OrderController extends FrontController
                 $bid_vendor_discount = 0;
                 $vendor_service_fee_percentage_amount = 0;
                 // $addonArray = [];
+                $datesInRange = [];
                 foreach ($vendor_cart_products as $vendor_cart_product) {
 
                     if( !empty($vendor_cart_product->slot_price) ) {
@@ -2183,6 +2186,7 @@ class OrderController extends FrontController
                     }
                     $vendor_cart_product->rental_price = $rental_price;
                     $order['payable_amount'] = $vendor_cart_product->price;
+
 
                     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
                         if (! empty($latitude) && ! empty($longitude)) {
@@ -2269,7 +2273,9 @@ class OrderController extends FrontController
                     }
                     $quantity_price = $quantity_price * $daysCountRecurring;
 
-
+                    if($action == 'p2p'){
+                        $quantity_price = $request->total_amount ?? 0;
+                    }
                     $quantity_container_charges = $container_charges_in_dollar_compare * $vendor_cart_product->quantity;
                     $total_container_charges = $total_container_charges + $quantity_container_charges;
 
@@ -2338,7 +2344,11 @@ class OrderController extends FrontController
 
                     $taxable_amount = $product_taxable_amount;
                     $vendor_taxable_amount = $taxable_amount;
-                    $variant_price = $variant->price * $daysCountRecurring;
+                    if($action == 'p2p'){
+                        $variant_price = $request->total_amount ?? 0;
+                    }else{
+                        $variant_price = $variant->price * $daysCountRecurring;
+                    }
                     // change variant_price price when is_service_product_price_from_dispatch on
                     $is_price_buy_driver = 0;
                     if(($action == 'on_demand') && ($is_service_product_price_from_dispatch ==1 )){
@@ -2360,6 +2370,12 @@ class OrderController extends FrontController
                         $variant_price = $request->total_amount;
                     }
                     $order_product = new OrderProduct;
+
+                    if($action == 'p2p'){
+                        $order_product->price = $request->total_amount ?? 0;
+                    }else{
+                        $order_product->price = $variant_price;
+                    }
                     $order_product->order_id = $order->id;
                     $order_product->price = $variant_price;
                     $order_product->bid_number = @$vendor_cart_product->bid_number ?? null;
@@ -2841,7 +2857,8 @@ class OrderController extends FrontController
 
 
 
-                $OrderVendor->payable_amount = $vendor_payable_amount +$fixedFeeAmount+$new_vendor_taxable_amount;
+                // $OrderVendor->payable_amount = $vendor_payable_amount +$fixedFeeAmount+$new_vendor_taxable_amount;
+                $OrderVendor->payable_amount = $request->$total_amount;
                 if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
                     $OrderVendor->subtotal_amount = $OrderVendor->payable_amount = $request->total_amount;
                 }
@@ -3090,8 +3107,9 @@ class OrderController extends FrontController
                 $order->recurring_booking_time  = $recurring_booking_time;
             }
 
-
+            $order->payable_amount = $request->total_amount;
             $order->save();
+            ProductAvailability::where('product_id', @$order_product->product_id)->whereIn('date_time', $datesInRange)->update(['not_available' => 1]);
             OrderFiles::where('cart_id',$cart->id)->update(['order_id'=>$order->id,'cart_id'=>'']);
 
             // $this->sendOrderNotification($user->id, $vendor_ids);

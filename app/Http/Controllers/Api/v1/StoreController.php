@@ -2499,7 +2499,7 @@ class StoreController extends BaseController
 							'body_html' => $request->body_html ?? null,
 							'meta_title' => '',
 							'meta_keyword' => '',
-							'meta_description' => '',
+							'meta_description' => $request->meta_description,
 							'product_id' => $product->id,
 							'language_id' => $client_lang->language_id
 						];

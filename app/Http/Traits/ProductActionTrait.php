@@ -882,6 +882,8 @@ trait ProductActionTrait{
                 $whereProductType = ' and `categories`.`type_id` IN ('.$categoryTypesArray.')';
             }
 
+            $user = auth()->user();
+            $vendor_id = $user->userVendor->vendor_id ?? 0;
             $raw_query = "";
 
             foreach($enable_layout as $enable_layout1){
@@ -932,7 +934,7 @@ trait ProductActionTrait{
                         `products`.`deleted_at` IS NULL 
                             AND `vendors`.`status` = 1 
                             AND `products`.`is_live` = 1
-    
+                            AND (`products`.`vendor_id` IS NULL OR `products`.`vendor_id` != $vendor_id)
                             $completeWhere
                                         
                             $vendorWhereIN 

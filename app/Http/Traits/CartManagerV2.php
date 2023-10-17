@@ -414,6 +414,8 @@ trait CartManagerV2{
         }
         $total_payable_amount = $total_subscription_discount_admin = $total_subscription_discount_vendor = $total_subscription_discount_delivery = $total_discount_amount = $total_discount_percent = $total_taxable_amount = $deliver_charges_lalmove = $total_fixed_fee_amount = 0.00;
         /* If cart have data then getting total and other variable set */
+      
+        
         if ($cartData) {
             $addon_price=0;
             $cart_dinein_table_id = NULL;
@@ -1192,12 +1194,14 @@ trait CartManagerV2{
                 }
 
                 $rental_price = 0;
+               
                 if (@$prod->start_date_time && @$prod->end_date_time) {
                     $start_date_time  = new Carbon($prod->start_date_time);
                     $end_date_time  = new Carbon($prod->end_date_time);
                     $prod->days = $start_date_time->diff($end_date_time)->days + 1;
                     $rental_price = $prod->pvariant ? $prod->pvariant->price : 0;
                     if (isset($prod->pvariant->month_price) && !empty($prod->pvariant->month_price)  && isset($prod->pvariant->week_price)) {
+
                         if ($prod->days >= 7 && $prod->days < 30) {
                             $rental_price = $prod->pvariant->week_price;
                         } elseif ($prod->days >= 30) {
@@ -1206,8 +1210,9 @@ trait CartManagerV2{
                     }
                     $prod->price = $rental_price;
                     $rental_price = $rental_price * $prod->days;
-                }
+                } 
 
+                
 
                     $product = Product::with([
                         'variant' => function ($sel) {
@@ -1713,7 +1718,7 @@ trait CartManagerV2{
                 }
                 //end  gift card calculation
 
-                // $cart->total_payable_amount =  $cartTotalPay ;
+                $cart->total_payable_amount =  $cartTotalPay ;
             }else{
                 $cartTotalPay = decimal_format($total_payable_amount - $total_taxable_amount - $other_taxes);
                 // gift card calculation
@@ -1723,7 +1728,7 @@ trait CartManagerV2{
                     $giftCardUsed  = @$calCulateGiftCard['used_GiftCardAmount'];
                 }
                 //end  gift card calculation
-                // $cart->total_payable_amount =  $cartTotalPay;
+                $cart->total_payable_amount =  $cartTotalPay;
                 $cart->payy = decimal_format(($total_payable_amount - $total_taxable_amount - $other_taxes) + $cart->other_taxes);
             }
 
@@ -1752,21 +1757,20 @@ trait CartManagerV2{
             if($requestType == 1){
                 $cart->left_section = view('frontend.cartnew-left')->with(['action' => $action,  'vendor_details' => $vendor_details, 'addresses'=> $this->user_allAddresses??[], 'countries'=> $countries, 'cart_dinein_table_id'=> $cart_dinein_table_id, 'processorProduct' => $processorProduct, 'preferences' => $preferences])->render();
             }
-        
+            
             $cart->upSell_products = ($upSell_products) ? $upSell_products->first() : collect();
             $cart->crossSell_products = ($crossSell_products) ? $crossSell_products->first() : collect();
             $cart->scheduled_date_time = $myDate;
             $cart->giftCardUsedAmount = $giftCardUsed;
             $cart->security_amount = $security_amount;
 
-
+          
             if($additionalPreference['agent_commison'] == 1){
-                
+            
                 $cart->plateform_fee = $cart->total_payable_amount * $additionalPreference['service_amount_percentage']/100;
                 $cart->agent_commison = $cart->total_payable_amount * $additionalPreference['agent_commison_amount_percentage']/100;
-                $cart->total_payable_amount  = $cart->total_payable_amount + $cart->plateform_fee ;
+                $cart->total_payable_amount  = $cart->total_payable_amount  ;
             }
- 
 
 
             if($preferences->scheduling_with_slots == 1 && $preferences->business_type == 'laundry'){
@@ -1814,7 +1818,7 @@ trait CartManagerV2{
             $cart->is_token =  $additionalPreference['is_token_currency_enable'] ? 1 : 0;
             $cart->token_value = $additionalPreference['token_currency'] ?? 0;
             $cart->products = $cartData->toArray();
-
+           
             if (taxJarEnable() && count($cart->products)) {
                 $cart->total_taxable_amount = $this->taxRateEstimate($cart);
                 $cart->total_payable_amount += $cart->total_taxable_amount;
