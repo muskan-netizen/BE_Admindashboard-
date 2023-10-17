@@ -375,8 +375,9 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                         </div>
                                     @endif
                                     @endif
-                                        
+                                    @if(is_category_p2p($product->category))
 
+                               
                                     <div class="flex-container">
                                         <div class="item-price">
                                             <h2>Daily</h2>
@@ -391,6 +392,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->month_price, 2)}}</p>
                                         </div>
                                     </div>
+                                    @endif
                                         
                                         @if( is_category_p2p($product->category) || is_attribute_enabled())
                                             @if( !empty($attr_array) )
@@ -445,7 +447,9 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
 
 
                                         <div id="variant_response">
+                                            @if(is_category_p2p($product->category) )
                                             <input type="text" class="form-control" name="booking_availability" id="range-datepicker" placeholder="{{date('Y-m-d')}}">
+                                            @endif
                                         </div>
                                         
 
@@ -794,6 +798,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                     </div>
 
                                 </div>
+                                @if(is_category_p2p($product->category))
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="summary-box" style="display:none;">
@@ -822,6 +827,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             </div>
                                         </div>
                                 </div>
+                                @endif
                                 @if( !is_category_p2p($product->category) && @$set_template->template_id == '8' )
                                     @include('frontend.product-coupon')
                             @endif

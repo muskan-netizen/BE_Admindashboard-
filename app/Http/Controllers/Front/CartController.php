@@ -2156,7 +2156,7 @@ class CartController extends FrontController
             ];
             $cart_details = $this->getCartsNewV2($obj, $request);
         }
-       
+        // pr($cart_details);
         $client_preference_detail = ClientPreference::first();
         $client_preference_detail  = $this->hideSecretKeys($client_preference_detail);
 

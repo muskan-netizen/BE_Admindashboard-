@@ -332,16 +332,17 @@
                                                             }
                                                             $price = $vendor_product->pvariant->price;
 
+                                                          
                                                          
-                                                            if($vendor_product->days ?? 0 <= 7){
+                                                            if($vendor_product->days  <= 7){
                                                                 $price = $vendor_product->pvariant->price;
-                                                            }elseif($vendor_product->days ?? 0 >= 7 && $vendor_product->days??0 < 30){
+                                                            }elseif($vendor_product->days >= 7 && $vendor_product->days < 30){
                                                                 $price = $vendor_product->pvariant->week_price;
                                                             }else{
                                                                 $price = $vendor_product->pvariant->month_price;
                                                             }
  
-                                                        
+                                                            
                                                          
                                                         @endphp
                                                         <div class="items-price">

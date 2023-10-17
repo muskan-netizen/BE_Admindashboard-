@@ -685,7 +685,6 @@ trait CartManagerV2{
                             $price_in_currency = $prod->pvariant->month_price;
                         }
                     }
-
                     //  GET PRICE from driver
                     if($is_service_product_price_from_dispatch ==1){
                             $price_in_currency = isset($prod->dispatch_agent_price) ? $prod->dispatch_agent_price : 0 ;
@@ -1212,7 +1211,8 @@ trait CartManagerV2{
                     $rental_price = $rental_price * $prod->days;
                 } 
 
-                
+                 
+              
 
                     $product = Product::with([
                         'variant' => function ($sel) {
@@ -1372,7 +1372,7 @@ trait CartManagerV2{
                 $total_service_fee = $total_service_fee + $vendor_service_fee_percentage_amount + $vendor_fixed_service_charge_amount;
 
                 $rental_price = $rental_price + $total_service_fee;
-
+                
                 $vendorData->coupon_amount_used = decimal_format($coupon_amount_used);
                 $vendorData->service_fee_percentage_amount = decimal_format($vendor_service_fee_percentage_amount);
                 $vendorData->fixed_service_charge_amount = decimal_format($vendor_fixed_service_charge_amount);
@@ -1696,6 +1696,8 @@ trait CartManagerV2{
             $cart->new_gross_amount = decimal_format($total_payable_amount + $total_discount_amount);
             $cart->is_long_term_service = $is_long_term_service ;
 
+
+
             if (@$rental_price) {
                 $cart->total_payable_amount = $rental_price;
             } else {
@@ -1706,6 +1708,7 @@ trait CartManagerV2{
                     $cart->total_payable_amount = $cart->total_payable_amount + $cart->total_fixed_fee_amount;
                 }
             }
+
 
             if(!$this->additionalPreferences->is_tax_price_inclusive){
                 $cartTotalPay = decimal_format($total_payable_amount);
@@ -1771,7 +1774,8 @@ trait CartManagerV2{
                 $cart->agent_commison = $cart->total_payable_amount * $additionalPreference['agent_commison_amount_percentage']/100;
                 $cart->total_payable_amount  = $cart->total_payable_amount  ;
             }
-
+  
+           
 
             if($preferences->scheduling_with_slots == 1 && $preferences->business_type == 'laundry'){
                 if($cart->pickupSlotsCnt==0){
@@ -1809,6 +1813,7 @@ trait CartManagerV2{
             }
 
             $cart->sub_total = @$rental_price;
+            
             $cart->pickup_delay_date =  $pickup_delay_date??0;
             $cart->dropoff_delay_date =  $dropoff_delay_date??0;
             $cart->delivery_type =  $code??'D';
@@ -1826,6 +1831,7 @@ trait CartManagerV2{
             }
 
         }
+       
         return $cart;
     }
 
