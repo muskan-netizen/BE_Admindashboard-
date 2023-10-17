@@ -2002,6 +2002,8 @@ class OrderController extends FrontController
             $order->is_postpay = (isset($request->is_postpay)) ? $request->is_postpay : 0;
             $order->pick_drop_order_number = $request->pick_drop_order_number ?? null;
             /* Save initial details of order */
+            $order->payable_amount = $request->total_amount;
+
             $order->save();
 
 
@@ -2167,6 +2169,20 @@ class OrderController extends FrontController
                         $slot_based_price += $vendor_cart_product->slot_price;
                     }
 
+                    $start_date_time  = new Carbon($vendor_cart_product->start_date_time);
+                    $end_date_time  = new Carbon($vendor_cart_product->end_date_time);
+                    $vendor_cart_product->days = $start_date_time->diff($end_date_time)->days + 1;
+                    $rental_price = $vendor_cart_product->pvariant ? $vendor_cart_product->pvariant->price : 0;
+                    if(@$vendor_cart_product->pvariant->month_price && @$vendor_cart_product->pvariant->week_price){
+                        if($vendor_cart_product->days >= 7 && $vendor_cart_product->days < 30){
+                            $rental_price = $vendor_cart_product->pvariant->week_price;
+                        }elseif($vendor_cart_product->days >= 30){
+                            $rental_price = $vendor_cart_product->pvariant->month_price;
+                        }
+                    }
+                    $vendor_cart_product->rental_price = $rental_price;
+                    $order['payable_amount'] = $vendor_cart_product->price;
+
                     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
                         if (! empty($latitude) && ! empty($longitude)) {
                             if (($preferences->slots_with_service_area == 1) && ($vendor_cart_product->vendor->show_slot == 0)) {
@@ -2204,6 +2220,22 @@ class OrderController extends FrontController
                     $quantity_price = 0;
                     $divider = (empty($vendor_cart_product->doller_compare) || $vendor_cart_product->doller_compare < 0) ? 1 : $vendor_cart_product->doller_compare;
                     $price_in_currency = $variant->price / $divider;
+
+                    $variant_price = $variant->price;
+                    if($luxury_option->id == 9 && @$variant->month_price){
+                        $schedule_days = $vendor_cart_product->additional_increments_hrs_min / 24;
+                            if($schedule_days >= 7 && $schedule_days < 30){
+                                
+                                $variant_price = $variant->week_price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
+                            }elseif($schedule_days >= 30){
+                                $variant_price = $variant->month_price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
+                            }else{
+                                $variant_price = $variant->price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
+                            }
+                        
+                    }
+
+
                     // change product price when is_service_product_price_from_dispatch on
                     if(($action == 'on_demand') && $is_service_product_price_from_dispatch ==1){
                         $price_in_currency =$vendor_cart_product->dispatch_agent_price / $divider;
@@ -2340,6 +2372,14 @@ class OrderController extends FrontController
                     $order_product->product_delivery_fee = isset($vendor_cart_product->product_delivery_fee) ? $vendor_cart_product->product_delivery_fee : 0;
                     $order_product->is_price_buy_driver = $is_price_buy_driver;
                     $order_product->specific_instruction = $vendor_cart_product->specific_instruction;
+                    
+                    
+                    if($action == 'p2p'){
+                        $order_product->price = $request->total_amount ?? 0;
+                    }else{
+                        $order_product->price = $variant->price * $daysCountRecurring;
+                    }
+                    
                     /**
                      * for rental case total_booking_time as a total time
                      * for on_demand and appointment total booking time as single service duration time as per service for get totel service time multiply by quantity

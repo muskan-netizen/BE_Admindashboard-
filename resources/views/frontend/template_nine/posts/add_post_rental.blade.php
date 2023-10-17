@@ -21,35 +21,37 @@
 
                     <div class=" row">
                         <div class="alPostBoxOuter form_top  col-md-11 mx-auto mt-2   ">
-                            <div class="px-3">
+                            <div class="px-0">
                                 <div class="d-flex mb-2 align-items-center justify-content-between alCategoryItemsHead">
                                     <h6 class="m-0">CHOOSE A CATEGORY </h6>
                                     <div class="fillter_div">
                                         <span>Filter:</span>
                                         <select name="category-filter" id="category_filter" value="">
                                             <option value="all">All</option>
-                                            <option value="10">Rental</option>
+                                            <option value="10">Rent</option>
                                             <option value="13">Sell</option>
                                         </select>
                                     </div>
                                 </div>
-                                <ul class=" p-0 m-0 no-gutters view-all_cats">
-                                    @if (@$categories)
-                                        @foreach ($categories as $key => $category)
-                                            @php  $icon = $category['icon']['proxy_url'] . '200/200' . $category['icon']['image_path'];  @endphp
-                                            <li class="px-1 category-list" id="category_{{ $category->id }}">
-                                                <a class="cate-item text-center w-100 py-3 mb-0 rounded select-category"
-                                                    data-name="{{@$category['translation_one']['name'] }}"
-                                                    data-id="{{ $category['id'] }}" data-type-id="{{$category->type_id}}" href="javascript:void(0);">
-                                                    <div class="alCategoryItems">
-                                                        <img class="" src="{{ $icon }}">                                                                                                              
-                                                        <h3>{{ @$category['translation_one']['name'] }}</h3>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                        @endforeach
-                                    @endif
-                                </ul>
+                                <div class="categoriesSlider">
+                                    <ul class=" p-0 m-0 no-gutters view-all_cats slider category_responsive">
+                                        @if (@$categories)
+                                            @foreach ($categories as $key => $category)
+                                                @php  $icon = $category['icon']['proxy_url'] . '200/200' . $category['icon']['image_path'];  @endphp
+                                                <li class="px-1 category-list" id="category_{{ $category->id }}">
+                                                    <a class="cate-item text-center w-100 py-3 mb-0 rounded select-category"
+                                                        data-name="{{@$category['translation_one']['name'] }}"
+                                                        data-id="{{ $category['id'] }}" data-type-id="{{$category->type_id}}" href="javascript:void(0);">
+                                                        <div class="alCategoryItems">
+                                                            <img class="" src="{{ $icon }}">                                                                                                              
+                                                            <h3>{{ @$category['translation_one']['name'] }}</h3>
+                                                        </div>
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                        @endif
+                                    </ul>
+                                </div>
                                 <ul class=" p-0 m-0 no-gutters view-rental_cats d-none">
                                     @if (@$categories)
                                         @foreach ($categories as $key => $category)
@@ -277,6 +279,8 @@
     <script src="{{ asset('assets/libs/select2/select2.min.js') }}"></script>
     <script src="{{ asset('assets/libs/jquery-toast-plugin/jquery-toast-plugin.min.js') }}"></script>
     <script src="{{ asset('assets/js/pages/toastr.init.js') }}"></script>
+    <script src="{{asset('assets/libs/flatpickr/flatpickr.min.js')}}"></script>
+
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script>

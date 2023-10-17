@@ -35,9 +35,9 @@ if(session()->has('applocale')){
                         </div>                       
                     </div>
                     @if(Auth::user())
-                    @if( p2p_module_status() )
+                   @if( p2p_module_status() )
                     <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
-                    @endif
+                    @endif 
                     @endif
                     <div class="al_toggle-menu">
                             <span></span><span></span><span></span>

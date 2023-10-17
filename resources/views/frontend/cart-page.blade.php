@@ -163,7 +163,11 @@
                         </div>
                         @if ($serviceType == 'rental' || $serviceType == 'p2p')
                             <div class="col-md-2 col text-center">
+                                @if($serviceType == 'p2p')
+                                <span>Duration By(Days)</span>
+                            @else
                                 <span>Duration By(min)</span>
+                            @endif
                             </div>
                         @else
                             <div class="col-md-2 col text-center">
@@ -337,9 +341,9 @@
                                                 <div class="col-6 col-md-2 mb-1 mb-md-0 order-md-2 p-0">
                                                     <div class="items-price">
                                                         @if ($additionalPreference['is_token_currency_enable'])
-                                                            {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($vendor_product->pvariant->actual_price * (@$vendor_product->pvariant->multiplier ?? 1))) }}
+                                                        {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($vendor_product->price * (@$vendor_product->days ?? 1))) }}
                                                         @else
-                                                            {{ Session::get('currencySymbol') . decimal_format($vendor_product->pvariant->actual_price * (@$vendor_product->pvariant->multiplier ?? 1)) }}
+                                                        {{ Session::get('currencySymbol') . decimal_format($vendor_product->price * (@$vendor_product->days ?? 1)) }}
                                                         @endif
                                                         @if (in_array($serviceType, ['appointment', 'on_demand']))
                                                             <span class="">
@@ -351,18 +355,30 @@
                                             @endif
                                             @if (!empty(@$vendor_product->quantity_price))
                                                 <div class="col-6 col-md-2 text-left order-md-4">
-                                                    @if ($serviceType == 'p2p')
-                                                        @php
-                                                            $additionalPrice = $vendor_product->quantity_price;
-                                                        @endphp
-                                                        <div class="items-price">
-                                                            @if ($additionalPreference['is_token_currency_enable'])
-                                                                SADS{!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($additionalPrice)) }}
-                                                            @else
-                                                                {{ Session::get('currencySymbol') . decimal_format($additionalPrice) }}
-                                                            @endif
-                                                        </div>
-                                                    @elseif ($serviceType == 'rental')
+                                            @if ($serviceType == 'p2p')
+                                                    @php
+                                                    $additionalPrice = 0;
+                                                    if ($vendor_product->pvariant->incremental_price_per_min > 0) {
+                                                        $additionalPrice = ($vendor_product->additional_increments_hrs_min/(60*24)) * $vendor_product->quantity_price;
+                                                    }
+                                                    if($vendor_product->days <= 7){
+                                                        $price = $vendor_product->price;
+                                                    }elseif($vendor_product->days >= 7 && $vendor_product->days < 30){
+                                                        $price = $vendor_product->week_price;
+                                                    }else{
+                                                        $price = $vendor_product->month_price;
+                                                    }
+
+                                                  
+                                                @endphp
+                                                <div class="items-price">
+                                                    @if ($additionalPreference['is_token_currency_enable'])
+                                                        {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($price * ($vendor_product->days ?? 1))) }}
+                                                    @else
+                                                        {{ Session::get('currencySymbol') . decimal_format($price * ($vendor_product->days ?? 1)) }}
+                                                    @endif
+                                                </div>
+                                             @elseif ($serviceType == 'rental')
                                                         @php
                                                             $additionalPrice = 0;
                                                             if ($vendor_product->pvariant->incremental_price_per_min > 0) {
@@ -405,7 +421,11 @@
                                                         <div class="qty-box alCartInput">
                                                             <div class="input-group">
                                                                 @php
-                                                                    $dura = getHoursMinutes($vendor_product->total_booking_time);
+                                                                     if($serviceType == 'p2p'){
+                                                                        $dura = getDaysBetweenTwoDates($vendor_product->start_date_time, $vendor_product->end_date_time);
+                                                                    }else{
+                                                                        $dura = getHoursMinutes($vendor_product->total_booking_time);
+                                                                    }
                                                                 @endphp
                                                                 <p class="mb-0">{{ $dura }}</p>
 
@@ -521,10 +541,12 @@
                                                         <p>{{ date('m/d/Y g:i A', strtotime($vendor_product->end_date_time)) }}
                                                         </p>
                                                     </div>
+                                                    @if($vendor_product->product->security_amount > 0)
                                                     <div class="col-3">
                                                         <h6 class="m-0 pl-0" style="font-weight: 600;">{{ __('Security Amount') }}</h6>
                                                         <p>{{ Session::get('currencySymbol') . decimal_format($vendor_product->product->security_amount) }}</p>
                                                     </div>
+                                                    @endif
                                                 </div>
                                             @endif
                                         @endif
@@ -981,7 +1003,7 @@
                     <div class="cart-summary p-2 pb-4">
                         <div class="col-12 mb-2">
                             <h5 class="order_text">{{ __('Order Summary') }}</h5>
-                            @if (array_key_exists('gift_card_id', $cart_details) && empty($cart_details->gift_card))
+                            @if (array_key_exists('gift_card_id',  (array) $cart_details) && empty($cart_details->gift_card))
                                 <a id='open_gift_card' href="javascript:void(0)"
                                     class="btn btn-solid w-100">{{ __('open gift Card') }}</a>
                             @endif
@@ -1804,6 +1826,7 @@
     </div>
 
 @endif
+
 @if ($serviceType == "rental" || $serviceType == 'p2p')
     @include('frontend.cart.rentalConsentFormModal')
 @endif
