@@ -74,10 +74,9 @@ use App\Models\ {
     OrderLongTermServiceSchedule,
     Bid,
     OrderNotificationsLogs,
-    VendorMargConfig
+    VendorMargConfig,
     CartBookingOption,
     CartRentalProtection,
-    OrderNotificationsLogs
 };
 use App\Models\ProductVariantSet;
 use GuzzleHttp\Client as GCLIENT;

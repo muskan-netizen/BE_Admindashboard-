@@ -18,6 +18,7 @@ $(function () {
 
     var slotValidater = 2;
 
+
     var footer_height = jQuery('.footer-light').height();
     var header_height = jQuery('.site-header').height();
     var window_height = jQuery(window).height();
@@ -1196,6 +1197,13 @@ $(document).ready(function () {
         let comment_for_pickup_driver = $("input[name='comment_for_pickup_driver']").val(); //commnet for pickup
         let comment_for_dropoff_driver = $("input[name='comment_for_dropoff_driver']").val(); //commnet for dropoff
         let comment_for_vendor = $("input[name='comment_for_vendor']").val(); //commnet for vendor
+        
+    var bookingOptionId ='';
+    var rentalProtectionId = '';
+    // var addonsId = '';
+    // var addonsOptionId = '';
+    var rentalProtectionId = '';
+    var bookingOptionId = '';
 
         if(business_type == 'laundry' && scheduling_with_slots == 1){
             var schedule_pickup = schedule_dt;
@@ -1234,7 +1242,7 @@ $(document).ready(function () {
                 type: "POST",
                 dataType: 'json',
                 url: update_cart_schedule,
-                data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, dropoff_scheduled_slot : slot_dropoff, address: address,payable_amount : cartAmount,bookingOptions : bookingOptionId, rental_protection : rentalProtectionId, addonID : addonsId, addonoptID : addonsOptionId , rentalProtectionId: rentalProtectionId, bookingOptionId: bookingOptionId},
+                data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, dropoff_scheduled_slot : slot_dropoff, address: address,payable_amount : cartAmount},
                 success: function (response) {
                     $(".error_prescription").attr("style", "display:none");
                     if(response.status == "passbase_submitted"){
@@ -3510,8 +3518,7 @@ $(document).ready(function () {
                         location.href =  '/category/cabservice?destination_location='+response.vendor.address+'&destination_location_latitude'+response.vendor.latitude+'&destination_location_longitude'+response.vendor.longitude+'&yacht_id='+product_id;
                     }
                     console.log(response.vendor.rental);
-                    if(response.vendor.rental == 0) {
-                      
+                    if(response.vendor.rental == 1) {
                        location.href =  '/viewcart';
                     }
                 } else {

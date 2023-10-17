@@ -2619,6 +2619,7 @@ class CartController extends FrontController
     {
         DB::beginTransaction();
         try {
+           
             $user = Auth::user();
             $client_timezone = DB::table('clients')->first('timezone');
             $user->timezone = $client_timezone->timezone ?? $user->timezone;
@@ -2629,12 +2630,14 @@ class CartController extends FrontController
             } else {
                 $cart_detail = Cart::where('unique_identifier', $new_session_token)->first();
             }
+
             $productIds = CartProduct::where('cart_id', $cart_detail->id)->whereHas('cartProduct', function ($q) {
                 $q->where('pharmacy_check', 1);
             })->pluck('product_id');
+          
 
             if (count($productIds) > 0) {
-
+         
                 $presciptionProducts = [];
                 foreach ($productIds as $product_id) {
 
@@ -2648,6 +2651,7 @@ class CartController extends FrontController
                     return response()->json(['status' => 'error_prescription', 'presciptionProducts' => $presciptionProducts]);
                 }
             }
+           
             $addon_ids = [];
             if ($request->has('addonID')) {
                 $addon_ids = $request->addonID;
@@ -2663,6 +2667,8 @@ class CartController extends FrontController
                 }
             }
 
+          
+
             foreach ($addonSets as $key => $value) {
                 $addon = AddonSet::join('addon_set_translations as ast', 'ast.addon_id', 'addon_sets.id')
                     ->select('addon_sets.id', 'addon_sets.min_select', 'addon_sets.max_select', 'ast.title')
@@ -2674,6 +2680,7 @@ class CartController extends FrontController
                 }
             }
             $cartProduct = CartProduct::where('cart_id', $cart_detail->id)->first();
+    
             $isnew = 0;
             if (!$cartProduct) {
                 $isnew = 1;
