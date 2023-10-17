@@ -331,6 +331,7 @@ $preference = $client_preference_detail;
 @endif
 
 
+@if($vendor_type!="car_rental")
 
 <section class="section-b-space ratio_asos  pt-0 mt-0 pb-0 mt-0" id="our_vendor_main_div">
    <div class="vendors">
@@ -540,6 +541,7 @@ $preference = $client_preference_detail;
       @endforeach
    </div>
 </section>
+@endif
 <section class="no-store-wrapper mb-3" style="display: none;"  >
    <div class="container">
       @if(count($for_no_product_found_html)) @foreach($for_no_product_found_html as $key => $homePageLabel) @include('frontend.included_files.dynamic_page') @endforeach @else
