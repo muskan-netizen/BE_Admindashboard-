@@ -488,6 +488,8 @@ class ProductController extends BaseController
             $response['relatedProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'relate', $product->related, $request->service);
             $response['upSellProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'upSell', $product->upSell, $request->service);
             $response['crossProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'cross', $product->crossSell, $request->service);
+            $response['similiar_products_by_same_user'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'similiar_product_user', $product->crossSell, $request->service,$product ?? null);
+            $response['similiar_products_in_category'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'similiar_product_category', $product->crossSell, $request->service,$product ?? null);
             $response['product_attribute'] = $product_attr;
             $response['additional_features'] = $additional;
             $response['productBookingsCount'] = $productBookingsCount;
@@ -549,7 +551,7 @@ class ProductController extends BaseController
 
     }
 
-    public function metaProduct($langId, $multiplier, $for = 'relate', $productArray = [], $service="")
+    public function metaProduct($langId, $multiplier, $for = 'relate', $productArray = [], $service="",$product =null)
     {
         if(empty($productArray)){
             return $productArray;
@@ -580,7 +582,19 @@ class ProductController extends BaseController
                     ])->select('id', 'sku', 'averageRating','calories')
                     ->whereIn('id', $productIds);
 
+
+
+        if($for == 'similiar_product_user'){
+            $products = $products->where('vendor_id',$product->vendor_id)->whereNotIn('id',[$product->id]);
+
+        }
+        if($for == 'similiar_product_category'){
+            $products = $products->where('category_id',$product->category_id); 
+        }
+
+
         $products = $products->get();
+
         if(!empty($products)){
             $fields = [];
             foreach ($products as $key => $value) {
