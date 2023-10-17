@@ -578,9 +578,9 @@ $preference = $client_preference_detail;
    </div>
 </div>
 
-@if($vendor_type=="car_rental")
+{{-- @if($vendor_type=="car_rental")
    @include('frontend.yacht.rental');
-@endif
+@endif --}}
 
 <script type="text/template" id="desktop_banners_template">
 	<div class="carousel-inner">
