@@ -320,7 +320,7 @@
 
               
                     if(available_product_variant) {
-                      console.log('adfdaffa');
+                   
                       // $("a#add_to_cart_btn").addClass("addToCart");
                       $('#available_product_variant').val(available_product_variant);
                   
