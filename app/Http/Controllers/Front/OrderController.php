@@ -62,6 +62,7 @@ use App\Models\ClientPreference;
 use App\Http\Traits\ {
     ApiResponser,
     CartManager,
+    OrderBlockchain,
     SquareInventoryManager,
     VendorTrait,
     OrderTrait,
@@ -77,7 +78,8 @@ use App\Models\ {
     CartBookingOption,
     CartRentalProtection,
     OrderNotificationsLogs,
-    ProductAvailability
+    ProductAvailability,
+    ClientPreferenceAdditional
 
 };
 use App\Models\ProductVariantSet;
@@ -92,7 +94,7 @@ use Illuminate\Support\Facades\Http;
 
 class OrderController extends FrontController
 {
-    use ApiResponser, CartManager, SquareInventoryManager,VendorTrait,OrderTrait,MargTrait;
+    use ApiResponser, CartManager, SquareInventoryManager,VendorTrait,OrderTrait,OrderBlockchain;
 
     /**
      * Display a listing of the resource.
@@ -1803,7 +1805,10 @@ class OrderController extends FrontController
             }
          }
 
+
         $order_response = $this->orderSave($request, "1");
+
+        
         $response = $order_response->getData();
         if ($response->status == 'Success') {
             # if payment type cash on delivery or payment status is 'Paid'
@@ -1818,6 +1823,8 @@ class OrderController extends FrontController
             return $this->errorResponse($response->message, $response->code ?? 400);
         }
     }
+
+
 
     public function orderSave($request, $paymentStatus)
     {
@@ -3313,6 +3320,17 @@ class OrderController extends FrontController
             // }
 
             DB::commit();
+            $blockchain_route = ClientPreferenceAdditional::where('key_name','blockchain_route_formation')->first();
+              $order_data = Order::select('id','user_id')->with([
+                'ordervendor'
+            ])
+                ->where('order_number', $order->order_number)
+                ->first();
+            if(isset($blockchain_route) && ($blockchain_route->key_value == 1))
+            {
+                @$this->saveBlockchainOrderDetail($order_data);
+
+            }
             $this->sendSuccessSMS($request, $order);
             // $hub_key = @getAdditionalPreference(['is_marg_enable']);
             
