@@ -13,11 +13,12 @@ use App\Models\ProductTranslation;
 use App\Models\ProductVariant;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\ToasterResponser;
+use Illuminate\Support\Str;
 use App\Models\Client;
 use App\Models\ProductAttribute;
 use App\Models\ProductImage;
 use App\Models\UserVendor;
-use App\Models\{Vendor, ProductAvailability, ServiceArea};
+use App\Models\{Vendor, ProductAvailability, ServiceArea, Type, User, VendorCategory};
 use App\Models\VendorMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -197,8 +198,50 @@ class PostController extends FrontController
 			$slug = str_replace(' ', '-',$slug);
 			$generated_slug = $sku_url.'.'.$slug;
 
-			$user = Auth::user();		
+			$user = Auth::user();	
+            $users = User::where('id',Auth::user('id'))->first();	
 			$user_vendor = UserVendor::where('user_id', $user->id)->first();
+            if(empty($user_vendor)){
+              
+
+                    $users->assignRole(4); // by default make this user as vendor
+                    
+                    $users->is_admin = 1;
+                    $users->save();
+
+                    // Create vendor with default images
+                    $vendor = new Vendor();
+                    $vendor->logo = 'default/default_logo.png';
+                    $vendor->banner = 'default/default_image.png';
+
+                    $vendor->status = 1;
+                    $vendor->name = $users->name;
+                    $vendor->p2p = 1;
+                    $vendor->email = $users->email ?? '';
+                    $vendor->phone_no = $users->phone_number ?? '';
+                    $vendor->slug = Str::slug($users->name, "-");
+                    $vendor->save();
+                    $user_vendor =  UserVendor::create(['user_id' => $user->id, 'vendor_id' => $vendor->id]);
+                    $user = new User ;
+                    $user->createPermissionsUser();
+                    $p2p_type = Type::where('service_type', 'p2p')->first();
+                    if( !empty($p2p_type) ) {
+                        $category_id = Category::where('type_id', $p2p_type->id)->get();
+                        $categories_ids = [];
+                        
+                        if( !empty($category_id) ) {
+                            foreach($category_id as $key => $val) {
+                                $categories_ids[] = $val->id;
+                            }
+                        }
+                        $request->request->add(['selectedCategories'=> $categories_ids]);
+                        
+                    }
+                    
+                    $this->addDataSaveVendor($request, $vendor->id);
+                   
+                }
+            
 			if(@$user_vendor->vendor_id){
 				$product = new Product();
 				$product->sku = $slug;
@@ -315,6 +358,40 @@ class PostController extends FrontController
 
         }
 	 }
+
+     public function addDataSaveVendor(Request $request, $vendor_id){
+
+        $vendor = Vendor::where('id', $vendor_id)->firstOrFail();
+        $VendorController = new VendorController();
+
+        $request->merge(["return_json"=>1]);
+        $VendorConfigrespons = $VendorController->updateConfig($request,'',$vendor_id)->getData();//$this->updateConfig($vendor_id);
+       // pr($VendorConfigrespons);
+        if($request->has('can_add_category')){
+            $vendor->add_category = $request->can_add_category == 'on' ? 1 : 0;
+        }
+        if ($request->has('assignTo')) {
+            $vendor->vendor_templete_id = $request->assignTo;
+        }
+
+        $vendor->save();
+        if($request->has('category_ids')){
+            foreach($request->category_ids as $category_id){
+                VendorCategory::create(['vendor_id' => $vendor_id, 'category_id' => $category_id, 'status' => '1']);
+            }
+        }
+        if($request->has('selectedCategories')){
+            foreach($request->selectedCategories as $category_id){
+                VendorCategory::create(['vendor_id' => $vendor_id, 'category_id' => $category_id, 'status' => '1']);
+            }
+        }
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Vendor created Successfully!',
+            'data' => $VendorConfigrespons
+        ]);
+        // pr($VendorConfigrespons);
+    }
 
 
      function uploadProductImage360($request, $product){
