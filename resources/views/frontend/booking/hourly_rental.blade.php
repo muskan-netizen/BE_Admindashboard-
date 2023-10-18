@@ -427,22 +427,27 @@ input[type=number]::-webkit-outer-spin-button {
                                     </fieldset>
                                     <fieldset>
                                         <h2 class="fs-title">Choose your pick-up location</h2>
-                                        
-                                        <div class="location-search d-flex align-items-center check-pickup" style="display: block;">
+                                        <div class="location-box check-dropoff-secpond">
+                                            <ul class="location-inputs position-relative pl-2" id="location_input_main_div">
+                                                <li class="d-flex dots">
+                                                    <div class="title title-24 position-relative edit-pickup"> {{ __('From') }} - <span
+                                                            id="pickup-where-from"></span><i class="fa fa-angle-down" aria-hidden="true"></i>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                            <a class="add-more-location position-relative pl-2" style="display:none"
+                                                href="javascript:void(0)">{{ __('Add Destination') }}</a>
+                                        </div>
+                                        <div class="location-search d-flex align-items-center check-pickup">
                                             <i class="fa fa-search" aria-hidden="true"></i>
                                             <input class="form-control pickup-text pac-target-input" type="text"
                                                 name="pickup_location_name[]" placeholder="Add A Pick-Up Location" id="pickup_location"
                                                 autocomplete="off">
                                         </div>
                                             <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
-                                            <input type="button" name="next"  class="next action-button" value="Choose Rental"/>
+                                            <input type="button" name="next"  class="action-button" value="Book Now"/>
                                     </fieldset>
-                                    <fieldset>
-                                        <h2 class="fs-title">Rental Details</h2>
-                                        <div class="cab-detail-box style-4 d-none" id="cab_detail_box"></div>
-                                        <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
-                                        <input type="button" name="next"  class="next action-button" value="Confirm Pickup"/>
-                                    </fieldset>
+                                    
                                  
                                    
                                 </form>

@@ -42,7 +42,6 @@ $(".next").click(function(){
 		//this comes from the custom easing plugin
 		easing: 'easeInOutBack'
 	});
-
     if(div_id == "select_vendor")
     {
         var rental_time = $('#datetime-picker').val();
