@@ -1339,6 +1339,7 @@ $(document).ready(function () {
         });
 
         let schedule_datetime = '';
+        let rental_price = $('#rental_price').val() ?? 0;
         let schedule_datetimeset = $('#schedule_date').val();
         if(schedule_datetimeset != undefined && schedule_datetimeset != 0){
             schedule_datetime = moment(schedule_datetimeset).format('YYYY-MM-DD HH:mm');
@@ -1348,11 +1349,11 @@ $(document).ready(function () {
 
         const urlParams = new URLSearchParams(window.location.search);
         const yacht_id = urlParams.get('yacht_id');
-
+         
         $.ajax({
             type: "POST",
             dataType: 'json',
-            data: {locations:locations,rider_id:rider_id, schedule_date_delivery:schedule_datetime, is_cab_pooling:is_cab_pooling, no_seats_for_pooling:no_seats_for_pooling,recurringformPost},
+            data: {locations:locations,rider_id:rider_id, schedule_date_delivery:schedule_datetime, is_cab_pooling:is_cab_pooling, no_seats_for_pooling:no_seats_for_pooling,recurringformPost,rental_price:parseInt(rental_price)},
             url: get_product_detail+'/'+product_id,
             success: function(response) {
                 console.log({response});
@@ -1403,6 +1404,8 @@ $(document).ready(function () {
                         }else{
                             $('.for_friend_fields_div').addClass('d-none');
                         }
+
+                         $('#selected_rental_product').val(response.data.id);
 
                     }else{
                         $("#cab_detail_box ").html('<p class="text-center my-3">'+ no_result_message +'</p>').show();

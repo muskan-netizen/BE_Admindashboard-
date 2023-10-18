@@ -5,6 +5,7 @@
     {{-- <link rel="stylesheet" href="{{asset('assets/libs/jquery.datetimepicker.min.css')}}"> --}}
     <link rel="stylesheet" type="text/css" href="{{asset('front-assets/css/slick-theme.css')}}"/>
     <link rel="stylesheet" href="{{asset('front-assets/css/slick.css')}}">
+    <link rel="stylesheet" href="{{asset('front-assets/css/hourly-rental.css')}}">
 @endsection
 @section('content')
     <style type="text/css">
@@ -193,7 +194,7 @@
             height: 100%;
             overflow-x: hidden;
             overflow-y: scroll;
-            width: 100%;
+            width: 140% ;
         }
 
         .slick_bid_ride .slick-items{
@@ -315,6 +316,7 @@ input[type=number]::-webkit-outer-spin-button {
 .text-loader i {
     font-size: 16px !important;
 }
+
     </style>
     <section id="alTaxiBookingWrapper" class="cab-booking pt-0 pb-0">
         <div class="alFullMapArea col-md-12 p-0 h-100">
@@ -325,59 +327,131 @@ input[type=number]::-webkit-outer-spin-button {
         </div>
         <div class="alFullMapForm col-md-12 p-0 position-absolute">
             <div class="booking-experienceNew ds bc">
-                <div class="address-form">
-                    @if (isset($client_preference_detail) && $client_preference_detail->book_for_friend == 1)
+             
                         <div class="tip_radio_controls_book_friend text-center mt-2">
-                            <input type="radio" class="tip_radio is_for_friend" id="for_me" name="is_for_friend"
+                            <input type="radio" class="tip_radio is_for_friend" id="hourly_rental" name="hourly_rental"
                                 value="0">
-                            <label class="tip_label mb-0  my-2 active " for="for_me" id="label_for_me">
-                                <h5 class="m-0" id="tip_5">{{ __('For Me') }}</h5>
-                            </label>
-                            <input type="radio" class="tip_radio is_for_friend" id="for_friend" name="is_for_friend"
-                                value="1">
-                            <label class="tip_label mb-0  my-2" for="for_friend" id="label_for_friend">
-                                <h5 class="m-0" id="tip_5">{{ __('For Others') }}</h5>
+                            <label class="tip_label mb-0  my-2 active " for="hourly_rental" id="hourly_rental">
+                                <h5 class="m-0" id="tip_5">{{ __('Hourly Rental') }}</h5>
                             </label>
                         </div>
-                    @endif
                     
-                    @if($is_cab_pooling == 1 || $is_bid_ride_enable == 1 || $is_recurring_booking == 1 || $is_particular_driver == 1)
-                        <div class="pool_radio_controls text-center">
-                            <div class="item">
-                                <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_booking" name="is_cab_pooling_radio"
-                                    value="0" checked>
-                                <label class="pool_label mb-0  my-2 active " for="cab_booking" id="label_cab_booking">
-                                    <h5 class="m-0" id="pool_5">{{ __('Booking') }}</h5>
-                                </label>
-                            @endif
-                            </div>
-                            @if($is_bid_ride_enable == 1)
-                            <div class="item">
-                                <input type="radio" id="bid_radio" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="0">
-                                <label class="mb-0  my-2" >
-                                    <h5 class="m-0" id="">Bid</h5>
-                                </label>
-                            </div>
-                            @endif
+                        <!-- MultiStep Form -->
+                        <div class="row">
+                            <div class="col-md-12 col-md-offset-3">
+                                <form action="" id="msform">
+                                    
+                                    @csrf
+                                    <!-- fieldsets -->
+                                    <fieldset>
+                                        <div class="custom-list">
+                                            <h2 class="fs-title">Hourly Rentals</h2>
+                                            <hr>
+                                            <div class="list-item">Keep the car and driver for as long as you need</div>
+                                            <div class="list-item">Make as many stops as you want</div>
+                                            <div class="list-item">No hassles of driving or parking</div>
+                                            <div class="list-item">Book anytime and get confirmation within minutes</div>
+                                        </div>
+                                        <hr>
+                                        <div class="row mt-2">
+                                           
+                                            <div class="col-6 text-left ">Starting at</div>
+                                            <div class="col-6 text-right">$20/hr</div>
+                                        </div>
+                                        <input type="button" name="next" class="next action-button" value="Get Started"/>
 
-                            @if($is_particular_driver == 1)
-                            <div class="item">
-                                <input type="radio" id="particular_driver_radio" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="2">
-                                <label class="mb-0  my-2" >
-                                    <h5 class="m-0" id="">Request to Driver</h5>
-                                </label>
+                                    </fieldset>
+                                    
+                                    <fieldset>
+                                        <h2 class="fs-title">How much time do you need?</h2>
+                                        <div class="container rental-container ">
+                                            <div class="button-container">
+                                                <div class="custom-button" id="minusButton">-     </div>
+                                                <div class="button-text" id="buttonText">0</div>
+                                                <div class="custom-button" id="plusButton">+</div>
+                                            </div>
+                                            <input type="hidden" id="rental_hours" value="" />
+                                            <input type="hidden" id="rental_price" value="" />
+                                           
+                                            <div class="box-container mb-3">
+                                                <div class="custom-box"></div>
+                                                <div class="custom-box"></div>
+                                                <div class="custom-box"></div>
+                                                <div class="custom-box"></div>
+                                                <div class="custom-box"></div>
+                                                <div class="custom-box"></div>
+                                                <div class="custom-box"></div>
+                                                <div class="custom-box"></div>
+                                                <div class="custom-box"></div>
+                                                <div class="custom-box"></div>
+                                                <div class="custom-box"></div>
+                                                <div class="custom-box"></div>
+                                        </div>
+                                        <input type="hidden" id="selected_rental_product" value="" />
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <button class="btn btn-primary rounded-button" id ="leave-now">Leave Now</button>
+
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="datetime-picker" name="booking-date" placeholder="Leave Later">
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                          <hr>
+                                        <div class="row mt-2 mb-2">
+                                           
+                                            <div class="col-6 text-left ">Starting at</div>
+                                            <div class="col-6 hourly_price text-right">$20/hr</div>
+                                        </div>
+                                        
+                                        
+                                        <hr>
+                                        <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                                        <input type="button" id="select_vendor" name="next" class="next action-button" value="Choose a trip"/>
+                                    </fieldset>
+                                    <fieldset>
+                                        <h2 class="fs-title">Cabs Available</h2>
+                                        <div class="vehical-container style-4" id="search_product_main_div"></div>
+                                        <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                                        <input type="button" name="next"  class="next action-button" value="Choose Rental"/>
+                                    </fieldset>
+                                    <fieldset>
+                                        <h2 class="fs-title">Rental Details</h2>
+                                        <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                                        <input type="button" name="next"  class="next action-button" value="Next"/>
+                                        <div class="cab-detail-box style-4 d-none" id="cab_detail_box"></div>
+                                    </fieldset>
+                                    <fieldset>
+                                        <h2 class="fs-title">Choose your pick-up location</h2>
+                                        
+                                        <div class="location-search d-flex align-items-center check-pickup" style="display: block;">
+                                            <i class="fa fa-search" aria-hidden="true"></i>
+                                            <input class="form-control pickup-text pac-target-input" type="text"
+                                                name="pickup_location_name[]" placeholder="Add A Pick-Up Location" id="pickup_location"
+                                                autocomplete="off">
+                                        </div>
+                                            <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                                            <input type="button" name="next"  class="next action-button" value="Choose Rental"/>
+                                    </fieldset>
+                                    <fieldset>
+                                        <h2 class="fs-title">Rental Details</h2>
+                                        <div class="cab-detail-box style-4 d-none" id="cab_detail_box"></div>
+                                        <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                                        <input type="button" name="next"  class="next action-button" value="Confirm Pickup"/>
+                                    </fieldset>
+                                 
+                                   
+                                </form>
                             </div>
-                            @endif
-                            @if($is_recurring_booking == 1)
-                            <div class="item">
-                            <input type="radio" id="is_recurring_booking" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="4">
-                            <label class="mb-0  my-2" >
-                                <h5 class="m-0" id="">{{ __(getDynamicTypeName('Recurring')) }}</h5>
-                            </label>
-                            </div>
-                        @endif
                         </div>
+                    <!-- /.MultiStep Form -->
                     
+                        
+                    <div class="address-form d-none">
 
 
 
@@ -386,26 +460,7 @@ input[type=number]::-webkit-outer-spin-button {
                             <div class="title title-36">{{ __(getDynamicTypeName('Where can we pick you up?')) }}</div>
                         </div>
                     </div>
-                    <div class="location-box check-dropoff-secpond" style="display:none">
-                        <ul class="location-inputs position-relative pl-2" id="location_input_main_div">
-                            <li class="d-flex dots">
-                                <div class="title title-24 position-relative edit-pickup"> {{ __('From') }} - <span
-                                        id="pickup-where-from"></span><i class="fa fa-angle-down" aria-hidden="true"></i>
-                                </div>
-                            </li>
-                            <li class="d-flex dots where-to-first">
-                                <div class="title title-36 pr-3 position-relative">{{ __(getDynamicTypeName('Where To?')) }}</div>
-                            </li>
-                            <li class="d-flex dots where-to-second" style="display:none !important;">
-                                <div class="title title-24 position-relative edit-dropoff"> {{ __('To') }} - <span
-                                        id="dropoff-where-to"></span><i class="fa fa-angle-down" aria-hidden="true"></i>
-                                </div>
-                                <i class="fa fa-times ml-1 apremove" aria-hidden="true" data-rel=""></i>
-                            </li>
-                        </ul>
-                        <a class="add-more-location position-relative pl-2" style="display:none"
-                            href="javascript:void(0)">{{ __('Add Destination') }}</a>
-                    </div>
+                    
                     <input type="hidden" name="pickup_location_latitude[]" value="" id="pickup_location_latitude">
                     <input type="hidden" name="pickup_location_longitude[]" value="" id="pickup_location_longitude">
                     <input type="hidden" name="destination_location_latitude[]" value=""
@@ -421,12 +476,7 @@ input[type=number]::-webkit-outer-spin-button {
                     <input type="hidden" id="address-longitude" value="" />
                     <input type="hidden" name="schedule_date" value="" id="schedule_date" />
                     <div class="location-containerNew style-4">
-                        <div class="location-search d-flex align-items-center check-pickup">
-                            <i class="fa fa-search" aria-hidden="true"></i>
-                            <input class="form-control pickup-text pac-target-input" type="text"
-                                name="pickup_location_name[]" placeholder="Add A Pick-Up Location" id="pickup_location"
-                                autocomplete="off">
-                        </div>
+                      
                         <div class="location-search d-flex align-items-center" style="display:none !important;"
                             id="destination_location_add_more">
                         </div>
@@ -542,7 +592,7 @@ input[type=number]::-webkit-outer-spin-button {
                             <div class="cab-button d-flex flex-nowrap align-items-center py-2 pl-2" id="vendor_main_div">
                             </div>
                         </div>
-                        <div class="vehical-container style-4" id="search_product_main_div"></div>
+                        
                         <div class="vehical-container style-4" id="search_product_rider_main_div" style="display:none;">
                         </div>
 
@@ -1096,43 +1146,15 @@ input[type=number]::-webkit-outer-spin-button {
             </div>
         </script>
 
-                <script type="text/template" id="cab_detail_box_template">
+            <script type="text/template" id="cab_detail_box_template">
             <div class="cab-outer style-4">
+
                 <div class="bg-white p-2">
-                    <a class="close-cab-detail-box" href="javascript:void()">✕</a>
                     <div class="cab-image-box w-100 d-flex align-items-center justify-content-center">
                         <img src="<%= result.image_url %>">
                     </div>
                     <div class="cab-location-details">
                     <div style="height:5px;"><div class="loader cab-detail-main-loader" style="display: none;"></div></div>
-                    @if($is_cab_pooling == 1)
-                    <div class="show_no_of_seats_if_pooling" style="display:none;">
-                        <div class="row mt-2">
-                            <div class="col-md-7">
-                                <div class="number_seats">
-                                    <h5>{{ __('Number Of Seats') }}</h5>
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="input-get-value">
-                                    <div class="input-group">
-                                        <span class="input-group-btn">
-                                            <button type="button" class="btn btn-danger btn-number-up-down" data-type="minus">
-                                                <i class="fa fa-minus" aria-hidden="true"></i>
-                                            </button>
-                                        </span>
-                                        <input type="text" name="no_seats_for_pooling" id="no_seats_for_pooling" class="form-control seats-number-up-down text-center" value="<%= result.no_seats_for_pooling%>" min="1" max="<%= result.seats_for_booking%>">
-                                        <span class="input-group-btn">
-                                            <button type="button" class="btn btn-success btn-number-up-down" data-type="plus">
-                                                <i class="fa fa-plus" aria-hidden="true"></i>
-                                            </button>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
 
                     <h4 class="d-flex align-items-center justify-content-between"><b><%= result.name %></b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.tags_price%></b></label></h4>
@@ -1167,12 +1189,6 @@ input[type=number]::-webkit-outer-spin-button {
                 <div class="cab-amount-details px-2">
                     <div class="row">
 
-                        <% if(result.yacht) { %>
-                            <div class="col-6 mb-2">{{__('Yacht Name')}}</div>
-                            <div class="col-6 mb-2 text-right" id=""><%= result.yacht.title %> </div>
-                            <div class="col-6 mb-2">{{__('Yacht image')}}</div>
-                            <img style="height:70px; width:170px" src="<%= result.yacht.image_url %>">
-                        <% } %>
 
                         <div class="col-6 mb-2">{{__('Distance')}}</div>
                         <div class="col-6 mb-2 text-right" id="distance"><%= result.distance %> {{__($client_preference_detail->distance_unit_for_time)}}</div>
@@ -1209,31 +1225,8 @@ input[type=number]::-webkit-outer-spin-button {
                         <% } %>
                     </div>
                 </div>
-                <div class="coupon_box d-flex w-100 py-2 align-items-center justify-content-between">
-                    <label class="mb-0 ml-1">
-                <span class="code-text">{{__('Select a promo code')}}</span>
-            </label>
-
-                    <a href="javascript:void(0)" class="ml-1" data-product_id="<%= result.id %>"  data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" id="promo_code_list_btn_cab_booking">Apply</a>
-                    <a class="remove-coupon" href="javascript:void(0)" id="remove_promo_code_cab_booking_btn" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" style="display:none;">Remove</a>
-
-        </div>
-        <% if(result.add_on){ %>
-        <h5>Addons</h5>
-            <div class="addon-box btn-product-order-form-div">
-                <% _.each(result.add_on, function(addon, key){%>
-                    <div class="">
-                        <h6><%= addon.add_on_name.title%></h6>
-                        <% _.each(addon.add_on_name.option, function(option, key){%>
-                            <div class="d-flex">
-                                <input type="checkbox" class="addon-opt" name="addon-opt-<%= option.id%>" data-id="<%=option.id%>"/>
-                                <p><%= option.title %><span><%= option.price %></span></p>
-                            </div>
-                        <%})%>
-                    </div>
-                <%})%>
-            </div>
-        <%}%>
+                
+     
         <% if((result.faqlist) && (result.faqlist) > 0 ){ %>
         <div class="text-center my-3 btn-product-order-form-div">
             <button class="clproduct_order_form btn btn-solid w-100"  id="add_product_order_form"  data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" >{{__('Product Order Form')}}</button>
@@ -1410,7 +1403,7 @@ input[type=number]::-webkit-outer-spin-button {
     </div>
 </script>
 
-                <div class="cab-detail-box style-4 d-none" id="cab_detail_box"></div>
+               
                 <div class="promo-box style-4 d-none">
                     <a class="d-block mt-2 close-promo-code-detail-box" href="javascript:void(0)">✕</a>
                     <div class="row" id="cab_booking_promo_code_list_main_div">
@@ -1948,6 +1941,8 @@ input[type=number]::-webkit-outer-spin-button {
             var output = document.getElementById('output');
             output.src = URL.createObjectURL(event.target.files[0]);
         };
+        var hourly_rental_url = "{{  route('front.booking.updateRentalPrice')}}";
+        var csrf_token = "{{ csrf_token()}}";
     </script>
     @if (in_array('kongapay', $client_payment_options))
         <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
@@ -1963,10 +1958,13 @@ input[type=number]::-webkit-outer-spin-button {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
         integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="{{ asset('js/cab_booking.js') }}"></script>
+        <script src="{{ asset('js/cab_booking.js') }}"></script>
+
     <script src="{{ asset('js/biding.js') }}"></script>
+    <script src="{{asset('assets/libs/flatpickr/flatpickr.min.js')}}"></script>
     <script>
         var category_id = "{{ $category->id ?? '' }}";
+        var is_hourly_rental_enabled = 1;
         var category_name = "{{ @$category->translation[0]->name ?? '' }}";
         var routeset = "{{ route('pickup-delivery-route', ':category_id') }}";
 
@@ -1977,6 +1975,7 @@ input[type=number]::-webkit-outer-spin-button {
         var get_payment_options = "{{ url('looking/payment/options') }}";
         var promo_code_list_url = "{{ route('verify.promocode.list') }}";
         var get_vehicle_list = "{{ url('looking/get-list-of-vehicles') }}";
+        var get_rental_vehicle_list = "{{ route('get-list-of-rental-vehicles') }}";
         var cab_booking_create_order = "{{ url('looking/create-order') }}";
         var live_location = "{{ URL::asset('/images/live_location.gif') }}";
         var no_coupon_available_message = "{{ __('No Other Coupons Available.') }}";
@@ -2089,4 +2088,6 @@ input[type=number]::-webkit-outer-spin-button {
     }
 
     </script>
+        <script src="{{ asset('js/hourly-rental.js') }}"></script>
+
 @endsection

@@ -503,6 +503,7 @@ class ClientPreferenceController extends BaseController{
             $preference->stop_order_acceptance_for_users = ($request->has('stop_order_acceptance_for_users') && $request->stop_order_acceptance_for_users == 'on') ? 1 : 0;
             $preference->map_on_search_screen = ($request->has('map_on_search_screen') && $request->map_on_search_screen == 'on') ? 1 : 0;
             $preference->slots_with_service_area = ($request->has('slots_with_service_area') && $request->slots_with_service_area == 'on') ? 1 : 0;
+            $preference->is_hourly_pickup_rental = ($request->has('is_hourly_pickup_rental_switch') && $request->is_hourly_pickup_rental_switch == 'on') ? 1 : 0;
         }
 
         if($request->has('edit_order_modes') && $request->edit_order_modes == '1'){
