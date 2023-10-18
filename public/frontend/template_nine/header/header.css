@@ -3,6 +3,7 @@
 
  .al_body_template_three,a,b,body,div,h1,h2,h3,h4,h5,h6,html,label,p,section,span,strong{
     /* font-family:var(--alBodyTemplateThreeFont)!important */
+    font-family:'Raleway', sans-serif!important;
 }
     body,html{scroll-behavior:smooth
     }
@@ -286,7 +287,7 @@ body.al_body_template_eight #al_new_design .pixelstrap ul {
 }
 .top-header .header-dropdown li.onhover-dropdown svg{display: none !important;}
 body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect {
-    padding-left: 15px !important;
+    /* padding-left: 15px !important; */
     position: relative;
 }
 .top-header .header-dropdown li a i {
