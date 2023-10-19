@@ -6212,11 +6212,11 @@ $('.category_responsive').slick({
         this.buttonToggle = '.readmore__toggle';
     }
 
-    bootstrap() {
-        this.setNodes();
-        this.init();
-        this.addEventListeners();
-    }
+    // bootstrap() {
+    //     this.setNodes();
+    //     this.init();
+    //     this.addEventListeners();
+    // }
 
     setNodes() {
         this.nodes = {

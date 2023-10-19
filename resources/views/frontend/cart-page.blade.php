@@ -345,6 +345,7 @@
                                                             
                                                          
                                                         @endphp
+
                                                         <div class="items-price">
                                                             @if ($additionalPreference['is_token_currency_enable'])
                                                                 {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($price * ($vendor_product->days ?? 0))) }}

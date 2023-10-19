@@ -2065,6 +2065,7 @@ class CartController extends FrontController
      */
     public function getCartData($domain = '', Request $request)
     {
+       
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'order_edit_before_hours', 'is_gift_card', 'is_token_currency_enable', 'is_service_product_price_from_dispatch', 'token_currency', 'advance_booking_amount', 'advance_booking_amount_percentage', 'is_file_cart_instructions', 'is_service_price_selection', 'is_rental_weekly_monthly_price']);
         $wishListCount = 0;
         $cart_details = null;
@@ -2087,7 +2088,7 @@ class CartController extends FrontController
 
             $cart = $cart->with(['coupon.promo', 'editingOrder'])->first();
 
-            //pr($cart->toArray());
+            // pr($cart->toArray());
             $wishListCount =  UserWishlist::where('user_id', $user->id)->count('id');
         } else {
             $cart = Cart::select('id', 'is_gift', 'item_count', 'schedule_type', 'scheduled_date_time', 'schedule_pickup', 'schedule_dropoff', 'scheduled_slot', 'shipping_delivery_type', 'order_id', 'address_id')->with(['coupon.promo', 'editingOrder'])->where('status', '0')->where('unique_identifier', session()->get('_token'))->first();
@@ -2133,6 +2134,8 @@ class CartController extends FrontController
             $schedule_slots_edit = '';
             $error_message = '';
         }
+
+   
 
         if (isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
             $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery)->format('Y-m-d H:i:s');
@@ -2198,10 +2201,11 @@ class CartController extends FrontController
                 $mycartView = view('frontend.yacht.cart-page')->with(['cart_details' => (($cart_details) ? json_decode($cart_details) : []), 'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm, 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message, 'addons' => $addon])->render();
             } else {
 
-                // pr($cart_details);
+              
                 $mycartView = view('frontend.cart-page')->with(['cart_details' => (($cart_details) ? json_decode($cart_details) : []), 'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm, 'getAdditionalPreference' => $getAdditionalPreference, 'edit_order_schedule_datetime' => $schedule_date_delivery_edit, 'schedule_slots_edit' => $schedule_slots_edit, 'cart_error_message' => $error_message])->render();
             }
         }
+       
 
         $tokenAmount = 1;
         $is_token_enable = @$getAdditionalPreference['is_token_currency_enable'];
