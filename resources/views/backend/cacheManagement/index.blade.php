@@ -69,7 +69,7 @@
                                                     <div class="form-group mt-3 mb-0">
                                                         <label for="cache_reset_time_for_home">{{ __('Cache reset time') }}/sec</label>
                                                         <input type="text" name="cache_reset_time_for_home"
-                                                            id="cache_reset_time_for_home" placeholder="60 minutes default"
+                                                            id="cache_reset_time_for_home" placeholder="3600 seconds default"
                                                             class="form-control"
                                                             value="{{ old('cache_reset_time_for_home', $additionalPreferences['cache_reset_time_for_home'] ?? '') }}">
                                                         @if ($errors->has('cache_reset_time_for_home'))

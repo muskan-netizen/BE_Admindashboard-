@@ -200,7 +200,7 @@ class FrontController extends Controller
 
     public function categoryNav($lang_id,$only_id = false)
     {
-        // return $this->categoryNavOld($lang_id,$only_id = false);
+        return $this->categoryNavOld($lang_id,$only_id = false);
 
         $preferences = session()->get('preferences');
         $vendorType = session()->get('vendorType');
