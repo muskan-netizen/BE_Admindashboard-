@@ -890,7 +890,7 @@ body.al_body_template_nine.p2p-module .alPageSearchView .img-wrapper {
 }
 
 body.al_body_template_nine.p2p-module li.onhover-dropdown.quick-links.quick-links {
-    display: none;
+    /* display: none; */
 }
 
 .top-header .header-dropdown li a i.fa.fa-heart {

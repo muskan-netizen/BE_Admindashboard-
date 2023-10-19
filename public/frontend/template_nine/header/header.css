@@ -631,7 +631,7 @@ body.dark .mobile-account span {
 }
 @media(max-width:991px){
     .al_template_one_menu.p2p_module_enable .al_new_mobile_header, .p2p_module_enable .al_template_one, .p2p_module_enable .mobile-header {
-        display: none!important;
+        /* display: none!important; */
     }
     .al_body_template_nine .mobileHeader {
         display: block!important;
