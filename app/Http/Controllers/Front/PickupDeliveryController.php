@@ -205,34 +205,39 @@ class PickupDeliveryController extends FrontController{
                             $q->groupBy('product_id');
                         },
                         'addOn.addOnName.option'
-                        ])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags', 'products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id','seats')->where('products.id', $product_id)->where('products.is_live', 1)->first();
+                        ])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags', 'products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id','seats','products.per_hour_price','products.km_included')->where('products.id', $product_id)->where('products.is_live', 1)->first();
         $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
         $product->image_url = $image_url;
 
         if($preferences->is_hourly_pickup_rental == 1)
         {
         $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del,1);
+      
             
         }
         else{
-        $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
+            $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
 
         }
+ 
 
         // $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
 
         $product->original_tags_price = decimal_format($tags_price['delivery_fee']);
         $product->tags_price = decimal_format($tags_price['delivery_fee']);
-        if(isset($request->rental_price))
+        if(isset($request->rental_hour))
         {
         $product->tags_price = decimal_format($request->rental_hour * $product->per_hour_price);
-            
+        $product->distance =  $product->km_included;
+        }
+        else{
+            $product->distance = decimal_format($tags_price['distance']);
         }
         
-        
+       
         $product->toll_fee = decimal_format($tags_price['toll_fee']);
 
-        $product->distance = decimal_format($tags_price['distance']);
+       
         $product->duration = decimal_format($tags_price['duration']);
         $product->min_tags_price = decimal_format($tags_price['min_delivery_fee']);
 

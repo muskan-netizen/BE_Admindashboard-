@@ -367,11 +367,11 @@ input[type=number]::-webkit-outer-spin-button {
                                         <div class="container rental-container ">
                                             <div class="button-container">
                                                 <div class="custom-button" id="minusButton">-     </div>
-                                                <div class="button-text" id="buttonText">0</div>
+                                                <div class="button-text" id="buttonText">1</div>
                                                 <div class="custom-button" id="plusButton">+</div>
                                             </div>
-                                            <input type="hidden" id="rental_hours" value="" />
-                                            <input type="hidden" id="rental_price" value="" />
+                                            <input type="hidden" id="rental_hours" value="1" />
+                                            <input type="hidden" id="rental_price" value="{{decimal_format($product->per_hour_price)}}" />
                                            
                                             <div class="box-container mb-3">
                                                 <div class="custom-box"></div>
@@ -424,6 +424,7 @@ input[type=number]::-webkit-outer-spin-button {
                                         <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
                                         <input type="button" name="next"  class="next action-button" value="Next"/>
                                         <div class="cab-detail-box style-4 d-none" id="cab_detail_box"></div>
+                                        
                                     </fieldset>
                                     <fieldset>
                                         <h2 class="fs-title">Choose your pick-up location</h2>
@@ -997,22 +998,7 @@ input[type=number]::-webkit-outer-spin-button {
                 </div>
             </div>
 
-            <div class="payment-promo-container p-2 d-none" id="paymentMethods">
-                <input type="hidden" id="payment-method-for-bid" value="1">
-                <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal_bid" type='bid'>
-                    <span id="payment_type_bid">
-                        <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
-                    </span>
-                    <i class="fa fa-angle-down" aria-hidden="true"></i>
-                </h4>
-            </div>
-
-            <div id="driver_acceptance_list" class="d-none">
-                <div class="text-loader">
-                    <i class="fa fa-circle-o-notch fa-spin"></i>
-                    Wait for driver acceptance
-                </div>
-            </div>
+            
 
             <span id="show_error_of_bid" class="text-danger"></span>
 
@@ -1111,15 +1097,7 @@ input[type=number]::-webkit-outer-spin-button {
                 <span id="driver_request_error" class="text-danger"> </span>
                 </div>
 
-                <div class="payment-promo-container p-2" id="paymentMethods">
-                    <input type="hidden" id="payment-method-for-bid" value="1">
-                    <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal_bid" type='bid'>
-                        <span id="payment_type_bid">
-                            <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
-                        </span>
-                        <i class="fa fa-angle-down" aria-hidden="true"></i>
-                    </h4>
-                </div>
+              
                 
                 <div class="row">
                     <div class="col-md-12 create-bid-btn">

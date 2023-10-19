@@ -154,7 +154,7 @@ $(".previous").click(function(){
 
 
 
-const plusButton = document.getElementById('plusButton');
+        const plusButton = document.getElementById('plusButton');
         const minusButton = document.getElementById('minusButton');
         const boxes = document.querySelectorAll('.custom-box');
         const buttonText = document.getElementById('buttonText');
