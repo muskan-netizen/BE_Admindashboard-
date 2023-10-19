@@ -225,7 +225,7 @@ class PickupDeliveryController extends FrontController{
         $product->tags_price = decimal_format($tags_price['delivery_fee']);
         if(isset($request->rental_price))
         {
-        $product->tags_price += $request->rental_price;
+        $product->tags_price = decimal_format($request->rental_hour * $product->per_hour_price);
             
         }
         
@@ -535,7 +535,7 @@ class PickupDeliveryController extends FrontController{
                     ->whereHas('category.categoryDetail' ,function($qryd) {
                         $qryd->where('type_id', 7);   # check only products get of pickup
                     })
-                    ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.category_id','products.tags','products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id')
+                    ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.category_id','products.tags','products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id','products.per_hour_price','products.km_included')
                     ->where('products.vendor_id', $vid);
                     if($cid > 0){
                         $products = $products->where('products.category_id', $cid);
@@ -562,7 +562,14 @@ class PickupDeliveryController extends FrontController{
                     if(isset($request->is_cab_pooling) && $request->is_cab_pooling==1 && !empty($preferences) && $preferences->is_cab_pooling == 1){
                         $product->tags_price = decimal_format(($tags_price['delivery_fee'] + $tags_price['toll_fee'])/$product->seats_for_booking);
                     }else{
-                        $product->tags_price = decimal_format($tags_price['delivery_fee'] + $tags_price['toll_fee'] + $request->rental_price ?? 0);
+                        if($preferences->is_hourly_pickup_rental == 1){
+
+                            $product->tags_price = decimal_format($request->rental_hours * $product->per_hour_price);
+
+                        }else {
+                            $product->tags_price = decimal_format($tags_price['delivery_fee'] + $tags_price['toll_fee'] );
+
+                        }
                     }
                     $product->original_tags_price = $product->tags_price + $product->service_charge_amount;
 

@@ -1340,6 +1340,7 @@ $(document).ready(function () {
 
         let schedule_datetime = '';
         let rental_price = $('#rental_price').val() ?? 0;
+        let rentalHr = $('#rental_hours').val() ?? 0;
         let schedule_datetimeset = $('#schedule_date').val();
         if(schedule_datetimeset != undefined && schedule_datetimeset != 0){
             schedule_datetime = moment(schedule_datetimeset).format('YYYY-MM-DD HH:mm');
@@ -1353,7 +1354,7 @@ $(document).ready(function () {
         $.ajax({
             type: "POST",
             dataType: 'json',
-            data: {locations:locations,rider_id:rider_id, schedule_date_delivery:schedule_datetime, is_cab_pooling:is_cab_pooling, no_seats_for_pooling:no_seats_for_pooling,recurringformPost,rental_price:parseInt(rental_price)},
+            data: {locations:locations,rider_id:rider_id, schedule_date_delivery:schedule_datetime, is_cab_pooling:is_cab_pooling, no_seats_for_pooling:no_seats_for_pooling,recurringformPost,rental_hour:parseInt(rentalHr)},
             url: get_product_detail+'/'+product_id,
             success: function(response) {
                 console.log({response});

@@ -45,6 +45,7 @@ $(".next").click(function(){
     if(div_id == "select_vendor")
     {
         var rental_time = $('#datetime-picker').val();
+        var rental_hours = $('#rental_hours').val();
         var rental_price = $('#rental_price').val();
         var vendorId = $("#default_cab_vendor_id").val($(this).data('vendor'));
         fetch(get_rental_vehicle_list, {
@@ -57,7 +58,7 @@ $(".next").click(function(){
                 category_id: category_id,
                 vendor_id: vendorId,
                 "_token": csrf_token,
-                rental_price :rental_price
+                rental_hours :rental_hours
             })
         })
         .then(response => response.json())
@@ -184,29 +185,38 @@ const plusButton = document.getElementById('plusButton');
         function updateRentalPrice() {
 
             var rental_hours = currentIndex.toString();
-            fetch(hourly_rental_url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ 
-                rental_hours:parseInt(rental_hours),
-                "_token": csrf_token
-             })
-            })
-            .then(response => response.json())
-            .then(data => {
-                const buttonTextElement = $('.hourly_price');
-                if (buttonTextElement) {
-                    $('.hourly_price').text("$"+data.total_rental_price+"/hr");
-                    $('#rental_price').val(data.total_rental_price);
-                    $('#buttonText').text(currentIndex.toString());
+             var new_product_price = product_price * rental_hours;
+            const buttonTextElement = $('.hourly_price');
+            if (buttonTextElement) {
+                $('.hourly_price').text("$"+new_product_price+"/hr");
+                $('#rental_price').val(new_product_price);
+                $('#buttonText').text(currentIndex.toString());
+                
+            }
+
+            // fetch(hourly_rental_url, {
+            // method: 'POST',
+            // headers: {
+            //     'Content-Type': 'application/json'
+            // },
+            // body: JSON.stringify({ 
+            //     rental_hours:parseInt(rental_hours),
+            //     "_token": csrf_token
+            //  })
+            // })
+            // .then(response => response.json())
+            // .then(data => {
+            //     const buttonTextElement = $('.hourly_price');
+            //     if (buttonTextElement) {
+            //         $('.hourly_price').text("$"+data.total_rental_price+"/hr");
+            //         $('#rental_price').val(data.total_rental_price);
+            //         $('#buttonText').text(currentIndex.toString());
                     
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            });
+            //     }
+            // })
+            // .catch(error => {
+            //     console.error('Error fetching data:', error);
+            // });
 
         }
 		

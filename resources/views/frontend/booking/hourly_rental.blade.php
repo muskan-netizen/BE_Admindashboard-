@@ -356,7 +356,7 @@ input[type=number]::-webkit-outer-spin-button {
                                         <div class="row mt-2">
                                            
                                             <div class="col-6 text-left ">Starting at</div>
-                                            <div class="col-6 text-right">$20/hr</div>
+                                            <div class="col-6 text-right">${{decimal_format($product->per_hour_price,2)}}/hr</div>
                                         </div>
                                         <input type="button" name="next" class="next action-button" value="Get Started"/>
 
@@ -405,7 +405,7 @@ input[type=number]::-webkit-outer-spin-button {
                                         <div class="row mt-2 mb-2">
                                            
                                             <div class="col-6 text-left ">Starting at</div>
-                                            <div class="col-6 hourly_price text-right">$20/hr</div>
+                                            <div class="col-6 hourly_price text-right">${{decimal_format($product->per_hour_price,2)}}/hr</div>
                                         </div>
                                         
                                         
@@ -1970,6 +1970,7 @@ input[type=number]::-webkit-outer-spin-button {
     <script>
         var category_id = "{{ $category->id ?? '' }}";
         var is_hourly_rental_enabled = 1;
+        var product_price = "{{$product->per_hour_price}}";
         var category_name = "{{ @$category->translation[0]->name ?? '' }}";
         var routeset = "{{ route('pickup-delivery-route', ':category_id') }}";
 

@@ -873,6 +873,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     @endif
                 @endif
             </div>
+            
             <div class="col-lg-5">
                 <!-- <div class="card-box ">
                     <div class="row mb-2 bg-light">
@@ -1130,6 +1131,20 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::label('title', __('Minimum Increment'),['class' => 'control-label']) !!}
                             {!! Form::number('batch_count', $product->batch_count, ['class'=>'form-control', 'id' => 'batch_count', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
+
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group" id="per_hour_price">
+                                {!! Form::label('title', __('Per Hour Price'),['class' => 'control-label']) !!}
+                                <input class="form-control" name="per_hour_price" type="text" value="{{$product->per_hour_price}}" onkeypress="return isNumberKey(event)" maxlength="6">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group" id="km_included">
+                                {!! Form::label('title', __('Kilometers Inclued with Rental'),['class' => 'control-label']) !!}
+                                <input class="form-control" name="km_included" type="text" value="{{$product->km_included}}" onkeypress="return isNumberKey(event)" maxlength="4">
+                            </div>
+                        </div>
+                        
                         <div class="col-md-6 mb-2">
                             {!! Form::label('title', __('Return/Replace Days'),['class' => 'control-label']) !!}
                             {!! Form::number('return_days', $product->return_days, ['class'=>'form-control', 'id' => 'return_days', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
@@ -1524,7 +1539,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 540x715</label>
                     <div class="imageDivHidden"></div>
                 </div>
-
+              
                 @if($client_preference_detail->business_type != 'taxi')
                 <div class="card-box" style="display:{{(($product->global_product_id!='')?'none':'block')}}">
                     <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Relate with other products") }}</h5>
@@ -1701,6 +1716,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                  <!-- end product faqs -->
 
             </div>
+            
         </div>
     </form>
 </div>

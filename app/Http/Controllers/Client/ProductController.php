@@ -397,6 +397,7 @@ class ProductController extends BaseController
      */
     public function update(Request $request, $domain = '', $id)
     {
+
         DB::beginTransaction();
         try {
             //ProductVariant::where('product_id',$id)->update(['status'=>0]);
@@ -593,6 +594,8 @@ class ProductController extends BaseController
             $product->extra_time = ($request->has('extra_time')) ? $request->extra_time : null;
             $product->captain_name = $request->captain_name ?? '';
             $product->captain_description = $request->captain_description ?? '';
+            $product->per_hour_price = $request->per_hour_price ?? 0;
+            $product->km_included = $request->km_included ?? '';
             if($request->hasFile('captain_profile')){
                 $filePath = 'profile/' . \Str::random(40);
                 $file = $request->file('captain_profile');

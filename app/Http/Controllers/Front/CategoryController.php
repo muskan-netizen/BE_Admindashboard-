@@ -190,6 +190,7 @@ class CategoryController extends FrontController{
      */
     public function categoryProduct(Request $request, $domain = '', $slug = 0, $service = null)
     {        
+         
         
         //$preferences = Session::get('preferences');
         if(!empty($service) && $service == 'pick_drop'){
@@ -216,7 +217,7 @@ class CategoryController extends FrontController{
         'allParentsAccount'])
         ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products', 'parent_id', 'sub_cat_banners')
         ->where('slug', $slug)->firstOrFail();
-       
+        
         $category->translation_name = ($category->translationLatest) ? $category->translationLatest->name : $category->slug;
         foreach($category->childs as $key => $child){   
             $child->translation_name = ($child->translationLatest) ? $child->translationLatest->name : $child->slug;
@@ -331,6 +332,10 @@ class CategoryController extends FrontController{
             if(!Auth::user()){
                 return redirect()->route('customer.login');
             }else{
+
+                $product = Product::where('category_id', $category->id)->orderBy('per_hour_price','asc')->first();
+
+                
                 $user_addresses = UserAddress::whereNotNull('latitude')->whereNotNull('longitude')->get();
                 $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
                 $wallet_balance = Auth::user()->balanceFloat * ($clientCurrency->doller_compare ?? 1);
@@ -340,7 +345,7 @@ class CategoryController extends FrontController{
       
                 if($preferences->is_hourly_pickup_rental == 1)
                 {
-                    return view('frontend.booking.hourly_rental')->with(['maxPrice'=>$maxPrice,'clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders, 'is_cab_pooling' => $getAdditionalPreference['is_cab_pooling'], 'is_bid_ride_enable' => $getAdditionalPreference['is_bid_ride_enable'],'is_postpay_enable' => $getAdditionalPreference['is_postpay_enable'], 'is_particular_driver' => $getAdditionalPreference['is_particular_driver'],'is_recurring_booking' => $getAdditionalPreference['is_recurring_booking'],'is_share_ride_users'=>$getAdditionalPreference['is_share_ride_users'],'companies'=>$companies]);
+                    return view('frontend.booking.hourly_rental')->with(['maxPrice'=>$maxPrice,'clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders, 'is_cab_pooling' => $getAdditionalPreference['is_cab_pooling'], 'is_bid_ride_enable' => $getAdditionalPreference['is_bid_ride_enable'],'is_postpay_enable' => $getAdditionalPreference['is_postpay_enable'], 'is_particular_driver' => $getAdditionalPreference['is_particular_driver'],'is_recurring_booking' => $getAdditionalPreference['is_recurring_booking'],'is_share_ride_users'=>$getAdditionalPreference['is_share_ride_users'],'companies'=>$companies,'product'=> $product]);
 
                 }else{
 
