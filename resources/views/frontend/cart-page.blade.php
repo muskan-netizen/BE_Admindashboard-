@@ -319,6 +319,7 @@
                                                     </div>
                                                 </div>
                                             @endif
+                                        
                                             @if (!empty(@$vendor_product->quantity_price))
                                                 <div class="col-6 col-md-2 text-left order-md-4">
                                                     @if ($serviceType == 'p2p')
