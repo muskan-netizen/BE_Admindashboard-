@@ -68,7 +68,8 @@ class ClientPreferenceController extends BaseController{
             }
         }
 
-
+  
+        
         $accounting     = ThirdPartyAccounting::where('code','xero')->first();
 
         $productDeliveryFeeByRole = ProductDeliveryFeeByRole::groupBy('role_id')->get()->pluck('role_id')->toArray();
