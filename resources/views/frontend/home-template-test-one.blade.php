@@ -332,7 +332,6 @@ $preference = $client_preference_detail;
 
 
 @if($vendor_type!="car_rental")
-
 <section class="section-b-space ratio_asos  pt-0 mt-0 pb-0 mt-0" id="our_vendor_main_div">
    <div class="vendors">
       @foreach($homePageLabels as $key => $homePageLabel)
@@ -667,7 +666,7 @@ $preference = $client_preference_detail;
 				url = "{{route('vendorDetail')}}" + "/" + banner.vendor.slug;
 			 }
 		  }
-		  %>
+		  %> 
 		  <div class="carousel-item <% if(k == 0) { %> active <% } %>">
 			 <a class="banner-img-outer" href="<%= url %>">
 				<link rel="preload" as="image" href="<%= banner.image.proxy_url %>1370/300<%= banner.image.image_path %>" />

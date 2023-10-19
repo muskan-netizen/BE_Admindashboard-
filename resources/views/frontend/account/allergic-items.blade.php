@@ -62,6 +62,9 @@
     .invalid-feedback{
         display: block;
     }
+    .select2-container {
+        width: 100% !important;
+    }
 </style>
 @endsection
 @section('content')
@@ -175,6 +178,14 @@ $applocale = session()->get('applocale');
                                 </div>
                             </div>
                         {{-- </div> --}}
+
+                        @if (auth()->user()->custom_allergic_items)
+                            <div class="page-title">
+                                <h2>{{__('Custom Allergic Items')}}</h2>
+                            </div>
+
+                            {{ auth()->user()->custom_allergic_items }}
+                        @endif
                     </div>
                 </div>
             </div>
@@ -206,6 +217,11 @@ $applocale = session()->get('applocale');
                                     @endforeach
                                 </select>
                             </div>
+
+                            <div class="mt-2">
+                                <input type="text" class="form-control" name="custom_allergic_items" placeholder="Enter Custom Allergic Items" value="{{ auth()->user()->custom_allergic_items ?? ''}}">
+                            </div>
+
                         </div>
                         <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">{{__('Close')}}</button>

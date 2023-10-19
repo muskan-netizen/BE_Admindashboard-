@@ -200,7 +200,7 @@ class FrontController extends Controller
 
     public function categoryNav($lang_id,$only_id = false)
     {
-        // return $this->categoryNavOld($lang_id,$only_id = false);
+        return $this->categoryNavOld($lang_id,$only_id = false);
 
         $preferences = session()->get('preferences');
         $vendorType = session()->get('vendorType');
@@ -949,6 +949,9 @@ class FrontController extends Controller
                 if($Dispatch){
                     $vendor_latitude =  $productDetail->vendor ? $productDetail->vendor->latitude : 30.71728880;
                     $vendor_longitude =  $productDetail->vendor ? $productDetail->vendor->longitude : 76.80350870;
+                    $unique = Client::first()->code;
+                    $email =  $unique.$productDetail->vendor_id."_royodispatch@dispatch.com";
+    
                     $location[] = array(
                         'latitude' =>  $vendor_latitude,
                         'longitude' => $vendor_longitude
@@ -963,7 +966,8 @@ class FrontController extends Controller
                         'longitude'        => $vendor_longitude,
                         'service_time'     => $productDetail->minimum_duration_min,
                         'schedule_date'    => $selectedDate,
-                        'slot_start_time'  => $vendorStartTime
+                        'slot_start_time'  => $vendorStartTime,
+                        'team_email'       => $email
                     ];
 
                     $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);

@@ -1721,8 +1721,12 @@ trait CartManagerV2{
                     $giftCardUsed  = @$calCulateGiftCard['used_GiftCardAmount'];
                 }
                 //end  gift card calculation
+                
+                if(!@$rental_price)
+                {
 
-                // $cart->total_payable_amount =  $cartTotalPay ;
+                    $cart->total_payable_amount =  $cartTotalPay ;
+                }
             }else{
                 $cartTotalPay = decimal_format($total_payable_amount - $total_taxable_amount - $other_taxes);
                 // gift card calculation
@@ -1732,7 +1736,11 @@ trait CartManagerV2{
                     $giftCardUsed  = @$calCulateGiftCard['used_GiftCardAmount'];
                 }
                 //end  gift card calculation
-                // $cart->total_payable_amount =  $cartTotalPay;
+                if(!@$rental_price)
+                {
+
+                    $cart->total_payable_amount =  $cartTotalPay ;
+                }
                 $cart->payy = decimal_format(($total_payable_amount - $total_taxable_amount - $other_taxes) + $cart->other_taxes);
             }
            
@@ -1812,13 +1820,21 @@ trait CartManagerV2{
 
             }
 
-            $cart->sub_total = @$rental_price;
+
+           
            
             $cart->pickup_delay_date =  $pickup_delay_date??0;
             $cart->dropoff_delay_date =  $dropoff_delay_date??0;
             $cart->delivery_type =  $code??'D';
-            // $sub_total = $sub_total??0 ;
-            // $cart->sub_total =  $sub_total - $cart->bid_total_discount;
+            if($rental_price)
+            {
+
+                $cart->sub_total = @$rental_price;
+            }else
+            {
+                $sub_total = $sub_total??0 ;
+                $cart->sub_total =  $sub_total - $cart->bid_total_discount;
+            }
             $cart->sub_total_inc_tax =  decimal_format($cart->sub_total + $total_taxable_amount);
             $cart->is_token =  $additionalPreference['is_token_currency_enable'] ? 1 : 0;
             $cart->token_value = $additionalPreference['token_currency'] ?? 0;

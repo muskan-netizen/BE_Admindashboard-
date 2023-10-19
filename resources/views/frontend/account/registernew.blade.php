@@ -165,6 +165,10 @@
                                             @endforeach
                                         </select>
                                     </div>
+
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="custom_allergic_items" placeholder="Enter Custom Allergic Items" value="{{ auth()->user()->custom_allergic_items ?? ''}}">
+                                    </div>
                                 @endif
 
                                 @if (count($user_registration_documents) > 0)    
@@ -340,6 +344,19 @@
                     });
                 @endif
             @endif
+
+            jQuery.validator.addMethod("indianMobile", function(value, element) {
+                var dialCode = $("#dialCode").val();
+                // Regular expression for Indian mobile numbers
+                if(dialCode == 91) {
+                    var regex = /^[6-9]\d{9}$/;
+                    return this.optional(element) || regex.test(value);
+                } else {
+                    return true;
+                }
+                
+                }, "Please enter a valid Indian mobile number.");
+
             jQuery.validator.addMethod("alphanumeric", function(value, element) {
                 return this.optional(element) || /^[a-zA-Z0-9 ]+$/i.test(value);
             }, "Name should contains alphanumeric data.");
@@ -353,7 +370,8 @@
                     },
                     phone_number: {
                         required: true,
-                        number: true
+                        //number: true,
+                        indianMobile: true
                     },
                     email: {
                         required: true,
