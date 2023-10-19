@@ -555,6 +555,7 @@ $(document).ready(function () {
             success_error_alert('error', 'Schedule date time is required', ".cart_response");
             return false;
         }
+        
         var orderResponse = '';
 
         $.ajax({
@@ -562,7 +563,7 @@ $(document).ready(function () {
             dataType: 'json',
             async: false,
             url: place_order_url,
-            data: { address_id: address_id, payment_option_id: payment_option_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, slot: slot,pick_drop_order_number },
+            data: { address_id: address_id, payment_option_id: payment_option_id, tip: tip, task_type: task_type, schedule_dt: schedule_dt, is_gift: is_gift, slot: slot,order_number:pick_drop_order_number },
             success: function (response) {
                 if (response.status == "Success") {
                     orderResponse = response.data;

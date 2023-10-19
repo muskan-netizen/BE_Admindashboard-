@@ -416,8 +416,9 @@ input[type=number]::-webkit-outer-spin-button {
                                     <fieldset>
                                         <h2 class="fs-title">Cabs Available</h2>
                                         <div class="vehical-container style-4" id="search_product_main_div"></div>
+                                         
                                         <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
-                                        <input type="button" name="next"  class="next action-button" value="Choose Rental"/>
+                                        <input type="button" name="next"  id="choose_rental" class="next action-button" value="Choose Rental"/>
                                     </fieldset>
                                     <fieldset>
                                         <h2 class="fs-title">Rental Details</h2>
@@ -446,7 +447,8 @@ input[type=number]::-webkit-outer-spin-button {
                                                 autocomplete="off">
                                         </div>
                                             <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
-                                            <input type="button" name="next"  class="action-button" value="Book Now"/>
+                                            <button class="btn btn-solid w-100" id="book_hourly_rental" data-rel="pickup_now" data-task_type="">{{__('Book Now')}}</button>
+
                                     </fieldset>
                                     
                                  
@@ -816,7 +818,7 @@ input[type=number]::-webkit-outer-spin-button {
         <script type="text/template" id="products_template">
             <% if(results != ''){ %>
             <% _.each(results, function(result, key){%>
-                <a class="vehical-view-box d-flex align-items-center no-gutters px-2" href="javascript:void(0)" data-product_id="<%= result.id %>">
+                <a class="product-detail-box d-flex align-items-center no-gutters px-2" href="javascript:void(0)" data-product_id="<%= result.id %>">
                     <div class="col-2 vehicle-icon">
                         <img class='img-fluid' src='<%= result.image_url %>'>
                     </div>
@@ -1227,32 +1229,10 @@ input[type=number]::-webkit-outer-spin-button {
     </div>
     <span id="show_error_of_booking" class="error text-danger"></span>
 
-    <div class="payment-promo-container p-2">
-        <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal">
-            <span id="payment_type">
-                <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
-            </span>
-            <i class="fa fa-angle-down" aria-hidden="true"></i>
-        </h4>
-        <div class="row">
-            <div class="col-12">
-            <%
-            var payableAmout = '';
-            if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){
-                payableAmout = result.subscription_discount;
-            }
-            %>
-                <input type="hidden" id="stripe_token" name="stripe_token" value="">
-                <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id =""  data-subscriptionPayableAmount ="<%= payableAmout %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Book Now')}}</button>
-            </div>
-            <!--<div class="col-6">
-                <button class="btn btn-solid w-100" id="pickup_later" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id ="" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-image="<%= result.image_url %>" data-rel="pickup_later">Pickup Later</button>
-            </div>-->
-        </div>
-    </div>
+   
 </script>
 
-                <script type="text/template" id="payment_methods_template">
+    <script type="text/template" id="payment_methods_template">
     <% if(payment_options != '') { %>
         <form method="POST" id="cab_payment_method_form">
             @csrf

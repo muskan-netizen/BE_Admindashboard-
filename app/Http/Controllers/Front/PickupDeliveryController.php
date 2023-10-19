@@ -728,6 +728,8 @@ class PickupDeliveryController extends FrontController{
      * create order for booking
     */
      public function createOrder(Request $request){
+
+          
         try {
             DB::beginTransaction();
             if(isset($request->schedule_datetime) && !empty($request->schedule_datetime))
@@ -1002,8 +1004,12 @@ class PickupDeliveryController extends FrontController{
                 $order->luxury_option_id    = $luxury_option->id;
 
                 $order->specific_instructions = $request->task_description ?? '';
-                $order->recurring_booking_time = $returnBookingTime;
+               
+                if ($client_preference->is_hourly_pickup_rental != 1) {
+
+                $order->recurring_booking_time = $returnBookingTime ;
                 $order->recurring_week_type = $returnBookingTime ? 2 : null; //once
+                }
                 $order->flight_no = $request->flight_number ?? '';
                 $order->adults = $request->number_of_adult ?? 0;
                 $order->name_sign_board = $request->name_sign_board ?? '';
