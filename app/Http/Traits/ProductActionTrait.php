@@ -493,6 +493,7 @@ trait ProductActionTrait{
             `product_translation`.`meta_title`,
             `product_translation`.`meta_keyword`,
             `product_translation`.`meta_description`,
+            `vendors`.`address`,
             `product_translation`.`language_id`,
             `product_variant`.`compare_at_price` as `compare_price_numeric`,
             `product_variant`.`price` as `price_numeric`,

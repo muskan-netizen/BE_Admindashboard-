@@ -16,8 +16,9 @@ class YachtController extends Controller
         $data = [];
         $pickup = $request->pickup ?? (object) [];
         $dropOff = $request->dropOff ?? (object) [];
-        $data = $this->productSearch($request, (object) $pickup, (object) $dropOff);
-
+        $category_id = $request->category_id ?? null;
+        $data = $this->productSearch($request, (object) $pickup, (object) $dropOff,$category_id);
+   
         $fields = [];
         foreach ($data['products'] as $products) {
             $allReviews = array_column($products->vendor->products()->with('reviews')->get()->toArray(),'reviews');
