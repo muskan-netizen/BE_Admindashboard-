@@ -3,14 +3,17 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Traits\ApiResponser;
 use App\Http\Traits\YachtTrait;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductAvailability;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class YachtController extends Controller
 {
-    use YachtTrait;
+    use YachtTrait,ApiResponser;
     public function productsSearchResult(Request $request)
     {
         $data = [];
@@ -45,5 +48,25 @@ class YachtController extends Controller
             }
         }
         return response()->json(['status' => 200, 'message' => 'Product List', 'data' => $data]);
+    }
+
+    public function checkProductAvailability(Request $request, $id)
+    {
+        $pickup_time = $request->start_time ?? '';
+        $drop_time = $request->end_time ?? '';
+        $products= Product::whereDoesntHave('productBooked', function($q) use($pickup_time, $drop_time){
+            if (!empty($pickup_time) ) {
+                $q->WhereRaw("DATE(end_date_time) >= ?", [$pickup_time]);
+            }
+            if (!empty($drop_time)) {
+                $q->whereRaw("DATE(start_date_time) <= ?", [$drop_time]);
+            }
+        })->where('id',$id)->first();
+    
+        if ($products) {
+            return $this->successResponse(null,'Product Available',200);
+        } else {
+            return $this->errorResponse('Not Available',400);
+        }
     }
 }
