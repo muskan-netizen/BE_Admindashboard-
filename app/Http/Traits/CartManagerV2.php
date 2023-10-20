@@ -1276,6 +1276,8 @@ trait CartManagerV2{
                     $subscription_discount_vendor   = $subscription_discount_arr['vendor'];
                     $subscription_discount_delivery = $subscription_discount_arr['delivery_discount'];
                 }
+
+                
                 // add total delivery fee
                 if($vendorData->vendor->delivery_charges_tax_id)
                 $total_deliver_charges +=  $deliveryfee_ifnot_discounted;
