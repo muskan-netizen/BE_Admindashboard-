@@ -455,118 +455,22 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                         </div>
                                         
 
-                                        @if($product->is_recurring_booking == 1)
-                                            @include('frontend.product-part.recurring-booking')
-                                        @endif
-                                        @if(@getAdditionalPreference(['is_rental_weekly_monthly_price'])['is_rental_weekly_monthly_price'] && $product->category->categoryDetail->type_id == 10)
-                                            {{-- @include('frontend.product-part.booking-slot-p2p-rental') --}}
-                                        @elseif($product->category->categoryDetail->type_id == 10)
-                                            {{-- @include('frontend.product-part.booking-slot') --}}
-                                        @endif
+                                            @if($product->is_recurring_booking == 1)
+                                                @include('frontend.product-part.recurring-booking')
+                                            @endif
+                                            @if(@getAdditionalPreference(['is_rental_weekly_monthly_price'])['is_rental_weekly_monthly_price'] && $product->category->categoryDetail->type_id == 10)
+                                                {{-- @include('frontend.product-part.booking-slot-p2p-rental') --}}
+                                            @elseif($product->category->categoryDetail->type_id == 10)
+                                                {{-- @include('frontend.product-part.booking-slot') --}}
+                                            @endif
 
 
-                                        @if(!empty($product->addOn) && $product->addOn->count() > 0)
-                                        <div class="border-product">
-                                            <h6 class="product-title">{{ __('Addon List')}}</h6>
-
-                                            <div id="addon-table">
-                                                @foreach($product->addOn as $row => $addon)
-                                                    <div class="addon-product">
-                                                        <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet mb-2">{{$addon->title}}
-                                                            @php
-                                                                $min_select = '';
-                                                                $minText = __('Minimum');
-                                                                $maxText = __('Maximum');
-                                                                $andText = __('and');
-                                                                if($addon->min_select > 0){
-                                                                    $min_select = $minText.' '.$addon->min_select;
-                                                                }
-                                                                $max_select = '';
-                                                                if($addon->max_select > 0){
-                                                                    $max_select = $maxText.' '.$addon->max_select;
-                                                                }
-                                                                if( ($min_select != '') && ($max_select != '') ){
-                                                                    $min_select = $min_select.' '.$andText.' ';
-                                                                }
-                                                            @endphp
-                                                            @if( ($min_select != '') || ($max_select != '') )
-                                                                <small>({{__($min_select).__($max_select)}} {{ __('Selections Allowed')}})</small>
-                                                            @endif
-                                                        </h4>
-
-                                                        <div class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
-                                                            @foreach($addon->setoptions as $k => $option)
-                                                            <div class="checkbox checkbox-success form-check-inline mb-1">
-                                                                <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}" data-price="{{$option->price * $option->multiplier}}" data-fixed_price="{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}" data-original_price="{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}">
-                                                                @if($additionalPreference ['is_token_currency_enable'])
-                                                                <label class="pl-2 mb-0" for="inlineCheckbox_{{$row.'_'.$k}}" data-toggle="tooltip" data-placement="top" title="{{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price).')' }}">
-                                                                {{$option->title ." ("}}<i class='fa fa-money' aria-hidden='true'></i> {{getInToken($option->price * $option->multiplier).')' }}</label>
-                                                                @else
-                                                                <label class="pl-2 mb-0" for="inlineCheckbox_{{$row.'_'.$k}}" data-toggle="tooltip" data-placement="top" title="{{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price).')' }}">
-                                                                {{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price * $option->multiplier).')' }}</label>
-                                                                @endif
-                                                            </div>
-                                                            @endforeach
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-
-
-                                            {{--<table class="table table-centered table-nowrap table-striped d-none" id="addon-table">
-                                                <tbody>
-                                                    @foreach($product->addOn as $row => $addon)
-                                                    <tr>
-                                                        <td>
-                                                            <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet">{{$addon->title}}
-                                                                @php
-                                                                    $min_select = '';
-                                                                    if($addon->min_select > 0){
-                                                                        $min_select = 'Minimum '.$addon->min_select;
-                                                                    }
-                                                                    $max_select = '';
-                                                                    if($addon->max_select > 0){
-                                                                        $max_select = 'Maximum '.$addon->max_select;
-                                                                    }
-                                                                    if( ($min_select != '') && ($max_select != '') ){
-                                                                        $min_select = $min_select.' and ';
-                                                                    }
-                                                                @endphp
-                                                                @if( ($min_select != '') || ($max_select != '') )
-                                                                    <small>({{$min_select.$max_select}} {{ __('Selections Allowed')}})</small>
-                                                                @endif
-                                                            </h4>
-                                                        </td>
-                                                    </tr>
-                                                    <tr class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
-                                                        <td>
-                                                            @foreach($addon->setoptions as $k => $option)
-                                                            <div class="checkbox checkbox-success form-check-inline">
-                                                                <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}">
-                                                                <label class="pl-2" for="inlineCheckbox_{{$row.'_'.$k}}">
-                                                                    {{$option->title .' ($'.decimal_format($option->price).')' }}</label>
-                                                            </div>
-                                                            @endforeach
-                                                        </td>
-                                                    </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>--}}
-                                        </div>
-                                        @endif
-
-                                        @if(@Auth::user()->role_id == 3)
+                                            @if(!empty($product->addOn) && $product->addOn->count() > 0)
                                             <div class="border-product">
-                                                <h6 class="product-title">{{ __('Bulk Order')}}</h6>
-                                                <div id="bulk-order-table">
+                                                <h6 class="product-title">{{ __('Addon List')}}</h6>
 
-                                                    @foreach ($product->productVariantByRoles as $key => $data)
-                                                        @if($data->role_id == 3)
-                                                            <h6 bulk_id="{{$data->id}}" class="header-title productAddonSet mb-1">{{__('Greater than or equal to quantity ').$data->quantity.' ( price '.Session::get('currencySymbol').''.$data->amount.' )'}}
-                                                            </h6>
-                                                        @endif
-                                                    @endforeach
-                                                    {{-- @foreach($product->addOn as $row => $addon)
+                                                <div id="addon-table">
+                                                    @foreach($product->addOn as $row => $addon)
                                                         <div class="addon-product">
                                                             <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet mb-2">{{$addon->title}}
                                                                 @php
@@ -589,8 +493,23 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                                     <small>({{__($min_select).__($max_select)}} {{ __('Selections Allowed')}})</small>
                                                                 @endif
                                                             </h4>
+
+                                                            <div class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
+                                                                @foreach($addon->setoptions as $k => $option)
+                                                                <div class="checkbox checkbox-success form-check-inline mb-1">
+                                                                    <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}" data-price="{{$option->price * $option->multiplier}}" data-fixed_price="{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}" data-original_price="{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}">
+                                                                    @if($additionalPreference ['is_token_currency_enable'])
+                                                                    <label class="pl-2 mb-0" for="inlineCheckbox_{{$row.'_'.$k}}" data-toggle="tooltip" data-placement="top" title="{{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price).')' }}">
+                                                                    {{$option->title ." ("}}<i class='fa fa-money' aria-hidden='true'></i> {{getInToken($option->price * $option->multiplier).')' }}</label>
+                                                                    @else
+                                                                    <label class="pl-2 mb-0" for="inlineCheckbox_{{$row.'_'.$k}}" data-toggle="tooltip" data-placement="top" title="{{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price).')' }}">
+                                                                    {{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price * $option->multiplier).')' }}</label>
+                                                                    @endif
+                                                                </div>
+                                                                @endforeach
+                                                            </div>
                                                         </div>
-                                                    @endforeach --}}
+                                                    @endforeach
                                                 </div>
 
 
@@ -634,7 +553,88 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                     </tbody>
                                                 </table>--}}
                                             </div>
-                                        @endif
+                                            @endif
+
+                                            @if(@Auth::user()->role_id == 3)
+                                                <div class="border-product">
+                                                    <h6 class="product-title">{{ __('Bulk Order')}}</h6>
+                                                    <div id="bulk-order-table">
+
+                                                        @foreach ($product->productVariantByRoles as $key => $data)
+                                                            @if($data->role_id == 3)
+                                                                <h6 bulk_id="{{$data->id}}" class="header-title productAddonSet mb-1">{{__('Greater than or equal to quantity ').$data->quantity.' ( price '.Session::get('currencySymbol').''.$data->amount.' )'}}
+                                                                </h6>
+                                                            @endif
+                                                        @endforeach
+                                                        {{-- @foreach($product->addOn as $row => $addon)
+                                                            <div class="addon-product">
+                                                                <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet mb-2">{{$addon->title}}
+                                                                    @php
+                                                                        $min_select = '';
+                                                                        $minText = __('Minimum');
+                                                                        $maxText = __('Maximum');
+                                                                        $andText = __('and');
+                                                                        if($addon->min_select > 0){
+                                                                            $min_select = $minText.' '.$addon->min_select;
+                                                                        }
+                                                                        $max_select = '';
+                                                                        if($addon->max_select > 0){
+                                                                            $max_select = $maxText.' '.$addon->max_select;
+                                                                        }
+                                                                        if( ($min_select != '') && ($max_select != '') ){
+                                                                            $min_select = $min_select.' '.$andText.' ';
+                                                                        }
+                                                                    @endphp
+                                                                    @if( ($min_select != '') || ($max_select != '') )
+                                                                        <small>({{__($min_select).__($max_select)}} {{ __('Selections Allowed')}})</small>
+                                                                    @endif
+                                                                </h4>
+                                                            </div>
+                                                        @endforeach --}}
+                                                    </div>
+
+
+                                                    {{--<table class="table table-centered table-nowrap table-striped d-none" id="addon-table">
+                                                        <tbody>
+                                                            @foreach($product->addOn as $row => $addon)
+                                                            <tr>
+                                                                <td>
+                                                                    <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet">{{$addon->title}}
+                                                                        @php
+                                                                            $min_select = '';
+                                                                            if($addon->min_select > 0){
+                                                                                $min_select = 'Minimum '.$addon->min_select;
+                                                                            }
+                                                                            $max_select = '';
+                                                                            if($addon->max_select > 0){
+                                                                                $max_select = 'Maximum '.$addon->max_select;
+                                                                            }
+                                                                            if( ($min_select != '') && ($max_select != '') ){
+                                                                                $min_select = $min_select.' and ';
+                                                                            }
+                                                                        @endphp
+                                                                        @if( ($min_select != '') || ($max_select != '') )
+                                                                            <small>({{$min_select.$max_select}} {{ __('Selections Allowed')}})</small>
+                                                                        @endif
+                                                                    </h4>
+                                                                </td>
+                                                            </tr>
+                                                            <tr class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
+                                                                <td>
+                                                                    @foreach($addon->setoptions as $k => $option)
+                                                                    <div class="checkbox checkbox-success form-check-inline">
+                                                                        <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}">
+                                                                        <label class="pl-2" for="inlineCheckbox_{{$row.'_'.$k}}">
+                                                                            {{$option->title .' ($'.decimal_format($option->price).')' }}</label>
+                                                                    </div>
+                                                                    @endforeach
+                                                                </td>
+                                                            </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>--}}
+                                                </div>
+                                            @endif
 
                                         @if($product->same_day_delivery == 1 && $product->next_day_delivery == 1 && $product->hyper_local_delivery == 1)
                                         <div class="enterPincodeMsg desktop-pin-message">

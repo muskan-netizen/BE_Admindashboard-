@@ -1601,6 +1601,12 @@ body.al_body_template_nine  .product-description .update_year  b{
  body.al_body_template_nine  .product-box:hover, body.al_body_template_nine  .product-card-box:hover, body.al_body_template_nine  .suppliers-box:hover {
     box-shadow: 0px 0px 11px 2px rgb(0 0 0 / 12%) !important;
 }
+.al_body_template_nine.p2p-module .product-m .slick-slide>div{
+    margin: 0 ;
+}
+.al_body_template_nine .product-m .slick-list .slick-track {
+    margin: 0;
+}
 body.al_body_template_nine  .common-product-box:hover{
     box-shadow:unset!important;
     background-color: transparent;
