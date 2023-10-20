@@ -334,13 +334,17 @@
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
             }
         });
-        initDataTable('user_datatable','active');
-        $(document).on("click","#inactive-user",function() {
-            initDataTable('inactive_user_datatable','inactive');
-        });
+         initDataTable('user_datatable','active');
         $(document).on("click","#active-user",function() {
+            $('input[type="search"]').val('');
             initDataTable('user_datatable','active');
         });
+        
+        $(document).on("click","#inactive-user",function() {
+            $('input[type="search"]').val('');
+            initDataTable('inactive_user_datatable','inactive');
+        });
+        
         $(document).on("click", ".delete-vendor", function() {
             var destroy_url = $(this).data('destroy_url');
             var id = $(this).data('rel');
@@ -369,12 +373,12 @@
                 $('#'+table).DataTable({
                     "dom": '<"toolbar">Bfrtip',
                     "responsive": true,
-                    "searching": true,
                     "destroy": true,
+                    "searching": true,
                     "scrollX": true,
                     "processing": true,
                     "serverSide": true,
-                    "iDisplayLength": 10,
+                    "iDisplayLength": 20,
                     language: {
                         search: "",
                         info:'{{__("Showing _START_ to _END_  of _TOTAL_ entries")}}',
@@ -398,7 +402,8 @@
                         url: "{{route('user.filterdata')}}",
                         data: function(d) {
                             d._token = "{{ csrf_token() }}";
-                            d.search = $('input[type="search"]').val();
+                            // d.search = $('input[type="search"]').val();
+                            d.search = $('#'+table).DataTable().search();
                             d.date_filter = $('#range-datepicker').val();
                             d.payment_option = $('#payment_option_select_box option:selected').val();
                             d.tax_type_filter = $('#tax_type_select_box option:selected').val();
@@ -631,6 +636,7 @@
             "dom": '<"toolbar">Bfrtip',
             "destroy": true,
             "scrollX": true,
+            "searching": true,
             "processing": true,
             "serverSide": true,
             "iDisplayLength": 10,

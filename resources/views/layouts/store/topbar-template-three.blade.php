@@ -13,12 +13,14 @@ if(session()->has('applocale')){
 $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
 @endphp
 <div class="top-header site-topbar al_custom_head">
+
     <nav class="navbar navbar-expand-lg p-0 ">
         <div class="container ">
             <div class="row d-flex align-items-center justify-content-between w-100">
                 <div class="col-lg-6 p-0 d-md-flex align-items-center justify-content-start" >
                     <a class="navbar-brand mr-3"  href="{{ route('userHome') }}">
                     <img class="logo-image" style="height:50px;" alt="" src="{{$urlImg}}"></a>
+                    
                     <div class="al_custom_head_map_box px-2 py-1 d-md-inline-flex  d-flex align-items-center justify-content-start">
                         @if(isset($preference))
                         @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
