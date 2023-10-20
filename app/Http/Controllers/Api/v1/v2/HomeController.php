@@ -132,6 +132,10 @@ class HomeController extends BaseController
             $_REQUEST['request_from'] = 1;
 
             $type = $request->has('type') ? $request->type : 'delivery';
+              Session::put('vendorType',$type);
+
+
+
             $categoryTypes = getServiceTypesCategory($type);
 
             $this->venderFilterOpenClose   = $request->has('open_close_vendor') && $request->open_close_vendor ? $request->open_close_vendor : null;
