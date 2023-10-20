@@ -1161,7 +1161,9 @@ class OrderController extends FrontController
 
     public function orderSave($request, $paymentStatus)
     {
-
+ 
+       
+        
         // dd($request->all());
         try {
             $latitude = '';
@@ -1499,6 +1501,13 @@ class OrderController extends FrontController
                     $OrderVendor = new OrderVendor();
                 }
 
+                if(!empty($order->total_other_taxes)){
+                    $tax_amount  =   (float) array_sum(explode(":", $order->total_other_taxes));
+                }else{
+                    $tax_amount = $order->taxable_amount;
+                }
+       
+                $tax_amount  = round($order->total_other_taxes_amount,2);
                 $OrderVendor->status = 0;
                 $OrderVendor->user_id = $user->id;
                 $OrderVendor->order_id = $order->id;
@@ -2099,7 +2108,7 @@ class OrderController extends FrontController
                 }
                 $OrderVendor->fixed_fee = $fixedFeeAmount;
                 $OrderVendor->additional_price = $additionalPrice;
-                $OrderVendor->taxable_amount =$new_vendor_taxable_amount;
+                $OrderVendor->taxable_amount =$new_vendor_taxable_amount + $tax_amount;
                 $OrderVendor->payment_option_id = $request->payment_option_id;
                 $OrderVendor->subtotal_amount = $OrderVendor->subtotal_amount - $bid_vendor_discount??0;
                 $OrderVendor->payable_amount = $vendor_payable_amount +$fixedFeeAmount+$new_vendor_taxable_amount;

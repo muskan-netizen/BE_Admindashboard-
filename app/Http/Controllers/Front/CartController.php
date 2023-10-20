@@ -1177,7 +1177,8 @@ class CartController extends FrontController
                         }
                         unset($prod->product->taxCategory);
                     }
-
+ 
+                 
                     $prod->taxdata = $taxData;
 
                     if (isset($prod->pvariant->image->imagedata) && !empty($prod->pvariant->image->imagedata)) {
@@ -1667,6 +1668,8 @@ class CartController extends FrontController
             }else{
                 $cart->without_category_kyc = 1;
             }
+
+            pr($cart);
             // echo "Total_payable_amount: ".$total_payable_amount."total_discount_amount: ". $total_discount_amount."loyalty_amount_saved". $loyalty_amount_saved ."wallet_amount_used".$wallet_amount_used."total_taxable_amount".$total_taxable_amount;
             // Total_payable_amount: 695.6total_discount_amount: 97.1loyalty_amount_saved83.4wallet_amount_used0total_taxable_amount102
             //pr($total_payable_amount);
