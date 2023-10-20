@@ -98,7 +98,7 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
             if(!empty($vendor_order->orderDetail)){
                 $vendor_order->taxable_amount  =   (float) array_sum(explode(":", $vendor_order->orderDetail->total_other_taxes));
             }else{
-                $vendor_order->taxable_amount = $vendor_order->orderDetail;
+                $vendor_order->taxable_amount = $vendor_order->orderDetail->total_other_taxes_amount;
             }
    
             $vendor_order->taxable_amount  = round($vendor_order->taxable_amount,2);
