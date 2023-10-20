@@ -599,6 +599,8 @@
                             "mRender": function(data, type, full) {
                                 if (full.is_superadmin == 1) {
                                     return "<div class='form-ul'><div class='inner-div'><a href='" + full.edit_url + "' class='action-icon editIconBtn'><i class='mdi mdi-square-edit-outline'></i></a><a href='" + full.delete_url + "' class='action-icon delete_customer'><i class='mdi mdi-delete' title='Delete user'></i></a></div></div>";
+                                }else{
+                                    return "-";
                                 }
                             }
                         },
@@ -1050,6 +1052,8 @@
                             "mRender": function(data, type, full) {
                                 if (full.is_superadmin == 1) {
                                     return "<div class='form-ul'><div class='inner-div'><a href='" + full.edit_url + "' class='action-icon editIconBtn'><i class='mdi mdi-square-edit-outline'></i></a><a href='" + full.delete_url + "' class='action-icon delete_customer'><i class='mdi mdi-delete' title='Delete user'></i></a></div></div>";
+                                }else{
+                                    return "-";
                                 }
                             }
                         },
