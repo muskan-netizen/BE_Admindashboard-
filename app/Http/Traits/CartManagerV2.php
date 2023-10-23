@@ -1276,7 +1276,7 @@ trait CartManagerV2{
                             $minimum_spend = 0;
                             if (isset($vendorData->coupon->promo->minimum_spend)) {
                                 $minimum_spend = $vendorData->coupon->promo->minimum_spend * $doller_compare;
-                            }
+                                }
                             
                             $maximum_spend = 0;
                             if (isset($vendorData->coupon->promo->maximum_spend)) {
@@ -1826,7 +1826,7 @@ trait CartManagerV2{
             $cart->pickup_delay_date =  $pickup_delay_date??0;
             $cart->dropoff_delay_date =  $dropoff_delay_date??0;
             $cart->delivery_type =  $code??'D';
-            if($rental_price)
+            if(@$rental_price)
             {
 
                 $cart->sub_total = @$rental_price;
