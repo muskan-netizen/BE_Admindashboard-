@@ -316,7 +316,7 @@ class BaseController extends Controller{
 
         $categoryTypes = getServiceTypesCategory($type);
 
-    
+        // pr($categoryTypes);
         $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
         $preferences = ClientPreference::select('is_hyperlocal', 'client_code', 'language_id', 'celebrity_check')->first();
         $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')

@@ -54,6 +54,8 @@ class YachtController extends Controller
     {
         $pickup_time = $request->start_time ?? '';
         $drop_time = $request->end_time ?? '';
+        $pickup_lat = $request->pickup_latitude ?? '';
+        $pickup_lng = $request->pickup_longitude ?? '';
         $products= Product::whereDoesntHave('productBooked', function($q) use($pickup_time, $drop_time){
             if (!empty($pickup_time) ) {
                 $q->WhereRaw("DATE(end_date_time) >= ?", [$pickup_time]);
@@ -61,12 +63,20 @@ class YachtController extends Controller
             if (!empty($drop_time)) {
                 $q->whereRaw("DATE(start_date_time) <= ?", [$drop_time]);
             }
-        })->where('id',$id)->first();
+        })->where(function ($q) use ($request, $pickup_lat, $pickup_lng) {
+            if (isset($pickup_lat) && isset($pickup_lng)) {
+                $q->whereHas('vendor.serviceArea', function ($q) use ($pickup_lat,$pickup_lng) {
+                    $q->select('id', 'vendor_id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $pickup_lat . " " . $pickup_lng . ")'))");
+                });
+            }
+
+        })
+        ->where('id',$id)->first();
     
         if ($products) {
             return $this->successResponse(null,'Product Available',200);
         } else {
-            return $this->errorResponse('Not Available',400);
+            return $this->errorResponse('Product Not Available',400);
         }
     }
 }

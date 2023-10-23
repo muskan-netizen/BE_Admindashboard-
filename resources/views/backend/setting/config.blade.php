@@ -2367,7 +2367,13 @@
                 </div>
         </form>
         
-     <div class="col-xl-4 col-lg-4 mb-3">
+    
+
+    </div>
+    
+    {{-- ends here marg form --}}
+    </div>
+    <div class="col-xl-4 col-lg-4 mb-3">
         <div class="page-title-box">
             <h4 class="page-title text-uppercase">{{ __('Blockchain Route Formation') }}</h4>
         </div>
@@ -2416,11 +2422,6 @@
                 </form>
             </div>
         </div>
-
-    </div>
-    {{-- ends here marg form --}}
-    </div>
-
          @if( Request::get('google_tag'))
         <div class="col-xl-4 col-lg-4 mb-3">
             <!-- Social Logins title start -->
