@@ -32,14 +32,21 @@ body {
     background: white;
     border: 0 none;
     border-radius: 8px;
-    box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
-    padding: 20px 30px;
+    border:1px solid #ccc;    
+    padding:15px;
     box-sizing: border-box;
-    width: 80%;
-    margin: 0 10%;
+    width: 95%;
+    margin: 0 auto;
 
     /*stacking fieldsets above each other*/
     position: relative;
+}
+.custom-list .list-item {
+    text-align: left;    
+    padding-bottom: 5px;    
+}
+.booking-experienceNew{
+    width: 100%!important;
 }
 
 /*Hide all except first fieldset*/
@@ -73,23 +80,25 @@ body {
 }
 
 /*buttons*/
-#msform .action-button {
-    width: 100px;
-    background: #2098ce;
+#msform .action-button , #msform .action-button-previous{
+    width: 100%;
+    background: var(--theme-deafult);
     font-weight: bold;
     color: white;
     border: 0 none;
-    border-radius: 25px;
+    border-radius: 6px;
+    border:1px solid var(--theme-deafult);
     cursor: pointer;
     padding: 10px 5px;
-    margin: 10px 5px;
+    margin: 10px auto 0;
+    
 }
 
 #msform .action-button:hover, #msform .action-button:focus {
-    box-shadow: 0 0 0 2px white, 0 0 0 3px #2098ce;
+    background-color: ;
 }
 
-#msform .action-button-previous {
+/* #msform .action-button-previous {
     width: 100px;
     background: #aCbEd0;
     font-weight: bold;
@@ -103,8 +112,30 @@ body {
 
 #msform .action-button-previous:hover, #msform .action-button-previous:focus {
     box-shadow: 0 0 0 2px white, 0 0 0 3px #aCbEd0;
-}
+} */
 
+a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
+    background-color: #f5f5f5!important;
+    border-color:var(--theme-deafult);
+    padding: 3px;
+}
+.vehical-container .product-detail-box{
+    border: 1px solid transparent;
+    padding: 3px;
+    border-radius: 4px;
+}
+.al_body_template_nine .menu-slider .al_main_category a{
+    color: #fff!important;
+}
+.al_body_template_nine .menu-slider .al_main_category a{
+    border-color: #fff!important;
+}
+.menu-navigation.al:after{
+    opacity: 1;
+}
+#main-menu{
+    justify-content: center;
+}
 /*headings*/
 .fs-title {
     font-size: 18px;
@@ -112,9 +143,12 @@ body {
     color: #2C3E50;
     margin-bottom: 10px;
     letter-spacing: 2px;
-    font-weight: bold;
+    font-weight: 800;
 }
-
+#msform .text-right {
+    font-weight: 600;
+    color: var(--theme-deafult);
+}
 .fs-subtitle {
     font-weight: normal;
     font-size: 13px;
@@ -220,18 +254,27 @@ body {
     color: #555; /* Adjust the color as needed */
 }
 
-.rounded-button
-{
-  position: relative;
-  display: inline-block;
-  border: 0;
-  border-radius: 30px;
-  text-align: center;
-  white-space: nowrap;
-  cursor: pointer;
-  font-family: 'Open Sans', sans-serif;
+.rounded-button {
+    position: relative;
+    display: inline-block;
+    border: 0;
+    border-radius: 6px;
+    background-color: var(--theme-deafult);
+    border:1px solid var(--theme-deafult);
+    text-align: center;
+    white-space: nowrap;
+    cursor: pointer;
+    font-family: 'Open Sans', sans-serif;
+    color: #fff!important;
+    font-weight: 400;
+    text-transform: capitalize;
+    width: 100%;
 }
-	
+.rounded-button:hover{
+    background-color: transparent;
+    color: var(--theme-deafult);
+    border-color: var(--theme-deafult)!important;
+}	
 
 /* #rental container css */
 
@@ -263,7 +306,9 @@ body {
         }
 
         .button-text {
-            font-size: 14px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--theme-deafult);
         }
 
         .box-container {
@@ -283,7 +328,7 @@ body {
         }
 
         .filled-box {
-            background-color: black;
+            background-color: var(--theme-deafult);
         }
 		
 
