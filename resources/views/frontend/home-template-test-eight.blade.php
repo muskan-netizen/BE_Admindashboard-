@@ -260,7 +260,7 @@
 <!-- html code here -->
 <button type="button" class="btn btn-primary d-none" data-toggle="modal" data-target="#login_modal"> Launch demo modal </button>
 @if(count($banners))
-<section class="home-slider-wrapper pt-md-0 pb-0">
+<section class="home-slider-wrapper pt-md-0 pb-3">
 
 	<div class="container-fluid p-0">
 		<div id="myCarousel" class="carousel slide al_desktop_banner" data-ride="carousel">
@@ -559,24 +559,19 @@
 		@if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories)) @include('frontend.booking.cabbooking-single-module') @endif
 		@elseif($homePageLabel->slug == 'dynamic_page') @include('frontend.included_files.dynamic_page')
 		@elseif($homePageLabel->slug == 'brands' && (count($homePageData['brands']) != 0))
-		<section class="container p2p-full-width popular-brands left-shape_ position-relative">
-			<div class="top-heading al_top_heading text-center d-flex align-items-center">
-				<!-- <h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
-				<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>  -->
-			</div>
-			<div class="row align-items-center">
-				<div class="col-md-2 brand text-center">
-					<div class=" top-heading">
-						<h2 class="h2-heading">top-Brands</h2>
-					<!-- <a class="" href="javscript:void(0);">See All <i class="fa fa-angle-right" aria-hidden="true"></i></a> -->
-					</div>
+		<section class="p2p-full-width popular-brands left-shape_ position-relative">
+			<div class="container">
+				<div class="top-heading al_top_heading text-center d-flex align-items-center">
+					<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('brands', true)}}</h2>
+					<a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>  
 				</div>
-
-				<div class=" col-md-10 al_custom_brand mt-3">
-					<div class="alNewSliderTopBrand render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-						@foreach ($homePageData[$homePageLabel->slug] as $brand )
-						@include('frontend.home_page_8.brands')
-						@endforeach
+				<div class="">				
+					<div class="al_custom_brand mt-3">
+						<div class="alNewSliderTopBrand render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+							@foreach ($homePageData[$homePageLabel->slug] as $brand )
+							@include('frontend.home_page_8.brands')
+							@endforeach
+						</div>
 					</div>
 				</div>
 			</div>
@@ -604,23 +599,23 @@
 			</div>
 		</section>
 		@elseif($homePageLabel->slug == 'vendors' && (count($homePageData['vendors']) != 0))
-		<section class="suppliers-section container vender_slider">
-			<!-- <div class=" top-heading d-flex justify-content-between align-self-center">
-				<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2>
-				<a class="" href="{{route('vendor.all')}}">{{__("See all")}} <img class="btn-arrow" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""></a>
-			</div> -->
-			<div class="row eccomerce-temp">
-				<div class="col-md-2 text-center">
-					<div class=" top-heading mt-5 pt-5">
-					<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('Recommended Vendor', true)}}</h2>
-				<a class="" href="{{route('vendor.all')}}">{{__("See All")}} <i class="fa fa-angle-right" aria-hidden="true"></i></a>
-					</div>
+		<section class="suppliers-section  vender_slider">
+			<div class="container">
+				<!-- <div class=" top-heading d-flex justify-content-between align-self-center">
+					<h2 class="h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('vendors', true)}}</h2>
+					<a class="" href="{{route('vendor.all')}}">{{__("See all")}} <img class="btn-arrow" src="{{asset('images/template-8/arrow.png')}}" alt="" title=""></a>
+				</div> -->
+				<div class=" top-heading">
+					<h2 class="text-left h2-heading">{{(!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : getNomenclatureName('Recommended Vendor', true)}}</h2>
+					<a class="" href="{{route('vendor.all')}}">{{__("See All")}} <i class="fa fa-angle-right" aria-hidden="true"></i></a>
 				</div>
-				<div class="col-md-10">
-					<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-						@foreach ($homePageData[$homePageLabel->slug] as $vendor )
-						@include('frontend.home_page_8.vendor')
-						@endforeach
+				<div class="row eccomerce-temp">				
+					<div class="col-12">
+						<div class="suppliers-slider-{{$homePageLabel->slug}} product-m render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+							@foreach ($homePageData[$homePageLabel->slug] as $vendor )
+							@include('frontend.home_page_8.vendor')
+							@endforeach
+						</div>
 					</div>
 				</div>
 			</div>
@@ -737,18 +732,20 @@
 			</div>
 		</section>
 		@elseif($homePageLabel->slug == 'best_sellers' && (count($homePageData['best_sellers']) != 0))
-		<section class="container best-seller-eccomerce mb-0 pb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-			<div class="top-heading d-flex justify-content-between">
-				<h2 class="col h2-heading"> @php
-					echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
-					@endphp </h2>
-			</div>
-			<div class="row">
-				<div class="col-12">
-					<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-						@foreach ($homePageData[$homePageLabel->slug] as $vendor )
-						@include('frontend.home_page_8.best_sellers')
-						@endforeach
+		<section class=" best-seller-eccomerce mb-0 pb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+			<div class="container">
+				<div class="top-heading d-flex justify-content-between">
+					<h2 class=" h2-heading"> @php
+						echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
+						@endphp </h2>
+				</div>
+				<div class="">
+					<div class="">
+						<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+							@foreach ($homePageData[$homePageLabel->slug] as $vendor )
+							@include('frontend.home_page_8.best_sellers')
+							@endforeach
+						</div>
 					</div>
 				</div>
 			</div>
@@ -866,9 +863,9 @@
 		<section class="main-product mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 			<div class="container p2p-full-width">
 				<div class="row ">
-					<div class="col-md-12 pl-0 pt-4 text-center">
+					<div class="col-md-12  pt-4 text-center">
 						<div class="top-heading d-flex justify-content-between">
-							<h2 class="h2-heading"> @php
+							<h2 class="mt-0 h2-heading"> @php
 								echo (!empty($homePageLabel->translations->first()->title)) ? $homePageLabel->translations->first()->title : __($homePageLabel->title);
 								@endphp </h2>
 								<!-- <a class="" href="">See All  <i class="fa fa-angle-right" aria-hidden="true"></i> </a>  -->
@@ -876,7 +873,7 @@
 					</div>
 				</div>
 			<div class="product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-				<div class="row  {{(($homePageLabel->slug =='featured_products')?'p2p_eccomerce_slider10':'p2p_eccomerce_slider')}}">
+				<div class="  {{(($homePageLabel->slug =='featured_products')?'p2p_eccomerce_slider10':'p2p_eccomerce_slider')}}">
 							@foreach ($homePageData[$homePageLabel->slug] as $product )
 							@include('frontend.home_page_8.product')
 							@endforeach

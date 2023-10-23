@@ -545,7 +545,7 @@ trait ProductActionTrait{
             // }
 
             // $returnArray = $products;
-            //pr($returnArray);
+          
             return $returnArray;
         }
         catch (\Exception $e) {
@@ -558,6 +558,7 @@ trait ProductActionTrait{
     }
     public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude, $vendor_ids = [], $set_template = NULL,$venderFilterOpenClose=null,$venderFilterbest=null,$nearest_vendor=0)
     {
+        
         try 
         {
             $mytime = Carbon::now()->setTimezone($timezone);
@@ -609,7 +610,7 @@ trait ProductActionTrait{
             
 
             
-            $mainQuery .= " GROUP BY `vendors`.`id` ";
+            $mainQuery .= " GROUP BY `vendors`.`id` ORDER BY `lineOfSightDistance` ASC";
 
             //------based on hyper location------------
             if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
@@ -885,6 +886,8 @@ trait ProductActionTrait{
                 $whereProductType = ' and `categories`.`type_id` IN ('.$categoryTypesArray.')';
             }
 
+            $user = auth()->user();
+            $vendor_id = $user->userVendor->vendor_id ?? 0;
             $raw_query = "";
 
             foreach($enable_layout as $enable_layout1){
@@ -935,7 +938,7 @@ trait ProductActionTrait{
                         `products`.`deleted_at` IS NULL 
                             AND `vendors`.`status` = 1 
                             AND `products`.`is_live` = 1
-    
+                            AND (`products`.`vendor_id` IS NULL OR `products`.`vendor_id` != $vendor_id)
                             $completeWhere
                                         
                             $vendorWhereIN 

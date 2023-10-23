@@ -745,6 +745,9 @@ if (!function_exists('showSlot')) {
                 return $q->where('day', $mytime)->where('laundry', '1');
             })->get();
         } else {
+            if(!empty($type) && $type == 'car_rental'){
+                $type ='rental';
+            }
             $slots = VendorSlot::where('vendor_id', $vid)
                     ->whereHas('days', function ($q) use ($mytime, $type) {
                         return $q->where('day', $mytime)->where($type, '1');
@@ -1321,13 +1324,15 @@ if (!function_exists('getServiceTypesCategory')) {
                 'taxi'         => ['pick_drop_service'],
                 'p2p'          => ['p2p'],
                 'home_service' => ['on_demand_service', 'appointment_service'],
+                'car_rental'   => ['rental_services'],
             ];
             $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
             if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+              
                 $alltypes['p2p'] = ['p2p', 'rental_service'];
             }
             
-            if ($vendorType == 'delivery' || $vendorType == 'dine_in' || $vendorType == 'takeaway' || $vendorType == 'rental' || $vendorType == 'pick_drop' || $vendorType == 'on_demand' || $vendorType == 'laundry' || $vendorType == 'appointment' || $vendorType == 'p2p') {
+            if ($vendorType == 'delivery' || $vendorType == 'dine_in' || $vendorType == 'takeaway' || $vendorType == 'rental' || $vendorType == 'pick_drop' || $vendorType == 'on_demand' || $vendorType == 'laundry' || $vendorType == 'appointment' || $vendorType == 'p2p' || $vendorType == 'car_rental') {
                 $service_types = $alltypes[$vendorType];
             }
 
@@ -1338,6 +1343,7 @@ if (!function_exists('getServiceTypesCategory')) {
             if($client_preference->business_type == 'p2p' && @$getAdditionalPreference['is_rental_weekly_monthly_price']){
                 $service_types = $alltypes['p2p'];
             }
+          
             /* if ($vendorType == "delivery" || $vendorType == "dine_in" || $vendorType == "takeaway") {
                 $service_types = ['products_service'];
             } elseif ($vendorType == "rental") {
@@ -1373,7 +1379,9 @@ if (!function_exists('getServiceTypesCategory')) {
                 $service_types = ['p2p'];
             } */
             $types =  $types->whereIn('service_type', $service_types);
+           
             $types_id = $types->pluck('id')->toArray();
+           
             return $types_id ;
         } catch (\Throwable $th) {
            return [];
@@ -1402,7 +1410,7 @@ if (!function_exists('getCategoryTypes')) {
                 $typeArray =['laundry'];
             break;
             case "rental":
-                $typeArray = ['rental'];
+                $typeArray = ['rental','car_rental'];
                 break;
             case "p2p":
                 $typeArray = ['p2p'];
@@ -1411,7 +1419,7 @@ if (!function_exists('getCategoryTypes')) {
                 $typeArray = ['delivery'];
                 break;
             case "super_app":
-                $typeArray = ['delivery', 'dinein', 'takeaway', 'rental', 'pick_drop', 'on_demand', 'appointment', 'p2p' ];
+                $typeArray = ['delivery', 'dinein', 'takeaway', 'rental', 'pick_drop', 'on_demand', 'appointment', 'p2p','car_rental' ];
                 break;
             default:
             $typeArray =['delivery','dinein','takeaway','pick_drop','on_demand','appointment'];
@@ -1603,6 +1611,7 @@ if( !function_exists('clientPrefrenceModuleStatus') ) {
 if( !function_exists('p2p_module_status') ) {
     function p2p_module_status() {
         $additional_preference = getAdditionalPreference(['is_attribute']);
+        
         if(clientPrefrenceModuleStatus('p2p_check') && $additional_preference['is_attribute']) {
             return true;
         }
@@ -2011,6 +2020,14 @@ if (!function_exists('getDatesBetweenTwoDates')) {
     }
 }
 
+if(!function_exists('getDaysBetweenTwoDates')){
+    function getDaysBetweenTwoDates($startDate, $endDate){
+        $startDate = Carbon::parse($startDate);
+        $endDate = Carbon::parse($endDate);
+        return $startDate->diffInDays($endDate) + 1;
+}
+
+}
 if (!function_exists('recurringCalculationFunction')) {    
     function recurringCalculationFunction($request)
     {

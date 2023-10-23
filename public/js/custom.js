@@ -1,4 +1,4 @@
-
+  
 $(function () {
     $(".al_main_category").hover(
         function () {
@@ -17,6 +17,7 @@ $(function () {
     }
 
     var slotValidater = 2;
+
 
     var footer_height = jQuery('.footer-light').height();
     var header_height = jQuery('.site-header').height();
@@ -667,6 +668,7 @@ $(document).ready(function () {
     });
 
     function productRemove(product_id, cartproduct_id, vendor_id) {
+        
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -703,6 +705,7 @@ $(document).ready(function () {
                     if($(`#add_button_href${cartproduct_id}`).length > 0){
                         $(`#add_button_href${cartproduct_id}`).show();
                         $(`#added_button_href${cartproduct_id}`).hide();
+                        $(`#add_button_href${cartproduct_id}`).text('Add');
                     }
                     if($(`#add_button_href${product_id}`).length > 0){
                         $(`#add_button_href${product_id}`).show();
@@ -994,6 +997,24 @@ $(document).ready(function () {
 
     }
     $(document).on("click", "#order_placed_btn", async function () {
+        
+        $('.adone_item .item').each(function(index, element){
+            let min = $(this).data('min');
+            let max = $(this).data('max');
+            let checkedBox = $(this).find('input[type="checkbox"]:checked').length
+            if(checkedBox < min || checkedBox > max){
+                
+                $(this).css('transition','border 0.2s ease-in-out');
+                $(this).css('border','1px solid red');
+
+                setTimeout(() => {
+                    $(this).css('border','none');
+                    $(this).css('transition','none');
+                }, 3000);
+            }
+        });
+        
+        // return true;
 
         if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val()!=$("#schedule_datetime").val())){
             success_error_alert('error', error_unchanged_schedule_date, ".cart_response");
@@ -1021,13 +1042,13 @@ $(document).ready(function () {
         var checkboxes = $('.checked-cart-product');
         var checkedCheckboxes = checkboxes.filter(':checked');
         if (checkedCheckboxes.length === 0) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Please select at least one product.',
-                //footer: '<a href="">Why do I have this issue?</a>'
-            });
-            return false;
+            // Swal.fire({
+            //     icon: 'error',
+            //     title: 'Oops...',
+            //     text: 'Please select at least one product.',
+            //     //footer: '<a href="">Why do I have this issue?</a>'
+            // });
+            // return false;
         }
 
         if ($("#agree_term_check").length > 0) {
@@ -1060,6 +1081,7 @@ $(document).ready(function () {
 
 
         //$("input[name='category_kyc_ids']").length > 0 ||
+        
         if( ($("input[name='without_category_kyc']").val() !=1 ) ){
             success_error_alert('error', 'User Place Order is required! kindly fill the details.', ".cart_response");
             return false;
@@ -1076,7 +1098,6 @@ $(document).ready(function () {
             })
             return false;
         }
-
 
         var vendorScheduleDatetime = $('.vendor_schedule_datetime').length
         if(vendorScheduleDatetime > 0){
@@ -1095,6 +1116,7 @@ $(document).ready(function () {
             $("#login_modal").modal("show");
             return false;
         }
+            
         var address = $("input[name='address_id']").val();
         if ((vendor_type == 'delivery' || vendor_type == 'on_demand' || vendor_type == 'rental') && ((address == '') || (address < 1) || ($("input[name='address_id']").length < 1))) {
             success_error_alert('error', 'Please add a valid address to continue', ".cart_response");
@@ -1175,6 +1197,13 @@ $(document).ready(function () {
         let comment_for_pickup_driver = $("input[name='comment_for_pickup_driver']").val(); //commnet for pickup
         let comment_for_dropoff_driver = $("input[name='comment_for_dropoff_driver']").val(); //commnet for dropoff
         let comment_for_vendor = $("input[name='comment_for_vendor']").val(); //commnet for vendor
+        
+    var bookingOptionId ='';
+    var rentalProtectionId = '';
+    // var addonsId = '';
+    // var addonsOptionId = '';
+    var rentalProtectionId = '';
+    var bookingOptionId = '';
 
         if(business_type == 'laundry' && scheduling_with_slots == 1){
             var schedule_pickup = schedule_dt;
@@ -1199,6 +1228,7 @@ $(document).ready(function () {
                 return false;
             }
         }
+        
         if (cartAmount == 0) {
             var params = [specific_instructions, task_type, schedule_dropoff, schedule_pickup, schedule_dt, comment_for_pickup_driver, comment_for_dropoff_driver, comment_for_vendor, delivery_type, slot, address];
             // Save Cart Page Detail Forcely If user is paying from his cart.
@@ -1212,7 +1242,7 @@ $(document).ready(function () {
                 type: "POST",
                 dataType: 'json',
                 url: update_cart_schedule,
-                data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, dropoff_scheduled_slot : slot_dropoff, address: address,payable_amount : cartAmount },
+                data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, dropoff_scheduled_slot : slot_dropoff, address: address,payable_amount : cartAmount},
                 success: function (response) {
                     $(".error_prescription").attr("style", "display:none");
                     if(response.status == "passbase_submitted"){
@@ -2439,7 +2469,6 @@ $(document).ready(function () {
             dataType: 'json',
             url: cart_product_url,
             success: function (response) {
-                console.log(response);
                 if (response.status == "success") {
                     if(response.wishListCount > 0){
                         $('.wishListCount').removeClass('fa-heart-o');
@@ -2476,7 +2505,6 @@ $(document).ready(function () {
                     var client_preference_detail = response.client_preference_detail;
                     var is_token_enable = response.is_token_enable;
                     var token_val = response.token_val;
-                    // console.log(cart_details);
                     if (cart_details!= undefined) {
                         // if((response.is_token_enable == 1) && (response.token_val > 0) ){
                         //     response.token_val;
@@ -2495,9 +2523,9 @@ $(document).ready(function () {
                             //map array  cart_details.products.map(checkIfInCart);
                             var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail, is_token_enable:is_token_enable, token_val:token_val });
 
-                             let header_cart_template = _.template($('#header_cart_template').html());
+                            //  let header_cart_template = _.template($('#header_cart_template').html());
 
-                             $("#header_cart_main_ul").append(header_cart_template(headerCartData));
+                            //  $("#header_cart_main_ul").append(header_cart_template(headerCartData));
                             if (response.cart_details.totalQuantity>0) {
                                 $('#expected_vendors').html('');
                                 $('#expected_vendors').html(response.expected_vendor_html);
@@ -2509,10 +2537,10 @@ $(document).ready(function () {
                                        displayMapLocation(latitude, longitude, 'vendor-address-map');
                                     }
                                 }
-                                initialize();
+                                //initialize();
                                 if (cart_details.deliver_status == 0) {
-                                    $("#order_placed_btn").attr("disabled", true);
-                                    $("#order_placed_btn").addClass("d-none");
+                                    // $("#order_placed_btn").attr("disabled", true);
+                                    // $("#order_placed_btn").addClass("d-none");
                                 } else {
 
                                     $("#order_placed_btn").removeAttr("disabled");
@@ -2550,7 +2578,6 @@ $(document).ready(function () {
 
                             }
                             cartTotalProductCount();
-
                             if ($("#header_cart_template_ondemand").length != 0) {
                                 $("#header_cart_main_ul_ondemand").html('');
                                 let header_cart_template_ondemand = _.template($('#header_cart_template_ondemand').html());
@@ -2618,6 +2645,7 @@ $(document).ready(function () {
                         }
 
                     }
+                    
                     $.each($('.vendor_schedule_slot'), function() {
                         if($(this).val()!=''){
                             $responst = checkSlotAvailability(this);
@@ -2699,9 +2727,10 @@ $(document).ready(function () {
                                 }
                             }
                             cartTotalProductCount();
-
+                            
                             if ($("#header_cart_template_ondemand").length != 0) {
                                 $("#header_cart_main_ul_ondemand").html('');
+                                
                                 let header_cart_template_ondemand = _.template($('#header_cart_template_ondemand').html());
                                 var CartTemplateOndemandData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url });
 
@@ -3071,9 +3100,9 @@ $(document).ready(function () {
         $('#add_new_address_btn').show();
         $('#add_new_address_form').hide();
     });
-    $(document).on("click", "#add_new_address_btn", function () {
+    $(document).on("click", "#add_new_address_btn a.add-address", function () {
         if(auth){
-        $(this).hide();
+        // $(this).hide();
         initialize();
         $("#add_new_address_form_modal").modal('show');
         $('#add_new_address_form').show();
@@ -3245,6 +3274,22 @@ $(document).ready(function () {
     function addToCart() {
         var breakOut = false;
         var Product_quantity = $('.quantity_count').val();
+        var booking_time = $('#range-datepicker').val();
+        var start_date_time, end_date_time;
+  
+        if(booking_time)
+        {
+
+
+        if (booking_time.includes(' to ')) {
+            var dateParts = booking_time.split(' to ');
+            start_date_time = dateParts[0];
+            end_date_time = dateParts[1];
+        } else if (booking_time.trim() !== '') {
+            start_date_time = booking_time;
+            end_date_time = booking_time;
+        }
+    }
         var addLongTerm = 0;
         var addRecurringBooking = 0;
         vendor_id = (vendor_id == undefined || vendor_id =='') ?  document.querySelector('input[name=vendor_id]').value : vendor_id;
@@ -3293,15 +3338,15 @@ $(document).ready(function () {
             return false;
         }
 
-        if($('#sele_slot_id').val() == ''){
+        // if($('#sele_slot_id').val() == ''){
 
-            Swal.fire({
-                text: _language.getLanString('Please select delivery slot to continue'),
-                icon: "warning",
-                button: "OK",
-            });
-            return false;
-        }
+        //     Swal.fire({
+        //         text: _language.getLanString('Please select delivery slot to continue'),
+        //         icon: "warning",
+        //         button: "OK",
+        //     });
+        //     return false;
+        // }
 
         if($('#is_long_term_service').length > 0){
             addLongTerm =1;
@@ -3406,6 +3451,9 @@ $(document).ready(function () {
                 var service_day             =  $('#service_day').val();
                 var service_date            =  $('#service_date').val();
                 var service_start_time      =  $('#service_start_time').val();
+                var is_template             = $('#is_template').val();
+
+               
 
                 if (((sVendorResponse.isSingleVendorEnabled == 1) && (sVendorResponse.otherVendorExists == 1)) || (OrderStorage.getStorage('LongTermServiceAdded') == 1 ) || (OrderStorage.getStorage('cartProductCount') > 0 &&  addLongTerm ==1 ) ) {
                     var modelText = _language.getLanString('You can only buy products for single vendor. Do you want to remove all your cart products to continue ?');
@@ -3417,8 +3465,22 @@ $(document).ready(function () {
                     }
                    showRemoveCart(modelText);
                 } else {
+                    // if(serviceType == 'yacht'){
+                        
+                    //     var booking_duration = $('input[name="booking_duration"]');
+                    //     let isDurationSelected = false;
+
+                    //     booking_duration.each(function(inbdex, element){
+                    //         if(element.checked){
+                    //             let isDurationSelected = false;
+                    //             console.log(element.value)
+                    //         }
+                    //     })
+                    //     return false;
+                    // }
                     var variant_id = $('#prod_variant_id').val();
                     var start_date =  $('#start_time').val();
+                
                     var end_date =  $('#end_time').val();
                     var quantity = $('.quantity_count').val();
                     var incremental_hrs =  $('#incremental_hrs').val();
@@ -3427,13 +3489,14 @@ $(document).ready(function () {
                     var sele_slot_id = $("#sele_slot_id").val();
                     var sele_slot_price = $("#sele_slot_price").val();
                     var delivery_date = $("#date_input").val();
-                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date, sele_slot_id, sele_slot_price, delivery_date,recurringformPost);
+                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date, sele_slot_id, sele_slot_price, delivery_date,recurringformPost,is_template,start_date_time, end_date_time);
                 }
             }
         }
     }
 
-    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='', sele_slot_id='', sele_slot_price='', delivery_date='',recurringformPost='') {
+    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='', sele_slot_id='', sele_slot_price='', delivery_date='',recurringformPost='',is_template='',start_date_time = '', end_date_time='') {
+          
         var returnResponse = false;
         $.ajax({
             type: "post",
@@ -3458,14 +3521,25 @@ $(document).ready(function () {
                 "recurringformPost":recurringformPost,
                  "sele_slot_id":sele_slot_id,
                  "delivery_date":delivery_date,
-                 "sele_slot_price":sele_slot_price
+                 "sele_slot_price":sele_slot_price,
+                 "is_template" : is_template,
+                 "start_date_time":start_date_time,
+                 "end_date_time":end_date_time,
             },
             success: function (response) {
                 if (response.status == 'success') {
                     // $(".shake-effect").effect("shake", { times: 3 }, 1200);
                     returnResponse = true;
                     cartHeader();
-                    if(vendor_type == 'rental') {
+                 
+                    if($("#pickup_service").is(":checked")){
+                        location.href =  '/category/cabservice?destination_location='+response.vendor.address+'&destination_location_latitude'+response.vendor.latitude+'&destination_location_longitude'+response.vendor.longitude+'&yacht_id='+product_id;
+                    }
+                    if(vendor_type == 'rental' || vendor_type == 'p2p') {
+                        location.href =  '/viewcart';
+                    }   
+                    console.log(response.vendor.rental);
+                    if(response.vendor.rental == 0) {
                        location.href =  '/viewcart';
                     }
                 } else {
@@ -6014,3 +6088,173 @@ function numberWithCommas(x) {
 }
 
 $(".related-css").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"20px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}}]});
+
+$('#add_edit_address').on('hidden.bs.modal', function () {
+    $("html").removeClass("intro");
+  });
+
+$(".add_edit_address_btn").click(function(){
+    $("html").addClass("intro");
+  });
+
+
+// nine template slider 
+$('.categories_slider').slick({
+    slidesToShow: 7,
+    slidesToScroll: 1,
+    arrows: true,
+    dots: false,
+    speed: 300,
+    infinite: true,
+    autoplaySpeed: 5000,
+    autoplay: true,
+    responsive: [
+        {
+            breakpoint: 991,
+            settings: {
+            slidesToShow: 4,
+            }
+        },
+        {
+            breakpoint: 767,
+            settings: {
+            slidesToShow: 3,
+            }
+        },
+        {
+            breakpoint: 576,
+            settings: {
+            slidesToShow: 2,
+            }
+        }
+    ]
+});
+
+$('.featured_slider').slick({
+    slidesToShow: 5,
+    slidesToScroll: 1,
+    arrows: true,
+    dots: false,
+    speed: 300,
+    infinite: true,
+    autoplaySpeed: 5000,
+    autoplay: true,
+    responsive: [
+        {
+            breakpoint: 1440,
+            settings: {
+            slidesToShow: 4,
+            }
+        },
+        {
+            breakpoint: 991,
+            settings: {
+            slidesToShow: 3,
+            }
+        },
+        {
+            breakpoint: 767,
+            settings: {
+            slidesToShow: 2,
+            }
+        },
+        {
+            breakpoint: 576,
+            settings: {
+            slidesToShow: 1,
+            }
+        }
+    ]
+});
+
+
+
+
+$('.category_responsive').slick({
+    dots: false,
+    infinite: false,
+    speed: 300,
+    slidesToShow: 6,
+    slidesToScroll: 1,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 5,
+          slidesToScroll: 1,
+          infinite: true,
+          dots: false
+        }
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1
+        }
+      }
+    ]
+  });
+          
+
+
+
+  class readMore {
+    constructor() {
+        this.content = '.readmore__content';
+        this.buttonToggle = '.readmore__toggle';
+    }
+
+    bootstrap() {
+        this.setNodes();
+        this.init();
+        this.addEventListeners();
+    }
+
+    setNodes() {
+        this.nodes = {
+            contentToggle: document.querySelector(this.content)
+        };
+
+        this.buttonToggle = this.nodes.contentToggle.parentElement.querySelector(this.buttonToggle);
+    }
+
+    init() {
+        const { contentToggle } = this.nodes;
+
+        this.stateContent = contentToggle.innerHTML;
+
+        contentToggle.innerHTML = `${this.stateContent.substring(0, 500)}...`;
+    }
+
+    addEventListeners() {
+        this.buttonToggle.addEventListener('click', this.onClick.bind(this))
+    }
+
+    onClick(event) {
+        const targetEvent = event.currentTarget;
+        const { contentToggle } = this.nodes
+
+        if (targetEvent.getAttribute('aria-checked') === 'true') {
+            targetEvent.setAttribute('aria-checked', 'false')
+            contentToggle.innerHTML = this.stateContent;
+            this.buttonToggle.innerHTML = 'Show less'
+
+        } else {
+            targetEvent.setAttribute('aria-checked', 'true')
+            contentToggle.innerHTML = `${this.stateContent.substring(0, 500)}...`
+            this.buttonToggle.innerHTML = 'Show more'
+        }
+    }
+}
+
+
+const initReadMore = new readMore();
+initReadMore.bootstrap()

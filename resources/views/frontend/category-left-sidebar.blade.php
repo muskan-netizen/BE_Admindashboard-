@@ -21,7 +21,7 @@
 @endif   
 <!-- side-bar colleps block stat -->
 <div class="collection-filter-block bg-transparent p-0 m-0 brand-left">
-  @if(@$category->brands)
+  @if(@$category->brands->count())
         @if(@count(@$category->brands->first()->translation) && count(@$category->brands->first()->translation) > 0)
             <div class="collection-collapse-block open mb-2">
                 <h3 class="collapse-block-title">{{__('Brand')}}</h3>
@@ -77,7 +77,7 @@
         <div class="collection-collapse-block-content">
             <div class="wrapper mt-3">
                 <div class="range-slider">
-                    <input type="text" class="js-range-slider rangeSliderPrice" value="" />
+                    <input type="text" class="js-range-slider rangeSliderPrice" value="" debounce="500"  />
                 </div>
             </div>
         </div>

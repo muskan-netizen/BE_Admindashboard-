@@ -9,7 +9,7 @@ use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, RoleOld as Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole, TollPassOrigin, TravelMode, VehicleEmissionType, Attribute, ProductAttribute,LongTermServiceProductAddons, ProcessorProduct, OrderProduct,DeliverySlot, MargProduct, Pincode};
+use App\Models\{CsvProductImport, Product, Category, ProductTranslation, Nomenclature, NomenclatureTranslation, Vendor, AddonSet, ProductRelated, ProductCrossSell, ProductAddon, ProductCategory, ClientLanguage, ProductVariant, ProductImage, TaxCategory, ProductVariantSet, Country, Variant, VendorMedia, ProductVariantImage, Brand, Celebrity, ClientPreference, ProductCelebrity, Type, ProductUpSell, CartProduct, CartAddon, UserWishlist,Client, CsvQrcodeImport, Tag,ProductTag,ProductFaq, ProductVariantByRole, RoleOld as Role, TaxRate, ProductByRole, ProductDeliveryFeeByRole, TollPassOrigin, TravelMode, VehicleEmissionType, Attribute, BookingOption, ProductAttribute,LongTermServiceProductAddons, ProcessorProduct, OrderProduct,DeliverySlot, MargProduct, Pincode, ProductBookingOption, ProductRentalProtection, RentalProtection};
 
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\ApiResponser;
@@ -143,6 +143,16 @@ class ProductController extends BaseController
             $product->type_id = $request->type_id;
             $product->category_id = $request->category;
             $product->vendor_id = $request->vendor_id;
+            $product->captain_name = $request->captain_name ?? '';
+            $product->captain_description = $request->captain_description ?? '';
+            if($request->hasFile('captain_profile')){
+                $filePath = 'profile/' . \Str::random(40);
+                $file = $request->file('captain_profile');
+                $orignal_name = $request->file('captain_profile')->getClientOriginalName();
+                $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                $url = Storage::disk('s3')->url($file_name);
+                $product->captain_profile = $url;
+            }
             $client_lang = ClientLanguage::where('is_primary', 1)->first();
             if (!$client_lang) {
                 $client_lang = ClientLanguage::where('is_active', 1)->first();
@@ -189,8 +199,11 @@ class ProductController extends BaseController
     {
         // $this->testfun1();
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module', 'is_cab_pooling', 'is_one_push_book_enable','is_service_product_price_from_dispatch']);
+        // $this->searchCatalogObjects();
 
-        $with_array = ['brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles'];
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module', 'is_cab_pooling', 'is_one_push_book_enable','is_service_product_price_from_dispatch', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_attribute']);
+
+        $with_array = ['brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles', 'bookingOptions', 'rentalProtections'];
 
         if( checkTableExists('product_attributes') ) {
             $with_array[] = 'ProductAttribute';
@@ -202,12 +215,11 @@ class ProductController extends BaseController
 
         $product = Product::with($with_array)->where('id', $id)->firstOrFail();
 
-
         $type = Type::all();
         $countries = Country::all();
         $addons = AddonSet::with('option')->select('id', 'title')
             ->where('status', '!=', 2)
-            ->where('vendor_id', $product->vendor_id)
+            // ->where('vendor_id', $product->vendor_id)
             ->orderBy('position', 'asc')->get();
         $brands = Brand::join('brand_categories as bc', 'bc.brand_id', 'brands.id')
             ->select('brands.id', 'brands.title', 'brands.image')
@@ -297,34 +309,30 @@ class ProductController extends BaseController
         $agent_dispatcher_tags = [];
         $agent_dispatcher_on_demand_tags = [];
         $pro_tags = [];
-
-         if(isset($product->category->categoryDetail) && $product->category->categoryDetail->type_id == 7) # if type is pickup delivery then get dispatcher tags
-        {
-            $vendor_id = $product->vendor_id;
-            $agent_dispatcher_tags = $this->getDispatcherTags($vendor_id);
-        }
-        if(isset($product->category->categoryDetail) && $product->category->categoryDetail->type_id == 1) # if type is pickup delivery then get dispatcher tags
-        {
-            $vendor_id = $product->vendor_id;
-            $agent_dispatcher_tags = $this->getDeliveryDispatcherTags($vendor_id);
-        }
-        if(isset($product->category->categoryDetail) && $product->category->categoryDetail->type_id == 8) # if type is on demand
-        {
-            $vendor_id = $product->vendor_id;
-            $onDemandRes = $this->getDispatcherOnDemandTags($vendor_id);
-            if(  $getAdditionalPreference['is_service_product_price_from_dispatch'] ==1){
-                $product->is_onDemand_on = isset($onDemandRes['is_onDemand_enable']) ?  $onDemandRes['is_onDemand_enable'] : 0;
+        
+        if(isset($product->category->categoryDetail)){
+            switch($product->category->categoryDetail->type_id){
+                case 7:
+                    $vendor_id = $product->vendor_id;
+                    $agent_dispatcher_tags = $this->getDispatcherTags($vendor_id);
+                    break;
+                case 1:
+                    $vendor_id = $product->vendor_id;
+                    $agent_dispatcher_tags = $this->getDeliveryDispatcherTags($vendor_id);
+                    break;
+                case 8:
+                    $vendor_id = $product->vendor_id;
+                    $onDemandRes = $this->getDispatcherOnDemandTags($vendor_id);
+                    if(  $getAdditionalPreference['is_service_product_price_from_dispatch'] ==1){
+                        $product->is_onDemand_on = isset($onDemandRes['is_onDemand_enable']) ?  $onDemandRes['is_onDemand_enable'] : 0;
+                    }
+                    $agent_dispatcher_on_demand_tags = isset($onDemandRes['tags']) ?  $onDemandRes['tags'] : '';// $this->getDispatcherOnDemandTags($vendor_id);
+                    break;
+                case 12:
+                    $vendor_id = $product->vendor_id;
+                    $agent_dispatcher_on_demand_tags = $this->getDispatcherAppointmentTags($vendor_id);
+                    break;
             }
-
-           // pr($this->getDispatcherOnDemandTags($vendor_id));
-            $agent_dispatcher_on_demand_tags = isset($onDemandRes['tags']) ?  $onDemandRes['tags'] : '';// $this->getDispatcherOnDemandTags($vendor_id);
-
-        }
-        if(isset($product->category->categoryDetail) && $product->category->categoryDetail->type_id == 12) # if type is on demand
-        {
-            $vendor_id = $product->vendor_id;
-            $agent_dispatcher_on_demand_tags = $this->getDispatcherAppointmentTags($vendor_id);
-
         }
 
         $pro_tags = Tag::with('primary')->whereHas('primary')->get();
@@ -344,12 +352,10 @@ class ProductController extends BaseController
             }
         }
 
-        $roles = Role::where('status',1)->where('is_enable_pricing',1)->get();
+        $allRoles = Role::where('status',1);
+        $roles = $allRoles->where('is_enable_pricing',1)->get();
+        $allRoles = $allRoles->get();
         
-
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role',  'is_free_delivery_by_roles', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery']);
-
-        $allRoles = Role::where('status',1)->get();
 
         $selectedRoles = [];
         if($getAdditionalPreference['is_free_delivery_by_roles'] == 1){
@@ -375,8 +381,12 @@ class ProductController extends BaseController
         {
             $margProduct = $margProduct->toArray()??[];
         }
-
-        return view('backend/product/edit', ['delivery_slots'=> $delivery_slots, 'product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'processorProduct' => $processorProduct,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value, 'attribute_latitude' => $attribute_latitude, 'attribute_longitude' => $attribute_longitude,'margProduct' => $margProduct??[]]);
+        $rentalProtection = RentalProtection::get();
+        $bookingOption = BookingOption::get();
+        $productBookingOption = $product->bookingOptions()->pluck('booking_option_id')->toArray();
+        $productRentalProtection = $product->rentalProtections()->where('type_id', 2)->pluck('rental_proctection_id')->toArray();
+        $inlcudedProductRentalProtection = $product->rentalProtections()->where('type_id', 1)->pluck('rental_proctection_id')->toArray();
+        return view('backend/product/edit', ['delivery_slots'=> $delivery_slots, 'product_faqs' => $product_faqs ,'set_product_tags' => $set_product_tags, 'nomenclatureProductOrderForm'=>$nomenclatureProductOrderForm, 'pro_tags' => $pro_tags,'agent_dispatcher_on_demand_tags' => $agent_dispatcher_on_demand_tags,'agent_dispatcher_tags' => $agent_dispatcher_tags,'processorProduct' => $processorProduct,'typeArray' => $type, 'addons' => $addons, 'productVariants' => $productVariants, 'languages' => $clientLanguages, 'taxCate' => $taxCate, 'countries' => $countries, 'product' => $product, 'addOn_ids' => $addOn_ids, 'existOptions' => $existOptions, 'brands' => $brands, 'otherProducts' => $otherProducts, 'related_ids' => $related_ids, 'upSell_ids' => $upSell_ids, 'crossSell_ids' => $crossSell_ids, 'celebrities' => $celebrities, 'configData' => $configData, 'celeb_ids' => $celeb_ids ,'roles' => $roles, 'getAdditionalPreference' => $getAdditionalPreference, 'allRoles' => $allRoles, 'selectedRoles' => $selectedRoles, 'tollPassOrigin' => $tollPassOrigin, 'travelMode' => $travelMode, 'vehicleEmissionType' => $vehicleEmissionType, 'productAttributes' => $productAttributes, 'attribute_value' => $attribute_value, 'attribute_key_value' => $attribute_key_value, 'attribute_latitude' => $attribute_latitude, 'attribute_longitude' => $attribute_longitude,'margProduct' => $margProduct??[], 'productAttributes' => $productAttributes, 'rentalProtection' => $rentalProtection, 'bookingOption' => $bookingOption, 'productBookingOption' => $productBookingOption, 'productRentalProtection' => $productRentalProtection, 'inlcudedProductRentalProtection' => $inlcudedProductRentalProtection]);
     }
 
     /**
@@ -390,8 +400,6 @@ class ProductController extends BaseController
     {
         DB::beginTransaction();
         try {
-            $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
-
             //ProductVariant::where('product_id',$id)->update(['status'=>0]);
             $product = Product::where('id', $id)->firstOrFail();
             $rule = array(
@@ -405,6 +413,10 @@ class ProductController extends BaseController
             if ($validation->fails()) {
                 return redirect()->back()->withInput()->withErrors($validation);
             }
+            
+            $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
+
+
             $check_url_slug = Product::where('id','!=',$id)->where('vendor_id',$request->vendor_id)->where('url_slug',$request->url_slug)->first();
             if(!is_null($check_url_slug))
             {
@@ -432,13 +444,11 @@ class ProductController extends BaseController
                     if( checkTableExists('product_attributes') ) {
                         $insert_arr = [];
                         $insert_count = 0;
-
                         foreach($request->attribute as $key => $value) {
                             if( !empty($value) && !empty($value['option'] && is_array($value) )) {
 
                                 if(!empty($value['type']) && $value['type'] == 1 ) { // dropdown
                                     $value_arr = @$value['value'];
-
                                     foreach( $value['option'] as $key1 => $val1 ) {
                                         if( @in_array($val1['option_id'], $value_arr) ) {
 
@@ -578,6 +588,20 @@ class ProductController extends BaseController
             
             $product->is_slot_from_dispatch        = ($request->has('is_slot_from_dispatch') && $request->is_slot_from_dispatch == 'on') ? 1 : 0;
             $product->is_show_dispatcher_agent     = ($request->has('is_show_dispatcher_agent') && $request->is_show_dispatcher_agent == 'on') ? 1 : 0;
+
+            $product->pickup_time = ($request->has('pickup_time')) ? $request->pickup_time : null;
+            $product->drop_time = ($request->has('drop_time')) ? $request->drop_time : null;
+            $product->extra_time = ($request->has('extra_time')) ? $request->extra_time : null;
+            $product->captain_name = $request->captain_name ?? '';
+            $product->captain_description = $request->captain_description ?? '';
+            if($request->hasFile('captain_profile')){
+                $filePath = 'profile/' . \Str::random(40);
+                $file = $request->file('captain_profile');
+                $orignal_name = $request->file('captain_profile')->getClientOriginalName();
+                $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                $url = Storage::disk('s3')->url($file_name);
+                $product->captain_profile = $url;
+            }
             $product->save();
             if($request->has('slot_ids') && $request->slot_ids != ''){
                 $product->syncProductDeliverySlot()->sync($request->slot_ids);
@@ -699,6 +723,7 @@ class ProductController extends BaseController
                 $existv = array();
 
                 if ($request->has('variant_ids')) {
+                    // pr($request->variant_minimum_duration);
                     foreach ($request->variant_ids as $key => $value) {
                         $variantData = ProductVariant::where('id', $value)->first();
                         $existv[] = $value;
@@ -715,6 +740,7 @@ class ProductController extends BaseController
                             $variantData->title             = @$request->variant_titles[$key];
                             $variantData->price             = @$request->variant_price[$key];
                             $variantData->incremental_price             = @$request->variant_incremental_price[$key]??0;
+                            $variantData->minimum_duration = @$request->variant_minimum_duration[$key] ?? 0;
                             $variantData->incremental_price_per_min             = @$per_min;
                             $variantData->markup_price      = @$request->markup_price[$key];
                             $variantData->compare_at_price  = @$request->variant_compare_price[$key];
@@ -744,6 +770,7 @@ class ProductController extends BaseController
                     $variantData->cost_price        = $request->cost_price;
                     $variantData->quantity          = $request->quantity;
                     $variantData->tax_category_id   = $request->tax_category;
+                    $variantData->minimum_duration = @$request->minimum_duration ?? 0;
                     $variantData->save();
 
                     // Save Product Variant By Roles without product_variant_id and amount
@@ -808,7 +835,39 @@ class ProductController extends BaseController
                 }
 
             }
+            
 
+            if(!empty($request->rental_protection)){
+                foreach($request->rental_protection as $rentalId){
+                    $rentalProtection = [
+                        'product_id' => $product->id,
+                        'rental_proctection_id' => $rentalId,
+                        'type_id' => 2
+                    ];
+                    ProductRentalProtection::updateOrCreate($rentalProtection,$rentalProtection);
+                }
+            }
+
+            if(!empty($request->included_rental_protection)){
+                foreach($request->included_rental_protection as $rentalId){
+                    $includedRentalProtection = [
+                        'product_id' => $product->id,
+                        'rental_proctection_id' => $rentalId,
+                        'type_id' => 1
+                    ];
+                    ProductRentalProtection::updateOrCreate($includedRentalProtection,$includedRentalProtection);
+                }
+            }
+
+            if(!empty($request->booking_option)){
+                foreach($request->booking_option as $optionId){
+                    $bookingOption = [
+                        'product_id' => $product->id,
+                        'booking_option_id' => $optionId
+                    ];
+                    ProductBookingOption::updateOrCreate($bookingOption,$bookingOption);
+                }
+            }
             
             DB::commit();
             $this->createOrUpdateProductInSquarePos($id);

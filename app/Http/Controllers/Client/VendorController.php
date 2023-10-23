@@ -577,6 +577,8 @@ class VendorController extends BaseController
         );
         //dd($request->all());
         $validation  = Validator::make($request->all(), $rules)->validate();
+   
+
         $vendor = Vendor::where('id', $id)->first();
         $saveVendor = $this->save($request, $vendor, 'true');
 
@@ -587,6 +589,7 @@ class VendorController extends BaseController
             ]);
         }
 
+       
         $vendor_registration_documents = VendorRegistrationDocument::with('primary')->get();
         if ($vendor_registration_documents->count() > 0) {
             foreach ($vendor_registration_documents as $vendor_registration_document) {

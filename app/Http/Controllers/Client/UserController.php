@@ -108,7 +108,7 @@ class UserController extends BaseController
 
 
         if ($request->type == 'active') {
-            $users->where('status', 1);
+                $users->where('status', 1)->where('is_superadmin', '!=', 1);
         } else if ($request->type == 'inactive') {
             $users->where('status', 3);
         }

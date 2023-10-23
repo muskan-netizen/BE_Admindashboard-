@@ -291,17 +291,15 @@ body.al_body_template_six.dark {
 .dark .alLocation:before {
     border-color: #fff;
 }
-
-
-
-
-
-
-
-
-
-
-
+.footer-contant .store-btn .row li {
+    width: auto;
+    max-width: inherit;
+    flex: unset;
+    padding-right: 10px !important;
+}
+.footer-contant .store-btn .row li:last-child{
+    padding-right: 0;
+}
 
 @media(max-width:1400px) {
 

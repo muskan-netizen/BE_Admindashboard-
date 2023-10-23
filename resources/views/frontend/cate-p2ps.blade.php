@@ -327,6 +327,7 @@
         filterProducts();
     });
     $('.js-range-slider').change(function(){
+        alert('pass');
         filterProducts();
     });
 

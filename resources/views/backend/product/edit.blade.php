@@ -298,7 +298,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                         <div class="col-12 mb-2">
                             {!! Form::label('title', __('Meta Description'),['class' => 'control-label']) !!}
                             {!! Form::textarea('meta_description', $product->primary ? $product->primary->meta_description : '', ['class'=>'form-control', 'id' => 'meta_description', 'placeholder' => 'Meta Description', 'rows' => '3']) !!}
-                        </div>
+                            </div>
                     </div>
                 </div>
                 {{-- @php
@@ -1130,18 +1130,65 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::label('title', __('Minimum Increment'),['class' => 'control-label']) !!}
                             {!! Form::number('batch_count', $product->batch_count, ['class'=>'form-control', 'id' => 'batch_count', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-6 mb-2">
                             {!! Form::label('title', __('Return/Replace Days'),['class' => 'control-label']) !!}
                             {!! Form::number('return_days', $product->return_days, ['class'=>'form-control', 'id' => 'return_days', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
-
+                        @if($product->category->categoryDetail->slug == 'yacht')
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('title', __('Select Destination'),['class' => 'control-label']) !!}
+                                {!! Form::select('destination_id', [], $product->destination_id ,['class'=>'form-control', 'id' => 'destination_id']) !!}
+                            </div>
+                        @endif
                         <div class="col-md-6 mb-2">
-                            {!! Form::label('title', __('Calories'),['class' => 'control-label']) !!}
-                            {!! Form::number('calories', $product->calories, ['class'=>'form-control', 'id' => 'calories', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
+                            <label for="title" class="control-label">{{ __("Pickup Date") }}</label>
+                            <input class="form-control" id="pickup_time" name="pickup_time" type="datetime-local" value="{{ $product->pickup_time ?? ''}}">
                         </div>
-                        
+                        <div class="col-md-6 mb-2">
+                            <label for="title" class="control-label">{{ __("Drop Date") }}</label>
+                            <input class="form-control" id="drop_time" name="drop_time" type="datetime-local" value="{{ $product->drop_time ?? ''}}">
+                        </div>
+                        @if($product->category->categoryDetail->slug == 'rental')
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('title', __('Select Booking Option'),['class' => 'control-label']) !!}
+                                <select class="form-control select2-multiple" name="booking_option[]" data-toggle="select2" multiple="multiple" placeholder="Select booking option...">
+                                    @foreach($bookingOption as $set)
+                                    <option value="{{$set->id}}" @if(in_array($set->id, $productBookingOption)) selected @endif>{{$set->title??null}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('title', __('Select Rental Protection'),['class' => 'control-label']) !!}
+                                <select class="form-control select2-multiple" name="rental_protection[]" data-toggle="select2" multiple="multiple" placeholder="Select Rental Protection...">
+                                    @foreach($rentalProtection as $set)
+                                    <option value="{{$set->id}}" @if(in_array($set->id, $productRentalProtection)) selected @endif>{{$set->title??null}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('title', __('Included Rental Protection'),['class' => 'control-label']) !!}
+                                <select class="form-control select2-multiple" name="included_rental_protection[]" data-toggle="select2" multiple="multiple" placeholder="Select Included Rental Protection...">
+                                    @foreach($rentalProtection as $set)
+                                    <option value="{{$set->id}}" @if(in_array($set->id, $inlcudedProductRentalProtection)) selected @endif>{{$set->title??null}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
+
+                        @if($product->category->categoryDetail->slug == 'yacht')
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('captain_name', __('Captain Name'),['class' => 'control-label']) !!}
+                                <input class="form-control" id="captain_name" name="captain_name" type="text" value="{{ $product->captain_name ?? ''}}">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('captain_description', __('Captain Description'),['class' => 'control-label']) !!}
+                                <input class="form-control" id="captain_description" name="captain_description" type="text" value="{{ $product->captain_description ?? ''}}">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                {!! Form::label('captain_profile', __('Captain Profile'),['class' => 'control-label']) !!}
+                                <input class="form-control" id="captain_profile" name="captain_profile" type="file">
+                            </div>
+                        @endif
                     </div>
                     <div class="row">
                         @if(isset($getAdditionalPreference['is_price_by_role']) && $getAdditionalPreference['is_price_by_role'] == '1')
@@ -1153,10 +1200,10 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                     @endphp
 
                                     @if( $role->role != 'Corporate_user')
-                                    <div class="col-md-6 mb-2">
-                                        {!! Form::label('title', $label_min,['class' => 'control-label']) !!}
-                                        <input type="number" class="form-control" min="0" onkeyup="isNumberKey(event)" placeholder="0" name="minimum_order_count_arr[{{$role['id']}}]" value="{{ isset($product->productByRoleForAdmin[$key]) ? (decimal_format($product->productByRoleForAdmin[$key]->minimum_order_count) ?? 0.00) : 0.00 }}">
-                                    </div>
+                                        <div class="col-md-6 mb-2">
+                                            {!! Form::label('title', $label_min,['class' => 'control-label']) !!}
+                                            <input type="number" class="form-control" min="0" onkeyup="isNumberKey(event)" placeholder="0" name="minimum_order_count_arr[{{$role['id']}}]" value="{{ isset($product->productByRoleForAdmin[$key]) ? (decimal_format($product->productByRoleForAdmin[$key]->minimum_order_count) ?? 0.00) : 0.00 }}">
+                                        </div>
                                     @endif
                                 @endforeach
                             @endif
@@ -1164,7 +1211,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     </div>
 
                     {{-- product free delivery fees --}}
-                    @if($getAdditionalPreference['is_free_delivery_by_roles'] == '1')
+                    @if($getAdditionalPreference['is_free_delivery_by_roles'] == '1' && 0)
                         <div class="row">
                             <div class="col-md-12">
                                 <label class="control-label">Free Delivery (Select Roles)</label>
@@ -2715,6 +2762,22 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                 });
         });
         $('.select2-multiple').select2();
+
+        $('select[name="included_rental_protection[]"], select[name="rental_protection[]"]').change(function(){
+            if($(this).val().length){
+                array1 = $('select[name="included_rental_protection[]"]').val()
+                array2 = $('select[name="rental_protection[]"]').val()
+                var filteredArray = array1.filter(function(n) {
+                    return array2.indexOf(n) !== -1;
+                });
+                
+                if(filteredArray.length){
+                    
+                    $(this).find("option[value='"+filteredArray[0]+"']").prop("selected", false);
+                    $(this).trigger('change.select2');
+                }
+            }
+        })
     </script>
 {{-- Insert Value to Role Price Modal (End) --}}
 @include('backend.catalog.pagescript')

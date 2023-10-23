@@ -6,6 +6,9 @@
 
 <link href="{{asset('assets/libs/jquery-toast-plugin/jquery-toast-plugin.min.css')}}" rel="stylesheet" type="text/css" />
 
+<link href="{{asset('assets/libs/flatpickr/flatpickr.min.css')}}" rel="stylesheet" type="text/css" />
+<link href="{{asset('assets/libs/selectize/selectize.min.css')}}" rel="stylesheet" type="text/css" />
+
 <style type="text/css">
         
         
@@ -32,6 +35,7 @@
         position: relative;
     }
     .alPostBoxOuter ul li{list-style: none;}
+    
     .alPostBoxOuter ul li a{
         list-style: none;
         cursor: pointer;
@@ -54,6 +58,17 @@
         min-height: 1px;
         box-sizing: border-box;
     }
+    .alPostBoxOuter ul li a:hover {
+        text-decoration: none;
+        background: linear-gradient(180deg, #e1dfdf 0%, #efe7e7 100%);
+    }
+    .alPostBoxOuter a:hover {
+        text-decoration: none;
+    }
+    .alPostBoxOuter a {
+        color: #777
+    }
+
     .alPostItemsData label {
     color: #002f34;
     display: block;
@@ -94,7 +109,7 @@
     .dark .alPostBoxOuter a{color: #fff;}
     .dark .alPostBoxOuter ul li a:hover{background: #2b2b2b!important;}
     .dark .bg-light {
-        background-color: #2b2b2b!important;
+        background-color: #2b2b2b !important;
     }
     .dark select{background-color: #2b2b2b!important}
     .alCategoryItemsHead a{color: #f00; font-size: 12px;}

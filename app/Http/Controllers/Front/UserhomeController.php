@@ -441,14 +441,20 @@ class UserhomeController extends FrontController
 
     public function index(Request $request, $domain='')
     {
+
+        
        // pr(Session::get('onDemandPricingSelected'));
         try {
+
+            $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
+
+            
             $home = array();
             $vendor_ids = array();
             if ($request->has('ref')) {
                 session(['referrer' => $request->query('ref')]);
             }
-           
+            $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating', 'is_service_product_price_from_dispatch','is_service_price_selection']);
             $latitude = Session::get('latitude') ?? null;
             $longitude = Session::get('longitude') ?? null;
             $curId = Session::get('customerCurrency');
@@ -459,9 +465,12 @@ class UserhomeController extends FrontController
             $_REQUEST['request_from'] = 1;
 
             $navCategories = $this->categoryNav($langId);
+
+            
             Session::put('navCategories', $navCategories);
-            $vendor_type = $request->has('type') ? $request->type : Session::get('vendorType');
-            $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating', 'is_service_product_price_from_dispatch','is_service_price_selection']);
+            $vendor_type = Session::get('vendorType') ?? "delivery";
+
+         
             $count = 0;
             if ($client_preferences) {
                 foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
@@ -482,167 +491,124 @@ class UserhomeController extends FrontController
                 return redirect()->route('categoryDetail',$categoriesSlug);
             }
 
-            if($client_preferences->is_hyperlocal == 1) {
+            $carbon_now = Carbon::now();
+
+            $banners = $this->getBannersForHomePage($client_preferences, 'banners', $latitude, $longitude);
+
+
+            $mobile_banners = $this->getBannersForHomePage($client_preferences, 'mobile_banners', $latitude, $longitude);
+
+
+            $home_page_labels = CabBookingLayout::where('is_active', 1)->web()->where('for_no_product_found_html',0)->orderBy('order_by');
+
+
+            if (isset($langId) && !empty($langId))
+                $home_page_labels = $home_page_labels->with(['translations' => function ($q) use ($langId) {
+                    $q->where('language_id', $langId);
+                }]);
+
+            $home_page_labels = $home_page_labels->get();
+            // if nothing in enblead for home page then show all 
+           
+            //     $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
+            $request->request->add(['type'=>Session::get('vendorType')??'delivery','noTinJson'=>1] );
+            $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+
+            $CabBookingLayout = CabBookingLayout::web()->where('is_active', 1);
+            $home_page_pickup_labels   = clone $CabBookingLayout;
+            $for_no_product_found_html = clone $CabBookingLayout;
+            $enable_layout             = clone $CabBookingLayout;
+            $enable_layout = $enable_layout->orderBy('order_by','asc')->pluck('slug')->toArray();
+            $homePageData = $this->postHomePageData($request, $set_template, $enable_layout, $additionalPreference);
+
+            $home_page_labels = $home_page_labels->map(function($da) use ($homePageData, $navCategories) {
+                if($da->slug!='pickup_delivery' && $da->slug!='dynamic_page' ){
+                    $da[$da->slug] = $homePageData[$da->slug] ?? '';
+                }
+                if( $da->slug == 'nav_categories'  ){
+                    $da['nav_categories'] = $navCategories ?? '';
+                }
+                return $da;
+            });
+            
+            $only_cab_booking = OnboardSetting::where('key_value', 'home_page_cab_booking')->count();
+            if ($only_cab_booking == 1)
+                return Redirect::route('categoryDetail', 'cabservice');
+
+            
+
+            $home_page_pickup_labels  = $home_page_pickup_labels->with('translations')->where('for_no_product_found_html',0)->orderBy('order_by')->get();
+
+         
+
+            $for_no_product_found_html = $for_no_product_found_html->with('translations')->where('for_no_product_found_html',1)->orderBy('order_by')->get();
+            
+            $categories = [];
+            if(isset($set_template)  && ($set_template->template_id == 8 || $set_template->template_id == 9)){
+                $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
+                ->where('id', '>', '1')
                 
-                $this->loc_key = $this->loc_key.":hyperlocal:".$vendor_type.":".$client_preferences->client_code;
+                ->whereNotIn('type_id', [4, 5])
+                ->where(function ($q) {
+                    $q->whereNull('vendor_id');
+                })->orderBy('position', 'asc')
+                ->orderBy('id', 'asc')
+                ->where('status', 1)
+                ->orderBy('parent_id', 'asc')->get();
+            }
+            
 
-                $cacheKey = $this->loc_key.":{$latitude}:{$longitude}";
-                
-                $find_key = $this->isPointInRadius($latitude, $longitude, $this->radius, $this->loc_key);
-
-
-            } else {
-                $this->loc_key = $this->loc_key.':'.$vendor_type.':'.$client_preferences->client_code;
-                $cacheKey = $this->loc_key;
-                $cachedResult = Redis::get($this->loc_key);
-                //$cachedResult['cacheKey'] = $cacheKey??'';
-                if ($cachedResult) {
-                    $find_key['data'] = json_decode($cachedResult);
-                } 
-
+            
+            $view_page ="home-template-one";
+            if (isset($set_template)  && $set_template->template_id == 1){
+                // $view_page = 'home-template-one';
+                $view_page = 'home-template-test-one';
+            }elseif(isset($set_template)  && $set_template->template_id == 2){
+                // $view_page = "home-template-two";
+                $view_page = 'home-template-test-two';
+            }elseif(isset($set_template)  && $set_template->template_id == 3){
+                // $view_page = "home-template-three";
+                $view_page = 'home-template-test-three';
+            }elseif(isset($set_template)  && $set_template->template_id == 4){
+                // $view_page = "home-template-four";
+                $view_page = 'home-template-test-four';
+            }elseif(isset($set_template)  && $set_template->template_id == 5){
+                $view_page = "home-template-five";
+            }elseif(isset($set_template)  && $set_template->template_id == 6){
+                // $view_page = "home-template-six";
+                $view_page = "home-template-test-six";
+            }
+            elseif(isset($set_template)  && $set_template->template_id == 8){
+                // $view_page = "home-template-six";
+                $view_page = "home-template-test-eight";
+            }
+            elseif(isset($set_template)  && $set_template->template_id == 9){
+                $view_page = "home-template-test-nine";
             }
 
-            if ($this->additionalPreference['is_cache_enable_for_home'] == 1 && @$find_key['data']) {
-                $homeData = $find_key['data'];
-                //die;
-                echo $homeData;
-                exit;
-            } else {
-                
-
-                $carbon_now = Carbon::now();
-
-                $banners = $this->getBannersForHomePage($client_preferences, 'banners', $latitude, $longitude);
-
-
-                $mobile_banners = $this->getBannersForHomePage($client_preferences, 'mobile_banners', $latitude, $longitude);
-
-
-                $home_page_labels = CabBookingLayout::where('is_active', 1)->web()->where('for_no_product_found_html',0)->orderBy('order_by');
-
-
-                if (isset($langId) && !empty($langId))
-                    $home_page_labels = $home_page_labels->with(['translations' => function ($q) use ($langId) {
-                        $q->where('language_id', $langId);
-                    }]);
-
-                $home_page_labels = $home_page_labels->get();
-                // if nothing in enblead for home page then show all 
+            elseif(isset($set_template) && $set_template->template_id == 10)
+{
+            $view_page = "yacht.index";
+       
+}
+            $is_service_product_price_from_dispatch_forOnDemand = 0;
+          
+            $getOnDemandPricingRule = getOnDemandPricingRule($vendor_type, Session::get('onDemandPricingSelected'),$additionalPreference);
+         
+            $is_service_product_price_from_dispatch_forOnDemand =$getOnDemandPricingRule['is_price_from_freelancer'];
+            // if(($additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
+            //     $is_service_product_price_from_dispatch_forOnDemand =1;
+            // }
             
-                //     $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
-                $request->request->add(['type'=>Session::get('vendorType')??'delivery','noTinJson'=>1] );
-                $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
+         
+            $homeData = ['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $client_preferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData ,'is_service_product_price_from_dispatch_forOnDemand'=> $is_service_product_price_from_dispatch_forOnDemand,'vendor_type'=>$vendor_type];
+            return view('frontend.'.$view_page)->with($homeData);
 
-                $CabBookingLayout = CabBookingLayout::web()->where('is_active', 1);
-                $home_page_pickup_labels   = clone $CabBookingLayout;
-                $for_no_product_found_html = clone $CabBookingLayout;
-                $enable_layout             = clone $CabBookingLayout;
-                $enable_layout = $enable_layout->orderBy('order_by','asc')->pluck('slug')->toArray();
-                $homePageData = $this->postHomePageData($request, $set_template, $enable_layout, $additionalPreference);
-
-                $home_page_labels = $home_page_labels->map(function($da) use ($homePageData, $navCategories) {
-                    if($da->slug!='pickup_delivery' && $da->slug!='dynamic_page' ){
-                        $da[$da->slug] = $homePageData[$da->slug] ?? '';
-                    }
-                    if( $da->slug == 'nav_categories'  ){
-                        $da['nav_categories'] = $navCategories ?? '';
-                    }
-                    return $da;
-                });
-                
-                $only_cab_booking = OnboardSetting::where('key_value', 'home_page_cab_booking')->count();
-                if ($only_cab_booking == 1)
-                    return Redirect::route('categoryDetail', 'cabservice');
-
-                
-
-                $home_page_pickup_labels  = $home_page_pickup_labels->with('translations')->where('for_no_product_found_html',0)->orderBy('order_by')->get();
-
-            
-
-                $for_no_product_found_html = $for_no_product_found_html->with('translations')->where('for_no_product_found_html',1)->orderBy('order_by')->get();
-                
-                $categories = [];
-                if(isset($set_template)  && ($set_template->template_id == 8 || $set_template->template_id == 9)){
-                    $categories = Category::with('translation_one')->select('id', 'icon', 'slug', 'type_id', 'is_visible', 'status', 'is_core', 'vendor_id', 'can_add_products', 'parent_id')
-                    ->where('id', '>', '1')
-                    
-                    ->whereNotIn('type_id', [4, 5])
-                    ->where(function ($q) {
-                        $q->whereNull('vendor_id');
-                    })->orderBy('position', 'asc')
-                    ->orderBy('id', 'asc')
-                    ->where('status', 1)
-                    ->orderBy('parent_id', 'asc')->get();
-                }
-                
-
-                
-                $view_page ="home-template-one";
-                if (isset($set_template)  && $set_template->template_id == 1){
-                    // $view_page = 'home-template-one';
-                    $view_page = 'home-template-test-one';
-                }elseif(isset($set_template)  && $set_template->template_id == 2){
-                    // $view_page = "home-template-two";
-                    $view_page = 'home-template-test-two';
-                }elseif(isset($set_template)  && $set_template->template_id == 3){
-                    // $view_page = "home-template-three";
-                    $view_page = 'home-template-test-three';
-                }elseif(isset($set_template)  && $set_template->template_id == 4){
-                    // $view_page = "home-template-four";
-                    $view_page = 'home-template-test-four';
-                }elseif(isset($set_template)  && $set_template->template_id == 5){
-                    $view_page = "home-template-five";
-                }elseif(isset($set_template)  && $set_template->template_id == 6){
-                    // $view_page = "home-template-six";
-                    $view_page = "home-template-test-six";
-                }
-                elseif(isset($set_template)  && $set_template->template_id == 8){
-                    // $view_page = "home-template-six";
-                    $view_page = "home-template-test-eight";
-                }
-                elseif(isset($set_template)  && $set_template->template_id == 9){
-                    $view_page = "home-template-test-nine";
-                }
-
-                $is_service_product_price_from_dispatch_forOnDemand = 0;
-            
-                $getOnDemandPricingRule = getOnDemandPricingRule($vendor_type, Session::get('onDemandPricingSelected'),$this->additionalPreference);
-            
-                $is_service_product_price_from_dispatch_forOnDemand =$getOnDemandPricingRule['is_price_from_freelancer'];
-                // if(($this->additionalPreference['is_service_product_price_from_dispatch'] == 1) && ( Session::get('vendorType') == 'on_demand')){
-                //     $is_service_product_price_from_dispatch_forOnDemand =1;
-                // }
-                
-                $homeData = ['categories' => $categories,'home' => $home,  'count' => $count, 'for_no_product_found_html' => $for_no_product_found_html,'homePagePickupLabels' => $home_page_pickup_labels, 'homePageLabels' => $home_page_labels, 'clientPreferences' => $client_preferences, 'banners' => $banners,'mobile_banners'=>$mobile_banners, 'navCategories' => $navCategories, 'selectedAddress' => $selectedAddress, 'latitude' => $latitude, 'longitude' => $longitude,'enable_layout'=>$enable_layout,'homePageData'=>$homePageData ,'is_service_product_price_from_dispatch_forOnDemand'=> $is_service_product_price_from_dispatch_forOnDemand];
-
-                $locations = [
-                    [
-                        'latitude' => $latitude,
-                        'longitude' => $longitude,
-                        'key' => $cacheKey,
-                        //'data' => json_encode($homeData)
-                    ]
-                ];
-                //pr($cacheKey);
-                $html = view('frontend.'.$view_page)->with($homeData)->render();
-                if($client_preferences->is_hyperlocal == 1) {
-                    $this->storeLocations($locations,$html,$this->loc_key);
-
-                } else {
-                    Redis::set($this->loc_key, json_encode($html));
-                    Redis::expire($this->loc_key, $this->cache_minutes);
-                }
-               
-                //pr($html);
-                return view('frontend.'.$view_page)->with($homeData);
-            }
         } catch (Exception $e) {
             pr($e->getCode());
             die;
         }
     }
-
     /**
      * setHyperlocalAddress
      *

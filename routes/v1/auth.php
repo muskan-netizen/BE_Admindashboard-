@@ -38,6 +38,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('social/info', 'Api\v1\SocialController@getKeys');
         Route::post('social/login/{driver}', 'Api\v1\SocialController@login');
         Route::post('get_product_price_from_dispatcher',   'Api\v1\ProductController@getFreeLincerFromDispatcher');
+        Route::post('product/search',   'Api\v1\YachtController@productsSearchResult');
     });
     Route::group(['middleware' => ['dbCheck', 'AppAuth']], function() {
 
@@ -49,7 +50,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('chat/vendor/{room_id?}', 'Api\v1\ChatController@UservendorChat');
         Route::post('chat/joinChatRoom', 'Api\v1\ChatController@JoinRoom');
         Route::post('chat/sendMessage', 'Api\v1\ChatController@sendMessage');
-
+        Route::post('sendAdminNotification', 'Api\v1\StoreController@send_notification');
         Route::post('chat/fetchOrderDetail', 'Api\v1\ChatController@fetchOrderDetail');
         Route::post('chat/userVendorChatRoom', 'Api\v1\ChatController@userVendorChatRoom');
         Route::post('chat/vendorUserChatRoom', 'Api\v1\ChatController@vendorUserChatRoom');
@@ -59,6 +60,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
        // Route::post('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
         Route::post('get-order-panel-detail', 'Api\v1\BaseController@getPanelDetail')->middleware('ConnectDbFromDispatcher');
+
+        Route::post('get-blockchain-address', 'Api\v1\BlockchainController@getBlockchainAddress');
 
 
         Route::get('profile', 'Api\v1\ProfileController@profile');
@@ -123,6 +126,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::get('mystore/product/getProductAttribute', 'Api\v1\StoreController@getProductAttribute');
         Route::get('mystore/product/availableListOfAttribute', 'Api\v1\StoreController@availableListOfAttribute');
         Route::post('mystore/product/addProductWithAttribute', 'Api\v1\StoreController@addProductWithAttribute');
+        Route::post('mystore/product/deleteProductWithAttributes', 'Api\v1\StoreController@destroy');
 
         Route::post('mystore/product/getProductImages', 'Api\v1\StoreController@getProductImages');
         Route::post('mystore/product/deleteimage', 'Api\v1\StoreController@deleteProductImage');
@@ -169,6 +173,23 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 	    Route::post('user/discardeditorder', 'Api\v1\OrderController@discardEditOrderByUser');
         Route::post('user/orderVenderStatusUpdate', 'Api\v1\OrderController@orderVenderStatusUpdate');
         Route::post('order/vendorReached', 'Api\v1\OrderController@sendVendorReachedLocation');
+
+        Route::post('user/saveVenderBankDetails', 'Api\v1\VendorController@saveVenderBankDetails');
+        
+         // Notification Api
+         Route::get('notification-list', 'Api\v1\OrderController@notificationList');
+         Route::post('delete-notification', 'Api\v1\OrderController@deleteNotification');
+
+           // payment card apis
+
+        Route::post('add-card', 'Api\v1\CardController@addCard');
+        Route::get('get-card-details', 'Api\v1\CardController@cardDetails');
+        Route::post('delete-card', 'Api\v1\CardController@deleteCard');
+
+        // Stripe Customer Card Saved Routes  
+        Route::post('save-card', 'Api\v1\StripeController@saveCardStripe');
+        Route::post('payment-intent', 'Api\v1\StripeGatewayController@createPaymentIntent');
+
 
         Route::post('update-wishlist-vendor', 'Api\v1\ProfileController@updateWishlistVendor');
         Route::get('wishlist-vendors', 'Api\v1\ProfileController@wishlistVendors');
