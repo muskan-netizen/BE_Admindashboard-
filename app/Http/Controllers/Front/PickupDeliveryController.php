@@ -1,27 +1,27 @@
 <?php
 
-namespace App\Http\Controllers\Front;
+namespace App\https\Controllers\Front;
 
 use DB;
 use Config;
 use Session;
 use Validation;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
+use Illuminate\https\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Controllers\Api\v1\BaseController;
-use App\Http\Requests\OrderProductRatingRequest;
+use App\https\Controllers\Api\v1\BaseController;
+use App\https\Requests\OrderProductRatingRequest;
 use App\Models\{AddonOption, Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, ClientPreferenceAdditional, OrderProductAddon, PaymentOption, PickDropDriverBid, TaxRate, UserBidRideRequest, UserDevice};
-use App\Http\Traits\{ApiResponser, GuzzleHttpTrait, OrderTrait, PaymentTrait};
-use GuzzleHttp\Client as GCLIENT;
-use Illuminate\Support\Facades\Http;
+use App\https\Traits\{ApiResponser, GuzzlehttpsTrait, OrderTrait, PaymentTrait};
+use Guzzlehttps\Client as GCLIENT;
+use Illuminate\Support\Facades\https;
 use Illuminate\Support\Facades\Validator;
 use Log,DateTime,DateTimeZone;
 
 class PickupDeliveryController extends FrontController{
 
-    use ApiResponser,PaymentTrait,OrderTrait,GuzzleHttpTrait;
+    use ApiResponser,PaymentTrait,OrderTrait,GuzzlehttpsTrait;
 
     public function getPaymentOptions(Request $request, $domain = '')
     {
@@ -60,7 +60,7 @@ class PickupDeliveryController extends FrontController{
 
         $order = OrderVendor::with('orderDetail')->where('order_id',$request->order_id)->select('*','dispatcher_status_option_id as dispatcher_status')->first()->toArray();
 
-       $response = Http::get($request->new_dispatch_traking_url);
+       $response = https::get($request->new_dispatch_traking_url);
 
         if(count($order) > 0) {
             if($response->status() == 200){
@@ -1261,7 +1261,7 @@ class PickupDeliveryController extends FrontController{
                 }else{
                     $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
                 }
-                $call_back_url = "http://".$domain."/dispatch-pickup-delivery/".$dynamic;
+                $call_back_url = "https://".$domain."/dispatch-pickup-delivery/".$dynamic;
 
                 $type=$request->type??0;
                 $friendName=$request->friendName?? null;
@@ -1406,7 +1406,7 @@ class PickupDeliveryController extends FrontController{
       /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\https\Response
      */
     public function postPromoCodeList(Request $request){
         try {
@@ -1600,7 +1600,7 @@ class PickupDeliveryController extends FrontController{
                     $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
                 }
 
-                $call_back_url = "http://".$domain."/dispatch/driver/bids/update/".$UserBidRideRequest->web_hook_code;
+                $call_back_url = "https://".$domain."/dispatch/driver/bids/update/".$UserBidRideRequest->web_hook_code;
 
                 $postdata =  [
                             'tasks'                   => $request->tasks,
