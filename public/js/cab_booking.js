@@ -69,7 +69,7 @@
        $('#pickup_now_bid').attr("data-payment_method",payment_method);
        $('#pickup_later').attr("data-payment_method",payment_method);
        $('#payment-method-for-bid').val(payment_method);
-
+       $('#book_hourly_rental').attr("data-payment_method",payment_method);
         //$("#payment_modal").modal('toggle');
    });
     $(document).on("click", ".select_payment_option_done",function() {

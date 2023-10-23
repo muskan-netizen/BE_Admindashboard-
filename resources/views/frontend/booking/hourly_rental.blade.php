@@ -416,7 +416,14 @@ input[type=number]::-webkit-outer-spin-button {
                                     <fieldset>
                                         <h2 class="fs-title">Cabs Available</h2>
                                         <div class="vehical-container style-4" id="search_product_main_div"></div>
-                                         
+                                        <div class="payment-promo-container p-2" id="paymentMethods">
+                                            <h4 class="d-flex align-items-center justify-content-between mb-2 rental_payment_method_selection"  data-toggle="modal" data-target="#payment_modal">
+                                                <span id="payment_type">
+                                                    <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
+                                                </span>
+                                                <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                            </h4>
+                                        </div>
                                         <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
                                         <input type="button" name="next"  id="choose_rental" class="next action-button" value="Choose Rental"/>
                                     </fieldset>
@@ -447,7 +454,7 @@ input[type=number]::-webkit-outer-spin-button {
                                                 autocomplete="off">
                                         </div>
                                             <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
-                                            <button class="btn btn-solid w-100" id="book_hourly_rental" data-rel="pickup_now" data-task_type="">{{__('Book Now')}}</button>
+                                            <button class="btn btn-solid w-100" id="book_hourly_rental" data-rel="pickup_now" data-task_type="" data-payment_method="1">{{__('Book Now')}}</button>
 
                                     </fieldset>
                                     

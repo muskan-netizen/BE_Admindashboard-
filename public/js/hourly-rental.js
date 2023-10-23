@@ -315,7 +315,6 @@ $(".previous").click(function(){
                             
                             var buttonElement = document.getElementById('book_hourly_rental');
 
-                            buttonElement.setAttribute('data-payment_method', 1);
                             buttonElement.setAttribute('data-product_id', response.data.id);
                             buttonElement.setAttribute('data-coupon_id', "");
                             buttonElement.setAttribute('data-subscriptionPayableAmount', response.data.tags_price);
@@ -637,3 +636,24 @@ $(".previous").click(function(){
             });
         });
     
+        
+           $(document).on("click",".rental_payment_method_selection", function(){
+            var type = $(this).attr('type');
+                $.ajax({
+                    type: "GET",
+                    dataType: 'json',
+                    url: get_payment_options,
+                    success: function(response) {
+                        if(response.status == 'Success'){
+                            $("#payment_modal .modal-body").html('');
+                            let payment_methods_template = _.template($('#payment_methods_template').html());
+                            var selected = $('#book_hourly_rental').attr("data-payment_method");
+                            $("#payment_modal .modal-body").append(payment_methods_template({payment_options: response.data, type:type}));
+                            $("#payment_modal .select_cab_payment_method[value='"+selected+"']").prop("checked", true);
+
+                            
+                        }
+                    }
+                });
+                // clearInterval(driverInterval);
+           });
