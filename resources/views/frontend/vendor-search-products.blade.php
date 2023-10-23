@@ -12,9 +12,11 @@ $add_to_cart =  route('addToCart') ;
 @endphp
 <div class="col-sm-4 col-lg-3 border-right al_white_bg_round">
     <nav class="scrollspy-menu">
-        <ul>
+        <ul>    
             @forelse($listData as $key => $data)
+
             <li class="side-scroll-menu-li"><a href="#{{ str_replace(' ', '-', $data->category->slug) }}">{{ @$data->category->translation[0]->name??'' }}({{ $data->products_count }})</a></li>
+
             @empty
             @endforelse
         </ul>
@@ -359,12 +361,6 @@ $add_to_cart =  route('addToCart') ;
     <h4 class="mt-3 mb-3 text-center">{{__('No product found')}}</h4>
 @endforelse
 
-
-
-
-
-
-
 </div>
 {{--@endif--}}
         <div class="col-12 col-lg-3 d-lg-inline-block d-none">
@@ -388,5 +384,10 @@ $add_to_cart =  route('addToCart') ;
                 $(".scrollspy-menu").removeClass("side-menu-open");
                 $(".manu-bars").removeClass("menu-btn");
              });              
-        </script>        
+
+            // function getVendorProduct(id)
+            // {
+            //     vendorProductsSearchResults(id);
+            // }
+            </script>        
         

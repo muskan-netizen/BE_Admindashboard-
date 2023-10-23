@@ -213,7 +213,7 @@ class FrontController extends Controller
 
         $preferences = session()->get('preferences');
         $vendorType = session()->get('vendorType');
-        $categoryTypes = getServiceTypesCategory($vendorType);
+        $categoryTypes = getServiceTypesCategory($vendorType) ;
         $primary = ClientLanguage::orderBy('is_primary', 'desc')->first();
         $status = $this->field_status;
         $include_categories = [4, 8]; // type 4 for brands
@@ -224,11 +224,14 @@ class FrontController extends Controller
             $celebrity_check = 1;
             $include_categories[] = 5; // type 5 for celebrity
         }
+
         
         // Check if request_from is set and get vendors accordingly
         if (isset($_REQUEST['request_from']) && $_REQUEST['request_from'] == 1) {
+            
             $vendors = $this->getServiceAreaVendors();
         } else {
+            
             $vendors = (session()->has('vendors')) ? session()->get('vendors') : $this->getServiceAreaVendors();
         }
 
@@ -421,6 +424,9 @@ class FrontController extends Controller
         $latitude = Session::get('latitude');
         $longitude = Session::get('longitude');
         $vendorType = Session::get('vendorType');
+        if($vendorType=="car_rental"){
+            $vendorType = "rental";
+        }
         $preferences = Session::has('preferences') ? Session::get('preferences') : $client_preferences;
         $serviceAreaVendors = Vendor::select('id', 'show_slot');
         $vendors = [];

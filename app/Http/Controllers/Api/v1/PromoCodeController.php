@@ -10,7 +10,7 @@ use App\Models\Promocode;
 use App\Models\CartCoupon;
 use App\Models\CartProduct;
 use Illuminate\Http\Request;
-use App\Models\{AddonOption, ClientCurrency, PromoCodeDetail};
+use App\Models\{AddonOption, ClientCurrency, OrderVendor, PromoCodeDetail};
 use App\Http\Traits\ApiResponser;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
@@ -64,7 +64,7 @@ class PromoCodeController extends Controller{
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
-    
+
     public function postPromoCodeList(Request $request){
         try {
             $user = Auth::user();
@@ -122,17 +122,17 @@ class PromoCodeController extends Controller{
                         $addon_option = AddonOption::where(['addon_id'=>$addons->addon_id,'id'=>$addons->option_id]);
                         if($addon_option->exists()){
                             $addon_price = $addon_option->first()->price * $cart_product->quantity;
-                        }                        
+                        }
                         $product_addon_price += $addon_price;
                     }
                 }
                 $total_minimum_spend += $product_addon_price;
                 $cart_product_ids[] = $cart_product->product_id;
             }
-            if ($product_ids) {  
+            if ($product_ids) {
                 if(!empty($cart_product_ids)){
-                    $product_ids = array_intersect($cart_product_ids,$product_ids); 
-                }                
+                    $product_ids = array_intersect($cart_product_ids,$product_ids);
+                }
                 $promo_code_details = PromoCodeDetail::whereIn('refrence_id', $product_ids)->pluck('promocode_id');
                 $result1 = Promocode::whereDate('expiry_date', '>=', $now)->where('restriction_on', 0)->where(function ($query) use ($promo_code_details ) {
                     $query->where(function ($query2) use ($promo_code_details) {
@@ -214,6 +214,7 @@ class PromoCodeController extends Controller{
 
     public function postVerifyPromoCode(Request $request){
         try {
+            $user = Auth::user();
             $validator = $this->validatePromoCode();
             if($validator->fails()){
                 return $this->errorResponse($validator->messages(), 422);
@@ -230,6 +231,18 @@ class PromoCodeController extends Controller{
             if(!$cart_detail){
                 return $this->errorResponse(__('Invalid Promocode Id'), 422);
             }
+            $promo_code = Promocode::where('id', $request->coupon_id)->first();
+
+            if(!$promo_code){
+                return $this->errorResponse('Invalid Promocode Id', 422);
+            }elseif(isset($request->amount) && $request->amount < $promo_code->minimum_spend){
+                return $this->errorResponse('Add item worth '.(int)($promo_code->minimum_spend - $request->amount).' to apply this offer.', 422);
+            }
+            $order_vendor_user_promo_count = OrderVendor::where(['user_id' => $user->id, 'coupon_id' => $request->coupon_id])->count();
+            if($order_vendor_user_promo_count >= $promo_code->limit_per_user){
+                return $this->errorResponse('Coupon Code already applied.', 422);
+            }
+
             $cart_coupon_detail = CartCoupon::where('cart_id', $request->cart_id)->where('vendor_id', $request->vendor_id)->where('coupon_id', $request->coupon_id)->first();
             if($cart_coupon_detail){
                 return $this->errorResponse(__('Coupon Code already applied.'), 422);
@@ -285,6 +298,7 @@ class PromoCodeController extends Controller{
 
     public function validate_promo_code(Request $request){
         try {
+            $user = Auth::user();
             $validator = $this->validatePromoCodeList($request);
             if($validator->fails()){
                 return $this->errorResponse($validator->messages(), 422);
@@ -296,6 +310,17 @@ class PromoCodeController extends Controller{
             $cart_detail = Cart::where('id', $request->cart_id)->first();
             if(!$cart_detail){
                 return $this->errorResponse(__('Invalid Cart Id'), 422);
+            }
+            $promo_code = Promocode::where('name', $request->promocode)->first();
+            
+            if(!$promo_code){
+                return $this->errorResponse('Invalid Promocode Id', 422);
+            }elseif(isset($request->amount) && $request->amount < $promo_code->minimum_spend){
+                return $this->errorResponse('Add item worth '.(int)($promo_code->minimum_spend - $request->amount).' to apply this offer.', 422);
+            }
+            $order_vendor_user_promo_count = OrderVendor::where(['user_id' => $user->id, 'coupon_code' => $request->promocode])->count();
+            if($order_vendor_user_promo_count >= $promo_code->limit_per_user){
+                return $this->errorResponse('Coupon Code already applied.', 422);
             }
 
             $now = Carbon::now()->toDateTimeString();

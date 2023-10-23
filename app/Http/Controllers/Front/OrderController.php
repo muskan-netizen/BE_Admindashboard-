@@ -62,6 +62,7 @@ use App\Models\ClientPreference;
 use App\Http\Traits\ {
     ApiResponser,
     CartManager,
+    OrderBlockchain,
     SquareInventoryManager,
     VendorTrait,
     OrderTrait,
@@ -73,8 +74,13 @@ use App\Models\ {
     OrderLongTermServicesAddon,
     OrderLongTermServiceSchedule,
     Bid,
+    VendorMargConfig,
+    CartBookingOption,
+    CartRentalProtection,
     OrderNotificationsLogs,
-    VendorMargConfig
+    ProductAvailability,
+    ClientPreferenceAdditional
+
 };
 use App\Models\ProductVariantSet;
 use GuzzleHttp\Client as GCLIENT;
@@ -88,7 +94,7 @@ use Illuminate\Support\Facades\Http;
 
 class OrderController extends FrontController
 {
-    use ApiResponser, CartManager, SquareInventoryManager,VendorTrait,OrderTrait,MargTrait;
+    use ApiResponser, CartManager, SquareInventoryManager,VendorTrait,OrderTrait,OrderBlockchain;
 
     /**
      * Display a listing of the resource.
@@ -1307,7 +1313,8 @@ class OrderController extends FrontController
 
         $order = Order::with([
             'products.vendor',
-            'products.pvariant.vset',
+            'products.pvariant.vset.option2',
+            'products.product.productcategory',
             'products.pvariant.translation' => function ($q) use ($langId) {
                 $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                 $q->where('language_id', $langId);
@@ -1780,6 +1787,8 @@ class OrderController extends FrontController
 
     public function placeOrder(Request $request, $domain = '')
     {
+
+       
         // dd($request->other_taxes_string);
         // $stock = $this->ProductVariantStock('18');
 
@@ -1796,7 +1805,10 @@ class OrderController extends FrontController
             }
          }
 
+
         $order_response = $this->orderSave($request, "1");
+
+        
         $response = $order_response->getData();
         if ($response->status == 'Success') {
             # if payment type cash on delivery or payment status is 'Paid'
@@ -1811,6 +1823,8 @@ class OrderController extends FrontController
             return $this->errorResponse($response->message, $response->code ?? 400);
         }
     }
+
+
 
     public function orderSave($request, $paymentStatus)
     {
@@ -1849,7 +1863,9 @@ class OrderController extends FrontController
             $order_edit_before_hours = $additionalPreferences->order_edit_before_hours;
 
             $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
+          
             $luxury_option = LuxuryOption::where('title', $action)->first();
+           
             $delivery_on_vendors = array();
             if ((isset($request->user_id)) && (! empty($request->user_id))) {
                 $user = User::find($request->user_id);
@@ -1872,10 +1888,10 @@ class OrderController extends FrontController
             }
             $loyalty_amount_saved = 0;
             $redeem_points_per_primary_currency = '';
-            $loyalty_card = LoyaltyCard::where('status', '0')->first();
-            if ($loyalty_card) {
-                $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
-            }
+            // $loyalty_card = LoyaltyCard::where('status', '0')->first();
+            // if ($loyalty_card) {
+            //     $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
+            // }
             $currency_id = Session::get('customerCurrency');
             $language_id = Session::get('customerLanguage');
             $cart = Cart::where('user_id', $user->id)->with([
@@ -1901,9 +1917,9 @@ class OrderController extends FrontController
             $customerCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
             $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
             // Get earn and used loyalty amount
-            $loyaltyCheck = $this->getOrderLoyalityAmount($user, $customerCurrency);
-            $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
-            $loyalty_points_used = $loyaltyCheck->loyalty_points_used ?? 0;
+            // $loyaltyCheck = $this->getOrderLoyalityAmount($user, $customerCurrency);
+            // $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
+            // $loyalty_points_used = $loyaltyCheck->loyalty_points_used ?? 0;
 
             // check gift card
 
@@ -2006,7 +2022,10 @@ class OrderController extends FrontController
             $order->user_latitude = $latitude ? $latitude : null;
             $order->user_longitude = $longitude ? $longitude : null;
             $order->is_postpay = (isset($request->is_postpay)) ? $request->is_postpay : 0;
+            $order->pick_drop_order_number = $request->pick_drop_order_number ?? null;
             /* Save initial details of order */
+            $order->payable_amount = $request->total_amount;
+
             $order->save();
 
 
@@ -2087,6 +2106,8 @@ class OrderController extends FrontController
             $security_amount = 0.00;
             $is_long_term_order = 0;
             $deliveryfeeOnCoupon = 0;
+            $rentalProtectionPrice = 0;
+            $bookingOptionPrice = 0;
 
             /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
             if (! empty($request->other_taxes_string)) {
@@ -2164,11 +2185,27 @@ class OrderController extends FrontController
                 $bid_vendor_discount = 0;
                 $vendor_service_fee_percentage_amount = 0;
                 // $addonArray = [];
+                $datesInRange = [];
                 foreach ($vendor_cart_products as $vendor_cart_product) {
 
                     if( !empty($vendor_cart_product->slot_price) ) {
                         $slot_based_price += $vendor_cart_product->slot_price;
                     }
+
+                    $start_date_time  = new Carbon($vendor_cart_product->start_date_time);
+                    $end_date_time  = new Carbon($vendor_cart_product->end_date_time);
+                    $vendor_cart_product->days = $start_date_time->diff($end_date_time)->days + 1;
+                    $rental_price = $vendor_cart_product->pvariant ? $vendor_cart_product->pvariant->price : 0;
+                    if(@$vendor_cart_product->pvariant->month_price && @$vendor_cart_product->pvariant->week_price){
+                        if($vendor_cart_product->days >= 7 && $vendor_cart_product->days < 30){
+                            $rental_price = $vendor_cart_product->pvariant->week_price;
+                        }elseif($vendor_cart_product->days >= 30){
+                            $rental_price = $vendor_cart_product->pvariant->month_price;
+                        }
+                    }
+                    $vendor_cart_product->rental_price = $rental_price;
+                    $order['payable_amount'] = $vendor_cart_product->price;
+
 
                     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
                         if (! empty($latitude) && ! empty($longitude)) {
@@ -2195,6 +2232,8 @@ class OrderController extends FrontController
                         }
                     }
 
+                
+
                     if(@$luxury_option->id == 4){
                         $security_amount += $vendor_cart_product->product->security_amount;
                     }
@@ -2207,6 +2246,22 @@ class OrderController extends FrontController
                     $quantity_price = 0;
                     $divider = (empty($vendor_cart_product->doller_compare) || $vendor_cart_product->doller_compare < 0) ? 1 : $vendor_cart_product->doller_compare;
                     $price_in_currency = $variant->price / $divider;
+
+                    $variant_price = $variant->price;
+                    if($luxury_option->id == 9 && @$variant->month_price){
+                        $schedule_days = $vendor_cart_product->additional_increments_hrs_min / 24;
+                            if($schedule_days >= 7 && $schedule_days < 30){
+                                
+                                $variant_price = $variant->week_price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
+                            }elseif($schedule_days >= 30){
+                                $variant_price = $variant->month_price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
+                            }else{
+                                $variant_price = $variant->price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
+                            }
+                        
+                    }
+
+
                     // change product price when is_service_product_price_from_dispatch on
                     if(($action == 'on_demand') && $is_service_product_price_from_dispatch ==1){
                         $price_in_currency =$vendor_cart_product->dispatch_agent_price / $divider;
@@ -2239,7 +2294,9 @@ class OrderController extends FrontController
                     }
                     $quantity_price = $quantity_price * $daysCountRecurring;
 
-
+                    if($action == 'p2p'){
+                        $quantity_price = $request->total_amount ?? 0;
+                    }
                     $quantity_container_charges = $container_charges_in_dollar_compare * $vendor_cart_product->quantity;
                     $total_container_charges = $total_container_charges + $quantity_container_charges;
 
@@ -2308,7 +2365,11 @@ class OrderController extends FrontController
 
                     $taxable_amount = $product_taxable_amount;
                     $vendor_taxable_amount = $taxable_amount;
-                    $variant_price = $variant->price * $daysCountRecurring;
+                    if($action == 'p2p'){
+                        $variant_price = $request->total_amount ?? 0;
+                    }else{
+                        $variant_price = $variant->price * $daysCountRecurring;
+                    }
                     // change variant_price price when is_service_product_price_from_dispatch on
                     $is_price_buy_driver = 0;
                     if(($action == 'on_demand') && ($is_service_product_price_from_dispatch ==1 )){
@@ -2330,6 +2391,12 @@ class OrderController extends FrontController
                         $variant_price = $request->total_amount;
                     }
                     $order_product = new OrderProduct;
+
+                    if($action == 'p2p'){
+                        $order_product->price = $request->total_amount ?? 0;
+                    }else{
+                        $order_product->price = $variant_price;
+                    }
                     $order_product->order_id = $order->id;
                     $order_product->price = $variant_price;
                     $order_product->bid_number = @$vendor_cart_product->bid_number ?? null;
@@ -2343,6 +2410,14 @@ class OrderController extends FrontController
                     $order_product->product_delivery_fee = isset($vendor_cart_product->product_delivery_fee) ? $vendor_cart_product->product_delivery_fee : 0;
                     $order_product->is_price_buy_driver = $is_price_buy_driver;
                     $order_product->specific_instruction = $vendor_cart_product->specific_instruction;
+                    
+                    
+                    if($action == 'p2p'){
+                        $order_product->price = $request->total_amount ?? 0;
+                    }else{
+                        $order_product->price = $variant->price * $daysCountRecurring;
+                    }
+                    
                     /**
                      * for rental case total_booking_time as a total time
                      * for on_demand and appointment total booking time as single service duration time as per service for get totel service time multiply by quantity
@@ -2619,6 +2694,7 @@ class OrderController extends FrontController
                         //pr($res);
                     }
                     // pr($order_product);
+                    
                     if (! empty($vendor_cart_product->addon)) {
 
                         foreach ($vendor_cart_product->addon as $ck => $addon) {
@@ -2635,6 +2711,26 @@ class OrderController extends FrontController
                             // }
                             $vendor_amount = $vendor_amount + $opt_quantity_price;
                             $quantity_price = $quantity_price + $opt_quantity_price;
+                        }
+                    }
+                    
+
+                    if(!empty($cart->rentalProtection)){
+                        foreach($cart->rentalProtection as $protection){
+                            $protection_price_in_currency = $protection->rentalProtection->price ?? 0;
+                            $rentalProtectionPrice = $protection_price_in_currency * $clientCurrency->doller_compare;
+                            $payable_amount += $rentalProtectionPrice;
+                            $quantity_price += $rentalProtectionPrice;
+                            $vendor_amount += $rentalProtectionPrice;
+                        }
+                    }
+                    if(!empty($cart->bookingOption)){
+                        foreach($cart->bookingOption as $option){
+                            $option_price_in_currency = $option->bookingOption->price ?? 0;
+                            $bookingOptionPrice = $option_price_in_currency * $clientCurrency->doller_compare;
+                            $payable_amount += $bookingOptionPrice;
+                            $quantity_price += $bookingOptionPrice;
+                            $vendor_amount += $bookingOptionPrice;
                         }
                     }
 
@@ -2782,7 +2878,8 @@ class OrderController extends FrontController
 
 
 
-                $OrderVendor->payable_amount = $vendor_payable_amount +$fixedFeeAmount+$new_vendor_taxable_amount;
+                // $OrderVendor->payable_amount = $vendor_payable_amount +$fixedFeeAmount+$new_vendor_taxable_amount;
+                $OrderVendor->payable_amount = $request->$total_amount;
                 if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
                     $OrderVendor->subtotal_amount = $OrderVendor->payable_amount = $request->total_amount;
                 }
@@ -2829,7 +2926,7 @@ class OrderController extends FrontController
                 $order_status->save();
             } // End cart product loop
               // echo "loop end";
-            $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint('', $payable_amount);
+            // $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint('', $payable_amount);
 
             // Total Discount
             $total_discount = $total_discount + $total_subscription_discount;
@@ -2859,16 +2956,12 @@ class OrderController extends FrontController
 
             $payable_amount = $payable_amount + $total_delivery_fee - $total_discount;
 
-            if ($loyalty_amount_saved > 0) {
-                if ($loyalty_amount_saved > $payable_amount) {
-                    $loyalty_amount_saved = $payable_amount;
-                    $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
-                }
-            }
-
-            if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
-                $loyalty_points_used = $loyalty_amount_saved = 0;
-            }
+            // if ($loyalty_amount_saved > 0) {
+            //     if ($loyalty_amount_saved > $payable_amount) {
+            //         $loyalty_amount_saved = $payable_amount;
+            //         $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
+            //     }
+            // }
             // ------------ move up
             $tip_amount = 0;
             if (isset($request->tip)) {
@@ -2880,12 +2973,13 @@ class OrderController extends FrontController
                 }
             }
             $payable_amount = $payable_amount + $tip_amount + $total_other_taxes + $security_amount;
+            $payable_amount += $order->taxable_amount;
             // ---------------------------------------
-            $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
+            // $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
 
-            if(!empty($vendor_cart_product->recurring_booking_time)){
-                $payable_amount = ($request->total_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
-            }
+            // if(!empty($vendor_cart_product->recurring_booking_time)){
+            //     $payable_amount = ($request->total_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
+            // }
 
             $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
 
@@ -2906,24 +3000,24 @@ class OrderController extends FrontController
             // $payable_amount = $payable_amount + $tip_amount + $total_other_taxes;
 
             $wallet_amount_used = 0;
-            if ($user) {
-                if ($user->balanceFloat > 0) {
-                    $wallet = $user->wallet;
-                    $wallet_amount_used = $user->balanceFloat;
-                    if ($wallet_amount_used > $payable_amount) {
-                        $wallet_amount_used = $payable_amount;
-                    }
-                    $order->wallet_amount_used = $wallet_amount_used;
-                    // Deduct wallet amount if payable amount is successfully done on gateway
-                    if (($wallet_amount_used > 0) && (! in_array($request->payment_option_id, $ex_gateways_wallet))) {
-                        $wallet->withdrawFloat($order->wallet_amount_used, [
-                            'Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>'
-                        ]);
-                    }
-                }
-            }
+            // if ($user) {
+            //     if ($user->balanceFloat > 0) {
+            //         $wallet = $user->wallet;
+            //         $wallet_amount_used = $user->balanceFloat;
+            //         if ($wallet_amount_used > $payable_amount) {
+            //             $wallet_amount_used = $payable_amount;
+            //         }
+            //         $order->wallet_amount_used = $wallet_amount_used;
+            //         // Deduct wallet amount if payable amount is successfully done on gateway
+            //         if (($wallet_amount_used > 0) && (! in_array($request->payment_option_id, $ex_gateways_wallet))) {
+            //             $wallet->withdrawFloat($order->wallet_amount_used, [
+            //                 'Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>'
+            //             ]);
+            //         }
+            //     }
+            // }
 
-            $payable_amount = $payable_amount - $wallet_amount_used;
+            // $payable_amount = $payable_amount - $wallet_amount_used;
 
             if(!empty($vendor_cart_product->recurring_booking_time)){
                 $payable_amount =  $request->total_amount - $wallet_amount_used;
@@ -2932,12 +3026,14 @@ class OrderController extends FrontController
             //echo  " Total payable_amount2=".$payable_amount."; <br>";
             $order->total_service_fee = $total_service_fee;
             $order->total_delivery_fee = $total_delivery_fee;
-            $order->loyalty_points_used = $loyalty_points_used;
-            $order->loyalty_amount_saved = $loyalty_amount_saved;
+            $order->loyalty_points_used = $loyalty_points_used ?? 0;
+            $order->loyalty_amount_saved = $loyalty_amount_saved ?? 0;
             $order->subscription_discount = $total_subscription_discount;
             // echo " total_subscription_discount=".$total_subscription_discount."; <br>";
-            $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
-            $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
+            $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'] ?? 0;
+            $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'] ?? 0;
+            $order->rental_protection_amount = $rentalProtectionPrice;
+            $order->booking_option_price = $bookingOptionPrice;
             // echo " total_service_fee=".$total_service_fee." total_delivery_fee=".$total_delivery_fee;
             // echo " Total payable_amount 3=".$payable_amount."; <br>";
             $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
@@ -3032,8 +3128,9 @@ class OrderController extends FrontController
                 $order->recurring_booking_time  = $recurring_booking_time;
             }
 
-
+            $order->payable_amount = $request->total_amount;
             $order->save();
+            ProductAvailability::where('product_id', @$order_product->product_id)->whereIn('date_time', $datesInRange)->update(['not_available' => 1]);
             OrderFiles::where('cart_id',$cart->id)->update(['order_id'=>$order->id,'cart_id'=>'']);
 
             // $this->sendOrderNotification($user->id, $vendor_ids);
@@ -3117,6 +3214,8 @@ class OrderController extends FrontController
                 CartProduct::query()->whereIn('id', $cart_product_ids)->delete();
                 CartProductPrescription::where('cart_id', $cart->id)->delete();
                 CartDeliveryFee::where('cart_id', $cart->id)->delete();
+                CartRentalProtection::where('cart_id', $cart->id)->delete();
+                CartBookingOption::where('cart_id', $cart->id)->delete();
                 // send sms
                 // $this->sendSuccessSMS($request, $order);
             }
@@ -3221,6 +3320,17 @@ class OrderController extends FrontController
             // }
 
             DB::commit();
+            $blockchain_route = ClientPreferenceAdditional::where('key_name','blockchain_route_formation')->first();
+              $order_data = Order::select('id','user_id')->with([
+                'ordervendor'
+            ])
+                ->where('order_number', $order->order_number)
+                ->first();
+            if(isset($blockchain_route) && ($blockchain_route->key_value == 1))
+            {
+                @$this->saveBlockchainOrderDetail($order_data);
+
+            }
             $this->sendSuccessSMS($request, $order);
             // $hub_key = @getAdditionalPreference(['is_marg_enable']);
             
@@ -3494,6 +3604,7 @@ class OrderController extends FrontController
                 if (getAdditionalPreference([
                     'is_tracking_url'
                 ])['is_tracking_url'] == 1) {
+                    \Log::info('test');
                     $this->sendTrackingUrlSMS($orderData);
                 }
             }

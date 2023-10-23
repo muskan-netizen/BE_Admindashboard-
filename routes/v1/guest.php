@@ -54,9 +54,12 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::get('user/registration/document', 'Api\v1\HomeController@UserRegistrationDocument');
 
+        Route::post('/cart/updateCartWalletAmount', 'Api\v1\CartController@updateCartWalletAmount');
+        
         Route::post('cart/add', 'Api\v1\CartController@add');
         Route::post('checkProductAvailibility', 'Api\v1\RentalProductController@checkProductAvailibility');
         Route::get('cart/list', 'Api\v1\CartController@index');
+        Route::post('cart/add-booking-option', 'Api\v1\CartController@addBookingOptionToCart');
         Route::post('upload/prescriptions', 'Api\v1\CartController@uploadPrescriptions');
         Route::post('delete/prescriptions', 'Api\v1\CartController@deleteProductPrescription');
         Route::post('mfc/stk/push', 'Api\v1\CartController@stkPushRequest');
@@ -159,5 +162,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
     });
     Route::group(['middleware' => ['dbCheck']], function () {
         Route::post('header', 'Api\v1\HomeController@headerContent');
+        Route::post('rental-protection', 'Api\v1\CartController@getRentalProtection');
     });
 });

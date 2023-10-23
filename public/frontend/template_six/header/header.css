@@ -1242,13 +1242,13 @@ body .royo_whatsapp_img {
         width: 300px;
         flex-wrap: nowrap;
         overflow-x: auto;
-        padding: 10px;
+        padding: 5px 10px!important;
     }
     .nav-tabs.navigation-tab_al.nav-material span.al_textTabsText {
-        width: 100%;
+        width: max-content!important;
         display: inline-block;
         max-width: 100%!important;
-        min-width: 75px;
+        min-width: inherit!important;
         text-align: center;
     }
 }
@@ -1260,7 +1260,7 @@ body .royo_whatsapp_img {
         padding: 4px!important;
     }
     .nav-tabs.navigation-tab_al.nav-material{
-        width: 190px!important;
+        width: 270px!important;
     }
 }
 @media (max-width:767px){

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BookingOptionController;
 use App\Http\Controllers\Front\SearchController;
 use App\Http\Controllers\Client\CMS\PageController;
 use App\Http\Controllers\Client\CMS\EmailController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\Client\VendorRegistrationDocumentController;
 use App\Http\Controllers\Client\SubscriptionPlansUserController;
 use App\Http\Controllers\Client\TagController;
 use App\Http\Controllers\Client\ClientSlotController;
+use App\Http\Controllers\Client\DestinationController;
 use App\Http\Controllers\Client\DriverRegistrationDocumentController;
 use App\Http\Controllers\Client\ProductFaqController;
 use App\Http\Controllers\Client\EstimationController;
@@ -29,7 +31,7 @@ use App\Http\Controllers\Client\RazorpayGatwayController;
 use App\Http\Controllers\Client\StaticDropoffController;
 
 use App\Http\Controllers\Client\GiftCard\GiftcardController;
-
+use App\Http\Controllers\Client\RentalProtectionController;
 
 Route::get('email-test', function () {
     $details['email'] = 'testmail@yopmail.com';
@@ -153,6 +155,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('configUpdate/{code}', 'Client\ClientPreferenceController@update')->name('configure.update');
         Route::post('configUpdate', 'Client\ClientPreferenceController@updateTaxInclusivePrice')->name('configure.taxinclusive');
         Route::post('additionalUpdate', 'Client\ClientPreferenceController@additionalupdate')->name('additional.update');
+        Route::post('toggleDatabase', 'Client\ClientPreferenceController@toggleDatabase')->name('configure.toggleDatabase');
         Route::post('updateIsPriceEnable', 'Client\ClientPreferenceController@updateIsPriceEnable')->name('customize.updateIsPriceEnable');
         Route::post('configUpdateAdditional/{code}', 'Client\ClientPreferenceController@updateAdditional')->name('configure.updateAdditional');
 
@@ -395,6 +398,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('admin/editCompany', 'Client\CompanyController@edit')->name('company.edit');
         Route::post('admin/updateCompany/{id}', 'Client\CompanyController@update')->name('company.update');
 
+        Route::get('orders/getBlockchainOrderDetail', 'Client\OrderController@getBlockchainOrderDetail')->name('orders.getBlockchainOrderDetail');
+        
         // Admin Service Area Routes
         Route::post('admin/serviceArea', 'Client\AdminServiceAreaController@store')->name('admin.serviceArea');
         Route::get('admin/serviceArea', 'Client\AdminServiceAreaController@index')->name('admin.serviceArea.index');
@@ -677,6 +682,23 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
             Route::post('package/updateStatus/{slug}', 'Client\MealSubscriptionController@updateSubscriptionPlanStatus')->name('mealSubscription.plan.updateStatus');
             Route::get('package/edit/{slug}', 'Client\MealSubscriptionController@editSubscriptionPlan')->name('mealSubscription.plan.edit');
             Route::get('package/delete/user/{slug}', 'Client\MealSubscriptionController@deleteSubscriptionPlan')->name('mealSubscription.plan.delete');
+        Route::group(['prefix' => 'rental-protection/'], function () {        
+            Route::get('', [RentalProtectionController::class, 'index'])->name('rental.protection');
+            Route::match(['put', 'post'],'store/{id?}', [RentalProtectionController::class, 'store'])->name('rental.protection.store');
+            Route::get('{id}/edit', [RentalProtectionController::class, 'edit'])->name('rental.protection.edit');
+            Route::delete('delete/{id}', [RentalProtectionController::class, 'delete'])->name('rental.protection.delete');
+        });
+        Route::group(['prefix' => 'booking-option/'], function () {     
+            Route::get('', [BookingOptionController::class, 'index'])->name('booking.option');
+            Route::match(['put', 'post'],'store/{id?}', [BookingOptionController::class, 'store'])->name('booking.option.store');
+            Route::get('{id}/edit', [BookingOptionController::class, 'edit'])->name('booking.option.edit');
+            Route::delete('delete/{id}', [BookingOptionController::class, 'delete'])->name('booking.option.delete');
+        });
+        Route::group(['prefix' => 'destination/'], function () {     
+            Route::get('', [DestinationController::class, 'index'])->name('destinations');
+            Route::match(['put', 'post'],'store/{id?}', [DestinationController::class, 'store'])->name('destination.store');
+            Route::get('{id}/edit', [DestinationController::class, 'edit'])->name('destination.edit');
+            Route::delete('delete/{id}', [DestinationController::class, 'delete'])->name('destination.delete');
         });
     });
 });
@@ -689,4 +711,6 @@ Route::group(['middleware' => 'auth:client', 'prefix' => '/admin'], function () 
     Route::get('{first}/{second}/{third}', 'Client\RoutingController@thirdLevel')->name('third');
     Route::get('{first}/{second}', 'Client\RoutingController@secondLevel')->name('second');
     Route::get('{any}', 'Client\RoutingController@root')->name('any');
+});
+
 });

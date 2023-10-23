@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Support\Facades\Storage;
 class AttributeController extends BaseController
 {
     private $blockdata = 2;
@@ -28,7 +28,7 @@ class AttributeController extends BaseController
             ->where('status', 1)
             ->orderBy('parent_id', 'asc')
             ->orderBy('position', 'asc')
-            ->whereIn('type_id', ['1', '3', '6','10', '13']) //see type ids in TypeSeeder seeder
+            ->whereIn('type_id', ['1', '3', '6','10', '13', '7']) //see type ids in TypeSeeder seeder
             ->where('id', '>', 1)
             ->whereNull('vendor_id')
             ->get();
@@ -70,6 +70,14 @@ class AttributeController extends BaseController
             $variant->user_id = Auth::id();
             $variant->type = $request->type;
             $variant->position = 1;
+            if ($request->hasFile('icon')) {
+                $filePath = 'attributes/' . \Str::random(40);
+                $file = $request->file('icon');
+                $orignal_name = $request->file('icon')->getClientOriginalName();
+                $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                $url = Storage::disk('s3')->url($file_name);
+                $variant->icon = $url;
+            }
             if($v_pos){
                 $variant->position = $v_pos->position + 1;
             }
@@ -136,7 +144,7 @@ class AttributeController extends BaseController
                 ->where('status', 1)
                 ->orderBy('parent_id', 'asc')
                 ->orderBy('position', 'asc')
-                ->whereIn('type_id', ['1', '3', '6', '13', '10'])
+                ->whereIn('type_id', ['1', '3', '6', '13', '10', '7'])
                 ->where('id', '>', 1)
                 ->whereNull('vendor_id')
                 ->get();
@@ -184,6 +192,14 @@ class AttributeController extends BaseController
             $variant->title = $request->title[0];
             $variant->type = $request->type;
             $variant->user_id = Auth::id();
+            if ($request->hasFile('icon')) {
+                $filePath = 'attributes/' . \Str::random(40);
+                $file = $request->file('icon');
+                $orignal_name = $request->file('icon')->getClientOriginalName();
+                $file_name = Storage::disk('s3')->put($filePath, $file, 'public');
+                $url = Storage::disk('s3')->url($file_name);
+                $variant->icon = $url;
+            }
             $variant->save();
 
             $VariantCategory = AttributeCategory::where('attribute_id', $variant->id)->first();
@@ -518,7 +534,6 @@ class AttributeController extends BaseController
             }
         }
         catch(\Exception $e) {
-            \Log::info($e->getMessage());
             return response()->json(array('success' => false));
         }
     }

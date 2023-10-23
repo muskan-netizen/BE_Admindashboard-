@@ -38,7 +38,9 @@
             </span>
         </div>
     </div>
-    <div class="col-md-4">
+   
+{{-- @endif --}}
+ <div class="col-md-4">
         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
             <label for="subscription_mode" class="mr-2 mb-0">{{ __('Subscription Mod') }}<small
                     class="d-block pr-5">{{ __('Enable the option to create Subscriptions for Customers and Vendors.') }}</small></label>
@@ -576,7 +578,7 @@
                 data-className="is_file_cart_instructions" data-color="#43bee1"
                 @if ($getAdditionalPreference['is_file_cart_instructions'] == '1') checked='checked' @endif>
             <input type="hidden" @if ($getAdditionalPreference['is_file_cart_instructions'] == 1) value="1" @else value="0" @endif
-                name="is_file_cart_instructions" id="is_file_cart_instructions" />
+                  name="is_file_cart_instructions" id="is_file_cart_instructions" />
         </span>
     </div>
 </div>

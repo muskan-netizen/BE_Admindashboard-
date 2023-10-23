@@ -8,7 +8,7 @@ use Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use App\Models\{User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet,OrderProductRating, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag,DeliverySlotProduct, DeliverySlot,UserAddress};
+use App\Models\{Attribute, User,ClientLanguage,ProductFaq, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, Vendor, Brand, ProductBooking, ProductFaqSelectOption, TagTranslation,Tag,DeliverySlotProduct, DeliverySlot, OrderProductRating, UserAddress};
 use Validation;
 use DB;
 use Carbon\CarbonPeriod;
@@ -68,6 +68,9 @@ class ProductController extends BaseController
                         $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
                         $q2->where('apt.language_id', $langId);
                     },
+                    'ProductAttribute' => function($q){
+                        $q->whereIn('key_name', ['Transmission', 'Fuel Type', 'Seats']);
+                    }, 'ProductAttribute.attributeOption'
                     ])->select('id', 'sku', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count')
                     ->where('id', $pid)
                     ->first();
@@ -110,14 +113,14 @@ class ProductController extends BaseController
 
     public function productById(Request $request, $pid)
     {
-        // try{
+        try{
             $pvIds = array();
             $user = Auth::user();
             $langId = $user->language;
             $userid = $user->id;
             $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
             $limit = 6; // Number of frequently bought products to retrieve
-            $product = Product::with(['inwishlist' => function($qry) use($userid){
+            $product = Product::with(['variant','inwishlist' => function($qry) use($userid){
                             $qry->where('user_id', $userid);
                         },'product_availability',
                         'category.categoryDetail', 'category.categoryDetail.translation' => function($q) use($langId){
@@ -170,7 +173,8 @@ class ProductController extends BaseController
                             $q->whereDate('end_date_time', '>', now());
                         }]);
                     }
-                    $product = $product->select('id', 'sku', 'url_slug','description', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating','minimum_order_count','batch_count','minimum_duration','minimum_duration_min','additional_increments','additional_increments_min','buffer_time_duration','buffer_time_duration_min', 'returnable', 'replaceable', 'return_days', 'is_long_term_service','service_duration','is_show_dispatcher_agent','is_slot_from_dispatch','tags','mode_of_service','is_recurring_booking', 'latitude', 'longitude', 'address','calories','inquiry_only');
+                    $product = $product->select('id', 'sku', 'url_slug', 'description', 'weight', 'weight_unit', 'vendor_id', 'is_new', 'is_featured', 'is_physical', 'has_inventory', 'has_variant', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'minimum_order_count', 'batch_count', 'minimum_duration', 'minimum_duration_min', 'additional_increments', 'additional_increments_min', 'buffer_time_duration', 'buffer_time_duration_min', 'returnable', 'replaceable', 'return_days', 'is_long_term_service', 'service_duration', 'is_show_dispatcher_agent', 'is_slot_from_dispatch', 'tags', 'mode_of_service', 'is_recurring_booking', 'latitude', 'longitude', 'address', 'calories', 'inquiry_only', 'security_amount', 'captain_name', 'captain_profile', 'captain_description');
+
 
                     $product = $product->where('id', $pid)
                         ->first();
@@ -179,32 +183,32 @@ class ProductController extends BaseController
                 return response()->json(['error' => 'No record found.'], 404);
             }
 
-            if(@$product->product_availability && @$product->OrderProduct){
+            // if(@$product->product_availability && @$product->OrderProduct){
 
-                foreach($product->OrderProduct as $OrderProducts){
-                    // dd($OrderProducts);
-                    $dates = [];
-                    if(@$OrderProducts->start_date_time && @$OrderProducts->end_date_time){
-                        $period = CarbonPeriod::create(date('Y-m-d',strtotime($OrderProducts->start_date_time)), date('Y-m-d',strtotime($OrderProducts->end_date_time)));
+            //     foreach($product->OrderProduct as $OrderProducts){
+            //         // dd($OrderProducts);
+            //         $dates = [];
+            //         if(@$OrderProducts->start_date_time && @$OrderProducts->end_date_time){
+            //             $period = CarbonPeriod::create(date('Y-m-d',strtotime($OrderProducts->start_date_time)), date('Y-m-d',strtotime($OrderProducts->end_date_time)));
 
-                        foreach ($period as $date) {
-                            $dates[] =  $date->format('Y-m-d');
-                        }
+            //             foreach ($period as $date) {
+            //                 $dates[] =  $date->format('Y-m-d');
+            //             }
 
-                        if(@$dates){
-                            foreach($product->product_availability as $product_availability){
-                                foreach($dates as $date){
-                                    if( date('Y-m-d',strtotime($product_availability->date_time)) == $date){
-                                        $product_availability->not_available = 1;
-                                    }
-                                }
+            //             if(@$dates){
+            //                 foreach($product->product_availability as $product_availability){
+            //                     foreach($dates as $date){
+            //                         if( date('Y-m-d',strtotime($product_availability->date_time)) == $date){
+            //                             $product_availability->not_available = 1;
+            //                         }
+            //                     }
 
-                            }
-                        }
-                }
-            }
+            //                 }
+            //             }
+            //     }
+            // }
 
-            }
+            // }
 
             $product->is_rented = 0;
             if(@$product->OrderProduct[0]->end_date_time){
@@ -212,8 +216,13 @@ class ProductController extends BaseController
             }
 
             if ($this->checkTemplateForAction(8)) {
-            $this->RecentView($pid);
+                $this->RecentView($pid);
             }
+            $productBookingsCount = ProductBooking::whereHas('products', function ($q) use ($product) {
+                $q->whereHas('product', function($q) use($product){
+                    $q->where('vendor_id', $product->vendor_id);
+                });
+            })->count();
             $product->vendor->is_vendor_closed = 0;
             if($product->vendor->show_slot == 0){
                 if( ($product->vendor->slotDate->isEmpty()) && ($product->vendor->slot->isEmpty()) ){
@@ -229,6 +238,9 @@ class ProductController extends BaseController
                     }
                 }
             }
+            $allReviews = array_column($product->vendor->products()->with('reviews')->get()->toArray(),'reviews');
+            $rating = array_sum(array_column($allReviews,'rating'));
+            $product->vendor_rating = $rating; 
 
             $slotsDate = 0;
             if($product->vendor->is_vendor_closed){
@@ -241,10 +253,11 @@ class ProductController extends BaseController
             }
 
 
-            $product->is_wishlist = @$product->category->categoryDetail->show_wishlist;
+            $product->is_wishlist = @$product->inwishlist ? 1 : 0;
             $clientCurrency = ClientCurrency::where('currency_id', $user->currency)->first();
             foreach ($product->variant as $key => $value) {
                 $product->variant[$key]->multiplier = $clientCurrency->doller_compare;
+                $product->variant[$key]->variant_title = $product->variant[$key]->optionData ?? '';
             }
             $addonList = array();
             foreach ($product->addOn as $key => $value) {
@@ -328,7 +341,10 @@ class ProductController extends BaseController
                     if( !empty($value->attribute) && !empty($value->attribute->status) && $value->attribute->status == 1 ) {
                         $product_attr[$key]['title'] = optional($value->attribute)->title ?? '';
                         $product_attr[$key]['attribute_id'] = $value->attribute_id ?? '';
-
+                        $attribute = $value->attribute;
+                        $img = $attribute->icon ? $attribute->icon['proxy_url'] . '100/100' . $attribute->icon['image_path'] : '';
+                        $product_attr[$key]['icon'] = $img;
+                        
                         if( !empty($value->attribute) && $value->attribute->type != 4 && $value->attribute->type != 6) {
                             $product_attr[$key]['value'] = optional($value->attributeOption)->title ?? '';
                         }
@@ -405,18 +421,77 @@ class ProductController extends BaseController
                     }
                 }
             }
+            
 
-
+            $detail = [
+            'Mileage',
+            'Engine',
+            'Transmission',
+            'BHP',
+            'Seats',
+            'Boot Space',
+            'Fuel Type'
+            ];
+            $additional = [];
+            $desc = [];
+            foreach ($product->ProductAttribute as $productAttribute) {
+                $attribute = $productAttribute->attribute;
+                $img = $attribute->icon['proxy_url'] . '100/100' . $attribute->icon['image_path'];
+                if ($productAttribute->attributeOption()->exists()) {
+                    $title = $productAttribute->attributeOption->title ?? $productAttribute->key_value;
+                    if(!in_array($productAttribute->key_name, $detail)){
+                        $additional[] = [
+                            'title' => $productAttribute->key_name,
+                            'value' => $title,
+                            'img' => $img
+                        ];
+                    }
+                    $desc[$productAttribute->key_name]['title'] = $title;
+                    $desc[$productAttribute->key_name]['img'] = $img;
+                }
+            }
+            $accordianData = [];
+            $desc = array_search('Specification', $additional);
+            $accordianData[] = [
+                'title' => 'Specification',
+                'value' => $desc['Specification']['title'] ?? ''
+            ];
+            $accordianData[] = [
+                'title' => 'Cancellation',
+                'value' => $product->returnable ? "Cancellable" : "Non-Cancelable"
+            ];
+            $accordianData[] = [
+                'title' => 'Commercial Owner',
+                'value' => $desc['Commercial Owner']['title'] ?? ''
+            ];
+            $accordianData[] = [
+                'title' => 'Security Amount',
+                'value' => $product->security_amount ? \Session::get('currencySymbol').$product->security_amount. ' need to be paid as security amount' : 'No Security Amount'
+            ];
+            $accordianData[] = [
+                'title' => 'Captain Info',
+                'value' => [
+                    'name' => $product->captain_name,
+                    'description' => $product->captain_description,
+                    'profile' => $product->captain_profile
+                ]
+            ];
+            
             $response['suggested_category_products'] =  $suggested_category_products;
             $response['suggested_brand_products'] =  $suggested_brand_products;
             $response['suggested_vendor_products'] =  $suggested_vendor_products;
 
+
+            
             $response['products'] = $product;
             $response['frequently_bought'] = $frequentlyBoughtProducts;
-            $response['relatedProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'relate', $product->related);
-            $response['upSellProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'upSell', $product->upSell);
-            $response['crossProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'cross', $product->crossSell);
+            $response['relatedProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'relate', $product->related, $request->service);
+            $response['upSellProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'upSell', $product->upSell, $request->service);
+            $response['crossProducts'] = $this->metaProduct($langId, $clientCurrency->doller_compare, 'cross', $product->crossSell, $request->service);
             $response['product_attribute'] = $product_attr;
+            $response['additional_features'] = $additional;
+            $response['productBookingsCount'] = $productBookingsCount;
+            $response['accordianData'] = $accordianData;
             // $response['product_variant'] = ProductVariant::select('id', 'sku', 'product_id', 'title', 'quantity','price','markup_price','cost_price','barcode','tax_category_id')->where('product_id',$pid)->get();
             /* group by in query return data only for key - 0 so using 0 */
             $is_return_days = 0;
@@ -435,10 +510,9 @@ class ProductController extends BaseController
             return response()->json([
                 'data' => $response,
             ]);
-
-        // } catch (Exception $e) {
-        //     return $this->errorResponse($e->getMessage(), $e->getCode());
-        // }
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
 
 
     }
@@ -475,7 +549,7 @@ class ProductController extends BaseController
 
     }
 
-    public function metaProduct($langId, $multiplier, $for = 'relate', $productArray = [])
+    public function metaProduct($langId, $multiplier, $for = 'relate', $productArray = [], $service="")
     {
         if(empty($productArray)){
             return $productArray;
@@ -495,7 +569,7 @@ class ProductController extends BaseController
         }
         $products = Product::with(['media' => function($q){
                             $q->groupBy('product_id');
-                        }, 'media.image',
+                        }, 'media.image','ProductAttribute','ProductAttribute.attributeOption','vendor',
                         'translation' => function($q) use($langId){
                         $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $langId);
                         },
@@ -508,9 +582,31 @@ class ProductController extends BaseController
 
         $products = $products->get();
         if(!empty($products)){
+            $fields = [];
             foreach ($products as $key => $value) {
                 foreach ($value->variant as $k => $v) {
                     $value->variant[$k]->multiplier = $multiplier;
+                }
+
+                foreach ($value->ProductAttribute as $productAttribute) {
+                    if ($productAttribute->attributeOption()->exists()) {
+                        if(!empty($title = $productAttribute->attributeOption->title)){
+                            $fields[$productAttribute->key_name] = $title;
+                        }else{
+                            $fields[$productAttribute->key_name] = $productAttribute->key_value;
+                        }
+                    }
+                }
+                if(!empty($fields)){
+                    if($service == 'rental'){
+                        $value->transmission = $fields['Transmission'] ?? '';
+                        $value->fuel_type = $fields['Fuel Type'] ?? '';
+                        $value->Seats = $fields['Seats'] .' Seats'?? '';
+                    } else{
+                        $value->cabins = $fields['Cabins']. ' Cabins' ?? '0' ;
+                        $value->baths = $fields['Baths']. ' Baths' ?? '0' ;
+                        $value->berths = $fields['Berths'].' Berths' ?? '0';
+                    }
                 }
             }
         }

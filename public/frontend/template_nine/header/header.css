@@ -19,6 +19,11 @@
     ::-webkit-scrollbar-thumb:hover{
     background: #555;
     }
+
+    .section-b-space .container .row .col-lg-3 >.dashboard-left {
+        position: sticky;
+        top: 170px;
+    }    
     .result-item-name.product_heading h4{
         font-size:14px;
         font-weight: bold;
@@ -126,6 +131,9 @@ z-index:1111;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-
 .fixed-bar .nav-cate-img {
     opacity: 1;
     visibility: inherit;
+}
+.top-header.site-topbar {
+    padding: 8px 0!important;
 }
 /*-----------new css ------------*/
 .dark .al_count_tabs_new_design li a.nav-link .al_tabsIcons {
@@ -415,6 +423,7 @@ body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect  a span{
     color:#777;
     font-weight: 400!important;
     text-transform: capitalize;
+    margin: 0!important;
 }
 .al_body_template_nine .pixelstrap li a img {
     width: 100%;
@@ -436,7 +445,7 @@ body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect  a span{
     display: flex;
     flex-direction: column;
     align-content: space-between;
-    min-height: 170px;
+    min-height: inherit;
     justify-content: space-between;
 }
 .al_body_template_nine  .top-header ul.header-dropdown li:first-child a span {
@@ -743,9 +752,21 @@ body.dark .mobile-account span {
         border-bottom: 0.1px solid#ccc;
         padding: 0 10px 10px 0!important;
     }
+    body.al_body_template_nine.p2p-module .al_count_tabs {
+        overflow-x: auto;
+        width: 150px;
+        padding-bottom: 5px;
+    }
+    body.al_body_template_nine.p2p-module .al_count_tabs::-webkit-scrollbar{
+        height: 5px;
+        background-color: #F5F5F5;
+    }
     body.al_body_template_nine.p2p-module ul#top-tab {
         flex-wrap: nowrap;
-        overflow-x: scroll;
+        
+    }
+    body.al_body_template_nine.p2p-module .navigation-tab-item .nav-link{
+        white-space: nowrap;
     }
     body.al_body_template_nine.p2p-module .navigation-tab-item .nav-link {
         padding: 5px 10px;
@@ -783,7 +804,7 @@ body.dark .mobile-account span {
     }
     body.al_body_template_nine.p2p-module .top-header .header-dropdown li.onhover-dropdown{
         color:#fff!important;
-    }
+    }    
 }
 
 footer ul.social-links li a i{
@@ -793,9 +814,21 @@ footer ul.social-links li a i{
     max-width: 100%;
     padding: 0;
 }
-
+.search_form  .btn{
+    padding: 0 5px!important;
+}
+.search_form  .btn svg{
+    width: 16px;
+}
 @media (max-width:576px){
     .al_body_template_nine .top-header ul.header-dropdown{
         display: none!important;
     }
+}
+
+body.al_body_template_nine.p2p-module .top-header.site-topbar{
+    background-color:#105d72 !important;
+}
+a.common-product-box.text-center:hover{
+    box-shadow:none !important;
 }

@@ -514,7 +514,7 @@ li {
     text-align: left;
     padding: 0;
     transition:  0.01s!important;
-    transform: translateY(0);
+    transform: translateY(-0);
     visibility: hidden;
 }
 
@@ -1283,7 +1283,7 @@ a.navbar-brand.mr-3 {
 
 .category-related-product .img-outer-box.position-relative {
     min-height: 270px !important;
-    height: 270px!important;
+    max-height: 270px!important;
 }
 
 .al_custom_categories .slick-slide > div {

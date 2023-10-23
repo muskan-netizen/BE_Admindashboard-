@@ -426,8 +426,9 @@ Route::group(['middleware' => ['domain']], function () {
 	]);
 	Route::get('/autocomplete-search', 'Front\SearchController@postAutocompleteSearch')->name('autocomplete');
 	Route::get('/search-all/{keyword}', 'Front\SearchController@showSearchResults')->name('showSearchResults');
-	Route::get('/', 'Front\UserhomeController@index')->name('userHome');
-	
+	 Route::get('/', 'Front\UserhomeController@index')->name('userHome');
+	// Route::get('/', 'Front\YachtController@yacht')->name('userHome');
+	Route::any('products-searchResults', 'Front\YachtController@productsSearchResult')->name('productSearch');
 	Route::get('/setSessionIndex', 'Front\UserhomeController@setSessionIndex')->name('setSessionIndex');
 
 	Route::get('/updateLocation', 'Front\UserhomeController@setHyperlocalAddress')->name('updateLocation');
@@ -450,6 +451,8 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::post('user/loginData', 'Front\CustomerAuthController@login')->name('customer.loginData');
 	Route::post('user/register', 'Front\CustomerAuthController@register')->name('customer.register');
 	Route::post('user/loginViaUsername', 'Front\CustomerAuthController@loginViaUsername')->name('customer.loginViaUsername');
+	Route::post('user/check-valid-email', 'Front\CustomerAuthController@checkValidEmail')->name('check-valid-email');
+
 	Route::post('user/verifyPhoneLoginOtp', 'Front\CustomerAuthController@verifyPhoneLoginOtp')->name('customer.verifyPhoneLoginOtp');
 	Route::post('vendor/register', 'Front\CustomerAuthController@postVendorregister')->name('vendor.register');
 	Route::post('user/forgotPassword', 'Front\ForgotPasswordController@postForgotPassword')->name('customer.forgotPass');
@@ -501,6 +504,7 @@ Route::group(['middleware' => ['domain']], function () {
 
 	
 
+	Route::get('category/{slug?}/{slug1?}', 'Front\CategoryController@categoryProduct')->name('categoryDetail');
 	Route::get('category/{slug1}/{slug2}', 'Front\CategoryController@categoryVendorProducts')->name('categoryVendorProducts');
 	Route::post('category/filters/{id}', 'Front\CategoryController@categoryFilters')->name('productFilters');
 	Route::get('category_kycDocument', 'Front\CategoryController@getcategoryKycDocument')->name('getCategoryKycDocument');
@@ -745,6 +749,6 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 	/**
 	 * booking routes
 	 */
-	Route::post('booking/checkProductAvailibility', 'Front\Booking\ProductBookingController@checkProductAvailibility')->name('product-booking.checkProductAvailibility');   # update all product actions
+	// Route::post('booking/checkProductAvailibility', 'Front\Booking\ProductBookingController@checkProductAvailibility')->name('product-booking.checkProductAvailibility');   # update all product actions
 
 });

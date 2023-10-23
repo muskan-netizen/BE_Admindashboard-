@@ -214,7 +214,6 @@ $(document).ready( async function () {
         // if($.hasAjaxRunning()){
         //     return false;
         // }
-        
       
         //$(".navigation-tab-item").removeClass("active");
         $('.vendor_mods').find('.nav-link').removeClass('active');

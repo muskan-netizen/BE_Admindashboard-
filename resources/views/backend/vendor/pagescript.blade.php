@@ -1295,4 +1295,193 @@ $(".openConfirmAppointmentDispatcher").click(function(e) {
         });
 });
 /////////////// **************   end 1.4 *****************************///////////////
+
+
+$('.editProtection').on('click', function(e) {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        e.preventDefault();
+        var did = $(this).attr('dataid');
+        let url = `{{route("rental.protection.edit", ":id")}}`;
+        url = url.replace(':id', did);
+        
+        $.ajax({
+            type: "get",
+            url: url,
+            data: '',
+            dataType: 'json',
+            success: function(data) {
+                $('#editdAddonmodal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                $('#editAddonForm #editAddonBox').html(data.html);
+                $('#editdAddonmodal .modal-title').html('Edit AddOn Set');
+                $('#editdAddonmodal .editAddonSubmit').html('Update');
+                document.getElementById('editAddonForm').action = data.submitUrl;
+                setTimeout(function() {
+                    var max = $('#edit_addon-datatable >tbody >tr.input_tr').length;
+                    var $d4 = $("#editAddonForm #slider-range1");
+                    $d4.ionRangeSlider({
+                        type: "double",
+                        grid: false,
+                        min: 0,
+                        max: max,
+                        from: data.min_select,
+                        to: data.max_select
+                    });
+                    $d4.on("change", function() {
+                        var $inp = $(this);
+                        $("#editAddonForm #max_select").val($inp.data("to"));
+                        $("#editAddonForm #min_select").val($inp.data("from"));
+                    });
+                }, 1000);
+            },
+            beforeSend: function() {
+                $(".loader_box").show();
+            },
+            complete: function() {
+                $(".loader_box").hide();
+            },
+            error: function(data) {
+                console.log('data2');
+            }
+        });
+    });
+    $(document).on('click', '.deleteProtection', function() {
+        var did = $(this).attr('dataid');
+        if (confirm("Are you sure? You want to delete this Rental Protection.")) {
+            $('#protectionDeleteForm' + did).submit();
+        }
+        return false;
+    });
+
+
+    $('.editBookingOption').on('click', function(e) {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        e.preventDefault();
+        var did = $(this).attr('dataid');
+        let url = `{{route("booking.option.edit", ":id")}}`;
+        url = url.replace(':id', did);
+        
+        $.ajax({
+            type: "get",
+            url: url,
+            data: '',
+            dataType: 'json',
+            success: function(data) {
+                $('#editdAddonmodal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                $('#editAddonForm #editAddonBox').html(data.html);
+                $('#editdAddonmodal .modal-title').html('Edit AddOn Set');
+                $('#editdAddonmodal .editAddonSubmit').html('Update');
+                document.getElementById('editAddonForm').action = data.submitUrl;
+                setTimeout(function() {
+                    var max = $('#edit_addon-datatable >tbody >tr.input_tr').length;
+                    var $d4 = $("#editAddonForm #slider-range1");
+                    $d4.ionRangeSlider({
+                        type: "double",
+                        grid: false,
+                        min: 0,
+                        max: max,
+                        from: data.min_select,
+                        to: data.max_select
+                    });
+                    $d4.on("change", function() {
+                        var $inp = $(this);
+                        $("#editAddonForm #max_select").val($inp.data("to"));
+                        $("#editAddonForm #min_select").val($inp.data("from"));
+                    });
+                }, 1000);
+            },
+            beforeSend: function() {
+                $(".loader_box").show();
+            },
+            complete: function() {
+                $(".loader_box").hide();
+            },
+            error: function(data) {
+                console.log('data2');
+            }
+        });
+    });
+    $(document).on('click', '.deleteBookingOption', function() {
+        var did = $(this).attr('dataid');
+        if (confirm("Are you sure? You want to delete this Booking Option.")) {
+            $('#bookingOptionDeleteForm' + did).submit();
+        }
+        return false;
+    });
+
+    var input2 = document.getElementById('destination-address');
+    if(input2){
+        var autocomplete = new google.maps.places.Autocomplete(input2);
+        google.maps.event.addListener(autocomplete, 'place_changed', function () {
+            var place = autocomplete.getPlace();
+            document.getElementById('longitude').value = place.geometry.location.lng();
+            document.getElementById('latitude').value = place.geometry.location.lat();
+        });
+    }
+
+    $(".openDestinationModal").click(function(e) {
+        $('#addDestinationmodal').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    });
+    
+
+    $('.editDestination').on('click', function(e) {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        e.preventDefault();
+        var did = $(this).attr('dataid');
+        let url = `{{route("destination.edit", ":id")}}`;
+        url = url.replace(':id', did);
+        
+        $.ajax({
+            type: "get",
+            url: url,
+            data: '',
+            dataType: 'json',
+            success: function(data) {
+                $('#editdAddonmodal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                $('#editAddonForm #editAddonBox').html(data.html);
+                $('#editdAddonmodal .editAddonSubmit').html('Update');
+                document.getElementById('editAddonForm').action = data.submitUrl;
+            },
+            beforeSend: function() {
+                $(".loader_box").show();
+            },
+            complete: function() {
+                $(".loader_box").hide();
+            },
+            error: function(data) {
+                console.log('data2');
+            }
+        });
+    });
+
+    $(document).on('click', '.deleteDestination', function() {
+        var did = $(this).attr('dataid');
+        if (confirm("Are you sure? You want to delete this Destination.")) {
+            $('#DestinationDeleteForm' + did).submit();
+        }
+        return false;
+    });
 </script>

@@ -343,17 +343,11 @@ input[type=number]::-webkit-outer-spin-button {
                     
                     @if($is_cab_pooling == 1 || $is_bid_ride_enable == 1 || $is_recurring_booking == 1 || $is_particular_driver == 1)
                         <div class="pool_radio_controls text-center">
-                            <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_booking" name="is_cab_pooling_radio"
-                                value="0" checked>
-                            <label class="pool_label mb-0  my-2 active " for="cab_booking" id="label_cab_booking">
-                                <h5 class="m-0" id="pool_5">{{ __('Booking') }}</h5>
-                            </label>
-
-                            @if ($is_cab_pooling == 1 )
-                                <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_pooling" name="is_cab_pooling_radio"
-                                    value="1">
-                                <label class="pool_label mb-0  my-2" for="cab_pooling" id="label_cab_pooling">
-                                    <h5 class="m-0" id="pool_5">{{ __('Pooling') }}</h5>
+                            <div class="item">
+                                <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_booking" name="is_cab_pooling_radio"
+                                    value="0" checked>
+                                <label class="pool_label mb-0  my-2 active " for="cab_booking" id="label_cab_booking">
+                                    <h5 class="m-0" id="pool_5">{{ __('Booking') }}</h5>
                                 </label>
                             @endif
 
@@ -377,7 +371,7 @@ input[type=number]::-webkit-outer-spin-button {
                             </label>
                         @endif
                         </div>
-                    @endif
+                    
 
 
 
@@ -434,6 +428,7 @@ input[type=number]::-webkit-outer-spin-button {
                             style="display:none !important;">
                             <i class="fa fa-search" aria-hidden="true"></i>
                             <input class="form-control pickup-text" name="destination_location_name[]" type="text"
+                            {{ (request()->segment(2) == 'airport' || request()->yacht_id) ? 'disabled' : '' }}
                                 placeholder="{{ __('Add A Stop') }}" id="destination_location" />
                         </div>
                         <div class="location-search d-flex align-items-center" style="display:none !important;"
@@ -1165,10 +1160,19 @@ input[type=number]::-webkit-outer-spin-button {
                 </div>
                 <div class="cab-amount-details px-2">
                     <div class="row">
+
+                        <% if(result.yacht) { %>
+                            <div class="col-6 mb-2">{{__('Yacht Name')}}</div>
+                            <div class="col-6 mb-2 text-right" id=""><%= result.yacht.title %> </div>
+                            <div class="col-6 mb-2">{{__('Yacht image')}}</div>
+                            <img style="height:70px; width:170px" src="<%= result.yacht.image_url %>">
+                        <% } %>
+
                         <div class="col-6 mb-2">{{__('Distance')}}</div>
                         <div class="col-6 mb-2 text-right" id="distance"><%= result.distance %> {{__($client_preference_detail->distance_unit_for_time)}}</div>
                         <div class="col-6 mb-2">{{__('Duration')}}</div>
                         <div class="col-6 mb-2 text-right" id="duration"><%= result.duration %> {{__('mins')}}</div>
+                        <input type="hidden" id="duration_time" value="<%= result.duration %>">
                         <% if((result.subscription_percent_value) && (result.subscription_percent_value) > 0 ){ %>
                         <div class="col-6 mb-2">{{__('Subscription Discount')}}</div>
                         <div class="col-6 mb-2 text-right" id="subscription-percent"><%= result.subscription_percent_value+'%' %></div>
@@ -1177,6 +1181,11 @@ input[type=number]::-webkit-outer-spin-button {
                         <div class="col-6 mb-2 text-right" id="discount"><p class="total_amt m-0" id="subscription-amout">{{Session::get('currencySymbol')}}<%= result.subscription_discount %></p></div>
                         <input type="hidden" id="subscription-amout-h" value="<%= result.subscription_discount %>">
                         <% } %>
+
+                        <% if((result.yacht)){ %>
+                            {{-- <input type="number" class="from-control" id="seats" value="" name="seats" placeholder="Number of Seats Booking"> --}}
+                        <% } %>
+                        
                         <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>
                             <div class="col-6 mb-2">Loyalty</div>
                             <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved %></div>
@@ -1203,6 +1212,22 @@ input[type=number]::-webkit-outer-spin-button {
                     <a class="remove-coupon" href="javascript:void(0)" id="remove_promo_code_cab_booking_btn" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.tags_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" style="display:none;">Remove</a>
 
         </div>
+        <% if(result.add_on){ %>
+        <h5>Addons</h5>
+            <div class="addon-box btn-product-order-form-div">
+                <% _.each(result.add_on, function(addon, key){%>
+                    <div class="">
+                        <h6><%= addon.add_on_name.title%></h6>
+                        <% _.each(addon.add_on_name.option, function(option, key){%>
+                            <div class="d-flex">
+                                <input type="checkbox" class="addon-opt" name="addon-opt-<%= option.id%>" data-id="<%=option.id%>"/>
+                                <p><%= option.title %><span><%= option.price %></span></p>
+                            </div>
+                        <%})%>
+                    </div>
+                <%})%>
+            </div>
+        <%}%>
         <% if((result.faqlist) && (result.faqlist) > 0 ){ %>
         <div class="text-center my-3 btn-product-order-form-div">
             <button class="clproduct_order_form btn btn-solid w-100"  id="add_product_order_form"  data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" >{{__('Product Order Form')}}</button>
@@ -1218,7 +1243,7 @@ input[type=number]::-webkit-outer-spin-button {
         </div>
 
     </div>
-    <span id="show_error_of_booking" class="error"></span>
+    <span id="show_error_of_booking" class="error text-danger"></span>
 
     <div class="payment-promo-container p-2">
         <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal">
@@ -1957,6 +1982,9 @@ input[type=number]::-webkit-outer-spin-button {
         var powertrans_payment_url = "{{ route('powertrans.payment') }}";
 
         var pesapal_payment_url = "{{ route('pesapal.payment') }}";
+
+        var place_order_url = "{{route('user.placeorder')}}";
+
         /// ************* product order form **************///////
         $('body').on('click', '.clproduct_order_form', function(event) {
             event.preventDefault();

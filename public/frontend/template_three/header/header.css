@@ -18,6 +18,10 @@
     ::-webkit-scrollbar-thumb:hover{
     background: #555;
     }
+    .section-b-space .container .row .col-lg-3 >.dashboard-left {
+        position: sticky;
+        top: 200px;
+    }
 
 .file.file--upload i.fa{color:#fff}
 header#al_new_design .main-menu .al_count_tabs_new_design.d-none.d-sm-block ul#top-tab{display: inline-block;max-width: 100%;white-space: nowrap;}

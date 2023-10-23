@@ -28,11 +28,11 @@
                             <label class="radio d-inline-block txt-14 col-4 position-relative pl-4 pr-2"
                                 data-title="{{ $key === 0 ? $variant->title : '' }}"> 
                                 <span
-                                    class="color_name ellipsis">{{ $optn->title }}</span>
+                                    class="color_name ellipsis">{{ $optn->title }}</span>3
                                     <input id="lineRadio-{{ $opt_id }}" name="{{ 'var_' . $var_id }}"
                                     vid="{{ $var_id }}" data-option-title="{{ $variant->title }}"
                                     optid="{{ $opt_id }}" value="{{ $opt_id }}" type="radio"
-                                    class="{{ $key != $t_var - 1 ? 'changeVariant' : '' }} dataVar{{ $var_id }} changeVariant_{{ $variant->title }}"
+                                    class="{{ $key != $t_var - 1 ? 'changeVariant' : '' }} dataVar{{ $var_id }} changeVariant"
                                     {{ $checked }} data-row-key = {{$key}}>
                                 @if ($variant->type == 2)
                                     <span

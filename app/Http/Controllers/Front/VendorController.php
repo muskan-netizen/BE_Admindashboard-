@@ -812,6 +812,7 @@ class VendorController extends FrontController
         $langId = Session::get('customerLanguage');
         $preferences = Session::get('preferences');
 
+      
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
 
         $vendor = Vendor::with('slot.day', 'slotDate')
@@ -985,6 +986,7 @@ class VendorController extends FrontController
                             // });
                         }
                         $vendor_category = $vendor_category->where('status', 1)->where('vendor_id', $vid)->where('category_id', $cid)->first();
+                        
                         if($vendor_categories){
                             $vendorProducts = $products->where('category_id', $cid);
                             if($vendor_category){

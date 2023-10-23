@@ -156,7 +156,7 @@
                                                                                 @endif
                                                                                 <span class="left_arrow pulse"></span>
                                                                                 <div class="row">
-                                                                                    <div class="col-6 col-sm-4">
+                                                                                    <div class="col-6 col-sm-3">
                                                                                         <h5 class="m-0">
                                                                                             {{ __('Order Status') }}</h5>
                                                                                         <ul class="status_box mt-1 pl-0">
@@ -245,9 +245,10 @@
 
                                                                                         </ul>
                                                                                     </div>
-                                                                                    <div class="col-6 col-sm-3">
+                                                                                    <div class="col-6 col-sm-4">
+                                                                                       <div class="product_list_item">
                                                                                         <ul
-                                                                                            class="product_list p-0 m-0 text-center">
+                                                                                            class="product_list_order_page product_list p-0 m-0 text-center">
                                                                                             @foreach ($vendor->products as $product)
                                                                                                 @if ($vendor->vendor_id == $product->vendor_id)
                                                                                                     <li class="text-center mb-0 alOrderImg">
@@ -269,7 +270,7 @@
                                                                                                 @endif
                                                                                             @endforeach
                                                                                         </ul>
-
+                                                                                        </div>
                                                                                     </div>
                                                                                     <div class="col-md-5 mt-md-0 mt-sm-2">
                                                                                         <ul class="price_box_bottom m-0 p-0">

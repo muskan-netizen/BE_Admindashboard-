@@ -251,6 +251,8 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
         </div>
         <!-- Localization end -->
     </div>
+
+  
     <!--Localization end -->
 {{-- vendoe typs section aline by harbans singh :) --}}
     <div class="row col-spacing">
@@ -262,6 +264,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup', 'gtag_id'
             {{-- @if($client_preference_detail->business_type != 'taxi' && $client_preference_detail->business_type != 'laundry' ) --}}
             @php
                 $typeArray = getCategoryTypes();
+               
             @endphp
             <form method="POST" class="h-100" action="{{route('configure.update', Auth::user()->code)}}">
                 @csrf

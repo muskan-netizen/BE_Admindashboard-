@@ -826,6 +826,7 @@ div#custom_date_recurring {
 
     function formData(action='',start_date='',end_date=''){
         var booking_type = $("input[type='radio'][name='booking_type']:checked").val();
+        
         if(action!=1){
           pushsliceSelected_custom_dates(selected_custom_dates,start_date)
         } 
@@ -833,7 +834,7 @@ div#custom_date_recurring {
             selectedCustomdates:selected_custom_dates,
             startDate:  start_date,
             endDate  :  end_date,
-            action   :  booking_type ,
+            action   :  booking_type ?? '1',
             schedule_time : daily_booking_time,
             month_number : monthNumber,
             weekDay:weeks

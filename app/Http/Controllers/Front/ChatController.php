@@ -131,7 +131,7 @@ class ChatController extends FrontController
         } else {
             $vendor_id = UserVendor::where('user_id',$user->id)->select('vendor_id')->first();
             // dd($vendor_id);
-            $this->client_data['vendor_id'] = $vendor_id->vendor_id;
+            $this->client_data['vendor_id'] = $vendor_id->vendor_id ?? "";
             //$roomData = $this->getChatRoom($vendor_id,'vendor_to_user');
             $roomData['status'] = false;
             $view = "VendorUserChat";

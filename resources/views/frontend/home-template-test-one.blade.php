@@ -331,11 +331,12 @@ $preference = $client_preference_detail;
 @endif
 
 
+@if($vendor_type!="car_rental")
 <section class="section-b-space ratio_asos  pt-0 mt-0 pb-0 mt-0" id="our_vendor_main_div">
    <div class="vendors">
       @foreach($homePageLabels as $key => $homePageLabel)
          @if($homePageLabel->slug == 'pickup_delivery')
-            @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories))
+            @if(isset($homePageLabel->pickupCategories) && count($homePageLabel->pickupCategories) && $vendor_type!="car_rental")
                @include('frontend.booking.cabbooking-single-module')
             @endif
          @elseif($homePageLabel->slug == 'dynamic_page')
@@ -539,6 +540,7 @@ $preference = $client_preference_detail;
       @endforeach
    </div>
 </section>
+@endif
 <section class="no-store-wrapper mb-3" style="display: none;"  >
    <div class="container">
       @if(count($for_no_product_found_html)) @foreach($for_no_product_found_html as $key => $homePageLabel) @include('frontend.included_files.dynamic_page') @endforeach @else
@@ -574,6 +576,10 @@ $preference = $client_preference_detail;
       </div>
    </div>
 </div>
+
+@if($vendor_type=="car_rental")
+   @include('frontend.yacht.rental');
+@endif
 
 <script type="text/template" id="desktop_banners_template">
 	<div class="carousel-inner">
@@ -624,7 +630,7 @@ $preference = $client_preference_detail;
 				url = "{{route('vendorDetail')}}" + "/" + banner.vendor.slug;
 			 }
 		  }
-		  %>
+		  %> 
 		  <div class="carousel-item <% if(k == 0) { %> active <% } %>">
 			 <a class="banner-img-outer" href="<%= url %>">
 				<link rel="preload" as="image" href="<%= banner.image.proxy_url %>1370/300<%= banner.image.image_path %>" />
