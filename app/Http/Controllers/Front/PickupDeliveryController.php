@@ -1,27 +1,27 @@
 <?php
 
-namespace App\https\Controllers\Front;
+namespace App\Http\Controllers\Front;
 
 use DB;
 use Config;
 use Session;
 use Validation;
 use Carbon\Carbon;
-use Illuminate\https\Request;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use App\https\Controllers\Api\v1\BaseController;
-use App\https\Requests\OrderProductRatingRequest;
+use App\Http\Controllers\Api\v1\BaseController;
+use App\Http\Requests\OrderProductRatingRequest;
 use App\Models\{AddonOption, Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client,Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, ProductFaq, ProductFaqSelectOption, User, VendorCategory,ClientLanguage, ClientPreferenceAdditional, OrderProductAddon, PaymentOption, PickDropDriverBid, TaxRate, UserBidRideRequest, UserDevice};
-use App\https\Traits\{ApiResponser, GuzzlehttpsTrait, OrderTrait, PaymentTrait};
-use Guzzlehttps\Client as GCLIENT;
-use Illuminate\Support\Facades\https;
+use App\Http\Traits\{ApiResponser, GuzzleHttpTrait, OrderTrait, PaymentTrait};
+use GuzzleHttp\Client as GCLIENT;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Log,DateTime,DateTimeZone;
 
 class PickupDeliveryController extends FrontController{
 
-    use ApiResponser,PaymentTrait,OrderTrait,GuzzlehttpsTrait;
+    use ApiResponser,PaymentTrait,OrderTrait,GuzzleHttpTrait;
 
     public function getPaymentOptions(Request $request, $domain = '')
     {
@@ -60,7 +60,7 @@ class PickupDeliveryController extends FrontController{
 
         $order = OrderVendor::with('orderDetail')->where('order_id',$request->order_id)->select('*','dispatcher_status_option_id as dispatcher_status')->first()->toArray();
 
-       $response = https::get($request->new_dispatch_traking_url);
+       $response = Http::get($request->new_dispatch_traking_url);
 
         if(count($order) > 0) {
             if($response->status() == 200){
@@ -997,9 +997,7 @@ class PickupDeliveryController extends FrontController{
                 }
 
                 $returnBookingTime = null;
-                if (!empty($request->return_booking_time)) {
-                    $returnBookingTime = Carbon::parse($request->return_booking_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-                }
+                
                 /*book for a friend*/
                 $order->type                = $request->type;
                 $order->friend_name         = $request->friendName;
@@ -1406,7 +1404,7 @@ class PickupDeliveryController extends FrontController{
       /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\https\Response
+     * @return \Illuminate\Http\Response
      */
     public function postPromoCodeList(Request $request){
         try {
