@@ -967,8 +967,7 @@ class PickupDeliveryController extends BaseController{
             }
 
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
-
-            $header = ['headers' => ['personaltoken' => !empty($dispatch_domain->delivery_service_key)? $dispatch_domain->delivery_service_key : $dispatch_domain->pickup_delivery_service_key,
+            $header = ['headers' => ['personaltoken' => !empty($dispatch_domain->pickup_delivery_service_key)? $dispatch_domain->pickup_delivery_service_key : "",
                 'shortcode' => !empty($dispatch_domain->delivery_service_key_code)? $dispatch_domain->delivery_service_key_code : $dispatch_domain->pickup_delivery_service_key_code,
                 'content-type' => 'application/json']
             ];
