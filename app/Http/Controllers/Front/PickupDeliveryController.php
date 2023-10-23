@@ -996,7 +996,10 @@ class PickupDeliveryController extends FrontController{
 
                 }
 
-               
+                $returnBookingTime = null;
+                if (!empty($request->return_booking_time)) {
+                    $returnBookingTime = Carbon::parse($request->return_booking_time, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+                }
                 /*book for a friend*/
                 $order->type                = $request->type;
                 $order->friend_name         = $request->friendName;
@@ -1258,7 +1261,7 @@ class PickupDeliveryController extends FrontController{
                 }else{
                     $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
                 }
-                $call_back_url = "https://".$domain."/dispatch-pickup-delivery/".$dynamic;
+                $call_back_url = "http://".$domain."/dispatch-pickup-delivery/".$dynamic;
 
                 $type=$request->type??0;
                 $friendName=$request->friendName?? null;
@@ -1597,7 +1600,7 @@ class PickupDeliveryController extends FrontController{
                     $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
                 }
 
-                $call_back_url = "https://".$domain."/dispatch/driver/bids/update/".$UserBidRideRequest->web_hook_code;
+                $call_back_url = "http://".$domain."/dispatch/driver/bids/update/".$UserBidRideRequest->web_hook_code;
 
                 $postdata =  [
                             'tasks'                   => $request->tasks,

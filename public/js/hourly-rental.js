@@ -9,6 +9,25 @@ $(".next").click(function(){
 
     var div_id = $(this).attr('id');
 	if(animating) return false;
+
+    if(div_id == "select_vendor")
+    { 
+
+    var rentalTime = $('#datetime-picker').val();
+    if (rentalTime == "") {
+        sweetAlert.error('Please select a valid date and time for your rental.',"");
+        return;
+    }
+    }
+    if(div_id == "choose_rental")
+    { 
+
+    var selected_rental_product = $('#selected_rental_product').val();
+    if (!selected_rental_product) {
+        sweetAlert.error('Please select a cab before proceeding to the next step.',"");
+        return;
+    }
+    }
 	animating = true;
 	
 	current_fs = $(this).parent();
@@ -45,8 +64,11 @@ $(".next").click(function(){
 	});
     
     if(div_id == "select_vendor")
-    {
+    { 
+
         var rental_time = $('#datetime-picker').val();
+
+
         var rental_hours = $('#rental_hours').val();
         var rental_price = $('#rental_price').val();
         var vendorId = $("#default_cab_vendor_id").val($(this).data('vendor'));
@@ -160,7 +182,7 @@ $(".previous").click(function(){
         const minusButton = document.getElementById('minusButton');
         const boxes = document.querySelectorAll('.custom-box');
         const buttonText = document.getElementById('buttonText');
-        let currentIndex = 0;
+        let currentIndex = 1;
 
         plusButton.addEventListener('click', () => {
             if (currentIndex < boxes.length) {
@@ -169,18 +191,16 @@ $(".previous").click(function(){
                 updateRentalPrice();
                 $('#rental_hours').val(currentIndex);
 
-                console.log($('#rental_hours').val());
                 
             }
         });
 
         minusButton.addEventListener('click', () => {
-            if (currentIndex > 0) {
+            if (currentIndex > 1) {
                 currentIndex--;
                 boxes[currentIndex].classList.remove('filled-box');
                 updateRentalPrice();
                 $('#rental_hours').val(currentIndex);
-                console.log($('#rental_hours').val());
             }
         });
 
@@ -195,31 +215,6 @@ $(".previous").click(function(){
                 $('#buttonText').text(currentIndex.toString());
                 
             }
-
-            // fetch(hourly_rental_url, {
-            // method: 'POST',
-            // headers: {
-            //     'Content-Type': 'application/json'
-            // },
-            // body: JSON.stringify({ 
-            //     rental_hours:parseInt(rental_hours),
-            //     "_token": csrf_token
-            //  })
-            // })
-            // .then(response => response.json())
-            // .then(data => {
-            //     const buttonTextElement = $('.hourly_price');
-            //     if (buttonTextElement) {
-            //         $('.hourly_price').text("$"+data.total_rental_price+"/hr");
-            //         $('#rental_price').val(data.total_rental_price);
-            //         $('#buttonText').text(currentIndex.toString());
-                    
-            //     }
-            // })
-            // .catch(error => {
-            //     console.error('Error fetching data:', error);
-            // });
-
         }
 		
 		$("#datetime-picker").flatpickr({
@@ -232,7 +227,7 @@ $(".previous").click(function(){
         });
 
         document.getElementById('leave-now').addEventListener('click', function (e) {
-            // e.preventDefault();  
+            e.preventDefault();  
             const currentDateTime = new Date();
             const formattedDateTime = formatDateTime(currentDateTime);
             document.getElementById('datetime-picker').value = formattedDateTime;
@@ -252,6 +247,9 @@ $(".previous").click(function(){
 
         $(document).on("click",".product-detail-box",function() {
             let product_id = $(this).data('product_id');
+            $(".product-detail-box").removeClass("active");
+
+            $(this).addClass("active");
             getVehicleDetail(product_id);
         });
     
@@ -328,7 +326,7 @@ $(".previous").click(function(){
                                 let cab_detail_box_template = _.template($('#cab_detail_box_template').html());
                                 $("#cab_detail_box").append(cab_detail_box_template(cabData)).show();
                             
-    
+                            
                            
     
                              $('#selected_rental_product').val(response.data.id);
@@ -348,7 +346,19 @@ $(".previous").click(function(){
 
         $(document).on("click","#book_hourly_rental",function(e) {
  
-            
+             e.preventDefault();
+
+             var pickupLocation = $('#pickup_location').val().trim();
+             if (pickupLocation === '') {
+                 sweetAlert.error('Please select a pick-up location.',"");
+                 return;
+             }
+             var pickup_lat = $('#pickup_location_latitude').val().trim();
+             if (pickup_lat === '') {
+                 sweetAlert.error('Please select a valid pick-up location.',"");
+                 return;
+             }
+          
             
             var bookingType = $(this).attr('booking-type');
             var bid_task_type = '';
@@ -521,19 +531,14 @@ $(".previous").click(function(){
                     $('#pickup_later').attr('disabled', false);
                     if(response.status == '200'){
                 
-                        if(is_cab_pooling == 4 )
-                        {   
-                            alert(response.message);
-                            window.location.href = response.redirect;
-                        }
+                        
     
                         let order_number = response.data.order_number;
 
-                        console.log(order_number);
                         let reload_route = response.data.route;
                         if((payment_option_id == 1) || (payment_option_id == 2)){
                             // placeOrderBeforePayment('',payment_option_id,0,order_number);
-                            // window.location.replace(response.data.route);
+                            window.location.replace(response.data.route);
     
                             // $('#cab_detail_box').html('');
                             // var orderSuccessData = _.extend({ Helper: NumberFormatHelper },{result: response.data, product_image: product_image});
@@ -556,6 +561,7 @@ $(".previous").click(function(){
                                 success: function(resp) {
                                     console.log({resp});
                                     if (resp.status == 'Success') {
+                                        
                                         window.location.replace(resp.data);
                                     } else {
                                         alert(resp.message);
@@ -657,3 +663,23 @@ $(".previous").click(function(){
                 });
                 // clearInterval(driverInterval);
            });
+
+           function isValidDateTime(dateTime) {
+            // You can use a date/time validation library or write custom code here.
+            // This is a basic example, and you may need to adjust it to match your date/time format.
+            var regex = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})$/;
+            if (!regex.test(dateTime)) {
+                return false;
+            }
+        
+            // Additional checks can be added to validate specific date and time requirements.
+        
+            // Example: Check if the date is not in the past
+            var selectedDate = new Date(dateTime);
+            var currentDate = new Date();
+            if (selectedDate < currentDate) {
+                return false;
+            }
+        
+            return true;
+        }

@@ -1202,6 +1202,7 @@ $(document).ready(function () {
                         $("#search_product_main_div ").html('<p class="text-center my-3">'+ no_result_message +'</p>').show();
                         $("#search_product_rider_main_div ").html('<p class="text-center my-3">'+ no_result_message +'</p>');
                     }
+                    
                 }
             },
             complete:function(data){

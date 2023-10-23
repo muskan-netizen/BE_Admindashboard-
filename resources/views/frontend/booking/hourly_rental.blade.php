@@ -317,6 +317,9 @@ input[type=number]::-webkit-outer-spin-button {
     font-size: 16px !important;
 }
 
+a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
+    background: gray;
+}
     </style>
     <section id="alTaxiBookingWrapper" class="cab-booking pt-0 pb-0">
         <div class="alFullMapArea col-md-12 p-0 h-100">
@@ -374,7 +377,7 @@ input[type=number]::-webkit-outer-spin-button {
                                             <input type="hidden" id="rental_price" value="{{decimal_format($product->per_hour_price)}}" />
                                            
                                             <div class="box-container mb-3">
-                                                <div class="custom-box"></div>
+                                                <div class="custom-box filled-box"></div>
                                                 <div class="custom-box"></div>
                                                 <div class="custom-box"></div>
                                                 <div class="custom-box"></div>
@@ -421,6 +424,7 @@ input[type=number]::-webkit-outer-spin-button {
                                                 <span id="payment_type">
                                                     <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
                                                 </span>
+                                                <input type="hidden" id="stripe_token" name="stripe_token" value="">
                                                 <i class="fa fa-angle-down" aria-hidden="true"></i>
                                             </h4>
                                         </div>
