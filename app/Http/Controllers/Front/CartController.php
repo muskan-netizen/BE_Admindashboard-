@@ -2115,7 +2115,7 @@ class CartController extends FrontController
         $cart_product_removed =    CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
             $q->whereIn('is_live',[0,2]);
         })->pluck('id');
-    }
+    
        
         if(count($cart_product_removed)){
             CartProduct::whereIn('id',$cart_product_removed)->delete();
@@ -2124,7 +2124,7 @@ class CartController extends FrontController
             }
         }
       
-
+        }
         $address_id = $request->has("address_id") ? $request->address_id : (@$cart->address_id ?? '');
 
         if (isset($address_id) && !empty($address_id)) {
