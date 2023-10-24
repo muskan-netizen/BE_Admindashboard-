@@ -504,7 +504,7 @@ class PickupDeliveryController extends BaseController{
                 if ($dispatch_domain && $dispatch_domain != false)
                 {
                     $all_location = array();
-                    $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del, 'toll_passes' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->tollpass)?$product->tollpass->toll_pass:'IN_FASTAG':'IN_FASTAG'), 'VehicleEmissionType' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->emissiontype)?$product->emissiontype->emission_type:'GASOLINE':'GASOLINE'), 'travelMode' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->travelmode)?$product->travelmode->travelmode:'TAXI':'TAXI')];                   
+                    $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del, 'toll_passes' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->tollpass)?$product->tollpass->toll_pass:'IN_FASTAG':'IN_FASTAG'), 'VehicleEmissionType' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->emissiontype)?$product->emissiontype->emission_type:'GASOLINE':'GASOLINE'), 'travelMode' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->travelmode)?$product->travelmode->travelmode:'TAXI':'TAXI')];
                     $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
                                                 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
                                                 'content-type' => 'application/json']
@@ -1256,8 +1256,7 @@ class PickupDeliveryController extends BaseController{
             }
 
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
-
-            $header = ['headers' => ['personaltoken' => !empty($dispatch_domain->delivery_service_key)? $dispatch_domain->delivery_service_key : $dispatch_domain->pickup_delivery_service_key,
+            $header = ['headers' => ['personaltoken' => !empty($dispatch_domain->pickup_delivery_service_key)? $dispatch_domain->pickup_delivery_service_key : "",
                 'shortcode' => !empty($dispatch_domain->delivery_service_key_code)? $dispatch_domain->delivery_service_key_code : $dispatch_domain->pickup_delivery_service_key_code,
                 'content-type' => 'application/json']
             ];
@@ -2044,7 +2043,7 @@ class PickupDeliveryController extends BaseController{
                     'driver_id'                   => $bid->driver_id,
                     'status'                      => 2
                 ];
-                
+
                 $client = new GClient(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,
                     'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,
                     'content-type' => 'application/json']
@@ -2059,7 +2058,7 @@ class PickupDeliveryController extends BaseController{
                 $response = json_decode($res->getBody(), true);
               //  return $response;
             }
-            
+
             return $this->successResponse($update, "Request declined successfully", 200);
         }
         catch (\Exception $e) {

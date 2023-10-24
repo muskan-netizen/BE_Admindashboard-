@@ -801,8 +801,15 @@ class OrderController extends BaseController
         }
         $product_schedule_type = '';
 
-
-
+ 
+            if(!empty($order->total_other_taxes)){
+                $order->total_other_taxes_amount  =   (float) array_sum(explode(":", $order->total_other_taxes));
+            }else{
+                $order->total_other_taxes_amount = $order->taxable_amount;
+            }
+   
+            $tax_amount  = round($order->total_other_taxes_amount,2);
+     
         foreach ($order->vendors as $key => $vendor) {
 
             if(isset($vendor) && !empty($vendor->vendor_id) && @$vendor->exchanged_to_order){
@@ -948,7 +955,7 @@ class OrderController extends BaseController
         if(!empty($order->recurring_booking_time)){
             $recurring_booking = OrderLongTermServiceSchedule::where(['order_number'=>$order->order_number])->get();
         }
-        //    pr($recurring_booking);
+          
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id,
             'order' => $order,
@@ -966,7 +973,8 @@ class OrderController extends BaseController
             "category_KYC_document" => $category_KYC_document,
             'driver_data' => (($driver_data) ? json_decode($driver_data) : ''),
             'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm,
-            'recurring_booking' => $recurring_booking
+            'recurring_booking' => $recurring_booking,
+            'tax_amount' => $tax_amount ?? 0
         ]);
     }
 

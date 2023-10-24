@@ -2641,7 +2641,11 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
     height: auto!important;
     max-height: 400px;
 }
-
+.al_body_template_three .img-outer-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 @media (min-width: 1024px) {
     .ds {
         position: absolute;

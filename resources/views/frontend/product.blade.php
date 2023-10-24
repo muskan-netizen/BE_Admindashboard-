@@ -419,19 +419,19 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             {{-- Chat Button --}}
                                             <hr>
                                                 <h6 class="sold-by">
-                                            @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
-                                                    <?php /*<span>Sold by : </span>
-                                                    <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a> */ ?>
-                                                    <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}"><i class="fa fa-comments" aria-hidden="true"></i></a>
-                                                    {{-- {{__('Chat')}} --}}
-                                                
-                                            @endif
-                                            @if(getAdditionalPreference(['call_button'])['call_button'])
-                                                <a class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone-square" aria-hidden="true"></i></a>
-                                                {{-- {{__('Call Button')}} --}}
-                                            @endif
+                                                    @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
+                                                            <?php /*<span>Sold by : </span>
+                                                            <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a> */ ?>
+                                                            <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}"><i class="fa fa-comments" aria-hidden="true"></i></a>
+                                                            {{-- {{__('Chat')}} --}}
+                                                        
+                                                    @endif
+                                                    @if(getAdditionalPreference(['call_button'])['call_button'])
+                                                        <a class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone-square" aria-hidden="true"></i></a>
+                                                        {{-- {{__('Call Button')}} --}}
+                                                    @endif
                                                 </h6>
-                                    @endif
+                                        @endif
 
 
                                         @if(((@$product->returnable && @$product->vendor->return_request) || $product->replaceable) && ($product->return_days > 0))
@@ -440,7 +440,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 <p>  <span>{{ $product->return_days }} days return policy is applicable on this product </span> </p>
 
                                             </div>
-                                            @endif
+                                        @endif
                                        
                                         @if(!empty($product->variantSet))
                                             @include('frontend.product-part.product-variant')

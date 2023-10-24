@@ -1346,7 +1346,7 @@ section#homepage_recently_viewed {
 }
 
 .main-pro-slider .img-outer-box.position-relative img {
-    height: 185px;
+    height: 220px!important;
     border-radius: 10px 10px 0 0 !important;
 }
 
@@ -1545,8 +1545,8 @@ body.al_body_template_eight.homeHeader .common-banner img {
 }
 
 section#homepage_top_rated {
-    background: #f2f2f2;
-    padding: 20px 0 20px 0px !important;margin-bottom: 0px;
+    background: transparent;
+    padding: 40px 0 40px 0px !important;margin-bottom: 0px;
 }
 
 h2.h2-heading {
@@ -1611,7 +1611,7 @@ section.main-product.single_category_products .deals-product.product-card-box.po
     background: #fff;
     border-radius: 10px;
     /* min-height: 325px; */
-    min-height: 436px;
+    min-height: inherit;
     height: 100%;
 }
 

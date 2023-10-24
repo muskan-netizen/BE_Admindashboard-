@@ -1069,7 +1069,7 @@ class PickupDeliveryController extends FrontController{
 
     // place Request To Dispatch
     public function placeRequestToDispatch($request,$order,$vendor){
-        try {            
+        try {
             $meta_data = '';
             $tasks = array();
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
@@ -1191,7 +1191,7 @@ class PickupDeliveryController extends FrontController{
                     'app_call' => 0,
                     'call_notification' => 0
                 ];
-                
+
                 if(isset($request->bid_task_type) && !empty($request->bid_task_type)){
                     $postdata['bid_task_type']    = $request->bid_task_type;
                 }
