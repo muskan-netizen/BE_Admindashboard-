@@ -226,7 +226,7 @@ public function enableLumenService(Request $request)
     \Log::info($responseData);
 
     return response()->json([
-        'message' => 'Order created successfully',
+        'message' => 'lumen updated successfully',
         'data' => $data ?? '',
         'api_response' => $responseData ?? '',
     ], 200);
