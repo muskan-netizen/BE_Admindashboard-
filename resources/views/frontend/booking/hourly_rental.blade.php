@@ -432,11 +432,10 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
                                         <input type="button" name="next"  id="choose_rental" class="next action-button" value="Choose Rental"/>
                                     </fieldset>
                                     <fieldset>
-                                        <h2 class="fs-title">Rental Details</h2>
+                                        <h2 class="fs-title">Rental Details</h2>                                        
+                                        <div class="cab-detail-box style-4 d-none" id="cab_detail_box"></div>
                                         <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
                                         <input type="button" name="next"  class="next action-button" value="Next"/>
-                                        <div class="cab-detail-box style-4 d-none" id="cab_detail_box"></div>
-                                        
                                     </fieldset>
                                     <fieldset>
                                         <h2 class="fs-title">Choose your pick-up location</h2>

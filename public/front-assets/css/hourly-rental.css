@@ -80,7 +80,7 @@ body {
 }
 
 /*buttons*/
-#msform .action-button , #msform .action-button-previous{
+#msform .action-button , #msform .action-button-previous, #book_hourly_rental{
     width: 100%;
     background: var(--theme-deafult);
     font-weight: bold;
@@ -89,13 +89,18 @@ body {
     border-radius: 6px;
     border:1px solid var(--theme-deafult);
     cursor: pointer;
-    padding: 10px 5px;
+    padding: 10px 5px!important;
     margin: 10px auto 0;
     
 }
 
 #msform .action-button:hover, #msform .action-button:focus {
-    background-color: ;
+    background-color: transparent;
+    color: var(--theme-deafult);
+}
+#book_hourly_rental:hover,  #book_hourly_rental:focus{
+    background-color: transparent;
+    color: var(--theme-deafult);
 }
 
 /* #msform .action-button-previous {
@@ -270,9 +275,9 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
     text-transform: capitalize;
     width: 100%;
 }
-.rounded-button:hover{
+.rounded-button:hover, .rounded-button:focus{
     background-color: transparent;
-    color: var(--theme-deafult);
+    color: var(--theme-deafult)!important   ;
     border-color: var(--theme-deafult)!important;
 }	
 
@@ -352,3 +357,81 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
             color: white;
         }
 		
+        .cab-outer{
+            height: auto!important;
+        }
+        .location-inputs li{
+            min-height: inherit;
+            margin-bottom: 0;
+        }
+        .dots::after, .dots::before{
+            content: unset!important;
+        }
+        .check-dropoff-secpond{
+            border-radius: 6px;
+        }
+        #alTaxiBookingWrapper .location-inputs .title-24 {         
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        body.al_body_template_nine.p2p-module .location-search input.form-control {
+            border-radius: 6px!important;
+            border-color: var(--theme-deafult)!important;
+            font-size: 16px!important;
+            height: auto;
+            line-height: 20px;
+            color: var(--theme-deafult)!important;
+            font-weight: 600;
+            opacity: 1;
+        }
+        body.al_body_template_nine.p2p-module .location-search input.form-control::placeholder {
+            color:var(--theme-deafult);
+            font-size: 16px;
+            opacity: 0.8;
+        }
+        .location-search{
+            padding:14px 0 0 ;
+        }
+        .location-search i{
+            right: 15px;
+        }
+
+
+@media (max-width:767px){
+    body{
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+    header .inner-pages-offset  {
+        margin: 0!important;
+    }
+    body .cab-booking #map_canvas, body .cab-booking #booking-map{
+        /* height: auto!important; */
+    }
+    .alFullMapForm {
+        max-width: 60% !important;     
+        height: auto!important;
+    }
+    .booking-experienceNew{
+        height: auto!important;
+        padding-bottom: 50px;
+        margin-bottom: 50px;
+    }
+    .alFullMapArea {
+        height: auto!important;
+    }
+    #content-wrap{
+        padding-bottom: 0!important;
+    }
+    .cab-booking{
+        height: 100%!important;
+    }
+    #msform input{
+        margin-top: 10px;
+    }
+    .booking-experienceNew {
+        width: 90%!important;
+    }
+}
