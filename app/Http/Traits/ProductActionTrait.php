@@ -512,7 +512,14 @@ trait ProductActionTrait{
             IFNULL(`products`.`is_long_term_service`, 0) AS `is_long_term_service`,
             
              -- Retrieve product attributes as a JSON object
-            (SELECT JSON_OBJECTAGG(`key_name`, `key_value`)
+             (
+                SELECT JSON_OBJECTAGG(`key_name`, 
+                    CASE
+                        WHEN `pa`.`attribute_option_id` = `pa`.`key_value` 
+                        THEN (SELECT `title` FROM `attribute_options` WHERE `id` = `pa`.`attribute_option_id`)
+                        ELSE `pa`.`key_value`
+                    END
+                )
                 FROM `product_attributes` AS `pa`
                 WHERE `pa`.`product_id` = `products`.`id`
             ) AS `product_attributes`
