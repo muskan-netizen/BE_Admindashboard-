@@ -139,7 +139,7 @@
         }
 
         $.ajax({
-                    url: "{{route('enable-campaign-service')}}",
+                    url: "{{route('enable-lumen-service')}}",
                     type: "POST",
                     dataType: 'json',
                     data: 
