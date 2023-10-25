@@ -1038,18 +1038,23 @@ $(document).ready(function () {
             })
             return false;
         }
-
-        var checkboxes = $('.checked-cart-product');
-        var checkedCheckboxes = checkboxes.filter(':checked');
-        if (checkedCheckboxes.length === 0) {
-            // Swal.fire({
-            //     icon: 'error',
-            //     title: 'Oops...',
-            //     text: 'Please select at least one product.',
-            //     //footer: '<a href="">Why do I have this issue?</a>'
-            // });
-            // return false;
+       
+        if(action_type == "car_rental")
+        {
+            var checkboxes = $('.checked-cart-product');
+            var checkedCheckboxes = checkboxes.filter(':checked');
+            if (checkedCheckboxes.length === 0) {
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please select at least one product.',
+                    //footer: '<a href="">Why do I have this issue?</a>'
+                });
+                return false;
+            }
         }
+      
 
         if ($("#agree_term_check").length > 0) {
             var checkbox = document.getElementById("agree_term_check");
@@ -6254,7 +6259,9 @@ $('.category_responsive').slick({
         }
     }
 }
-
+if(action_type == "p2p")
+{
 
 const initReadMore = new readMore();
 initReadMore.bootstrap()
+}

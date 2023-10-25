@@ -178,7 +178,9 @@ $client_preferences = \App\Models\ClientPreference::first();
 
 
 
-
+<script>
+    var action_type = "{{$action}}";
+</script>
 
 <script type="text/template" id="promo_code_template">
     <% _.each(promo_codes, function(promo_code, key){%>
