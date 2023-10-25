@@ -839,7 +839,7 @@ class PickupDeliveryController extends FrontController{
 
                 }
 
-               
+               $returnBookingTime = null;
                 /*book for a friend*/
                 $order->type                = $request->type;
                 $order->friend_name         = $request->friendName;
