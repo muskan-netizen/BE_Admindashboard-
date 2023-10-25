@@ -2440,7 +2440,7 @@
                 </form>
             </div>
         </div>
-         @if( Request::get('google_tag'))
+      @if( Request::get('google_tag'))
         <div class="col-xl-4 col-lg-4 mb-3">
             <!-- Social Logins title start -->
             <div class="page-title-box">
@@ -2488,6 +2488,8 @@
         </div>
         </div>
 	@endif
+</div>
+@endif
 </div>
     <div class="row">
 
