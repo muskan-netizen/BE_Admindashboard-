@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Requests\OrderProductRatingRequest;
 use App\Models\{AddonOption, Category,ClientPreference,ClientCurrency,Vendor,ProductVariantSet,Product,SubscriptionInvoicesUser,LoyaltyCard,UserAddress,Order,OrderVendor,OrderProduct,VendorOrderStatus,Client, ClientPreferenceAdditional, Promocode,PromoCodeDetail,VendorOrderDispatcherStatus, Payment, Rider, OrderLocations, LuxuryOption, OrderDriverRating, OrderProductAddon, OrderVendorProduct, ProductFaq, ProductFaqSelectOption, UserBidRideRequest, PickDropDriverBid, UserDevice};
-use App\Http\Traits\ApiResponser;
+use App\Http\Traits\{ApiResponser,OrderTrait,GuzzleHttpTrait};
 use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Validator;
