@@ -108,6 +108,9 @@ $clientData = \App\Models\Client::select('socket_url')->first();
 #summary-table > .text-right {
     text-align: right;
 }
+
+
+  
     </style>
 
 @endsection
@@ -346,19 +349,31 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                     @if(!empty($product->translation) && isset($product->translation->first()->body_html))
                                         <div class="border-product al_disc">
                                             <h6 class="product-title">{{__('Product Details')}}</h6>
+                                            
+                                            <?php
+                                            $content = strip_tags($product->translation->first()->body_html); // Strip HTML tags
+                                            $maxContentLength = 200; // Set the maximum length (adjust as needed)
+                                            
+                                            if (strlen($content) > $maxContentLength) {
+                                                $content = substr($content, 0, $maxContentLength) . '...';
+                                                $fullContent = $product->translation->first()->body_html;
+                                                $readMore = true;
+                                            } else {
+                                                $readMore = false;
+                                            }
+                                            ?>
+                                            
+                                            <p>
+                                                <span id="productContent"><?= $content ?></span>
+                                                @if ($readMore)
+                                                  <span id="readMoreButton">
+                                                    <a href="#" id="readMoreLink" class="read-more-button btn btn-solid">Read More</a>
+                                                  </span>
+                                                @endif
+                                              </p>
+                                              
+                                              
 
-
-                                            <div id="readmore">
-                                                <span class="readmore__content">
-                                                    {!! $product->translation->first()->body_html !!}
-                                                </span>
-                                                <button class="readmore__toggle" role="switch" aria-checked="true">
-                                                    Show more
-                                                </button>
-                                            </div>
-                                            <!-- <p>
-                                            {!! $product->translation->first()->body_html !!}
-                                            </p> -->
                                         </div>
                                     @endif
 
@@ -1889,6 +1904,24 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
         }
 
 
+        document.addEventListener("DOMContentLoaded", function() {
+        var content = document.getElementById("productContent");
+        var readMoreLink = document.getElementById("readMoreLink");
+        var fullContent = <?= json_encode($fullContent) ?>;
+        var isFullContentDisplayed = false;
+
+        readMoreLink.addEventListener("click", function(e) {
+        e.preventDefault();
+        if (isFullContentDisplayed) {
+            content.innerHTML = <?= json_encode($content) ?>;
+            readMoreLink.innerText = "Read More";
+        } else {
+            content.innerHTML = fullContent;
+            readMoreLink.innerText = "Read Less";
+        }
+        isFullContentDisplayed = !isFullContentDisplayed;
+        });
+    });
         </script>
 
 @endsection
