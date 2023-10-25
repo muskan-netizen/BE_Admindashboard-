@@ -1103,7 +1103,7 @@ class OrderController extends BaseController
                     $order->loyalty_points_earned_order = $loyalty_card->per_order_points ?? 0;
 
                     }else{
-                    $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
+                    $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'] ?? 0;
 
                     }
                     $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
