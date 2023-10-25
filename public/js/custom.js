@@ -1039,8 +1039,8 @@ $(document).ready(function () {
             return false;
         }
        
-        if(action_type == "car_rental")
-        {
+        if (typeof action_type !== "undefined" && action_type === "car_rental") {
+
             var checkboxes = $('.checked-cart-product');
             var checkedCheckboxes = checkboxes.filter(':checked');
             if (checkedCheckboxes.length === 0) {
@@ -6210,58 +6210,7 @@ $('.category_responsive').slick({
           
 
 
-
-  class readMore {
-    constructor() {
-        this.content = '.readmore__content';
-        this.buttonToggle = '.readmore__toggle';
-    }
-
-    // bootstrap() {
-    //     this.setNodes();
-    //     this.init();
-    //     this.addEventListeners();
-    // }
-
-    setNodes() {
-        this.nodes = {
-            contentToggle: document.querySelector(this.content)
-        };
-
-        this.buttonToggle = this.nodes.contentToggle.parentElement.querySelector(this.buttonToggle);
-    }
-
-    init() {
-        const { contentToggle } = this.nodes;
-
-        this.stateContent = contentToggle.innerHTML;
-
-        contentToggle.innerHTML = `${this.stateContent.substring(0, 500)}...`;
-    }
-
-    addEventListeners() {
-        this.buttonToggle.addEventListener('click', this.onClick.bind(this))
-    }
-
-    onClick(event) {
-        const targetEvent = event.currentTarget;
-        const { contentToggle } = this.nodes
-
-        if (targetEvent.getAttribute('aria-checked') === 'true') {
-            targetEvent.setAttribute('aria-checked', 'false')
-            contentToggle.innerHTML = this.stateContent;
-            this.buttonToggle.innerHTML = 'Show less'
-
-        } else {
-            targetEvent.setAttribute('aria-checked', 'true')
-            contentToggle.innerHTML = `${this.stateContent.substring(0, 500)}...`
-            this.buttonToggle.innerHTML = 'Show more'
-        }
-    }
-}
-if(action_type == "p2p")
-{
-
-const initReadMore = new readMore();
-initReadMore.bootstrap()
+  if (typeof action_type !== "undefined" && action_type === "p2p") {
+    const initReadMore = new readMore();
+    initReadMore.bootstrap();
 }
