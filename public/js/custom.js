@@ -3544,7 +3544,7 @@ $(document).ready(function () {
                         location.href =  '/viewcart';
                     }   
                     console.log(response.vendor.rental);
-                    if(response.vendor.rental == 0) {
+                    if(response.vendor.rental == 1) {
                        location.href =  '/viewcart';
                     }
                 } else {
@@ -5027,11 +5027,13 @@ $(document).ready(function () {
                 error: function (reject) {
                     if (reject.status === 422) {
                         var message = $.parseJSON(reject.responseText);
+                        sweetAlert.error(message.message,"");
                         $(".invalid-feedback.manual_promocode").html("<strong>" + message.message + "</strong>");
                     }
                 }
             });
         } else {
+            sweetAlert.error("Enter a Promocode","");
             $(".invalid-feedback.manual_promocode").html("<strong>Please enter promocode</strong>");
         }
     });

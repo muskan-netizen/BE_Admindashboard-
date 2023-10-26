@@ -296,6 +296,8 @@ class PickupDeliveryController extends FrontController{
         $product->description = $product->translation->first() ? $product->translation->first()->body_html :'';
         $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
         $product->faqlist = count($product->ProductFaq);
+
+      
         if(isset($request->rider_id) && $request->rider_id)
         {
             $rider = Rider::where('id',$request->rider_id)->first();
