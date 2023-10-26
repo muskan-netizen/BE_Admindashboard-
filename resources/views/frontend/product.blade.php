@@ -1907,13 +1907,13 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
         document.addEventListener("DOMContentLoaded", function() {
         var content = document.getElementById("productContent");
         var readMoreLink = document.getElementById("readMoreLink");
-        var fullContent = <?= json_encode($fullContent ?? 0) ?>;
+        var fullContent = <?= json_encode($fullContent ?? "") ?>;
         var isFullContentDisplayed = false;
 
         readMoreLink.addEventListener("click", function(e) {
         e.preventDefault();
         if (isFullContentDisplayed) {
-            content.innerHTML = <?= json_encode($content) ?>;
+            content.innerHTML = <?= json_encode($content ?? "") ?>;
             readMoreLink.innerText = "Read More";
         } else {
             content.innerHTML = fullContent;
