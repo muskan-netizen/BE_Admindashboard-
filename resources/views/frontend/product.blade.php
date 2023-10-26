@@ -1907,7 +1907,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
         document.addEventListener("DOMContentLoaded", function() {
         var content = document.getElementById("productContent");
         var readMoreLink = document.getElementById("readMoreLink");
-        var fullContent = <?= json_encode($fullContent) ?>;
+        var fullContent = <?= json_encode($fullContent ?? 0) ?>;
         var isFullContentDisplayed = false;
 
         readMoreLink.addEventListener("click", function(e) {
