@@ -13,7 +13,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Pagination\Paginator;
-use App\Models\{User, Vendor, Order, UserVendor, ProductAvailability, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption, ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, Category, OrderQrcodeLinks, ProductVariantImage, RescheduleOrder, UserWishlist, ProductAttribute, Attribute, Client, Notification, NotificationTemplate, OrderProduct, Type, UserDevice};
+use App\Models\{User, Vendor, Order, UserVendor, ProductAvailability, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption, ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, Category, OrderQrcodeLinks, ProductVariantImage, RescheduleOrder, UserWishlist, ProductAttribute, Attribute, Client, Notification, NotificationTemplate, OrderProduct, Type, UserDevice, VendorFacilty, VendorMinAmount};
 use Carbon\CarbonPeriod;
 use Log;
 
@@ -2429,7 +2429,7 @@ class StoreController extends BaseController
 
 		
 		
-		try {
+		// try {
 		
 			$validator = Validator::make($request->all(), [
 				// 'sku' => 'required|unique:products',
@@ -2441,7 +2441,7 @@ class StoreController extends BaseController
 			]);
 
 			if ($validator->fails()) {
-				die('pass');
+		
 
 				return $this->errorResponse($validator->errors()->first(), 422);
 			}
@@ -2466,10 +2466,13 @@ class StoreController extends BaseController
 			
 
 			$users = Auth::user();
-			$user = User::where('id',Auth::user('id'))->first();
-			$user_vendor = UserVendor::where('user_id', $user->id)->first();
+			\Log::info($users);
+			$user = User::where('id',$users->id)->first();
+			\log::info($user);
+			$user_vendor = UserVendor::where('user_id', $users->id)->first();
+			
 			if(empty($user_vendor)){
-              
+                \Log::info('check');
 
 				$user->assignRole(4); // by default make this user as vendor
 				
@@ -2490,7 +2493,7 @@ class StoreController extends BaseController
 				$vendor->save();
 				$user_vendor =  UserVendor::create(['user_id' => $user->id, 'vendor_id' => $vendor->id]);
 				$user = new User ;
-				$user->createPermissionsUser();
+				// $user->createPermissionsUser();
 				$p2p_type = Type::where('service_type', 'p2p')->first();
 				if( !empty($p2p_type) ) {
 					$category_id = Category::where('type_id', $p2p_type->id)->get();
@@ -2506,7 +2509,7 @@ class StoreController extends BaseController
 				}
 				
 				$this->addDataSaveVendor($request, $vendor->id);
-			   
+				$user_vendor = UserVendor::where('user_id', $users->id)->first();
 			}
 			if (@$user_vendor->vendor_id) {
 				$product = new Product();
@@ -2813,9 +2816,9 @@ class StoreController extends BaseController
 			
 		} 
 		
-		} catch (\Exception $e) {
-			return $this->errorResponse('Exception occured', 500);
-		}
+		// } catch (\Exception $e) {
+		// 	return $this->errorResponse('Exception occured', 500);
+		// }
 	
 }
 
@@ -2825,6 +2828,7 @@ public function addDataSaveVendor(Request $request, $vendor_id){
 	$VendorController = new VendorController();
 
 	$request->merge(["return_json"=>1]);
+	\Log::info($vendor_id);
 	$VendorConfigrespons = $VendorController->updateConfig($request,'',$vendor_id)->getData();//$this->updateConfig($vendor_id);
    // pr($VendorConfigrespons);
 	if($request->has('can_add_category')){
@@ -2852,6 +2856,8 @@ public function addDataSaveVendor(Request $request, $vendor_id){
 	]);
 	// pr($VendorConfigrespons);
 }
+
+
 
 	public function destroy(Request $request)
 		{

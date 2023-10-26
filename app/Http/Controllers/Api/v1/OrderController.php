@@ -4451,10 +4451,12 @@ class OrderController extends BaseController
         $order_status_options = [];
         $paginate = $request->has('limit') ? $request->limit : 12;
         $type = $request->has('type') ? $request->type : 'all';
-        $user_type = $request->has('user_type') ? $request->user_type : '';
+        $user_type = $request->has('user_type') ? $request->user_type : 'borrower';
         $orders = OrderVendor::with('products')->orderBy('id', 'DESC');
         $additionalPreference =getAdditionalPreference(['is_service_product_price_from_dispatch']);
         $vendorUser =  UserVendor::select('vendor_id')->where('user_id', $user->id)->first();
+        $orders->where('user_id', $user->id);
+        if(!empty($vendorUser)){
         if($user_type == 'borrower'){
             $orders->where('user_id', $user->id) ;
         }elseif( $user_type == 'lender'){
@@ -4464,6 +4466,9 @@ class OrderController extends BaseController
                 $q->where('vendor_id',  $vendorUser->vendor_id)->orWhere('user_id', $user->id) ;
             });
         }
+
+    }
+    
    
         switch ($type) {
             case 'all': // which order not assign yet indriver
@@ -4714,7 +4719,7 @@ class OrderController extends BaseController
                         'driver_rating',
                         'reports',
                         'vendors.vendor',
-                        'vendors.products.Routes','vendors.products.product',
+                        'vendors.products.Routes','vendors.products.product','vendors.products.product.category.categoryDetail',
                         'vendors.products.translation' => function ($q) use ($language_id) {
                             $q->select('id', 'product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                             $q->where('language_id', $language_id);

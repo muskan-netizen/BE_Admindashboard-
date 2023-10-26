@@ -47,6 +47,11 @@ class Product extends Model implements Auditable
     return $this->hasMany('App\Models\ProductRelated')->select('product_id', 'related_product_id');
   }
 
+  public function categories()
+  {
+    return $this->hasOne('App\Models\Category','category_id','id');
+  }
+
   public function celebrities()
   {
     return $this->hasMany('App\Models\ProductCelebrity')->select('product_id', 'celebrity_id');

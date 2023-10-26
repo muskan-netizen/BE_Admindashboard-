@@ -72,8 +72,9 @@ class P2PController extends BaseController
             $category->share_link = "https://" . $client->sub_domain . env('SUBMAINDOMAIN') . "/category/" . $category->slug;
             $response['category'] = $category;
             $response['filterData'] = $variantSets;
+           
             $response['listData'] = $this->listData($langId, $cid, strtolower($category->type->redirect_to), $userid, $product_list, $mod_type, $mode_of_service, $limit, $page, $request);
-            
+                 
             return $this->successResponse($response);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
@@ -90,9 +91,10 @@ class P2PController extends BaseController
             $servicearea = $this->getServiceArea($request->latitude, $request->longitude, $mod_type);
       
         }
-
+       
      
         if ($type == 'vendor' && $product_list == 'false') {
+           
             $user = Auth::user();
             $vendor_ids = [];
             $vendor_categories = VendorCategory::where('category_id', $category_id)->where('status', 1)->get();
@@ -103,7 +105,7 @@ class P2PController extends BaseController
             }
             $vendorData = Vendor::select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude');
             $ses_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude, $mod_type);
-
+             pr($ses_vendors);
            
 
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
@@ -158,6 +160,7 @@ class P2PController extends BaseController
             }
             return $vendorData;
         } elseif ($type == 'vendor' && $product_list == 'true') {
+         
             $vendor_ids = Vendor::where('status', 1)->pluck('id')->toArray();
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $products = Product::has('vendor')->with([
@@ -216,6 +219,7 @@ class P2PController extends BaseController
             }
             return $products;
         } elseif ($type == 'Pickup/Delivery' || $type == 'pickup/delivery') {
+          
             $vendor_ids = [];
             $user = Auth::user();
             $pickup_latitude = $user->latitude ? $user->latitude : '';
@@ -245,6 +249,7 @@ class P2PController extends BaseController
             }
             return $vendorData;
         } elseif (strtolower($type) == 'subcategory') {
+          
             $category_details = [];
             $category_list = Category::with([
                 'tags', 'type'  => function ($q) {
@@ -270,8 +275,9 @@ class P2PController extends BaseController
             }
             return $category_details;
         } elseif ($type == 'product' || $type == 'appointment' || $type == 'on demand service' || strtolower($type) == 'laundry' || $type = 'rental service') {
+           
             $vendor_ids = Vendor::where('status', 1)->pluck('id')->toArray();
-
+                
            
             if (!empty($request->latitude) && !empty($request->longitude)) {
             
@@ -279,7 +285,7 @@ class P2PController extends BaseController
                 $longitude = $request->longitude ;
                
                 $categoryTypes = getServiceTypesCategory($request->type);
-
+                   
                
                 $vendorData = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
                     $q->whereIn('type_id',$categoryTypes);
@@ -312,6 +318,7 @@ class P2PController extends BaseController
                 $vendorIds = UserVendor::where('user_id', $userid)->pluck('vendor_id')->toArray();
 
             }
+            
           
             
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
@@ -336,10 +343,10 @@ class P2PController extends BaseController
                     $qry->where('user_id', $userid);
                 }
             ])->whereHas('product_availability', function ($q) use ($now, $vendorIds) {
-                $q->where(function($qq) use ($now, $vendorIds){
-                    $qq->where('date_time', '>', $now);
-                    $qq->where('not_available', 0);
-                });
+                // $q->where(function($qq) use ($now, $vendorIds){
+                //     $qq->where('date_time', '>', $now);
+                //     $qq->where('not_available', 0);
+                // });
                 $q->orWhereIn('vendor_id', $vendorIds);
             })->where('products.category_id', $category_id)
                 ->where('products.is_live', 1); 
@@ -353,7 +360,7 @@ class P2PController extends BaseController
                
             if( clientPrefrenceModuleStatus('p2p_check') && $request->has('attributes') && count($request['attributes']) > 0) {
 
-                die('pass');
+             
                 $attributes = $request['attributes'];
                 
                 $products = $products->whereHas('ProductAttribute', function($q) use($attributes){
@@ -419,6 +426,7 @@ class P2PController extends BaseController
             return $listData;
         }
         elseif($type == 'brand'){
+        
             $brands = Brand::with(['bc.categoryDetail', 'bc.categoryDetail.translation' =>  function ($q) use ($langId) {
                 $q->select('category_translations.name', 'category_translations.category_id', 'category_translations.language_id')->where('category_translations.language_id', $langId);
             }, 'translation' => function ($q) use ($langId) {
@@ -434,6 +442,7 @@ class P2PController extends BaseController
             return $brands;
         }
         else {
+           
             $arr = array();
             return $arr;
         }
