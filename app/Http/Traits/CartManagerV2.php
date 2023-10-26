@@ -30,6 +30,8 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Traits\{ProductTrait};
 use App\Models\WebStylingOption;
 use App\Http\Traits\ShipEngineTrait;
+use Illuminate\Support\Facades\Session as FacadesSession;
+
 trait CartManagerV2{
   use ProductTrait,ShipEngineTrait;
 
@@ -1821,20 +1823,21 @@ trait CartManagerV2{
                 }
 
             }
-
-
            
            
             $cart->pickup_delay_date =  $pickup_delay_date??0;
             $cart->dropoff_delay_date =  $dropoff_delay_date??0;
             $cart->delivery_type =  $code??'D';
-            if(@$rental_price)
+
+            
+            
+            if(@$rental_price && (FacadesSession::get('vendorType') == "p2p"))
             {
 
                 $cart->sub_total = @$rental_price;
             }else
             {
-                $sub_total = $sub_total??0 ;
+                $sub_total = $sub_total ?? 0 ;
                 $cart->sub_total =  $sub_total - $cart->bid_total_discount;
             }
             $cart->sub_total_inc_tax =  decimal_format($cart->sub_total + $total_taxable_amount);

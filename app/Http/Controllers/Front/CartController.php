@@ -1750,6 +1750,7 @@ class CartController extends FrontController
             $cart->dropoff_delay_date =  $dropoff_delay_date ?? 0;
             $cart->delivery_type =  $code ?? 'D';
             $cart->sub_total =  $sub_total ?? 0;
+            
             // dd($cart->toArray());
             $cart->products = $cartData->toArray();
         }
@@ -2181,6 +2182,8 @@ class CartController extends FrontController
             ];
             $cart_details = $this->getCartsNewV2($obj, $request);
         }
+
+        // pr($cart_details);
         
         $client_preference_detail = ClientPreference::first();
         $client_preference_detail  = $this->hideSecretKeys($client_preference_detail);
