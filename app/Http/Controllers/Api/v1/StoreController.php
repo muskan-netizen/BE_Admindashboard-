@@ -8,11 +8,12 @@ use Validator;
 use GuzzleHttp\Client as GCLIENT;
 use App\Http\Traits\ApiResponser;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use App\Http\Controllers\Api\v1\BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Pagination\Paginator;
-use App\Models\{User, Vendor, Order, UserVendor, ProductAvailability, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption, ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, Category, OrderQrcodeLinks, ProductVariantImage, RescheduleOrder, UserWishlist, ProductAttribute, Attribute, Client, Notification, NotificationTemplate, OrderProduct, UserDevice};
+use App\Models\{User, Vendor, Order, UserVendor, ProductAvailability, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption, ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, Category, OrderQrcodeLinks, ProductVariantImage, RescheduleOrder, UserWishlist, ProductAttribute, Attribute, Client, Notification, NotificationTemplate, OrderProduct, Type, UserDevice};
 use Carbon\CarbonPeriod;
 use Log;
 
@@ -2440,6 +2441,7 @@ class StoreController extends BaseController
 			]);
 
 			if ($validator->fails()) {
+				die('pass');
 
 				return $this->errorResponse($validator->errors()->first(), 422);
 			}
@@ -2450,6 +2452,8 @@ class StoreController extends BaseController
 			} else {
 				$sku_url = ($client->sub_domain . env('SUBMAINDOMAIN'));
 			}
+
+			\Log::info('test');
  
 			
 			$slug = str_replace(' ', '-', $request->product_name);
@@ -2458,9 +2462,52 @@ class StoreController extends BaseController
 			$slug = str_replace(' ', '-', $slug);
 			$generated_slug = $sku_url . '.' . $slug;
 
-			$user = Auth::user();
-			$user_vendor = UserVendor::where('user_id', $user->id)->first();
 			
+			
+
+			$users = Auth::user();
+			$user = User::where('id',Auth::user('id'))->first();
+			$user_vendor = UserVendor::where('user_id', $user->id)->first();
+			if(empty($user_vendor)){
+              
+
+				$user->assignRole(4); // by default make this user as vendor
+				
+				$user->is_admin = 1;
+				$user->save();
+
+				// Create vendor with default images
+				$vendor = new Vendor();
+				$vendor->logo = 'default/default_logo.png';
+				$vendor->banner = 'default/default_image.png';
+
+				$vendor->status = 1;
+				$vendor->name = $user->name;
+				$vendor->p2p = 1;
+				$vendor->email = $user->email ?? '';
+				$vendor->phone_no = $user->phone_number ?? '';
+				$vendor->slug = Str::slug($user->name, "-");
+				$vendor->save();
+				$user_vendor =  UserVendor::create(['user_id' => $user->id, 'vendor_id' => $vendor->id]);
+				$user = new User ;
+				$user->createPermissionsUser();
+				$p2p_type = Type::where('service_type', 'p2p')->first();
+				if( !empty($p2p_type) ) {
+					$category_id = Category::where('type_id', $p2p_type->id)->get();
+					$categories_ids = [];
+					
+					if( !empty($category_id) ) {
+						foreach($category_id as $key => $val) {
+							$categories_ids[] = $val->id;
+						}
+					}
+					$request->request->add(['selectedCategories'=> $categories_ids]);
+					
+				}
+				
+				$this->addDataSaveVendor($request, $vendor->id);
+			   
+			}
 			if (@$user_vendor->vendor_id) {
 				$product = new Product();
 				$product->sku = $slug;
@@ -2492,6 +2539,8 @@ class StoreController extends BaseController
 					if (!$client_lang) {
 						$client_lang = ClientLanguage::where('is_active', 1)->first();
 					}
+				
+			        \Log::info('test3');
 					$product->save();
 					if ($product->id > 0) {
 						$datatrans[] = [
@@ -2534,6 +2583,8 @@ class StoreController extends BaseController
 						$proVariant->barcode = $this->generateBarcodeNumber();
 						$proVariant->save();
 						ProductTranslation::insert($datatrans);
+						
+			           \Log::info('test4');
 
 						$product_detail = Product::where('id', $product->id)->firstOrFail();
 
@@ -2760,11 +2811,46 @@ class StoreController extends BaseController
 				}
 			
 			
-		}
+		} 
+		
 		} catch (\Exception $e) {
 			return $this->errorResponse('Exception occured', 500);
 		}
 	
+}
+
+public function addDataSaveVendor(Request $request, $vendor_id){
+
+	$vendor = Vendor::where('id', $vendor_id)->firstOrFail();
+	$VendorController = new VendorController();
+
+	$request->merge(["return_json"=>1]);
+	$VendorConfigrespons = $VendorController->updateConfig($request,'',$vendor_id)->getData();//$this->updateConfig($vendor_id);
+   // pr($VendorConfigrespons);
+	if($request->has('can_add_category')){
+		$vendor->add_category = $request->can_add_category == 'on' ? 1 : 0;
+	}
+	if ($request->has('assignTo')) {
+		$vendor->vendor_templete_id = $request->assignTo;
+	}
+
+	$vendor->save();
+	if($request->has('category_ids')){
+		foreach($request->category_ids as $category_id){
+			VendorCategory::create(['vendor_id' => $vendor_id, 'category_id' => $category_id, 'status' => '1']);
+		}
+	}
+	if($request->has('selectedCategories')){
+		foreach($request->selectedCategories as $category_id){
+			VendorCategory::create(['vendor_id' => $vendor_id, 'category_id' => $category_id, 'status' => '1']);
+		}
+	}
+	return response()->json([
+		'status' => 'success',
+		'message' => 'Vendor created Successfully!',
+		'data' => $VendorConfigrespons
+	]);
+	// pr($VendorConfigrespons);
 }
 
 	public function destroy(Request $request)
