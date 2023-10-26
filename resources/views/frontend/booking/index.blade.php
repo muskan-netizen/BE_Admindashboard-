@@ -1134,7 +1134,10 @@ input[type=number]::-webkit-outer-spin-button {
                         <span class="d-flex align-items-center justify-content-between mt-2"><b>{{ __('Toll Fee') }}</b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount_less_toll">{{Session::get('currencySymbol')}}<%= result.toll_fee%></b></label></span>
                     <% } %>
-
+                    <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>
+                        <span class="d-flex align-items-center justify-content-between"><b>{{ __('Loyalty') }}</b> <label><sub class="ling-throgh" id
+                            ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">- {{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved%></b></label></span>
+                    <% } %>
                     <% if(result.service_charge_amount > 0){ %>
                         <span class="d-flex align-items-center justify-content-between"><b>{{ __('Service Charge') }}</b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.service_charge_amount%></b></label></span>
@@ -1144,7 +1147,10 @@ input[type=number]::-webkit-outer-spin-button {
                         <span class="d-flex align-items-center justify-content-between"><b><%= result.product_tax_name %></b> <label><sub class="ling-throgh" id
                             ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.total_other_taxes %></b></label></span>
                     <% } %>
-
+                    <% if(result.wallet_amount_used > 0){ %>
+                    <span class="d-flex align-items-center justify-content-between mt-2"><b>{{ __('Wallet amount used') }}</b> <label><sub class="ling-throgh"
+                    style="display:none;"></sub> <b>-{{Session::get('currencySymbol')}}<%= result.wallet_amount_used%></b></label></span>
+                    <% } %>
                     <% if(result.service_charge_amount > 0 || result.toll_fee > 0){ %>
                         <h4 class="d-flex align-items-center justify-content-between"><b>{{ __('Total') }}</b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_total_amount">{{Session::get('currencySymbol')}}<%= (result.total_tags_price)%></b></label></h4>
@@ -1246,12 +1252,14 @@ input[type=number]::-webkit-outer-spin-button {
     <span id="show_error_of_booking" class="error text-danger"></span>
 
     <div class="payment-promo-container p-2">
+ <% if(result.tags_price > 0){ %>
         <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal">
             <span id="payment_type">
                 <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
             </span>
             <i class="fa fa-angle-down" aria-hidden="true"></i>
         </h4>
+ <% } %>
         <div class="row">
             <div class="col-12">
             <%
