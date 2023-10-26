@@ -401,6 +401,14 @@ class ClientPreferenceController extends BaseController{
                     'sms_password' => $request->sms_password,
                 ];
             }
+            elseif($request->sms_provider == 10) // Sms Country
+            {
+                $sms_credentials = [
+                    'sms_sender_id' => $request->sms_sender_id,
+                    'sms_auth_key' => $request->sms_auth_key,
+                    'sms_auth_token' => $request->sms_auth_token,
+                ];
+            }
             //for static otp
             $sms_credentials['static_otp'] = ($request->has('static_otp') && $request->static_otp == 'on') ? 1 : 0;
             $preference->sms_credentials = json_encode($sms_credentials);

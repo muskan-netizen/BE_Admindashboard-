@@ -971,6 +971,48 @@
                             </div>
                         </div>
 
+                  <div class="row sms_fields mx-0" id="sms_country_fields"style="display : {{ $preference->sms_provider == 10 ? 'flex' : 'none' }};">
+                    <div class="col-12">
+                        <div class="form-group mb-2">
+                            <label for="sms_sender_id">{{ __('Sender Id') }}</label>
+                            <input type="text" name="sms_sender_id" id="sms_sender_id" placeholder=""
+                                class="form-control"
+                                value="{{ old('sms_sender_id', $sms_crendential->sms_sender_id ?? '') }}">
+                            @if ($errors->has('sms_sender_id'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('sms_sender_id') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group mb-2">
+                            <label for="sms_auth_key">{{ __('Auth Key') }}</label>
+                            <input type="text" name="sms_auth_key" id="sms_auth_key" placeholder=""
+                                class="form-control"
+                                value="{{ old('sms_auth_key', $sms_crendential->sms_auth_key ?? '') }}">
+                            @if ($errors->has('sms_auth_key'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('sms_auth_key') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group mb-2">
+                            <label for="sms_auth_token">{{ __('Auth Token') }}</label>
+                            <input type="text" name="sms_auth_token" id="sms_auth_token" placeholder=""
+                                class="form-control"
+                                value="{{ old('sms_auth_token', $sms_crendential->sms_auth_token ?? '') }}">
+                            @if ($errors->has('sms_auth_token'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('sms_auth_token') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                
                     </div>
                 </div>
             </form><!-- SMS Configuration end -->
