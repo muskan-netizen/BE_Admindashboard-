@@ -1778,12 +1778,14 @@ article#page-container {
 .pool_label {
     display: inline-block;
     background: #fff;
-    border: 1px solid var(--theme-deafult);
+    border: 1px solid v
+    ar(--theme-deafult);
     border-radius: 5px;
     padding: 5px 10px;
     margin-bottom: 1rem;
     text-align: center;
     position: relative;
+    cursor: pointer;
 }
 
 .pool_radio:checked+.pool_label {
