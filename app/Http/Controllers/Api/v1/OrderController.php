@@ -4455,7 +4455,7 @@ class OrderController extends BaseController
         $orders = OrderVendor::with('products')->orderBy('id', 'DESC');
         $additionalPreference =getAdditionalPreference(['is_service_product_price_from_dispatch']);
         $vendorUser =  UserVendor::select('vendor_id')->where('user_id', $user->id)->first();
-        $orders->where('user_id', $user->id);
+        // $orders->where('user_id', $user->id);
         if(!empty($vendorUser)){
         if($user_type == 'borrower'){
             $orders->where('user_id', $user->id) ;
