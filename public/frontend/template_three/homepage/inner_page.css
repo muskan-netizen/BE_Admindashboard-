@@ -2695,7 +2695,8 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
 }
 
 .show-div.shopping-cart .text-danger {
-    font-size: 12px;
+    font-size: 12px;    
+    padding-left: 10px;
 }
 
 .code-outer label {
