@@ -1359,12 +1359,17 @@ body.al_body_template_nine .menu-navigation.al {
     opacity: 0.70;
 }
 .al_body_template_nine .menu-slider .al_main_category a {
-    color: #fff;
+    color: #fff!important;
 }
 
 
 
 /*----------media css--------------*/
+@media(min-width:1900px) {
+    .al_body_template_nine #main-menu{
+        justify-content: center;
+    }
+}
 @media(max-width:1800px) {
     body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head a.sell-btn span{
         padding:3px 10px;
