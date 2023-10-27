@@ -36,6 +36,11 @@ class OrderProduct extends Model{
     public function vendor(){
         return $this->belongsTo('App\Models\Vendor', 'vendor_id', 'id')->select('id', 'name', 'desc', 'logo', 'banner', 'order_pre_time', 'auto_reject_time', 'order_min_amount');
     }
+    public function categories()
+    {
+      return $this->hasOne('App\Models\Category','category_id','id');
+    }
+  
     public function coupon(){
       return $this->hasOne('App\Models\CartCoupon', 'vendor_id', 'vendor_id')->select("cart_id", "coupon_id", 'vendor_id');
     }

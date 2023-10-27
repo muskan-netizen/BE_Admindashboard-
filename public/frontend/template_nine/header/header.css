@@ -283,7 +283,7 @@ body.al_body_template_eight #al_new_design .pixelstrap ul {
 }
 .top-header .header-dropdown li.onhover-dropdown {
     padding: 0 !important;
-    border-right: 1px solid #ccc;
+    /* border-right: 1px solid #ccc; */
 }
 .top-header .header-dropdown li.onhover-dropdown svg{display: none !important;}
 body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect {
@@ -589,7 +589,30 @@ body.dark .mobile-account span {
     z-index: -1;
     transform: translate(-50%, -50%);
 }
-
+.al_body_template_nine header  .container, .top-header header .container{
+    max-width: 80%!important;
+    padding:0!important;    
+}
+@media(min-width:1460px){
+    .al_body_template_nine .container,  .al_body_template_nine .container-lg, .al_body_template_nine .container-md, .al_body_template_nine .container-sm, .al_body_template_nine     .container-xl{
+        max-width: 1440px!important;
+    }
+}
+@media(max-width:1650px){
+    .al_body_template_nine header  .container, .top-header header .container{
+        max-width: 98%!important;
+        padding:0!important;
+    }
+    .al_body_template_nine  a.navbar-brand img{
+        max-width: 100px;
+    }
+    .al_body_template_nine  .radius-bar.d-xl-inline.al_custom_search{
+        max-width: 150px;
+    }
+    .al_body_template_nine  .radius-bar.d-xl-inline.al_custom_search input{
+        min-width: inherit;
+    }    
+}
 
 @media(max-width:1350px){
     .main-menu .menu-right .icon-nav li.mobile-account {
@@ -606,9 +629,36 @@ body.dark .mobile-account span {
         font-size: 14px;
     }
 }
+@media(max-width:1200px){
+    .al_count_tabs {
+        max-width: 390px;
+        overflow-x: auto;
+        padding-bottom: 5px;
+    }
+    .al_count_tabs::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	background-color: #F5F5F5;
+    }
+
+    .al_count_tabs::-webkit-scrollbar
+    {
+        width: 10px;
+        height: 5px;
+        background-color: #F5F5F5;
+    }
+
+    .al_count_tabs::-webkit-scrollbar-thumb
+    {
+        background-color: var(--theme-deafult);
+        border: 2px solid #555555;
+    }
+   
+
+}
 @media(max-width:991px){
     .al_template_one_menu.p2p_module_enable .al_new_mobile_header, .p2p_module_enable .al_template_one, .p2p_module_enable .mobile-header {
-        display: none!important;
+        /* display: none!important; */
     }
     .al_body_template_nine .mobileHeader {
         display: block!important;
@@ -636,6 +686,9 @@ body.dark .mobile-account span {
         max-width: 100%;
         justify-content: center;
         margin-bottom: 10px;
+    }
+    .al_body_template_nine .radius-bar.d-xl-inline.al_custom_search{
+        max-width: 80%;
     }
 }
 

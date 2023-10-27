@@ -329,10 +329,15 @@ class HomeController extends BaseController
             $navCategories = $this->categoryNav($langId, $venderIds, $type , $request);
             }
             else{
+           
+              
                 $navCategories = $this->categoryNav($langId, @$homePageData['vendor_ids'], $type);
+
+            
 
             }
             
+          
 
             Session::put('navCategories', $navCategories);
 
