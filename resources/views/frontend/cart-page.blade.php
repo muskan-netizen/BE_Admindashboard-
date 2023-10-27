@@ -264,25 +264,29 @@
  
                             
                             @foreach ($product->vendor_products as $vendor_product)
-                                <div class="row al align-items-md-center vendor_products_tr alFourTemplateCartPage"
-                                    id="tr_vendor_products_{{ $vendor_product->id }}">
-                                    <div class="product-img col-12 col-md-12">
-                                        <div class="product-img w-auto  ">
-                                            <input type="checkbox" name="checked_cart_product" class="checked-cart-product" id="checked_cart_product" value="{{$vendor_product->id}}" {{ $vendor_product->is_cart_checked ? 'checked' : '' }} >
-                                            <i class="fa fa-spinner fa-pulse d-none" id="fa_spinner_{{$vendor_product->id}}" aria-hidden="true" style="color: var(--theme-deafult)"></i>
-                                        </div>                                    
-                                        <div class="product-img col-2 col-md-1">
-                                            @if (!empty($vendor_product->pvariant->media_one))
-                                                <img class='blur-up lazyload w-100'
-                                                    data-src="{{ $vendor_product->pvariant->media_one->pimage->image->path->proxy_url . '200/200' . $vendor_product->pvariant->media_one->pimage->image->path->image_path }}">
-                                            @elseif(!empty($vendor_product->pvariant->media_second) && !empty($vendor_product->pvariant->media_second->image))
-                                                <img class='blur-up lazyload w-100'
-                                                    data-src="{{ $vendor_product->pvariant->media_second->image->path->proxy_url . '200/200' . $vendor_product->pvariant->media_second->image->path->image_path }}">
-                                            @elseif(!empty($vendor_product->image_ur))
-                                                <img class='blur-up lazyload w-100'
-                                                    data-src="{{ $vendor_product->image_url }}">
-                                            @endif
+                                <div class="row al align-items-md-center vendor_products_tr alFourTemplateCartPage" id="tr_vendor_products_{{ $vendor_product->id }}">
+                                    <div class="col-3 col-md-2">
+                                        <div class="product_img_grid">
+                                            <div class="product-img">
+                                                <div class="product-img w-auto  ">
+                                                    <input type="checkbox" name="checked_cart_product" class="checked-cart-product" id="checked_cart_product" value="{{$vendor_product->id}}" {{ $vendor_product->is_cart_checked ? 'checked' : '' }} >
+                                                    <i class="fa fa-spinner fa-pulse d-none" id="fa_spinner_{{$vendor_product->id}}" aria-hidden="true" style="color: var(--theme-deafult)"></i>
+                                                </div>
+                                            </div>
+                                            <div class="product-img">
+                                                @if (!empty($vendor_product->pvariant->media_one))
+                                                    <img class='blur-up lazyload w-100'
+                                                        data-src="{{ $vendor_product->pvariant->media_one->pimage->image->path->proxy_url . '200/200' . $vendor_product->pvariant->media_one->pimage->image->path->image_path }}">
+                                                @elseif(!empty($vendor_product->pvariant->media_second) && !empty($vendor_product->pvariant->media_second->image))
+                                                    <img class='blur-up lazyload w-100'
+                                                        data-src="{{ $vendor_product->pvariant->media_second->image->path->proxy_url . '200/200' . $vendor_product->pvariant->media_second->image->path->image_path }}">
+                                                @elseif(!empty($vendor_product->image_ur))
+                                                    <img class='blur-up lazyload w-100'
+                                                        data-src="{{ $vendor_product->image_url }}">
+                                                @endif
+                                            </div>
                                         </div>
+                                    </div>
                                     <div class="col-9 col-md-10">
                                         <div class="row align-items-md-center">
                                             <div class="col-md-3 order-md-1">
@@ -824,14 +828,14 @@
                                             </div>
                                         </div>
                                         {{-- <div class="row mb-1 d-flex align-items-center">
-                                            <div class="col-5 text-lg-right">
-                                                <label class="m-0 radio">
-                                                    {{ __('Processor Address') }} :</label>
-                                            </div>
-                                            <div class="col-7">
-                                                {!! $product->processor_product->address !!}
-                                            </div>
-                                        </div> --}}
+                                <div class="col-5 text-lg-right">
+                                    <label class="m-0 radio">
+                                        {{ __('Processor Address') }} :</label>
+                                </div>
+                                <div class="col-7">
+                                    {!! $product->processor_product->address !!}
+                                </div>
+                            </div> --}}
                                     @endif
                                     @if ($product->vendor->fixed_fee_amount > 0)
                                         <div class="row mb-1 d-flex align-items-center">

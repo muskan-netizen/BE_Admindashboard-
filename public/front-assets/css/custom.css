@@ -3980,7 +3980,7 @@ p.vendor_address, p.vendor_email {
 }
 
 .categories-product-list .number {
-    border: .5px solid #ed5a6b;
+    border: .5px solid var(--theme-deafult);
     border-radius: 8px
 }
 
