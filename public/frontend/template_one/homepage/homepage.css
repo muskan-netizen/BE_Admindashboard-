@@ -4320,7 +4320,11 @@ input.form-control.pac-target-input.gm-err-autocomplete {
 span.fa.fa-eye-slash.toggle-password.eye::before {
     content: "\f06e"
 }
-
+.al_body_template_one .pixelstrap li a{
+    max-width: inherit;
+    width: auto;
+    margin: 0 10px;
+}
 .al_body_template_one .pixelstrap li a,
 .al_body_template_one .product-card-box,
 .al_body_template_one .scale-effect,

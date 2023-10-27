@@ -342,7 +342,7 @@ input[type=number]::-webkit-outer-spin-button {
                     @endif
                     
                     @if($is_cab_pooling == 1 || $is_bid_ride_enable == 1 || $is_particular_driver == 1)
-                        <div class="pool_radio_controls text-center">
+                        <div class="pool_radio_controls text-center row justify-content-center">
                             <div class="item">
                                 <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_booking" name="is_cab_pooling_radio"
                                     value="0" checked>
@@ -359,18 +359,18 @@ input[type=number]::-webkit-outer-spin-button {
                                     </label>
                                 @endif
                             </div>
-                            <div class="item">
+                            <div class="item mx-1">
                                 @if($is_bid_ride_enable == 1)
-                                    <input type="radio" id="bid_radio"  name="is_cab_pooling_radio" value="0">
-                                    <label class="mb-0  my-2" >
+                                    <input type="radio" class="pool_radio" id="bid_radio"  name="is_cab_pooling_radio" value="0">
+                                    <label class="pool_label mb-0  my-2" for="bid_radio">
                                         <h5 class="m-0" id="">Bid</h5>
                                     </label>
                                 @endif
                             </div>
                             <div class="item">
                                 @if($is_particular_driver == 1)
-                                    <input type="radio" id="particular_driver_radio"  name="is_cab_pooling_radio" value="2">
-                                    <label class="mb-0  my-2" >
+                                    <input class="pool_radio" type="radio" id="particular_driver_radio"  name="is_cab_pooling_radio" value="2">
+                                    <label class="pool_label mb-0  my-2" for="particular_driver_radio">
                                         <h5 class="m-0" id="">Request to Driver</h5>
                                     </label>
                                 @endif
