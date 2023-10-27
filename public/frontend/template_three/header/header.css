@@ -115,6 +115,9 @@ body.al_body_template_three .menu-navigation.alThreeMenu li.al_main_category a .
     height: 80px !important;
     width: 80px !important;
 }
+.site-header img.logo-image {
+    object-fit: contain;
+}
 body.al_body_template_three .al_custom_head_map_box {
     width: 100%;
 }
