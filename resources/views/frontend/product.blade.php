@@ -1910,18 +1910,21 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
         var fullContent = <?= json_encode($fullContent ?? "") ?>;
         var isFullContentDisplayed = false;
 
+    if (readMoreLink) { // Check if readMoreLink exists
         readMoreLink.addEventListener("click", function(e) {
-        e.preventDefault();
-        if (isFullContentDisplayed) {
-            content.innerHTML = <?= json_encode($content ?? "") ?>;
-            readMoreLink.innerText = "Read More";
-        } else {
-            content.innerHTML = fullContent;
-            readMoreLink.innerText = "Read Less";
-        }
-        isFullContentDisplayed = !isFullContentDisplayed;
+            e.preventDefault();
+            if (isFullContentDisplayed) {
+                content.innerHTML = <?= json_encode($content ?? "") ?>;
+                readMoreLink.innerText = "Read More";
+            } else {
+                content.innerHTML = fullContent;
+                readMoreLink.innerText = "Read Less";
+            }
+            isFullContentDisplayed = !isFullContentDisplayed;
         });
-    });
+    }
+});
+
         </script>
 
 @endsection

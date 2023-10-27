@@ -2507,6 +2507,8 @@ $(document).ready(function () {
                     // }
                     //return true;
                     var cart_details = response.cart_details;
+
+                    console.log(cart_details);
                     var client_preference_detail = response.client_preference_detail;
                     var is_token_enable = response.is_token_enable;
                     var token_val = response.token_val;
@@ -2528,9 +2530,9 @@ $(document).ready(function () {
                             //map array  cart_details.products.map(checkIfInCart);
                             var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail, is_token_enable:is_token_enable, token_val:token_val });
 
-                            //  let header_cart_template = _.template($('#header_cart_template').html());
+                             let header_cart_template = _.template($('#header_cart_template').html());
 
-                            //  $("#header_cart_main_ul").append(header_cart_template(headerCartData));
+                             $("#header_cart_main_ul").append(header_cart_template(headerCartData));
                             if (response.cart_details.totalQuantity>0) {
                                 $('#expected_vendors').html('');
                                 $('#expected_vendors').html(response.expected_vendor_html);

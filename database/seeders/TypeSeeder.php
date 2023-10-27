@@ -130,7 +130,7 @@ class TypeSeeder extends Seeder
                 'sequence' => 13,
                 'title' => 'Car Rental',
                 'service_type' => 'car_rental',
-                'image' => 'template-ten.png',
+                'image' => 'template-ten.PNG',
                 'description' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
                 
             ]
