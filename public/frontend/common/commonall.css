@@ -545,9 +545,11 @@ body.al_body_template_eight .vendor_onetem .outter-fillter-data .displayProducts
     font-size: 14px;
     font-weight: 400;
 }
-.al_body_template_one .sold-by img {
-    height: 30px;
-    width: 30px;
+.al_body_template_one .sold-by img , .buy_details .product-right .sold-by img{
+    height: 30px!important;
+    width: 30px!important;
+    border-radius: 50%;
+    margin-right: 5px;
 }
 
 .al_body_template_one .product-right .product-title {
@@ -1584,6 +1586,9 @@ ul.product_list_order_page .items_price{
 
 .al_body_template_three .container {
     max-width: 1400px;
+}
+.swal2-styled.swal2-confirm{
+    color: #fff!important;
 }
 
 @media(min-width:1440px){
