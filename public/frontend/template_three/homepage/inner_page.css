@@ -580,12 +580,16 @@ span.fa.fa-eye-slash.toggle-password.eye::before {
 }
 
 .al_body_template_three .add-on-main-div .slick-slider .slick-prev {
-    left: -25px;
+    left: 0;
     top: 20px;
+    background-color: transparent!important;
 }
-
+.al_body_template_three .add-on-main-div .slick-slider .slick-prev:before{
+    color:#000!important;
+    font-size: 20px;
+}
 .al_body_template_three .add-on-main-div .slick-slider .slick-next {
-    right: -25px;
+    right: 0;
     top: 20px;
 }
 
