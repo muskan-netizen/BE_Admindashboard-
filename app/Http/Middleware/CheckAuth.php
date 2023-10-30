@@ -75,12 +75,14 @@ class CheckAuth
 
         if(!empty($header['currency'][0])){
             $checkCur = ClientCurrency::where('currency_id', $header['currency'][0])->first();
-        }else{
-            $currency_id = Currency::where('id',147)->first()->id;
         }
 
         $language_id = $checkLang->language_id;
         $currency_id = $checkCur->currency_id;
+
+        if(empty($currency_id)){
+        $currency_id = Currency::where('id',147)->first()->id;
+        }
 
         if(!empty($header['timezone'][0])){
             $timezone = $header['timezone'][0];
