@@ -11,7 +11,7 @@ trait GuzzleHttpTrait{
         try {
             $client = new Guzzle(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
             $url = $dispatch_domain->pickup_delivery_service_key_url;
-            $res = $client->post($url.$endPoints,['form_params' => ($postdata),'timeout'=>'10']);
+            $res = $client->post($url.$endPoints,['form_params' => ($postdata),'timeout'=>'50']);
             $response = json_decode($res->getBody(), true);
 
             // You can process the response further based on the $statusCode and $responseBody
