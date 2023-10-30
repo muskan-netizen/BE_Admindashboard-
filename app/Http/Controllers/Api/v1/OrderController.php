@@ -621,37 +621,37 @@ class OrderController extends BaseController
 
 
 
-            // Recurring Booking Functionity
-
-                if(!empty($vendor_cart_product->recurring_booking_time)){
-
-                    $user_timezone          =   $timezone;
-                    $recurring_booking_time =   convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
-
-                        $RecurringServiceSchedule = array();
-                        // No Nee other action
-                        if(@$vendor_cart_product->recurring_booking_type){
-                            $Recurring_quantity     = $vendor_cart_product->quantity;
-                            $recurring_day_data     = $vendor_cart_product->recurring_day_data;
-                            $recurring_day_data     = explode(",",$recurring_day_data);
-
-                            $ndate                  = convertDateTimeInClientTimeZone(Carbon::now());
-                            $recurring_booking_time = convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
-                            for ($x = 0; $x < count($recurring_day_data); $x++) {
-                                $date           = $recurring_day_data[$x];
-                                $newDate        = $date.' '. $recurring_booking_time;
-                                $RecurringServiceSchedule [] = [
-                                    'order_vendor_product_id' => $order_product->id,
-                                    'schedule_date'           => $newDate,
-                                    'type'                    => 2,
-                                    'order_number'            => $order->order_number
-                                ];
-                            }
-                        }
-                        if (!empty($RecurringServiceSchedule)) {
-                            OrderLongTermServiceSchedule::insert($RecurringServiceSchedule);
-                        }
-                }
+                            // Recurring Booking Functionity
+                
+                                if(!empty($vendor_cart_product->recurring_booking_time)){
+                
+                                    $user_timezone          =   $timezone;
+                                    $recurring_booking_time =   convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
+                
+                                        $RecurringServiceSchedule = array();
+                                        // No Nee other action
+                                        if(@$vendor_cart_product->recurring_booking_type){
+                                            $Recurring_quantity     = $vendor_cart_product->quantity;
+                                            $recurring_day_data     = $vendor_cart_product->recurring_day_data;
+                                            $recurring_day_data     = explode(",",$recurring_day_data);
+                
+                                            $ndate                  = convertDateTimeInClientTimeZone(Carbon::now());
+                                            $recurring_booking_time = convertDateTimeInTimeZone($vendor_cart_product->recurring_booking_time, $user_timezone, 'H:i');
+                                            for ($x = 0; $x < count($recurring_day_data); $x++) {
+                                                $date           = $recurring_day_data[$x];
+                                                $newDate        = $date.' '. $recurring_booking_time;
+                                                $RecurringServiceSchedule [] = [
+                                                    'order_vendor_product_id' => $order_product->id,
+                                                    'schedule_date'           => $newDate,
+                                                    'type'                    => 2,
+                                                    'order_number'            => $order->order_number
+                                                ];
+                                            }
+                                        }
+                                        if (!empty($RecurringServiceSchedule)) {
+                                            OrderLongTermServiceSchedule::insert($RecurringServiceSchedule);
+                                        }
+                                }
 
 
 
@@ -851,7 +851,7 @@ class OrderController extends BaseController
                             $service_fee_percentage_amount        = $vendor_cart_product->vendor->service_charge_amount;
                             $vendor_service_fee_percentage_amount = $vendor_service_fee_percentage_amount + $service_fee_percentage_amount;
                             $payable_amount += $service_fee_percentage_amount;
-                            $total_service_fee = $total_service_fee + $service_fee_percentage_amount;
+                           // $total_service_fee = $total_service_fee + $service_fee_percentage_amount;
                             $vendor_payable_amount += $service_fee_percentage_amount;
                         }
 

@@ -522,12 +522,9 @@ class StoreController extends BaseController{
 				unset($order->products);
 				unset($order->paymentOption);
 				unset($order->payment_option_id);
-
-				
-
 			}
             return $this->successResponse($order_list, '', 200);
-    	} catch (Exception $e) {
+    	} catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
     	}
     }
