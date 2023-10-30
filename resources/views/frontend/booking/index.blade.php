@@ -340,7 +340,8 @@ input[type=number]::-webkit-outer-spin-button {
                             </label>
                         </div>
                     @endif
-                    
+
+
                     @if($is_cab_pooling == 1 || $is_bid_ride_enable == 1 || $is_recurring_booking == 1 || $is_particular_driver == 1)
                         <div class="pool_radio_controls text-center">
                             <div class="item">
@@ -349,31 +350,37 @@ input[type=number]::-webkit-outer-spin-button {
                                 <label class="pool_label mb-0  my-2 active " for="cab_booking" id="label_cab_booking">
                                     <h5 class="m-0" id="pool_5">{{ __('Booking') }}</h5>
                                 </label>
+                            </div>
                             @endif
 
                             @if($is_bid_ride_enable == 1)
+                            <div class="item mx-1">
                                 <input type="radio" id="bid_radio" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="0">
                                 <label class="mb-0  my-2" >
                                     <h5 class="m-0" id="">Bid</h5>
                                 </label>
+                            </div>
                             @endif
 
                             @if($is_particular_driver == 1)
+                            <div class="item">
+
                                 <input type="radio" id="particular_driver_radio" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="2">
                                 <label class="mb-0  my-2" >
                                     <h5 class="m-0" id="">Request to Driver</h5>
                                 </label>
+                            </div>
                             @endif
                             @if($is_recurring_booking == 1)
+                            <div class="item">
+
                             <input type="radio" id="is_recurring_booking" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="4">
                             <label class="mb-0  my-2" >
                                 <h5 class="m-0" id="">{{ __(getDynamicTypeName('Recurring')) }}</h5>
                             </label>
+                            </div>
                         @endif
                         </div>
-                    
-
-
 
                     <div class="location-box check-pick-first">
                         <div class="where-to-go">
@@ -518,7 +525,7 @@ input[type=number]::-webkit-outer-spin-button {
                                                 class="fa fa-calendar"></i></span>
                                     </div>
                                 </div>
-                            
+
                                 @if($is_recurring_booking == 1)
                                     <div class="recurring-option">
                                         @include('frontend.product-part.recurring-booking')
@@ -986,7 +993,7 @@ input[type=number]::-webkit-outer-spin-button {
                     </div>
                     <div class="cab-location-details">
                     <div style="height:5px;"><div class="loader cab-detail-main-loader" style="display: none;"></div></div>
-       
+
 
                     <h4 class="d-flex align-items-center justify-content-between"><b><%= result.name %></b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.tags_price%></b></label></h4>
@@ -1059,16 +1066,16 @@ input[type=number]::-webkit-outer-spin-button {
                         <i class="fa fa-angle-down" aria-hidden="true"></i>
                     </h4>
                 </div>
-                
+
                 <div class="row">
                     <div class="col-md-12 create-bid-btn">
                         <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-task_type="schedule" booking-type='driver_request' data-tags="<%=(result.tags)%>">{{__('Request For Driver')}}</button>
                     </div>
                 </div>
             </div>
-            
+
             <span id="show_errors" class="text-danger"></span>
-            
+
         </script>
 
         <script type="text/template" id="driver_biding_list">
@@ -1142,8 +1149,8 @@ input[type=number]::-webkit-outer-spin-button {
                         <span class="d-flex align-items-center justify-content-between"><b>{{ __('Service Charge') }}</b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.service_charge_amount%></b></label></span>
                     <% } %>
-                           
-                    <% if((result.product_tax) && (result.product_tax) > 0 ){ %>        
+
+                    <% if((result.product_tax) && (result.product_tax) > 0 ){ %>
                         <span class="d-flex align-items-center justify-content-between"><b><%= result.product_tax_name %></b> <label><sub class="ling-throgh" id
                             ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.total_other_taxes %></b></label></span>
                     <% } %>
@@ -1191,7 +1198,7 @@ input[type=number]::-webkit-outer-spin-button {
                         <% if((result.yacht)){ %>
                             {{-- <input type="number" class="from-control" id="seats" value="" name="seats" placeholder="Number of Seats Booking"> --}}
                         <% } %>
-                        
+
                         <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>
                             <div class="col-6 mb-2">Loyalty</div>
                             <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved %></div>
