@@ -78,9 +78,11 @@ class CheckAuth
         }
 
         $language_id = $checkLang->language_id;
-        $currency_id = $checkCur->currency_id;
+       
 
-        if(empty($currency_id)){
+        if(!empty($checkCur)){
+            $currency_id = $checkCur->currency_id;
+        }else{
         $currency_id = Currency::where('id',147)->first()->id;
         }
 
