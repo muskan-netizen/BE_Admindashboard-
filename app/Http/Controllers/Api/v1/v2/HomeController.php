@@ -276,14 +276,20 @@ class HomeController extends BaseController
                 }
             }
             $mobile_banners = $mobile_banners->whereIn('redirect_category_id', $getSubCatIds)->orderBy('sorting', 'asc')->get();
+
+
             $home_page_labels = CabBookingLayout::where('is_active', 1)->app()->where('for_no_product_found_html', 0)->orderBy('order_by');
+
+
 
             if (isset($langId) && !empty($langId))
                 $home_page_labels = $home_page_labels->with(['banner_image', 'translations' => function ($q) use ($langId) {
                     $q->where('language_id', $langId);
                 }]);
 
-            $home_page_labels = $home_page_labels->get();           
+
+            $home_page_labels = $home_page_labels->get();
+            
 
             if (count($home_page_labels) == 0)
                 $home_page_labels = HomePageLabel::with('translations')->where('is_active', 1)->orderBy('order_by')->get();
@@ -294,14 +300,18 @@ class HomeController extends BaseController
 
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
             $enable_layout = CabBookingLayout::where('is_active', 1)->app();
+
             $enable_layout = $enable_layout->orderBy('order_by', 'asc')->pluck('slug')->toArray();
             //$homePageData = $this->postHomePageData($request);
 
-            $homePageData = $this->postHomePageDataV2($request, $set_template, $enable_layout, $additionalPreference,$user, $getSubCatIds);           
+            $homePageData = $this->postHomePageDataV2($request, $set_template, $enable_layout, $additionalPreference,$user, $getSubCatIds);
+            
             $navCategories = $this->subCategoryNav($langId, @$homePageData['vendor_ids'], $type, $cid);
             Session::put('navCategories', $navCategories);
+
             /***end new  */
 
+            // dd($navCategories);
             $home_page_labels = $home_page_labels->map(function ($da) use ($homePageData, $navCategories) {
                 if ($da->slug != 'pickup_delivery' && $da->slug != 'dynamic_page' && $da->slug != 'nav_categories' && $da->slug != 'banner') {
 
@@ -312,6 +322,7 @@ class HomeController extends BaseController
                     $da['data'] = $navCategories;
                     // dd($da[$da->slug]);
                 }
+               
                 return $da;
             });
 
@@ -469,7 +480,7 @@ class HomeController extends BaseController
         /**
          * put a limit to get vendors.
          */
-        $long_term_vendors = $vendors->where($request->type,1)->pluck('id')->toArray();
+        $long_term_vendors = $vendors->pluck('id')->toArray();
 
         $vendors = $vendors->where('status', 1)
             ->inRandomOrder()
