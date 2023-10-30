@@ -3,7 +3,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Routing\Route;
-use App\Models\{BlockedToken, User, ClientLanguage, ClientCurrency,UserDevice};
+use App\Models\{BlockedToken, User, ClientLanguage, ClientCurrency, Currency, UserDevice};
 use Illuminate\Support\Facades\Cache;
 use Request;
 use Config;
@@ -76,7 +76,7 @@ class CheckAuth
         if(!empty($header['currency'][0])){
             $checkCur = ClientCurrency::where('currency_id', $header['currency'][0])->first();
         }else{
-            $checkCur = ClientCurrency::where('is_primary', 1)->first();
+            $currency_id = Currency::where('id',147)->first()->id;
         }
 
         $language_id = $checkLang->language_id;
