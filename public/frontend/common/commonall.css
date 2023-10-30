@@ -1608,6 +1608,13 @@ ul.product_list_order_page .items_price{
     width: 100%;
     max-height: 100%;
 }
+.product-order .total-sec ul li span{
+    font-weight: 400!important;
+}
+ .product-order .final-total h3{
+    font-weight: 400;
+    padding: 0 12px;
+ }
 @media(min-width:1440px){
     .al_body_template_eight .container {
         max-width: 1500px;
