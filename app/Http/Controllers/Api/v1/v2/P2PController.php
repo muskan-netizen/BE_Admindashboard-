@@ -17,6 +17,7 @@ class P2PController extends BaseController
     public function categoryData(Request $request, $cid = 0)
     {
         
+     
         
         try {
             $limit = $request->has('limit') ? $request->limit : 12;
@@ -48,6 +49,7 @@ class P2PController extends BaseController
             if (!empty($category)) {
 
                 $mode_of_service_data = Product::where('category_id',$cid)->first();
+           
 
                 $mode_of_service = $mode_of_service_data->mode_of_service ?? null;
                
@@ -105,7 +107,7 @@ class P2PController extends BaseController
             }
             $vendorData = Vendor::select('id', 'slug', 'name', 'banner', 'show_slot', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'latitude', 'longitude');
             $ses_vendors = $this->getServiceAreaVendors($user->latitude, $user->longitude, $mod_type);
-             pr($ses_vendors);
+         
            
 
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
@@ -323,9 +325,6 @@ class P2PController extends BaseController
             
             $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
             $multipli = $clientCurrency ? $clientCurrency->doller_compare : 1;
-         
-          
-           
             $now = Carbon::now();
             $products = Product::has('vendor')->with(['ProductAttribute',
                 'category.categoryDetail', 'media.image',
