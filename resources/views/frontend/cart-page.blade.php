@@ -488,7 +488,7 @@
                                                                 data-vendor_id="{{ $vendor_product->vendor_id }}">{{ __('Add Prescription') }}</button>
                                                             @if ($vendor_product->cart_product_prescription > 0)
                                                                 <h4 class="mt-0 mb-1"
-                                                                    style="word-wrap: break-word; line-height:20px">
+                                                                    style="word-wrap: break-word; line-height:20px;float: left;">
                                                                     <strong>{{ $vendor_product->cart_product_prescription }}
                                                                         {{ __('Prescription Added') }}</strong></h4>
                                                             @endif
@@ -803,7 +803,7 @@
                                                 <label class="m-0 radio">
                                                     {{ __('Delivery Fee') }} :</label>
                                             </div>
-                                            <div class="col-7">
+                                            <div class="col-7 text-right">
                                                 {!! $product->delOptions !!}
                                             </div>
                                         </div>
