@@ -1039,14 +1039,14 @@ class OrderController extends BaseController
     public function changeStatus(Request $request, $domain = '')
     {
        
-        
+        try {
         $orderPlaced = true;
         $orderPlacedNo = '';
         $productIds = $request->productIds??[];
         $orderVendorProductIds = $request->order_vendor_product_id??[];
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
-         try {
+      
 
             $timezone = Auth::user()->timezone;
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
@@ -1263,11 +1263,11 @@ class OrderController extends BaseController
                  OrderProduct::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id'=>$request->status_option_id]);
               
                 DB::commit();
-                $newOrder = Order::select('id','user_id')->with([
-                'ordervendor'
-            ])
+                $newOrder = Order::select('id','user_id')->with(
+                'ordervendor')
                 ->where('id', $request->order_id)
                 ->first();
+            
                 $blockchain_route = ClientPreferenceAdditional::where('key_name','blockchain_route_formation')->first();
  
                 if(isset($blockchain_route) && ($blockchain_route->key_value == 1))
@@ -1280,7 +1280,7 @@ class OrderController extends BaseController
             
                 $customer = User::find($orderData->user_id);
                 if(getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1){
-                     $this->sendTrackingUrlSMS($orderData);
+                     $this->sendTrackingUrlSMS($orderData,$request->order_id);
                 }
 
                 
