@@ -77,6 +77,13 @@ body .pac-container{
     text-transform: capitalize;
     margin-right:0!important;
 }
+.al_body_template_one span#cart_qty_span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+    padding-right: 1px;
+}
 .search_bar.menu-right .icon-nav a span {
     font-family: 'Poppins', sans-serif;
 }
