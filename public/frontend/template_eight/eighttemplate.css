@@ -539,6 +539,15 @@ body.al_body_template_eight .aside_bar span {
     color: #000;
     position: relative;
 }
+a#readMoreLink {
+    background: transparent;
+    color: var(--theme-deafult)!important;
+    padding: 0!important;
+    border: unset!important;
+    margin-left: 5px;
+    text-transform: capitalize;
+    font-weight: 400;
+}
 
 body.al_body_template_eight .aside_bar span small {
     font-size: 14px;
@@ -992,6 +1001,7 @@ body.al_body_template_eight .collection-wrapper.al h2 {
     margin-top: 0;
     padding-left: 35px;
     font-weight: 500;
+    padding-right:50px!important;
 }
 
 body.al_body_template_eight section.buy_details span.rating.main-rating {
