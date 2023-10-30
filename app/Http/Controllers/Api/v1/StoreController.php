@@ -16,7 +16,7 @@ use Illuminate\Pagination\Paginator;
 use App\Models\{User, Vendor, Order, UserVendor, ProductAvailability, PaymentOption, VendorCategory, Product, VendorOrderStatus, OrderStatusOption, ClientCurrency, Category_translation, OrderVendor, LuxuryOption, ClientLanguage, ProductCategory, ProductVariant, ProductTranslation, Variant, Brand, AddonSet, TaxCategory, ClientPreference, Celebrity, ProductImage, ProductAddon, ProductUpSell, ProductCrossSell, ProductRelated, ProductCelebrity, ProductTag, VendorMedia, ProductVariantSet, CartProduct, Category, OrderQrcodeLinks, ProductVariantImage, RescheduleOrder, UserWishlist, ProductAttribute, Attribute, Client, Notification, NotificationTemplate, OrderProduct, Type, UserDevice, VendorFacilty, VendorMinAmount};
 use Carbon\CarbonPeriod;
 use Log;
-
+use PhpParser\JsonDecoder;
 
 class StoreController extends BaseController
 {
@@ -2426,10 +2426,9 @@ class StoreController extends BaseController
 
 	function addProductWithAttribute(Request $request)
 	{
-
-		
-		
-		// try {
+	
+    
+		try {
 		
 			$validator = Validator::make($request->all(), [
 				// 'sku' => 'required|unique:products',
@@ -2455,16 +2454,12 @@ class StoreController extends BaseController
 
 			\Log::info('test');
  
-			
+				
 			$slug = str_replace(' ', '-', $request->product_name);
 			$generated_slug = $sku_url . '.' . $slug;
 			$slug = generateSlug($generated_slug);
 			$slug = str_replace(' ', '-', $slug);
 			$generated_slug = $sku_url . '.' . $slug;
-
-			
-			
-
 			$users = Auth::user();
 			\Log::info($users);
 			$user = User::where('id',$users->id)->first();
@@ -2786,13 +2781,14 @@ class StoreController extends BaseController
 								}
 							}
 						}
-						if (@$request->date_availability && is_array($request->date_availability)) {
-							$date_availability_data = [];
-							foreach ($request->date_availability as $date_availability) {
+						if (@$request->date_availability) {	
+							$date = [];
+							$date = json_decode($request->date_availability);	
+							foreach ($date as $date_availability) {
 								$date_availability_data[] = [
 									'product_id' => $product->id,
-									'date_time' => $date_availability['date_time'],
-									'not_available' => $date_availability['not_available'],
+									'date_time' => $date_availability,
+									'not_available' => 0,
 									'created_at' => Carbon::now(),
 									'updated_at' => Carbon::now()
 								];
@@ -2816,9 +2812,9 @@ class StoreController extends BaseController
 			
 		} 
 		
-		// } catch (\Exception $e) {
-		// 	return $this->errorResponse('Exception occured', 500);
-		// }
+		} catch (\Exception $e) {
+			return $this->errorResponse('Exception occured', 500);
+		}
 	
 }
 
