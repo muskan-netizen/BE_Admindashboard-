@@ -16,7 +16,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
 <section class="home-serivces" id="alSixHomeServices">
     <div class="container">
         <div class="row mb-lg-5 mb-md-4 mb-3">
-            <div class="col-xl-8 offset-xl-2">
+            <div class="col-xl-12">
                 <div class="step-indicator">
 
                     <div class="step step1 @if(app('request')->input('step') >= '1' || empty(app('request')->input('step'))) active @endif">
