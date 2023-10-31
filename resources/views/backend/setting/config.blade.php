@@ -1618,6 +1618,7 @@
                                 <hr />
                             </div>
                         </div>
+                       
 
                         <div class="col-12 mt-2">
                             <div class="form-group mt-2 d-flex switchery-demo">
