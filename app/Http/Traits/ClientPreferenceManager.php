@@ -52,12 +52,8 @@ trait ClientPreferenceManager{
    * harbans :)
    *
    */
-  public function updatePreferenceAdditional($request=[]){
+  public function updatePreferenceAdditional($request){
     $validated_keys = $request->only($this->client_preference_fillable_key);
-
-  
-    
-    
     $client = Client::first();
     $cacheKey = 'client_preferences_additional_'.json_encode($this->client_preference_fillable_key);
 

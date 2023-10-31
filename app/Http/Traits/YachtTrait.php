@@ -9,9 +9,10 @@ use Illuminate\Support\Facades\Auth;
 
 trait YachtTrait
 {
-    public function productSearch($request, $pickup, $dropOff)
+    public function productSearch($request, $pickup, $dropOff,$category_id = null)
     {
 
+      
         $pickup_time = $pickup->time ?? '';
         $drop_time = $dropOff->time ?? '';
         $clientPreference = \App\Models\ClientPreference::where(['id' => 1])->first();
@@ -35,7 +36,7 @@ trait YachtTrait
  
         $data['products'] = [];
         if ($category) {
-            $data['products'] = Product::with([
+            $products= Product::with([
                 'variant', 'media.image',
                 'ProductAttribute' => function ($q) use ($request) {
                     if ($request->service == 'rental') {
@@ -85,9 +86,16 @@ trait YachtTrait
                     } else {
                         // $q->distanceInMeters($clientPreference->Default_latitude, $clientPreference->Default_longitude);
                     }
-                })
-                ->where('category_id', $category->id)
-                ->get();
+                });
+
+                if($category_id)
+                {
+                    $products = $products->where('category_id', $category_id);
+                } else {
+                    $products = $products->where('category_id', $category->id);
+                }
+                $products =  $products->get();
+                $data['products'] = $products;
         }
 
 

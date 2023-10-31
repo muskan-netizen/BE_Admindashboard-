@@ -197,6 +197,7 @@
 @endif
 
 <!-----------------categores------------>
+
 @if(!empty($navCategories) && count($navCategories))
 <section class="p2p-categories">
 	<div class="container">

@@ -281,6 +281,8 @@ class FrontController extends Controller
             }
     });
 
+  
+
         return $categories;
     }
 

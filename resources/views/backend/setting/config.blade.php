@@ -2282,6 +2282,24 @@
             </div>
         </form>
         </div>
+        @if( Request::get('google_tag'))
+        <div class="col-xl-4 col-lg-4 mb-3">
+            <!-- Social Logins title start -->
+            <div class="page-title-box">
+                <h4 class="page-title text-uppercase">{{ __('Google Analytics') }}</h4>
+            </div><!-- Social Logins title end -->
+                            <div class="card-box">
+            <form method="POST" action="{{ route('additional.update') }}">
+                <input type="hidden" name="crm" id="crm" value="1">
+                <input type="hidden" name="send_to" id="send_to" value="configure">
+                @csrf
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h4 class="header-title text-uppercase mb-0">{{ __('Google Analytics') }}
+                    </h4>
+                    <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
+                    </button>
+                </div>
+                            <div class="col-12">
 
         <div class="col-md-4 mb-3">
             <form method="POST" class="h-100" action="{{ route('additional.update')}}">
@@ -2409,7 +2427,13 @@
                 </div>
         </form>
         
-     <div class="col-xl-4 col-lg-4 mb-3">
+    
+
+    </div>
+    
+    {{-- ends here marg form --}}
+    </div>
+    <div class="col-xl-4 col-lg-4 mb-3">
         <div class="page-title-box">
             <h4 class="page-title text-uppercase">{{ __('Blockchain Route Formation') }}</h4>
         </div>
@@ -2454,16 +2478,11 @@
                     </div>
                     <hr />
                 </div>
-        
+
                 </form>
             </div>
         </div>
-
-    </div>
-    {{-- ends here marg form --}}
-    </div>
-
-         @if( Request::get('google_tag'))
+      @if( Request::get('google_tag'))
         <div class="col-xl-4 col-lg-4 mb-3">
             <!-- Social Logins title start -->
             <div class="page-title-box">
@@ -2511,6 +2530,8 @@
         </div>
         </div>
 	@endif
+</div>
+@endif
 </div>
     <div class="row">
 

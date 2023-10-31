@@ -197,6 +197,8 @@ class VendorController extends BaseController
                 $query->where('user_id', $user->id);
             });
         }
+
+      
         if(@$this->roleId=='5')
         {
             $vendors = $vendors->where('refference_id',auth()->id());
@@ -249,6 +251,8 @@ class VendorController extends BaseController
                 $build = $this->buildTree($categories->toArray());
             }
             $templetes = \DB::table('vendor_templetes')->where('status', 1)->get();
+
+           
             return view('backend/vendor/index')->with([
                 'vendors' => $vendors,
                 'vendor_for_pickup_delivery' => $vendor_for_pickup_delivery,
@@ -827,6 +831,7 @@ class VendorController extends BaseController
             return redirect('client/dashboard')->with('error','You do not have permission to do this task.');
         }
 
+        
         $product_categories = [];
         $active = array();
         $categoryToggle = array();
@@ -2195,7 +2200,7 @@ class VendorController extends BaseController
             $product_categories_build = $this->buildTree($p_categories->toArray());
             $product_categories_hierarchy = $this->getCategoryOptionsHeirarchy($product_categories_build, $langId);
             foreach($product_categories_hierarchy as $k => $cat){
-                $myArr = array(1,3,7,8,9,10,12);
+                $myArr = array(1,3,7,8,9,10,12,14);
                 if( getClientPreferenceDetail()->p2p_check ) {
                     $myArr[] = 13;
                 }

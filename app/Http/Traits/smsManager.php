@@ -242,7 +242,7 @@ trait smsManager{
                 'Authorization' => 'Basic '.base64_encode($crendentials->sms_auth_key.':'.$crendentials->sms_auth_token)
             ])->post('https://restapi.smscountry.com/v0.1/Accounts/'.$crendentials->sms_auth_key.'/SMSes', [
                 "Text"=> $message,
-                "Number"=> $to,
+                "Number"=> str_replace("+","",$to),
                 "SenderId"=> $crendentials->sms_sender_id,
                 "DRNotifyUrl"=> "https://www.domainname.com/notifyurl",
                 "DRNotifyHttpMethod"=> "POST",

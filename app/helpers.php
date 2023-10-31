@@ -1324,7 +1324,8 @@ if (!function_exists('getServiceTypesCategory')) {
                 'taxi'         => ['pick_drop_service'],
                 'p2p'          => ['p2p'],
                 'home_service' => ['on_demand_service', 'appointment_service'],
-                'car_rental'   => ['rental_services'],
+                'car_rental'   => ['car_rental'],
+                // 'car_rental'   => ['rental_services'],
             ];
             $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
             if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
@@ -1456,7 +1457,7 @@ if (!function_exists('getCategoryTypesServices')) {
                 $typeArray = ['p2p'];
                 break;
             case "super_app":
-                $typeArray = ['pick_drop_service', 'on_demand_service', 'appointment_service', 'rental_service', 'products_service', 'p2p'];
+                $typeArray = ['pick_drop_service', 'on_demand_service', 'appointment_service', 'rental_service', 'products_service', 'p2p','car_rental'];
 
                 break;
             default:

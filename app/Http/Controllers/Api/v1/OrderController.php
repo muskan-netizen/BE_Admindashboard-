@@ -1095,9 +1095,17 @@ class OrderController extends BaseController
                     $order->total_delivery_fee = $total_delivery_fee;
                     $order->loyalty_points_used = $loyalty_points_used;
                     $order->loyalty_amount_saved = $loyalty_amount_saved;
+
+                    if($action == 'p2p'){
+
                     // $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
                     $order->loyalty_points_earned = NULL;
-                    $order->loyalty_points_earned_order = $loyalty_card->per_order_points;
+                    $order->loyalty_points_earned_order = $loyalty_card->per_order_points ?? 0;
+
+                    }else{
+                    $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'] ?? 0;
+
+                    }
                     $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
                     $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
                     $order->scheduled_slot = $cart->scheduled_slot ?? null;

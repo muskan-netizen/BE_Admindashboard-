@@ -28,7 +28,7 @@ class AttributeController extends BaseController
             ->where('status', 1)
             ->orderBy('parent_id', 'asc')
             ->orderBy('position', 'asc')
-            ->whereIn('type_id', ['1', '3', '6','10', '13', '7']) //see type ids in TypeSeeder seeder
+            ->whereIn('type_id', ['1', '3', '6','10', '13', '7','14']) //see type ids in TypeSeeder seeder
             ->where('id', '>', 1)
             ->whereNull('vendor_id')
             ->get();
@@ -144,7 +144,7 @@ class AttributeController extends BaseController
                 ->where('status', 1)
                 ->orderBy('parent_id', 'asc')
                 ->orderBy('position', 'asc')
-                ->whereIn('type_id', ['1', '3', '6', '13', '10', '7'])
+                ->whereIn('type_id', ['1', '3', '6', '13', '10', '7','14'])
                 ->where('id', '>', 1)
                 ->whereNull('vendor_id')
                 ->get();

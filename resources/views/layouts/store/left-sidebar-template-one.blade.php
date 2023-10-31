@@ -160,40 +160,40 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                         <div class="logo">
                             <a class="navbar-brand mr-3 p-0 d-none d-sm-inline-flex align-items-center" style="height:60px" href="{{route('userHome')}}"><img alt="" src="{{$urlImg}}"></a>
                             <div class="radius-bar d-xl-inline al_custom_search mr-sm-2">
-                                <div class="search_form d-flex align-items-start justify-content-start"> {{--<button
-                                        class="btn">
-<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-viewBox="0 0 512.000000 512.000000"
-preserveAspectRatio="xMidYMid meet">
-<metadata>
-Created by potrace 1.16, written by Peter Selinger 2001-2019
-</metadata>
-<g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
-fill="#000000" stroke="none">
-<path d="M1810 5114 c-14 -2 -59 -9 -100 -15 -176 -25 -415 -101 -580 -184
--587 -295 -982 -823 -1107 -1480 -24 -127 -29 -474 -9 -615 65 -450 264 -848
-583 -1166 485 -482 1170 -686 1841 -548 281 58 570 187 792 353 l65 49 740
--738 c472 -470 753 -743 777 -753 54 -25 145 -22 199 6 68 36 103 93 107 176
-3 51 0 79 -13 107 -12 26 -257 279 -756 779 l-738 740 25 30 c49 60 140 202
-190 300 133 254 203 507 225 807 43 575 -171 1145 -585 1561 -315 316 -716
-518 -1157 582 -97 14 -425 19 -499 9z m473 -449 c512 -81 970 -430 1188 -903
-282 -612 156 -1316 -321 -1792 -626 -627 -1626 -626 -2251 2 -238 240 -389
-535 -446 870 -19 115 -21 375 -4 478 63 371 216 669 472 916 277 266 611 416
-999 448 74 6 269 -4 363 -19z"/>
-</g>
-</svg>
-</button>--}} @php
+                                <div class="search_form d-flex align-items-start justify-content-start"> 
+                                    {{--<button class="btn">
+                                        <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 512.000000 512.000000"
+                                        preserveAspectRatio="xMidYMid meet">
+                                        <metadata>
+                                        Created by potrace 1.16, written by Peter Selinger 2001-2019
+                                        </metadata>
+                                        <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
+                                        fill="#000000" stroke="none">
+                                        <path d="M1810 5114 c-14 -2 -59 -9 -100 -15 -176 -25 -415 -101 -580 -184
+                                        -587 -295 -982 -823 -1107 -1480 -24 -127 -29 -474 -9 -615 65 -450 264 -848
+                                        583 -1166 485 -482 1170 -686 1841 -548 281 58 570 187 792 353 l65 49 740
+                                        -738 c472 -470 753 -743 777 -753 54 -25 145 -22 199 6 68 36 103 93 107 176
+                                        3 51 0 79 -13 107 -12 26 -257 279 -756 779 l-738 740 25 30 c49 60 140 202
+                                        190 300 133 254 203 507 225 807 43 575 -171 1145 -585 1561 -315 316 -716
+                                        518 -1157 582 -97 14 -425 19 -499 9z m473 -449 c512 -81 970 -430 1188 -903
+                                        282 -612 156 -1316 -321 -1792 -626 -627 -1626 -626 -2251 2 -238 240 -389
+                                        535 -446 870 -19 115 -21 375 -4 478 63 371 216 669 472 916 277 266 611 416
+                                        999 448 74 6 269 -4 363 -19z"/>
+                                        </g>
+                                        </svg>
+                                    </button>--}} 
+                                    @php
                                     $searchPlaceholder=getNomenclatureName('Search', true);
                                     $searchPlaceholder=($searchPlaceholder==='Search product, vendor, item') ?
                                     __('Search product, vendor, item') : $searchPlaceholder; @endphp <input
                                         class="form-control border-0 typeahead" type="search"
                                         placeholder="{{$searchPlaceholder}}" id="main_search_box"
                                         autocomplete="off"> </div>
-                                <div class="list-box style-4" style="display:none;" id="search_box_main_div"> </div>
+                                    <div class="list-box style-4" style="display:none;" id="search_box_main_div"> </div>
+                                </div>
+                                @include('layouts.store.search_template')                        
                             </div>
-                            @include('layouts.store.search_template')
-                        
-                        </div>
                         
                         <div class="al_count_tabs my-1 d-none d-sm-block">
                             @if($mod_count > 1)
@@ -236,31 +236,31 @@ fill="#000000" stroke="none">
                                 @endif
                                 
                                 @if(auth()->user() && $client_preference_detail->show_wishlist==1)
-                                <div class="icon-nav  d-none d-sm-block"> 
-                                    <a class="fav-button" href="{{route('user.wishlists')}}"> 
-                                        <svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512.000000 512.000000"  preserveAspectRatio="xMidYMid meet">
-                                            <metadata>
-                                            Created by potrace 1.16, written by Peter Selinger 2001-2019
-                                            </metadata>
-                                            <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
-                                            fill="#000000" stroke="none">
-                                            <path d="M1325 4733 c-455 -57 -857 -339 -1062 -747 -44 -87 -106 -276 -124
-                                            -376 -20 -109 -18 -384 4 -490 46 -230 141 -433 286 -611 33 -41 526 -540
-                                            1095 -1109 l1036 -1035 1053 1055 c823 824 1064 1071 1103 1130 102 156 169
-                                            319 211 510 25 119 25 401 0 520 -42 192 -110 356 -212 510 -65 98 -260 294
-                                            -355 357 -318 212 -686 286 -1052 212 -249 -50 -473 -166 -666 -344 l-83 -77
-                                            -112 108 c-62 60 -146 131 -187 159 -236 157 -502 237 -781 234 -68 -1 -137
-                                            -4 -154 -6z m365 -388 c155 -23 294 -76 423 -162 42 -27 150 -124 260 -232
-                                            l187 -185 178 175 c197 195 222 216 337 282 402 232 921 156 1247 -181 131
-                                            -135 216 -286 265 -470 23 -85 26 -117 26 -252 0 -135 -3 -167 -26 -252 -31
-                                            -119 -89 -243 -156 -340 -35 -51 -329 -351 -961 -983 l-910 -910 -910 910
-                                            c-615 614 -926 933 -959 980 -294 425 -242 980 127 1337 239 231 550 332 872
-                                            283z"/>
-                                            </g>
-                                        </svg>
-                                        <span>Wishlist</span>
-                                    </a> 
-                                </div>
+                                    <div class="icon-nav  d-none d-sm-block"> 
+                                        <a class="fav-button" href="{{route('user.wishlists')}}"> 
+                                            <svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512.000000 512.000000"  preserveAspectRatio="xMidYMid meet">
+                                                <metadata>
+                                                Created by potrace 1.16, written by Peter Selinger 2001-2019
+                                                </metadata>
+                                                <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
+                                                fill="#000000" stroke="none">
+                                                <path d="M1325 4733 c-455 -57 -857 -339 -1062 -747 -44 -87 -106 -276 -124
+                                                -376 -20 -109 -18 -384 4 -490 46 -230 141 -433 286 -611 33 -41 526 -540
+                                                1095 -1109 l1036 -1035 1053 1055 c823 824 1064 1071 1103 1130 102 156 169
+                                                319 211 510 25 119 25 401 0 520 -42 192 -110 356 -212 510 -65 98 -260 294
+                                                -355 357 -318 212 -686 286 -1052 212 -249 -50 -473 -166 -666 -344 l-83 -77
+                                                -112 108 c-62 60 -146 131 -187 159 -236 157 -502 237 -781 234 -68 -1 -137
+                                                -4 -154 -6z m365 -388 c155 -23 294 -76 423 -162 42 -27 150 -124 260 -232
+                                                l187 -185 178 175 c197 195 222 216 337 282 402 232 921 156 1247 -181 131
+                                                -135 216 -286 265 -470 23 -85 26 -117 26 -252 0 -135 -3 -167 -26 -252 -31
+                                                -119 -89 -243 -156 -340 -35 -51 -329 -351 -961 -983 l-910 -910 -910 910
+                                                c-615 614 -926 933 -959 980 -294 425 -242 980 127 1337 239 231 550 332 872
+                                                283z"/>
+                                                </g>
+                                            </svg>
+                                            <span>Wishlist</span>
+                                        </a> 
+                                    </div>
                                 @endif
                                 <div class="icon-nav d-none d-sm-inline-block">
                                     <form name="filterData" id="filterData" action="{{route('changePrimaryData')}}">
@@ -268,8 +268,8 @@ fill="#000000" stroke="none">
                                             value="{{session('customerLanguage')}}"> <input type="hidden" id="cliCur"
                                             name="cliCur" value="{{session('customerCurrency')}}"> </form>
                                     <ul class="d-flex align-items-center m-0">
-                                        <li class="mr-2 pl-0 d-ipad"> 
-                                            <span class="mobile-search-btn">
+                                        <li class="mr-2 pl-0 d-ipad d-none"> 
+                                            <span class="mobile-search-btn d-none">
                                                 <i class="fa fa-search" aria-hidden="true"></i>
                                             </span> 
                                         </li>
@@ -771,7 +771,7 @@ fill="#000000" stroke="none">
                                 </div>
                                 @include('layouts.store.search_template')
                                 @if(auth()->user() && $client_preference_detail->show_wishlist==1)
-                                <div class="icon-nav mr-2 d-none d-sm-block"> 
+                                <div class="icon-nav mr-0 d-none d-sm-block"> 
                                     <a class="fav-button" href="{{route('user.wishlists')}}"> 
                                     <svg version="1.0" xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 512.000000 512.000000" preserveAspectRatio="xMidYMid meet">
                                     <metadata> Created by potrace 1.16, written by Peter Selinger 2001-2019 </metadata> <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
@@ -799,8 +799,11 @@ fill="#000000" stroke="none">
                                             value="{{session('customerLanguage')}}"> <input type="hidden" id="cliCur"
                                             name="cliCur" value="{{session('customerCurrency')}}"> </form>
                                     <ul class="d-flex align-items-center m-0">
-                                        <li class="mr-2 pl-0 d-ipad"> <span class="mobile-search-btn"><i
-                                                    class="fa fa-search" aria-hidden="true"></i></span> </li>
+                                        <li class="mr-0 pl-0 d-ipad d-none"> 
+                                            <span class="mobile-search-btn ">
+                                                <i class="fa fa-search" aria-hidden="true"></i>
+                                            </span> 
+                                            </li>
                                         <li class="onhover-div pl-0 shake-effect">
                                             @if($client_preference_detail)
                                             @if($client_preference_detail->cart_enable==1)

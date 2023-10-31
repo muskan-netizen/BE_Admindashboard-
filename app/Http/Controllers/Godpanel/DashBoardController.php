@@ -226,7 +226,7 @@ public function enableLumenService(Request $request)
     \Log::info($responseData);
 
     return response()->json([
-        'message' => 'Order created successfully',
+        'message' => 'lumen updated successfully',
         'data' => $data ?? '',
         'api_response' => $responseData ?? '',
     ], 200);
@@ -237,10 +237,13 @@ public function enableCampaignService(Request $request)
     $api_domain = ClientPreferenceAdditional::where('key_name', 'lumen_domain_url')->first();
     $client = Client::find($request->client_id);
 
+    if($request->has('campaign_service'))
+
     $data = [
         'campaign_service' => $request->campaign_service,
         'code' => $client->code,
     ];
+    
 
     \Log::info('post data');
     \Log::info($data);
@@ -261,8 +264,7 @@ public function enableCampaignService(Request $request)
         if ($response->status() === 200) {
             $responseData = $response->json();
             
-            // Extract the API key from the response and save it in the database
-            
+
                 $client->campaign_service = $request->campaign_service;
                 $client->save();
             

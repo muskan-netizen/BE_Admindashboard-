@@ -1770,6 +1770,7 @@ body.al_body_template_eight .custom-vender-card .suppliers-img-outer img {
 
 body.al_body_template_eight .custom-vender-card .supplier-rating {
     padding: 0 20px;
+    min-height: 125px;
 }
 
 body.al_body_template_eight section#continental .product_variant_quantity_wrapper {
@@ -2556,7 +2557,7 @@ body.dark.al_body_template_eight section.section-b-space.new-pages .custom-conta
 body.al_body_template_eight.p2p-module section.section-b-space.alSingleProducts.product_ddetails_page a {
     float: none;
     margin: 0;
-    padding: 5px 0px!important;
+    padding: 5px 10px!important;
     /* display: inline-block!important;  */
     min-height: inherit!important;
 }
@@ -3096,6 +3097,7 @@ body.al_body_template_eight.homeHeader .main-fillter .side_fillter .range-slider
 .buy_details .product-right> hr {
     display: none;
 }
+.product_compare_design ul.cd-features-list li.compare_pro_discription{display: block!important;}
 /*----------laptop view----------*/
 
 @media screen and (min-width:768px) and (max-width:1392px){
