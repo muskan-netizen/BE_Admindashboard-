@@ -2885,8 +2885,14 @@ class OrderController extends FrontController
 
 
 
-                // $OrderVendor->payable_amount = $vendor_payable_amount +$fixedFeeAmount+$new_vendor_taxable_amount;
-                $OrderVendor->payable_amount = $request->$total_amount;
+                if($action == 'p2p'){
+                    $OrderVendor->payable_amount = $request->$total_amount;
+
+                }
+                else{
+                    $OrderVendor->payable_amount = $vendor_payable_amount +$fixedFeeAmount+$new_vendor_taxable_amount;
+
+                }
                 if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
                     $OrderVendor->subtotal_amount = $OrderVendor->payable_amount = $request->total_amount;
                 }
@@ -3612,7 +3618,7 @@ class OrderController extends FrontController
                     'is_tracking_url'
                 ])['is_tracking_url'] == 1) {
                     \Log::info('test');
-                    $this->sendTrackingUrlSMS($orderData);
+                    $this->sendTrackingUrlSMS($orderData,$request->order_id);
                 }
             }
         }
