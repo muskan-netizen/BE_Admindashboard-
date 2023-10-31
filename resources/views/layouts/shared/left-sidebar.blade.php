@@ -1,5 +1,5 @@
 @php
-    $getAdditionalPreference = getAdditionalPreference(['is_seller_module','is_gift_card','is_marg_enable']);
+    $getAdditionalPreference = getAdditionalPreference(['is_seller_module','is_gift_card','is_marg_enable','is_vendor_marg_configuration']);
 @endphp
 <div class="left-side-menu">
     <div class="logo-box   d-lg-block">
@@ -137,19 +137,28 @@
                                     </a>
                                 </li>
                             @endif
-                            @if(@$getAdditionalPreference['is_marg_enable'] == '1')
-                            <li>
+
+                            @if(@$getAdditionalPreference['is_vendor_marg_configuration'] == '1')
+                                <li>
                                     <a href="{{route('failed-marg-orders')}}">
-                                    <span class="icon-vendor"></span>
+                                    <span class="icon-orders"></span>
                                     @php
                                         $vendormenu = getNomenclatureName('Marg Failed Orders', true);
-
-                                    @endphp
+                                        $vendor_orders_count = \App\Models\OrderVendor::select('id')->whereHas('orderDetail', function ($query){
+                                            $query->where('marg_status', '=',null);
+                                            $query->where('marg_max_attempt', '>',2);
+                                        })->whereHas('vendor.permissionToUser', function ($query){
+                                            if (auth()->user()->is_admin) {
+                                                $query->where('user_id', auth()->user()->id);
+                                            }
+                                        })->count(); 
+                                    @endphp 
                                         {{-- <span>{{getNomenclatureName('Vendors', true)}}</span> --}}
-                                        <span>{{ __('Marg Failed Orders') }}</span>
+                                        <span>{{ __('Marg Failed Orders') }} {{ $vendor_orders_count ? '('. $vendor_orders_count .')' : '' }}</span>
                                     </a>
-                         </li>
-                         @endif
+                                </li>
+                            @endif
+
                             @if(@$getAdditionalPreference['is_seller_module'] == '1')
                                 <li>
                                     <a href="{{route('seller.index')}}">
@@ -296,6 +305,13 @@
                                 <a href="{{route('admin.serviceArea.index')}}">
                                     <span class="icon-customer-2"></span>
                                     <span> {{ __('Admin Service Area') }} </span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="{{route('company.getList')}}">
+                                    <span class="icon-customer-2"></span>
+                                    <span> {{ __('Companies') }} </span>
                                 </a>
                             </li>
 
@@ -483,6 +499,40 @@
                                 </a>
                             </li>
                         @endif
+                        @if(Auth::user()->is_superadmin == 1)
+                            <li>  
+                                <a href="{{route('manageCache')}}">
+                                    <i class="icon-profile"></i>
+                                    <span>{{ __("Cache Control") }}</span>
+                                    </a>
+                            </li>
+                            <li class="d-none">  
+                                <a href="{{route('manage.attribute')}}">
+                                    <i class="icon-profile"></i>
+                                    <span>{{ __("Manage Attributes") }}</span>
+                                </a>
+                            </li>
+                        @endif
+                        
+                        <li>  
+                            <a href="{{route('rental.protection')}}">
+                                <i class="icon-profile"></i>
+                                <span>{{ __("Rental Protection") }}</span>
+                            </a>
+                        </li>
+                        <li>  
+                            <a href="{{route('booking.option')}}">
+                                <i class="icon-profile"></i>
+                                <span>{{ __("Booking Option") }}</span>
+                            </a>
+                        </li>
+                        <li>  
+                            <a href="{{route('destinations')}}">
+                                <i class="icon-profile"></i>
+                                <span>{{ __("Destination") }}</span>
+                            </a>
+                        </li>
+                        
                         {{-- @if(Auth::user()->is_superadmin == 1)
                             <li>
                                 <a href="{{route('verifyoption.index')}}">

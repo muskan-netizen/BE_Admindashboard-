@@ -81,8 +81,8 @@
 }
 .custom_filtter ul li span {
     font-weight: 500;
-    font-size: 20px;
-    line-height: 24px;
+    font-size: 18px;
+    line-height: 22px;
     color: #0A0A0A;
     position: relative;
 }
@@ -100,6 +100,7 @@
     min-width: 0;
     max-width: 100%;
     line-height: 50px;
+    text-align: left;
 }
 .custom_filtter ul li a.active {
     color: #E9248D;
@@ -116,7 +117,7 @@
 .custom_filtter ul li a {
     font-style: normal;
     font-weight: 400;
-    font-size: 18px;
+    font-size: 16px;
     line-height: 22px;
     color: #6F6F6F;
     position: relative;

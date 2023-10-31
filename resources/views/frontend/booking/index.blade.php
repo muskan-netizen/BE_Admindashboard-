@@ -583,7 +583,7 @@ input[type=number]::-webkit-outer-spin-button {
                         var randomColor = "#" + ((1<<24)*Math.random() | 0).toString(16);
                         %>
                         <div class="col-3 text-center alHoverRiderBox">
-                            <input class="alCheckMark" type="radio" name="rider_id" id="option-<%= key %>" <% if(key == 0){'checked'} %> >
+                            <input class="alCheckMark" type="radio" name="rider_id" id="option-<%= key %>" value="<%= rider.id %>"  <% if(key == 0){'checked'} %> >
                             <label for="option-<%= key %>" class="option option-<%= key %>">
                                 <div class="alRiderImg mb-1" style="background-color: <%=randomColor%> "> <%= (rider.first_name).charAt(0)%></div>
                                 <div class="dalRiderInfo">

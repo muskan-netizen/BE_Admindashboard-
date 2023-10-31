@@ -7,10 +7,11 @@ use DB;
 use Auth;
 use Session;
 use App\Models\UserVendor;
+use Illuminate\Support\Facades\Cache;
 
 class ProductVariant extends Model
 {
-	protected $fillable = ['sku','product_id','title','quantity','price','position','compare_at_price','cost_price','barcode','currency_id','tax_category_id','inventory_policy','fulfillment_service','inventory_management','status', 'container_charges','markup_price','incremental_price','incremental_price_per_min','role_id', 'square_variant_id', 'square_variant_version'];
+	protected $fillable = ['sku','product_id','title','quantity','price','position','compare_at_price','cost_price','barcode','currency_id','tax_category_id','inventory_policy','fulfillment_service','inventory_management','status', 'container_charges','markup_price','incremental_price','incremental_price_per_min','role_id', 'square_variant_id', 'square_variant_version', 'minimum_duration'];
 
     protected $appends = ['actual_price', 'new_price'];
 
@@ -157,21 +158,31 @@ class ProductVariant extends Model
     public function getPriceAttribute($value)
     {
         $checkMarkup = 0;
-        $vendor = Product::where('id', $this->product_id)->select('vendor_id','tax_category_id')->first();
+        $cacheKey = 'Product_'.$this->product_id;
+        $vendor = Cache::remember($cacheKey, 60, function () {
+            return Product::where('id', $this->product_id)->select('vendor_id','tax_category_id')->first();
+        });
         if(!empty($vendor)){
-            $checkMarkup = Vendor::where('id',$vendor->vendor_id)->value('add_markup_price');
+            $cacheKey = 'markup_price_'.$vendor->vendor_id;
+            $checkMarkup = Cache::remember($cacheKey, 60, function () use($vendor) {
+                return Vendor::where('id',$vendor->vendor_id)->value('add_markup_price');
+            });
         
             //if vendor price add with markup price
-            if(auth()->user() !=null && auth()->user()->is_admin == 1){
-                $userVendor = UserVendor::where('user_id', auth()->id())->where('vendor_id', $vendor->vendor_id)->first();
+            $user = auth()->user();
+            if($user !=null && $user->is_admin == 1 ){
+                $cacheKey = 'user_vendor_'.$user->id;
+                $userVendor = Cache::remember($cacheKey, 60, function () use($vendor, $user) {
+                    return UserVendor::where('user_id', $user->id)->where('vendor_id', $vendor->vendor_id)->first();
+                });
                 if($userVendor){
                     return decimal_format($value);
                 }
             }
-       }
-       if($checkMarkup){
+        }
+        if($checkMarkup){
            return decimal_format($value + $this->markup_price??0);
-       }
+        }
 
        //  price based on role
        if(auth()->user() !=null){
@@ -191,8 +202,16 @@ class ProductVariant extends Model
     public function getMarkupPriceAttribute($value)
     {
         $checkMarkup = 0;
-        $vendor = Product::where('id', $this->product_id)->value('vendor_id');
-        $checkMarkup = Vendor::where('id',$vendor)->value('add_markup_price');
+        $cacheKey = 'Product_'.$this->product_id;
+        $vendor = Cache::remember($cacheKey, 60, function () {
+            return Product::where('id', $this->product_id)->select('vendor_id')->first();
+        });
+
+        $cacheKey = 'markup_price_'.$vendor;
+        $checkMarkup = Cache::remember($cacheKey, 60, function () use($vendor) {
+            return Vendor::where('id',$vendor)->value('add_markup_price');
+        });
+
         //if vendor price add with markup price
            if($checkMarkup){
                 return decimal_format($value);

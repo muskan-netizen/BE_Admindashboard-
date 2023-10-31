@@ -12,7 +12,7 @@ use App\Models\User;
 use App\Models\NotificationTemplate;
 use GuzzleHttp\Client;
 use App\Models\Client as CP;
-use App\Models\{ClientPreference, ClientPreferenceAdditional, OrderLongTermServiceSchedule, UserAddress, Product, Vendor, OrderVendor};
+use App\Models\{ClientPreference, ClientPreferenceAdditional, OrderLongTermServiceSchedule, UserAddress, Product, Vendor, OrderVendor, VendorMargConfig};
 use Log;
 use Carbon\Carbon;
 use App\Models\Order;
@@ -89,9 +89,9 @@ class MargApiOrderUpdate extends Command
                 $preference = ClientPreference::first();
 
 
-                $hub_key = @getAdditionalPreference(['is_marg_enable']);
+                $hub_key = @getAdditionalPreference(['is_vendor_marg_configuration']);
 
-                if(isset($hub_key) && $hub_key['is_marg_enable'] == 1){
+                if(isset($hub_key) && $hub_key['is_vendor_marg_configuration'] == 1){
                     // $decryptionKey  = $hub_key['marg_decrypt_key'];
                     // $MargID  = $hub_key['marg_access_token'];
                     // $CompanyCode  = $hub_key['marg_company_code'];
@@ -111,11 +111,14 @@ class MargApiOrderUpdate extends Command
                     ])
                 ->where('marg_max_attempt', '<', 3)
                     ->get();
-                    // dd($orders);
                 if (count($orders) > 0) {
 
                     foreach ($orders as $order) {
-                        $this->makeInsertOrderMargApi($order);
+
+                        $marg_config = VendorMargConfig::where('vendor_id',$order->ordervendor->vendor_id ?? 0)->first();
+                        if ($marg_config && $marg_config['is_marg_enable'] == 1) {
+                            $this->makeInsertOrderMargApi($order);
+                        }
                     }
                 }
             }

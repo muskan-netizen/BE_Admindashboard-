@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{AppStyling, UserRegistrationDocuments, AppStylingOption,VendorCategory, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,PermissionsOld, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page,UserDocs,WebStylingOption,Type, VendorAdditionalInfo};
+use App\Models\{AllergicItem, AppStyling, UserRegistrationDocuments, AppStylingOption,VendorCategory, Currency, Client, Category, Brand, Cart, ReferAndEarn, ClientPreference, Vendor, ClientCurrency, User, Country, UserRefferal, Wallet, WalletHistory, CartProduct, PaymentOption, UserVendor,PermissionsOld, UserPermissions, VendorDocs, VendorRegistrationDocument, EmailTemplate, NotificationTemplate, UserDevice,Page,UserDocs,WebStylingOption,Type, UserAllergicItem, VendorAdditionalInfo};
 
 use Kutia\Larafirebase\Facades\Larafirebase;
 use App\Http\Controllers\Client\VendorController;
@@ -32,6 +32,8 @@ use Math;
 use SimpleXMLElement;
 use Log;
 use App\Http\Traits\ProductActionTrait;
+use App\Observers\OrderObserver;
+use App\Observers\UserObserver;
 
 class CustomerAuthController extends FrontController
 {
@@ -81,7 +83,7 @@ class CustomerAuthController extends FrontController
         }
     }
 
-    public function loginForm($domain = '')
+    public function loginForm(Request $request,$domain = '')
     {
         $curId = Session::get('customerCurrency');
         $langId = Session::get('customerLanguage');
@@ -100,7 +102,7 @@ class CustomerAuthController extends FrontController
         return view('frontend.'.$login_page)->with(['navCategories' => $navCategories]);
     }
 
-    public function registerForm($domain = '', Request $request)
+    public function registerForm(Request $request,$domain = '')
     {
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
@@ -136,10 +138,13 @@ class CustomerAuthController extends FrontController
         }else{
             $register_page = "account.registernew";
         }
+        
+        $allergic_items = AllergicItem::get();
+        //echo $register_page; die;
         if (!Session::get('referrer')) {
-            return view('frontend.'.$register_page)->with(['navCategories' => $navCategories,'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents]);
+            return view('frontend.'.$register_page)->with(['navCategories' => $navCategories,'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents,'allergic_items' => $allergic_items]);
         } else {
-            return view('frontend.account.'.$register_page)->with(['navCategories' => $navCategories, 'code' => Session::get('referrer'),'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents]);
+            return view('frontend.account.'.$register_page)->with(['navCategories' => $navCategories, 'code' => Session::get('referrer'),'privacy' => $privacy,'terms' => $terms , "user_registration_documents"=> $user_registration_documents,'allergic_items' => $allergic_items]);
         }
     }
 
@@ -221,7 +226,7 @@ class CustomerAuthController extends FrontController
         try {
             $phonenumber= str_replace('-', '', $req->phone_number);
             $req->phone_number = str_replace(' ', '', $phonenumber);
-            if( (empty($req->email)) && (empty($req->phone_number)) ){
+            if( (empty($req->email)) && (empty($req->phone_number)) ) {
                 $validator = $req->validate([
                     'email'  => 'required',
                     'phone_number'  => 'required|unique:users'
@@ -229,6 +234,12 @@ class CustomerAuthController extends FrontController
                     "email.required" => __('The email field is required.'),
                     "phone_number.required" => __('The phone number field is required.'),
                 ]);
+                if($req->dialCode == 91) {
+                    $validator = $req->validate([
+                        'phone_number'  => 'numeric|min:10|max:10'
+                    ]);
+                }
+                
             }
             else{
 
@@ -246,6 +257,9 @@ class CustomerAuthController extends FrontController
                     ]);
                 }
             }
+            
+            $getAdditionalPreference = getAdditionalPreference(['is_user_pre_signup']);
+            
             $user = new User();
             $county = Country::where('code', strtoupper($req->countryData))->first();
             $client_timezone = Client::where('id', '>', 0)->value('timezone');
@@ -257,6 +271,14 @@ class CustomerAuthController extends FrontController
             $user->status = 1;
             $user->role_id = 1;
             $user->name = $req->name;
+            
+            if(isset($getAdditionalPreference) && ($getAdditionalPreference['is_user_pre_signup'] == 1))
+            {
+                $user->is_presignup = 1;
+            }else{
+                $user->is_presignup = 0;
+                
+            }
             $user->email = $email;
             $user->is_email_verified = 0;
             $user->is_phone_verified = 0;
@@ -268,9 +290,26 @@ class CustomerAuthController extends FrontController
             $user->phone_token_valid_till = $sendTime;
             $user->email_token_valid_till = $sendTime;
             $user->timezone = $client_timezone;
+
+            if(session()->get('company_id')){
+                $user->company_id = base64_decode(session()->get('company_id'));
+            }
+
             $user->password = Hash::make($req->password);
+            $user->custom_allergic_items = $req->custom_allergic_items ?? null;
+
             $user->save();
 
+            if ($req->allergic_item_ids && count($req->allergic_item_ids)) {
+                foreach($req->allergic_item_ids as $key => $id){
+                    $data[$key] = [
+                        'user_id' => $user->id,
+                        'allergic_item_id' => $id,
+                    ];
+                }
+                UserAllergicItem::insert($data);
+            }
+            
             // Save User Kyc Details
             if(@$req->kyc){
                 InfluencerTrait::saveKycData($req, $user->id);
@@ -361,6 +400,8 @@ class CustomerAuthController extends FrontController
 
                 if( getClientPreferenceDetail()->p2p_check ) {
 
+                    $user->assignRole(4); // by default make this user as vendor
+                    
                     $user->is_admin = 1;
                     $user->save();
 
@@ -513,6 +554,9 @@ class CustomerAuthController extends FrontController
                 $this->LoginActionRecentView($userid);
             }
             
+            //Login Observer
+            UserObserver::signIn(auth()->user());
+            
             $message = ('Logged in successfully');
             $redirect_to = '';
      
@@ -583,7 +627,6 @@ class CustomerAuthController extends FrontController
     
     /*** Login user via username ***/
     public function loginViaUsername(Request $request, $domain = ''){
-       
         try{
             $errors = array();
 
@@ -690,6 +733,10 @@ class CustomerAuthController extends FrontController
                 }
                 $username = str_ireplace(' ', '', $username);
                 if (Auth::attempt(['email' => $username, 'password' => $request->password, 'status' => 1])) {
+
+                    //Login Observer
+                     UserObserver::signIn(auth()->user());
+
                     $userid = Auth::id();
                     $Authuser = Auth::user();
                     $update_last_login = User::where('id',$userid)->update(['last_login_at' => Carbon::now()->toDateTimeString()]);

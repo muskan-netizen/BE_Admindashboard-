@@ -23,5 +23,8 @@ class NomenclatureTableSeeder extends Seeder
         if(!NomenClature::where(['label'=>'P2P'])->exists()){
             NomenClature::Create(['label'=>'P2P']);
         }
+        if(!NomenClature::where(['label'=>'Car-Rental'])->exists()){
+            NomenClature::Create(['label'=>'Car-Rental']);
+        }
     }
 }

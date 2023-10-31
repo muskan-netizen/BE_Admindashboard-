@@ -442,6 +442,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
 
 
                             @if(app('request')->input('step') == '2')
+                             
                                 <div id="step-2-ondemand">
                                    @php
                                    $lastKey = count($cartData) - 1;
@@ -452,13 +453,15 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                         @php
                                          $last_cart_product_id =  $cart_data->id
                                          @endphp
-                                        @if( in_array($cart_data->cateTypeId , [8,12]) && ($additionalPreference['is_service_product_price_from_dispatch'] !=1))
+                                        
+                                        @if(in_array($cart_data->cateTypeId , [8,12]) && ($additionalPreference['is_service_product_price_from_dispatch'] !=1))
+                                          
                                             @if(!empty($cart_data->product->mode_of_service) && $cart_data->product->mode_of_service == 'schedule')
-                                            @php
-                                                $productDate = trim(date('Y-m-d', strtotime($cart_data->scheduled_date_time)));
-                                            @endphp
+                                                @php
+                                                    $productDate = trim(date('Y-m-d', strtotime($cart_data->scheduled_date_time)));
+                                                @endphp
 
-
+                                               
                                             <div  id="date_time_set_div{{$cart_data->id}}" class="booking_date_section">
 
                                                 <h4 class="mb-2" ><b>{{ __('When would you like your service?')}}</b></h4>
@@ -493,6 +496,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                                 @else
                                                 <h5 class="text-center">{{ __("Vendor has not created slots for this Date yet.") }}</h5>
                                                 @endif
+                                               
                                                 @if($cart_data->is_dispatch_slot == 1)
                                                 @php
 
@@ -506,7 +510,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                                 @endphp
                                                 <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" >
                                                     {{-- style="@if($cart_data->schedule_slot != '')  @else display: none; @endif " --}}
-                                                @include('frontend.ondemand.dispatcher_agent_slots')
+                                                    @include('frontend.ondemand.dispatcher_agent_slots')
                                                 </div>
                                                 @else
                                                     @php

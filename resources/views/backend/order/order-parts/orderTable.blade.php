@@ -478,7 +478,26 @@
                                     <span>-{{ $clientCurrency->currency->symbol }}{{ decimal_format($order->total_discount_calculate) }}</span>
                                 </li>
                             @endif
+                            
+                            @if ($order->rental_protection_amount > 0 || $order->rental_protection_amount < 0)
+                                <li class="d-flex align-items-center justify-content-between">
+                                    <label class="m-0">{{ __('Rental Protection Amount') }}</label>
+                                    <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($order->rental_protection_amount) }}</span>
+                                </li>
+                            @endif
 
+                            @if ($order->booking_option_price > 0 || $order->booking_option_price < 0)
+                                <li class="d-flex align-items-center justify-content-between">
+                                    <label class="m-0">{{ __('Booking Option Amount') }}</label>
+                                    <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($order->booking_option_price) }}</span>
+                                </li>
+                            @endif
+                            @if($order->luxury_option_id == 4)
+                                <li class="d-flex align-items-center justify-content-between">
+                                    <label class="m-0">{{ __('Security Amount') }} </label>
+                                    <span>{{Session::get('currencySymbol').decimal_format($order->security_amount)}}</span>
+                                </li>
+                            @endif
                             <li class="grand_total d-flex align-items-center justify-content-between">
                                 <label class="m-0">{{ __('Payable') }} </label>
                                 <span>{{ $clientCurrency->currency->symbol }}{{ decimal_format($order->payable_amount) }}</span>

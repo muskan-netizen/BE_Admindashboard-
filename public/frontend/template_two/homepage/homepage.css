@@ -202,6 +202,11 @@ body .category-head {
 .cab-banner-area .cab-input input.form-control{
     color: #000!important;  
 }
+@media(min-width:1900px) {
+    ul.sm.pixelstrap.sm-horizontal{
+        justify-content: center;
+    }
+}
 @media(max-width:1440px) {
    .product-right .product-buttons button{margin-bottom: 10px;}
    .product-right .product-buttons a{margin-bottom: 10px;}

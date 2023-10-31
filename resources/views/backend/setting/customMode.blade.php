@@ -1,5 +1,4 @@
-@if ($client_preference_detail->business_type != 'taxi')
-    @if ($client_preference_detail->business_type != 'laundry')
+@if ($client_preference_detail->business_type != 'laundry' && $client_preference_detail->business_type != 'taxi')
         <div class="col-md-4">
             <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                 <label for="pharmacy_check" class="mr-2 mb-0">{{ __('Pharmacy Mod') }}
@@ -21,6 +20,7 @@
             </div>
         </div>
     @endif
+
     {{-- <div class="col-md-4">
         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
                     <label for="off_scheduling_at_cart" class="mr-2 mb-0">{{__('Disable Scheduling Orders')}}<small class="d-block pr-5">Disable Order Scheduling across the platform to limit only to Instant Orders.</small></label>
@@ -38,7 +38,9 @@
             </span>
         </div>
     </div>
-    <div class="col-md-4">
+   
+{{-- @endif --}}
+ <div class="col-md-4">
         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
             <label for="subscription_mode" class="mr-2 mb-0">{{ __('Subscription Mod') }}<small
                     class="d-block pr-5">{{ __('Enable the option to create Subscriptions for Customers and Vendors.') }}</small></label>
@@ -48,7 +50,7 @@
             </span>
         </div>
     </div>
-@endif
+
 <div class="col-md-4">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="subscription_tab_taxi" class="mr-2 mb-0">{{ __('Subscription Tab') }}<small
@@ -538,9 +540,6 @@
     </div>
 </div>
 
-
-
-
 <div class="col-md-4">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="is_user_kyc_for_registration_switch"
@@ -579,7 +578,7 @@
                 data-className="is_file_cart_instructions" data-color="#43bee1"
                 @if ($getAdditionalPreference['is_file_cart_instructions'] == '1') checked='checked' @endif>
             <input type="hidden" @if ($getAdditionalPreference['is_file_cart_instructions'] == 1) value="1" @else value="0" @endif
-                name="is_file_cart_instructions" id="is_file_cart_instructions" />
+                  name="is_file_cart_instructions" id="is_file_cart_instructions" />
         </span>
     </div>
 </div>
@@ -623,7 +622,7 @@
             name="is_service_product_price_from_dispatch" id="is_service_product_price_from_dispatch" />
     </div>
 </div>
-@if ($getAdditionalPreference['is_service_product_price_from_dispatch'] == '1') 
+@if ($getAdditionalPreference['is_service_product_price_from_dispatch'] == '1')
 <div class="col-md-4 ">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="is_service_price_selection_switch" class="mr-2 mb-0">{{ __('Service Freelancer/ Vendor Module') }}<small
@@ -667,6 +666,28 @@
 
 <div class="col-md-4 ">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_rental_weekly_monthly_price" class="mr-2 mb-0">{{__('Rental Weekly Monthly Price')}}<small class="d-block pr-5">{{__("Enable to add weekly and monthly price for product in rental.")}}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_rental_weekly_monthly_price" id="is_rental_weekly_monthly_price_switch" class="form-control checkbox_change" data-className="is_rental_weekly_monthly_price"  data-color="#43bee1" @if(@$getAdditionalPreference['is_rental_weekly_monthly_price'] == 1) checked='checked' @endif>
+        </span>
+        <input type="hidden"  @if(@$getAdditionalPreference['is_rental_weekly_monthly_price'] == 1) value="1" @else value="0" @endif  name="is_rental_weekly_monthly_price"  id="is_rental_weekly_monthly_price"/>
+    </div>
+</div>
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_share_ride_users" class="mr-2 mb-0">{{ __('Share Ride Users') }}<small
+                class="d-block pr-5">{{ __('.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_share_ride_users"
+                id="is_share_ride_users_switch" class="form-control checkbox_change"
+                data-className="is_share_ride_users" data-color="#43bee1"
+                @if (@$getAdditionalPreference['is_share_ride_users'] == 1) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['is_share_ride_users'] == 1) value="1" @else value="0" @endif
+            name="is_share_ride_users" id="is_share_ride_users" />
+    </div>
+</div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="is_enable_curb_side" class="mr-2 mb-0">{{ __('Curb Side') }}<small
                 class="d-block pr-5">{{ __('Enable Curb Side Notification To Vendor.') }}</small></label>
         <span> <input type="checkbox" data-plugin="switchery" name="is_enable_curb_side"
@@ -681,18 +702,31 @@
 
 <div class="col-md-4 ">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
-        <label for="is_service_price_selection_switch" class="mr-2 mb-0">{{ __('Map Configuration') }}<small
-                class="d-block pr-5">{{ __('Enable this if you want to search address within your country') }}</small></label>
-        <span> <input type="checkbox" data-plugin="switchery" name="is_map_search_perticular_country_switch"
-                id="is_map_search_perticular_country_switch" class="form-control checkbox_change"
-                data-className="is_map_search_perticular_country" data-color="#43bee1"
-                @if ($getAdditionalPreference['is_map_search_perticular_country'] == 1) checked='checked' @endif>
+        <label for="is_enable_allergic_items" class="mr-2 mb-0">{{ __('Customer Allergic Items') }}<small
+                class="d-block pr-5">{{ __('Enable this for Customer add Allergic Items.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_enable_allergic_items"
+                id="is_enable_allergic_items_switch" class="form-control checkbox_change"
+                data-className="is_enable_allergic_items" data-color="#43bee1"
+                @if (@getAdditionalPreference(['is_enable_allergic_items'])['is_enable_allergic_items']) checked='checked' @endif>
         </span>
-        <input type="hidden" @if ($getAdditionalPreference['is_map_search_perticular_country'] == 1) value="1" @else value="0" @endif
-            name="is_map_search_perticular_country" id="is_map_search_perticular_country" />
+        <input type="hidden" @if (@$getAdditionalPreference['is_enable_allergic_items'] == 1) value="1" @else value="0" @endif
+            name="is_enable_allergic_items" id="is_enable_allergic_items" />
     </div>
 </div>
 
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_vendor_marg_configuration" class="mr-2 mb-0">{{ __('Vendor Marg Configuration') }}<small
+                class="d-block pr-5">{{ __('Enable this for Vendor add own Marg Configuration.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_vendor_marg_configuration"
+                id="is_vendor_marg_configuration_switch" class="form-control checkbox_change"
+                data-className="is_vendor_marg_configuration" data-color="#43bee1"
+                @if (@getAdditionalPreference(['is_vendor_marg_configuration'])['is_vendor_marg_configuration']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['is_vendor_marg_configuration'] == 1) value="1" @else value="0" @endif
+            name="is_vendor_marg_configuration" id="is_vendor_marg_configuration" />
+    </div>
+</div>
 <div class="col-md-4 ">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="is_vendor_marg_configuration" class="mr-2 mb-0">{{ __('Manage Roles & Permission') }}<small

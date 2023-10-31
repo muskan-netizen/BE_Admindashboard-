@@ -23,6 +23,7 @@ class AppStylingAddOptionTableSeeder extends Seeder
             array('app_styling_id' => '8', 'name' => 'Home Page 11', 'image' => 'home_eleven.png', 'template_id' => '10', 'is_selected' => '0'),
             array('app_styling_id' => '8', 'name' => 'Home Page 12', 'image' => 'home_twelve.png', 'template_id' => '11', 'is_selected' => '0')
         );
+        
 
       
         foreach ($app_styling_options as $option) {

@@ -207,7 +207,24 @@ function initDataTable(table, status) {
                 drawCallback: function () {
                     $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
                 },
-                buttons: [],
+                buttons: [
+                    {
+                        extend: 'pdf',
+                        text: 'Export to PDF',
+                        className:'btn btn-success waves-effect Export_btn waves-light vendor_export_button',
+                        id:'exp-btn',
+                        text: '<span class="btn-label"><i class="mdi mdi-file-pdf-box"></i></span>Export PDF',
+                        orientation: 'landscape',
+                        exportOptions: {
+                            columns: ':visible'
+                        },
+                        customize: function (doc) {
+                        doc.pageOrientation = 'landscape';
+                        doc.pageSize = 'A3'; // Set the custom page size
+                    }
+                        
+                    }
+                ],
                 ajax: {
                   url: base_url+'/client/vendor/filterdata',
                   complete: function(){

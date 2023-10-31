@@ -3653,6 +3653,11 @@ select.delivery-fee {
         width: 100% !important;
         padding: 0!important;
     }
+    body.al_body_template_nine.p2p-module.p2p_module_enable #summary-table {
+        width: 100%;
+        min-width: 100%;
+        margin:30px;
+    }
 }
 @media (max-width:767px) {
     body.al_body_template_three.dark .sm-horizontal {
@@ -3666,6 +3671,11 @@ select.delivery-fee {
     }
     .al_body_template_three h2.category-head {
         top: 140px;
+    }
+    body.al_body_template_nine.p2p-module.p2p_module_enable #summary-table {
+        width: 100%;
+        min-width: 100%;
+        margin:30px;
     }
 }
 
@@ -3845,4 +3855,59 @@ body.dark.al_body_template_nine .number input {
     border-left: 1px solid #ffffff;
     border-right: 1px solid #ffffff;
     color: #fff;
+}
+
+
+
+body.al_body_template_nine.p2p-module.p2p_module_enable .readmore__content {
+    display: contents;
+}
+  body.al_body_template_nine.p2p-module.p2p_module_enable button.readmore__toggle {
+    display: inline-block;
+    margin-top: 0;
+    border: none;
+    background: transparent;
+    color: #508c96;
+    padding: 0;
+    cursor: pointer;
+    border-radius: 0;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable section.section-b-space.alSingleProducts.product_ddetails_page h2 {
+    padding: 5px;
+}
+
+
+body.al_body_template_nine.p2p-module.p2p_module_enable #summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 820px;
+    margin: 30px 5rem 30px 7rem;
+    display: inline-table;
+    background-color: #fff;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable #summary-table tr td {
+    padding: 12px 30px;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable #summary-table tr th {
+    padding: 12px 30px;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable section.section-b-space.alSingleProducts.product_ddetails_page .img-outer-box.position-relative {
+    height: auto;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable section.section-b-space.alSingleProducts.product_ddetails_page .img-outer-box.position-relative img {
+    height: 250px;
+    object-fit: cover;
+}
+body.al_body_template_nine.p2p-module section.section-b-space.alSingleProducts.product_ddetails_page .product-card-box.position-relative.al_box_third_template.al:hover {
+    box-shadow: 0px 0px 11px 2px rgb(0 0 0 / 14%) !important;
+    background-color: #fff !important;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable section.section-b-space.alSingleProducts.product_ddetails_page h2 {
+    padding: 0;
+    font-size: 18px;
+    margin: 6px 4px;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable .item-price {
+    margin: 10px 4px !important;
+    padding:10px 4px !important;
 }

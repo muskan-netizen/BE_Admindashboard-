@@ -28,7 +28,7 @@ class ProductBookingController extends FrontController
      */
     public function checkProductAvailibility(Request $request)
     {
-      try {
+      // try {
         $block_time = explode('-', $request->blocktime);
         $start_time = date("Y-m-d H:i:s",strtotime($request->selectedStartDate));
         $end_time = date("Y-m-d H:i:s",strtotime($request->selectedEndDate));
@@ -43,16 +43,15 @@ class ProductBookingController extends FrontController
           $product_variant_id[]=$request->variant_id;
         }
 
-        $ProductBooking = ProductBooking::whereIn('variant_id',$product_variant_id)->where('product_id',$request->product_id)
+        $ProductBooking = ProductBooking::whereIn('variant_id',$product_variant_id)->where('product_id',$request->product_id)->where('on_rent', 1)
                             ->where(function ($query) use ($start_time , $end_time ){
-                                $query->where('start_date_time', '<=', $end_time)
-                                      ->where('end_date_time', '>=', $start_time);
+                                $query->where('start_date_time', '>=', $start_time)
+                                      ->where('end_date_time', '<=', $end_time);
                             })->pluck('variant_id')->toArray();
 
         $available_product_variant = array_values(array_diff($product_variant_id, $ProductBooking));
 
         $variant_product_detail = ProductVariant::select('product_id', 'quantity')->whereIn('id', $product_variant_id)->first();
-       
         $variant_product_quantity = $variant_product_detail->quantity;
 
         if($variant_product_detail->quantity > count($ProductBooking)){
@@ -69,9 +68,9 @@ class ProductBookingController extends FrontController
         $returnarr['variant_option_id'] = $request->variant_option_id;
         $returnarr['variant_product_quantity'] = $variant_product_quantity;
         return response()->json(array('success' => true, 'variant_data'=>$returnarr ,'message'=>'Available product data.'));
-    } catch (Exception $e) {
-          return response()->json(array('error' => false, 'message'=>'Something went wrong.'));
-        }
+    // } catch (Exception $e) {
+    //       return response()->json(array('error' => false, 'message'=>'Something went wrong.'));
+    //     }
      
     }
     

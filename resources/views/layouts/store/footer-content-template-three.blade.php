@@ -236,12 +236,11 @@ $applocale = session()->get('applocale');
     </div>
 </footer>
 @php
-if(@getAdditionalPreference(['is_enable_google_analytics'])['is_enable_google_analytics'] == 1){
+if(@getAdditionalPreference(['is_enable_google_analytics'])['is_enable_google_analytics'] == 1){ 
 $footer_script = getAdditionalPreference(['footer_script'])['footer_script'];
 @endphp
 {!! $footer_script !!}
- @php }
- @endphp
+ @php } @endphp
 </article>
 
 <div class="modal fade single-vendor-order-modal" id="single_vendor_order_modal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="s_vendor_remove_cartLabel" style="background-color: rgba(0,0,0,0.8);">
