@@ -3941,7 +3941,8 @@ p.vendor_address, p.vendor_email {
     height: 30px;
     padding: 0 10px;
     line-height: 30px;
-    border: .5px solid #ed5a6b;
+    border: .5px solid var(--theme-deafult);
+    color: var(--theme-deafult)!important;
     border-radius: 8px;
     overflow: hidden;
     cursor: pointer;
@@ -4031,8 +4032,9 @@ p.vendor_address, p.vendor_email {
 }
 
 .checkout-btn {
-    background: var(--theme-deafult);
-    color: #fff;
+    background: #1b1b1b;
+    border-top: 1px solid #ccc!important;
+    color: #fff!important;
     font-size: 18px;
     font-weight: 700;
     padding: 9px 0 11px;

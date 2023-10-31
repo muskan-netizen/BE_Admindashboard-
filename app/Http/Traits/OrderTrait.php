@@ -1124,7 +1124,7 @@ trait OrderTrait
         }
     }
 
-    public function sendTrackingUrlSMS($order, $vendor_id = '')
+    public function sendTrackingUrlSMS($order,$order_id='', $vendor_id = '')
     {
         $user = User::find($order['user_id']);
         $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'currency_id')->first();
@@ -1134,7 +1134,8 @@ trait OrderTrait
             $to = '+' . $user['dial_code'] . $user['phone_number'];
         }
         $provider = $prefer['sms_provider'];
-        $order    = Order::where(['user_id' => $order['user_id'], 'order_number' => $order['order_number']])->with('orderStatusVendor', 'ordervendor')->first();
+        $order    = Order::where('id',$order_id)->with('orderStatusVendor', 'ordervendor')->first();
+  
         if (isset($order->orderStatusVendor)) {
             $order_status = '';
             foreach ($order->orderStatusVendor as $key => $status) {

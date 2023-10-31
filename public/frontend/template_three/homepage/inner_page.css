@@ -580,12 +580,16 @@ span.fa.fa-eye-slash.toggle-password.eye::before {
 }
 
 .al_body_template_three .add-on-main-div .slick-slider .slick-prev {
-    left: -25px;
+    left: 0;
     top: 20px;
+    background-color: transparent!important;
 }
-
+.al_body_template_three .add-on-main-div .slick-slider .slick-prev:before{
+    color:#000!important;
+    font-size: 20px;
+}
 .al_body_template_three .add-on-main-div .slick-slider .slick-next {
-    right: -25px;
+    right: 0;
     top: 20px;
 }
 
@@ -3384,11 +3388,16 @@ input.addon-input-number {
 }
 
 .al_body_template_three .extra-items-price,
-.al_body_template_three .order-success-sec h3,
-.al_body_template_three .total-sec span {
+.al_body_template_three .order-success-sec h3{
     font-weight: 600;
 }
-
+.al_body_template_three .total-sec span{
+    font-weight: 400;
+}
+.product-order .final-total h3{
+    font-weight: 400;
+    padding: 0 12px;
+}
 .al_body_template_three .product-order h3 {
     text-transform: capitalize;
 }

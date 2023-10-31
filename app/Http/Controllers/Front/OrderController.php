@@ -3618,7 +3618,7 @@ class OrderController extends FrontController
                     'is_tracking_url'
                 ])['is_tracking_url'] == 1) {
                     \Log::info('test');
-                    $this->sendTrackingUrlSMS($orderData);
+                    $this->sendTrackingUrlSMS($orderData,$request->order_id);
                 }
             }
         }
