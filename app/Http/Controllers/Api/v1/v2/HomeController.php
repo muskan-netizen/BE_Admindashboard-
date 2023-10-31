@@ -680,7 +680,7 @@ class HomeController extends BaseController
          */
         $long_term_vendors = $vendors->pluck('id')->toArray();
 
-        $vendors = $vendors->where('status', 1)
+        $vendors = $vendors->where('status', 1)->where($request->type, 1)
             ->inRandomOrder()
             ->limit(10)->get();
 
