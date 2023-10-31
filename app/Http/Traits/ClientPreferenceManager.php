@@ -70,8 +70,6 @@ trait ClientPreferenceManager{
       if($value === 0){
         $value = "0";
       }
-
-    Cache::forget('client_preferences_additional_'.$key);
     Cache::forget('client_preferences_additional_["'.$key.'"]');
       ClientPreferenceAdditional::updateOrCreate(
           ['key_name' => $key, 'client_code' => $client->code],
