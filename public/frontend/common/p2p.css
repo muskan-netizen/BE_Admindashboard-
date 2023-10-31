@@ -1211,7 +1211,9 @@ body.al_body_template_nine.p2p-module .header-dropdown .onhover-dropdown a {
     font-size: 14px;
 }
 .al_body_template_nine  form#register .iti__selected-flag {
-    height: 45px;
+    height: 100%;
+    padding: 0 10px!important;
+    text-align: center;
 }
 .al_body_template_nine .al_custom_head .row {
     margin: 0!important;
