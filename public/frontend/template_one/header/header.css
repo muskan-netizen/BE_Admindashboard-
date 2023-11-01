@@ -1298,9 +1298,9 @@ body.al_body_template_one .main-menu .menu-right .icon-nav li ul.onhover-show-di
     body.al_body_template_one #content-wrap .site-header .navbar-brand {
         text-align: left;
     }
-    body.al_body_template_one .al_offset-top-home {
+    /* body.al_body_template_one .al_offset-top-home {
         margin-top: 140.625px !important;
-    }
+    } */
     body.al_body_template_one section.suppliers-section {
         margin-top: 20px !important;
     }
@@ -1458,9 +1458,9 @@ ul.header-dropdown.d-none.d-sm-inline li {
     body.al_body_template_one #content-wrap .site-header .navbar-brand {
         text-align: center;
     }
-    body.al_body_template_one .al_offset-top-home {
+    /* body.al_body_template_one .al_offset-top-home {
         margin-top: 140.625px !important;
-    }
+    } */
     body.al_body_template_one section.suppliers-section {
         margin-top: 20px !important;
     }

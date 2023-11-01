@@ -1,12 +1,13 @@
 
 $(document).ready(function() {
     
-    var table;
+       var table;
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
             }
         });
+      
         $(".all-vendor_check").click(function() {
             if ($(this).is(':checked')) {
                 $("#action_vendor_button").css("display", "block");
@@ -160,6 +161,7 @@ $(document).ready(function() {
         $(document).on("click",".nav-link",function() {
             let rel= $(this).data('rel');
             let status= $(this).data('status');
+            $('input[type="search"]').val('');
             initDataTable(rel, status);
         });
         $(document).on("click",".delete-vendor",function() {
@@ -190,6 +192,7 @@ $(document).ready(function() {
         });
 
 function initDataTable(table, status) {
+    // alert('#'+table+ "  "+ status);
             $('#'+table).DataTable({
                 "destroy": true,
                 // "scrollX": true,
@@ -231,7 +234,7 @@ function initDataTable(table, status) {
                   },
                   data: function (d) {
                     d.status = status;
-                    d.search = $('input[type="search"]').val();
+                    d.search = $('#'+table).DataTable().search();
                     d.date_filter = $('#range-datepicker').val();
                     d.payment_option = $('#payment_option_select_box option:selected').val();
                     d.tax_type_filter = $('#tax_type_select_box option:selected').val();

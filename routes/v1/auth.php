@@ -39,6 +39,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('social/login/{driver}', 'Api\v1\SocialController@login');
         Route::post('get_product_price_from_dispatcher',   'Api\v1\ProductController@getFreeLincerFromDispatcher');
         Route::post('product/search',   'Api\v1\YachtController@productsSearchResult');
+        Route::post('check-product-availability/{id}','Api\v1\YachtController@checkProductAvailability');
     });
     Route::group(['middleware' => ['dbCheck', 'AppAuth']], function() {
 
@@ -60,6 +61,8 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
        // Route::post('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
         Route::post('get-order-panel-detail', 'Api\v1\BaseController@getPanelDetail')->middleware('ConnectDbFromDispatcher');
+
+        Route::post('get-blockchain-address', 'Api\v1\BlockchainController@getBlockchainAddress');
 
 
         Route::get('profile', 'Api\v1\ProfileController@profile');

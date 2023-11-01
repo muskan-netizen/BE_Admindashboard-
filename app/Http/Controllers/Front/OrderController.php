@@ -62,6 +62,7 @@ use App\Models\ClientPreference;
 use App\Http\Traits\ {
     ApiResponser,
     CartManager,
+    OrderBlockchain,
     SquareInventoryManager,
     VendorTrait,
     OrderTrait,
@@ -77,7 +78,8 @@ use App\Models\ {
     CartBookingOption,
     CartRentalProtection,
     OrderNotificationsLogs,
-    ProductAvailability
+    ProductAvailability,
+    ClientPreferenceAdditional
 
 };
 use App\Models\ProductVariantSet;
@@ -92,7 +94,7 @@ use Illuminate\Support\Facades\Http;
 
 class OrderController extends FrontController
 {
-    use ApiResponser, CartManager, SquareInventoryManager,VendorTrait,OrderTrait,MargTrait;
+    use ApiResponser, CartManager, SquareInventoryManager,VendorTrait,OrderTrait,OrderBlockchain;
 
     /**
      * Display a listing of the resource.
@@ -921,12 +923,13 @@ class OrderController extends FrontController
 
         foreach ($activeOrders as $order) {
             foreach ($order->vendors as $vendor) {
-                $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)
-                    ->where('vendor_id', $vendor->vendor_id)
-                    ->orderBy('id', 'DESC')
-                    ->first();
+                // $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)
+                //     ->where('vendor_id', $vendor->vendor_id)
+                //     ->orderBy('id', 'DESC')
+                //     ->first();
+                // dd($vendor->OrderStatusOption->getStatusName($order->luxury_option_id));
+                $vendor->order_status = strtolower($vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'';
 
-                $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
 
                 foreach ($vendor->products as $product) {
                     $product = $this->gettimeSlotName($product);
@@ -973,11 +976,15 @@ class OrderController extends FrontController
             $is_order_days_for_return = 0;
             $replaceable = 0;
             foreach ($order->vendors as $vendor) {
-                $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)
-                    ->where('vendor_id', $vendor->vendor_id)
-                    ->orderBy('id', 'DESC')
-                    ->first();
-                $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+                // $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)
+                //     ->where('vendor_id', $vendor->vendor_id)
+                //     ->orderBy('id', 'DESC')
+                //     ->first();
+                // $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+
+                $vendor->order_status = strtolower($vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'';
+
+
                 foreach ($vendor->products as $product) {
                     $product = $this->gettimeSlotName($product);
                     // dd($product->product->return_days);
@@ -1092,11 +1099,15 @@ class OrderController extends FrontController
 
         foreach ($rejectedOrders as $order) {
             foreach ($order->vendors as $vendor) {
-                $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)
-                    ->where('vendor_id', $vendor->vendor_id)
-                    ->orderBy('id', 'DESC')
-                    ->first();
-                $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+                // $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)
+                //     ->where('vendor_id', $vendor->vendor_id)
+                //     ->orderBy('id', 'DESC')
+                //     ->first();
+                // $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+
+                $vendor->order_status = strtolower($vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'';
+
+                
                 if($vendor->cancelled_by == $user->id){
                     $vendor->order_status = OrderVendor::CANCEL_STATUS;
                 }
@@ -1796,7 +1807,10 @@ class OrderController extends FrontController
             }
          }
 
+
         $order_response = $this->orderSave($request, "1");
+
+        
         $response = $order_response->getData();
         if ($response->status == 'Success') {
             # if payment type cash on delivery or payment status is 'Paid'
@@ -1811,6 +1825,8 @@ class OrderController extends FrontController
             return $this->errorResponse($response->message, $response->code ?? 400);
         }
     }
+
+
 
     public function orderSave($request, $paymentStatus)
     {
@@ -2159,6 +2175,13 @@ class OrderController extends FrontController
                     $OrderVendor = new OrderVendor();
                 }
 
+                if(!empty($order->total_other_taxes)){
+                    $tax_amount  =   (float) array_sum(explode(":", $order->total_other_taxes));
+                }else{
+                    $tax_amount = $order->taxable_amount;
+                }
+       
+                $tax_amount  = round($order->total_other_taxes_amount,2);
                 $OrderVendor->status = 0;
                 $OrderVendor->user_id = $user->id;
                 $OrderVendor->order_id = $order->id;
@@ -2860,14 +2883,20 @@ class OrderController extends FrontController
                 }
                 $OrderVendor->fixed_fee = $fixedFeeAmount;
                 $OrderVendor->additional_price = $additionalPrice;
-                $OrderVendor->taxable_amount =$new_vendor_taxable_amount;
+                $OrderVendor->taxable_amount =$new_vendor_taxable_amount + $tax_amount;
                 $OrderVendor->payment_option_id = $request->payment_option_id;
                 $OrderVendor->subtotal_amount = $OrderVendor->subtotal_amount - $bid_vendor_discount??0;
 
 
 
-                // $OrderVendor->payable_amount = $vendor_payable_amount +$fixedFeeAmount+$new_vendor_taxable_amount;
-                $OrderVendor->payable_amount = $request->$total_amount;
+                if($action == 'p2p'){
+                    $OrderVendor->payable_amount = $request->$total_amount;
+
+                }
+                else{
+                    $OrderVendor->payable_amount = $vendor_payable_amount +$fixedFeeAmount+$new_vendor_taxable_amount;
+
+                }
                 if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
                     $OrderVendor->subtotal_amount = $OrderVendor->payable_amount = $request->total_amount;
                 }
@@ -3319,6 +3348,17 @@ class OrderController extends FrontController
             // }
 
             DB::commit();
+            $blockchain_route = ClientPreferenceAdditional::where('key_name','blockchain_route_formation')->first();
+              $order_data = Order::select('id','user_id')->with([
+                'ordervendor'
+            ])
+                ->where('order_number', $order->order_number)
+                ->first();
+            if(isset($blockchain_route) && ($blockchain_route->key_value == 1))
+            {
+                @$this->saveBlockchainOrderDetail($order_data);
+
+            }
             $this->sendSuccessSMS($request, $order);
             // $hub_key = @getAdditionalPreference(['is_marg_enable']);
             
@@ -3593,7 +3633,7 @@ class OrderController extends FrontController
                     'is_tracking_url'
                 ])['is_tracking_url'] == 1) {
                     \Log::info('test');
-                    $this->sendTrackingUrlSMS($orderData);
+                    $this->sendTrackingUrlSMS($orderData,$request->order_id);
                 }
             }
         }

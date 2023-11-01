@@ -615,8 +615,8 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
 }
 
 .add-cart-btn.add_vendor_product {
-    background-color: #caae73;
-    color: #fff;
+    background-color: var(--theme-deafult);
+    color: #fff!important;
     font-size: 14px;
     max-width: 100px;
     display: inline-block;
@@ -740,9 +740,9 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
 }
 
 .alFourTemplateCartPage .product-img img {
-    border-radius: 15px;
-    object-fit: cover;
-    height: 100px;
+    border-radius: 4px!important;
+    object-fit: contain;
+    height: 50px;
     margin: 10px 0;
 }
 
@@ -774,16 +774,20 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
 }
 
 .cart-main-box .checkout-btn {
-    padding: 20px;
+    padding: 10px;
     background-color: var(--top-header-color);
-    ;
-    color: #fff;
+    color: #fff!important;
 }
 
 .cart-main-box .checkout-btn:hover {
     background-color: #0c0c0c;
 }
-
+.add-on-main-div button.slick-prev{
+    left: 0;
+}
+.add-on-main-div button.slick-next {
+    right: 0;
+}
 .badge.badge-light {
     background-color: #0c0c0c;
     padding: 10px 0;
@@ -3671,9 +3675,19 @@ span.registerLink {
 /* ========= alFourTemplate Order Succes page ======== */
 
 .alFourTemplateOrderSucces .product-order .total-sec {
-    background-color: #f5f5f5;
+    background-color: #fff;
     border-radius: 0;
     border: none;
+}
+.spa_order_detail_slot{
+    padding-right: 22px;
+}
+.alFourTemplateOrderSucces .product-order  .final-total, .alFourTemplateOrderSucces .product-order .total-sec {
+    padding: 0 22px!important;
+    margin-bottom: 15px;
+}
+.alFourTemplateOrderSucces .product-order  .final-total h3{
+    margin: 0;
 }
 
 .alFourTemplateOrderSucces .product-order {

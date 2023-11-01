@@ -1038,18 +1038,23 @@ $(document).ready(function () {
             })
             return false;
         }
+       
+     
 
-        var checkboxes = $('.checked-cart-product');
-        var checkedCheckboxes = checkboxes.filter(':checked');
-        if (checkedCheckboxes.length === 0) {
-            // Swal.fire({
-            //     icon: 'error',
-            //     title: 'Oops...',
-            //     text: 'Please select at least one product.',
-            //     //footer: '<a href="">Why do I have this issue?</a>'
-            // });
-            // return false;
-        }
+            // var checkboxes = $('.checked-cart-product');
+            // var checkedCheckboxes = checkboxes.filter(':checked');
+            // if (checkedCheckboxes.length === 0) {
+                
+            //     Swal.fire({
+            //         icon: 'error',
+            //         title: 'Oops...',
+            //         text: 'Please select at least one product.',
+            //         //footer: '<a href="">Why do I have this issue?</a>'
+            //     });
+            //     return false;
+            // }
+        
+      
 
         if ($("#agree_term_check").length > 0) {
             var checkbox = document.getElementById("agree_term_check");
@@ -2502,6 +2507,8 @@ $(document).ready(function () {
                     // }
                     //return true;
                     var cart_details = response.cart_details;
+
+                    console.log(cart_details);
                     var client_preference_detail = response.client_preference_detail;
                     var is_token_enable = response.is_token_enable;
                     var token_val = response.token_val;
@@ -2523,9 +2530,9 @@ $(document).ready(function () {
                             //map array  cart_details.products.map(checkIfInCart);
                             var headerCartData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url, client_preference_detail: client_preference_detail, is_token_enable:is_token_enable, token_val:token_val });
 
-                            //  let header_cart_template = _.template($('#header_cart_template').html());
+                             let header_cart_template = _.template($('#header_cart_template').html());
 
-                            //  $("#header_cart_main_ul").append(header_cart_template(headerCartData));
+                             $("#header_cart_main_ul").append(header_cart_template(headerCartData));
                             if (response.cart_details.totalQuantity>0) {
                                 $('#expected_vendors').html('');
                                 $('#expected_vendors').html(response.expected_vendor_html);
@@ -3528,7 +3535,7 @@ $(document).ready(function () {
             },
             success: function (response) {
                 if (response.status == 'success') {
-                    // $(".shake-effect").effect("shake", { times: 3 }, 1200);
+                    $(".shake-effect").effect("shake", { times: 3 }, 1200);
                     returnResponse = true;
                     cartHeader();
                  
@@ -3539,7 +3546,7 @@ $(document).ready(function () {
                         location.href =  '/viewcart';
                     }   
                     console.log(response.vendor.rental);
-                    if(response.vendor.rental == 0) {
+                    if(response.vendor.rental == 1) {
                        location.href =  '/viewcart';
                     }
                 } else {
@@ -4041,7 +4048,7 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.status == 'success') {
                     returnResponse = true;
-                    // $(".shake-effect").effect("shake", { times: 3 }, 1200);
+                    $(".shake-effect").effect("shake", { times: 3 }, 1200);
                     cartHeader();
                     if (that.hasClass('add_vendor_addon_product')) {
                         that.parents('.modal').modal('hide');
@@ -4301,7 +4308,7 @@ $(document).ready(function () {
             success: function (response) {
                 var address_id = dispatcherAgentData?.address_id;
                 if (response.status == 'success') {
-                    // $(".shake-effect").effect("shake", { times: 3 }, 1200);
+                    $(".shake-effect").effect("shake", { times: 3 }, 1200);
                     cartHeader(address_id);
                     if($(`#added_button_href${product_id}`).length > 0){
                         $(`#add_button_href${product_id}`).hide();
@@ -5022,11 +5029,13 @@ $(document).ready(function () {
                 error: function (reject) {
                     if (reject.status === 422) {
                         var message = $.parseJSON(reject.responseText);
+                        sweetAlert.error(message.message,"");
                         $(".invalid-feedback.manual_promocode").html("<strong>" + message.message + "</strong>");
                     }
                 }
             });
         } else {
+            sweetAlert.error("Enter a Promocode","");
             $(".invalid-feedback.manual_promocode").html("<strong>Please enter promocode</strong>");
         }
     });
@@ -6205,56 +6214,7 @@ $('.category_responsive').slick({
           
 
 
-
-  class readMore {
-    constructor() {
-        this.content = '.readmore__content';
-        this.buttonToggle = '.readmore__toggle';
-    }
-
-    bootstrap() {
-        this.setNodes();
-        this.init();
-        this.addEventListeners();
-    }
-
-    setNodes() {
-        this.nodes = {
-            contentToggle: document.querySelector(this.content)
-        };
-
-        this.buttonToggle = this.nodes.contentToggle.parentElement.querySelector(this.buttonToggle);
-    }
-
-    init() {
-        const { contentToggle } = this.nodes;
-
-        this.stateContent = contentToggle.innerHTML;
-
-        contentToggle.innerHTML = `${this.stateContent.substring(0, 500)}...`;
-    }
-
-    addEventListeners() {
-        this.buttonToggle.addEventListener('click', this.onClick.bind(this))
-    }
-
-    onClick(event) {
-        const targetEvent = event.currentTarget;
-        const { contentToggle } = this.nodes
-
-        if (targetEvent.getAttribute('aria-checked') === 'true') {
-            targetEvent.setAttribute('aria-checked', 'false')
-            contentToggle.innerHTML = this.stateContent;
-            this.buttonToggle.innerHTML = 'Show less'
-
-        } else {
-            targetEvent.setAttribute('aria-checked', 'true')
-            contentToggle.innerHTML = `${this.stateContent.substring(0, 500)}...`
-            this.buttonToggle.innerHTML = 'Show more'
-        }
-    }
+  if (typeof action_type !== "undefined" && action_type === "p2p") {
+    const initReadMore = new readMore();
+    initReadMore.bootstrap();
 }
-
-
-const initReadMore = new readMore();
-initReadMore.bootstrap()

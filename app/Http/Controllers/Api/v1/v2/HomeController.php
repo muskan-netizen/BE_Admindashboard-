@@ -132,6 +132,10 @@ class HomeController extends BaseController
             $_REQUEST['request_from'] = 1;
            
             $type = $request->has('type') ? $request->type : 'delivery';
+              Session::put('vendorType',$type);
+
+
+
             $categoryTypes = getServiceTypesCategory($type);
 
             $this->venderFilterOpenClose   = $request->has('open_close_vendor') && $request->open_close_vendor ? $request->open_close_vendor : null;
@@ -329,10 +333,15 @@ class HomeController extends BaseController
             $navCategories = $this->categoryNav($langId, $venderIds, $type , $request);
             }
             else{
+           
+              
                 $navCategories = $this->categoryNav($langId, @$homePageData['vendor_ids'], $type);
+
+            
 
             }
             
+          
 
             Session::put('navCategories', $navCategories);
 
@@ -671,7 +680,7 @@ class HomeController extends BaseController
          */
         $long_term_vendors = $vendors->pluck('id')->toArray();
 
-        $vendors = $vendors->where('status', 1)
+        $vendors = $vendors->where('status', 1)->where($request->type, 1)
             ->inRandomOrder()
             ->limit(10)->get();
 

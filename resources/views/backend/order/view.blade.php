@@ -82,6 +82,9 @@
         border: 1px solid#eee;
         border-radius: 10px !important;
     }
+   
+  
+
 </style>
 @endsection
 @section('content')
@@ -537,7 +540,7 @@ $timezone = Auth::user()->timezone;
 
                                             {{-- mohit sir branch code added by sohail --}}
                                             @php
-                                                $getAdditionalPreference = getAdditionalPreference(['update_order_product_price']);
+                                                $getAdditionalPreference = getAdditionalPreference(['update_order_product_price','is_enable_allergic_items']);
                                             @endphp
                                             @if( @getAdditionalPreference(['update_order_product_price'])['update_order_product_price'] == '1')
                                                 <a href="javascript:void(0);" data-toggle="modal" data-target="#addModal" class="badge badge-info ml-3 update_product_price" data-or_prod_old_price="{{decimal_format($product->total_amount)}}" data-or_vend_prod_id="{{$product->id}}">Update Price <img src=""> </a>
@@ -1028,6 +1031,12 @@ $timezone = Auth::user()->timezone;
                 </p>
                 @endif
             </div>
+            <div class="card-body">
+                <h4 class="header-title mb-3">{{ __('Blockchain Order Information') }}</h4>
+                <a href="{{ route('orders.getBlockchainOrderDetail', ['order_id' => $order->id]) }}" target="_blank">
+                    <button type="button" id="blockchain_order_data" data-id="{{ $order->id }}" class="btn btn-primary">Get Blockchain Order Data</button>
+                </a>
+            </div>
 
 
             <div class="card-body">
@@ -1073,6 +1082,7 @@ $timezone = Auth::user()->timezone;
 
             </div>
 
+            @if ($getAdditionalPreference['is_enable_allergic_items'] == 1)
             <div class="card-body">
                 @if (count($order->user->allergicItems))
                     <h4 class="header-title mb-3 "> {{ __('Customer Allergic Items')}} </h4>
@@ -1082,7 +1092,13 @@ $timezone = Auth::user()->timezone;
                 @empty
                     <b>{{ __('No Allergic Item Found')}}</b><br>
                 @endforelse
+                
+                @if ($order->user->custom_allergic_items)
+                    <h4 class="header-title mb-3 "> {{ __('Custom Allergic Items')}} </h4>
+                    {{ $order->user->custom_allergic_items }}
+                @endif
             </div>
+            @endif
 
         </div>
     </div>
@@ -1293,6 +1309,7 @@ $timezone = Auth::user()->timezone;
     </div>
 
 
+  
 
 
 
@@ -1303,6 +1320,39 @@ $timezone = Auth::user()->timezone;
     <!--End Order Invoice Code -->
     @endsection
     @section('script')
+
+
+
+    
+    <div id="blockchain_order_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="blockchain_order_modal_label" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="blockchain_order_modal_label">Order Details</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Field</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody id="order_data_table">
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+     
     <script src="{{asset('assets/libs/sweetalert2/sweetalert2.min.js')}}"></script>
     <script>
         $('body').on('click', '.show-return-product-modal', function(event) {
@@ -1612,6 +1662,9 @@ $timezone = Auth::user()->timezone;
                 newWin.close();
             }, 10);
         }
+
+     
+
 
         $(document).on('click', '.buffer_time_btn', function(e) {
             var time = $("#buffer_time").val();

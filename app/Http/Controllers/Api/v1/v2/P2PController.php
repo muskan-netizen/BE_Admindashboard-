@@ -352,6 +352,8 @@ class P2PController extends BaseController
             }
                
             if( clientPrefrenceModuleStatus('p2p_check') && $request->has('attributes') && count($request['attributes']) > 0) {
+
+                die('pass');
                 $attributes = $request['attributes'];
                 
                 $products = $products->whereHas('ProductAttribute', function($q) use($attributes){

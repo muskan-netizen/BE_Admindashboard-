@@ -317,6 +317,8 @@ class PickupDeliveryController extends FrontController{
         $product->description = $product->translation->first() ? $product->translation->first()->body_html :'';
         $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
         $product->faqlist = count($product->ProductFaq);
+
+      
         if(isset($request->rider_id) && $request->rider_id)
         {
             $rider = Rider::where('id',$request->rider_id)->first();
@@ -997,8 +999,7 @@ class PickupDeliveryController extends FrontController{
 
                 }
 
-                $returnBookingTime = null;
-                
+               $returnBookingTime = null;
                 /*book for a friend*/
                 $order->type                = $request->type;
                 $order->friend_name         = $request->friendName;
@@ -1233,7 +1234,7 @@ class PickupDeliveryController extends FrontController{
 
     // place Request To Dispatch
     public function placeRequestToDispatch($request,$order,$vendor){
-        try {            
+        try {
             $meta_data = '';
             $tasks = array();
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
@@ -1355,7 +1356,7 @@ class PickupDeliveryController extends FrontController{
                     'app_call' => 0,
                     'call_notification' => 0
                 ];
-                
+
                 if(isset($request->bid_task_type) && !empty($request->bid_task_type)){
                     $postdata['bid_task_type']    = $request->bid_task_type;
                 }

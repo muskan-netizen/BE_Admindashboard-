@@ -75,6 +75,11 @@ class BaseController extends Controller{
             $crendentials = json_decode($client_preference->sms_credentials);
             $send = $this->ethiopia($to,$body,$crendentials);
             }
+            elseif($client_preference->sms_provider == 10) //sms country
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->sms_country($to,$body,$crendentials);
+            }
             else{
                 $client = new TwilioClient($sms_key, $sms_secret);
                 $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);
@@ -135,6 +140,11 @@ class BaseController extends Controller{
             {
             $crendentials = json_decode($client_preference->sms_credentials);
             $send = $this->ethiopia($to,$body,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 10) //sms country
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->sms_country($to,$body,$crendentials);
             }
             else{
                 $client = new TwilioClient($sms_key, $sms_secret);
@@ -316,7 +326,7 @@ class BaseController extends Controller{
 
         $categoryTypes = getServiceTypesCategory($type);
 
-    
+        // pr($categoryTypes);
         $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
         $preferences = ClientPreference::select('is_hyperlocal', 'client_code', 'language_id', 'celebrity_check')->first();
         $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')

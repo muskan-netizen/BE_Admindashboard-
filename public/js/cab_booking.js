@@ -443,7 +443,7 @@ $(document).ready(function () {
                     let order_number = response.data.order_number;
                     let reload_route = response.data.route;
                     if((payment_option_id == 1) || (payment_option_id == 2)){
-                        placeOrderBeforePayment('',payment_option_id,0,order_number);
+                        // placeOrderBeforePayment('',payment_option_id,0,order_number);
                         window.location.replace(response.data.route);
 
                         // $('#cab_detail_box').html('');
@@ -965,10 +965,11 @@ $(document).ready(function () {
 
     $(document).on("click","#submit_product_rider_button",function(){
         let product_id = $('input[name="rider_product_id"]:checked').val();
+        let rider_id = 0;
         if(product_id === undefined){
             alert("Please choose one "+category_name+" to process next");
         }else{
-            let rider_id = 0;
+            
             let rider_type = $('input[name="is_for_friend"]:checked').val();
             if(rider_type == 1 || rider_type == "1")
             {

@@ -17,6 +17,7 @@ use App\Models\{Currency, CategoryKycDocuments,Banner, Category, Brand, Product,
 use Redirect;
 use Log;
 use \App\Http\Traits\{VendorTrait};
+use App\Models\Client as ModelsClient;
 class CategoryController extends FrontController{
     private $field_status = 2;
     use \App\Http\Traits\DispatcherSlot,VendorTrait;
@@ -873,12 +874,15 @@ class CategoryController extends FrontController{
                 $vendorStartDate = (($slotsDate)?$slotsDate['date']:'');
                 $vendorStartTime = (($slotsDate)?$slotsDate['time']:'');
             }
+           
             // ch
             if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ( $last_mile_check ==1) ){ 
                 $Dispatch =  $this->getDispatchAppointmentDomain();
                 $dispatchAgents = [];
                 $cart_product_id = $request->cart_product_id??0;
                 if($Dispatch){
+                   $unique = ModelsClient::first()->code;
+                   $email =  $unique.$product->vendor->id."_royodispatch@dispatch.com"; 
                    $vendor_latitude =  $product->vendor ? $product->vendor->latitude : 30.71728880;
                    $vendor_longitude =  $product->vendor ? $product->vendor->longitude : 76.80350870;
                     $location[] = array(
@@ -895,7 +899,8 @@ class CategoryController extends FrontController{
                         'longitude'        => $vendor_longitude,
                         'service_time'     => $product->minimum_duration_min,
                         'schedule_date'    => $request->cur_date,
-                        'slot_start_time'  => $vendorStartTime
+                        'slot_start_time'  => $vendorStartTime,
+                        'team_email'       => $email
                     ];
                     $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
                 }
