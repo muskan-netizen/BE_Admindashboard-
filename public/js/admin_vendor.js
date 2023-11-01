@@ -1,12 +1,13 @@
 
 $(document).ready(function() {
     
-    var table;
+       var table;
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
             }
         });
+      
         $(".all-vendor_check").click(function() {
             if ($(this).is(':checked')) {
                 $("#action_vendor_button").css("display", "block");
@@ -191,6 +192,7 @@ $(document).ready(function() {
         });
 
 function initDataTable(table, status) {
+    // alert('#'+table+ "  "+ status);
             $('#'+table).DataTable({
                 "destroy": true,
                 // "scrollX": true,
