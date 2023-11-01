@@ -341,8 +341,14 @@ input[type=number]::-webkit-outer-spin-button {
                         </div>
                     @endif
 
+<<<<<<< HEAD
                     @if($is_cab_pooling == 1 || $is_bid_ride_enable == 1 || $is_particular_driver == 1)
                         <div class="pool_radio_controls text-center row justify-content-center">
+=======
+
+                    @if($is_cab_pooling == 1 || $is_bid_ride_enable == 1 || $is_recurring_booking == 1 || $is_particular_driver == 1)
+                        <div class="pool_radio_controls text-center">
+>>>>>>> 7f96401f5b2fb339e49be510face2d004032e0f8
                             <div class="item">
                                 <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_booking" name="is_cab_pooling_radio"
                                     value="0" checked>
@@ -350,6 +356,7 @@ input[type=number]::-webkit-outer-spin-button {
                                     <h5 class="m-0" id="pool_5">{{ __('Booking') }}</h5>
                                 </label>
                             </div>
+<<<<<<< HEAD
                             <div class="item">
                                 @if ($is_cab_pooling == 1 )
                                     <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_pooling" name="is_cab_pooling_radio"
@@ -379,6 +386,38 @@ input[type=number]::-webkit-outer-spin-button {
                     @endif
 
 
+=======
+                            @endif
+
+                            @if($is_bid_ride_enable == 1)
+                            <div class="item mx-1">
+                                <input type="radio" id="bid_radio" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="0">
+                                <label class="mb-0  my-2" >
+                                    <h5 class="m-0" id="">Bid</h5>
+                                </label>
+                            </div>
+                            @endif
+
+                            @if($is_particular_driver == 1)
+                            <div class="item">
+
+                                <input type="radio" id="particular_driver_radio" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="2">
+                                <label class="mb-0  my-2" >
+                                    <h5 class="m-0" id="">Request to Driver</h5>
+                                </label>
+                            </div>
+                            @endif
+                            @if($is_recurring_booking == 1)
+                            <div class="item">
+
+                            <input type="radio" id="is_recurring_booking" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="4">
+                            <label class="mb-0  my-2" >
+                                <h5 class="m-0" id="">{{ __(getDynamicTypeName('Recurring')) }}</h5>
+                            </label>
+                            </div>
+                        @endif
+                        </div>
+>>>>>>> 7f96401f5b2fb339e49be510face2d004032e0f8
 
                     <div class="location-box check-pick-first">
                         <div class="where-to-go">
@@ -513,6 +552,13 @@ input[type=number]::-webkit-outer-spin-button {
                                                 class="fa fa-calendar"></i></span>
                                     </div>
                                 </div>
+
+                                @if($is_recurring_booking == 1)
+                                    <div class="recurring-option">
+                                        @include('frontend.product-part.recurring-booking')
+                                    </div>
+                                @endif
+
                             </div>
 
                             <div class="scheduled-footer">
@@ -1055,6 +1101,14 @@ input[type=number]::-webkit-outer-spin-button {
                         <div class="col-6 mb-2 text-right" id="discount"><p class="total_amt m-0" id="subscription-amout">{{Session::get('currencySymbol')}}<%= result.subscription_discount %></p></div>
                         <input type="hidden" id="subscription-amout-h" value="<%= result.subscription_discount %>">
                         <% } %>
+<<<<<<< HEAD
+=======
+
+                        <% if((result.yacht)){ %>
+                            {{-- <input type="number" class="from-control" id="seats" value="" name="seats" placeholder="Number of Seats Booking"> --}}
+                        <% } %>
+
+>>>>>>> 7f96401f5b2fb339e49be510face2d004032e0f8
                         <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>
                             <div class="col-6 mb-2">Loyalty</div>
                             <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved %></div>
