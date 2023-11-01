@@ -58,8 +58,7 @@ class CMSPageController extends BaseController
         $data['is_advance_details_required_for_vendor_registration'] = (int)  $getAdditionalPreference['is_advance_details_required_for_vendor_registration']??0;
         $data['is_vendor_category_required_for_vendor_registration'] = (int)  $getAdditionalPreference['is_vendor_category_required_for_vendor_registration']??0;
         $data['is_seller_module'] = (int)  $getAdditionalPreference['is_seller_module']??0;
-        
-        
+               
         $user = Auth::user();
       //  $langId = $user->language;
 

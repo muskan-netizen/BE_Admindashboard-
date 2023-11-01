@@ -580,12 +580,16 @@ span.fa.fa-eye-slash.toggle-password.eye::before {
 }
 
 .al_body_template_three .add-on-main-div .slick-slider .slick-prev {
-    left: -25px;
+    left: 0;
     top: 20px;
+    background-color: transparent!important;
 }
-
+.al_body_template_three .add-on-main-div .slick-slider .slick-prev:before{
+    color:#000!important;
+    font-size: 20px;
+}
 .al_body_template_three .add-on-main-div .slick-slider .slick-next {
-    right: -25px;
+    right: 0;
     top: 20px;
 }
 
@@ -1778,12 +1782,14 @@ article#page-container {
 .pool_label {
     display: inline-block;
     background: #fff;
-    border: 1px solid var(--theme-deafult);
+    border: 1px solid v
+    ar(--theme-deafult);
     border-radius: 5px;
     padding: 5px 10px;
     margin-bottom: 1rem;
     text-align: center;
     position: relative;
+    cursor: pointer;
 }
 
 .pool_radio:checked+.pool_label {
@@ -2693,7 +2699,8 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
 }
 
 .show-div.shopping-cart .text-danger {
-    font-size: 12px;
+    font-size: 12px;    
+    padding-left: 10px;
 }
 
 .code-outer label {
@@ -3381,11 +3388,16 @@ input.addon-input-number {
 }
 
 .al_body_template_three .extra-items-price,
-.al_body_template_three .order-success-sec h3,
-.al_body_template_three .total-sec span {
+.al_body_template_three .order-success-sec h3{
     font-weight: 600;
 }
-
+.al_body_template_three .total-sec span{
+    font-weight: 400;
+}
+.product-order .final-total h3{
+    font-weight: 400;
+    padding: 0 12px;
+}
 .al_body_template_three .product-order h3 {
     text-transform: capitalize;
 }
@@ -3826,9 +3838,9 @@ body[dir="rtl"] .product-description {
 }
 
 .start_chat {
-    float: right;
+    /* float: right;
     margin: -15px;
-    padding: 0px 132px 0px 0px;
+    padding: 0px 132px 0px 0px; */
 }
 
 

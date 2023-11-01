@@ -15,10 +15,11 @@ use App\Models\UserDevice;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use \App\Http\Traits\smsManager;
 
 class CampaignSendNotificationJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable;
+    use Dispatchable, InteractsWithQueue, Queueable,smsManager;
     protected $allNotifications;
     protected $client_preferences;
     protected $headers;

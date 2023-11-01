@@ -8,7 +8,7 @@ use App\Models\PaymentOption;
 $urlImg = URL::to('/').'/assets/images/users/user-1.jpg';
 $clientData = \App\Models\Client::select('id', 'logo','socket_url')->first();
 $azulExist =  PaymentOption::where('code', 'azul')->where('status', 1)->first();
-$getAdditionalPreference = getAdditionalPreference(['is_gift_card','is_token_currency_enable']);
+$getAdditionalPreference = getAdditionalPreference(['is_gift_card','is_token_currency_enable', 'is_rental_weekly_monthly_price']);
 @endphp
 @switch($client_preference_detail->business_type)
     @case('taxi')
@@ -65,8 +65,13 @@ $getAdditionalPreference = getAdditionalPreference(['is_gift_card','is_token_cur
             </a></li>
             @endif
             
-            
             <li class="{{ (request()->is('user/orders*')) ? 'active' : '' }}"><a href="{{route('user.orders')}}">{{ __('My '.getNomenclatureName($ordertitle, true) )}}</a></li>
+
+            @if(@$getAdditionalPreference['is_rental_weekly_monthly_price'] == 1)
+                <li class="{{ (request()->is('user/lander-orders*')) ? 'active' : '' }}"><a href="{{route('user.lander-orders')}}">{{ __('My Order As Lender')}}</a></li>
+                <li class="{{ (request()->is('user/borrower-orders*')) ? 'active' : '' }}"><a href="{{route('user.borrower-orders')}}">{{ __('My Order As Borrower')}}</a></li>
+            @endif
+
             <li class="{{ (request()->is('user/wishlists')) ? 'active' : '' }}"><a href="{{route('user.wishlists')}}">{{ __(getNomenclatureName('Wishlist', true) )}}</a></li>
             <li class="{{ (request()->is('user/loyalty')) ? 'active' : '' }}"><a href="{{route('user.loyalty')}}">{{ __('My Loyalty') }}</a></li>
             
@@ -80,11 +85,13 @@ $getAdditionalPreference = getAdditionalPreference(['is_gift_card','is_token_cur
                 <li class="{{ (request()->is('user/subscription*')) ? 'active' : '' }}"><a href="{{route('user.subscription.plans')}}">{{ __('My Subscriptions') }}</a></li>
             @endif
             <li class="last {{ (request()->is('user/notification')) ? 'active' : '' }}"><a href="{{route('user.notification')}}">{{ __('Notification') }}</a></li>
-
+            <li class="last {{ (request()->is('user/my-ads')) ? 'active' : '' }}"><a href="{{route('user.productList')}}">{{__('My Ads')}}</a></li>
+            @if(@getAdditionalPreference(['is_enable_allergic_items'])['is_enable_allergic_items'])
+                <li class="last {{ (request()->is('user/allergic-items')) ? 'active' : '' }}"><a href="{{route('list.allergicItems')}}">{{__('Allergic Items')}}</a></li>
+            @endif
             @if(is_p2p_vendor())
                 <li class=""><a href="{{route('posts.index', ['fullPage'=>1])}}">{{ __('Add Post') }}</a></li>
-                <li class="last {{ (request()->is('user/my-ads')) ? 'active' : '' }}"><a href="{{route('user.productList')}}">{{__('My Ads')}}</a></li>
-            @endif
+    @endif
             @if(@getAdditionalPreference(['is_gift_card'])['is_gift_card']==1)
                 <li class="{{ (request()->is('user/giftCard')) ? 'active' : '' }}"><a href="{{route('giftCard.index')}}">{{ __('Gift Card') }}</a></li>
             @endif

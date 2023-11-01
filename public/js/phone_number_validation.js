@@ -3,6 +3,7 @@ function phoneNumbervalidation(iti, input)
     $('<span id="phone-valid-msg" class="hide phone-error-msg"></span><span id="phone-error-msg" class="hide phone-error-msg"></span>').appendTo(input.parentElement);
     
     var input = input;
+    //alert(input);
     var errorMsg = document.querySelector("#phone-error-msg");
     var validMsg = document.querySelector("#phone-valid-msg");
         

@@ -35,6 +35,15 @@
                     </span>
                 </div>
             </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {!! Form::label('title', __('Icon'),['class' => 'control-label']) !!}
+                    <input type="file" class="form-control"  name="icon">
+                    <span class="invalid-feedback" role="alert">
+                        <strong></strong>
+                    </span>
+                </div>
+            </div>
         </div>
 
         <div class="row rowYK ">

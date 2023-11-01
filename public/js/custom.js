@@ -1,4 +1,4 @@
-
+  
 $(function () {
     $(".al_main_category").hover(
         function () {
@@ -17,6 +17,7 @@ $(function () {
     }
 
     var slotValidater = 2;
+
 
     var footer_height = jQuery('.footer-light').height();
     var header_height = jQuery('.site-header').height();
@@ -579,6 +580,7 @@ $(document).ready(function () {
                                 $("#subscription_payment #features_list").html(response.sub_plan.features);
                                 $("#subscription_payment #subscription_id").val(sub_id);
                                 $("#subscription_payment #subscription_amount").val(response.sub_plan.price);
+                                $("#subscription_payment #type_id").val(response.sub_plan.type_id);
                                 $("#subscription_payment #subscription_payment_methods").html('');
                                 let payment_method_template = _.template($('#payment_method_template').html());
                                 $("#subscription_payment #subscription_payment_methods").append(payment_method_template({ payment_options: response.payment_options }));
@@ -586,6 +588,22 @@ $(document).ready(function () {
                                     $("#subscription_payment .subscription_confirm_btn").hide();
                                 }
                                 $("#subscription_payment").modal("show");
+                                if(response.sub_plan.type_id == 2){
+									var form = document.getElementById('meal-subscription-form');
+						          	  var formData = new FormData(form); // Create a new FormData object
+
+						            var serializedData = JSON.stringify(Object.fromEntries(formData)); // Serialize the form data to JSON
+
+						            var serializedField = document.createElement("input"); // Create a new input element
+						            serializedField.type = "hidden";
+						            serializedField.name = "serializedForm";
+						            serializedField.value = serializedData;
+
+						            document.getElementById('subscription_payment_form').appendChild(serializedField); // Append the serialized field to the form
+
+						            // Display the serialized form data in the console
+						            console.log(serializedData);
+								}
                                 if(stripe_publishable_key != ''){
                                     stripeInitialize();
                                 }
@@ -979,6 +997,24 @@ $(document).ready(function () {
 
     }
     $(document).on("click", "#order_placed_btn", async function () {
+        
+        $('.adone_item .item').each(function(index, element){
+            let min = $(this).data('min');
+            let max = $(this).data('max');
+            let checkedBox = $(this).find('input[type="checkbox"]:checked').length
+            if(checkedBox < min || checkedBox > max){
+                
+                $(this).css('transition','border 0.2s ease-in-out');
+                $(this).css('border','1px solid red');
+
+                setTimeout(() => {
+                    $(this).css('border','none');
+                    $(this).css('transition','none');
+                }, 3000);
+            }
+        });
+        
+        // return true;
 
         if(typeof $("#edit_order_schedule_datetime").val()!='undefined' && $("#edit_order_schedule_datetime").val()!='' && ($("#edit_order_schedule_datetime").val()!=$("#schedule_datetime").val())){
             success_error_alert('error', error_unchanged_schedule_date, ".cart_response");
@@ -1002,18 +1038,23 @@ $(document).ready(function () {
             })
             return false;
         }
+       
+     
 
-        var checkboxes = $('.checked-cart-product');
-        var checkedCheckboxes = checkboxes.filter(':checked');
-        if (checkedCheckboxes.length === 0) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Please select at least one product.',
-                //footer: '<a href="">Why do I have this issue?</a>'
-            });
-            return false;
-        }
+            // var checkboxes = $('.checked-cart-product');
+            // var checkedCheckboxes = checkboxes.filter(':checked');
+            // if (checkedCheckboxes.length === 0) {
+                
+            //     Swal.fire({
+            //         icon: 'error',
+            //         title: 'Oops...',
+            //         text: 'Please select at least one product.',
+            //         //footer: '<a href="">Why do I have this issue?</a>'
+            //     });
+            //     return false;
+            // }
+        
+      
 
         if ($("#agree_term_check").length > 0) {
             var checkbox = document.getElementById("agree_term_check");
@@ -1045,6 +1086,7 @@ $(document).ready(function () {
 
 
         //$("input[name='category_kyc_ids']").length > 0 ||
+        
         if( ($("input[name='without_category_kyc']").val() !=1 ) ){
             success_error_alert('error', 'User Place Order is required! kindly fill the details.', ".cart_response");
             return false;
@@ -1061,7 +1103,6 @@ $(document).ready(function () {
             })
             return false;
         }
-
 
         var vendorScheduleDatetime = $('.vendor_schedule_datetime').length
         if(vendorScheduleDatetime > 0){
@@ -1080,6 +1121,7 @@ $(document).ready(function () {
             $("#login_modal").modal("show");
             return false;
         }
+            
         var address = $("input[name='address_id']").val();
         if ((vendor_type == 'delivery' || vendor_type == 'on_demand' || vendor_type == 'rental') && ((address == '') || (address < 1) || ($("input[name='address_id']").length < 1))) {
             success_error_alert('error', 'Please add a valid address to continue', ".cart_response");
@@ -1160,6 +1202,13 @@ $(document).ready(function () {
         let comment_for_pickup_driver = $("input[name='comment_for_pickup_driver']").val(); //commnet for pickup
         let comment_for_dropoff_driver = $("input[name='comment_for_dropoff_driver']").val(); //commnet for dropoff
         let comment_for_vendor = $("input[name='comment_for_vendor']").val(); //commnet for vendor
+        
+    var bookingOptionId ='';
+    var rentalProtectionId = '';
+    // var addonsId = '';
+    // var addonsOptionId = '';
+    var rentalProtectionId = '';
+    var bookingOptionId = '';
 
         if(business_type == 'laundry' && scheduling_with_slots == 1){
             var schedule_pickup = schedule_dt;
@@ -1184,6 +1233,7 @@ $(document).ready(function () {
                 return false;
             }
         }
+        
         if (cartAmount == 0) {
             var params = [specific_instructions, task_type, schedule_dropoff, schedule_pickup, schedule_dt, comment_for_pickup_driver, comment_for_dropoff_driver, comment_for_vendor, delivery_type, slot, address];
             // Save Cart Page Detail Forcely If user is paying from his cart.
@@ -1197,7 +1247,7 @@ $(document).ready(function () {
                 type: "POST",
                 dataType: 'json',
                 url: update_cart_schedule,
-                data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, dropoff_scheduled_slot : slot_dropoff, address: address,payable_amount : cartAmount },
+                data: { specific_instructions: specific_instructions, task_type: task_type, schedule_dropoff: schedule_dropoff, schedule_pickup: schedule_pickup, schedule_dt: schedule_dt, comment_for_pickup_driver: comment_for_pickup_driver, comment_for_dropoff_driver: comment_for_dropoff_driver, comment_for_vendor: comment_for_vendor, delivery_type: delivery_type, slot: slot, dropoff_scheduled_slot : slot_dropoff, address: address,payable_amount : cartAmount},
                 success: function (response) {
                     $(".error_prescription").attr("style", "display:none");
                     if(response.status == "passbase_submitted"){
@@ -1394,9 +1444,16 @@ $(document).ready(function () {
         let pending_amount = $("input[name='amount_pending']");
         let tipElement = $("#cart_tip_amount");
         let payment_form = '';
+        let type = $("input[name='type_id']").val();
+        let mealSubscriptionForm = '';
+        if(type == '2'){
+			mealSubscriptionForm = $("input[name='serializedForm']").val()
+			paymentAjaxData.days = $('#sub-days').html();
+		}
         // let payment_option_id = paymentAjaxData.payment_option_id;
 
         paymentAjaxData.payment_method_id = result.paymentMethod.id;
+        paymentAjaxData.type_id = type;
         // paymentAjaxData.payment_option_id = payment_option_id;
         if (path.indexOf("cart") !== -1) {
             payment_form = 'cart';
@@ -1404,7 +1461,7 @@ $(document).ready(function () {
         } else if ((path.indexOf("wallet") !== -1) || ((typeof cabbookingwallet !== 'undefined') && (cabbookingwallet == 1))) {
             payment_form = 'wallet';
             total_amount = walletElement.val();
-        } else if (path.indexOf("subscription") !== -1) {
+        } else if (path.indexOf("subscription") !== -1 || path.indexOf("mealSubscription") !== -1) {
             payment_form = 'subscription';
             total_amount = subscriptionElement.val();
             // paymentAjaxData = $("#subscription_payment_form").serializeArray();
@@ -1433,6 +1490,9 @@ $(document).ready(function () {
         }
         paymentAjaxData.payment_form = payment_form;
         paymentAjaxData.total_amount = total_amount;
+        if(mealSubscriptionForm !== 'undefined' && mealSubscriptionForm !== ''){
+			paymentAjaxData.mealSubscriptionForm = mealSubscriptionForm;
+		}
         if (result.error) {
             swal.fire({
                 icon: 'error',
@@ -1474,12 +1534,23 @@ $(document).ready(function () {
             // Show error from server on payment form
         } else if (response.requires_action) {
             // Use Stripe.js to handle required card action
-            stripe.handleCardAction(
-                response.payment_intent_client_secret
-            ).then(handleStripeJsResult);
+            if(response.hasOwnProperty('type') && response.type == 'subscription'){
+                stripe.confirmCardPayment(response.payment_intent_client_secret, {
+                    payment_method: {
+                        card: card
+                    },
+                })
+                .then(function(){
+                    setTimeout(() => {
+                        window.location.href = response.result;
+                    }, 1500);
+                });
+            }else{
+                stripe.handleCardAction(
+                    response.payment_intent_client_secret
+                ).then(handleStripeJsResult);
+            }
         } else {
-            // console.log(response);
-            // Show success message
             setTimeout(() => {
                 window.location.href = response.result;
             }, 1500);
@@ -2306,6 +2377,7 @@ $(document).ready(function () {
                         }
                         if (mapAddress.types[0] == "administrative_area_level_1") {
                             document.getElementById('state').value = mapAddress.long_name;
+                            document.getElementById('state_code').value = mapAddress.short_name;
                         }
                         if (mapAddress.types[0] == "postal_code") {
                             document.getElementById('pincode').value = mapAddress.long_name;
@@ -2402,7 +2474,6 @@ $(document).ready(function () {
             dataType: 'json',
             url: cart_product_url,
             success: function (response) {
-                console.log(response);
                 if (response.status == "success") {
                     if(response.wishListCount > 0){
                         $('.wishListCount').removeClass('fa-heart-o');
@@ -2411,16 +2482,36 @@ $(document).ready(function () {
                         $('.wishListCount').removeClass('fa-heart');
                         $('.wishListCount').addClass('fa-heart-o');
                     }
-                    $("#cart_table").html('');
+                    $("#cart_table").html('');  
                     $(".spinner-box").hide();
                     $("#mycart").html(response.mycart);
 
+
+                    // if(response.loggedIn ==  "true") {
+                    //     $('.onhover-show-div').html(`<li>
+                    //         <a href="/client/dashboard" data-lng="en">Control Panel</a>
+                    //     </li>
+                    //     <li>
+                    //         <a href="/user/profile" data-lng="en">Profile</a>
+                    //     </li>
+                    //     <li>
+                    //         <a href="/user/logout" data-lng="es">Logout</a>
+                    //     </li>`);
+                    // } else{
+                    //     $('.onhover-show-div').html( `<li>
+                    //         <a href="/user/login" data-lng="en">Login</a>
+                    //     </li>
+                    //     <li>
+                    //         <a href="/user/register" data-lng="es">Register</a>
+                    //     </li>`);
+                    // }
                     //return true;
                     var cart_details = response.cart_details;
+
+                    console.log(cart_details);
                     var client_preference_detail = response.client_preference_detail;
                     var is_token_enable = response.is_token_enable;
                     var token_val = response.token_val;
-                    // console.log(cart_details);
                     if (cart_details!= undefined) {
                         // if((response.is_token_enable == 1) && (response.token_val > 0) ){
                         //     response.token_val;
@@ -2453,10 +2544,10 @@ $(document).ready(function () {
                                        displayMapLocation(latitude, longitude, 'vendor-address-map');
                                     }
                                 }
-                                initialize();
+                                //initialize();
                                 if (cart_details.deliver_status == 0) {
-                                    $("#order_placed_btn").attr("disabled", true);
-                                    $("#order_placed_btn").addClass("d-none");
+                                    // $("#order_placed_btn").attr("disabled", true);
+                                    // $("#order_placed_btn").addClass("d-none");
                                 } else {
 
                                     $("#order_placed_btn").removeAttr("disabled");
@@ -2494,7 +2585,6 @@ $(document).ready(function () {
 
                             }
                             cartTotalProductCount();
-
                             if ($("#header_cart_template_ondemand").length != 0) {
                                 $("#header_cart_main_ul_ondemand").html('');
                                 let header_cart_template_ondemand = _.template($('#header_cart_template_ondemand').html());
@@ -2562,6 +2652,7 @@ $(document).ready(function () {
                         }
 
                     }
+                    
                     $.each($('.vendor_schedule_slot'), function() {
                         if($(this).val()!=''){
                             $responst = checkSlotAvailability(this);
@@ -2643,9 +2734,10 @@ $(document).ready(function () {
                                 }
                             }
                             cartTotalProductCount();
-
+                            
                             if ($("#header_cart_template_ondemand").length != 0) {
                                 $("#header_cart_main_ul_ondemand").html('');
+                                
                                 let header_cart_template_ondemand = _.template($('#header_cart_template_ondemand').html());
                                 var CartTemplateOndemandData = _.extend({ Helper: NumberFormatHelper }, { cart_details: cart_details, show_cart_url: show_cart_url });
 
@@ -3028,6 +3120,7 @@ $(document).ready(function () {
     $(document).on("click", "#save_address", function () {
         let city = $('#add_new_address_form #city').val();
         let state = $('#add_new_address_form #state').val();
+        let state_code = $('#add_new_address_form #state_code').val();
         let street = $('#add_new_address_form #street').val();
         let address = $('#add_new_address_form #address').val();
         let country = $('#add_new_address_form #country').val();
@@ -3054,7 +3147,8 @@ $(document).ready(function () {
                     "latitude": latitude,
                     "longitude": longitude,
                     "house_number": house_number,
-                    "extra_instruction": extra_instruction
+                    "extra_instruction": extra_instruction,
+                    "state_code":state_code
                 },
                 beforeSend: function () {
                     if ($("#cart_table").length > 0) {
@@ -3063,7 +3157,15 @@ $(document).ready(function () {
                     }
                 },
                 success: function (response) {
-
+                    if (response.status == 'error') {
+                        Swal.fire({
+                            title: "Warning!",
+                            text: response.message,
+                            icon: "warning",
+                            button: "OK",
+                        });
+                        return
+                    }
                     if ($("#add_edit_address").length > 0) {
 
                         $("#add_edit_address").modal('hide');
@@ -3179,6 +3281,22 @@ $(document).ready(function () {
     function addToCart() {
         var breakOut = false;
         var Product_quantity = $('.quantity_count').val();
+        var booking_time = $('#range-datepicker').val();
+        var start_date_time, end_date_time;
+  
+        if(booking_time)
+        {
+
+
+        if (booking_time.includes(' to ')) {
+            var dateParts = booking_time.split(' to ');
+            start_date_time = dateParts[0];
+            end_date_time = dateParts[1];
+        } else if (booking_time.trim() !== '') {
+            start_date_time = booking_time;
+            end_date_time = booking_time;
+        }
+    }
         var addLongTerm = 0;
         var addRecurringBooking = 0;
         vendor_id = (vendor_id == undefined || vendor_id =='') ?  document.querySelector('input[name=vendor_id]').value : vendor_id;
@@ -3227,15 +3345,15 @@ $(document).ready(function () {
             return false;
         }
 
-        if($('#sele_slot_id').val() == ''){
+        // if($('#sele_slot_id').val() == ''){
 
-            Swal.fire({
-                text: _language.getLanString('Please select delivery slot to continue'),
-                icon: "warning",
-                button: "OK",
-            });
-            return false;
-        }
+        //     Swal.fire({
+        //         text: _language.getLanString('Please select delivery slot to continue'),
+        //         icon: "warning",
+        //         button: "OK",
+        //     });
+        //     return false;
+        // }
 
         if($('#is_long_term_service').length > 0){
             addLongTerm =1;
@@ -3340,6 +3458,9 @@ $(document).ready(function () {
                 var service_day             =  $('#service_day').val();
                 var service_date            =  $('#service_date').val();
                 var service_start_time      =  $('#service_start_time').val();
+                var is_template             = $('#is_template').val();
+
+               
 
                 if (((sVendorResponse.isSingleVendorEnabled == 1) && (sVendorResponse.otherVendorExists == 1)) || (OrderStorage.getStorage('LongTermServiceAdded') == 1 ) || (OrderStorage.getStorage('cartProductCount') > 0 &&  addLongTerm ==1 ) ) {
                     var modelText = _language.getLanString('You can only buy products for single vendor. Do you want to remove all your cart products to continue ?');
@@ -3351,8 +3472,22 @@ $(document).ready(function () {
                     }
                    showRemoveCart(modelText);
                 } else {
+                    // if(serviceType == 'yacht'){
+                        
+                    //     var booking_duration = $('input[name="booking_duration"]');
+                    //     let isDurationSelected = false;
+
+                    //     booking_duration.each(function(inbdex, element){
+                    //         if(element.checked){
+                    //             let isDurationSelected = false;
+                    //             console.log(element.value)
+                    //         }
+                    //     })
+                    //     return false;
+                    // }
                     var variant_id = $('#prod_variant_id').val();
                     var start_date =  $('#start_time').val();
+                
                     var end_date =  $('#end_time').val();
                     var quantity = $('.quantity_count').val();
                     var incremental_hrs =  $('#incremental_hrs').val();
@@ -3361,13 +3496,14 @@ $(document).ready(function () {
                     var sele_slot_id = $("#sele_slot_id").val();
                     var sele_slot_price = $("#sele_slot_price").val();
                     var delivery_date = $("#date_input").val();
-                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date, sele_slot_id, sele_slot_price, delivery_date,recurringformPost);
+                    submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date,end_date,incremental_hrs,total_booking_time,service_period,service_day,service_start_time,service_date, sele_slot_id, sele_slot_price, delivery_date,recurringformPost,is_template,start_date_time, end_date_time);
                 }
             }
         }
     }
 
-    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='', sele_slot_id='', sele_slot_price='', delivery_date='',recurringformPost='') {
+    function submitAddtoCart(addonids, addonoptids, product_id, variant_id, quantity, vendor_id,start_date='',end_date='',incremental_hrs='',total_booking_time='',service_period='',service_day='',service_start_time='',service_date='', sele_slot_id='', sele_slot_price='', delivery_date='',recurringformPost='',is_template='',start_date_time = '', end_date_time='') {
+          
         var returnResponse = false;
         $.ajax({
             type: "post",
@@ -3392,14 +3528,25 @@ $(document).ready(function () {
                 "recurringformPost":recurringformPost,
                  "sele_slot_id":sele_slot_id,
                  "delivery_date":delivery_date,
-                 "sele_slot_price":sele_slot_price
+                 "sele_slot_price":sele_slot_price,
+                 "is_template" : is_template,
+                 "start_date_time":start_date_time,
+                 "end_date_time":end_date_time,
             },
             success: function (response) {
                 if (response.status == 'success') {
                     $(".shake-effect").effect("shake", { times: 3 }, 1200);
                     returnResponse = true;
                     cartHeader();
-                    if(vendor_type == 'rental') {
+                 
+                    if($("#pickup_service").is(":checked")){
+                        location.href =  '/category/cabservice?destination_location='+response.vendor.address+'&destination_location_latitude'+response.vendor.latitude+'&destination_location_longitude'+response.vendor.longitude+'&yacht_id='+product_id;
+                    }
+                    if(vendor_type == 'rental' || vendor_type == 'p2p') {
+                        location.href =  '/viewcart';
+                    }   
+                    console.log(response.vendor.rental);
+                    if(response.vendor.rental == 1) {
                        location.href =  '/viewcart';
                     }
                 } else {
@@ -4882,11 +5029,13 @@ $(document).ready(function () {
                 error: function (reject) {
                     if (reject.status === 422) {
                         var message = $.parseJSON(reject.responseText);
+                        sweetAlert.error(message.message,"");
                         $(".invalid-feedback.manual_promocode").html("<strong>" + message.message + "</strong>");
                     }
                 }
             });
         } else {
+            sweetAlert.error("Enter a Promocode","");
             $(".invalid-feedback.manual_promocode").html("<strong>Please enter promocode</strong>");
         }
     });
@@ -5121,11 +5270,13 @@ $(document).ready(function () {
             case 58:
                 payWithPowerTrans(payment_option_id,'');
             break;
-
             case 59:
                 payWithLivees(payment_option_id);
                 break;
-
+             case 62:
+                paymentViaMpesaSafari('', payment_option_id, '');
+            break;
+                
         }
 
     }
@@ -5678,13 +5829,17 @@ $(document).ready(function () {
                 payWithPowerTrans(payment_option_id, order);
               }
             break;
-
             case '59':
               var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
               if (order != '') {
                 payWithLivees(address_id, payment_option_id, order);
               }
             break;
+           case '62':
+              var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+              if (order != '') {
+                paymentViaMpesaSafari(address_id, payment_option_id, order);
+              }
         }
 
     }
@@ -5740,7 +5895,6 @@ $(document).ready(function () {
                     }
                 }).catch(function (error) {
                     // Re-enable button now that request is complete
-                    // alert("error occured: " + error);
                 Swal.fire({
                     // title: "Warning!",
                     text: "error occured: " + error,
@@ -5926,9 +6080,11 @@ $(document).ready(function () {
             case 58:
                 payWithPowerTrans(payment_option_id,'');
             break;
-
-             case 59: console.log("here");
+             case 59:
                 payWithLivees(payment_option_id,payment_from='wallet');
+            break;
+            case 62:
+                paymentViaMpesaSafari('',payment_option_id,'');
             break;
         }
     }
@@ -5939,8 +6095,7 @@ function numberWithCommas(x) {
     // x=x.toFixed(2)
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
-//   var number = 213242.3412;
-//   alert(numberWithCommas(number));
+
 $(".related-css").slick({dots:!1,infinite:!0,speed:300,slidesToShow:4,centerMode:!0,centerPadding:"20px",slidesToScroll:4,arrows:!0,responsive:[{breakpoint:1200,settings:{slidesToShow:3,slidesToScroll:3}},{breakpoint:991,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}},{breakpoint:767,settings:{slidesToShow:2,arrows:!0,slidesToScroll:2}}]});
 
 $('#add_edit_address').on('hidden.bs.modal', function () {
@@ -6020,3 +6175,46 @@ $('.featured_slider').slick({
         }
     ]
 });
+
+
+
+
+$('.category_responsive').slick({
+    dots: false,
+    infinite: false,
+    speed: 300,
+    slidesToShow: 6,
+    slidesToScroll: 1,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 5,
+          slidesToScroll: 1,
+          infinite: true,
+          dots: false
+        }
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1
+        }
+      }
+    ]
+  });
+          
+
+
+  if (typeof action_type !== "undefined" && action_type === "p2p") {
+    const initReadMore = new readMore();
+    initReadMore.bootstrap();
+}

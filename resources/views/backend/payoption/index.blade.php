@@ -160,6 +160,12 @@ Options']) @section('css')
 				$pesapal_consumer_key = (isset($creds->pesapal_consumer_key)) ? $creds->pesapal_consumer_key : '';
 				$pesapal_consumer_secret = (isset($creds->pesapal_consumer_secret)) ? $creds->pesapal_consumer_secret : '';
 
+				// mpesa-safari
+				$mpesasafari_consumer_key = (isset($creds->mpesasafari_consumer_key)) ? $creds->mpesasafari_consumer_key : '';
+				$mpesasafari_consumer_secret = (isset($creds->mpesasafari_consumer_secret)) ? $creds->mpesasafari_consumer_secret : '';
+				$mpesasafari_shortcode = (isset($creds->mpesasafari_shortcode)) ? $creds->mpesasafari_shortcode : '';                                                                                
+				$mpesasafari_webhook = (isset($creds->mpesasafari_webhook)) ? $creds->mpesasafari_webhook : '';
+				
                 $livee_merchant_key=(isset($creds->livee_merchant_key))?$creds->livee_merchant_key: '';
                   $livee_resource_key=(isset($creds->livee_resource_key))?$creds->livee_resource_key: '';
                 ?>
@@ -1735,6 +1741,48 @@ Options']) @section('css')
                         </div>
                     </div>
                     @endif
+			    @if ( (strtolower($opt->code) == 'mpesasafari') )
+					<div class="mt-2" id="mpesasafari_fields_wrapper" @if($opt->
+						status != 1) style="display:none" @endif>
+						<div class="row">
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="mpesasafari_consumer_key" class="mr-3">{{ __("Consumer Key") }}</label>
+									<input type="text" name="mpesasafari_consumer_key" id="mpesasafari_consumer_key"
+										class="form-control" value="{{$mpesasafari_consumer_key}}" @if($opt->status
+									== 1) required @endif>
+								</div>
+							</div>
+
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="mpesasafari_consumer_secret" class="mr-3">{{ __("Consumer Secret") }}</label>
+									<input type="text" name="mpesasafari_consumer_secret" id="mpesasafari_consumer_secret"
+										class="form-control" value="{{$mpesasafari_consumer_secret}}" @if($opt->status
+									== 1) required @endif>
+								</div>
+							</div>
+
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="mpesasafari_shortcode" class="mr-3">{{ __("Shortcode") }}</label> <input type="text" name="mpesasafari_shortcode"
+										id="mpesasafari_shortcode" class="form-control"
+										value="{{$mpesasafari_shortcode}}" @if($opt->status == 1)
+									required @endif>
+								</div>
+							</div>
+							<div class="col-12">
+								<div class="form-group mb-2">
+									<label for="mpesasafari_webhook" class="mr-3">{{ __("Webhook Url") }}</label> <input type="text" name="mpesasafari_webhook"
+										id="mpesasafari_webhook" class="form-control"
+										value="{{$mpesasafari_webhook}}" @if($opt->status == 1)
+									required @endif>
+								</div>
+							</div>
+
+						</div>
+					</div>
+					@endif
 
 					@if ( (strtolower($opt->code) == 'powertrans') )
                     <div class="mt-2" id="powertrans_fields_wrapper" @if($opt->status != 1) style="display:none" @endif>

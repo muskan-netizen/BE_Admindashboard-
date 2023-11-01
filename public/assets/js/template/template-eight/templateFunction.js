@@ -4,10 +4,10 @@ $(function () {
         speed: 300,
         slidesToShow:4,
         slidesToScroll: 1,
-        centerMode: true,
-        centerPadding: 'false',
+        centerMode: false,
+        centerPadding: 'true',
         arrows: true,
-        dots: false,
+        dots: false,        
         responsive: [
             { breakpoint: 1199, settings: { slidesToShow: 4, slidesToScroll: 1, infinite: true, dots: false, centerMode: true, } },
             { breakpoint: 991, settings: { slidesToShow: 2, slidesToScroll: 1, dots: false, centerMode: true, } },

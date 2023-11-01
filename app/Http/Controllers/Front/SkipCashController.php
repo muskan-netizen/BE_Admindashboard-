@@ -198,14 +198,9 @@ class SkipCashController extends Controller
             return $data;
         }
     }
-    
-
-
-
 
     public function successPage(Request $request)
     {
-        // dd($request->all());
         if (isset($request) && $request->get('status')) {
             $payment = Payment::where('transaction_id', $request->get('transId'))->first();
             
@@ -220,11 +215,7 @@ class SkipCashController extends Controller
             } elseif ($payment->type == 'pickup_delivery') {
                 return $this->completePickupDelivery($request, $payment, $request);
             }
-            
-        }
-
-        
-        
+        } 
     }
 
     public function completeOrderCart($request, $payment)

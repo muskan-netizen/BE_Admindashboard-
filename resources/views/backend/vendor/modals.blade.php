@@ -252,7 +252,7 @@
                                 <div class="col-md-12 form-group" id="phone_numberInput">
                                     {!! Form::label('title', __('Phone Number'),['class' => 'control-label']) !!}
                                     <input type="tel" class="form-control phone" id="new_user_phone_number" placeholder={{ __("Phone Number") }} name="phone_number" value="{{ old('full_number')}}">
-                                    <input type="hidden" id="countryCode" name="country" value="{{ old('countryData') ? old('countryData') : 'us'}}">
+                                    <input type="hidden" id="countryCode" name="country_code" value="{{ old('countryData') ? old('countryData') : 'us'}}">
                                     <input type="hidden" id="dialCode" name="dial_code" value="{{ old('dialCode') ? old('dialCode') : Session::get('default_country_phonecode',1) }}">
 
                                     <span class="invalid-feedback" role="alert">

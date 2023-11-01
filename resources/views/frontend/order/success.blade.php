@@ -4,7 +4,7 @@
 //$total_amount = $order->payable_amount+$order->total_other_taxes_amount;
 $total_amount = $order->payable_amount;
 $total_bid_discount = @$order->bid_discount;
-$total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges;
+$total=$order->total_amount+$order->fixed_fee_amount+$order->total_delivery_fee+$order->total_service_fee+$order->total_container_charges+$order->rental_protection_amount+$order->booking_option_price;
 $additional_price=0;
 $vendor_total_discount = 0;
 $serviceType =  Session::get('vendorType');
@@ -67,7 +67,7 @@ $order_is_long_term = $order->is_long_term;
 
                                 @foreach($vendor->products as $product)
                                     @php
-
+                                        $productCategory = $product->product->productcategory->slug;
                                         $image = count($product->media) ? @$product->media->first()->image['path']['proxy_url'].'74/100'.@$product->media->first()->image['path']['image_path']:@$product->image['proxy_url'].'74/100'.@$product->image['image_path'];
                                         $additional_price+= $product->incremental_price;
                                         $security_amount+=$product->security_amount;
@@ -96,7 +96,13 @@ $order_is_long_term = $order->is_long_term;
                                                     <div>
                                                         @if($serviceType=='rental')
                                                             <h4>{{__('Duration')}}</h4>
-                                                            @php  $dura = getHoursMinutes($product->total_booking_time);  @endphp
+                                                            @php  
+                                                            if($productCategory == 'rental'){
+                                                                $dura = getHoursMinutes($product->total_booking_time);
+                                                            }elseif($productCategory == 'yacht'){
+                                                                $dura = $product->pvariant->vset[0]->options1->title;
+                                                            }
+                                                            @endphp
                                                             <h5>{{$dura}}</h5>
                                                         @else
                                                             <h4>{{__('Quantity')}}</h4>
@@ -223,11 +229,19 @@ $order_is_long_term = $order->is_long_term;
                                     $total += decimal_format($order->total_other_taxes_amount * @$clientCurrency->doller_compare);
                                     @endphp
 				                         <li>{{__('Tax')}} <span>@if( $additionalPreference["is_token_currency_enable"])
-                                        {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->total_other_taxes_amount * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->total_other_taxes_amount * @$clientCurrency->doller_compare)}}@endif</span></li>
+                                        {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->taxable_amount * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->taxable_amount * @$clientCurrency->doller_compare)}}@endif</span></li>
                                    @endif
 
                                     @if($order->luxury_option_id == 4)
                                         <li>{{__('Security Amount')}}<span>{{Session::get('currencySymbol').decimal_format($security_amount)}}</span></li>
+                                    @endif
+
+                                    @if($order->rental_protection_amount > 0)
+                                        <li>{{__('Rental Protection Amount')}}<span>{{Session::get('currencySymbol').decimal_format($order->rental_protection_amount)}}</span></li>
+                                    @endif
+
+                                    @if($order->booking_option_price > 0)
+                                        <li>{{__('Booking Option Amount')}}<span>{{Session::get('currencySymbol').decimal_format($order->booking_option_price)}}</span></li>
                                     @endif
 
                                     @if($product->slot_id != '' && $product->delivery_date != '' && $product->slot_price != '')
@@ -255,8 +269,8 @@ $order_is_long_term = $order->is_long_term;
                                         <li>{{__('Tip Amount')}} <span>@if( $additionalPreference["is_token_currency_enable"])
                                             {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format($order->tip_amount * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format($order->tip_amount * @$clientCurrency->doller_compare)}}@endif</span></li>
                                     @endif
-                                     <li>{{__('Total')}}<span>@if( $additionalPreference["is_token_currency_enable"])
-                                        {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format(($total+$additional_price) * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format(($total+$additional_price) * @$clientCurrency->doller_compare)}}@endif</span></li>
+                                        {{-- <li>{{__('Total')}}<span>@if( $additionalPreference["is_token_currency_enable"])
+                                            {!!"<i class='fa fa-money' aria-hidden='true'></i> "!!}{{ getInToken(decimal_format(($total+$additional_price) * @$clientCurrency->doller_compare)) }}@else{{Session::get('currencySymbol').decimal_format(($total+$additional_price) * @$clientCurrency->doller_compare)}}@endif</span></li> --}}
       
 
                         </ul>

@@ -635,6 +635,21 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="col-md-12 mt-3 p-0">
+
+                            <h5 class="d-inline-block ">
+                                <span>{{ __('Webhook Url') }} : </span>
+                                <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('roadieWebhook')}}</span></a>
+                            </h5>
+                            <sup class="position-relative">
+                                <a class="copy-icon ml-2" id="copy_icon2" data-url="{{route('roadieWebhook')}}" style="cursor:pointer;">
+                                    <i class="fa fa-copy"></i>
+                                </a>
+                                <h6 id="copy_message2" class="copy-message mt-2"></h6>
+                            </sup>
+                            <hr/>
+                        </div>
                     </div>
                     @endif
                 </div>
@@ -1060,6 +1075,128 @@
           @endif
  
           <!-- End Kwik Api -->
+
+          <!--- shipEngineOption Code -->
+
+          @if($shipEngineOption)
+            <div class="col-md-6 mb-3">
+                <form method="POST" id="payment_option_form" action="{{route('shipengine.updateAll')}}" class="h-100">
+                    @csrf
+                    @method('POST')
+                    <div class="card-box h-100">
+                        <input type="hidden" name="method_id" id="{{$shipEngineOption->id}}" value="{{$shipEngineOption->id}}">
+                        <input type="hidden" name="method_name" id="{{$shipEngineOption->code}}" value="{{$shipEngineOption->code}}">
+
+                        <?php
+                            $creds = json_decode($shipEngineOption->credentials);
+                            $api_key = (isset($creds->api_key)) ? $creds->api_key : '';
+                            $service_code = (isset($creds->service_code)) ? $creds->service_code : '';
+                            $carrier_ids = (isset($creds->carrier_ids)) ? $creds->carrier_ids : '';
+                            
+                            $base_price = (isset($creds->base_price)) ? $creds->base_price : '0';
+                            $distance = (isset($creds->distance)) ? $creds->distance : '0';
+                            $amount_per_km = (isset($creds->amount_per_km)) ? $creds->amount_per_km : '0';
+                        ?>
+
+                        <div class="row">
+                            <div class="col-md-12 d-flex justify-content-between align-items-center">
+                                <h3 class="mb-1"><span class="alPaymentImage" style="display:inline-block;"> <img style="width:100%;" src="{{asset('deliveryLogo/'.$shipEngineOption->code.'.png')}}" alt=""></span>  {{$shipEngineOption->title}}</h3>
+                                <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
+                            </div>
+                        </div>
+    
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group mb-0 switchery-demo  d-flex justify-content-between align-items-center">
+                                    <label for="" class="mr-3">{{ __("Enable") }}</label>
+                                    <input type="checkbox" data-id="{{$shipEngineOption->id}}" data-title="{{$shipEngineOption->code}}" data-plugin="switchery" name="active" class="chk_box all_select" data-color="#43bee1" @if($shipEngineOption->status == 1) checked @endif>
+                                </div>
+                            </div>
+                            @if ( (strtolower($shipEngineOption->code) == 'shipengine'))
+                                <div class="col-6">
+                                    <div class="form-group mb-0 switchery-demo d-flex justify-content-between align-items-center">
+                                        <label for="" class="mr-3 ">{{ __('Sandbox') }}</label>
+                                        <input type="checkbox" data-id="{{$shipEngineOption->id}}" data-title="{{$shipEngineOption->code}}" data-plugin="switchery" name="sandbox" class="chk_box" data-color="#43bee1" @if($shipEngineOption->test_mode == 1) checked @endif>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+    
+                        @if ( (strtolower($shipEngineOption->code) == 'shipengine') )
+                            <div id="shipengine_fields_wrapper" @if($shipEngineOption->status != 1) style="display:none" @endif>
+                                <hr>
+        
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group mb-0">
+                                            <label for="api_key" class="mr-3">{{ __("Api Key") }}</label>
+                                            <input type="text" name="api_key" id="api_key" class="form-control" value="{{$api_key}}" @if($shipEngineOption->status == 1) required @endif autofill="off">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group mb-0">
+                                            <label for="service_code" class="mr-3">{{ __("Service Code") }}</label>
+                                            <input type="text" name="service_code" id="service_code" class="form-control" value="{{$service_code}}" @if($shipEngineOption->status == 1) required @endif autofill="off">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group mb-0">
+                                            <label for="carrier_ids" class="mr-3">{{ __("Carrier Id") }}</label>
+                                            <input type="text" name="carrier_ids" id="carrier_ids" class="form-control" value="{{$carrier_ids}}" @if($shipEngineOption->status == 1) required @endif autofill="off">
+                                        </div>
+                                    </div>
+                                </div>
+        
+                                <div class="col-md-12 mt-3 p-0">
+                                    <h5 class="d-inline-block ">
+                                        <span>{{ __('Webhook Url') }} : </span>
+                                        <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('quick-api')}}</span></a>
+                                    </h5>
+                                    <sup class="position-relative">
+                                        <a class="copy-icon ml-2" id="copy_icon2" data-url="{{route('quick-api')}}" style="cursor:pointer;">
+                                            <i class="fa fa-copy"></i>
+                                        </a>
+                                        <h6 id="copy_message2" class="copy-message mt-2"></h6>
+                                    </sup>
+
+                                    {{-- <div class="form-group mt-2 switchery-demo">
+                                        <label for="" class="mr-3">{{ __("Set Base Price Fare") }}</label>
+                                        <input type="checkbox"  data-title="{{$shipEngineOption->code}}" data-plugin="switchery" name="base_active" class="chk_box base_select" data-color="#43bee1" @if($base_price > 0) checked @endif>
+                                    </div> --}}
+                                    <hr/>
+                                </div>
+        
+                                {{-- <div class="row mt-3" id="{{$shipEngineOption->code}}_fields_wrapper_base" @if($base_price < 1) style="display:none" @endif >
+            
+                                    <div class="col-md-4">
+                                        <div class="form-group mb-0">
+                                            <label for="kwikapi_base_price" class="mr-3">{{ __("Base Price") }}</label>
+                                            <input type="text" name="base_price" id="kwikapi_base_price" class="form-control" value="{{$base_price??0}}" >
+                                        </div>
+                                    </div>
+            
+                                    <div class="col-md-4">
+                                        <div class="form-group mb-0">
+                                            <label for="kwikapi_distance" class="mr-3">{{ __("Distance") }}</label>
+                                            <input type="text" name="distance" id="kwikapi_distance" class="form-control" value="{{@$distance??0}}" >
+                                        </div>
+                                    </div>
+            
+                                    <div class="col-md-4">
+                                        <div class="form-group mb-0">
+                                            <label for="kwikapi_amount_per_km" class="mr-3">{{ __("Amount Per Killometer") }}</label>
+                                            <input type="text" name="amount_per_km" id="kwikapi_amount_per_km" class="form-control" value="{{@$amount_per_km??0}}" >
+                                        </div>
+                                    </div>
+                                </div> --}}
+                            </div>
+                        @endif
+                    </div>
+                </form>
+            </div>
+          @endif
+ 
+          <!-- End shipEngineOption Api -->
 
     </div>
 </div>

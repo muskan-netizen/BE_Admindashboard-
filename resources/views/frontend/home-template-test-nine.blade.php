@@ -197,6 +197,7 @@
 @endif
 
 <!-----------------categores------------>
+
 @if(!empty($navCategories) && count($navCategories))
 <section class="p2p-categories">
 	<div class="container">
@@ -774,7 +775,7 @@
 		</section> -->
 		@if( $homePageLabel->slug == 'featured_products' )
 			<section class="product-1 main-product mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-				<div class="container p2p-full-width">
+				<div class="container">
 					<div class="row">
 						<div class="col-md-12 text-center">
 							<div class="top-heading d-flex justify-content-between">
@@ -788,6 +789,8 @@
 				<div class="product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 					<div class="featured_slider">
 								@foreach ($homePageData[$homePageLabel->slug] as $product )
+
+								
 								@include('frontend.home_page_9.product')
 								@endforeach
 						</div>
@@ -797,7 +800,7 @@
 
 		@elseif( $homePageLabel->slug == 'new_products' )
 			<section class="product-2 main-product mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
-				<div class="container p2p-full-width">
+				<div class="container">
 					<div class="row">
 						<div class="col-md-12 text-center">
 							<div class="top-heading d-flex justify-content-between">
@@ -819,7 +822,7 @@
 			</section>
 		@elseif( $homePageLabel->slug == 'on_sale' )
 			<section class="main-product mb-0 render_full_{{$homePageLabel->slug}} pt-0" id="{{$homePageLabel->slug.$key}}">
-				<div class="container p2p-full-width">
+				<div class="container">
 					<div class="row">
 						<div class="col-md-12 text-center">
 							<div class="top-heading d-flex justify-content-between">
@@ -834,6 +837,8 @@
 					<div class="featured_slider">
 						{{-- @dd($homePageData[$homePageLabel->slug]) --}}
 								@foreach ($homePageData[$homePageLabel->slug] as $product )
+
+								
 								@include('frontend.home_page_9.product')
 								@endforeach
 						</div>

@@ -127,6 +127,12 @@
                         <span> SMS Providers </span>
                     </a>
                 </li>
+                <li>
+                    <a href="{{route('lumen')}}">
+                        <i data-feather="message-square" class="icon-dual"></i>
+                        <span> Lumen </span>
+                    </a>
+                </li>
             </ul>
         </div>
         <div class="clearfix"></div>

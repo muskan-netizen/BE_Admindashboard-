@@ -223,10 +223,6 @@
                 $("#return_form_button").html('Request').prop('disabled', false);
                 var url = "{{route('user.orders',['pageType' => 'returnOrders'])}}";
                 $(location).prop('href', url);
-<<<<<<< HEAD
-
-=======
->>>>>>> pre_production
             }
             else
             {

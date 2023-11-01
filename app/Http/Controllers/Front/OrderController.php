@@ -62,9 +62,11 @@ use App\Models\ClientPreference;
 use App\Http\Traits\ {
     ApiResponser,
     CartManager,
+    OrderBlockchain,
     SquareInventoryManager,
     VendorTrait,
-    OrderTrait
+    OrderTrait,
+    MargTrait
 };
 use App\Models\AddonOption;
 use App\Models\ {
@@ -72,7 +74,13 @@ use App\Models\ {
     OrderLongTermServicesAddon,
     OrderLongTermServiceSchedule,
     Bid,
-    OrderNotificationsLogs
+    VendorMargConfig,
+    CartBookingOption,
+    CartRentalProtection,
+    OrderNotificationsLogs,
+    ProductAvailability,
+    ClientPreferenceAdditional
+
 };
 use App\Models\ProductVariantSet;
 use GuzzleHttp\Client as GCLIENT;
@@ -83,17 +91,662 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\LalaMovesController;
 use Illuminate\Support\Facades\Http;
-use App\Http\Traits\MargTrait;
 
 class OrderController extends FrontController
 {
-    use ApiResponser, CartManager, SquareInventoryManager,VendorTrait,OrderTrait,MargTrait;
+    use ApiResponser, CartManager, SquareInventoryManager,VendorTrait,OrderTrait,OrderBlockchain;
 
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
+
+    public function lenderOrders(Request $request, $domain = '')
+    {
+        $iconsArray = [];
+        $user = Auth::user();
+        if (empty($user->timezone)) {
+            $client_timezone = DB::table('clients')->first('timezone');
+            $user->timezone = $client_timezone->timezone ?? $user->timezone;
+        }
+        $currency_id = Session::get('customerCurrency');
+
+        $langId = Session::get('customerLanguage');
+        $navCategories = $this->categoryNav($langId);
+        $additionalPreference =getAdditionalPreference(['is_long_term_service','is_token_currency_enable','token_currency','is_postpay_enable'  ,'is_order_edit_enable' ,'order_edit_before_hours','is_service_product_price_from_dispatch','is_service_price_selection']);
+        $getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'), (@Session::get('onDemandPricingSelected') ?? ''),$additionalPreference);
+        $is_service_product_price_from_dispatch_forOnDemand =$getOnDemandPricingRule['is_price_from_freelancer'] ?? 0;
+
+
+        $dispatcher_icons = OrderDeliveryStatusIcon::select('image', 'image_url')->get();
+        foreach ($dispatcher_icons as $icon) {
+            $imgUrl = asset($icon->image);
+            if (! empty($icon->image_url['proxy_url'])) {
+                $imgUrl = $icon->image_url['proxy_url'] . '40/40' . $icon->image_url['image_path'];
+            }
+
+            $iconsArray[] = $imgUrl;
+        }
+        $vendorUser =  UserVendor::select('vendor_id')->where('user_id', $user->id)->first();
+        $allOrders = $upcomingOrders = $ongoingOrders = [];
+        if($vendorUser){
+            //Past Orders Start Query
+            $allOrders = Order::with([
+                'vendors',
+                'vendors.vendor',
+                'vendors.dineInTable.translations' => function ($qry) use ($langId) {
+                    $qry->where('language_id', $langId);
+                },
+                'vendors.dineInTable.category',
+                'vendors.products',
+                'vendors.products.product',
+                'vendors.products.media.image',
+                'vendors.products.pvariant.media.pimage.image',
+                'vendors.products.Routes',
+                'vendors.products.order_product_status',
+                'products.productRating',
+                'user',
+                'address',
+                'driver_rating',
+                'reports'
+            ]);
+            $allOrders = $allOrders->with('vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail');
+
+            $allOrders = $allOrders->whereHas('vendors', function ($q) use($vendorUser) {
+                $q->whereHas('products');
+                //lender
+                $q->where('vendor_id',  $vendorUser->vendor_id);
+            });
+            $allOrders = $allOrders->where(function ($q1) {
+                $q1->where('payment_status', 1)
+                    ->whereNotIn('payment_option_id', [
+                    1
+                ]);
+                $q1->orWhere(function ($q2) {
+                    $q2->where('payment_option_id', 1);
+                });
+            });
+            $allOrders->where('orders.is_long_term', 0);
+            $allOrders = $allOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
+
+            foreach ($allOrders as $order) {
+                $is_order_days_for_return = 0;
+                $replaceable = 0;
+                foreach ($order->vendors as $vendor) {
+                    $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
+                    $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+                    foreach ($vendor->products as $product) {
+                        $product = $this->gettimeSlotName($product);
+                        // dd($product->product->return_days);
+                        // $vendor->is_order_days_for_return = 1;
+                        if ((@$product->product->return_days && $this->checkOrderDaysForReturn($vendor, $product->product->return_days)) && $is_order_days_for_return == 0) {
+                            $this->checkOrderDaysForReturn($vendor, $product->product->return_days);
+                            $vendor->is_order_days_for_return = 1;
+                        }
+
+                        if (isset($product->pvariant) && isset($product->pvariant->media) && $product->pvariant->media->isNotEmpty()) {
+                            $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
+                        } elseif ($product->media->isNotEmpty()) {
+                            $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
+                        } else {
+                            $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
+                        }
+                    }
+                    if ($vendor->dineInTable) {
+                        $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
+                        $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
+                        $vendor->dineInTableCategory = $vendor->dineInTable->category ? $vendor->dineInTable->category->title : '';
+                    }
+                }
+            }
+
+
+            //Upcoming Lender Orders Start Query
+            $upcomingOrders = Order::with([
+                'vendors',
+                'vendors.vendor',
+                'vendors.dineInTable.translations' => function ($qry) use ($langId) {
+                    $qry->where('language_id', $langId);
+                },
+                'vendors.dineInTable.category',
+                'vendors.products',
+                'vendors.products.product',
+                'vendors.products.media.image',
+                'vendors.products.pvariant.media.pimage.image',
+                'vendors.products.Routes',
+                'vendors.products.order_product_status',
+                'products.productRating',
+                'user',
+                'address',
+                'driver_rating',
+                'reports'
+            ]);
+            $upcomingOrders = $upcomingOrders->with('vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail');
+            $upcomingOrders = $upcomingOrders->whereHas('vendors', function ($q) use($vendorUser) {
+                $q->whereHas('products');
+                //lender
+                $q->where('vendor_id',  $vendorUser->vendor_id);
+                // upcoming
+                $q->whereIn('order_status_option_id', [1,2]);
+            });
+            $upcomingOrders = $upcomingOrders->where(function ($q1) {
+                $q1->where('payment_status', 1)
+                    ->whereNotIn('payment_option_id', [
+                    1
+                ]);
+                $q1->orWhere(function ($q2) {
+                    $q2->where('payment_option_id', 1);
+                });
+            });
+
+            $upcomingOrders->where('orders.is_long_term', 0);
+
+            $upcomingOrders = $upcomingOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
+
+            foreach ($upcomingOrders as $order) {
+                $is_order_days_for_return = 0;
+                $replaceable = 0;
+                foreach ($order->vendors as $vendor) {
+                    $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)->where('vendor_id', $vendor->vendor_id)->orderBy('id', 'DESC')->first();
+                    $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+                    foreach ($vendor->products as $product) {
+                        $product = $this->gettimeSlotName($product);
+                        // dd($product->product->return_days);
+                        // $vendor->is_order_days_for_return = 1;
+                        if ((@$product->product->return_days && $this->checkOrderDaysForReturn($vendor, $product->product->return_days)) && $is_order_days_for_return == 0) {
+                            $this->checkOrderDaysForReturn($vendor, $product->product->return_days);
+                            $vendor->is_order_days_for_return = 1;
+                        }
+
+                        if (isset($product->pvariant) && isset($product->pvariant->media) && $product->pvariant->media->isNotEmpty()) {
+                            $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
+                        } elseif ($product->media->isNotEmpty()) {
+                            $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
+                        } else {
+                            $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
+                        }
+                    }
+                    if ($vendor->dineInTable) {
+                        $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
+                        $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
+                        $vendor->dineInTableCategory = $vendor->dineInTable->category ? $vendor->dineInTable->category->title : '';
+                    }
+                }
+            }
+
+
+            //Ongoing Lender Orders Start Query
+            $ongoingOrders = Order::with([
+                'vendors',
+                'vendors.vendor',
+                'vendors.dineInTable.translations' => function ($qry) use ($langId) {
+                    $qry->where('language_id', $langId);
+                },
+                'vendors.dineInTable.category',
+                'vendors.products',
+                'vendors.products.product',
+                'vendors.products.media.image',
+                'vendors.products.pvariant.media.pimage.image',
+                'vendors.products.Routes',
+                'vendors.products.order_product_status',
+                'products.productRating',
+                'user',
+                'address',
+                'driver_rating',
+                'reports'
+            ]);
+            $ongoingOrders = $ongoingOrders->with('vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail');
+            $ongoingOrders = $ongoingOrders->whereHas('vendors', function ($q) use($vendorUser) {
+                $q->whereHas('products');
+                //lender
+                $q->where('vendor_id',  $vendorUser->vendor_id);
+                //ongoing
+                $q->whereIn('order_status_option_id', [4]);
+            });
+            $ongoingOrders = $ongoingOrders->where(function ($q1) {
+                $q1->where('payment_status', 1)
+                    ->whereNotIn('payment_option_id', [
+                    1
+                ]);
+                $q1->orWhere(function ($q2) {
+                    $q2->where('payment_option_id', 1);
+                });
+            });
+
+            $ongoingOrders->where('orders.is_long_term', 0);
+
+            $ongoingOrders = $ongoingOrders->orderBy('orders.id', 'DESC')
+                ->select('*', 'id as total_discount_calculate')
+                ->paginate(10);
+
+            foreach ($ongoingOrders as $order) {
+                $is_order_days_for_return = 0;
+                $replaceable = 0;
+                foreach ($order->vendors as $vendor) {
+                    $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)
+                        ->where('vendor_id', $vendor->vendor_id)
+                        ->orderBy('id', 'DESC')
+                        ->first();
+                    $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+                    foreach ($vendor->products as $product) {
+                        $product = $this->gettimeSlotName($product);
+                        // dd($product->product->return_days);
+                        // $vendor->is_order_days_for_return = 1;
+                        if ((@$product->product->return_days && $this->checkOrderDaysForReturn($vendor, $product->product->return_days)) && $is_order_days_for_return == 0) {
+                            $this->checkOrderDaysForReturn($vendor, $product->product->return_days);
+                            $vendor->is_order_days_for_return = 1;
+                        }
+
+                        if (isset($product->pvariant) && isset($product->pvariant->media) && $product->pvariant->media->isNotEmpty()) {
+                            $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
+                        } elseif ($product->media->isNotEmpty()) {
+                            $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
+                        } else {
+                            $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
+                        }
+                    }
+                    if ($vendor->dineInTable) {
+                        $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
+                        $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
+                        $vendor->dineInTableCategory = $vendor->dineInTable->category ? $vendor->dineInTable->category->title : '';
+                    }
+                }
+            }
+        }
+
+
+        $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+
+        if (empty($clientCurrency)) {
+            $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
+        }
+
+        $client_preferences = ClientPreference::select('*')->where('id', '>', 0)->first();
+        if (! empty($client_preferences)) {
+            $client_preferences->is_postpay_enable =  $additionalPreference['is_postpay_enable'];
+            $client_preferences->is_order_edit_enable = $additionalPreference['is_order_edit_enable'];
+            $client_preferences->order_edit_before_hours = $additionalPreference['order_edit_before_hours'];
+            $client_preferences->editlimit_datetime = Carbon::now()->addHours($client_preferences->order_edit_before_hours)->toDateTimeString();
+        }
+        $payments = PaymentOption::where('credentials', '!=', '')->where('status', 1)->count();
+
+        $cancellation_reason = ReturnReason::where([
+                'status' => 'Active',
+                'type' => 3
+            ])->get();
+
+
+        $longTermOrder = [];
+        /**
+         * get user long term orders
+         */
+        $show_long_term =0;
+        if ($additionalPreference['is_long_term_service'] == 1){
+            $show_long_term =1;
+
+            $longTermOrder = $this->getUserLongTermService($user, $langId, $currency_id);
+        }
+
+
+        $langId = Session::get('customerLanguage');
+        $fixedFee = $this->fixedFee($langId);
+        $pendingOrder = [];
+        if ($is_service_product_price_from_dispatch_forOnDemand == 1){
+            $pendingOrder = $this->pendingOrder( $request,$user,$langId,$iconsArray);
+        }
+
+        return view('frontend.account.lender-orders')->with([
+            'payments' => $payments,
+            'navCategories' => $navCategories,
+            'cancellation_reason' => $cancellation_reason,
+            'allOrders' => $allOrders,
+            'ongoingOrders' => $ongoingOrders,
+            'upcomingOrders' => $upcomingOrders,
+            'clientCurrency' => $clientCurrency,
+            'clientPreference' => $client_preferences,
+            'fixedFee' => $fixedFee,
+            'longTermOrder' => $longTermOrder,
+            'additionalPreference' => $additionalPreference,
+            'pendingOrder' => $pendingOrder,
+            'show_long_term' =>$show_long_term,
+            'is_service_product_price_from_dispatch_forOnDemand' =>$is_service_product_price_from_dispatch_forOnDemand
+        ]);
+    }
+
+    public function borrowerOrders(Request $request, $domain = '')
+    {
+        $iconsArray = [];
+        $user = Auth::user();
+        if (empty($user->timezone)) {
+            $client_timezone = DB::table('clients')->first('timezone');
+            $user->timezone = $client_timezone->timezone ?? $user->timezone;
+        }
+        $currency_id = Session::get('customerCurrency');
+
+        $langId = Session::get('customerLanguage');
+        $navCategories = $this->categoryNav($langId);
+        $additionalPreference =getAdditionalPreference(['is_long_term_service','is_token_currency_enable','token_currency','is_postpay_enable'  ,'is_order_edit_enable' ,'order_edit_before_hours','is_service_product_price_from_dispatch','is_service_price_selection']);
+        $getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'), (@Session::get('onDemandPricingSelected') ?? ''),$additionalPreference);
+        $is_service_product_price_from_dispatch_forOnDemand =$getOnDemandPricingRule['is_price_from_freelancer'] ?? 0;
+
+        $dispatcher_icons = OrderDeliveryStatusIcon::select('image', 'image_url')->get();
+        foreach ($dispatcher_icons as $icon) {
+            $imgUrl = asset($icon->image);
+            if (! empty($icon->image_url['proxy_url'])) {
+                $imgUrl = $icon->image_url['proxy_url'] . '40/40' . $icon->image_url['image_path'];
+            }
+            $iconsArray[] = $imgUrl;
+        }
+
+        $vendorUser =  UserVendor::select('vendor_id')->where('user_id', $user->id)->first();
+        $allOrders = $upcomingOrders = $ongoingOrders = [];
+        if($vendorUser){
+            //All Borrower Orders Start Query
+            $allOrders = Order::with([
+                'vendors',
+                'vendors.vendor',
+                'vendors.dineInTable.translations' => function ($qry) use ($langId) {
+                    $qry->where('language_id', $langId);
+                },
+                'vendors.dineInTable.category',
+                'vendors.products',
+                'vendors.products.product',
+                'vendors.products.media.image',
+                'vendors.products.pvariant.media.pimage.image',
+                'vendors.products.Routes',
+                'vendors.products.order_product_status',
+                'products.productRating',
+                'user',
+                'address',
+                'driver_rating',
+                'reports'
+            ]);
+            $allOrders = $allOrders->with('vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail');
+            $allOrders = $allOrders->whereHas('vendors', function ($q) use($user) {
+                $q->whereHas('products');
+                //lender
+                $q->where('user_id', $user->id) ;
+            });
+            $allOrders = $allOrders->where(function ($q1) {
+                $q1->where('payment_status', 1)
+                    ->whereNotIn('payment_option_id', [
+                    1
+                ]);
+                $q1->orWhere(function ($q2) {
+                    $q2->where('payment_option_id', 1);
+                });
+            })->where('orders.user_id', $user->id);
+            $allOrders->where('orders.is_long_term', 0);
+            $allOrders = $allOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
+
+            foreach ($allOrders as $order) {
+                $is_order_days_for_return = 0;
+                $replaceable = 0;
+                foreach ($order->vendors as $vendor) {
+                    $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)
+                        ->where('vendor_id', $vendor->vendor_id)
+                        ->orderBy('id', 'DESC')
+                        ->first();
+                    $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+                    foreach ($vendor->products as $product) {
+                        $product = $this->gettimeSlotName($product);
+                        // dd($product->product->return_days);
+                        // $vendor->is_order_days_for_return = 1;
+                        if ((@$product->product->return_days && $this->checkOrderDaysForReturn($vendor, $product->product->return_days)) && $is_order_days_for_return == 0) {
+                            $this->checkOrderDaysForReturn($vendor, $product->product->return_days);
+                            $vendor->is_order_days_for_return = 1;
+                        }
+
+                        if (isset($product->pvariant) && isset($product->pvariant->media) && $product->pvariant->media->isNotEmpty()) {
+                            $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
+                        } elseif ($product->media->isNotEmpty()) {
+                            $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
+                        } else {
+                            $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
+                        }
+                    }
+                    if ($vendor->dineInTable) {
+                        $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
+                        $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
+                        $vendor->dineInTableCategory = $vendor->dineInTable->category ? $vendor->dineInTable->category->title : '';
+                    }
+                }
+            }
+
+
+            //Upcoming Borrower Orders Start Query
+            $upcomingOrders = Order::with([
+                'vendors',
+                'vendors.vendor',
+                'vendors.dineInTable.translations' => function ($qry) use ($langId) {
+                    $qry->where('language_id', $langId);
+                },
+                'vendors.dineInTable.category',
+                'vendors.products',
+                'vendors.products.product',
+                'vendors.products.media.image',
+                'vendors.products.pvariant.media.pimage.image',
+                'vendors.products.Routes',
+                'vendors.products.order_product_status',
+                'products.productRating',
+                'user',
+                'address',
+                'driver_rating',
+                'reports'
+            ]);
+            $upcomingOrders = $upcomingOrders->with('vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail');
+            $upcomingOrders = $upcomingOrders->whereHas('vendors', function ($q) use($user) {
+                $q->whereHas('products');
+                //borrower
+                $q->where('user_id', $user->id) ;
+                // upcoming
+                $q->whereIn('order_status_option_id', [1,2]);
+            });
+            $upcomingOrders = $upcomingOrders->where(function ($q1) {
+                $q1->where('payment_status', 1)
+                    ->whereNotIn('payment_option_id', [
+                    1
+                ]);
+                $q1->orWhere(function ($q2) {
+                    $q2->where('payment_option_id', 1);
+                });
+            })->where('orders.user_id', $user->id);
+
+            $upcomingOrders->where('orders.is_long_term', 0);
+
+            $upcomingOrders = $upcomingOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
+
+            foreach ($upcomingOrders as $order) {
+                $is_order_days_for_return = 0;
+                $replaceable = 0;
+                foreach ($order->vendors as $vendor) {
+                    $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)
+                        ->where('vendor_id', $vendor->vendor_id)
+                        ->orderBy('id', 'DESC')
+                        ->first();
+                    $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+                    foreach ($vendor->products as $product) {
+                        $product = $this->gettimeSlotName($product);
+                        // dd($product->product->return_days);
+                        // $vendor->is_order_days_for_return = 1;
+                        if ((@$product->product->return_days && $this->checkOrderDaysForReturn($vendor, $product->product->return_days)) && $is_order_days_for_return == 0) {
+                            $this->checkOrderDaysForReturn($vendor, $product->product->return_days);
+                            $vendor->is_order_days_for_return = 1;
+                        }
+
+                        if (isset($product->pvariant) && isset($product->pvariant->media) && $product->pvariant->media->isNotEmpty()) {
+                            $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
+                        } elseif ($product->media->isNotEmpty()) {
+                            $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
+                        } else {
+                            $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
+                        }
+                    }
+                    if ($vendor->dineInTable) {
+                        $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
+                        $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
+                        $vendor->dineInTableCategory = $vendor->dineInTable->category ? $vendor->dineInTable->category->title : '';
+                    }
+                }
+            }
+
+
+            //Ongoing Borrower Orders Start Query
+            $ongoingOrders = Order::with([
+                'vendors',
+                'vendors.vendor',
+                'vendors.dineInTable.translations' => function ($qry) use ($langId) {
+                    $qry->where('language_id', $langId);
+                },
+                'vendors.dineInTable.category',
+                'vendors.products',
+                'vendors.products.product',
+                'vendors.products.media.image',
+                'vendors.products.pvariant.media.pimage.image',
+                'vendors.products.Routes',
+                'vendors.products.order_product_status',
+                'products.productRating',
+                'user',
+                'address',
+                'driver_rating',
+                'reports'
+            ]);
+            $ongoingOrders = $ongoingOrders->with('vendors.exchanged_of_order.orderDetail', 'vendors.exchanged_to_order.orderDetail');
+            $ongoingOrders = $ongoingOrders->whereHas('vendors', function ($q) use($user) {
+                $q->whereHas('products');
+                //borrower
+                $q->where('user_id', $user->id) ;
+                //ongoing
+                $q->whereIn('order_status_option_id', [4]);
+            });
+            $ongoingOrders = $ongoingOrders->where(function ($q1) {
+                $q1->where('payment_status', 1)
+                    ->whereNotIn('payment_option_id', [
+                    1
+                ]);
+                $q1->orWhere(function ($q2) {
+                    $q2->where('payment_option_id', 1);
+                });
+            })->where('orders.user_id', $user->id);
+
+            $ongoingOrders->where('orders.is_long_term', 0);
+
+            $ongoingOrders = $ongoingOrders->orderBy('orders.id', 'DESC')->select('*', 'id as total_discount_calculate')->paginate(10);
+
+            foreach ($ongoingOrders as $order) {
+                $is_order_days_for_return = 0;
+                $replaceable = 0;
+                foreach ($order->vendors as $vendor) {
+                    $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)
+                        ->where('vendor_id', $vendor->vendor_id)
+                        ->orderBy('id', 'DESC')
+                        ->first();
+                    $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+                    foreach ($vendor->products as $product) {
+                        $product = $this->gettimeSlotName($product);
+                        // dd($product->product->return_days);
+                        // $vendor->is_order_days_for_return = 1;
+                        if ((@$product->product->return_days && $this->checkOrderDaysForReturn($vendor, $product->product->return_days)) && $is_order_days_for_return == 0) {
+                            $this->checkOrderDaysForReturn($vendor, $product->product->return_days);
+                            $vendor->is_order_days_for_return = 1;
+                        }
+
+                        if (isset($product->pvariant) && isset($product->pvariant->media) && $product->pvariant->media->isNotEmpty()) {
+                            $product->image_url = $product->pvariant->media->first()->pimage->image->path['image_fit'] . '74/100' . $product->pvariant->media->first()->pimage->image->path['image_path'];
+                        } elseif ($product->media->isNotEmpty()) {
+                            $product->image_url = $product->media->first()->image->path['image_fit'] . '74/100' . $product->media->first()->image->path['image_path'];
+                        } else {
+                            $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
+                        }
+                    }
+                    if ($vendor->dineInTable) {
+                        $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
+                        $vendor->dineInTableCapacity = $vendor->dineInTable->seating_number;
+                        $vendor->dineInTableCategory = $vendor->dineInTable->category ? $vendor->dineInTable->category->title : '';
+                    }
+                }
+            }
+        }
+
+
+        $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
+
+        if (empty($clientCurrency)) {
+            $clientCurrency = ClientCurrency::where('is_primary', 1)->first();
+        }
+
+        $client_preferences = ClientPreference::select('*')->where('id', '>', 0)->first();
+        if (! empty($client_preferences)) {
+            $client_preferences->is_postpay_enable =  $additionalPreference['is_postpay_enable'];
+            $client_preferences->is_order_edit_enable = $additionalPreference['is_order_edit_enable'];
+            $client_preferences->order_edit_before_hours = $additionalPreference['order_edit_before_hours'];
+            $client_preferences->editlimit_datetime = Carbon::now()->addHours($client_preferences->order_edit_before_hours)->toDateTimeString();
+        }
+        $payments = PaymentOption::where('credentials', '!=', '')->where('status', 1)->count();
+
+        $cancellation_reason = ReturnReason::where([
+            'status' => 'Active',
+            'type' => 3
+        ])->get();
+
+
+        $longTermOrder = [];
+        /**
+         * get user long term orders
+         */
+        $show_long_term =0;
+        if ($additionalPreference['is_long_term_service'] == 1){
+            $show_long_term =1;
+            $longTermOrder = $this->getUserLongTermService($user, $langId, $currency_id);
+        }
+
+        $langId = Session::get('customerLanguage');
+        $fixedFee = $this->fixedFee($langId);
+        $pendingOrder = [];
+        if ($is_service_product_price_from_dispatch_forOnDemand == 1){
+            $pendingOrder = $this->pendingOrder( $request,$user,$langId,$iconsArray);
+        }
+        return view('frontend.account.borrower-orders')->with([
+            'payments' => $payments,
+            'navCategories' => $navCategories,
+            'cancellation_reason' => $cancellation_reason,
+            'allOrders' => $allOrders,
+            'ongoingOrders' => $ongoingOrders,
+            'upcomingOrders' => $upcomingOrders,
+            'clientCurrency' => $clientCurrency,
+            'clientPreference' => $client_preferences,
+            'fixedFee' => $fixedFee,
+            'longTermOrder' => $longTermOrder,
+            'additionalPreference' => $additionalPreference,
+            'pendingOrder' => $pendingOrder,
+            'show_long_term' =>$show_long_term,
+            'is_service_product_price_from_dispatch_forOnDemand' =>$is_service_product_price_from_dispatch_forOnDemand
+        ]);
+    }
+
+    public function orderVenderStatusUpdate(Request $request)
+    {
+        try {
+            $orderVendor = OrderVendor::find($request->order_vendor_id);
+            if (!$orderVendor) {
+                return $this->errorResponse(__('Order vendor not found.'), 404);
+            }
+
+            $orderVendor->order_status_option_id = $request->order_vendor_status;
+            $orderVendor->save();
+            $response = [
+                'success' => true,
+                'message' => 'Status updated successfully'
+            ];
+            return response()->json($response);
+        } catch (\Exception $e) {
+            \Log::error($e->getMessage());
+            return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
+        }
+    }
+
+
     public function orders(Request $request, $domain = '')
     {
         $iconsArray = [];
@@ -270,12 +923,13 @@ class OrderController extends FrontController
 
         foreach ($activeOrders as $order) {
             foreach ($order->vendors as $vendor) {
-                $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)
-                    ->where('vendor_id', $vendor->vendor_id)
-                    ->orderBy('id', 'DESC')
-                    ->first();
+                // $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)
+                //     ->where('vendor_id', $vendor->vendor_id)
+                //     ->orderBy('id', 'DESC')
+                //     ->first();
+                // dd($vendor->OrderStatusOption->getStatusName($order->luxury_option_id));
+                $vendor->order_status = strtolower($vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'';
 
-                $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
 
                 foreach ($vendor->products as $product) {
                     $product = $this->gettimeSlotName($product);
@@ -286,7 +940,7 @@ class OrderController extends FrontController
                     } else {
                         $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
                     }
-                    $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;                   
+                    $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;
                 }
                 if ($vendor->delivery_fee > 0) {
                     $order_pre_time = ($vendor->order_pre_time > 0) ? $vendor->order_pre_time : 0;
@@ -322,11 +976,15 @@ class OrderController extends FrontController
             $is_order_days_for_return = 0;
             $replaceable = 0;
             foreach ($order->vendors as $vendor) {
-                $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)
-                    ->where('vendor_id', $vendor->vendor_id)
-                    ->orderBy('id', 'DESC')
-                    ->first();
-                $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+                // $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)
+                //     ->where('vendor_id', $vendor->vendor_id)
+                //     ->orderBy('id', 'DESC')
+                //     ->first();
+                // $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+
+                $vendor->order_status = strtolower($vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'';
+
+
                 foreach ($vendor->products as $product) {
                     $product = $this->gettimeSlotName($product);
                     // dd($product->product->return_days);
@@ -343,7 +1001,7 @@ class OrderController extends FrontController
                     } else {
                         $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
                     }
-                    $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;                  
+                    $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;
                 }
                 if ($vendor->dineInTable) {
                     $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
@@ -389,7 +1047,7 @@ class OrderController extends FrontController
                     } else {
                         $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
                     }
-                    $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;                   
+                    $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;
                 }
                 if ($vendor->dineInTable) {
                     $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
@@ -441,11 +1099,15 @@ class OrderController extends FrontController
 
         foreach ($rejectedOrders as $order) {
             foreach ($order->vendors as $vendor) {
-                $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)
-                    ->where('vendor_id', $vendor->vendor_id)
-                    ->orderBy('id', 'DESC')
-                    ->first();
-                $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+                // $vendor_order_status = VendorOrderStatus::with('OrderStatusOption')->where('order_id', $order->id)
+                //     ->where('vendor_id', $vendor->vendor_id)
+                //     ->orderBy('id', 'DESC')
+                //     ->first();
+                // $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
+
+                $vendor->order_status = strtolower($vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'';
+
+                
                 if($vendor->cancelled_by == $user->id){
                     $vendor->order_status = OrderVendor::CANCEL_STATUS;
                 }
@@ -459,7 +1121,7 @@ class OrderController extends FrontController
                             $product->image_url = ($product->image) ? $product->image['image_fit'] . '74/100' . $product->image['image_path'] : '';
                         }
                     }
-                    $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;              
+                    $product->product_title = isset($product->translation)?$product->translation->title:$product->product_name;
                 }
                 if ($vendor->dineInTable) {
                     $vendor->dineInTableName = $vendor->dineInTable->translations->first() ? $vendor->dineInTable->translations->first()->name : '';
@@ -651,7 +1313,8 @@ class OrderController extends FrontController
 
         $order = Order::with([
             'products.vendor',
-            'products.pvariant.vset',
+            'products.pvariant.vset.option2',
+            'products.product.productcategory',
             'products.pvariant.translation' => function ($q) use ($langId) {
                 $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                 $q->where('language_id', $langId);
@@ -907,7 +1570,7 @@ class OrderController extends FrontController
         }
         $latitude = ($address) ? $address->latitude : '';
         $longitude = ($address) ? $address->longitude : '';
-       
+
         $cartData = CartProduct::with([
             'vendor',
             'coupon' => function ($qry) use ($cart_id) {
@@ -1124,6 +1787,8 @@ class OrderController extends FrontController
 
     public function placeOrder(Request $request, $domain = '')
     {
+
+       
         // dd($request->other_taxes_string);
         // $stock = $this->ProductVariantStock('18');
 
@@ -1133,9 +1798,6 @@ class OrderController extends FrontController
         // $navCategories = $this->categoryNav($langId);
         // return view('frontend/orderPayment')->with(['navCategories' => $navCategories, 'first_name' => $request->first_name, 'last_name' => $request->last_name, 'email_address' => $request->email_address, 'phone' => $request->phone, 'total_amount' => $request->total_amount, 'address_id' => $request->address_id]);
         // }
-
-        
-
         $primaryCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
          if($request->payment_option_id=='52'){
             if($primaryCurrency->currency->iso_code!='QAR'){
@@ -1143,7 +1805,10 @@ class OrderController extends FrontController
             }
          }
 
+
         $order_response = $this->orderSave($request, "1");
+
+        
         $response = $order_response->getData();
         if ($response->status == 'Success') {
             # if payment type cash on delivery or payment status is 'Paid'
@@ -1154,15 +1819,15 @@ class OrderController extends FrontController
 
             return $this->successResponse($response->data, __('Order placed successfully.'), 201);
         } else {
-            
+
             return $this->errorResponse($response->message, $response->code ?? 400);
         }
     }
 
+
+
     public function orderSave($request, $paymentStatus)
     {
-
-        // dd($request->all());
         try {
             $latitude = '';
             $longitude = '';
@@ -1198,7 +1863,9 @@ class OrderController extends FrontController
             $order_edit_before_hours = $additionalPreferences->order_edit_before_hours;
 
             $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
+          
             $luxury_option = LuxuryOption::where('title', $action)->first();
+           
             $delivery_on_vendors = array();
             if ((isset($request->user_id)) && (! empty($request->user_id))) {
                 $user = User::find($request->user_id);
@@ -1221,10 +1888,10 @@ class OrderController extends FrontController
             }
             $loyalty_amount_saved = 0;
             $redeem_points_per_primary_currency = '';
-            $loyalty_card = LoyaltyCard::where('status', '0')->first();
-            if ($loyalty_card) {
-                $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
-            }
+            // $loyalty_card = LoyaltyCard::where('status', '0')->first();
+            // if ($loyalty_card) {
+            //     $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
+            // }
             $currency_id = Session::get('customerCurrency');
             $language_id = Session::get('customerLanguage');
             $cart = Cart::where('user_id', $user->id)->with([
@@ -1237,7 +1904,7 @@ class OrderController extends FrontController
                 $cart_product_removed =    CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
                     $q->whereIn('is_live',[0,2]);
                 })->pluck('id');
-               
+
                 if(count($cart_product_removed)){
                      CartProduct::whereIn('id',$cart_product_removed)->delete();
                      if(CartProduct::where('cart_id',$cart->id)->count() == 0){
@@ -1250,9 +1917,9 @@ class OrderController extends FrontController
             $customerCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
             $clientCurrency = ClientCurrency::where('is_primary', '=', 1)->first();
             // Get earn and used loyalty amount
-            $loyaltyCheck = $this->getOrderLoyalityAmount($user, $customerCurrency);
-            $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
-            $loyalty_points_used = $loyaltyCheck->loyalty_points_used ?? 0;
+            // $loyaltyCheck = $this->getOrderLoyalityAmount($user, $customerCurrency);
+            // $loyalty_amount_saved = $loyaltyCheck->loyalty_amount_saved;
+            // $loyalty_points_used = $loyaltyCheck->loyalty_points_used ?? 0;
 
             // check gift card
 
@@ -1355,10 +2022,13 @@ class OrderController extends FrontController
             $order->user_latitude = $latitude ? $latitude : null;
             $order->user_longitude = $longitude ? $longitude : null;
             $order->is_postpay = (isset($request->is_postpay)) ? $request->is_postpay : 0;
+            $order->pick_drop_order_number = $request->pick_drop_order_number ?? null;
             /* Save initial details of order */
+            $order->payable_amount = $request->total_amount;
+
             $order->save();
 
-        
+
             /* Updating order prescription if any */
             $cart_prescriptions = CartProductPrescription::where('cart_id', $cart->id)->get();
             foreach ($cart_prescriptions as $cart_prescription) {
@@ -1411,7 +2081,7 @@ class OrderController extends FrontController
             ])
                 ->orderBy('created_at', 'asc')
                 ->get();
-            
+
             /* Initialize empty data */
             $total_amount = 0;
             $total_discount = 0;
@@ -1436,12 +2106,14 @@ class OrderController extends FrontController
             $security_amount = 0.00;
             $is_long_term_order = 0;
             $deliveryfeeOnCoupon = 0;
+            $rentalProtectionPrice = 0;
+            $bookingOptionPrice = 0;
 
             /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */
             if (! empty($request->other_taxes_string)) {
                 $total_other_taxes = array_sum(explode(":", $request->other_taxes_string));
                 $total_other_taxes = decimal_format($total_other_taxes);
-            }  
+            }
             /* Loop through evey cart product to get desired data for order */
             foreach ($cart_products->groupBy('vendor_id') as $vendor_id => $vendor_cart_products) {
 
@@ -1499,6 +2171,13 @@ class OrderController extends FrontController
                     $OrderVendor = new OrderVendor();
                 }
 
+                if(!empty($order->total_other_taxes)){
+                    $tax_amount  =   (float) array_sum(explode(":", $order->total_other_taxes));
+                }else{
+                    $tax_amount = $order->taxable_amount;
+                }
+       
+                $tax_amount  = round($order->total_other_taxes_amount,2);
                 $OrderVendor->status = 0;
                 $OrderVendor->user_id = $user->id;
                 $OrderVendor->order_id = $order->id;
@@ -1513,11 +2192,27 @@ class OrderController extends FrontController
                 $bid_vendor_discount = 0;
                 $vendor_service_fee_percentage_amount = 0;
                 // $addonArray = [];
+                $datesInRange = [];
                 foreach ($vendor_cart_products as $vendor_cart_product) {
 
                     if( !empty($vendor_cart_product->slot_price) ) {
                         $slot_based_price += $vendor_cart_product->slot_price;
                     }
+
+                    $start_date_time  = new Carbon($vendor_cart_product->start_date_time);
+                    $end_date_time  = new Carbon($vendor_cart_product->end_date_time);
+                    $vendor_cart_product->days = $start_date_time->diff($end_date_time)->days + 1;
+                    $rental_price = $vendor_cart_product->pvariant ? $vendor_cart_product->pvariant->price : 0;
+                    if(@$vendor_cart_product->pvariant->month_price && @$vendor_cart_product->pvariant->week_price){
+                        if($vendor_cart_product->days >= 7 && $vendor_cart_product->days < 30){
+                            $rental_price = $vendor_cart_product->pvariant->week_price;
+                        }elseif($vendor_cart_product->days >= 30){
+                            $rental_price = $vendor_cart_product->pvariant->month_price;
+                        }
+                    }
+                    $vendor_cart_product->rental_price = $rental_price;
+                    $order['payable_amount'] = $vendor_cart_product->price;
+
 
                     if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
                         if (! empty($latitude) && ! empty($longitude)) {
@@ -1544,7 +2239,9 @@ class OrderController extends FrontController
                         }
                     }
 
-                    if($luxury_option->id == 4){
+                
+
+                    if(@$luxury_option->id == 4){
                         $security_amount += $vendor_cart_product->product->security_amount;
                     }
 
@@ -1556,6 +2253,22 @@ class OrderController extends FrontController
                     $quantity_price = 0;
                     $divider = (empty($vendor_cart_product->doller_compare) || $vendor_cart_product->doller_compare < 0) ? 1 : $vendor_cart_product->doller_compare;
                     $price_in_currency = $variant->price / $divider;
+
+                    $variant_price = $variant->price;
+                    if($luxury_option->id == 9 && @$variant->month_price){
+                        $schedule_days = $vendor_cart_product->additional_increments_hrs_min / 24;
+                            if($schedule_days >= 7 && $schedule_days < 30){
+                                
+                                $variant_price = $variant->week_price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
+                            }elseif($schedule_days >= 30){
+                                $variant_price = $variant->month_price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
+                            }else{
+                                $variant_price = $variant->price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
+                            }
+                        
+                    }
+
+
                     // change product price when is_service_product_price_from_dispatch on
                     if(($action == 'on_demand') && $is_service_product_price_from_dispatch ==1){
                         $price_in_currency =$vendor_cart_product->dispatch_agent_price / $divider;
@@ -1588,7 +2301,9 @@ class OrderController extends FrontController
                     }
                     $quantity_price = $quantity_price * $daysCountRecurring;
 
-
+                    if($action == 'p2p'){
+                        $quantity_price = $request->total_amount ?? 0;
+                    }
                     $quantity_container_charges = $container_charges_in_dollar_compare * $vendor_cart_product->quantity;
                     $total_container_charges = $total_container_charges + $quantity_container_charges;
 
@@ -1657,7 +2372,11 @@ class OrderController extends FrontController
 
                     $taxable_amount = $product_taxable_amount;
                     $vendor_taxable_amount = $taxable_amount;
-                    $variant_price = $variant->price * $daysCountRecurring;
+                    if($action == 'p2p'){
+                        $variant_price = $request->total_amount ?? 0;
+                    }else{
+                        $variant_price = $variant->price * $daysCountRecurring;
+                    }
                     // change variant_price price when is_service_product_price_from_dispatch on
                     $is_price_buy_driver = 0;
                     if(($action == 'on_demand') && ($is_service_product_price_from_dispatch ==1 )){
@@ -1672,7 +2391,19 @@ class OrderController extends FrontController
                         $total_amount += $vendor_cart_product->quantity * $quantity_role_price['amount'];
                         $variant_price = $quantity_role_price['amount'];
                     }
+                    $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
+                    if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                        $quantity_price = $request->total_amount;
+                        $total_amount = $request->total_amount;
+                        $variant_price = $request->total_amount;
+                    }
                     $order_product = new OrderProduct;
+
+                    if($action == 'p2p'){
+                        $order_product->price = $request->total_amount ?? 0;
+                    }else{
+                        $order_product->price = $variant_price;
+                    }
                     $order_product->order_id = $order->id;
                     $order_product->price = $variant_price;
                     $order_product->bid_number = @$vendor_cart_product->bid_number ?? null;
@@ -1686,6 +2417,14 @@ class OrderController extends FrontController
                     $order_product->product_delivery_fee = isset($vendor_cart_product->product_delivery_fee) ? $vendor_cart_product->product_delivery_fee : 0;
                     $order_product->is_price_buy_driver = $is_price_buy_driver;
                     $order_product->specific_instruction = $vendor_cart_product->specific_instruction;
+                    
+                    
+                    if($action == 'p2p'){
+                        $order_product->price = $request->total_amount ?? 0;
+                    }else{
+                        $order_product->price = $variant->price * $daysCountRecurring;
+                    }
+                    
                     /**
                      * for rental case total_booking_time as a total time
                      * for on_demand and appointment total booking time as single service duration time as per service for get totel service time multiply by quantity
@@ -1779,7 +2518,7 @@ class OrderController extends FrontController
                     $order_product->end_date_time = $vendor_cart_product->end_date_time;
                     $order_product->additional_increments_hrs_min = $vendor_cart_product->additional_increments_hrs_min;
 
-                    if ($luxury_option->id == 4) {
+                    if (@$luxury_option->id == 4) {
                         $order_product->security_amount = $vendor_cart_product->product->security_amount;
                     }
 
@@ -1946,7 +2685,7 @@ class OrderController extends FrontController
 
 
                     // book for rental
-                    if ($luxury_option->id == 4) {
+                    if (@$luxury_option->id == 4) {
 
                         $data = [
                             'memo' => __('Booked for order #') . $order->order_number,
@@ -1962,6 +2701,7 @@ class OrderController extends FrontController
                         //pr($res);
                     }
                     // pr($order_product);
+                    
                     if (! empty($vendor_cart_product->addon)) {
 
                         foreach ($vendor_cart_product->addon as $ck => $addon) {
@@ -1978,6 +2718,26 @@ class OrderController extends FrontController
                             // }
                             $vendor_amount = $vendor_amount + $opt_quantity_price;
                             $quantity_price = $quantity_price + $opt_quantity_price;
+                        }
+                    }
+                    
+
+                    if(!empty($cart->rentalProtection)){
+                        foreach($cart->rentalProtection as $protection){
+                            $protection_price_in_currency = $protection->rentalProtection->price ?? 0;
+                            $rentalProtectionPrice = $protection_price_in_currency * $clientCurrency->doller_compare;
+                            $payable_amount += $rentalProtectionPrice;
+                            $quantity_price += $rentalProtectionPrice;
+                            $vendor_amount += $rentalProtectionPrice;
+                        }
+                    }
+                    if(!empty($cart->bookingOption)){
+                        foreach($cart->bookingOption as $option){
+                            $option_price_in_currency = $option->bookingOption->price ?? 0;
+                            $bookingOptionPrice = $option_price_in_currency * $clientCurrency->doller_compare;
+                            $payable_amount += $bookingOptionPrice;
+                            $quantity_price += $bookingOptionPrice;
+                            $vendor_amount += $bookingOptionPrice;
                         }
                     }
 
@@ -1997,6 +2757,15 @@ class OrderController extends FrontController
                         $payable_amount += $service_fee_percentage_amount;
                         $total_service_fee = $total_service_fee + $service_fee_percentage_amount;
                         $vendor_payable_amount += $service_fee_percentage_amount;
+                    }
+
+
+                    if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                        $service_fee_percentage_amount        = 0;
+                        $vendor_service_fee_percentage_amount = 0;
+                        $total_amount = $payable_amount = $request->total_amount;
+                        $total_service_fee = 0;
+                        $vendor_payable_amount = 0;
                     }
 
                     $cart_addons = CartAddon::where('cart_product_id', $vendor_cart_product->id)->get();
@@ -2021,6 +2790,9 @@ class OrderController extends FrontController
                 } //End products loop
 
                 $payable_amount += $vendor_total_container_charges;
+                if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                    $payable_amount = $request->total_amount;
+                }
                 // dump("+Container_charges ".$vendor_total_container_charges."/- ---".$payable_amount);
 
                 // echo "vendor_total_container_charges: ".$vendor_total_container_charges."payable_amount: ".$payable_amount."<br>";
@@ -2069,7 +2841,15 @@ class OrderController extends FrontController
                 $vendor_payable_amount += $delivery_fee;
                 $vendor_payable_amount += $vendor_taxable_amount;
 
+
+
                 $payable_amount += $additionalPrice;
+                $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
+                if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                    // $payable_amount = $request->total_amount;
+                    $payable_amount = !empty($request->total_amount) ? $request->total_amount:0 ;
+                    $vendor_payable_amount = $request->total_amount;
+                }
                 // dump("+AdditionalPrice ".$additionalPrice."/- ----".$payable_amount);
                 $totalAdditionalPrice += $additionalPrice;
 
@@ -2099,10 +2879,23 @@ class OrderController extends FrontController
                 }
                 $OrderVendor->fixed_fee = $fixedFeeAmount;
                 $OrderVendor->additional_price = $additionalPrice;
-                $OrderVendor->taxable_amount =$new_vendor_taxable_amount;
+                $OrderVendor->taxable_amount =$new_vendor_taxable_amount + $tax_amount;
                 $OrderVendor->payment_option_id = $request->payment_option_id;
                 $OrderVendor->subtotal_amount = $OrderVendor->subtotal_amount - $bid_vendor_discount??0;
-                $OrderVendor->payable_amount = $vendor_payable_amount +$fixedFeeAmount+$new_vendor_taxable_amount;
+
+
+
+                if($action == 'p2p'){
+                    $OrderVendor->payable_amount = $request->$total_amount;
+
+                }
+                else{
+                    $OrderVendor->payable_amount = $vendor_payable_amount +$fixedFeeAmount+$new_vendor_taxable_amount;
+
+                }
+                if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                    $OrderVendor->subtotal_amount = $OrderVendor->payable_amount = $request->total_amount;
+                }
                 $OrderVendor->total_markup_price = $vendor_markup_amount;
                 $OrderVendor->total_container_charges = $vendor_total_container_charges;
 
@@ -2146,15 +2939,19 @@ class OrderController extends FrontController
                 $order_status->save();
             } // End cart product loop
               // echo "loop end";
-            $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint('', $payable_amount);
+            // $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint('', $payable_amount);
 
             // Total Discount
             $total_discount = $total_discount + $total_subscription_discount;
 
             $order->total_amount = $total_amount - $Order_bid_discount??0;
-
-
-            if(@$vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
+            if(!empty($vendor_cart_product->recurring_booking_time)){
+                $order->total_amount =  $request->total_amount;
+            }
+            if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                $order->total_amount = $request->total_amount;
+            }
+            if($vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
                 $date       = explode(",",$vendor_cart_product->recurring_day_data);
                 if($vendor_cart_product->recurring_booking_type == 1 ||$vendor_cart_product->recurring_booking_type == 2 || $vendor_cart_product->recurring_booking_type == 3 || $vendor_cart_product->recurring_booking_type == 4){
                     $days_count                         =  count($date);
@@ -2172,12 +2969,12 @@ class OrderController extends FrontController
 
             $payable_amount = $payable_amount + $total_delivery_fee - $total_discount;
 
-            if ($loyalty_amount_saved > 0) {
-                if ($loyalty_amount_saved > $payable_amount) {
-                    $loyalty_amount_saved = $payable_amount;
-                    $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
-                }
-            }
+            // if ($loyalty_amount_saved > 0) {
+            //     if ($loyalty_amount_saved > $payable_amount) {
+            //         $loyalty_amount_saved = $payable_amount;
+            //         $loyalty_points_used = $payable_amount * $redeem_points_per_primary_currency;
+            //     }
+            // }
             // ------------ move up
             $tip_amount = 0;
             if (isset($request->tip)) {
@@ -2189,12 +2986,13 @@ class OrderController extends FrontController
                 }
             }
             $payable_amount = $payable_amount + $tip_amount + $total_other_taxes + $security_amount;
+            $payable_amount += $order->taxable_amount;
             // ---------------------------------------
-            $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
+            // $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
 
-            if(!empty($vendor_cart_product->recurring_booking_time)){
-                $payable_amount = ($request->total_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
-            }
+            // if(!empty($vendor_cart_product->recurring_booking_time)){
+            //     $payable_amount = ($request->total_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
+            // }
 
             $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
 
@@ -2215,24 +3013,24 @@ class OrderController extends FrontController
             // $payable_amount = $payable_amount + $tip_amount + $total_other_taxes;
 
             $wallet_amount_used = 0;
-            if ($user) {
-                if ($user->balanceFloat > 0) {
-                    $wallet = $user->wallet;
-                    $wallet_amount_used = $user->balanceFloat;
-                    if ($wallet_amount_used > $payable_amount) {
-                        $wallet_amount_used = $payable_amount;
-                    }
-                    $order->wallet_amount_used = $wallet_amount_used;
-                    // Deduct wallet amount if payable amount is successfully done on gateway
-                    if (($wallet_amount_used > 0) && (! in_array($request->payment_option_id, $ex_gateways_wallet))) {
-                        $wallet->withdrawFloat($order->wallet_amount_used, [
-                            'Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>'
-                        ]);
-                    }
-                }
-            }
+            // if ($user) {
+            //     if ($user->balanceFloat > 0) {
+            //         $wallet = $user->wallet;
+            //         $wallet_amount_used = $user->balanceFloat;
+            //         if ($wallet_amount_used > $payable_amount) {
+            //             $wallet_amount_used = $payable_amount;
+            //         }
+            //         $order->wallet_amount_used = $wallet_amount_used;
+            //         // Deduct wallet amount if payable amount is successfully done on gateway
+            //         if (($wallet_amount_used > 0) && (! in_array($request->payment_option_id, $ex_gateways_wallet))) {
+            //             $wallet->withdrawFloat($order->wallet_amount_used, [
+            //                 'Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>'
+            //             ]);
+            //         }
+            //     }
+            // }
 
-            $payable_amount = $payable_amount - $wallet_amount_used;
+            // $payable_amount = $payable_amount - $wallet_amount_used;
 
             if(!empty($vendor_cart_product->recurring_booking_time)){
                 $payable_amount =  $request->total_amount - $wallet_amount_used;
@@ -2241,28 +3039,30 @@ class OrderController extends FrontController
             //echo  " Total payable_amount2=".$payable_amount."; <br>";
             $order->total_service_fee = $total_service_fee;
             $order->total_delivery_fee = $total_delivery_fee;
-            $order->loyalty_points_used = $loyalty_points_used;
-            $order->loyalty_amount_saved = $loyalty_amount_saved;
+            $order->loyalty_points_used = $loyalty_points_used ?? 0;
+            $order->loyalty_amount_saved = $loyalty_amount_saved ?? 0;
             $order->subscription_discount = $total_subscription_discount;
             // echo " total_subscription_discount=".$total_subscription_discount."; <br>";
-            $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'];
-            $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'];
+            $order->loyalty_points_earned = $loyalty_points_earned['per_order_points'] ?? 0;
+            $order->loyalty_membership_id = $loyalty_points_earned['loyalty_card_id'] ?? 0;
+            $order->rental_protection_amount = $rentalProtectionPrice;
+            $order->booking_option_price = $bookingOptionPrice;
             // echo " total_service_fee=".$total_service_fee." total_delivery_fee=".$total_delivery_fee;
             // echo " Total payable_amount 3=".$payable_amount."; <br>";
             $order->scheduled_date_time = $cart->schedule_type == 'schedule' ? $cart->scheduled_date_time : null;
 
             $order->scheduled_slot = (($cart->scheduled_slot) ? $cart->scheduled_slot : null);
-            if($order->scheduled_slot){   
+            if($order->scheduled_slot){
                 $scheduled_time =    explode("-",$order->scheduled_slot);
                 // dd($scheduled_time);
                 $schedule_dt =  date('Y-m-d',strtotime($order->scheduled_date_time));
                 $schedule_dt = date('Y-m-d H:i:s',strtotime( $schedule_dt." ".$scheduled_time[0]));
                 $order->scheduled_date_time = Carbon::parse($schedule_dt, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
-          
+
             }
 
             $order->dropoff_scheduled_slot = (($cart->dropoff_scheduled_slot) ? $cart->dropoff_scheduled_slot : null);
-            $order->luxury_option_id = $luxury_option->id;
+            $order->luxury_option_id = $luxury_option->id??'';
             $payable_amount = $payable_amount - $Order_bid_discount ?? 0;
             if (! $additionalPreferences->is_tax_price_inclusive) {
 
@@ -2286,6 +3086,9 @@ class OrderController extends FrontController
                     $giftCardUsedAmount = @$calCulateGiftCard['used_GiftCardAmount'];
                 }
                 $order->payable_amount = $orderTotalPay;
+            }
+            if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                $order->payable_amount = $request->total_amount;
             }
 
             if (getAdditionalPreference([
@@ -2338,8 +3141,9 @@ class OrderController extends FrontController
                 $order->recurring_booking_time  = $recurring_booking_time;
             }
 
-
+            $order->payable_amount = $request->total_amount;
             $order->save();
+            ProductAvailability::where('product_id', @$order_product->product_id)->whereIn('date_time', $datesInRange)->update(['not_available' => 1]);
             OrderFiles::where('cart_id',$cart->id)->update(['order_id'=>$order->id,'cart_id'=>'']);
 
             // $this->sendOrderNotification($user->id, $vendor_ids);
@@ -2423,6 +3227,8 @@ class OrderController extends FrontController
                 CartProduct::query()->whereIn('id', $cart_product_ids)->delete();
                 CartProductPrescription::where('cart_id', $cart->id)->delete();
                 CartDeliveryFee::where('cart_id', $cart->id)->delete();
+                CartRentalProtection::where('cart_id', $cart->id)->delete();
+                CartBookingOption::where('cart_id', $cart->id)->delete();
                 // send sms
                 // $this->sendSuccessSMS($request, $order);
             }
@@ -2475,11 +3281,11 @@ class OrderController extends FrontController
                             'vendor_id' => $vendor_value->vendor_id
                         ])->pluck('user_id');
                         if ($request->payment_option_id == 1 || $order->is_postpay == 1 || $order->payment_status == 1) {
-                            
+
                             $this->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
                         }
 
-                        
+
 
                         if(!empty($additionalPreferences->stock_notification_before) && $additionalPreferences->stock_notification_before == 1){
                             $vendor_id=$this->CheckProductStockLimit($order->id,$additionalPreferences->stock_notification_qunatity);
@@ -2527,15 +3333,20 @@ class OrderController extends FrontController
             // }
 
             DB::commit();
-            $this->sendSuccessSMS($request, $order);
-            $hub_key = @getAdditionalPreference(['is_marg_enable']);
+            $blockchain_route = ClientPreferenceAdditional::where('key_name','blockchain_route_formation')->first();
+              $order_data = Order::select('id','user_id')->with([
+                'ordervendor'
+            ])
+                ->where('order_number', $order->order_number)
+                ->first();
+            if(isset($blockchain_route) && ($blockchain_route->key_value == 1))
+            {
+                @$this->saveBlockchainOrderDetail($order_data);
 
-            if(isset($hub_key) && $hub_key['is_marg_enable'] == 1){
-         
-              $this->ProductVariantStock($order->id);
-          
-              $this->makeInsertOrderMargApi($order);
             }
+            $this->sendSuccessSMS($request, $order);
+            // $hub_key = @getAdditionalPreference(['is_marg_enable']);
+            
             return $this->successResponse($order);
         } catch (Exception $e) {
             DB::rollback();
@@ -2634,7 +3445,7 @@ class OrderController extends FrontController
         }
     }
 
-   
+
 
     public function makePayment(Request $request)
     {
@@ -2807,7 +3618,7 @@ class OrderController extends FrontController
                     'is_tracking_url'
                 ])['is_tracking_url'] == 1) {
                     \Log::info('test');
-                    $this->sendTrackingUrlSMS($orderData);
+                    $this->sendTrackingUrlSMS($orderData,$request->order_id);
                 }
             }
         }
@@ -4053,7 +4864,7 @@ class OrderController extends FrontController
                     $payment->balance_transaction = $request->tip_amount;
                     $payment->type = 'tip';
                     $payment->save();
-                    
+
                 }
                 $message = 'Tip has been submitted successfully';
                 $response['tip_amount'] = $request->tip_amount;

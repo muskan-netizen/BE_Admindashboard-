@@ -152,10 +152,12 @@ ul.onhover-show-div.open {
     border-bottom: 1px solid#e5e8eb !important;
     display: inline-block;
     overflow: hidden;
+    color: #000!important;
+    font-size: 20px;
 }
 
 
-
+    
 .displayProducts .suppliers-box {
     width: 100%;
     margin: auto;
@@ -1411,7 +1413,7 @@ li.close-window i {
     height: 30px;
     padding: 0 10px;
     line-height: 30px;
-    border: .5px solid #ed5a6b;
+    border: .5px solid var(--theme-deafult);
     border-radius: 8px;
     overflow: hidden;
     cursor: pointer;
@@ -1422,7 +1424,8 @@ li.close-window i {
     font-size: 14px;
     text-transform: uppercase;
     font-weight: 700;
-    position: relative
+    position: relative;
+    color: var(--theme-deafult)!important;
 }
 
 .add-cart-btn:not(.btn-solid):after {
@@ -3020,7 +3023,7 @@ a.product-box.scale-effect.mt-0 {
 
 .checkout-btn {
     background: var(--theme-deafult);
-    color: #fff;
+    color: #fff!important;
     font-size: 18px;
     font-weight: 700;
     padding: 9px 0 11px;
@@ -4320,7 +4323,11 @@ input.form-control.pac-target-input.gm-err-autocomplete {
 span.fa.fa-eye-slash.toggle-password.eye::before {
     content: "\f06e"
 }
-
+.al_body_template_one .pixelstrap li a{
+    max-width: inherit;
+    width: auto;
+    margin: 0 10px;
+}
 .al_body_template_one .pixelstrap li a,
 .al_body_template_one .product-card-box,
 .al_body_template_one .scale-effect,
@@ -4750,14 +4757,19 @@ body.dark.al_body_template_one table.table.wishlist-table.border {
 }
 
 .al_body_template_one .extra-items-price,
-.al_body_template_one .order-success-sec h3,
-.al_body_template_one .total-sec span {
+.al_body_template_one .order-success-sec h3{
     font-weight: 600;
 }
-
+.al_body_template_one .total-sec span {
+    font-weight: 400;
+}
 .al_body_template_one .product-order h3 {
     text-transform: capitalize;
+    font-weight: 400;
+    padding: 0 12px;
 }
+
+
 
 .al_body_template_one .order-success-sec {
     background-color: transparent;
