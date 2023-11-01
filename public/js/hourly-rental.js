@@ -359,7 +359,8 @@ $(".previous").click(function(){
                  return;
              }
           
-            
+            let rentalHr = $('#rental_hours').val() ?? 0;
+
             var bookingType = $(this).attr('booking-type');
             var bid_task_type = '';
             if(bookingType == 'bid')
@@ -524,7 +525,7 @@ $(".previous").click(function(){
                 type: "POST",
                 dataType: 'json',
                 url: cab_booking_create_order,
-                data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id, coupon_id: coupon_id, amount: amount, tollamount:tollamount, servicechargeamount:servicechargeamount, totalamount:totalamount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:booking_time, type:type, friendName:friendName, friendPhoneNumber:friendPhoneNumber, no_seats_for_pooling:no_seats_for_pooling, is_cab_pooling:is_cab_pooling,driver_id,unique_id,recurringformPost,share_ride_users,total_other_taxes_string,total_other_taxes,bid_task_type,send_to_all},
+                data: { user_product_order_form:product_order_form_element_data,time_zone:time_zone,payment_option_id: payment_option_id, vendor_id: vendor_id, product_id: product_id, coupon_id: coupon_id, amount: amount, tollamount:tollamount, servicechargeamount:servicechargeamount, totalamount:totalamount, subscription_payable_amount:subscription_payable_amount, tasks: tasks, task_type:task_type, schedule_datetime:booking_time, type:type, friendName:friendName, friendPhoneNumber:friendPhoneNumber, no_seats_for_pooling:no_seats_for_pooling, is_cab_pooling:is_cab_pooling,driver_id,unique_id,recurringformPost,share_ride_users,total_other_taxes_string,total_other_taxes,bid_task_type,send_to_all,rental_hours:rentalHr},
                 success: function(response) {
     
                     $('#book_hourly_rental').attr('disabled', false);

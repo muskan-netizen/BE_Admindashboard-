@@ -730,6 +730,7 @@ class PickupDeliveryController extends FrontController{
      public function createOrder(Request $request){
 
           
+       
         try {
             DB::beginTransaction();
             if(isset($request->schedule_datetime) && !empty($request->schedule_datetime))
@@ -1014,6 +1015,7 @@ class PickupDeliveryController extends FrontController{
                 $order->flight_no = $request->flight_number ?? '';
                 $order->adults = $request->number_of_adult ?? 0;
                 $order->name_sign_board = $request->name_sign_board ?? '';
+                $order->rental_hours = $request->rental_hours ?? 0;
                 $order->save();
 
 
