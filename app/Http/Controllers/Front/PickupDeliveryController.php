@@ -18,9 +18,6 @@ use GuzzleHttp\Client as GCLIENT;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Log,DateTime,DateTimeZone;
-use App\Http\Traits\OrderTrait;
-use App\Http\Traits\GuzzleHttpTrait;
-use App\Models\TaxRate;
 
 class PickupDeliveryController extends FrontController{
 
