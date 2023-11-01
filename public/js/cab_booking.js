@@ -443,7 +443,7 @@ $(document).ready(function () {
                     let order_number = response.data.order_number;
                     let reload_route = response.data.route;
                     if((payment_option_id == 1) || (payment_option_id == 2)){
-                        placeOrderBeforePayment('',payment_option_id,0,order_number);
+                        // placeOrderBeforePayment('',payment_option_id,0,order_number);
                         window.location.replace(response.data.route);
 
                         // $('#cab_detail_box').html('');

@@ -34,6 +34,7 @@ class ProductController extends FrontController{
     public function index(Request $request, $domain = '',$vendor,$url_slug){
 
       
+        
      
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
         $pickup_time = $request->pickup;

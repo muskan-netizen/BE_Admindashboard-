@@ -169,6 +169,30 @@ span#cart_qty_span:empty {
 body.dark.al_body_template_three .al_count_tabs_new_design li a.nav-link{
     color: #fffcfc;
 }
+@media(max-width:1400px){
+    .al_count_tabs_new_design li a.nav-link{
+        font-size: 16px;
+    }
+}
+@media(max-width:1240px){
+    .al_count_tabs_new_design li a.nav-link .al_tabsIcons{
+        width: 30px;
+        height: 30px;
+    }
+    .al_count_tabs_new_design li a.nav-link .al_tabsIcons img {
+        height: 20px;
+    }
+    .al_count_tabs_new_design li a.nav-link{
+        font-size: 12px;
+    }
+    .al_custom_head .onhover-dropdown span:before, .al_custom_head.top-header .header-dropdown li a, .al_custom_head.top-header .header-dropdown li span{
+        font-size: 12px!important;
+    }
+    .top-header .header-dropdown li.onhover-dropdown {
+        padding: 0 10px!important;
+    }
+}
+
 @media(max-width:991px){
     body.al_body_template_three.p2p-module .al_count_tabs_new_design li a.nav-link .al_tabsIcons{
         width: 30px;

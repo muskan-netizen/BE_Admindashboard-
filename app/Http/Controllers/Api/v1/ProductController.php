@@ -380,7 +380,7 @@ class ProductController extends BaseController
 
             $suggested_category_products = $suggested_brand_products = $suggested_vendor_products = [];
 
-            $suggested_product = Product::with(['media.image','vendor', 'translation', 'variant', 'productVariantByRoles']);
+            $suggested_product = Product::with(['media.image','vendor', 'translation', 'variant', 'productVariantByRoles','categoryName']);
             if( !empty($product->category->category_id) ) {
                 $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)->groupBy('id')->orderby('id', 'desc')->limit(20)->get();
             }
@@ -409,7 +409,7 @@ class ProductController extends BaseController
             }
 
             if( !empty($product->vendor_id) ) {
-                $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant']);
+                $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant','categoryName'])->whereNotIn('id',[$product->id]);
                 $suggested_vendor_products = $suggested_product->where('vendor_id', $product->vendor_id)->orderby('id', 'desc')->limit(20)->get();
             }
 
@@ -549,7 +549,7 @@ class ProductController extends BaseController
 
     }
 
-    public function metaProduct($langId, $multiplier, $for = 'relate', $productArray = [], $service="")
+    public function metaProduct($langId, $multiplier, $for = 'relate', $productArray = [], $service="",$product =null)
     {
         if(empty($productArray)){
             return $productArray;
@@ -580,7 +580,19 @@ class ProductController extends BaseController
                     ])->select('id', 'sku', 'averageRating','calories')
                     ->whereIn('id', $productIds);
 
+
+
+        if($for == 'similiar_product_user'){
+            $products = $products->where('vendor_id',$product->vendor_id)->whereNotIn('id',[$product->id]);
+
+        }
+        if($for == 'similiar_product_category'){
+            $products = $products->where('category_id',$product->category_id); 
+        }
+
+
         $products = $products->get();
+
         if(!empty($products)){
             $fields = [];
             foreach ($products as $key => $value) {

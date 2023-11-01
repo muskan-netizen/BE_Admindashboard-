@@ -801,8 +801,15 @@ class OrderController extends BaseController
         }
         $product_schedule_type = '';
 
-
-
+ 
+            if(!empty($order->total_other_taxes)){
+                $order->total_other_taxes_amount  =   (float) array_sum(explode(":", $order->total_other_taxes));
+            }else{
+                $order->total_other_taxes_amount = $order->taxable_amount;
+            }
+   
+            $tax_amount  = round($order->total_other_taxes_amount,2);
+     
         foreach ($order->vendors as $key => $vendor) {
 
             if(isset($vendor) && !empty($vendor->vendor_id) && @$vendor->exchanged_to_order){
@@ -948,7 +955,7 @@ class OrderController extends BaseController
         if(!empty($order->recurring_booking_time)){
             $recurring_booking = OrderLongTermServiceSchedule::where(['order_number'=>$order->order_number])->get();
         }
-        //    pr($recurring_booking);
+          
         return view('backend.order.view')->with([
             'vendor_id' => $vendor_id,
             'order' => $order,
@@ -966,7 +973,8 @@ class OrderController extends BaseController
             "category_KYC_document" => $category_KYC_document,
             'driver_data' => (($driver_data) ? json_decode($driver_data) : ''),
             'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm,
-            'recurring_booking' => $recurring_booking
+            'recurring_booking' => $recurring_booking,
+            'tax_amount' => $tax_amount ?? 0
         ]);
     }
 
@@ -1031,14 +1039,14 @@ class OrderController extends BaseController
     public function changeStatus(Request $request, $domain = '')
     {
        
-        
+        try {
         $orderPlaced = true;
         $orderPlacedNo = '';
         $productIds = $request->productIds??[];
         $orderVendorProductIds = $request->order_vendor_product_id??[];
         DB::beginTransaction();
         $client_preferences = ClientPreference::first();
-         try {
+      
 
             $timezone = Auth::user()->timezone;
             $vendor_order_status_check = VendorOrderStatus::where('order_id', $request->order_id)->where('vendor_id', $request->vendor_id)->where('order_status_option_id', $request->status_option_id)->first();
@@ -1255,11 +1263,11 @@ class OrderController extends BaseController
                  OrderProduct::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update(['order_status_option_id'=>$request->status_option_id]);
               
                 DB::commit();
-                $newOrder = Order::select('id','user_id')->with([
-                'ordervendor'
-            ])
+                $newOrder = Order::select('id','user_id')->with(
+                'ordervendor')
                 ->where('id', $request->order_id)
                 ->first();
+            
                 $blockchain_route = ClientPreferenceAdditional::where('key_name','blockchain_route_formation')->first();
  
                 if(isset($blockchain_route) && ($blockchain_route->key_value == 1))
@@ -1272,7 +1280,7 @@ class OrderController extends BaseController
             
                 $customer = User::find($orderData->user_id);
                 if(getAdditionalPreference(['is_tracking_url'])['is_tracking_url'] == 1){
-                     $this->sendTrackingUrlSMS($orderData);
+                     $this->sendTrackingUrlSMS($orderData,$request->order_id);
                 }
 
                 

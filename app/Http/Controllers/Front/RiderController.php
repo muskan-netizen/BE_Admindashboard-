@@ -29,7 +29,7 @@ class RiderController extends FrontController
     	$data['user_id'] = Auth::user()->id;
         $data['phone_number'] = '+'.$data['dial_code'].$data['phone_number'];
         $data['dial_code'] = $data['dial_code'];
-        $data['email'] = $data['email'];
+        $data['email'] = $data['email'] ?? null;
     	$add = $this->riderObj->createRider($data);
     	$all_riders = $this->riderObj->getAllByUserId($data['user_id']);
     	return response()->json(['riders' => $all_riders],200);

@@ -178,7 +178,9 @@ $client_preferences = \App\Models\ClientPreference::first();
 
 
 
-
+<script>
+    var action_type = "{{$action}}";
+</script>
 
 <script type="text/template" id="promo_code_template">
     <% _.each(promo_codes, function(promo_code, key){%>
@@ -391,10 +393,10 @@ $client_preferences = \App\Models\ClientPreference::first();
                             <input class="form-control manual_promocode_input" name="name" type="text" placeholder="{{ __('Enter a promocode')}}" >
                             <button class="btn btn-solid apply_promo_code_btn" data-vendor_id="" data-cart_id=""
                             data-coupon_id="" data-amount="" style="display:none">Apply</button>
-                            <span class="invalid-feedback manual_promocode" role="alert">
-
-                            </span>
+                            
                         </div>
+                        <span class="invalid-feedback manual_promocode" role="alert">
+                        </span>
                     </div>
                     <div class="col-3 p-0">
                         <button class="btn btn-solid validate_promo_code_btn" data-vendor_id="" data-cart_id=""

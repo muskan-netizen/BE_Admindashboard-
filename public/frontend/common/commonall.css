@@ -77,6 +77,13 @@ body .pac-container{
     text-transform: capitalize;
     margin-right:0!important;
 }
+.al_body_template_one span#cart_qty_span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+    padding-right: 1px;
+}
 .search_bar.menu-right .icon-nav a span {
     font-family: 'Poppins', sans-serif;
 }
@@ -545,8 +552,11 @@ body.al_body_template_eight .vendor_onetem .outter-fillter-data .displayProducts
     font-size: 14px;
     font-weight: 400;
 }
-.al_body_template_one .sold-by img {
-    height: 20px;
+.al_body_template_one .sold-by img , .buy_details .product-right .sold-by img{
+    height: 30px!important;
+    width: 30px!important;
+    border-radius: 50%;
+    margin-right: 5px;
 }
 
 .al_body_template_one .product-right .product-title {
@@ -658,7 +668,7 @@ content: inherit;
 .al_body_template_one .customizable-text {
     font-weight: inherit;
     opacity: inherit;
-    color: #ff0000;
+    color: var(--theme-deafult);    
 }
 .al_body_template_one .file.file--upload {
     position: relative;
@@ -1046,8 +1056,8 @@ display: inline-block;
 }
 .al_body_template_eight .single_category_products .suppliers-img-outer{
     height: 100%;
-    min-height: 330px !important;
-    max-height: 330px !important;
+    min-height: 260px !important;
+    max-height: 260px !important;
 }
 .al_body_template_eight section#homepage_top_rated .product-m.render_top_rated .row .img-outer-box.position-relative {
     min-height: 220px;
@@ -1581,6 +1591,30 @@ ul.product_list_order_page .items_price{
     margin-bottom: 25px;
 }
 
+.al_body_template_three .container {
+    max-width: 1400px;
+}
+.swal2-styled.swal2-confirm{
+    color: #fff!important;
+}
+.product_img_grid{
+    display: grid;
+    grid-template-columns: 25px 1fr;
+    grid-gap: 10px;
+    align-items: center;
+    margin-right: 5px;
+}
+.product_img_grid .product-img, .product_img_grid img {
+    width: 100%;
+    max-height: 100%;
+}
+.product-order .total-sec ul li span{
+    font-weight: 400!important;
+}
+ .product-order .final-total h3{
+    font-weight: 400;
+    padding: 0 12px;
+ }
 @media(min-width:1440px){
     .al_body_template_eight .container {
         max-width: 1500px;
@@ -2030,6 +2064,9 @@ section#our_vendor_main_div .render_full_best_sellers {padding: 20px 0 !importan
         width: max-content;
         text-align: right;
         margin-left: auto!important;
+    }
+    .product_img_grid{
+        grid-template-columns: 1fr;
     }
 }
 

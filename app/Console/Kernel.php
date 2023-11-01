@@ -19,12 +19,8 @@ class Kernel extends ConsoleKernel
         // Commands\SetDummyDataForDemo::class,
         Commands\RejectOrderNotification::class,
         Commands\HubSpotSyncData::class,
-        // Commands\MargApiProductUpdateCron::class,
-        // Commands\MargApiOrderUpdate::class,
         Commands\RecurringBooking::class,
-        // Commands\MakeTrait::class,
-        // Commands\CloneDatabase::class
-        Commands\SetStoragePermissions::class
+        Commands\CloneDatabase::class
 
         //
     ];
@@ -37,7 +33,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('set:storage-permissions')->everyMinute();
         $schedule->command('cart:reminder')->hourly();
         $schedule->command('auto:reject_order')->everyMinute();
         $schedule->command('auto:reject_order_notifi')->everyMinute();

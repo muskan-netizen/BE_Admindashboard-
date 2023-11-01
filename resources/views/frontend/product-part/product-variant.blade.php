@@ -13,13 +13,13 @@
             $lastIndex = count($product->variantSet) - 1;
         @endphp
         @if ($variant->type == 1 || $variant->type == 2)
-            @if ($key == 1)
+            @if ($key == $lastIndex)
                 <div id="variant_options">
             @endif
             <div class="size-box">
                 <ul class="productVariants">
                     <li class="firstChild">{{ $variant->title }}</li>
-                    <li class="row otherSize">
+                    <li class="row otherSize m-0">
                         @foreach ($variant->option2 as $k => $optn)
                             <?php $var_id = $variant->variant_type_id;
                             $opt_id = $optn->variant_option_id;
