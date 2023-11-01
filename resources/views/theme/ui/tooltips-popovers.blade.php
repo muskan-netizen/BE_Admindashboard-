@@ -30,7 +30,7 @@
 
 
                     <div class="button-list">
-                        <button type="button" class="btn btn-light" data-container="body" title="" data-toggle="popover" data-placement="top" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus." data-original-title="">
+                        <button type="button" class="btn btn-light" data-container="body" title="" data-toggle="popover" data-placement="top" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus." ="">
                             Popover on top
                         </button>
 
