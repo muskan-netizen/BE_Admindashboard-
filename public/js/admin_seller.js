@@ -190,6 +190,7 @@ $(document).ready(function() {
             $('#'+table).DataTable({
                 "destroy": true,
                 "scrollX": true,
+                "searching":true,
                 "processing": true,
                 "serverSide": true,
                 "iDisplayLength": 20,
@@ -211,7 +212,8 @@ $(document).ready(function() {
                   },
                   data: function (d) {
                     d.status = status;
-                    d.search = $('input[type="search"]').val();
+                    // d.search = $('input[type="search"]').val();
+                    d.search =$('#'+table).DataTable().search();
                     d.date_filter = $('#range-datepicker').val();
                     d.payment_option = $('#payment_option_select_box option:selected').val();
                     d.tax_type_filter = $('#tax_type_select_box option:selected').val();

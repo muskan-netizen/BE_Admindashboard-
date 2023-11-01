@@ -400,3 +400,4 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
     var table_info = '{{__("Showing _START_ to _END_  of _TOTAL_ entries")}}';
 </script>
 @endsection
+xxxx
