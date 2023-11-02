@@ -2433,7 +2433,7 @@
     
     {{-- ends here marg form --}}
     </div>
-    <div class="col-xl-4 col-lg-4 mb-3">
+    <div class="col-xl-4 col-lg-4 mb-3 d-none">
         <div class="page-title-box">
             <h4 class="page-title text-uppercase">{{ __('Blockchain Route Formation') }}</h4>
         </div>
@@ -2451,18 +2451,18 @@
             
 
             <div class="col-12">
-                  
+                
                 <div class="form-group mb-0 d-flex switchery-demo">
                     <label for="" class="mr-3">{{ __('Enable') }}</label>
                     <input type="checkbox" data-plugin="switchery" name="blockchain_route_formation_switch"
                         id="blockchain_route_formation_switch" class="form-control checkbox_change"
                         data-className="blockchain_route_formation" data-color="#43bee1"
-                        @if (@$getAdditionalPreference['blockchain_route_formation'] == 1) checked='checked' @endif>
+                        @if (@$getAdditionalPreference['blockchain_route_formation'] == 1) checked @endif>
                     <input type="hidden" @if (@$getAdditionalPreference['blockchain_route_formation'] == 1) value="1" @else value="0" @endif
                         name="blockchain_route_formation" id="blockchain_route_formation" />
                 </div>
         
-                <div class="row mt-2  @if (@$getAdditionalPreference['blockchain_route_formation'] == 1) @else d-none @endif;" id="blockchain_configuration_div">
+                <div class="row mt-2  @if (@$getAdditionalPreference['blockchain_route_formation'] != 1) d-none @endif;" id="blockchain_configuration_div">
                    
                     <div class="col-6">
                     <label for="" class="mr-3">{{ __('Blockchain Api Domain') }}</label>
