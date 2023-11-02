@@ -18997,3 +18997,8 @@ body.al_body_template_nine.p2p-module .common-product-box,
 .suppliers-box:hover{
     box-shadow: 0px 0px 11px 2px rgb(0 0 0 / 32%) !important;
 } */
+
+body[dir="rtl"] #alSixHomeServices .border-product .slick-track {
+    position: relative;
+    left: 100%;
+}
