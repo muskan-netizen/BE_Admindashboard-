@@ -363,10 +363,9 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                             @endif
                                             </ul>
                                         </li>
-                                        @if(Auth::user())
-                                        @if( p2p_module_status())
+                                     
+                                        @if( Session::get('vendorType') == 'p2p' )
                                         <li class="add_post"><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
-                                        @endif
                                         @endif
                                         <li class="mobile-menu-btn d-none">
                                             <div class="toggle-nav p-0 d-inline-block"><i
