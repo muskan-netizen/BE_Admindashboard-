@@ -593,6 +593,9 @@ body.dark .mobile-account span {
     max-width: 80%!important;
     padding:0!important;    
 }
+.onhover-div:hover .show-div:empty {
+    display: none;
+}
 @media(min-width:1460px){
     .al_body_template_nine .container,  .al_body_template_nine .container-lg, .al_body_template_nine .container-md, .al_body_template_nine .container-sm, .al_body_template_nine     .container-xl{
         max-width: 1440px!important;
