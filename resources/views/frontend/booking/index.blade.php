@@ -584,8 +584,11 @@ input[type=number]::-webkit-outer-spin-button {
 
                     </div>
                 </div>
+                <div class="hourly-rental-container">
+                </div>
                 <script type="text/template" id="rider_template">
-            <div class="col-12 d-flex justify-content-between align-items-center">
+            
+                    <div class="col-12 d-flex justify-content-between align-items-center">
                 <% if(riders.length > 0){%>
                     <p class="m-0">Riders : <%= riders.length %></p>
                 <% } %>
@@ -598,11 +601,7 @@ input[type=number]::-webkit-outer-spin-button {
                         var randomColor = "#" + ((1<<24)*Math.random() | 0).toString(16);
                         %>
                         <div class="col-3 text-center alHoverRiderBox">
-<<<<<<< HEAD
-                            <input class="alCheckMark" type="radio" name="rider_id" id="option-<%= key %>" <% if(key == 0){'checked'} %> >
-=======
                             <input class="alCheckMark" type="radio" name="rider_id" id="option-<%= key %>" value="<%= rider.id %>"  <% if(key == 0){'checked'} %> >
->>>>>>> 7fa9ac5dc13c10d5296d0682d396b3fc54be5091
                             <label for="option-<%= key %>" class="option option-<%= key %>">
                                 <div class="alRiderImg mb-1" style="background-color: <%=randomColor%> "> <%= (rider.first_name).charAt(0)%></div>
                                 <div class="dalRiderInfo">
@@ -1879,7 +1878,29 @@ input[type=number]::-webkit-outer-spin-button {
             // }
             $('#label_for_friend').click(function() {
                 $('#label_for_me').removeClass('active');
+                $('.address-form').removeClass('d-none');
+
             });
+           
+            $('#label_for_hourly_rental').click(function() {
+            $('#label_for_me').removeClass('active');
+            $('#label_for_friend').removeClass('active');
+            $('.address-form').addClass('d-none');
+
+            // Make an AJAX request to load the view.
+            $.ajax({
+                url: "{{route('get-rental-view')}}",
+                method: 'POST',
+                success: function(response) {
+                    // Append the retrieved view to the desired element.
+                    $('.hourly-rental-container').html(response.view);
+                },
+                error: function(xhr, status, error) {
+                    // Handle errors if necessary.
+                }
+            });
+        });
+
             $(document).delegate('#submit_productfaq', 'click', function() {
                 var product_order_form_element = getFormData('#product-order-form-name');
                 $('#product_order_form').modal('hide');

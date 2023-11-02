@@ -684,3 +684,10 @@ $(".previous").click(function(){
         
             return true;
         }
+
+         $('#label_for_friend').click(function() {
+            $('#label_for_me').removeClass('active');
+            $('.address-form').removeClass('d-none');
+            $(".hourly-rental-container").empty();
+
+        });

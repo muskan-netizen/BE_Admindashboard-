@@ -501,6 +501,7 @@ Route::group(['middleware' => ['domain']], function () {
 
 
 	Route::get('category/{slug?}', 'Front\CategoryController@categoryProduct')->name('categoryDetail');
+	Route::post('get-rental-view', 'Front\CategoryController@getRentalView')->name('get-rental-view');
 
 	
 

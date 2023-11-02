@@ -466,7 +466,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     @endif
                     {{-- Input Filed of price based on roles (END) --}}
 
-                    @if(  in_array( $product->category->categoryDetail->type_id , [10,5]) )
+                    @if(  in_array( $product->category->categoryDetail->type_id , [10]) )
                         <div class="row col-md-12 mb-2">
                             <div class="col-12 mb-2 row">
                                 <div class="col-12">
@@ -717,8 +717,8 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                  </div>
              @endif
              {{-- marg data --}}
-
-                @if($product->category->categoryDetail->type_id == 10)
+             
+                @if(($product->category->categoryDetail->type_id == 10) || (($product->category->categoryDetail->type_id == 7) && $client_preference_detail->is_hourly_pickup_rental == 1) )
                     @include('backend.product.popup.scheduleTableRows')
                     {{-- @include('backend.product.popup.addBlockTimeTablePopup') --}}
                     @include('backend.product.variant')

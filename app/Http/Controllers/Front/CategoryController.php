@@ -998,5 +998,14 @@ class CategoryController extends FrontController{
         return $this->errorResponse('Invalid product form ', 404);
     }
 
+ 
+    public function getRentalView()
+    {
 
+        $product = Product::where('category_id',29)->orderBy('per_hour_price','asc')->first();
+  
+        $view = view('frontend.booking.hourlyRental',['product' => $product])->render();
+
+        return response()->json(['view' => $view]);
+    }
 }
