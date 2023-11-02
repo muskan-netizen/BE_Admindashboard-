@@ -1618,6 +1618,7 @@
                                 <hr />
                             </div>
                         </div>
+                       
 
                         <div class="col-12 mt-2">
                             <div class="form-group mt-2 d-flex switchery-demo">
@@ -2282,26 +2283,7 @@
             </div>
         </form>
         </div>
-        @if( Request::get('google_tag'))
         <div class="col-xl-4 col-lg-4 mb-3">
-            <!-- Social Logins title start -->
-            <div class="page-title-box">
-                <h4 class="page-title text-uppercase">{{ __('Google Analytics') }}</h4>
-            </div><!-- Social Logins title end -->
-                            <div class="card-box">
-            <form method="POST" action="{{ route('additional.update') }}">
-                <input type="hidden" name="crm" id="crm" value="1">
-                <input type="hidden" name="send_to" id="send_to" value="configure">
-                @csrf
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <h4 class="header-title text-uppercase mb-0">{{ __('Google Analytics') }}
-                    </h4>
-                    <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
-                    </button>
-                </div>
-                            <div class="col-12">
-
-        <div class="col-md-4 mb-3">
             <form method="POST" class="h-100" action="{{ route('additional.update')}}">
             @csrf
                 <input type="hidden" name="is_lumen" value="1">
@@ -2365,7 +2347,7 @@
        
                 </div>
             </form>
-        </div> 
+    
     </div>
 </div>
 
@@ -2482,6 +2464,7 @@
                 </form>
             </div>
         </div>
+    </div>
       @if( Request::get('google_tag'))
         <div class="col-xl-4 col-lg-4 mb-3">
             <!-- Social Logins title start -->
@@ -2530,8 +2513,6 @@
         </div>
         </div>
 	@endif
-</div>
-@endif
 </div>
     <div class="row">
 
@@ -2879,7 +2860,7 @@
             $('.optionTableAdd').append($clone);
 
         });
-        $('#add_slot_modal_btn').click(function(e) {
+        $('#add_slot_modal_btn').click(function(e) {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
             document.getElementById("slotForm").reset();
             $('#add_slot_modal input[name=slot_id]').val("");
             $('#add_slot_modal').modal('show');
@@ -2888,7 +2869,7 @@
 
 
         $(document).on("click", "#sync_marg_btn", function(e) {
-            e.preventDefault();
+            e.preventDefault();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
             $.ajax({
                 type: "GET",
                 dataType: 'json',
@@ -3268,7 +3249,7 @@
             $('#add-customer-modal').removeClass('fadeIn');
 
         });
-
+    //*************configurations hyperlocal map location selected by map*********************//
         $(document).on('click', '.showMap', function() {
             var no = $(this).attr('num');
             var lats = document.getElementById('Default_latitude').value;
@@ -3276,48 +3257,60 @@
 
             document.getElementById('map_for').value = no;
 
-            if (lats == null || lats == '0') {
-                lats = 30.53899440;
-            }
-            if (lngs == null || lngs == '0') {
-                lngs = 75.95503290;
-            }
+                    if (lats == null || lats == '0') {
+                    lats = 30.53899440;
+                    }
+                    if (lngs == null || lngs == '0') {
+                    lngs = 75.95503290;
+                    }
 
             var myLatlng = new google.maps.LatLng(lats, lngs);
-            var mapProp = {
+                var mapProp = {
                 center: myLatlng,
                 zoom: 13,
                 mapTypeId: google.maps.MapTypeId.ROADMAP
 
-            };
+                };
             var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
-            var marker = new google.maps.Marker({
+                var marker = new google.maps.Marker({
                 position: myLatlng,
                 map: map,
                 title: 'Hello World!',
                 draggable: true
-            });
-            document.getElementById('lat_map').value = lats;
-            document.getElementById('lng_map').value = lngs;
-            google.maps.event.addListener(marker, 'drag', function(event) {
+                });
+                document.getElementById('lat_map').value = lats;
+                document.getElementById('lng_map').value = lngs;
+                google.maps.event.addListener(marker, 'drag', function(event) {
+
                 document.getElementById('lat_map').value = event.latLng.lat();
                 document.getElementById('lng_map').value = event.latLng.lng();
             });
 
             google.maps.event.addListener(marker, 'dragend', function(event) {
-                var zx = JSON.stringify(event);
-                console.log(zx);
 
-
-                document.getElementById('lat_map').value = event.latLng.lat();
-                document.getElementById('lng_map').value = event.latLng.lng();
-            });
+            var newLat = event.latLng.lat();
+            var newLng = event.latLng.lng();
+            var geocoder = new google.maps.Geocoder();
+            var latlng = new google.maps.LatLng(newLat, newLng);
+                geocoder.geocode({
+                'latLng': latlng
+                }, function(results, status) {
+                if (status === google.maps.GeocoderStatus.OK) {
+                    if (results[0]) {
+                    var locationName = results[0].formatted_address;
+                    document.getElementById('Default_location_name').value = locationName;
+                }
+                }
+                });
+                    document.getElementById('lat_map').value = newLat;
+                    document.getElementById('lng_map').value = newLng;
+                });
             $('#add-customer-modal').addClass('fadeIn');
             $('#show-map-modal').modal({
-                keyboard: false
+            keyboard: false
             });
 
-        });
+            });
 
         $(document).on('click', '.selectMapLocation', function() {
 

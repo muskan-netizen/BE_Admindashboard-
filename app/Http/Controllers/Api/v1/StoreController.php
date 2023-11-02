@@ -537,12 +537,9 @@ class StoreController extends BaseController
 				unset($order->products);
 				unset($order->paymentOption);
 				unset($order->payment_option_id);
-
-
-
 			}
 			return $this->successResponse($order_list, '', 200);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			return $this->errorResponse($e->getMessage(), $e->getCode());
 		}
 	}
@@ -707,7 +704,7 @@ class StoreController extends BaseController
 	{
 
 
-		
+
 		//return $product = Product::with('brand', 'variant.set', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSet', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities')->where('id', 232)->firstOrFail();
 		try {
 			$validator = Validator::make($request->all(), [
@@ -968,7 +965,7 @@ class StoreController extends BaseController
 
 	// 							if (!empty($value['type']) && $value['type'] == 1) { // dropdown
 	// 								$value_arr = @$value['value'];
-									
+
     //                                 foreach($value['option'] as $option_key => $option) {
     //                                     if(!empty($value['type']) && $value['type'] == 4 ) { // textbox
 	// 										$insert_arr[$insert_count]['product_id'] = $request->product_id;
@@ -1042,12 +1039,12 @@ class StoreController extends BaseController
 	// 		$user = Auth::user();
 	// 		$productid = $product->id;
 	// 		$user_vendor = UserVendor::where('user_id', $user->id)->first();
- 
 
-			 
- 
+
+
+
 	// 		if (@$user_vendor->vendor_id) {
-			
+
 	// 			$product->sku = $slug;
 	// 			$product->url_slug = $generated_slug;
 	// 			$product->title = $request->product_name;
@@ -1057,7 +1054,7 @@ class StoreController extends BaseController
 	// 			$product->is_live = 1;
 	// 			$product->publish_at = date('Y-m-d H:i:s');
 	// 			$product->vendor_id = $user_vendor->vendor_id;
-			
+
 	// 			if (@$request->longitude) {
 	// 				$product->longitude = $request->longitude;
 	// 			}
@@ -1073,8 +1070,8 @@ class StoreController extends BaseController
 	// 			if (!$client_lang) {
 	// 				$client_lang = ClientLanguage::where('is_active', 1)->first();
 	// 			}
-			    	
-				
+
+
 	// 			if ($product->id > 0) {
 	// 				$datatrans[] = [
 	// 					'title' => $request->product_name ?? null,
@@ -1086,14 +1083,14 @@ class StoreController extends BaseController
 	// 					'language_id' => $client_lang->language_id
 	// 				];
 	// 				$product_category =  ProductCategory::where('product_id',$request->product_id)->first();
-				
+
 	// 				// if(@$request->category_id){
 	// 				// $product_category->product_id = $product->id;
 	// 				// $product_category->category_id = $request->category_id;
 	// 				// $product_category->save();
 	// 				// }
 	// 				$proVariant =  ProductVariant::where('product_id',$request->product_id)->first();
-					
+
 	// 				$proVariant->price = $request->price ?? 0;
 
 	// 				$proVariant->week_price = $request->week_price ?? 0;
@@ -1151,7 +1148,7 @@ class StoreController extends BaseController
 	// 						// 	$varientimage->product_variant_id = $variant_id;
 	// 						// 	$varientimage->product_image_id = $image->id;
 	// 						// 	$varientimage->save();
-	// 						// }							
+	// 						// }
 	// 					}
 	// 				}
 	// 				//return response()->json(['htmlData' => $resp]);
@@ -1174,7 +1171,7 @@ class StoreController extends BaseController
 	// 					// 	$varientimage->product_variant_id = $variant_id;
 	// 					// 	$varientimage->product_image_id = $image->id;
 	// 					// 	$varientimage->save();
-	// 					// }						
+	// 					// }
 	// 				}
 	// 			}
 	// 		}
@@ -1204,7 +1201,7 @@ class StoreController extends BaseController
 	// 						// 	$varientimage->product_variant_id = $variant_id;
 	// 						// 	$varientimage->product_image_id = $image->id;
 	// 						// 	$varientimage->save();
-	// 						// }							
+	// 						// }
 	// 					}
 	// 				}
 	// 				//return response()->json(['htmlData' => $resp]);
@@ -1227,7 +1224,7 @@ class StoreController extends BaseController
 	// 					// 	$varientimage->product_variant_id = $variant_id;
 	// 					// 	$varientimage->product_image_id = $image->id;
 	// 					// 	$varientimage->save();
-	// 					// }						
+	// 					// }
 	// 				}
 	// 			}
 	// 		}
@@ -1253,7 +1250,7 @@ class StoreController extends BaseController
 	// 				}
 	// 			}
 	// 		}
-			
+
 
 	// 		$data = Product::with('brand', 'variant.set', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSet', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities')->where('id', $product->id)->firstOrFail();
 	// 		return $this->successResponse($data, 'Product Updated successfully!', 200);
@@ -1349,9 +1346,9 @@ class StoreController extends BaseController
 
 			$user = Auth::user();
 			$user_vendor = UserVendor::where('user_id', $user->id)->first();
-		
+
 			if (@$user_vendor->vendor_id) {
-			
+
 				$product->sku = $slug;
 				$product->url_slug = $generated_slug;
 				$product->title = $request->product_name;
@@ -1361,7 +1358,7 @@ class StoreController extends BaseController
 				$product->is_live = 1;
 				$product->publish_at = date('Y-m-d H:i:s');
 				$product->vendor_id = $user_vendor->vendor_id;
-			
+
 				if (@$request->longitude) {
 					$product->longitude = $request->longitude;
 				}
@@ -1377,8 +1374,8 @@ class StoreController extends BaseController
 				if (!$client_lang) {
 					$client_lang = ClientLanguage::where('is_active', 1)->first();
 				}
-			    	
-				
+
+
 				if ($product->id > 0) {
 					$datatrans[] = [
 						'title' => $request->product_name ?? null,
@@ -1390,14 +1387,14 @@ class StoreController extends BaseController
 						'language_id' => $client_lang->language_id
 					];
 					$product_category =  ProductCategory::where('product_id',$request->product_id)->first();
-				
+
 					// if(@$request->category_id){
 					// $product_category->product_id = $product->id;
 					// $product_category->category_id = $request->category_id;
 					// $product_category->save();
 					// }
 					$proVariant =  ProductVariant::where('product_id',$request->product_id)->first();
-					
+
 					$proVariant->price = $request->price ?? 0;
 
 					$proVariant->week_price = $request->week_price ?? 0;
@@ -1429,7 +1426,7 @@ class StoreController extends BaseController
 				}
 
 			}
-		
+
 			if ($request->has('file')) {
 				ProductImage::where('product_id',$product->id)->delete();
 				$imageId = '';
@@ -1455,7 +1452,7 @@ class StoreController extends BaseController
 							// 	$varientimage->product_variant_id = $variant_id;
 							// 	$varientimage->product_image_id = $image->id;
 							// 	$varientimage->save();
-							// }							
+							// }
 						}
 					}
 					//return response()->json(['htmlData' => $resp]);
@@ -1478,7 +1475,7 @@ class StoreController extends BaseController
 						// 	$varientimage->product_variant_id = $variant_id;
 						// 	$varientimage->product_image_id = $image->id;
 						// 	$varientimage->save();
-						// }						
+						// }
 					}
 				}
 			}
@@ -1508,7 +1505,7 @@ class StoreController extends BaseController
 							// 	$varientimage->product_variant_id = $variant_id;
 							// 	$varientimage->product_image_id = $image->id;
 							// 	$varientimage->save();
-							// }							
+							// }
 						}
 					}
 					//return response()->json(['htmlData' => $resp]);
@@ -1531,7 +1528,7 @@ class StoreController extends BaseController
 						// 	$varientimage->product_variant_id = $variant_id;
 						// 	$varientimage->product_image_id = $image->id;
 						// 	$varientimage->save();
-						// }						
+						// }
 					}
 				}
 			}
@@ -1557,7 +1554,7 @@ class StoreController extends BaseController
 					}
 				}
 			}
-			
+
 
 			$data = Product::with('brand', 'variant.set', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSet', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities')->where('id', $product->id)->firstOrFail();
 			return $this->successResponse($data, 'Product Updated successfully!', 200);
@@ -1636,7 +1633,7 @@ class StoreController extends BaseController
 
 	public function productImages(Request $request)
 	{
-		
+
 		try {
 			$validator = Validator::make($request->all(), [
 				'product_id' => 'required',
@@ -1833,9 +1830,9 @@ class StoreController extends BaseController
 			// 	$allcategories[] = $selected_category_id;
 			// }else{
 			// 	foreach ($vendor_categories as $vendor_category) {
-			// 		$allcategories[] = $vendor_category->category->id;					
+			// 		$allcategories[] = $vendor_category->category->id;
 			// 	}
-			// }			
+			// }
 			$is_selected_category_id = $selected_category_id;
 			foreach ($vendor_categories as $vendor_category) {
 				$Category_translation = Category_translation::where('category_id', $vendor_category->category->id)->where('language_id', $langId)->first();
@@ -2429,7 +2426,7 @@ class StoreController extends BaseController
 	
     
 		try {
-		
+
 			$validator = Validator::make($request->all(), [
 				// 'sku' => 'required|unique:products',
 				// 'url_slug' => 'required|unique:products',
@@ -2527,7 +2524,7 @@ class StoreController extends BaseController
 						$product->latitude = $request->latitude;
 					}
 
-				
+
 					$client_lang = ClientLanguage::where('is_primary', 1)->first();
 					if (!$client_lang) {
 						$client_lang = ClientLanguage::where('is_active', 1)->first();
@@ -2614,7 +2611,7 @@ class StoreController extends BaseController
 										// 	$varientimage->product_variant_id = $variant_id;
 										// 	$varientimage->product_image_id = $image->id;
 										// 	$varientimage->save();
-										// }							
+										// }
 									}
 								}
 								//return response()->json(['htmlData' => $resp]);
@@ -2637,12 +2634,12 @@ class StoreController extends BaseController
 									// 	$varientimage->product_variant_id = $variant_id;
 									// 	$varientimage->product_image_id = $image->id;
 									// 	$varientimage->save();
-									// }						
+									// }
 								}
 							}
 						}
 
-                    
+
 						if ($request->has('file_360')) {
 							$imageId = '';
 							$files = $request->file('file_360');
@@ -2667,7 +2664,7 @@ class StoreController extends BaseController
 										// 	$varientimage->product_variant_id = $variant_id;
 										// 	$varientimage->product_image_id = $image->id;
 										// 	$varientimage->save();
-										// }							
+										// }
 									}
 								}
 								//return response()->json(['htmlData' => $resp]);
@@ -2690,7 +2687,7 @@ class StoreController extends BaseController
 									// 	$varientimage->product_variant_id = $variant_id;
 									// 	$varientimage->product_image_id = $image->id;
 									// 	$varientimage->save();
-									// }						
+									// }
 								}
 							}
 						}
@@ -2699,22 +2696,22 @@ class StoreController extends BaseController
 					if( checkTableExists('product_attributes') ) {
 						if( !empty($request->attribute) ) {
 							$attribute = json_decode($request->attribute, true);
-							
+
 							if( !empty($attribute) ) {
-						
+
 								$insert_arr = [];
 								$insert_count = 0;
-								
+
 								foreach($attribute as $key => $value) {
-									
+
 									if( !empty($value) && !empty($value['option'] && is_array($value) )) {
-										
+
 										if(!empty($value['type']) && $value['type'] == 1 ) { // dropdown
 											$value_arr = @$value['value'];
-											
+
 											foreach( $value['option'] as $key1 => $val1 ) {
 												if( @in_array($val1['option_id'], $value_arr) ) {
-		
+
 													$insert_arr[$insert_count]['product_id'] = $product->id;
 													$insert_arr[$insert_count]['attribute_id'] = $value['id'];
 													$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
@@ -2729,7 +2726,7 @@ class StoreController extends BaseController
 										}
 										else {
 											$value_arr = @$value['value'];
-											
+
 											foreach($value['option'] as $option_key => $option) {
 												if(!empty($value['type']) && $value['type'] == 4 ) { // textbox
 													$insert_arr[$insert_count]['product_id'] = $product->id;
@@ -2742,7 +2739,7 @@ class StoreController extends BaseController
 													$insert_arr[$insert_count]['is_active'] = 1;
 												}
 												elseif(!empty($value['type']) && $value['type'] == 6) {
-													
+
 													$insert_arr[$insert_count]['product_id'] = $product->id;
 													$insert_arr[$insert_count]['attribute_id'] = $value['id'];
 													$insert_arr[$insert_count]['key_name'] = $value['attribute_title'];
@@ -2772,8 +2769,8 @@ class StoreController extends BaseController
 										ProductAttribute::where('product_id', $request->product_id)->delete();
 										ProductAttribute::insert($insert_arr);
 									}
-		
-								
+
+
 								}
 								if( !empty($insert_arr) ) {
 									ProductAttribute::where('product_id',$request->product_id)->delete();
@@ -2815,7 +2812,7 @@ class StoreController extends BaseController
 		} catch (\Exception $e) {
 			return $this->errorResponse('Exception occured', 500);
 		}
-	
+
 }
 
 public function addDataSaveVendor(Request $request, $vendor_id){
@@ -2879,7 +2876,7 @@ public function sendNotification($user_id){
 	->where('user_id', $user_id)
 	->pluck('device_token')
 	->toArray();
-	
+
 	if (empty($devices)) {
 		return true;
 	}
@@ -2889,7 +2886,7 @@ public function sendNotification($user_id){
 	$notification_content = NotificationTemplate::where('id', 16)->first();
 	$title = $notification_content ? $notification_content->subject : "New Listing Created";
 	$body_content = $notification_content ? $notification_content->content : "Yay! Your product has been successfully listed. View your product under Account->My Posts";
-	
+
 	$data = [
 		"registration_ids" => $devices,
 		"notification" => [
@@ -2921,19 +2918,19 @@ public function sendNotification($user_id){
 
 public function send_notification(Request $request)
     {
-	
-		
+
+
         if(empty($request->user_id)){
             $user = User::where('id',$request->user_id)->first();
         }
-          
+
         $devices = UserDevice::where('user_id', 2)->pluck('device_token')->toArray();
-	
-        if (!empty($devices)) 
+
+        if (!empty($devices))
         {
             $from = '';
             $client_preferences = ClientPreference::select('fcm_server_key', 'favicon', 'vendor_fcm_server_key')->first();
-			
+
             if (!empty($devices) && !empty($client_preferences->fcm_server_key)) {
                 $from = $client_preferences->fcm_server_key;
             }
@@ -2963,9 +2960,9 @@ public function send_notification(Request $request)
                     ],
                     "priority" => "high"
                 ];
-			
+
                 if(!empty($from)){
-				
+
                     // helper function
                     sendFcmCurlRequest($data);
 					return true;

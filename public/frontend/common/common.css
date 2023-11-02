@@ -2966,6 +2966,7 @@ section.royo-business .title-36{margin-bottom:24px}.description-text{margin-bott
 .divider_line {height: 1.2px;width: 353px;border: 1.2px solid #979797;opacity: .24;background-color: #979797;}
 .divider_line span {height: 25.15px;width: 25.15px;line-height: 21.15px;border: 1.2px solid #dfe2e6;box-shadow: 0 0 4px 0 rgb(0, 0, 0 / 5%);font-size: 9.56px;font-weight: bold;border-radius: 50%;text-align: center;display: block;margin: -13px auto;background: #fff;}
 ul.social-links.d-flex.align-items-center.mx-auto.mb-4.mt-3 {text-align: center;margin: 0 auto;width: max-content;}
+ul.social-links.d-flex.align-items-center.mx-auto.mb-4.mt-3 li{margin: 0 10px;}
 .file.upload-new img,.vendor-signup .file .update_pic img{height:130px;width:auto;object-fit:cover}.file>input[type=file]{display:none}
 .file--upload>label .plus_icon {height: 33px;width: 33px;line-height: 36px;color: #fff;text-align: center;font-family: "Nunito Sans";
 font-size: 13px;font-weight: 700;letter-spacing: 0;border-radius: 50%;background-color: var(--theme-deafult);box-shadow: 0 2px 4px 0 rgb(63 159 255 / 40%);
