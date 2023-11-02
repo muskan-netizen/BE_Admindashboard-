@@ -385,7 +385,8 @@ class HomeController extends BaseController
             $homeData['banner_image'] = $banners??[];
             //$homeData['categories'] = $categories;
             $homeData['cacheKey'] = $cacheKey??'';
-
+            $lowest_price_product = Product::whereNotNull('per_hour_price')->where('is_live',1)->orderBy('per_hour_price','asc')->first();
+            $homeData['hourly_rental_product'] = $lowest_price_product??'';
             $locations = [
                 [
                     'latitude' => $latitude,
