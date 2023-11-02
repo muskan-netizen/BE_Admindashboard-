@@ -102,7 +102,7 @@
                 <span>{{$product->vendor->address}}</span>
             </div>
 
-            <div class="pass-detail">
+            {{-- <div class="pass-detail">
                 <ul class="m-0 p-0">
                     <li><span>Flexible</span> {!!$product->returnable ? 'Cancellation <br/>Policy' : 'No <br/> Cancellation'!!}</li>
                     <li><span>Passenger</span> Up to {{$desc['Passangers']['title'] ?? 0}} <br/> Passengers</li>
@@ -112,7 +112,7 @@
 
             <div class="booking-option mt-1">
                 <h5>Booking Option</h5>
-            </div>
+            </div> --}}
             <div class="product_price">
                 @if($category->slug == 'rental')
                 <p>{{Session::get('currencySymbol')}}{{decimal_format($product->variant[0]->price)}}</p>
