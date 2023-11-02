@@ -68,12 +68,12 @@ if (!function_exists('getAdditionalPreference')) {
         $dbreturn= [];
         if(sizeof($key)){
             	
-            // $result = ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
-            $cacheKey = 'client_preferences_additional_'.json_encode($key);
+            $result = ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
+            // $cacheKey = 'client_preferences_additional_'.json_encode($key);
 
-            $result = Cache::remember($cacheKey, $time, function () use ($key) {
-                return ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
-            });
+            // $result = Cache::remember($cacheKey, $time, function () use ($key) {
+            //     return ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
+            // });
             $return = array_column($result->toArray(), 'key_value', 'key_name');
             if (sizeof($result)) {
                 $dbreturn = array_column($result->toArray(), 'key_value', 'key_name');
