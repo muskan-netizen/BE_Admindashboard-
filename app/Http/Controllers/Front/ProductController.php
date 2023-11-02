@@ -300,7 +300,14 @@ class ProductController extends FrontController{
 
             $suggested_product = Product::with(['vendor', 'translation', 'variant', 'productVariantByRoles']);
             if( !empty($product->category->category_id) ) {
-                $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)->groupBy('id')->orderby('id', 'desc')->limit(20)->get();
+                $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)
+                ->whereHas('vendor',function ($q){
+                    $q->whereIn('id',session()->get('vendors'));
+                })
+                ->where('id','!=',$p_id)
+                ->groupBy('id')
+                ->orderby('id', 'desc')
+                ->limit(20)->get();
             }
 
 
