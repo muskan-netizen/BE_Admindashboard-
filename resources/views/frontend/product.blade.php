@@ -464,7 +464,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
 
 
                                         <div id="variant_response">
-                                            @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
+                                            @if( p2p_module_status() && Session::get('vendorType') == 'p2p' && $product->category->categoryDetail->type_id == 10 )
                                             <input type="text" class="form-control" name="booking_availability" id="range-datepicker" placeholder="{{date('Y-m-d')}}">
                                             @endif
                                         </div>

@@ -10,11 +10,11 @@
             <div class="img-outer-box position-relative">
                 
                 
-            @if(@$product->type_id == 10)
+            @if(@$product->type_id == 13)
             <span class="for_sale">For Sale</span>
             @endif
             
-            @if(@$product->type_id == 13)
+            @if(@$product->type_id == 10)
             <span class="for_rent">For Rent</span>
             @endif
                 <img class="blur-up lazyload" data-src="{{ get_file_path($product->path,'FILL_URL','260','260') }}" alt="" title="">

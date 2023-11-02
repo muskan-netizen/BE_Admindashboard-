@@ -1682,6 +1682,9 @@ body.al_body_template_nine .product-m .item .media-body{
 body.al_body_template_nine .menu-navigation.al{
     display: none;
 }
+body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect a span:first-child{
+    padding-top: 0;
+}
 body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect  a span {
     font-size: 12px;
     padding-top: 5px;
