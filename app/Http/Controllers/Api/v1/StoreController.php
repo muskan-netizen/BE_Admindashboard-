@@ -2423,8 +2423,7 @@ class StoreController extends BaseController
 
 	function addProductWithAttribute(Request $request)
 	{
-	
-    
+	    
 		try {
 
 			$validator = Validator::make($request->all(), [
@@ -2449,22 +2448,19 @@ class StoreController extends BaseController
 				$sku_url = ($client->sub_domain . env('SUBMAINDOMAIN'));
 			}
 
-			\Log::info('test');
- 
-				
 			$slug = str_replace(' ', '-', $request->product_name);
 			$generated_slug = $sku_url . '.' . $slug;
 			$slug = generateSlug($generated_slug);
 			$slug = str_replace(' ', '-', $slug);
 			$generated_slug = $sku_url . '.' . $slug;
 			$users = Auth::user();
-			\Log::info($users);
+	
 			$user = User::where('id',$users->id)->first();
-			\log::info($user);
+			
 			$user_vendor = UserVendor::where('user_id', $users->id)->first();
 			
 			if(empty($user_vendor)){
-                \Log::info('check');
+                
 
 				$user->assignRole(4); // by default make this user as vendor
 				
@@ -2535,7 +2531,6 @@ class StoreController extends BaseController
 						$client_lang = ClientLanguage::where('is_active', 1)->first();
 					}
 				
-			        \Log::info('test3');
 					$product->save();
 					if ($product->id > 0) {
 						$datatrans[] = [
@@ -2579,7 +2574,7 @@ class StoreController extends BaseController
 						$proVariant->save();
 						ProductTranslation::insert($datatrans);
 						
-			           \Log::info('test4');
+			         
 
 						$product_detail = Product::where('id', $product->id)->firstOrFail();
 
@@ -2764,7 +2759,7 @@ class StoreController extends BaseController
 
 
 									}
-									\Log::info($insert_arr);
+									
 									if (!empty($insert_arr)) {
 										ProductAttribute::where('product_id', $request->product_id)->delete();
 										ProductAttribute::insert($insert_arr);
@@ -2821,7 +2816,7 @@ public function addDataSaveVendor(Request $request, $vendor_id){
 	$VendorController = new VendorController();
 
 	$request->merge(["return_json"=>1]);
-	\Log::info($vendor_id);
+	
 	$VendorConfigrespons = $VendorController->updateConfig($request,'',$vendor_id)->getData();//$this->updateConfig($vendor_id);
    // pr($VendorConfigrespons);
 	if($request->has('can_add_category')){
