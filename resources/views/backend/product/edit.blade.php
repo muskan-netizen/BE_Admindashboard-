@@ -466,7 +466,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     @endif
                     {{-- Input Filed of price based on roles (END) --}}
 
-                    @if(  in_array( $product->category->categoryDetail->type_id , [10]) )
+                    @if(  in_array( $product->category->categoryDetail->type_id , [10,5]) )
                         <div class="row col-md-12 mb-2">
                             <div class="col-12 mb-2 row">
                                 <div class="col-12">

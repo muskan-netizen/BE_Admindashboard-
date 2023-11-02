@@ -338,6 +338,21 @@ input[type=number]::-webkit-outer-spin-button {
                             <label class="tip_label mb-0  my-2" for="for_friend" id="label_for_friend">
                                 <h5 class="m-0" id="tip_5">{{ __('For Others') }}</h5>
                             </label>
+                            @if (isset($client_preference_detail) && $client_preference_detail->is_hourly_pickup_rental == 1)
+                            <input type="radio" class="tip_radio is_for_friend" id="hourly_rental" name="is_for_friend"
+                            value="1">
+                            <label class="tip_label mb-0  my-2" for="hourly_rental" id="label_for_hourly_rental">
+                                <h5 class="m-0" id="tip_5">{{ __('Hourly Rental') }}</h5>
+                            </label>
+                            @endif
+                        </div>
+                    @elseif (isset($client_preference_detail) && $client_preference_detail->is_hourly_pickup_rental == 1)
+                        <div class="tip_radio_controls_book_friend text-center mt-2">
+                            <input type="radio" class="tip_radio is_for_friend" id="hourly_rental" name="hourly_rental"
+                                value="1">
+                            <label class="tip_label mb-0  my-2" for="hourly_rental" id="label_for_hourly_rental">
+                                <h5 class="m-0" id="tip_5">{{ __('Hourly Rental') }}</h5>
+                            </label>
                         </div>
                     @endif
                     
