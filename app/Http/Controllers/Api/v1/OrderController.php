@@ -4473,6 +4473,7 @@ class OrderController extends BaseController
                 $q->where('vendor_id',  $vendorUser->vendor_id)->orWhere('user_id', $user->id) ;
             });
         }
+        }
 
         switch ($type) {
             case 'all': // which order not assign yet indriver
