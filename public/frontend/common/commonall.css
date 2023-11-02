@@ -1615,6 +1615,11 @@ ul.product_list_order_page .items_price{
     font-weight: 400;
     padding: 0 12px;
  }
+ .p2p_module_enable .buy_details .inner_spacing .flex-container .item-price h2 {
+    font-size: 14px;
+    line-height: 1;
+    margin: 10px auto 0;    
+}
 @media(min-width:1440px){
     .al_body_template_eight .container {
         max-width: 1500px;
