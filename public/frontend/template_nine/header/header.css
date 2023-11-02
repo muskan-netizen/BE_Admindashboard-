@@ -418,13 +418,13 @@ body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect a span{
     padding-left: 15px!important;
 }
 body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect  a span{
-    font-size: 14px;
-    /* padding-top: 5px; */
+    font-size: 14px;    
     display: block;
     color:#777;
     font-weight: 400!important;
     text-transform: capitalize;
     margin: 0!important;
+    padding-top: 5px;
 }
 .al_body_template_nine .pixelstrap li a img {
     width: 100%;
@@ -846,6 +846,9 @@ footer ul.social-links li a i{
 }
 @media (max-width:576px){
     .al_body_template_nine .top-header ul.header-dropdown{
+        display: none!important;
+    }
+    .mobile-menu.main-menu{
         display: none!important;
     }
 }
