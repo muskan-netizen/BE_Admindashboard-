@@ -24,7 +24,12 @@ class AddonSet extends Model
 
 	public function translation_one()
 	{
-		return $this->hasOne('App\Models\AddonSetTranslation', 'addon_id', 'id')->where('language_id',\Session::get('adminLanguage') ?? 1);
+		if (request()->segment(1) == 'client') {
+			$sessionLang = \Session::get('adminLanguage');
+		}else{
+			$sessionLang = \Session::get('customerLanguage');
+		}
+		return $this->hasOne('App\Models\AddonSetTranslation', 'addon_id', 'id')->where('language_id',$sessionLang ?? 1);
 	}
 	public function translation_many()
 	{
