@@ -2473,6 +2473,7 @@ class StoreController extends BaseController
 				$vendor->banner = 'default/default_image.png';
 
 				$vendor->status = 1;
+				$vendor->show_slot = 0;
 				$vendor->name = $user->name;
 				$vendor->p2p = 1;
 				$vendor->email = $user->email ?? '';
