@@ -1718,7 +1718,7 @@ trait CartManagerV2{
 
             elseif(FacadesSession::get('vendorType') == "p2p")
             {
-                $cart->total_payable_amount = $total_payable_amount;
+                $cart->total_payable_amount = decimal_format($total_payable_amount);
 
             }
             else {
