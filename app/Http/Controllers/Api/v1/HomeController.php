@@ -355,11 +355,12 @@ class HomeController extends BaseController
                         ],
                     ];
                 }
+                $homeData['primary_currencies'] = $primary_currencies;
+                $homeData['primary_language'] = $primary_language;
+                $homeData['primary_country'] = $primary_country;
             }
 
-            $homeData['primary_currencies'] = $primary_currencies;
-            $homeData['primary_language'] = $primary_language;
-            $homeData['primary_country'] = $primary_country;
+       
 
             if (isset($homeData['profile']->custom_domain) && !empty($homeData['profile']->custom_domain) && $homeData['profile']->custom_domain != $homeData['profile']->sub_domain)
                 $domain_link = "https://" . $homeData['profile']->custom_domain;

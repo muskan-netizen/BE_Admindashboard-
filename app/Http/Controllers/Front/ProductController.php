@@ -31,11 +31,10 @@ class ProductController extends FrontController{
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, $domain = '',$vendor,$url_slug){
+    public function index(Request $request, $domain = '',$vendor,$url_slug)
+    {
 
-      
-        
-     
+    
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
         $pickup_time = $request->pickup;
         $drop_time = $request->drop;
@@ -52,6 +51,9 @@ class ProductController extends FrontController{
         $curId = Session::get('customerCurrency');
         $navCategories = $this->categoryNav($langId);
         $serviceType = Session::get('serviceType');
+          
+        
+        
         $product = Product::select('id', 'vendor_id','security_amount')->where('url_slug', $url_slug)
             ->whereHas('vendor',function($q) use($vendor){
                 $q->where('slug',$vendor);
@@ -89,11 +91,8 @@ class ProductController extends FrontController{
 
         $p_id = $product->id;
         $product =  $this->getProduct($p_id,$vendor,$url_slug,$user,$langId);
-        $productAvailability = ProductAvailability::where('product_id', $product->id)
-        ->where('not_available', 0)
-        ->selectRaw('DATE_FORMAT(date_time, "%Y-%m-%d") as formatted_date')
-        ->pluck('formatted_date');
-      
+       
+  
         if(@$product->product_availability && @$product->OrderProduct){
             $product_notavailability = [];
             foreach($product->OrderProduct as $OrderProducts){
@@ -128,6 +127,7 @@ class ProductController extends FrontController{
         ->where('not_available', 0)
         ->selectRaw('DATE_FORMAT(date_time, "%Y-%m-%d") as formatted_date')
         ->pluck('formatted_date'));
+     
         if($this->checkTemplateForAction(8)){
             $this->RecentView($p_id);
         }
@@ -300,7 +300,14 @@ class ProductController extends FrontController{
 
             $suggested_product = Product::with(['vendor', 'translation', 'variant', 'productVariantByRoles']);
             if( !empty($product->category->category_id) ) {
-                $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)->groupBy('id')->orderby('id', 'desc')->limit(20)->get();
+                $suggested_category_products = $suggested_product->where('category_id', $product->category->category_id)
+                ->whereHas('vendor',function ($q){
+                    $q->whereIn('id',session()->get('vendors'));
+                })
+                ->where('id','!=',$p_id)
+                ->groupBy('id')
+                ->orderby('id', 'desc')
+                ->limit(20)->get();
             }
 
 

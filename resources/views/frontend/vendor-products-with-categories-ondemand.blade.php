@@ -37,7 +37,7 @@ $checkSlot = findSlot('', $vendor->id, '');
 
         <!-- section hero start -->
         <section class="heroArea alProductCategories" id="heroMembershipPage">
-            <div class="container-fluid">
+            <div class="container-fluid px-0">
                 <div class="row">
                         <div class="col-12">
                             @include('frontend.vendor-category-topbar-banner')   

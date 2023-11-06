@@ -536,6 +536,7 @@ class CategoryController extends BaseController
             if (!empty($order_type) && $order_type == 'popular_product') {
                 $products = $products->orderBy('order_product_count', 'desc');
             }
+            
             $paginate = $request->has('limit') ? $request->limit : 12;
             $products = $products->groupBy('id');
             $products = $products->paginate($paginate);

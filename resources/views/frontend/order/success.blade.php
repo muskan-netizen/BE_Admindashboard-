@@ -103,7 +103,7 @@ $order_is_long_term = $order->is_long_term;
                                                                 $dura = $product->pvariant->vset[0]->options1->title;
                                                             }
                                                             @endphp
-                                                            <h5>{{$dura}}</h5>
+                                                            <h5>{{$dura ?? ''}}</h5>
                                                         @else
                                                             <h4>{{__('Quantity')}}</h4>
 

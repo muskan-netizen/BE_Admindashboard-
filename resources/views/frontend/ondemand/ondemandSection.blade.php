@@ -349,10 +349,12 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                                     </div>
                                                 </div>
                                                 <hr>
-
-
-
                                                 @endforeach
+                                                @if(count($listData))
+                                                <div class="pagination pagination-rounded justify-content-end mb-0 page-m-20">
+                                                    {{ $listData->links() }}
+                                                </div>
+                                                @endif
                                             @else
                                                 <div class="col-xl-12 col-12 mt-4"><h5 class="text-center">{{ __('No Product Found') }}</h5></div>
                                             @endif
