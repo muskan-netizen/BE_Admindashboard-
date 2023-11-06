@@ -44,12 +44,12 @@ class HomeController extends BaseController
             $homeData['profile'] = $preferences = Client::with(['preferences', 'country:id,name,code,phonecode'])->select('id','country_id', 'company_name', 'code', 'sub_domain','database_name', 'logo','dark_logo', 'company_address', 'phone_number', 'email','custom_domain','contact_phone_number','socket_url')->first();
             //dd(Client::with('getPreference')->first()->getPreference->auto_implement_5_percent_tip);
             $app_styling_detail = AppStyling::getSelectedData();
+            \Session::put('customerLanguage',$langId);
             foreach ($app_styling_detail as $app_styling) {
                 $key = $app_styling['key'];
                 $homeData['profile']->preferences->$key = __($app_styling['value']);
             }
             $vendorMode = [];
-       
             foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
                 
                 $clientVendorTypes = $vendor_typ_key.'_check';
@@ -57,8 +57,7 @@ class HomeController extends BaseController
                 $nomenclature =  $vendor_typ_key.'_nomenclature';
                 $vendorData = [];
                     if($preferences->preferences->$clientVendorTypes == 1){
-                
-                        $vendorData['name'] =  $vendor_typ_value;
+                        $vendorData['name'] = getNomenclatureName($vendor_typ_value, false);
                         $iconFiledName = config('constants.VendorTypesIcon.'.$vendor_typ_key);
                         $vendorData["icon"] = $clientPreferences->$iconFiledName ? $clientPreferences->$iconFiledName : asset('images/al_custom3.png');
                         //$vendorData["name"] = $clientVendorTypes;
