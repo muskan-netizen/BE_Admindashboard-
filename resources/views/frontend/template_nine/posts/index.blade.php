@@ -250,7 +250,7 @@ body.al_body_template_nine .alPostBoxOuter ul li a.active h3 {
                                     <h5 class="text-uppercase py-3">Upload up to 20 photos</h5>
                                     <div class="form-group">
                                         {{-- <input type="file" accept="image/*"   data-plugins="dropify" name="images[]" class="dropify ss_form_submit" id="image" multiple /> --}}
-                                        <input type="file" class="form-control-file" required name="file[]" accept="image/png, image/gif, image/jpeg" id=" " multiple>
+                                        <input type="file" class="form-control-file" required name="file[]" accept="image/*" id=" " multiple>
                                     </div>
                                 </div>
                             </div>

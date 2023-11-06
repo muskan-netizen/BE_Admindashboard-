@@ -225,8 +225,8 @@
                                                 <div class="form-group choose_file">
                                                     {{-- <input type="file" accept="image/*"   data-plugins="dropify" name="images[]" class="dropify ss_form_submit" id="image" multiple /> --}}
                                                     <input type="file" class="form-control-file" required
-                                                        name="file[]" accept="image/png, image/gif, image/jpeg"
-                                                        id=" " multiple>
+                                                        name="file[]" accept="image/*"
+                                                         multiple>
                                                 </div>
                                             </div>
                                         </div>
@@ -359,9 +359,35 @@
 
         var form = document.getElementById("product_form");
         document.getElementById("save-post").addEventListener("click", function (e) {
+
+        
             e.preventDefault();
             const elements = document.querySelectorAll('.select-category.active');
             const hasElements = elements.length > 0;
+            var productName = $('input[name="product_name"]').val();
+            var description = $('textarea[name="product_description"]').val();
+            var address = $('input[name="address"]').val();
+            var files = $('input[name="file[]')[0].files;
+
+            // Validate form fields.
+            if (productName === '') {
+                sweetAlert.error('Product name is required', '');
+                return;
+            }
+            if (description === '') {
+                sweetAlert.error('Description is required', '');
+                return;
+            }
+            if (address === '') {
+                sweetAlert.error('Address is required', '');
+                return;
+            }
+           
+           
+            if (files.length === 0) {
+               sweetAlert.error('Image file is required', '');
+               return;
+           }
             if (hasElements) {
                 $('.cat-error').addClass('d-none');
                 form.submit();

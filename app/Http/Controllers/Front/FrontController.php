@@ -502,10 +502,22 @@ class FrontController extends Controller
 
     public function loadDefaultImage(){
         $proxy_url = \Config::get('app.IMG_URL1');
-        $image_path = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png');
+        $image_path = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default.png');
         $image_fit = \Config::get('app.FIT_URl');
         $default_url = $image_fit .'300/300'. $image_path.'@webp';
-        return $default_url;
+       
+        if ($this->imageExists($default_url)) {
+            return $default_url;
+        } else {
+            return asset('assets/images/bg-material.png');
+
+        }
+    }
+
+    private function imageExists($url) {
+        // You can use either File or Storage to check if the image exists.
+        // Here, I'm using the File class.
+        return \File::exists(public_path($url));
     }
 
     public function productList($vendorIds, $langId, $currency = 'USD', $where = '')
