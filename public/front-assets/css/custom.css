@@ -5058,7 +5058,8 @@ body[dir="rtl"] .inner_spacing {
 }
 
 body[dir="rtl"] .footer-theme .sub-title .contact-list li {
-    padding: 0 25px 0 0
+    padding: 0;
+    padding-right: 50px;
 }
 
 body[dir="rtl"] .footer-theme .sub-title .contact-list i {

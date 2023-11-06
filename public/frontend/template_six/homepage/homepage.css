@@ -1320,6 +1320,9 @@ body.al_body_template_six.homeHeader.dark .displayProducts .product-box .media-b
 }
 
 @media (max-width:576px) {
+    body[dir="rtl"] #alSixHomeServices .col-xl-8.offset-xl-2 {
+        margin-right: 0!important;
+    }
     html,
     body {
         overflow-x: hidden;
