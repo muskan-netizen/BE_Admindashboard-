@@ -78,6 +78,7 @@ class ProductController extends FrontController{
         }
         $product_in_cart = $product_in_cart->first();
         $is_available = true;
+
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) ){
             if($product){
                 $productVendorId = $product->vendor_id;

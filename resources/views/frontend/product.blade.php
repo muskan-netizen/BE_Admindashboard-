@@ -786,6 +786,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 else
                                                     $product_quantity_in_cart = $product_in_cart->quantity??0;
                                                 @endphp
+                                              
                                             @if($is_available == 1 && $additionalPreference['add_to_cart_btn'] == 1)
                                                 <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
                                             @endif
