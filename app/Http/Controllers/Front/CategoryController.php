@@ -191,7 +191,7 @@ class CategoryController extends FrontController{
      */
     public function categoryProduct(Request $request, $domain = '', $slug = 0, $service = null)
     {        
-        
+ 
         //$preferences = Session::get('preferences');
         if(!empty($service) && $service == 'pick_drop'){
             Session::forget('vendorType');
@@ -534,7 +534,7 @@ class CategoryController extends FrontController{
      */
     public function categoryVendorProducts(Request $request, $domain = '', $slug1 = 0, $slug2 = 0)
     {
-        
+   
         // slug1 => category slug
         // slug2 => vendor slug
         $maxPrice = 0;

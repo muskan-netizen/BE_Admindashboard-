@@ -683,7 +683,7 @@ c42 -28 59 -60 59 -112 0 -76 -59 -135 -135 -135 -80 0 -135 58 -135 144 0 43
 </div>
 <div class="al_mobile_menu al_new_mobile_header">
                 <div class="d-flex">
-                    @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
+                    @if( Session::get('vendorType') == 'p2p' )
                     <li class="add_post pr-2"><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn">
                         <span>
                             <i class="fa fa-plus" aria-hidden="true"></i>

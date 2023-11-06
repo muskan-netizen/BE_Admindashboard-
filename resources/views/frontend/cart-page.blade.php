@@ -156,9 +156,9 @@
                         </div>
                         @if ($serviceType == 'rental' || $serviceType == 'p2p')
                             <div class="col-md-2 col text-center">
-                                @if($serviceType == 'p2p')
+                                @if($serviceType == 'rental' && Session::get('vendorType') == 'p2p')
                                     <span>Duration By(Days)</span>
-                                @else
+                                @elseif($serviceType == 'rental')
                                     <span>Duration By(min)</span>
                                 @endif
                             </div>
@@ -345,9 +345,9 @@
 
                                                           
                                                          
-                                                            if($vendor_product->days  <= 7){
+                                                            if(@$vendor_product->days  <= 7){
                                                                 $price = $vendor_product->pvariant->price;
-                                                            }elseif($vendor_product->days >= 7 && $vendor_product->days < 30){
+                                                            }elseif(@$vendor_product->days >= 7 && @$vendor_product->days < 30){
                                                                 $price = $vendor_product->pvariant->week_price;
                                                             }else{
                                                                 $price = $vendor_product->pvariant->month_price;
@@ -359,9 +359,9 @@
 
                                                         <div class="items-price">
                                                             @if ($additionalPreference['is_token_currency_enable'])
-                                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($price * ($vendor_product->days ?? 0))) }}
+                                                                {!! "<i class='fa fa-money' aria-hidden='true'></i> " !!}{{ getInToken(decimal_format($price * (@$vendor_product->days ?? 0))) }}
                                                             @else
-                                                                {{ Session::get('currencySymbol') . decimal_format($price * ($vendor_product->days ?? 1)) }}
+                                                                {{ Session::get('currencySymbol') . decimal_format($price * (@$vendor_product->days ?? 1)) }}
                                                             @endif
                                                         </div>
                                                     @elseif ($serviceType == 'rental')
@@ -513,7 +513,7 @@
 
                                         </div>
                                         
-                                        @if($serviceType == 'rental' || $serviceType == 'p2p')
+                                        @if($serviceType == 'rental')
                                             <hr class="my-2">
                                             <div class="row align-items-md-center alRentalStartDate">
                                                 <div class="col-3">
@@ -1671,7 +1671,7 @@
                                     <input type="hidden" id="edit_order_schedule_slot"
                                         value="{{ $schedule_slots_edit }}">
                                 @endif
-                                @if ($serviceType == 'rental' || $serviceType == 'p2p')
+                                @if ($serviceType == 'rental')
                                     <div class="text-sm-left mb-2">
                                         <input type="checkbox" name="agree_term_check" id="agree_term_check" value="" disabled> <a href="javascript:void(0);" class="agree_term_btn">Agree Term</a>
                                     </div>
@@ -1869,7 +1869,7 @@
             }]
         });
         var serviceType = "{{$serviceType}}";
-        if(serviceType == "rental" || serviceType == 'p2p'){
+        if(serviceType == "rental"){
             $("#order_placed_btn").attr('disabled', true);
         }
     });

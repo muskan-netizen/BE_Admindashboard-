@@ -199,47 +199,50 @@ class PostController extends FrontController
 			$slug = str_replace(' ', '-',$slug);
 			$generated_slug = $sku_url.'.'.$slug;
 
-			$user = Auth::user();	
-            $users = User::where('id',Auth::user('id'))->first();	
-			$user_vendor = UserVendor::where('user_id', $user->id)->first();
+            $users = Auth::user();
+	
+			$user = User::where('id',$users->id)->first();
+			
+			$user_vendor = UserVendor::where('user_id', $users->id)->first();
             if(empty($user_vendor)){
               
+                $user->assignRole(4); // by default make this user as vendor
+				
+				$user->is_admin = 1;
+				$user->save();
 
-                    $users->assignRole(4); // by default make this user as vendor
-                    
-                    $users->is_admin = 1;
-                    $users->save();
+				// Create vendor with default images
+				$vendor = new Vendor();
+				$vendor->logo = 'default/default_logo.png';
+				$vendor->banner = 'default/default_image.png';
 
-                    // Create vendor with default images
-                    $vendor = new Vendor();
-                    $vendor->logo = 'default/default_logo.png';
-                    $vendor->banner = 'default/default_image.png';
-
-                    $vendor->status = 1;
-                    $vendor->name = $users->name;
-                    $vendor->p2p = 1;
-                    $vendor->email = $users->email ?? '';
-                    $vendor->phone_no = $users->phone_number ?? '';
-                    $vendor->slug = Str::slug($users->name, "-");
-                    $vendor->save();
-                    $user_vendor =  UserVendor::create(['user_id' => $user->id, 'vendor_id' => $vendor->id]);
-                    $user = new User ;
-                    $user->createPermissionsUser();
-                    $p2p_type = Type::where('service_type', 'p2p')->first();
-                    if( !empty($p2p_type) ) {
-                        $category_id = Category::where('type_id', $p2p_type->id)->get();
-                        $categories_ids = [];
-                        
-                        if( !empty($category_id) ) {
-                            foreach($category_id as $key => $val) {
-                                $categories_ids[] = $val->id;
-                            }
-                        }
-                        $request->request->add(['selectedCategories'=> $categories_ids]);
-                        
-                    }
-                    
-                    $this->addDataSaveVendor($request, $vendor->id);
+				$vendor->status = 1;
+                $vendor->show_slot = 0;
+				$vendor->name = $user->name;
+				$vendor->p2p = 1;
+				$vendor->email = $user->email ?? '';
+				$vendor->phone_no = $user->phone_number ?? '';
+				$vendor->slug = Str::slug($user->name, "-");
+				$vendor->save();
+				$user_vendor =  UserVendor::create(['user_id' => $user->id, 'vendor_id' => $vendor->id]);
+				$user = new User ;
+				// $user->createPermissionsUser();
+				$p2p_type = Type::where('service_type', 'p2p')->first();
+				if( !empty($p2p_type) ) {
+					$category_id = Category::where('type_id', $p2p_type->id)->get();
+					$categories_ids = [];
+					
+					if( !empty($category_id) ) {
+						foreach($category_id as $key => $val) {
+							$categories_ids[] = $val->id;
+						}
+					}
+					$request->request->add(['selectedCategories'=> $categories_ids]);
+					
+				}
+				
+				$this->addDataSaveVendor($request, $vendor->id);
+				$user_vendor = UserVendor::where('user_id', $users->id)->first();
                    
                 }
             
