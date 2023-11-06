@@ -475,7 +475,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             @endif
                                             @if(@getAdditionalPreference(['is_rental_weekly_monthly_price'])['is_rental_weekly_monthly_price'] && $product->category->categoryDetail->type_id == 10 && Session::get('vendorType') == 'rental');
                                                 @include('frontend.product-part.booking-slot-p2p-rental')
-                                            @elseif($product->category->categoryDetail->type_id == 10)
+                                            @elseif($product->category->categoryDetail->type_id == 10 && Session::get('vendorType') == 'car_rental')
                                                 @include('frontend.product-part.booking-slot')
                                             @endif
 
