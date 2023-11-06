@@ -183,6 +183,57 @@ class PickupDeliveryController extends BaseController{
                         $product->variant[$k]->toll_fee = $product->toll_fee;
                         $product->variant[$k]->multiplier = $clientCurrency->doller_compare;
                     }
+                    $now = Carbon::now()->toDateTimeString();
+                    $subscriptionInvoiceUser = SubscriptionInvoicesUser::with('features')->whereUserId($userid)->where('end_date', '>', $now)
+                    ->orderBy('end_date', 'desc')->first();
+                    if($subscriptionInvoiceUser){
+                        $percentValue = $subscriptionInvoiceUser->features[0]['percent_value'];
+                        if(!empty($percentValue)){
+                            $calulateSubscription = ($percentValue / 100)* $product->tags_price;
+                            $subscriptionPercentage = $percentValue;
+                            $subscriptionAmount = $calulateSubscription;
+                            $totalTagPriceWithSubscription = $product->tags_price - $calulateSubscription;
+                            $product->subscriptionPercentage = $percentValue;
+                            $product->subscriptionAmount = decimal_format($calulateSubscription);
+                            $product->total_tags_price = decimal_format($totalTagPriceWithSubscription)+ $product->service_charge_amount- $loyalty_amount_saved??0.00;
+                        }
+                    }
+                    
+                    $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;
+                    $divider = isset($divider) ? $divider : 1;
+                    $price_in_currency = $product->tags_price / $divider;
+                    $price_in_dollar_compare = $price_in_currency * $divider;
+                    $quantity_price = $price_in_dollar_compare * 1;
+                    $payable_amount = $payable_amount + $quantity_price;
+                    $vendor_payable_amount = $vendor_payable_amount + $quantity_price;
+                    $vendor_payable_amount = $vendor_payable_amount - $loyalty_amount_saved ?? 0;
+                    if ($product['taxCategory']) {
+                        foreach ($product['taxCategory']['taxRate'] as $tax_rate_detail) {
+                            $rate                  = round($tax_rate_detail->tax_rate); // 2
+                            $tax_amount            = ($price_in_dollar_compare * $rate) / 100;  // 20/100
+                            $product_tax           = $payable_amount * $rate / 100;
+                            $payable_amount        = $payable_amount + $product_tax;
+                            $taxable_amount        = $taxable_amount + $product_tax;
+                        }
+                    }
+                    $product->tax_rate =  $tax_amount;
+                    $product->total_tags_price = decimal_format($product->total_tags_price + $taxable_amount);
+                    // $product->payable_amount =  $payable_amount;
+                    $product->taxable_amount =  $taxable_amount;
+                    $product->wallet_amount_used = "0.00";
+                    if($user){
+                        if($user->balanceFloat > 0){
+                            if($clientCurrency){
+                                $wallet_amount_used = $user->balanceFloat * $clientCurrency->doller_compare;
+                            }
+                            if($wallet_amount_used > $product->total_tags_price ){
+                                $wallet_amount_used = $product->total_tags_price ;
+                            }
+                            $product->wallet_amount_used = decimal_format($wallet_amount_used);
+                        }
+                        $product->remaining_amount =  decimal_format($product->total_tags_price - $product->wallet_amount_used);
+                        $product->total_tags_price =  $product->remaining_amount;
+                    }
                 }
                 if( $total_price > 0 && $preferences->tip_before_order == 1){
                 $response['tips'] = array(
@@ -190,57 +241,6 @@ class PickupDeliveryController extends BaseController{
                     ['label' => '10%', 'value' => decimal_format(0.1 * $total_price)],
                     ['label' => '15%', 'value' => decimal_format(0.15 * $total_price)]
                     );
-                }
-                $now = Carbon::now()->toDateTimeString();
-                $subscriptionInvoiceUser = SubscriptionInvoicesUser::with('features')->whereUserId($userid)->where('end_date', '>', $now)
-                ->orderBy('end_date', 'desc')->first();
-                if($subscriptionInvoiceUser){
-                    $percentValue = $subscriptionInvoiceUser->features[0]['percent_value'];
-                    if(!empty($percentValue)){
-                        $calulateSubscription = ($percentValue / 100)* $product->tags_price;
-                        $subscriptionPercentage = $percentValue;
-                        $subscriptionAmount = $calulateSubscription;
-                        $totalTagPriceWithSubscription = $product->tags_price - $calulateSubscription;
-                        $product->subscriptionPercentage = $percentValue;
-                        $product->subscriptionAmount = decimal_format($calulateSubscription);
-                        $product->total_tags_price = decimal_format($totalTagPriceWithSubscription)+ $product->service_charge_amount- $loyalty_amount_saved??0.00;
-                    }
-                }
-                
-                $divider = (empty($clientCurrency->doller_compare) || $clientCurrency->doller_compare < 0) ? 1 : $clientCurrency->doller_compare;             
-                $divider = isset($divider) ? $divider : 1;              
-                $price_in_currency = $product->tags_price / $divider;             
-                $price_in_dollar_compare = $price_in_currency * $divider;               
-                $quantity_price = $price_in_dollar_compare * 1;               
-                $payable_amount = $payable_amount + $quantity_price;               
-                $vendor_payable_amount = $vendor_payable_amount + $quantity_price;               
-                $vendor_payable_amount = $vendor_payable_amount - $loyalty_amount_saved ?? 0;               
-                if ($product['taxCategory']) {
-                    foreach ($product['taxCategory']['taxRate'] as $tax_rate_detail) {                        
-                        $rate                  = round($tax_rate_detail->tax_rate); // 2                       
-                        $tax_amount            = ($price_in_dollar_compare * $rate) / 100;  // 20/100                       
-                        $product_tax           = $payable_amount * $rate / 100;                   
-                        $payable_amount        = $payable_amount + $product_tax;                     
-                        $taxable_amount        = $taxable_amount + $product_tax;                      
-                    }
-                }
-                $product->tax_rate =  $tax_amount;
-                $product->total_tags_price = decimal_format($product->total_tags_price + $taxable_amount);               
-                // $product->payable_amount =  $payable_amount;                
-                $product->taxable_amount =  $taxable_amount;               
-                $product->wallet_amount_used = "0.00";               
-                if($user){
-                    if($user->balanceFloat > 0){
-                        if($clientCurrency){
-                            $wallet_amount_used = $user->balanceFloat * $clientCurrency->doller_compare;
-                        }
-                        if($wallet_amount_used > $product->total_tags_price ){
-                            $wallet_amount_used = $product->total_tags_price ;
-                        }                        
-                        $product->wallet_amount_used = decimal_format($wallet_amount_used);                       
-                    }                 
-                    $product->remaining_amount =  decimal_format($product->total_tags_price - $product->wallet_amount_used);                  
-                    $product->total_tags_price =  $product->remaining_amount;                 
                 }
             }
             $response['vendor'] = $vendor;
