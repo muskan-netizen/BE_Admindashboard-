@@ -394,8 +394,18 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                     @endif
                                     @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
 
-                               
-                                    <div class="flex-container">
+                                     
+
+                                     @if($product->category->categoryDetail->type_id == 13)
+                                     <div class="border-product al_disc">
+                                        <h6 class="product-title">{{__('Price')}}</h6>
+                                        <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->price)}}</p>
+                                    </div>
+                                     
+                                     @endif
+                                     @if($product->category->categoryDetail->type_id == 10)
+
+                                     <div class="flex-container">
                                         <div class="item-price">
                                             <h2>Daily</h2>
                                             <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->price)}}</p>
@@ -409,6 +419,9 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->month_price)}}</p>
                                         </div>
                                     </div>
+                                     @endif
+                               
+                                 
                                     @endif
                                         
                                         @if( is_category_p2p($product->category) || is_attribute_enabled())

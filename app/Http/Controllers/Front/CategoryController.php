@@ -191,7 +191,7 @@ class CategoryController extends FrontController{
      */
     public function categoryProduct(Request $request, $domain = '', $slug = 0, $service = null)
     {        
- 
+  
         //$preferences = Session::get('preferences');
         if(!empty($service) && $service == 'pick_drop'){
             Session::forget('vendorType');
@@ -308,6 +308,7 @@ class CategoryController extends FrontController{
         $redirect_to = $category->type->redirect_to;
         
         $listData = $this->listData($langId, $category->id, $redirect_to,$vendorIds,false);
+        
         $maxPrice = DB::select("SELECT MAX(product_variants.price) as max_price FROM product_variants INNER JOIN products ON products.id = product_variants.product_id WHERE product_variants.status = 1 AND products.is_live = 1 AND products.category_id = ?", [$category->id])[0]->max_price;
         $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';
         // $newProducts =  $this->getNewProducts($vendorIds, $langId, $curId);
@@ -327,6 +328,7 @@ class CategoryController extends FrontController{
             }
         }
         
+       
         $newProducts = [];
         if($page == 'pickup/delivery' || $page == 'product' && $slug == 'yacht'){
             if(!Auth::user()){
@@ -372,6 +374,7 @@ class CategoryController extends FrontController{
             $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
             return view('frontend.ondemand.index')->with(['maxPrice'=>$maxPrice,'clientCurrency' => $clientCurrency,'time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
         }else{
+
             if($page == 'laundry' || $service_type == 'rental_service')
                 $page = 'product';
                 
