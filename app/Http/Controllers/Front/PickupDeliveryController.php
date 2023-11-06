@@ -231,6 +231,20 @@ class PickupDeliveryController extends FrontController{
             $product->toll_fee = decimal_format(($product->toll_fee/$product->seats_for_booking)*$no_seats_for_pooling);
         }//------
 
+        $loyalty_amount_saved = 0;
+        $redeem_points_per_primary_currency = '';
+        $loyalty_card = LoyaltyCard::where('status', '0')->first();
+        if ($loyalty_card) {
+            $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
+        }
+        $loyalty_points_used = 0;
+        $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
+        if ($order_loyalty_points_earned_detail) {         
+            $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
+            if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {               
+                $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;              
+            }
+        }
 
         //Check for fixed service fee and service fee percent
         $product->service_charge_amount  = 0.00;
@@ -268,7 +282,8 @@ class PickupDeliveryController extends FrontController{
             }
         }
         // dd($price_in_doller_compare);
-
+        $product->taxable_amount =  $product_tax;
+        $product->total_tags_price = $product->total_tags_price - $loyalty_amount_saved??0.0;
 
         $service_charges_tax_rate = 0;
             if($product->vendor->service_charges_tax_id!=null){
@@ -310,29 +325,15 @@ class PickupDeliveryController extends FrontController{
             $product->variant[$k]->toll_fee = $product->toll_fee;
             $product->variant[$k]->multiplier = 1;
         }
-        $loyalty_amount_saved = 0;
-        $redeem_points_per_primary_currency = '';
-        $loyalty_card = LoyaltyCard::where('status', '0')->first();
-        if ($loyalty_card) {
-            $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
-        }
-        $loyalty_points_used = 0;
-        $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
-        if ($order_loyalty_points_earned_detail) {
-            $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
-            if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
-                $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
-            }
-        }
+
         $product->loyalty_amount_saved = decimal_format((float)$loyalty_amount_saved ?? 0);
 
         if($product->loyalty_amount_saved > $product->total_tags_price)
-        $product->loyalty_amount_saved = $product->total_tags_price;
+            $product->loyalty_amount_saved = $product->total_tags_price;
 
         $subscription_features = array();
         $user_subscription = null;
         $user = Auth::user();
-
 
         $product->subscription_discount = 0;
         $product->subscription_percent_value = 0;
@@ -352,6 +353,21 @@ class PickupDeliveryController extends FrontController{
                 }
             }
         }
+        
+        //wallet amount used
+        $product->wallet_amount_used = 0;
+        if($user->balanceFloat > 0){
+            if($customerCurrency){
+                $wallet_amount_used = $user->balanceFloat * $customerCurrency->doller_compare;
+            }
+            if($wallet_amount_used >  $product->total_tags_price){
+                $wallet_amount_used = $product->total_tags_price;
+            }
+            $product->wallet_amount_used = decimal_format($wallet_amount_used);
+        }
+        $product->total_tags_price = $product->total_tags_price - $product->subscription_discount??0.0;      
+        $product->total_tags_price =  decimal_format($product->total_tags_price - $product->wallet_amount_used);
+        
         if(isset($request->yacht_id)){
             $yacht = Product::with(['pimage','variant'])->select('id','title')->find($request->yacht_id);
             $product->yacht = $yacht;
@@ -797,7 +813,15 @@ class PickupDeliveryController extends FrontController{
                 //         $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
                 //     }
                 // }
-
+                
+                $loyalty_points_used = 0;
+                $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();                
+                if ($order_loyalty_points_earned_detail) {                    
+                    $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;                    
+                    if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {                       
+                        $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;                        
+                    }
+                }
                 if($request->payment_option_id == 2){
                     $payment_option = 1;
                 }
@@ -987,6 +1011,18 @@ class PickupDeliveryController extends FrontController{
                         $order_vendor->admin_commission_fixed_amount = $vendor_info->commission_fixed_per_order;
                     }
                 }
+                $vendor_payable_amount = $vendor_payable_amount - $loyalty_amount_saved ?? 0;               
+                $order_vendor->payable_amount = $vendor_payable_amount;               
+                if ($product['taxCategory']) {                  
+                    foreach ($product['taxCategory']['taxRate'] as $tax_rate_detail) {                       
+                        $rate                  = round($tax_rate_detail->tax_rate);                       
+                        $tax_amount            = ($price_in_dollar_compare * $rate) / 100;                       
+                        $product_tax           = $payable_amount * $rate / 100;                        
+                        $payable_amount        = $payable_amount + $product_tax;                       
+                        $taxable_amount        = $taxable_amount + $product_tax;                       
+                    } 
+                }
+                $order_vendor->taxable_amount = $taxable_amount;
                 $order_vendor->save();
                 $order_status = new VendorOrderStatus();
                 $order_status->order_id = $order->id;
@@ -1039,6 +1075,23 @@ class PickupDeliveryController extends FrontController{
                     $order->payment_status = 1;
                 }
                 
+                $wallet_amount_used = 0;
+                // $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
+                if ($user->balanceFloat > 0) {
+                    $wallet = $user->wallet;
+                    $wallet_amount_used = $user->balanceFloat;
+                    if ($wallet_amount_used > $finalAmount) {
+                        $wallet_amount_used = $finalAmount;
+                    }
+                    $order->wallet_amount_used = $wallet_amount_used;
+                    // Deduct wallet amount if payable amount is successfully done on gateway
+                    if (($wallet_amount_used > 0)) {
+                        $wallet->withdrawFloat($order->wallet_amount_used, [
+                            'Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>'
+                        ]);
+                    }
+                }
+                $order->payable_amount = $finalAmount - $wallet_amount_used;
                 $order->save();
 
 
