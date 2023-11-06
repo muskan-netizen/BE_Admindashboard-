@@ -136,7 +136,7 @@
             </div>
             <div class="productList d-flex justify-content-between">
                 <ul class="product-features">
-                    @if($category->slug == 'rental')
+                    @if($category->slug == 'rental' &&  Session::get('vendorType') == 'car_rental')
                     <li><a href="javascript:void(0);">{{$fields['Transmission']['title'] ?? ''}}</a></li>
                     <li><a href="javascript:void(0);">{{$fields['Fuel Type']['title'] ?? ''}}</a></li>
                     <li><a href="javascript:void(0);">{{$fields['Seats']['title'] ?? '0'}} Seats</a></li>
@@ -147,7 +147,7 @@
                     @endif
                 </ul>
             </div>
-            @if($category->slug == 'rental')
+            @if($category->slug == 'rental' && Session::get('vendorType') == 'car_rental')
                 <div class="product_iteslist">
                     <ul>
                         @foreach ($fields as $key => $productAttribute)
