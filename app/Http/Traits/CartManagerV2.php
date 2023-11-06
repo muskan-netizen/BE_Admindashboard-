@@ -1706,13 +1706,23 @@ trait CartManagerV2{
             $cart->is_long_term_service = $is_long_term_service ;
 
 
+         
 
             if(@$rental_price && (FacadesSession::get('vendorType') == "p2p"))
 
             {
-                $cart->total_payable_amount = $rental_price;
+              
+                $cart->total_payable_amount = $rental_price ?? 0;
             } 
+
+
+            elseif(FacadesSession::get('vendorType') == "p2p")
+            {
+                $cart->total_payable_amount = $total_payable_amount;
+
+            }
             else {
+                
                 if ($cart->other_taxes > 0) {
                     $cart->total_payable_amount = $cart->total_payable_amount + $cart->other_taxes;
                 }
@@ -1721,9 +1731,7 @@ trait CartManagerV2{
                 }
             }
   
-
            
-             
             if(!$this->additionalPreferences->is_tax_price_inclusive){
                 $cartTotalPay = decimal_format($total_payable_amount);
                // pr( $cartTotalPay);
@@ -1734,7 +1742,8 @@ trait CartManagerV2{
                     $giftCardUsed  = @$calCulateGiftCard['used_GiftCardAmount'];
                 }
                 //end  gift card calculation
-         
+          
+            
                 if((!@$rental_price) && (FacadesSession::get('vendorType') != "p2p"))
 
                 {
@@ -1753,11 +1762,11 @@ trait CartManagerV2{
                 if((!@$rental_price) && (FacadesSession::get('vendorType') != "p2p"))
                 {
 
-                    $cart->total_payable_amount =  $cartTotalPay ;
+                    $cart->total_payable_amount +=  $cartTotalPay ;
                 }
                 $cart->payy = decimal_format(($total_payable_amount - $total_taxable_amount - $other_taxes) + $cart->other_taxes);
             }
-           
+
             $cart->delivery_slot_amount = $delivery_slot_amount;
             
             // $cart->total_payable_amount = decimal_format($total_payable_amount);

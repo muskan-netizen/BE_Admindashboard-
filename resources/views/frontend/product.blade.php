@@ -394,8 +394,18 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                     @endif
                                     @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
 
-                               
-                                    <div class="flex-container">
+                                     
+
+                                     @if($product->category->categoryDetail->type_id == 13)
+                                     <div class="border-product al_disc">
+                                        <h6 class="product-title">{{__('Price')}}</h6>
+                                        <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->price)}}</p>
+                                    </div>
+                                     
+                                     @endif
+                                     @if($product->category->categoryDetail->type_id == 10)
+
+                                     <div class="flex-container">
                                         <div class="item-price">
                                             <h2>Daily</h2>
                                             <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->price)}}</p>
@@ -409,6 +419,9 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->month_price)}}</p>
                                         </div>
                                     </div>
+                                     @endif
+                               
+                                 
                                     @endif
                                         
                                         @if( is_category_p2p($product->category) || is_attribute_enabled())
@@ -786,7 +799,6 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 else
                                                     $product_quantity_in_cart = $product_in_cart->quantity??0;
                                                 @endphp
-                                              
                                             @if($is_available == 1 && $additionalPreference['add_to_cart_btn'] == 1)
                                                 <a href="#" data-toggle="modal" data-target="#addtocart" class="btn btn-solid addToCart {{ (($checkSlot == 0  && $vendor_info->is_vendor_closed == 1) || ($product->variant[0]->quantity <= $product_quantity_in_cart && $product->has_inventory)) ? 'btn-disabled' : '' }}">{{__('Add To Cart')}}</a>
                                             @endif
