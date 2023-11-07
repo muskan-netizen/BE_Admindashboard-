@@ -1099,4 +1099,35 @@ class ClientPreferenceController extends BaseController{
 
         return back();
     }
+
+    public function resetToDefault(Request $request)
+    {
+  
+       
+           $clientPreferences = ClientPreference::first();
+           $data = [
+            'web_template_id' => 1,
+            'app_template_id' => 1,
+            'is_hyperlocal' => 0
+           ];
+          
+        
+           $clientPreferences->update($data);
+           foreach (config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value) {
+            $clientVendorTypes = $vendor_typ_key . '_check';
+            $value = 0;
+            if ($clientPreferences->$clientVendorTypes == "delivery_check") {
+                $value = 1;
+            }
+
+             $clientPreferences->update([$clientVendorTypes => $value]);
+           
+            }
+           
+
+
+            return redirect()->back()->with('success', 'Configuration resetted successfully!');
+
+        
+    }
 }
