@@ -11,6 +11,7 @@ use App\Models\CartAddon;
 use App\Models\CartCoupon;
 use App\Models\CartProduct;
 use App\Models\CartProductPrescription;
+use App\Models\GiftCard;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\User;
@@ -20,10 +21,11 @@ use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Redirect;
 use JWT\Token;
 use Log;
+use App\Http\Traits\Giftcard\GiftCardTrait;
 
 class CcavenueController extends Controller
 {
-   use ApiResponser;
+   use ApiResponser,GiftCardTrait;
 
    private $access_key;
    private $merchant_id;
@@ -77,6 +79,12 @@ class CcavenueController extends Controller
             Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'subscription','date'=>date('Y-m-d')]);
 
         }
+        elseif($request->from == 'giftCard')
+        {
+            $time = ($request->transaction_id)??'W_'.time();
+            Payment::create(['amount'=>0,'transaction_id'=>$time,'balance_transaction'=>$request->amt,'type'=>'giftCard','date'=>date('Y-m-d')]);
+
+        }
         return $time;
    }
 
@@ -102,6 +110,10 @@ class CcavenueController extends Controller
    {
     $user = $this->createUserToken();
     $merchant_data='';
+    if($request->from == "giftCard"){
+      $newValue = GiftCard::findOrFail($request->amt);
+      $request->merge(['amt' => $newValue->amount]);
+    }
     $number = $this->orderNumber($request); // order no
     $working_key=$this->access_key;//Shared by CCAVENUES
     $access_code=$this->access_code;//Shared by CCAVENUES   
@@ -113,6 +125,9 @@ class CcavenueController extends Controller
       $address->address = $addressess[0]['address'];
       }else{
         $address = UserAddress::where('is_primary','1')->first();
+      }
+      if($request->from == "giftCard"){
+        $merchant_data = 'merchant_id='.$this->merchant_id.'&order_id='.$number.'&amount='.$request->amt.'&currency='.getPrimaryCurrencyName().'&redirect_url='.route('ccavenue.success').'&cancel_url='.route('ccavenue.success').'&language=EN&billing_name='.$user->name.'&billing_address='.$address->address.'&billing_city='.@$address->city.'&billing_state='.@$address->state.'&billing_zip='.@$address->pincode.'&billing_country='.@$address->country.'&billing_tel='.@$user->phone_number.'&billing_email='.@$user->email.'&delivery_name='.$user->name.'&delivery_address='.$address->address.'&delivery_city='.@$address->city.'&delivery_state='.@$address->state.'&delivery_zip='.@$address->pincode.'&delivery_country='.@$address->country.'&delivery_tel='.@$user->phone_number.'&merchant_param1='.$number.'&merchant_param2='.$request->from.'&merchant_param3=web&merchant_param4='.$user->id.'&merchant_param5='.$user->auth_token.'&promo_code=&customer_identifier=&';
       }
       $merchant_data = 'merchant_id='.$this->merchant_id.'&order_id='.$number.'&amount='.$request->amt.'&currency='.getPrimaryCurrencyName().'&redirect_url='.route('ccavenue.success').'&cancel_url='.route('ccavenue.success').'&language=EN&billing_name='.$user->name.'&billing_address='.$address->address.'&billing_city='.@$address->city.'&billing_state='.@$address->state.'&billing_zip='.@$address->pincode.'&billing_country='.@$address->country.'&billing_tel='.@$user->phone_number.'&billing_email='.@$user->email.'&delivery_name='.$user->name.'&delivery_address='.$address->address.'&delivery_city='.@$address->city.'&delivery_state='.@$address->state.'&delivery_zip='.@$address->pincode.'&delivery_country='.@$address->country.'&delivery_tel='.@$user->phone_number.'&merchant_param1='.$number.'&merchant_param2='.$request->from.'&merchant_param3=web&merchant_param4='.$user->id.'&merchant_param5='.$user->auth_token.'&promo_code=&customer_identifier=&';
       $encrypted_data=$this->encrypt($merchant_data,$working_key); // Method for encrypting the data.
@@ -170,6 +185,10 @@ class CcavenueController extends Controller
       }elseif ($action == 'pickup_delivery') {
         //app = 4 is for pickup delivery
         $params = $params . '&order_number=' . $request->order_number . '&app=4';
+      }elseif( $request->from == 'giftCard')
+      {
+        $params = $params .'&app=2&transaction_id=W_'.time();
+
       }
 
        return $this->successResponse(url($request->serverUrl.'payment/ccavenue/api/'.$params));
@@ -205,6 +224,16 @@ class CcavenueController extends Controller
             return $this->completeOrderSubs($request);
         }elseif ($request->merchant_param2 == 'pickup_delivery') {
           return $this->completeOrderPickup($request);
+        }elseif ($request->merchant_param2 == 'giftCard') {
+            // $gift_card_id = $parameters['gift_card_id'];
+            // $senderData = $parameters['senderData'];
+
+            // $request = new Request(['payment_option_id' => 4, 'user_id' => $user->id,  'amount' => $amount, 'transaction_id' => $transactionId,'senderData'=>$senderData]);
+
+            // $subscriptionController = new GiftcardController();
+            /// $subscriptionController->purchaseGiftCard($request, '', $gift_card_id);
+            $message = __('Your giftCard has been activated successfully.');
+            $returnUrl = route('giftCard.index');
         }
    }
 
@@ -303,7 +332,48 @@ class CcavenueController extends Controller
         }
    }
 
-
+   public function completeGiftCard($request)
+   {
+      $order = Order::where('order_number',$request->order_id)->first();
+       if(isset($request->order_status) && $request->order_status == 'Success')
+       {
+        if( $GiftCard ){
+          if(Payment::where('transaction_id',$request->transaction_id)->count() ==0){
+              $code =$this->getGiftCardCode($GiftCard->title);
+              $UserGiftCard               = new UserGiftCard();
+              $UserGiftCard->user_id      = $user->id;
+              $UserGiftCard->gift_card_id = $GiftCard->id;
+              $UserGiftCard->amount       = $GiftCard->amount;
+              $UserGiftCard->expiry_date  = $GiftCard->expiry_date;
+              $UserGiftCard->gift_card_code = $code;
+              $UserGiftCard->buy_for_data = !empty($request->senderData) ? $request->senderData : ''; 
+              $UserGiftCard->save();
+              if($sendToMail != ''){
+                 // Log::info('GiftCardMail');
+                  $currSymbol = Session::has('currencySymbol') ? Session::get('currencySymbol') : '$';
+                  $GiftCard->userCode =  $code;
+                  $this->GiftCardMail($sendToMail,$sendToName, $GiftCard ,$user ,$currSymbol);
+              }
+              $payment                        = new Payment;
+              $payment->user_id               = $user->id;
+              $payment->balance_transaction   = $request->amount;
+              $payment->transaction_id        = $request->transaction_id;
+              $payment->reference_table_id    = $UserGiftCard->id;
+              $payment->payment_option_id     = $request->payment_option_id;
+              $payment->date                  = Carbon::now()->format('Y-m-d');
+              $payment->type                  = 'giftCard';
+              $payment->save();
+          }
+          
+          $message = __('Your Gift Card has been activated successfully.');
+          Session::put('success', $message);
+          return $this->successResponse('', $message);
+          
+      }else{
+          return $this->errorResponse(__('Invalid Data'), 402);
+      }
+   }
+  }
    public function completeOrderWallet($request)
    {
         if(isset($request->order_status) && $request->order_status == 'Success')

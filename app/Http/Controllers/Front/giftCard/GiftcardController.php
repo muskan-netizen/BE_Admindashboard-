@@ -97,14 +97,17 @@ class GiftcardController extends FrontController
         $clientCurrency = ClientCurrency::where('currency_id', $currency_id)->first();
         $GiftCard       = GiftCard::where('id', $id)->first();
       
-        $code = array('stripe');
+        $code = array('stripe','ccavenue');
         $ex_codes = array('cod');
         $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereIn('code', $code)->where('status', 1)->get();
+        \Log::info($payment_options);
         foreach ($payment_options as $k => $payment_option) {
             if( (in_array($payment_option->code, $ex_codes)) || (!empty($payment_option->credentials)) ){
                 $payment_option->slug = strtolower(str_replace(' ', '_', $payment_option->title));
                 if($payment_option->code == 'stripe'){
                     $payment_option->title = 'Credit/Debit Card (Stripe)';
+                }if($payment_option->code == 'ccavenue'){
+                    $payment_option->title = 'Credit/Debit Card (CCAvenue)';
                 }elseif($payment_option->code == 'kongapay'){
                     $payment_option->title = 'Pay Now';
                 }elseif($payment_option->code == 'mvodafone'){
