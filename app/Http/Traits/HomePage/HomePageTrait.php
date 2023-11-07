@@ -2,11 +2,12 @@
 
 namespace App\Http\Traits\HomePage;
 
-use App\Models\{CabBookingLayout, Category, HomePageLabel, HomeProduct, Order, OrderProductRating, OrderVendorProduct, Product, ProductCategory, ProductRecentlyViewed, Vendor, VendorCategory, VendorCities, PromoCodeDetail, Promocode, SubscriptionInvoicesVendor, VendorOrderStatus};
+use App\Models\{CabBookingLayout, Category, HomePageLabel, HomeProduct, Order, OrderProductRating, OrderVendorProduct, Product, ProductCategory, ProductRecentlyViewed, Vendor, VendorCategory, VendorCities, PromoCodeDetail, Promocode, SubscriptionInvoicesVendor, VendorOrderStatus, UserAddress, ClientPreference, User};
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
 use Session, DB, Auth;
 use Illuminate\Support\Str;
+use GuzzleHttp\Client as GCLIENT;
 use App\Http\Traits\{ProductActionTrait};
 use Kreait\Firebase\Auth as FirebaseAuth;
 
@@ -459,7 +460,7 @@ trait HomePageTrait
      public function postHomePageDataV2($request,$set_template,$enable_layout,$additionalPreference,$user='', $getSubCatIds='')
     {
         $client_timezone = DB::table('clients')->first('timezone');
-      
+     
         
         if(!empty($user)){
             $timezone        = $user->timezone ? $user->timezone :  ($client_timezone->timezone ?? 'Asia/Kolkata' );
@@ -586,6 +587,7 @@ trait HomePageTrait
         $vendor_ids = $this->getRandomVendorIdsForHomePage($preferences, $request->type, $preferences['is_admin_vendor_rating'], $latitude, $longitude,@$request->momo);
         $home_page_labels = HomePageLabel::with('translations')->get();
         if (in_array('brands', $enable_layout)) {     # if enable brands section in
+             
             $brands = $this->getBrandsForHomePage($language_id, $this->field_status);
         }else{
             $brands = [];
@@ -611,10 +613,28 @@ trait HomePageTrait
             }
         }
 
+         
         
         if(count($vendor_ids) > 0){
-          
             $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids,null,$this->venderFilterOpenClose,$this->venderFilterbest);
+            $preferences = ClientPreference::first();
+            
+            foreach($vendors as $k => $vendorData){
+                if($preferences->static_delivey_fee != 1){
+                $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->id, $dispatcher_tags='');
+                
+                    if (!empty($deliver_response_array[0])){
+                        $totalRoute = '1';
+                        $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format(($deliver_response_array[0]['delivery_fee']*$totalRoute), 2, '.', ''):'0.00';
+                        $delivery_duration = (!empty($deliver_response_array[0]['total_duration']))?number_format($deliver_response_array[0]['total_duration'], 0, '.', ''):'0.00';
+                        $vendorData->delivery_fee = $deliver_charge;
+                        $vendorData->delivery_time = $delivery_duration;
+                    }
+                }elseif($preferences->static_delivey_fee == 1 &&  $vendorData->vendor->order_amount_for_delivery_fee != 0){
+                    $vendorData->delivery_fee = 0.00;
+                    $vendorData->delivery_time = 0.00;
+                } 
+            }
         }
         
         $trendingVendors = [];
@@ -761,7 +781,7 @@ trait HomePageTrait
 
 
         /** Respose data */
-      
+            //   print_r($vendors);exit;
         
             $data = [
                 'vendor_ids'=>$vendor_ids,
@@ -785,9 +805,128 @@ trait HomePageTrait
                 'banners' => $banners,
                 'additionalPreference' => $additionalPreference,
             ];
-            //pr( $data);
+            // pr( $data);
             return $data ;
     }
+
+        // AAA
+        //Fetch all delivery fee option
+        // public function getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $dispatcher_tags='', $totalRoute = '1')
+        // {
+        //     $option = array();
+        //     $delivery_count = 0;
+        //     $delivery_duration = 0;
+        //     try {
+        //     if($vendorData->vendor_id)
+        //     {
+        //         Session()->put('vid',$vendorData->vendor_id);
+    
+        //         if($preferences->static_delivey_fee != 1)
+        //         {
+        //             //Dispatcher Delivery changes code
+        //             $deliver_response_array = $this->getDeliveryFeeDispatcher($vendorData->vendor_id, $dispatcher_tags);
+        //             if (!empty($deliver_response_array[0])){
+        //                 $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format(($deliver_response_array[0]['delivery_fee']*$totalRoute), 2, '.', ''):'0.00';
+        //                 $delivery_duration = (!empty($deliver_response_array[0]['total_duration']))?number_format($deliver_response_array[0]['total_duration'], 0, '.', ''):'0.00';
+        //                 $option[] = array(
+        //                     'type'=>'D',
+        //                     'courier_name'=>__('Dispatcher'),
+        //                     'rate' => $deliver_charge,
+        //                     'courier_company_id' => 0,
+        //                     'etd' => 0,
+        //                     'duration' => $delivery_duration,
+        //                     'etd_hours' => 0,
+        //                     'estimated_delivery_days' => 0,
+        //                     'code' => 'D_0'
+        //                 );
+        //             }
+        
+        //         } elseif($preferences->static_delivey_fee == 1 &&  $vendorData->vendor->order_amount_for_delivery_fee != 0){
+        //                 # for static fees
+        //                     if( $payable_amount >= (float)($vendorData->vendor->order_amount_for_delivery_fee)){
+        //                         $deliveryCharges = number_format($vendorData->vendor->delivery_fee_maximum, 2, '.', '');
+        //                     }elseif($payable_amount < (float)($vendorData->vendor->order_amount_for_delivery_fee)){
+        //                         $deliveryCharges = number_format($vendorData->vendor->delivery_fee_minimum, 2, '.', '');
+        //                     }
+            
+        //                     $option[] = array(
+        //                         'type'=>'D',
+        //                         'courier_name'=>__('Static'),
+        //                         'rate' => $deliveryCharges,
+        //                         'courier_company_id' => 0,
+        //                         'etd' => 0,
+        //                         'etd_hours' => 0,
+        //                         'duration' => 0,
+        //                         'estimated_delivery_days' => 0,
+        //                         'code' => 'D_0'
+        //                     );
+            
+        //         }//End statis fe code
+        
+        //     }
+        //     } catch (\Exception $e) {
+        //     }
+        //     return $option;
+        // }
+
+        public function getDeliveryFeeDispatcher($vendor_id, $dispatcher_tags='')
+        {
+            try {
+                $dispatch_domain = $this->checkIfLastMileOn();
+                // print_r($dispatch_domain);exit;
+                if ($dispatch_domain && $dispatch_domain != false) {
+                    
+                    $customer = User::find(Auth::id());
+                    // print_r($customer);exit;
+                    $cus_address = UserAddress::where('user_id', Auth::id())->orderBy('is_primary', 'desc')->first();
+                     
+                    if ($cus_address) {
+                        $tasks = array();
+                        $vendor_details = Vendor::find($vendor_id);
+                
+                        $location[] = array(
+                            'latitude' => $vendor_details->latitude ?? 30.71728880,
+                            'longitude' => $vendor_details->longitude ?? 76.80350870
+                        );
+                        $location[] = array(
+                            'latitude' => $cus_address->latitude ?? 30.717288800000,
+                            'longitude' => $cus_address->longitude ?? 76.803508700000
+                        );
+                        $postdata =  ['locations' => $location, 'agent_tag' => (!empty($dispatcher_tags)?$dispatcher_tags:'')];
+                        $client = new GClient([
+                            'headers' => [
+                                'personaltoken' => $dispatch_domain->delivery_service_key,
+                                'shortcode' => $dispatch_domain->delivery_service_key_code,
+                                'content-type' => 'application/json'
+                            ]
+                        ]);
+                        $url = $dispatch_domain->delivery_service_key_url;
+                         
+                        $res = $client->post(
+                            $url . '/api/get-delivery-fee',
+                            ['form_params' => ($postdata)]
+                        );
+                        $response = json_decode($res->getBody(), true);
+                     
+                        if ($response && $response['message'] == 'success') {
+                            $response_array[] = array('delivery_fee' => $response['total'], 'total_duration' => $response['total_duration']);
+                            return $response_array;
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+            }
+        }
+        
+        public function checkIfLastMileOn()
+        {
+            $preference = ClientPreference::first();
+            if ($preference->need_delivery_service == 1 && !empty($preference->delivery_service_key) && !empty($preference->delivery_service_key_code) && !empty($preference->delivery_service_key_url))
+                return $preference;
+            else
+                return false;
+        }
+    // AAA END
 
     
 
