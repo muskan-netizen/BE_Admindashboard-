@@ -50,6 +50,11 @@ class SendCampaignNotification extends Command
         $clients = Client::select('database_name', 'sub_domain')->get();
         $intervalTime = now();
         foreach ($clients as $client) {
+
+            if($client->is_lumen_enabled == 1)
+            {
+                break;
+            }
             $database_name = 'royo_' . $client->database_name;
             $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME =  ?";
             $db = DB::select($query, [$database_name]);
