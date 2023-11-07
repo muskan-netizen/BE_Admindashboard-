@@ -394,8 +394,18 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                     @endif
                                     @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
 
-                               
-                                    <div class="flex-container">
+                                     
+
+                                     @if($product->category->categoryDetail->type_id == 13)
+                                     <div class="border-product al_disc">
+                                        <h6 class="product-title">{{__('Price')}}</h6>
+                                        <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->price)}}</p>
+                                    </div>
+                                     
+                                     @endif
+                                     @if($product->category->categoryDetail->type_id == 10)
+
+                                     <div class="flex-container">
                                         <div class="item-price">
                                             <h2>Daily</h2>
                                             <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->price)}}</p>
@@ -409,6 +419,9 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->month_price)}}</p>
                                         </div>
                                     </div>
+                                     @endif
+                               
+                                 
                                     @endif
                                         
                                         @if( is_category_p2p($product->category) || is_attribute_enabled())
@@ -464,7 +477,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
 
 
                                         <div id="variant_response">
-                                            @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
+                                            @if( p2p_module_status() && Session::get('vendorType') == 'p2p' && $product->category->categoryDetail->type_id == 10 )
                                             <input type="text" class="form-control" name="booking_availability" id="range-datepicker" placeholder="{{date('Y-m-d')}}">
                                             @endif
                                         </div>
@@ -473,10 +486,10 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             @if($product->is_recurring_booking == 1)
                                                 @include('frontend.product-part.recurring-booking')
                                             @endif
-                                            @if(@getAdditionalPreference(['is_rental_weekly_monthly_price'])['is_rental_weekly_monthly_price'] && $product->category->categoryDetail->type_id == 10)
-                                                {{-- @include('frontend.product-part.booking-slot-p2p-rental') --}}
-                                            @elseif($product->category->categoryDetail->type_id == 10)
-                                                {{-- @include('frontend.product-part.booking-slot') --}}
+                                            @if(@getAdditionalPreference(['is_rental_weekly_monthly_price'])['is_rental_weekly_monthly_price'] && $product->category->categoryDetail->type_id == 10 && Session::get('vendorType') == 'rental');
+                                                @include('frontend.product-part.booking-slot-p2p-rental')
+                                            @elseif($product->category->categoryDetail->type_id == 10 && Session::get('vendorType') == 'car_rental')
+                                                @include('frontend.product-part.booking-slot')
                                             @endif
 
 
@@ -1732,7 +1745,7 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
 
         var enableDates = {!! $productAvailability !!};
      
-      
+        
         
         if (typeof enableDates === 'string') {
             enableDates = enableDates.split(',').map(function(dateString) {

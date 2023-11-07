@@ -1807,7 +1807,7 @@ class CartController extends BaseController
             $loyalty_amount_saved = $temp_total_paying;
             $cart->total_payable_amount = 0.00;
         } else {
-            $cart->total_payable_amount = ($total_paying  + $cart->total_tax);
+            $cart->total_payable_amount = ($total_paying  + $cart->total_tax) -   ($total_disc_amount + $loyalty_amount_saved);
         }
         
         /* if($total_taxable_amount>0){

@@ -740,3 +740,17 @@
             name="is_role_and_permission_enable" id="is_role_and_permission_enable" />
     </div>
 </div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_vendor_marg_configuration" class="mr-2 mb-0">{{ __('Car Rental') }}<small
+                class="d-block pr-5">{{ __('Enable For Rental Protection,Booking Options and for Destination.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_car_rental_enable"
+                id="is_car_rental_enable_switch" class="form-control checkbox_change"
+                data-className="is_car_rental_enable" data-color="#43bee1"
+                @if (@$getAdditionalPreference['is_car_rental_enable']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['is_car_rental_enable'] == 1) value="1" @else value="0" @endif
+            name="is_car_rental_enable" id="is_car_rental_enable" />
+    </div>
+</div>

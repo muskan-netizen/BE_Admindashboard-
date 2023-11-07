@@ -246,6 +246,20 @@ class PickupDeliveryController extends FrontController{
             $product->toll_fee = decimal_format(($product->toll_fee/$product->seats_for_booking)*$no_seats_for_pooling);
         }//------
 
+        $loyalty_amount_saved = 0;
+        $redeem_points_per_primary_currency = '';
+        $loyalty_card = LoyaltyCard::where('status', '0')->first();
+        if ($loyalty_card) {
+            $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
+        }
+        $loyalty_points_used = 0;
+        $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
+        if ($order_loyalty_points_earned_detail) {         
+            $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
+            if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {               
+                $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;              
+            }
+        }
 
         //Check for fixed service fee and service fee percent
         $product->service_charge_amount  = 0.00;
@@ -350,6 +364,7 @@ class PickupDeliveryController extends FrontController{
                 }
             }
         }
+        
         //wallet amount used
         $product->wallet_amount_used = 0;
         if($user->balanceFloat > 0){
@@ -361,8 +376,9 @@ class PickupDeliveryController extends FrontController{
             }
             $product->wallet_amount_used = decimal_format($wallet_amount_used);
         }
-        $product->total_tags_price = $product->total_tags_price - $product->subscription_discount??0.0;
+        $product->total_tags_price = $product->total_tags_price - $product->subscription_discount??0.0;      
         $product->total_tags_price =  decimal_format($product->total_tags_price - $product->wallet_amount_used);
+        
         if(isset($request->yacht_id)){
             $yacht = Product::with(['pimage','variant'])->select('id','title')->find($request->yacht_id);
             $product->yacht = $yacht;
@@ -808,16 +824,15 @@ class PickupDeliveryController extends FrontController{
                 //         $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
                 //     }
                 // }
-
+                
                 $loyalty_points_used = 0;
-                $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
-                if ($order_loyalty_points_earned_detail) {
-                    $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
-                    if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
-                        $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
+                $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();                
+                if ($order_loyalty_points_earned_detail) {                    
+                    $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;                    
+                    if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {                       
+                        $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;                        
                     }
                 }
-
                 if($request->payment_option_id == 2){
                     $payment_option = 1;
                 }
@@ -1007,17 +1022,16 @@ class PickupDeliveryController extends FrontController{
                         $order_vendor->admin_commission_fixed_amount = $vendor_info->commission_fixed_per_order;
                     }
                 }
-
-                $vendor_payable_amount = $vendor_payable_amount - $loyalty_amount_saved ?? 0;
-                $order_vendor->payable_amount = $vendor_payable_amount;
-                if ($product['taxCategory']) {
-                    foreach ($product['taxCategory']['taxRate'] as $tax_rate_detail) {
-                        $rate                  = round($tax_rate_detail->tax_rate);
-                        $tax_amount            = ($price_in_dollar_compare * $rate) / 100;
-                        $product_tax           = $payable_amount * $rate / 100;
-                        $payable_amount        = $payable_amount + $product_tax;
-                        $taxable_amount        = $taxable_amount + $product_tax;
-                    }
+                $vendor_payable_amount = $vendor_payable_amount - $loyalty_amount_saved ?? 0;               
+                $order_vendor->payable_amount = $vendor_payable_amount;               
+                if ($product['taxCategory']) {                  
+                    foreach ($product['taxCategory']['taxRate'] as $tax_rate_detail) {                       
+                        $rate                  = round($tax_rate_detail->tax_rate);                       
+                        $tax_amount            = ($price_in_dollar_compare * $rate) / 100;                       
+                        $product_tax           = $payable_amount * $rate / 100;                        
+                        $payable_amount        = $payable_amount + $product_tax;                       
+                        $taxable_amount        = $taxable_amount + $product_tax;                       
+                    } 
                 }
                 $order_vendor->taxable_amount = $taxable_amount;
                 $order_vendor->save();
@@ -1071,7 +1085,6 @@ class PickupDeliveryController extends FrontController{
                 if (($request->has('transaction_id')) && (!empty($request->transaction_id))) {
                     $order->payment_status = 1;
                 }
-
                 $wallet_amount_used = 0;
                 // $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
                 if ($user->balanceFloat > 0) {
