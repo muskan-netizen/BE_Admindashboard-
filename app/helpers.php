@@ -68,12 +68,12 @@ if (!function_exists('getAdditionalPreference')) {
         $dbreturn= [];
         if(sizeof($key)){
             	
-            // $result = ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
-            $cacheKey = 'client_preferences_additional_'.json_encode($key);
+            $result = ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
+            // $cacheKey = 'client_preferences_additional_'.json_encode($key);
 
-            $result = Cache::remember($cacheKey, $time, function () use ($key) {
-                return ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
-            });
+            // $result = Cache::remember($cacheKey, $time, function () use ($key) {
+            //     return ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
+            // });
             $return = array_column($result->toArray(), 'key_value', 'key_name');
             if (sizeof($result)) {
                 $dbreturn = array_column($result->toArray(), 'key_value', 'key_name');
@@ -579,11 +579,25 @@ if (!function_exists('loadDefaultImage')) {
         $image_path = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png');
         $image_fit = \Config::get('app.FIT_URl');
         $default_url = $image_fit .'300/300'. $image_path.'@webp';
-        return $default_url;
+
+        if (imageExists($default_url)) {
+            return $default_url;
+        } else {
+            return asset('assets/images/bg-material.png');
+
+        }
     }
 }
 
 
+if (!function_exists('imageExists')) {
+
+     function imageExists($url) {
+        // You can use either File or Storage to check if the image exists.
+        // Here, I'm using the File class.
+        return \File::exists(public_path($url));
+    }
+}
 if (!function_exists('getImageUrl')) {
     function getImageUrl($image, $dim)
     {

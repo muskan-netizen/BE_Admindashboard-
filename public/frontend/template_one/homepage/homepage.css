@@ -3444,7 +3444,9 @@ input.form-control.pac-target-input.gm-err-autocomplete {
 .step.active .step-icon {
     background: var(--theme-deafult)
 }
-body.al_body_template_one .main-fillter .side_fillter .irs{width:90%;}
+body.al_body_template_one .main-fillter .side_fillter .irs{
+    width:100%;
+}
 .step.active .step-icon-order-fill {
     background: var(--theme-deafult)
 }

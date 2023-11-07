@@ -69,12 +69,14 @@ class VendorController extends BaseController
     public function getFilterData(Request $request){
         $client_preference = (object)Session::get('preferences');
         $getAdditionalPreference = getAdditionalPreference(['is_one_push_book_enable']);
-    
+        $user = Auth::user();
         $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->with('slot')->where('status', $request->status)->where('is_seller', 0)->orderBy('id', 'desc');
-        if (Auth::user()->is_superadmin == 0) {
-            $vendors = $vendors->whereHas('permissionToUser', function ($query) {
-                $query->where('user_id', Auth::user()->id);
-            });
+        if ($user->is_superadmin == 0) {
+            if($user->hasRole('Vendor') || $user->hasRole('Vendors') || $user->hasRole('vendor')){
+                $vendors = $vendors->whereHas('permissionToUser', function ($query) use ($user) {
+                    $query->where('user_id', $user->id);
+                });
+            }
             if(@$this->roleId=='5')
             {
                 $vendors = $vendors->where('refference_id',auth()->id());
@@ -193,11 +195,12 @@ class VendorController extends BaseController
         $client_preferences = ClientPreference::first();
         $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->where('is_seller', 0)->orderBy('id', 'desc');
         if ($user->is_superadmin == 0) {
-            $vendors = $vendors->whereHas('permissionToUser', function ($query) use($user) {
-                $query->where('user_id', $user->id);
-            });
+            if($user->hasRole('Vendor') || $user->hasRole('Vendors') || $user->hasRole('vendor')){
+                $vendors = $vendors->whereHas('permissionToUser', function ($query) use ($user) {
+                    $query->where('user_id', $user->id);
+                });
+            }
         }
-
       
         if(@$this->roleId=='5')
         {
