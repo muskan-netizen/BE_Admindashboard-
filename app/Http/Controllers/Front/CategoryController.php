@@ -856,11 +856,13 @@ class CategoryController extends FrontController{
             $last_mile_check       = $product ? $product->Requires_last_mile  : '';
             $vendorStartDate       = $vendorStartTime  = '';
             $slotsDate = findSlot('',$product->vendor_id,'','webFormet');
+
+            
             if($slotsDate){
                 $vendorStartDate = (($slotsDate)?$slotsDate['date']:'');
                 $vendorStartTime = (($slotsDate)?$slotsDate['time']:'');
             }
-           
+      
             // ch
             if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ( $last_mile_check ==1) ){ 
                 $Dispatch =  $this->getDispatchAppointmentDomain();
@@ -915,8 +917,10 @@ class CategoryController extends FrontController{
         
         $slots = showSlot($date,$request->product_vendor_id,'delivery');
 
-      
-
+        
+        $vendor = Vendor::find($product->vendor_id);
+     
+        
         $time_slots = [];
         if(!empty($slots)){
             $time_slots = $slots;
@@ -927,19 +931,26 @@ class CategoryController extends FrontController{
             // }
         }else{
             $end_time = date('Y-m-d 23:59');
-            $timing   = $this->SplitTime($curr_time, $end_time, "60");
-            foreach ($timing as $k=> $slt) {
-                if($k+1 < count($timing)){
-                    $viewSlot['name'] = date('h:i:A', strtotime($slt)).' - '.date('h:i:A', strtotime($timing[$k+1]));
-                    $viewSlot['value'] = $slt.' - '.$timing[$k+1]; 
-                    $time_slots[] =  $viewSlot;
+            if($vendor->show_slot == 1)
+            {
+                $timing   = $this->SplitTime($curr_time, $end_time, "60");
+                foreach ($timing as $k=> $slt) {
+                    if($k+1 < count($timing)){
+                        $viewSlot['name'] = date('h:i:A', strtotime($slt)).' - '.date('h:i:A', strtotime($timing[$k+1]));
+                        $viewSlot['value'] = $slt.' - '.$timing[$k+1]; 
+                        $time_slots[] =  $viewSlot;
+                    }
                 }
+
             }
+           
           //$time_slots  // this is for static slots 
         }
 
         //pr($time_slots);
         $cart_product_id = $request->cart_product_id??0;
+
+     
         if ($request->ajax()) {
            return \Response::json(\View::make('frontend.ondemand.time-slots-for-date', array('time_slots' => $time_slots,'cart_product_id'=> $cart_product_id))->render());
         }
