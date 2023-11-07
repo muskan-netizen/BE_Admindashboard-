@@ -409,7 +409,7 @@ class ProductController extends BaseController
             }
 
             if( !empty($product->vendor_id) ) {
-                $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant','categoryName','category.categoryDetail'])->whereNotIn('id',[$product->id]);
+                $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant','categoryName','category.categoryDetail.translation'])->whereNotIn('id',[$product->id]);
                 $suggested_vendor_products = $suggested_product->where('vendor_id', $product->vendor_id)->orderby('id', 'desc')->limit(20)->get();
             }
 
