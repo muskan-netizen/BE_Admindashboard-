@@ -345,6 +345,7 @@ position: relative;
 display: flex;
 flex-wrap: wrap;
 margin-top:40px!important;
+justify-content: center;
 }
  .alPostBoxOuter ul li a.active:before {
 color: green;

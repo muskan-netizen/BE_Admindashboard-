@@ -95,7 +95,7 @@ body.dark.al_body_template_one.p2p-module .breadcrumb-section .breadcrumb {
 
 .p2p-module .theme-card.custom-inner-card {
     height: auto;
-    overflow-y: scroll;
+    overflow-y: auto;
     border: 1px solid#ccc;
     padding: 10px;
     border-radius: 10px;
