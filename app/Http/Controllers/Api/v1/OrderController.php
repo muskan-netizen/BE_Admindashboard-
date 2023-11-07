@@ -2385,6 +2385,7 @@ class OrderController extends BaseController
                 $order->scheduled_slot  = $order->orderDetail->scheduled_slot;
                 $order->schedule_dropoff = date('d/m/Y',strtotime($order->orderDetail->schedule_dropoff));
                 $order->dropoff_scheduled_slot  = $order->orderDetail->dropoff_scheduled_slot;
+                $order->payable_amount = $order->total_price;
                 $order->payable_amount = decimal_format($order->total_price - $order->orderDetail->wallet_amount_used);
                 if(checkColumnExists('orders', 'is_postpay')){
                     $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
@@ -4456,10 +4457,12 @@ class OrderController extends BaseController
         $order_status_options = [];
         $paginate = $request->has('limit') ? $request->limit : 12;
         $type = $request->has('type') ? $request->type : 'all';
-        $user_type = $request->has('user_type') ? $request->user_type : '';
+        $user_type = $request->has('user_type') ? $request->user_type : 'borrower';
         $orders = OrderVendor::with('products')->orderBy('id', 'DESC');
         $additionalPreference =getAdditionalPreference(['is_service_product_price_from_dispatch']);
         $vendorUser =  UserVendor::select('vendor_id')->where('user_id', $user->id)->first();
+        $orders->where('user_id', $user->id);
+        if(!empty($vendorUser)){
         if($user_type == 'borrower'){
             $orders->where('user_id', $user->id) ;
         }elseif( $user_type == 'lender'){
@@ -4468,6 +4471,7 @@ class OrderController extends BaseController
             $orders->where(function($q) use ($vendorUser, $user){
                 $q->where('vendor_id',  $vendorUser->vendor_id)->orWhere('user_id', $user->id) ;
             });
+        }
         }
 
         switch ($type) {
@@ -4719,7 +4723,7 @@ class OrderController extends BaseController
                         'driver_rating',
                         'reports',
                         'vendors.vendor',
-                        'vendors.products.Routes','vendors.products.product',
+                        'vendors.products.Routes','vendors.products.product','vendors.products.product.category.categoryDetail',
                         'vendors.products.translation' => function ($q) use ($language_id) {
                             $q->select('id', 'product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description');
                             $q->where('language_id', $language_id);
@@ -5076,16 +5080,16 @@ class OrderController extends BaseController
         //   // Log::info('order'.json_encode($order));
 
             //mohit sir branch code added by sohail
-            $advancePayableAmount = 0;
-            $pendingAmount = 0;
-            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage']);
-            if(!empty($order->advance_amount) && !empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101) )
-            {
-                $advancePayableAmount = $order->advance_amount;
-                $pendingAmount = $order['payable_amount'] - $order->advance_amount;
-            }
-            $order['advance_paid_amount'] = number_format((float)$advancePayableAmount, 2, '.', '');
-            $order['pending_amount'] = number_format((float)$pendingAmount, 2, '.', '');
+            // $advancePayableAmount = 0;
+            // $pendingAmount = 0;
+            // $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage']);
+            // if(!empty($order->advance_amount) && !empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101) )
+            // {
+            //     $advancePayableAmount = $order->advance_amount;
+            //     $pendingAmount = $order['payable_amount'] - $order->advance_amount;
+            // }
+            // $order['advance_paid_amount'] = number_format((float)$advancePayableAmount, 2, '.', '');
+            // $order['pending_amount'] = number_format((float)$pendingAmount, 2, '.', '');
             //till here
 
            /* Check if other taxes available like: Tax on service fee, container charges, delivery fee and fixed fee .etc */

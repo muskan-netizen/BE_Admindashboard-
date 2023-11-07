@@ -102,7 +102,7 @@
                 <span>{{$product->vendor->address}}</span>
             </div>
 
-            <div class="pass-detail">
+            {{-- <div class="pass-detail">
                 <ul class="m-0 p-0">
                     <li><span>Flexible</span> {!!$product->returnable ? 'Cancellation <br/>Policy' : 'No <br/> Cancellation'!!}</li>
                     <li><span>Passenger</span> Up to {{$desc['Passangers']['title'] ?? 0}} <br/> Passengers</li>
@@ -112,7 +112,7 @@
 
             <div class="booking-option mt-1">
                 <h5>Booking Option</h5>
-            </div>
+            </div> --}}
             <div class="product_price">
                 @if($category->slug == 'rental')
                 <p>{{Session::get('currencySymbol')}}{{decimal_format($product->variant[0]->price)}}</p>
@@ -136,7 +136,7 @@
             </div>
             <div class="productList d-flex justify-content-between">
                 <ul class="product-features">
-                    @if($category->slug == 'rental')
+                    @if($category->slug == 'rental' &&  Session::get('vendorType') == 'car_rental')
                     <li><a href="javascript:void(0);">{{$fields['Transmission']['title'] ?? ''}}</a></li>
                     <li><a href="javascript:void(0);">{{$fields['Fuel Type']['title'] ?? ''}}</a></li>
                     <li><a href="javascript:void(0);">{{$fields['Seats']['title'] ?? '0'}} Seats</a></li>
@@ -147,7 +147,7 @@
                     @endif
                 </ul>
             </div>
-            @if($category->slug == 'rental')
+            @if($category->slug == 'rental' && Session::get('vendorType') == 'car_rental')
                 <div class="product_iteslist">
                     <ul>
                         @foreach ($fields as $key => $productAttribute)

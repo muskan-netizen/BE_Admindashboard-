@@ -21,7 +21,7 @@ class AppStyling extends Model{
             if($app_style->name == "Tab Bar Style" || $app_style->name == "Home Page Style"){
                 $template_id = $app_style->styleOption ? $app_style->styleOption->template_id : 3;
             }else {
-                $template_id = $app_style->styleOption->name;
+                $template_id = $app_style->styleOption->name ?? "";
             }
             $app_styles_array[]=array(
                 'key' => $key_name,

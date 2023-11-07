@@ -385,7 +385,7 @@ $serviceType = Session::get('serviceType');
                         <h3>Rental Charges</h3>
                         <div class="inner_item d-flex justify-content-between align-items-center">
                                 <p>{{$difference}} Rental Days</p>
-                                <span>{{Session::get('currencySymbol')}}{{$cart_details->sub_total}}</span>
+                                <span>{{Session::get('currencySymbol')}}{{$cart_details->sub_total*$difference}}</span>
                         </div>
                         <div class="inner_item d-flex justify-content-between align-items-center mt-2">
                                 <p>Security Amount</p>
