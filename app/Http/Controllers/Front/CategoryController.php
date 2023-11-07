@@ -921,7 +921,7 @@ class CategoryController extends FrontController{
         $slots = showSlot($date,$request->product_vendor_id,'delivery');
 
         
-        $vendor = Vendor::find($product->vendor_id);
+        $vendor = Vendor::where('id', $product->vendor_id)->select('show_slot')->first();
      
         
         $time_slots = [];
