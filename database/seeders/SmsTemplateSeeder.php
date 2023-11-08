@@ -24,7 +24,10 @@ class SmsTemplateSeeder extends Seeder
             ['id' => 5,'label' => "User Signup Sms", 'slug' => 'user-signup-sms', 'subject' => "User Signup Sms", 'content' => "Dear {user_name}, Thanks for creating an account with us!", 'tags' => "{user_name}"],
             ['id' => 6,'label' => "Otp to verify Account", 'slug' => 'verify-account', 'subject' => "Otp to verify Account", 'content' => "Dear {user_name}, Please enter OTP {otp_code} to verify your account.{app_hash_key}", 'tags' => "{user_name},{otp_code},{app_hash_key}"],
             ['id' => 7,'label' => "Order Tracking", 'slug' => 'order-tracking-url', 'subject' => "Order Tracking", 'content' => "Hi {user_name} Your order number {order_number} has been on the way.please track your order via this link {track_url}", 'tags' => "{user_name},{amount},{order_number},{track_url},{order_status}"],
-            ['id' => 8,'label' => "Otp Sms For Tracking url", 'slug' => 'otp-sms-tracking-url', 'subject' => "Otp Sms Access For Tracking Url", 'content' => "Please enter OTP {otp_code}. Keep it safe and don't show to other.", 'tags' => "{otp_code}"]
+            ['id' => 8,'label' => "Otp Sms For Tracking url", 'slug' => 'otp-sms-tracking-url', 'subject' => "Otp Sms Access For Tracking Url", 'content' => "Please enter OTP {otp_code}. Keep it safe and don't show to other.", 'tags' => "{otp_code}"],
+            ['id' => 9,'label' => "Order Canceled", 'slug' => 'order-canceled', 'subject' => "Ride Cancel By Driver", 'content' => "Hi {user_name} Your ride canceled by driver.", 'tags' => "{user_name}"],
+            ['id' => 10,'label' => "Order Completed", 'slug' => 'order-completed', 'subject' => "Order Completed", 'content' => "Hi {user_name} Your order successfully completed.", 'tags' => "{user_name}"],
+            ['id' => 11,'label' => "Ride Booked", 'slug' => 'ride-booked', 'subject' => "Ride Booked Confirmation.", 'content' => "Hi {user_name} Your ride successfully booked.", 'tags' => "{user_name}"]
 
         );
 
