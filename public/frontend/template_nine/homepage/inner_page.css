@@ -392,7 +392,8 @@ body .create_box a.btn.btn-solid.mt-2 {
     height: 30px;
     width: 30px;
     border-radius: 50%;
-    background: #c2c2c2;
+    background: transparent;
+    margin-right: 10px;
     font-size: 10px;
     text-align: center;
     color: #fff;
@@ -2690,6 +2691,14 @@ span.org_price.ml-1.font-14{
     justify-content: flex-end;
     padding-right: 25px;
 }
+button#transfer_wallet_btn, #topup_wallet_btn {
+    font-size: 12px;
+    padding: 7px;
+    border-radius: 8px;
+    line-height: 1.5;
+    font-weight: 400;
+    text-transform: capitalize;
+}
 
 @media (min-width: 1024px) {
     .ds {
@@ -3236,6 +3245,9 @@ input.addon-input-number {
     display: flex;
     align-items: center;
     padding: 0 15px;
+}
+#alSixHomeServices .step-indicator > .indicator-line {
+    display: block;
 }
 
 .step {
