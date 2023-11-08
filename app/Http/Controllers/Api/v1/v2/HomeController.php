@@ -680,10 +680,13 @@ class HomeController extends BaseController
          */
         $long_term_vendors = $vendors->pluck('id')->toArray();
 
-        $vendors = $vendors->where('status', 1)->where($request->type, 1)
-            ->inRandomOrder()
+            if($preferences->is_admin_vendor_rating == 1){
+                $vendors = $vendors->orderBy('admin_rating', 'DESC');
+            }else{
+                $vendors = $vendors->inRandomOrder();
+            }
+            $vendors = $vendors->where('status', 1)->where($request->type, 1)
             ->limit(10)->get();
-
         foreach ($vendors as $key => $value) {
             $vendor_ids[] = $value->id;
             // $value->vendorRating = $this->vendorRating($value->products);
