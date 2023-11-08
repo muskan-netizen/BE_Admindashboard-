@@ -44,7 +44,7 @@
 .cate-item img {
     width: auto;
     height: auto;
-    object-fit: contain;
+    object-fit: cover;
 }
 
 .cate-item h3 {
