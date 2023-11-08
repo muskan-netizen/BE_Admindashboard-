@@ -89,7 +89,7 @@ $(".next").click(function(){
         .then(data => {
             console.log(data);
             if (data.status === 'Success') {
-                $('#search_product_main_div').html('');
+                $('#search_rental_product_main_div').html('');
                 $('#search_product_rider_main_div').html('');
         
                 if (data.data.length !== 0) {
@@ -97,39 +97,11 @@ $(".next").click(function(){
                     let products_template = _.template($('#products_template').html());
                     let products_rider_template = _.template($('#products_rider_template').html());
         
-                    $("#search_product_main_div").append(products_template(productData));
+                    $("#search_rental_product_main_div").append(products_template(productData));
                     $("#search_product_rider_main_div").append(products_rider_template(productData));
         
-                    if ($('input[name="is_cab_pooling_radio"]:checked').val() == 0 || $('input[name="is_cab_pooling_radio"]:checked').val() === undefined) {
-                        $("#search_product_main_div .double_price_p").hide();
-                        $("#search_product_main_div .single_price_p").show();
-        
-                        $(".TypeBookingRec").hide();
-                        $(".TypeBookingNow").show();
-                    } else if (is_cab_pooling == 4) {
-                        $("#search_product_main_div .double_price_p").show();
-                        $("#search_product_main_div .single_price_p").hide();
-        
-                        $(".TypeBookingRec").show();
-                        $(".TypeBookingNow").hide();
-                    } else {
-                        $("#search_product_main_div .double_price_p").show();
-                        $("#search_product_main_div .single_price_p").hide();
-        
-                        $(".TypeBookingRec").hide();
-                        $(".TypeBookingNow").show();
-                    }
-        
-                    let is_friend = $('input[name="is_for_friend"]:checked').val();
-                    if (is_friend == undefined || is_friend == '0') {
-                        $("#search_product_main_div").show();
-                        $("#search_product_rider_main_div").hide();
-                    } else {
-                        $("#search_product_main_div").hide();
-                        $("#search_product_rider_main_div").show();
-                    }
                 } else {
-                    $("#search_product_main_div ").html('<p class="text-center my-3">'+ no_result_message +'</p>').show();
+                    $("#search_rental_product_main_div ").html('<p class="text-center my-3">'+ no_result_message +'</p>').show();
                     $("#search_product_rider_main_div ").html('<p class="text-center my-3">'+ no_result_message +'</p>');
                 }
             }
@@ -685,9 +657,45 @@ $(".previous").click(function(){
             return true;
         }
 
-         $('#label_for_friend').click(function() {
+        $('.is_for_friend').click(function() {
+
+            if($(this).attr('id') != 'label_for_hourly_rental')
+            {
+                $('#label_for_me').removeClass('active');
+                $('.address-form').removeClass('d-none');
+                $(".hourly-rental-container").addClass('d-none');
+                $('.hourly-rental-container').empty();
+            }
+           
+
+        });
+       
+        $('#label_for_friend').click(function() {
             $('#label_for_me').removeClass('active');
             $('.address-form').removeClass('d-none');
-            $(".hourly-rental-container").empty();
+            $(".hourly-rental-container").addClass('d-none');
+            $('.hourly-rental-container').empty();
 
+        });
+       
+        $('.for_hourly_rental').click(function() {
+
+        $('.for_friend').removeClass('active');
+        $(".hourly-rental-container").removeClass('d-none');
+        $('#label_for_friend').removeClass('active');
+        $('.address-form').addClass('d-none');
+        $('.hourly-rental-container').empty();
+
+        // Make an AJAX request to load the view.
+        $.ajax({
+            url: get_rental_view,
+            method: 'POST',
+            success: function(response) {
+                // Append the retrieved view to the desired element.
+                $('.hourly-rental-container').html(response.view);
+            },
+            error: function(xhr, status, error) {
+                // Handle errors if necessary.
+            }
+        });
         });

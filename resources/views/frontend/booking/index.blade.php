@@ -1785,6 +1785,8 @@ input[type=number]::-webkit-outer-spin-button {
             var output = document.getElementById('output');
             output.src = URL.createObjectURL(event.target.files[0]);
         };
+        var hourly_rental_url = "{{  route('front.booking.updateRentalPrice')}}";
+        var csrf_token = "{{ csrf_token()}}";
     </script>
     @if (in_array('kongapay', $client_payment_options))
         <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
@@ -1802,14 +1804,22 @@ input[type=number]::-webkit-outer-spin-button {
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="{{ asset('js/cab_booking.js') }}"></script>
     <script src="{{ asset('js/biding.js') }}"></script>
+    <script src="{{asset('assets/libs/flatpickr/flatpickr.min.js')}}"></script>
+
     <script>
         var category_id = "{{ $category->id ?? '' }}";
         var category_name = "{{ @$category->translation[0]->name ?? '' }}";
         var routeset = "{{ route('pickup-delivery-route', ':category_id') }}";
-
+        var is_hourly_rental_enabled = 1;
+        var product_price = "{{$product->per_hour_price}}";
+      
         var autocomplete_urls = routeset.replace(":category_id", category_id);
         var wallet_balance = {{ $wallet_balance }}
         var payment_stripe_url = "{{ route('payment.stripe') }}";
+        var get_rental_vehicle_list = "{{ route('get-list-of-rental-vehicles') }}";
+        var get_rental_view = "{{route('get-rental-view')}}";
+
+
         var get_product_detail = "{{ url('looking/product-detail') }}";
         var get_payment_options = "{{ url('looking/payment/options') }}";
         var promo_code_list_url = "{{ route('verify.promocode.list') }}";
@@ -1879,13 +1889,18 @@ input[type=number]::-webkit-outer-spin-button {
             $('#label_for_friend').click(function() {
                 $('#label_for_me').removeClass('active');
                 $('.address-form').removeClass('d-none');
+                $(".hourly-rental-container").addClass('d-none');
+                $('.hourly-rental-container').empty();
 
             });
            
             $('#label_for_hourly_rental').click(function() {
-            $('#label_for_me').removeClass('active');
+
+            $('.for_friend').removeClass('active');
+            $(".hourly-rental-container").removeClass('d-none');
             $('#label_for_friend').removeClass('active');
             $('.address-form').addClass('d-none');
+            $('.hourly-rental-container').empty();
 
             // Make an AJAX request to load the view.
             $.ajax({
@@ -1899,7 +1914,7 @@ input[type=number]::-webkit-outer-spin-button {
                     // Handle errors if necessary.
                 }
             });
-        });
+            });
 
             $(document).delegate('#submit_productfaq', 'click', function() {
                 var product_order_form_element = getFormData('#product-order-form-name');
@@ -1936,4 +1951,5 @@ input[type=number]::-webkit-outer-spin-button {
     }
 
     </script>
+
 @endsection

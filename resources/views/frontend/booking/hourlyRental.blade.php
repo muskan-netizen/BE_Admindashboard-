@@ -450,7 +450,7 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
         <h5 class="m-0" id="tip_5">{{ __('For Others') }}</h5>
     </label>
     @if (isset($client_preference_detail) && $client_preference_detail->is_hourly_pickup_rental == 1)
-    <input type="radio" class="tip_radio is_for_friend" id="hourly_rental" name="is_for_friend"
+    <input type="radio" class="tip_radio for_hourly_rental" id="hourly_rental" name="is_for_friend"
     value="1">
     <label class="tip_label mb-0  my-2" for="hourly_rental" id="label_for_hourly_rental">
         <h5 class="m-0" id="tip_5">{{ __('Hourly Rental') }}</h5>
@@ -544,7 +544,7 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
             </fieldset>
             <fieldset>
                 <h2 class="fs-title">Cabs Available</h2>
-                <div class="vehical-container style-4" id="search_product_main_div"></div>
+                <div class="vehical-container style-4" id="search_rental_product_main_div"></div>
                 <div class="payment-promo-container p-2" id="paymentMethods">
                     <h4 class="d-flex align-items-center justify-content-between mb-2 rental_payment_method_selection"  data-toggle="modal" data-target="#payment_modal">
                         <span id="payment_type">
@@ -558,10 +558,11 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
                 <input type="button" name="next"  id="choose_rental" class="next action-button" value="Choose Rental"/>
             </fieldset>
             <fieldset>
-                <h2 class="fs-title">Rental Details</h2>                                        
-                <div class="cab-detail-box style-4 d-none" id="cab_detail_box"></div>
+                <h2 class="fs-title">Rental Details</h2>  
                 <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
-                <input type="button" name="next"  class="next action-button" value="Next"/>
+                <input type="button" name="next"  class="next action-button" value="Next"/>                                      
+                <div class="cab-detail-box style-4 d-none" id="cab_detail_box"></div>
+               
             </fieldset>
             <fieldset>
                 <h2 class="fs-title">Choose your pick-up location</h2>
