@@ -540,7 +540,7 @@ $timezone = Auth::user()->timezone;
 
                                             {{-- mohit sir branch code added by sohail --}}
                                             @php
-                                                $getAdditionalPreference = getAdditionalPreference(['update_order_product_price','is_enable_allergic_items']);
+                                                $getAdditionalPreference = getAdditionalPreference(['update_order_product_price','is_enable_allergic_items','blockchain_route_formation']);
                                             @endphp
                                             @if( @getAdditionalPreference(['update_order_product_price'])['update_order_product_price'] == '1')
                                                 <a href="javascript:void(0);" data-toggle="modal" data-target="#addModal" class="badge badge-info ml-3 update_product_price" data-or_prod_old_price="{{decimal_format($product->total_amount)}}" data-or_vend_prod_id="{{$product->id}}">Update Price <img src=""> </a>
@@ -1031,6 +1031,8 @@ $timezone = Auth::user()->timezone;
                 </p>
                 @endif
             </div>
+            @if ($getAdditionalPreference['blockchain_route_formation'] == 1)
+
             <div class="card-body">
                 <h4 class="header-title mb-3">{{ __('Blockchain Order Information') }}</h4>
                 <a href="{{ route('orders.getBlockchainOrderDetail', ['order_id' => $order->id]) }}" target="_blank">
@@ -1038,7 +1040,7 @@ $timezone = Auth::user()->timezone;
                 </a>
             </div>
 
-
+            @endif
             <div class="card-body">
                 <h4 class="header-title mb-3 ">{{ __('Comment/Schedule Information') }}</h4>
 
