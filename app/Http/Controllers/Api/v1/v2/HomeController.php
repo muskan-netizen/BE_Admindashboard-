@@ -679,9 +679,12 @@ class HomeController extends BaseController
          * put a limit to get vendors.
          */
         $long_term_vendors = $vendors->pluck('id')->toArray();
-
+        if($preferences->is_admin_vendor_rating == 1){
+            $vendors = $vendors->orderBy('admin_rating', 'DESC');
+        }else{
+            $vendors = $vendors->inRandomOrder();
+        }
         $vendors = $vendors->where('status', 1)->where($request->type, 1)
-            ->inRandomOrder()
             ->limit(10)->get();
 
         foreach ($vendors as $key => $value) {
