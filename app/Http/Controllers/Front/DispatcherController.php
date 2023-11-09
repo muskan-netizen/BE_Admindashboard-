@@ -506,21 +506,29 @@ class DispatcherController extends FrontController
                 }
 
                 // AAA
-                    // ride booked sms
-                    $data = ClientPreference::select('sms_credentials','sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
-                    if($dispatch_status == 2){
-                        $provider = $data->sms_provider;
-                        $keyData = ['{user_name}'=>$username??''];
-                        $body = sendSmsTemplate('ride-booked',$keyData);
-                        $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
-                    }
-                    // ride complete sms
-                    $data = ClientPreference::select('sms_credentials','sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
-                    if($dispatch_status == 5){
-                        $provider = $data->sms_provider;
-                        $keyData = ['{user_name}'=>$username??''];
-                        $body = sendSmsTemplate('order-completed',$keyData);
-                        $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
+                    $to = "";
+                    $username = "";
+                    $orderUserInfo= User::where('id',$checkiftokenExist->user_id)->first();
+                    $to = '+' . $orderUserInfo->dial_code . $orderUserInfo->phone_number;
+                    $username = $orderUserInfo->name;
+                    $isSmsForRideBookCancelCompleteEnbled = ClientPreferenceAdditional::where('key_name','is_sms_complete_cancel_book_login_ride_enable')->first();
+                    if(isset($isSmsForRideBookCancelCompleteEnbled) && ($isSmsForRideBookCancelCompleteEnbled->key_value == 1))
+                    { 
+                        // ride booked sms
+                        $data = ClientPreference::select('sms_credentials','sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
+                        if($dispatch_status == 2){
+                            $provider = $data->sms_provider;
+                            $keyData = ['{user_name}'=>$username??''];
+                            $body = sendSmsTemplate('ride-booked',$keyData);
+                            $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
+                        }
+                        // ride complete sms
+                        if($dispatch_status == 5){
+                            $provider = $data->sms_provider;
+                            $keyData = ['{user_name}'=>$username??''];
+                            $body = sendSmsTemplate('order-completed',$keyData);
+                            $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
+                        }
                     }
                 // END
 
@@ -1020,11 +1028,19 @@ class DispatcherController extends FrontController
                 $user = Auth::user();
 
                  // AAA
+                    $to = "";
+                    $username = "";
+                    $orderUserInfo= User::where('id',$checkiftokenExist->user_id)->first();
+                    $to = '+' . $orderUserInfo->dial_code . $orderUserInfo->phone_number;
+                    $username = $orderUserInfo->name;
+
                     $data = ClientPreference::select('sms_credentials','sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
                     $provider = $data->sms_provider;
                     $keyData = ['{user_name}'=>$username??''];
-                    $body = sendSmsTemplate('order-canceled',$keyData);
-                    $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
+                    if(!empty($data->sms_provider)) {
+                        $body = sendSmsTemplate('order-canceled',$keyData);
+                        $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
+                    }    
                 //END
 
                 if($checkiftokenExist->dispatcher_status_option_id == 5){
