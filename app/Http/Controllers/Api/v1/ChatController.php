@@ -192,9 +192,7 @@ class ChatController extends BaseController
             // check order_vendor_id and order_id is empty then it is called for p2p chat
             if( $c_type == 'user_to_user' ) {
 
-               $random_string = $this->generateRandomString(10);
-
-            
+           
               
                 $room_name = $room_id = ($order_number != null) ? 'p2p-productId-'.$product_id.'-orderNumber-'.$order_number :'p2p-productId-'.$product_id."-userId-".$user_id;
                 $orderby_user_id = Auth::id();
