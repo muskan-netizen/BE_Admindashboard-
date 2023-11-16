@@ -516,18 +516,20 @@ class DispatcherController extends FrontController
                     { 
                         // ride booked sms
                         $data = ClientPreference::select('sms_credentials','sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
-                        if($dispatch_status == 2){
-                            $provider = $data->sms_provider;
-                            $keyData = ['{user_name}'=>$username??''];
-                            $body = sendSmsTemplate('ride-booked',$keyData);
-                            $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
-                        }
-                        // ride complete sms
-                        if($dispatch_status == 5){
-                            $provider = $data->sms_provider;
-                            $keyData = ['{user_name}'=>$username??''];
-                            $body = sendSmsTemplate('order-completed',$keyData);
-                            $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
+                        if(!empty($data->sms_provider)  && !empty($data->sms_key) && !empty($data->sms_secret) && !empty($data->sms_from)) {
+                            if($dispatch_status == 2){
+                                $provider = $data->sms_provider;
+                                $keyData = ['{user_name}'=>$username??''];
+                                $body = sendSmsTemplate('ride-booked',$keyData);
+                                $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
+                            }
+                            // ride complete sms
+                            if($dispatch_status == 5){
+                                $provider = $data->sms_provider;
+                                $keyData = ['{user_name}'=>$username??''];
+                                $body = sendSmsTemplate('order-completed',$keyData);
+                                $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
+                            }
                         }
                     }
                 // END
@@ -1037,7 +1039,7 @@ class DispatcherController extends FrontController
                     $data = ClientPreference::select('sms_credentials','sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
                     $provider = $data->sms_provider;
                     $keyData = ['{user_name}'=>$username??''];
-                    if(!empty($data->sms_provider)) {
+                    if(!empty($data->sms_provider) && !empty($data->sms_key) && !empty($data->sms_secret) && !empty($data->sms_from)) {
                         $body = sendSmsTemplate('order-canceled',$keyData);
                         $send = $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
                     }    
