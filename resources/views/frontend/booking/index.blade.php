@@ -321,6 +321,8 @@ input[type=number]::-webkit-outer-spin-button {
             <div id="booking-map" style="width: 100%; height: 100%;"></div>
             <input id="booking-latitude" type="hidden" value="-34">
             <input id="booking-longitude" type="hidden" value="151">
+            <input id="selected_category_id" type="hidden" value="">
+            <input id="selected_vendor_id" type="hidden" value="">
 
         </div>
         <div class="alFullMapForm col-md-12 p-0 position-absolute">

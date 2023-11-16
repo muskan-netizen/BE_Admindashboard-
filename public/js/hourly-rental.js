@@ -79,7 +79,7 @@ $(".next").click(function(){
             },
             body: new URLSearchParams({
                 schedule_date_delivery: rental_time,
-                category_id: category_id,
+                category_id: $("#selected_category_id").val(),
                 vendor_id: vendorId,
                 "_token": csrf_token,
                 rental_hours :rental_hours
@@ -217,100 +217,6 @@ $(".previous").click(function(){
         }
 
 
-        $(document).on("click",".product-detail-box",function() {
-            let product_id = $(this).data('product_id');
-            $(".product-detail-box").removeClass("active");
-
-            $(this).addClass("active");
-            getVehicleDetail(product_id);
-        });
-    
-        function getVehicleDetail(product_id, rider_id=0,$recurringformPost = {})
-        {
-            add_spinner('.cab-booking-loader');
-            var locations = [];
-            var pickup_location_latitude = $('input[name="pickup_location_latitude[]"]').map(function(){return this.value;}).get();
-            var pickup_location_longitude = $('input[name="pickup_location_longitude[]"]').map(function(){return this.value;}).get();
-            var destination_location_latitudes = $('input[name="destination_location_latitude[]"]').map(function(){return this.value;}).get();
-            var destination_location_longitudes = $('input[name="destination_location_longitude[]"]').map(function(){return this.value;}).get();
-            $(pickup_location_latitude).each(function(index, latitude) {
-                var data = {};
-                data.latitude = latitude;
-                data.longitude = pickup_location_longitude[index];
-                locations.push(data);
-            });
-            $(destination_location_latitudes).each(function(index, destination_location_latitude) {
-                var data = {};
-                data.latitude = destination_location_latitude;
-                data.longitude = destination_location_longitudes[index];
-                locations.push(data);
-            });
-    
-            let schedule_datetime = '';
-            let rental_price = $('#rental_price').val() ?? 0;
-            let rentalHr = $('#rental_hours').val() ?? 0;
-            let schedule_datetimeset = $('#datetime-picker').val();
-            if(schedule_datetimeset != undefined && schedule_datetimeset != 0){
-                schedule_datetime = moment(schedule_datetimeset).format('YYYY-MM-DD HH:mm');
-            }
-            var no_seats_for_pooling = $('input[name="no_seats_for_pooling"]').val();
-            var is_cab_pooling = $('input[name="is_cab_pooling_radio"]:checked').val();
-    
-            const urlParams = new URLSearchParams(window.location.search);
-            const yacht_id = urlParams.get('yacht_id');
-             
-            $.ajax({
-                type: "POST",
-                dataType: 'json',
-                data: {locations:locations,rider_id:rider_id, schedule_date_delivery:schedule_datetime, is_cab_pooling:is_cab_pooling, no_seats_for_pooling:no_seats_for_pooling,recurringformPost,rental_hour:parseInt(rentalHr)},
-                url: get_product_detail+'/'+product_id,
-                success: function(response) {
-                    console.log({response});
-                    remove_spinner('.cab-booking-loader');
-                    if(response.status == 'Success'){
-                        $('#cab_detail_box').html('');
-                        if(response.data.length != 0){
-    
-                            var schedule_date_time = ''
-                            if(schedule_datetime !='' && schedule_datetime != undefined){
-                                schedule_date_time = moment(schedule_datetime).format('MMM Do YY, h:mm:ss a')
-                            }
-    
-                            var cabData = _.extend({ Helper: NumberFormatHelper },{result: response.data,schedule_datetime:schedule_date_time});
-    
-                            $('.address-form').addClass('d-none');
-                            $('.cab-detail-box').removeClass('d-none');
-                           
-
-                            
-                            var buttonElement = document.getElementById('book_hourly_rental');
-
-                            buttonElement.setAttribute('data-product_id', response.data.id);
-                            buttonElement.setAttribute('data-coupon_id', "");
-                            buttonElement.setAttribute('data-subscriptionPayableAmount', response.data.tags_price);
-                            buttonElement.setAttribute('data-vendor_id', response.data.vendor.id);
-                            buttonElement.setAttribute('data-amount',response.data.tags_price);
-                            buttonElement.setAttribute('data-tollamount', response.data.toll_fee);
-                            buttonElement.setAttribute('data-servicechargeamount', response.data.service_charge_amount);
-                            buttonElement.setAttribute('data-totalamount', response.data.tags_price);
-                            buttonElement.setAttribute('data-image', response.data.image_url);
-
-                                let cab_detail_box_template = _.template($('#cab_detail_box_template').html());
-                                $("#cab_detail_box").append(cab_detail_box_template(cabData)).show();
-                            
-                            
-                           
-    
-                             $('#selected_rental_product').val(response.data.id);
-    
-                        }else{
-                            $("#cab_detail_box ").html('<p class="text-center my-3">'+ no_result_message +'</p>').show();
-                        }
-                    }
-                }
-            });
-        }
-
 
 
         // order create js
@@ -320,7 +226,7 @@ $(".previous").click(function(){
  
              e.preventDefault();
 
-             var pickupLocation = $('#pickup_location').val().trim();
+             var pickupLocation = $('#pickup_hourly_location').val().trim();
              if (pickupLocation === '') {
                  sweetAlert.error('Please select a pick-up location.',"");
                  return;
@@ -464,9 +370,9 @@ $(".previous").click(function(){
             let totalamount                 = $(this).attr('data-totalamount');
             let subscription_payable_amount = $(this).attr('data-subscriptionPayableAmount');
             let product_image               = $(this).attr('data-image');
-            let vendor_id                   = $(this).attr('data-vendor_id');
+            let vendor_id                   = $('#selected_vendor_id').val();
             let coupon_id                   = $(this).attr('data-coupon_id');
-            let product_id                  = $(this).attr('data-product_id');
+            let product_id                  = $('#selected_rental_product').val();
             let payment_option_id           = $(this).attr('data-payment_method');
             let type                        = parseFloat($('input[name=is_for_friend]:checked').val());
             let driver_id                   = $(this).attr('data-driver_id');

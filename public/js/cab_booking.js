@@ -1319,7 +1319,27 @@ $(document).ready(function () {
         let product_id = $(this).data('product_id');
         getVehicleDetail(product_id);
     });
+    $(document).on("click",".category-view-box",function() {
+        let category_id = $(this).data('category_id');
+        getProductDetail(category_id);
+        initialize();
 
+    });
+
+    function getProductDetail(category_id)
+    {
+       
+        $("#selected_category_id").val(category_id);
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            data: {category_id:category_id},
+            url: get_rental_view,
+            success: function(response) {
+               
+             }
+        });
+    }
     function getVehicleDetail(product_id, rider_id=0,$recurringformPost = {})
     {
         add_spinner('.cab-booking-loader');
@@ -1399,7 +1419,12 @@ $(document).ready(function () {
                         }
                         if(response.data.distance == 0 || response.data.duration == 0)
                         {
-                            getDistance();
+
+                            if($('#selected_category_id').val() == "")
+                            {
+
+                                getDistance();
+                            }
                         }
                         if($('input[name=is_for_friend]:checked').val()==1){
                             $('.for_friend_fields_div').removeClass('d-none');
@@ -1410,6 +1435,7 @@ $(document).ready(function () {
                         }
 
                          $('#selected_rental_product').val(response.data.id);
+                         $('#selected_vendor_id').val(response.data.vendor_id);
 
                     }else{
                         $("#cab_detail_box ").html('<p class="text-center my-3">'+ no_result_message +'</p>').show();
@@ -1860,6 +1886,8 @@ $(document).ready(function () {
     function initialize() {
       var input = document.getElementById('pickup_location');
       var input2 = document.getElementById('destination_location');
+      var input3 = document.getElementById('pickup_hourly_location');
+      
       if(input){
         var autocomplete = new google.maps.places.Autocomplete(input);
         var autocomplete2 = new google.maps.places.Autocomplete(input2);
@@ -1913,6 +1941,36 @@ $(document).ready(function () {
             }
 
         });
+      }
+      if(input3){
+        var hourly_autocomplete = new google.maps.places.Autocomplete(input3);
+        if(is_map_search_perticular_country){
+            hourly_autocomplete.setComponentRestrictions({'country': [is_map_search_perticular_country]});
+        }
+        google.maps.event.addListener(hourly_autocomplete, 'place_changed', function () {
+            var place = hourly_autocomplete.getPlace();
+            $('#pickup_location_latitude').val(place.geometry.location.lat());
+            $('#pickup_location_longitude').val(place.geometry.location.lng());
+            initMap2();
+
+            var pickup_location = $("#pickup_location").val();
+            if(pickup_location != ""){
+                var pickupLocationLatitude  = place.geometry.location.lat();
+                var pickupLocationLongitude = place.geometry.location.lng();
+                var currentUrl              = window.location.href;
+                var queryString             = removeURLParameter(currentUrl, 'pickup_location');
+                var perm                    = "?pickup_location=" + pickup_location + "&pickup_location_latitude=" + pickupLocationLatitude +"&pickup_location_longitude=" + pickupLocationLongitude + (queryString != '' ? "&" + queryString : '');
+                window.history.replaceState(null, null, perm);
+
+                $(".check-pick-first").css("display", "none");
+                $("#pickup-where-from").html(" "+pickup_location);
+                $(".check-dropoff-secpond").css("display", "block");
+                $('.check-pickup').attr("style", "display: none !important");
+                $(".check-dropoff").css("display", "block");
+            }
+
+        });
+      
       }
     }
 

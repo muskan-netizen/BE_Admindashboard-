@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{Currency, CategoryKycDocuments,Banner, Category, Brand, Product, Celebrity, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet, ServiceArea, UserAddress,Country,Cart,CartProduct,SubscriptionInvoicesUser,ClientPreference,LoyaltyCard,Order,CaregoryKycDoc,Rider, Attribute, Company};
+use App\Models\{Currency, CategoryKycDocuments,Banner, Category, Brand, Product, Celebrity, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet, ServiceArea, UserAddress,Country,Cart,CartProduct,SubscriptionInvoicesUser,ClientPreference,LoyaltyCard,Order,CaregoryKycDoc,Rider, Attribute, Company, ProductVariant};
 use Redirect;
 use Log;
 use \App\Http\Traits\{VendorTrait};
@@ -998,13 +998,29 @@ class CategoryController extends FrontController{
     }
 
  
-    public function getRentalView()
+    public function getRentalView(Request $request)
     {
+ 
+ 
+        if($request->has('category_id'))
+        {
+            $product_ids = Product::where('category_id', $request->category_id)->pluck('id');
+            $productVariant = ProductVariant::whereIn('product_id', $product_ids)->orderBy('price','asc')->first();
+            
+             
 
-        $product = Product::where('category_id',29)->orderBy('per_hour_price','asc')->first();
+            return response()->json(['product' => $productVariant]);
+        }
+        else{
+
+            $langId = Session::get('customerLanguage');
   
-        $view = view('frontend.booking.hourlyRental',['product' => $product])->render();
-
-        return response()->json(['view' => $view]);
+            $navCategories = $this->categoryNav($langId);
+             
+            $view = view('frontend.booking.hourlyRental',['navCategories' => $navCategories])->render();
+    
+            return response()->json(['view' => $view]);
+        }
+       
     }
 }

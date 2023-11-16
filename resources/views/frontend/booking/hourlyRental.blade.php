@@ -474,6 +474,44 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
             <!-- fieldsets -->
             <fieldset>
                 <div class="custom-list">
+                    <h2 class="fs-title">Select Category</h2>
+                    <hr>
+                    
+                        <!-- Check if $navCategories is not empty -->
+                        @if (!empty($navCategories))
+                    
+                            <!-- Loop through each category -->
+                            @foreach ($navCategories as $category)
+                                <a class="category-view-box d-flex align-items-center no-gutters px-2" href="javascript:void(0)" data-category_id="{{ $category->id }}">
+                                    <div class="col-2 category-icon">
+                                        <img class='img-fluid' src="{{$category->icon['proxy_url'].'200/200'.$category->icon['image_path']}}" alt="{{ $category->slug }} Image">
+                                    </div>
+                                    <div class="col-10">
+                                        <div class="row no-gutters">
+                                            <div class="col category-details">
+                                                <h4 class="m-0"><b>{{ $category->slug }}</b></h4>
+                                            </div>
+                                           
+                                        </div>
+                                    </div>
+                                </a>
+                                <hr class="m-0">
+                            @endforeach
+                    
+                        <!-- If $navCategories is empty -->
+                        @else
+                            <div class="col-12 category-details text-center">
+                                <img class="w-100" src="{{ asset('assets/images/noproductfound.png') }}" alt="No Category Found">
+                                {{ __('No result found. Please try a new search') }}
+                            </div>
+                        @endif
+                    
+                </div>
+                <input type="button" name="next" class="next action-button" value="Next"/>
+
+            </fieldset>
+            <fieldset>
+                <div class="custom-list">
                     <h2 class="fs-title">Hourly Rentals</h2>
                     <hr>
                     <div class="list-item">Keep the car and driver for as long as you need</div>
@@ -485,8 +523,9 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
                 <div class="row mt-2">
                    
                     <div class="col-6 text-left ">Starting at</div>
-                    <div class="col-6 text-right">${{decimal_format($product->per_hour_price,2)}}/hr</div>
+                    <div class="col-6 text-right">${{decimal_format(0)}}/hr</div>
                 </div>
+                <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
                 <input type="button" name="next" class="next action-button" value="Get Started"/>
 
             </fieldset>
@@ -500,7 +539,7 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
                         <div class="custom-button" id="plusButton">+</div>
                     </div>
                     <input type="hidden" id="rental_hours" value="1" />
-                    <input type="hidden" id="rental_price" value="{{decimal_format($product->per_hour_price)}}" />
+                    <input type="hidden" id="rental_price" value="{{decimal_format(0)}}" />
                    
                     <div class="box-container mb-3">
                         <div class="custom-box filled-box"></div>
@@ -534,7 +573,7 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
                 <div class="row mt-2 mb-2">
                    
                     <div class="col-6 text-left ">Starting at</div>
-                    <div class="col-6 hourly_price text-right">${{decimal_format($product->per_hour_price,2)}}/hr</div>
+                    <div class="col-6 hourly_price text-right">${{decimal_format(0,2)}}/hr</div>
                 </div>
                 
                 
@@ -580,7 +619,7 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
                 <div class="location-search d-flex align-items-center check-pickup">
                     <i class="fa fa-search" aria-hidden="true"></i>
                     <input class="form-control pickup-text pac-target-input" type="text"
-                        name="pickup_location_name[]" placeholder="Add A Pick-Up Location" id="pickup_location"
+                        name="pickup_location_name[]" placeholder="Add A Pick-Up Location" id="pickup_hourly_location"
                         autocomplete="off">
                 </div>
                     <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
