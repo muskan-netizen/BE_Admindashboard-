@@ -167,8 +167,10 @@ class ChatController extends BaseController
             $data = $request->all();
             
             $vendor_id = $data['vendor_id'];
-            $order_number = $data['order_number'];
+         
+            $order_number = $data['order_number'] ?? null;
             $vendor_order_id = $data['order_vendor_id'] ?? '';
+           
             $order_id = $data['order_id'] ?? '';
             $isRaiseIssue = $data['isRaiseIssue'] ?? 0 ;
             $server_name = $_SERVER['SERVER_NAME'];
@@ -181,12 +183,18 @@ class ChatController extends BaseController
             $vendor_name = null;
             $product_name = null;
             $product_price = null;
+            $user_id = Auth::id();
+
             $product = [];
             $vendorImage = [];
+           
             // dd(is_null($order_id));
             // check order_vendor_id and order_id is empty then it is called for p2p chat
             if( $c_type == 'user_to_user' ) {
-                $room_name = $room_id = 'p2p-productId-'.$product_id.'-orderNumber-'.$order_number;
+
+           
+              
+                $room_name = $room_id = ($order_number != null) ? 'p2p-productId-'.$product_id.'-orderNumber-'.$order_number :'p2p-productId-'.$product_id."-userId-".$user_id;
                 $orderby_user_id = Auth::id();
                 $p2p_id = $vendor_id;
                 $vendor = Vendor::where('id', $vendor_id)->first();
@@ -258,9 +266,11 @@ class ChatController extends BaseController
                 $roomData = $response['roomData'];
                 return response()->json(['status' => true, 'roomData' => $roomData ,'product' => $product,'vendorImage' => $vendorImage, 'message' => __('Room created successfully !!!')]);
             } else {
+              
                 return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
             }
         } catch (\Throwable $th) {
+         
             return response()->json(['status' => false, 'message' => __('Something went wrong!!!')]);
         }
     }
@@ -278,16 +288,26 @@ class ChatController extends BaseController
             $order_vendor = [];
             if(@$request->product_id){
                 $order_vendor_id = OrderVendorProduct::select('order_vendor_id')->where('product_id', $request->product_id)->orderBy('id', 'Desc')->first();
+                  
+                if($order_vendor_id)
+                {
                 $order_vendor = OrderVendor::select('order_status_option_id', 'vendor_id', 'user_id', 'id')->where('id',  $order_vendor_id->order_vendor_id)->first();
                 
                 $user_vendor = UserVendor::where('vendor_id', $order_vendor->vendor_id)->first();
                 $order_vendor->vendor_user_id = $user_vendor->user_id ?? 0;
+
+                }
             }
+
+
+
+            
             if($request->product_id != 'undefined' && $request->product_id != ''){
                 $orderData = $this->ProductDetail($request);
-               
+                
                 if(@$orderData){
                     $user_vendor = UserVendor::where('vendor_id', $orderData->vendor_id)->first();
+                    
                     if(@$user_vendor->user_id){
                         $vendorImage = User::where('id', $user_vendor->user_id)->first();
                     }
