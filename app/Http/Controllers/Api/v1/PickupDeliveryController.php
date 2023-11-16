@@ -1270,8 +1270,6 @@ class PickupDeliveryController extends BaseController{
                             'call_notification' => $request->call_notification??0
                         ];
 
-                        \Log::info('bid_request');
-                        \Log::info($postdata);
 
                 if($request->has('bid_task_type')){
                     $postdata['bid_task_type']    = $request->bid_task_type;
