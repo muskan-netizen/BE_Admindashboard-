@@ -35,6 +35,7 @@
     border-top: none;
     border-bottom: none;
     border-left: none;
+    border-radius: 5px 0 0 5px;
 }
 
 .disclaimer {
@@ -88,7 +89,7 @@ a.backArroww.position-absolute {
 .alPostBoxOuter ul li a:hover {
     text-decoration: none;
     background: linear-gradient(180deg, #e1dfdf 0%, #efe7e7 100%);
-}
+} 
 
 .alPostBoxOuter a:hover {
     text-decoration: none;
