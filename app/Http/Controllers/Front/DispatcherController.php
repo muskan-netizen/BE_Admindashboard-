@@ -82,7 +82,7 @@ class DispatcherController extends FrontController
 
                     # vendor status update
 
-                    if(isset($request->status_option_id) && !empty($request->status_option_id) && (in_array($request->status_option_id ,[6,3])) && $type == 2){
+                    if(isset($request->status_option_id) && !empty($request->status_option_id) && (in_array($request->status_option_id ,[6,3,4])) && $type == 2){
 
                         $checkif= VendorOrderStatus::where(['order_id' =>  $checkiftokenExist->order_id,
                         'order_status_option_id' =>  $request->status_option_id,
