@@ -1336,7 +1336,9 @@ $(document).ready(function () {
             data: {category_id:category_id},
             url: get_rental_view,
             success: function(response) {
-               
+               $('#starting_rental_price').val(response.product.price);
+               $('#starting_price').text("$"+response.product.price);
+               $('.hourly_price').val(response.product.price);
              }
         });
     }

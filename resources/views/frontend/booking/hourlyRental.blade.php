@@ -523,7 +523,7 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
                 <div class="row mt-2">
                    
                     <div class="col-6 text-left ">Starting at</div>
-                    <div class="col-6 text-right">${{decimal_format(0)}}/hr</div>
+                    <div id="starting_price" class="col-6 text-right">/hr</div>
                 </div>
                 <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
                 <input type="button" name="next" class="next action-button" value="Get Started"/>

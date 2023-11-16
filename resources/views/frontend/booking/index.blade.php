@@ -323,6 +323,7 @@ input[type=number]::-webkit-outer-spin-button {
             <input id="booking-longitude" type="hidden" value="151">
             <input id="selected_category_id" type="hidden" value="">
             <input id="selected_vendor_id" type="hidden" value="">
+            <input id="starting_rental_price" type="hidden" value="">
 
         </div>
         <div class="alFullMapForm col-md-12 p-0 position-absolute">
@@ -1812,9 +1813,7 @@ input[type=number]::-webkit-outer-spin-button {
         var category_id = "{{ $category->id ?? '' }}";
         var category_name = "{{ @$category->translation[0]->name ?? '' }}";
         var routeset = "{{ route('pickup-delivery-route', ':category_id') }}";
-        var is_hourly_rental_enabled = 1;
-        var product_price = "{{$product->per_hour_price}}";
-      
+        var is_hourly_rental_enabled = 1;      
         var autocomplete_urls = routeset.replace(":category_id", category_id);
         var wallet_balance = {{ $wallet_balance }}
         var payment_stripe_url = "{{ route('payment.stripe') }}";

@@ -177,9 +177,10 @@ $(".previous").click(function(){
         });
 
         function updateRentalPrice() {
-
+            var product_price =$('.hourly_price').val();
             var rental_hours = currentIndex.toString();
-             var new_product_price = product_price * rental_hours;
+              
+            var new_product_price = product_price * rental_hours;
             const buttonTextElement = $('.hourly_price');
             if (buttonTextElement) {
                 $('.hourly_price').text("$"+new_product_price+"/hr");
