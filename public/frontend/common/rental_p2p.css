@@ -330,7 +330,7 @@ body.al_body_template_nine.p2p-module.dark form input.form-control,
 .cate-item img {
 width: 120px;
 height: 120px;
-padding: 3px;
+padding: 0;
 border: 1px solid #ccc;
 border-radius: 8px;
 margin: 0 auto 0px;
