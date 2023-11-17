@@ -1176,7 +1176,6 @@ $(document).ready(function () {
         let tipElement = $("#cart_tip_amount");
         let payment_from = '';
         let cabElement = $("#pickup_now");
-
         if (path.indexOf("cart") !== -1) {
             total_amount = cartElement.val();
             payment_from = 'cart';
@@ -1190,11 +1189,21 @@ $(document).ready(function () {
             subsId = subscriptionId.val();
             payment_from = 'subscription';
             var rowData = 'subsid=' + subsId + '&from=' + payment_from + '&amt=' + total_amount;
-        } else if (cabElement.length > 0) {
+        } else if (path.indexOf("giftCard") !== -1) {
+                payment_form = 'giftCard';
+                gift_card_id        = $("#giftCard_id").val();
+                send_card_to_name   = $("input[name='send_card_to_name']").val();
+                send_card_to_mobile = $("input[name='send_card_to_mobile']").val();
+                send_card_to_email  = $("input[name='send_card_to_email']").val();
+                send_card_to_address    = $("input[name='send_card_to_address']").val();
+                send_card_is_delivery   = $("#send_card_is_delivery").val();
+                var rowData = 'gift_card_id=' + total_amount + '&from=' + payment_from + 'send_card_to_name=' + send_card_to_name + '&send_card_to_mobile=' + send_card_to_mobile +'send_card_to_email=' + send_card_to_email + '&send_card_to_address=' + send_card_to_address + '&send_card_is_delivery=' + send_card_is_delivery;
+        }else if (cabElement.length > 0) {
             total_amount = cabElement.data('amount');
             payment_from = 'pickup_delivery';
             var rowData = 'amt=' + total_amount + '&from=' + payment_from + '&order_number=' + order.order_number;
-        } else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
+        } 
+        else if ((tip_for_past_order != undefined) && (tip_for_past_order == 1)) {
             total_amount = tipElement.val();
             payment_from = 'tip';
             var rowData = 'amt=' + total_amount + '&from=' + payment_from + '&order_number=' + $("#order_number").val();

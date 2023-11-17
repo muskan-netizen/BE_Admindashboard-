@@ -679,7 +679,6 @@ class HomeController extends BaseController
         }
         $vendors = $vendors->where('status', 1)->where($request->type, 1)
             ->limit(10)->get();
-
         foreach ($vendors as $key => $value) {
             $vendor_ids[] = $value->id;
             // $value->vendorRating = $this->vendorRating($value->products);
