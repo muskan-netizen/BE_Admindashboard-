@@ -2004,8 +2004,13 @@ body .modal-content #address-map-container {
 .al_body_template_three .suppliers-box:hover{box-shadow:none;box-sizing:border-box;border:1px solid transparent} */
 
 .wishlist-row .product-icon img {
-    border-radius: 35px;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border: 1px solid #cccc;
 }
+
 
 body #page-container #footer .footer-theme .sub-title .contact-list li span {
     padding-left: 0
