@@ -598,6 +598,7 @@ if (!function_exists('imageExists')) {
         return \File::exists(public_path($url));
     }
 }
+
 if (!function_exists('getImageUrl')) {
     function getImageUrl($image, $dim)
     {
