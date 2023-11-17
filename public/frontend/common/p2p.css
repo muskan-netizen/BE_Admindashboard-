@@ -100,7 +100,15 @@ body.dark.al_body_template_one.p2p-module .breadcrumb-section .breadcrumb {
     padding: 10px;
     border-radius: 10px;
 }
-
+a#readMoreLink {
+    background: transparent;
+    border: unset;
+    padding: 0;
+    color: var(--theme-deafult)!important;
+    text-transform: capitalize;
+    font-weight: 600;
+    letter-spacing: 0;
+}
 body.al_body_template_nine.p2p-module .product-buttons {
     margin: 0 0 10px !important;
 }

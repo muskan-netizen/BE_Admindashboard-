@@ -1515,7 +1515,8 @@ body.al_body_template_nine.p2p-module section.p2p-categories .cate-item h3 {
 body.al_body_template_nine.p2p-module section.p2p-categories .cate-item img {
     width: 100%;
     height: 100px;
-    object-fit: contain;
+    object-fit: cover;
+    padding: 0;
 }
 
 body.al_body_template_nine section.main-product.mb-0.render_full_on_sale {
