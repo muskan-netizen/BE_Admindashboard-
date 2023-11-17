@@ -100,7 +100,6 @@ class GiftcardController extends FrontController
         $code = array('stripe','ccavenue');
         $ex_codes = array('cod');
         $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->whereIn('code', $code)->where('status', 1)->get();
-        \Log::info($payment_options);
         foreach ($payment_options as $k => $payment_option) {
             if( (in_array($payment_option->code, $ex_codes)) || (!empty($payment_option->credentials)) ){
                 $payment_option->slug = strtolower(str_replace(' ', '_', $payment_option->title));
