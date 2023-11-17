@@ -528,12 +528,12 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
 .al_body_template_six.homeHeader .product-bottom-bar {
     padding: 20px 0;
     max-width: 1400px;
-    margin: -70px auto 0;
+    margin: 20px auto 0;
     background-color: #fff;
     width: 100%;
     position: relative;
     border-radius: 20px 20px 0 0;
-    box-shadow: 0 -30px 20px rgb(0 0 0 / 20%);
+    box-shadow:  0 0 4px rgb(0 0 0 / 20%);
 }
 
 .al_body_template_six.homeHeader .container.homepageSix,
