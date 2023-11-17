@@ -5,7 +5,7 @@
     {
       $url = loadDefaultImage();   
      }    
-    <div class="common-banner my-banner"><img class="blur-up lazyload" alt="" data-src="{{ $url}}" >
+    <div class="common-banner my-banner"><img class="blur-up lazyload" alt="" data-src="{{ $url ?? ''}}" >
 
 
 </div>
@@ -36,7 +36,7 @@ if(!imageExists($url))
 }
 
 @endphp
-    <div class="common-banner my-banner"><img alt="" class="blur-up lazyload" data-src="{{ $url}}"></div>
+    <div class="common-banner my-banner"><img alt="" class="blur-up lazyload" data-src="{{ $url ?? ''}}"></div>
 @else
-    <div class="common-banner my-banner"><img alt="" class="blur-up lazyload" data-src="{{ $url}}" ></div>
+    <div class="common-banner my-banner"><img alt="" class="blur-up lazyload" data-src="{{ $url ?? '' }}" ></div>
 @endif
