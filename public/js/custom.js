@@ -6211,6 +6211,7 @@ $('.category_responsive').slick({
       }
     ]
   });
+
           
 
 

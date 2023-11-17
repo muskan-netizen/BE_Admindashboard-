@@ -71,7 +71,7 @@
                                         @endforeach
                                     @endif
                                 </ul>
-                                <ul class=" p-0 m-0 no-gutters view-p2psell_cats d-none">
+                                <ul class=" p-0 m-0 no-gutters   view-p2psell_cats d-none">
                                     @if (@$categories)
                                         @foreach ($categories as $key => $category)
                                             @php  $icon = $category['icon']['proxy_url'] . '200/200' . $category['icon']['image_path'];  @endphp
@@ -413,7 +413,8 @@
                 $viewRentalCats.removeClass('d-none');
                 break;
                 case '13':
-                $viewP2PSellCats.removeClass('d-none');
+                $viewP2PSellCats.removeClass('d-none');               
+                // $(".slick-arrow").click();
                 break;
                 default:
                 $viewAllCats.removeClass('d-none');
