@@ -3537,24 +3537,7 @@
       
          });
 
-         const resetButton = document.getElementById('reset-btn');
-         resetButton.addEventListener('click', function (e) {
-            e.preventDefault();
-            Swal.fire({
-                title: 'Confirmation',
-                text: 'Are you sure you want to reset to default configuration settings?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, reset!',
-                cancelButtonText: 'No, cancel',
-            }).then((result) => {
-
-                if (result.value) {
-                    // If the user confirms, submit the form
-                    document.querySelector('#reset-form').submit();
-                }
-            });    
-        });
+        
         
         $('#pickup_notification_switch2')[0].onchange = function() {
             if ($('#pickup_notification_switch2:checked').length != 1) {
