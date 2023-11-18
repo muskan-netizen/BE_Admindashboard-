@@ -2414,7 +2414,7 @@
     </div>
     
     {{-- ends here marg form --}}
-</div>
+    </div>
     <div class="col-xl-4 col-lg-4 mb-3 d-none">
         <div class="page-title-box">
             <h4 class="page-title text-uppercase">{{ __('Blockchain Route Formation') }}</h4>
@@ -2433,18 +2433,18 @@
             
 
             <div class="col-12">
-                  
+                
                 <div class="form-group mb-0 d-flex switchery-demo">
                     <label for="" class="mr-3">{{ __('Enable') }}</label>
                     <input type="checkbox" data-plugin="switchery" name="blockchain_route_formation_switch"
                         id="blockchain_route_formation_switch" class="form-control checkbox_change"
                         data-className="blockchain_route_formation" data-color="#43bee1"
-                        @if (@$getAdditionalPreference['blockchain_route_formation'] == 1) checked='checked' @endif>
+                        @if (@$getAdditionalPreference['blockchain_route_formation'] == 1) checked @endif>
                     <input type="hidden" @if (@$getAdditionalPreference['blockchain_route_formation'] == 1) value="1" @else value="0" @endif
                         name="blockchain_route_formation" id="blockchain_route_formation" />
                 </div>
         
-                <div class="row mt-2  @if (@$getAdditionalPreference['blockchain_route_formation'] == 1) @else d-none @endif;" id="blockchain_configuration_div">
+                <div class="row mt-2  @if (@$getAdditionalPreference['blockchain_route_formation'] != 1) d-none @endif;" id="blockchain_configuration_div">
                    
                     <div class="col-6">
                     <label for="" class="mr-3">{{ __('Blockchain Api Domain') }}</label>
@@ -2510,10 +2510,9 @@
                     </div>
                 </div>
             </form>
-            </div>
+        </div>
         </div>
 	@endif
-    
 </div>
     <div class="row">
 
@@ -2861,7 +2860,7 @@
             $('.optionTableAdd').append($clone);
 
         });
-        $('#add_slot_modal_btn').click(function(e) {
+        $('#add_slot_modal_btn').click(function(e) {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
             document.getElementById("slotForm").reset();
             $('#add_slot_modal input[name=slot_id]').val("");
             $('#add_slot_modal').modal('show');
@@ -2870,7 +2869,7 @@
 
 
         $(document).on("click", "#sync_marg_btn", function(e) {
-            e.preventDefault();
+            e.preventDefault();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
             $.ajax({
                 type: "GET",
                 dataType: 'json',
@@ -3250,7 +3249,7 @@
             $('#add-customer-modal').removeClass('fadeIn');
 
         });
-
+    //*************configurations hyperlocal map location selected by map*********************//
         $(document).on('click', '.showMap', function() {
             var no = $(this).attr('num');
             var lats = document.getElementById('Default_latitude').value;
@@ -3258,48 +3257,60 @@
 
             document.getElementById('map_for').value = no;
 
-            if (lats == null || lats == '0') {
-                lats = 30.53899440;
-            }
-            if (lngs == null || lngs == '0') {
-                lngs = 75.95503290;
-            }
+                    if (lats == null || lats == '0') {
+                    lats = 30.53899440;
+                    }
+                    if (lngs == null || lngs == '0') {
+                    lngs = 75.95503290;
+                    }
 
             var myLatlng = new google.maps.LatLng(lats, lngs);
-            var mapProp = {
+                var mapProp = {
                 center: myLatlng,
                 zoom: 13,
                 mapTypeId: google.maps.MapTypeId.ROADMAP
 
-            };
+                };
             var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
-            var marker = new google.maps.Marker({
+                var marker = new google.maps.Marker({
                 position: myLatlng,
                 map: map,
                 title: 'Hello World!',
                 draggable: true
-            });
-            document.getElementById('lat_map').value = lats;
-            document.getElementById('lng_map').value = lngs;
-            google.maps.event.addListener(marker, 'drag', function(event) {
+                });
+                document.getElementById('lat_map').value = lats;
+                document.getElementById('lng_map').value = lngs;
+                google.maps.event.addListener(marker, 'drag', function(event) {
+
                 document.getElementById('lat_map').value = event.latLng.lat();
                 document.getElementById('lng_map').value = event.latLng.lng();
             });
 
             google.maps.event.addListener(marker, 'dragend', function(event) {
-                var zx = JSON.stringify(event);
-                console.log(zx);
 
-
-                document.getElementById('lat_map').value = event.latLng.lat();
-                document.getElementById('lng_map').value = event.latLng.lng();
-            });
+            var newLat = event.latLng.lat();
+            var newLng = event.latLng.lng();
+            var geocoder = new google.maps.Geocoder();
+            var latlng = new google.maps.LatLng(newLat, newLng);
+                geocoder.geocode({
+                'latLng': latlng
+                }, function(results, status) {
+                if (status === google.maps.GeocoderStatus.OK) {
+                    if (results[0]) {
+                    var locationName = results[0].formatted_address;
+                    document.getElementById('Default_location_name').value = locationName;
+                }
+                }
+                });
+                    document.getElementById('lat_map').value = newLat;
+                    document.getElementById('lng_map').value = newLng;
+                });
             $('#add-customer-modal').addClass('fadeIn');
             $('#show-map-modal').modal({
-                keyboard: false
+            keyboard: false
             });
 
-        });
+            });
 
         $(document).on('click', '.selectMapLocation', function() {
 
@@ -3537,8 +3548,7 @@
       
          });
 
-        
-        
+       
         $('#pickup_notification_switch2')[0].onchange = function() {
             if ($('#pickup_notification_switch2:checked').length != 1) {
                 $('#pickup_notification_div2').hide();
@@ -3653,9 +3663,5 @@
             $('.lumen-field').hide();
         }
         });
-
-     
-        
-    
     </script>
 @endsection
