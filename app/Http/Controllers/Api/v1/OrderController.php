@@ -2596,9 +2596,6 @@ class OrderController extends BaseController
                     // },
                     'vendors' => function ($q) use ($vendor_id) {
                         $q->where('vendor_id', $vendor_id)
-                          ->with(['dispatcherRoute' => function ($q) {
-                              $q->select('order_id', 'dispatch_traking_url');
-                          }])
                           ->addSelect([
                               'order_vendors.*',
                               \DB::raw('(SELECT dispatch_traking_url FROM order_product_dispatch_routes WHERE order_product_dispatch_routes.order_id = order_vendors.order_id LIMIT 1) as dispatch_traking_url')
