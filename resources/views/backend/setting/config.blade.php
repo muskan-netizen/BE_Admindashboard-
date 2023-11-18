@@ -2513,26 +2513,7 @@
             </div>
         </div>
 	@endif
-    <div class="col-xl-4 col-lg-4 mb-3">
-        <!-- Social Logins title start -->
-        <div class="page-title-box">
-        </div><!-- Social Logins title end -->
-                        <div class="card-box">
-
-
-        <form id="reset-form" method="POST" action="{{ route('additional.resetToDefault') }}">
-            <input type="hidden" name="is_reset_default" id="is_reset_default" value="1">
-            @csrf
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <h4 class="header-title text-uppercase mb-0">{{ __('Restoring to Default Configuration Settings') }}
-                </h4>
-                <button id="reset-btn" class="btn btn-info d-block" type="submit">{{ __('Reset') }}</button>
-
-            </div>
-                     
-        </form>
-        </div>
-    </div>
+    
 </div>
     <div class="row">
 
