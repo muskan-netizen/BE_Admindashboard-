@@ -1099,4 +1099,5 @@ class ClientPreferenceController extends BaseController{
 
         return back();
     }
+
 }

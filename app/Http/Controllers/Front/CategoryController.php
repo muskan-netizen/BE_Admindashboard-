@@ -935,7 +935,7 @@ class CategoryController extends FrontController{
         }else{
             $end_time = date('Y-m-d 23:59');
             if($vendor->show_slot == 1)
-            {
+            { 
                 $timing   = $this->SplitTime($curr_time, $end_time, "60");
                 foreach ($timing as $k=> $slt) {
                     if($k+1 < count($timing)){
