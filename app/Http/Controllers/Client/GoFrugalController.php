@@ -57,7 +57,7 @@ class GoFrugalController extends BaseController
     public function index(Request $request)
     {
         if(!Session::has('job_running')){
-            \Log::info('job dispatched');
+            \Log::info('job creating');
             dispatch(new GoFrugalSync())->onQueue('go_frugal');
             return redirect()->back()->with('success', 'Data is being Synced');
         }
