@@ -22,7 +22,7 @@ class GoFrugalSync implements ShouldQueue
      */
     public function __construct()
     {
-        //
+        \Log::info('job created');
     }
 
     /**
@@ -32,9 +32,11 @@ class GoFrugalSync implements ShouldQueue
      */
     public function handle()
     {
+        \Log::info('syncing data');
         Session::put('job_running', true);
         $controller = new GoFrugalController();
         $controller->syncData();
         Session::forget('job_running');
+        \Log::info('data synced');
     }
 }

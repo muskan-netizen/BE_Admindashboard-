@@ -57,17 +57,21 @@ class GoFrugalController extends BaseController
     public function index(Request $request)
     {
         if(!Session::has('job_running')){
-            dispatch(new GoFrugalSync)->onQueue('go_frugal');
+            \Log::info('job creating');
+            dispatch(new GoFrugalSync())->onQueue('go_frugal');
             return redirect()->back()->with('success', 'Data is being Synced');
         }
         return redirect()->back()->with('success', 'Data is already being synced');
     }
 
     public function syncData(){
-        
+        \Log::info('syncing data');
         $this->fetchCategories();
+        \Log::info('synced category');
         $this->fetchCustomers();
+        \Log::info('synced customer');
         $this->fetchProducts();
+        \Log::info('synced product');
     }
 
     protected function fetchProducts(){
