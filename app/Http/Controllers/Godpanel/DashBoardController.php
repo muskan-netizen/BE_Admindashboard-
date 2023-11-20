@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Godpanel;
 
+use App\Models\LumenClient;
 use DB;
 use App\Http\Controllers\Controller;
-use App\Models\{BillingPlan, BillingPlanType, BillingTimeframe, BillingPricing, BillingSubscription, Client, BillingPaymentTransation};
+use App\Models\{BillingPlan, BillingPlanType, BillingTimeframe, BillingPricing, BillingSubscription, Client, BillingPaymentTransation, ClientPreferenceAdditional};
 use App\Http\Controllers\Client\BaseController;
 use App\Http\Traits\BillingPlanManager;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Validator;
 
 class DashBoardController extends Controller
 {
@@ -122,6 +125,164 @@ class DashBoardController extends Controller
     {
         //
     }
+
+    public function lumen()
+    {
+        $clients = LumenClient::get();
+
+        return view('godpanel/lumen',compact('clients'));
+    }
+    public function lumenClientSave(Request $request)
+{
+    try {
+        // Validation rules (same as before)
+
+        // Validate the input data
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        // Check if a record with the same code already exists
+        $existingClient = LumenClient::where('code', $request->input('code'))->first();
+
+        if ($existingClient) {
+            // Client with the same code already exists
+            return redirect()->back()
+                ->with('error', 'A client with the same code already exists.');
+        }
+
+        // Create a new LumenClient model and save it
+        $model = new LumenClient();
+        $model->domain = $request->input('domain');
+        $model->code = $request->input('code');
+        $model->database_name = $request->input('database_name');
+        $model->lumen_access_token = $request->input('lumen_access_token_v1');
+        $model->save();
+
+        // Success message
+        return redirect()->route('lumen') // Change to the appropriate route
+            ->with('success', 'Lumen client saved successfully.');
+
+    } catch (\Exception $e) {
+        // Error message
+        return redirect()->back()
+            ->with('error', 'An error occurred while saving the Lumen client: ' . $e->getMessage());
+    }
+}
+
+public function enableLumenService(Request $request)
+{
+    $api_domain = ClientPreferenceAdditional::where('key_name', 'lumen_domain_url')->first();
+    $client = Client::find($request->client_id);
+
+    $data = [
+        'client_id' => $request->client_id,
+        'is_lumen_enabled' => $request->is_lumen,
+        'code' => $client->code,
+        'custom_domain' => $client->custom_domain,
+        'database_name' => $client->database_name,
+        'name' => $client->name ?? 'lumen',
+        'email' => $client->email,
+        'password' => rand(11111111, 9999999)
+    ];
+
+    \Log::info('post data');
+    \Log::info($data);
+
+    $headers = [
+        'Content-Type' => 'application/json',
+        'X-API-Key' => $client->lumen_access_token ?? '12345abcd',
+        'code' => $client->code
+    ];
+
+
+    if (isset($api_domain)) {
+        \Log::info('api domain');
+        \Log::info($api_domain->key_value);
+
+        $response = Http::withHeaders($headers)->post($api_domain->key_value . '/api/v1/createLumenClient', $data);
+
+        if ($response->status() === 200) {
+            $responseData = $response->json();
+            
+            // Extract the API key from the response and save it in the database
+            if (isset($responseData['api_key'])) {
+                $client->lumen_access_token = $responseData['api_key'];
+                $client->is_lumen_enabled = $request->is_lumen;
+                $client->save();
+            }
+        } else {
+            $responseData = null;
+        }
+    } else {
+        $responseData = null;
+    }
+
+    \Log::info('create lumen client');
+    \Log::info($responseData);
+
+    return response()->json([
+        'message' => 'lumen updated successfully',
+        'data' => $data ?? '',
+        'api_response' => $responseData ?? '',
+    ], 200);
+}
+
+public function enableCampaignService(Request $request)
+{
+    $api_domain = ClientPreferenceAdditional::where('key_name', 'lumen_domain_url')->first();
+    $client = Client::find($request->client_id);
+
+    if($request->has('campaign_service'))
+
+    $data = [
+        'campaign_service' => $request->campaign_service,
+        'code' => $client->code,
+    ];
+    
+
+    \Log::info('post data');
+    \Log::info($data);
+
+    $headers = [
+        'Content-Type' => 'application/json',
+        'X-API-Key' => $client->lumen_access_token ?? '12345abcd',
+        'code' => $client->code
+    ];
+
+
+    if (isset($api_domain)) {
+        \Log::info('api domain');
+        \Log::info($api_domain->key_value);
+
+        $response = Http::withHeaders($headers)->post($api_domain->key_value . '/api/v1/createLumenClient', $data);
+
+        if ($response->status() === 200) {
+            $responseData = $response->json();
+            
+
+                $client->campaign_service = $request->campaign_service;
+                $client->save();
+            
+        } else {
+            $responseData = null;
+        }
+    } else {
+        $responseData = null;
+    }
+
+
+
+    return response()->json([
+        'message' => 'service updated successfully',
+        'data' => $data ?? '',
+        'api_response' => $responseData ?? '',
+    ], 200);
+}
 
     
 }

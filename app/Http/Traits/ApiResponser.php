@@ -141,9 +141,11 @@ trait ApiResponser
 		return response()->json([
 			'status' => 'Error',
 			'message' => $message,
-			'data' => $data
+			'data' => $data,
+			'code' => $code
 		], $code);
 	}
+	
 
 	protected function updateaverageRating($product_id, $message = null, $code = 200)
 	{
@@ -535,6 +537,11 @@ trait ApiResponser
             $crendentials = json_decode($client_preference->sms_credentials);
             $send = $this->ethiopia($to,$body,$crendentials);
             }
+			elseif($client_preference->sms_provider == 10) //sms country
+    		{
+    		$crendentials = json_decode($client_preference->sms_credentials);
+    		$send = $this->sms_country($to,$body,$crendentials);
+    		}
 			else{
                 $client = new TwilioClient($sms_key, $sms_secret);
                 $client->messages->create($to, ['from' => $sms_from, 'body' => $body]);

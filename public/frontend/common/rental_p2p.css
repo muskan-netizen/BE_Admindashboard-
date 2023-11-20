@@ -439,6 +439,7 @@ html body header .header-dropdown li a.sell-btn span i{
     padding-top: 0!important;
     font-size: 14px!important;
     color: #fff!important;
+    padding-right: 5px;
 }
 html body header .header-dropdown li{
     padding-top:0!important;
@@ -523,4 +524,38 @@ html body header .header-dropdown li a.sell-btn span  i{
     opacity: 0.7;
 }
 
+}
+
+
+body.al_body_template_nine.p2p-module.p2p_module_enable .start_form_register {
+    padding: 40px 0;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable .cate-item img{
+    width: 170px;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable .category_responsive .slick-next:before, body.al_body_template_nine.p2p-module.p2p_module_enable .category_responsive  .slick-prev:before {
+    font-size: 14px;
+    color: #fff !important;
+}
+body.al_body_template_nine.p2p-module .category_responsive .slick-next, body.al_body_template_nine.p2p-module.p2p_module_enable .category_responsive  .slick-prev {
+    top: 35% !important;
+    background: #000 !important;
+    color: #fff !important;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable .category_responsive .slick-next.slick-disabled:before, .slick-prev.slick-disabled:before {
+    opacity: 1;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable .category_responsive .slick-next {
+    right: 0;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable .exzoom_nav.side_nav_img {
+    height: 550px;
+    overflow-y: scroll;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable .alPostBoxOuter ul {
+    padding-left: 38px !important;
+    padding-right: 40px !important;
 }

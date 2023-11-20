@@ -54,9 +54,13 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::get('user/registration/document', 'Api\v1\HomeController@UserRegistrationDocument');
 
+        Route::post('/cart/updateCartWalletAmount', 'Api\v1\CartController@updateCartWalletAmount');
+        
+        Route::post('product/inquiry', 'Api\v1\ProductInquiryController@store');
         Route::post('cart/add', 'Api\v1\CartController@add');
         Route::post('checkProductAvailibility', 'Api\v1\RentalProductController@checkProductAvailibility');
         Route::get('cart/list', 'Api\v1\CartController@index');
+        Route::post('cart/add-booking-option', 'Api\v1\CartController@addBookingOptionToCart');
         Route::post('upload/prescriptions', 'Api\v1\CartController@uploadPrescriptions');
         Route::post('delete/prescriptions', 'Api\v1\CartController@deleteProductPrescription');
         Route::post('mfc/stk/push', 'Api\v1\CartController@stkPushRequest');
@@ -78,7 +82,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         // get Category kyc document
         Route::post('category_kyc_document', 'Api\v1\CategoryController@getcategoryKycDocument');
         Route::post('submit_category_kyc', 'Api\v1\CartController@updateCartCategoryKyc');
-
+        Route::post('inquiry-mode/store', 'Api\v1\ProductController@storeProductInquiry');
         Route::post('search/{type}/{id?}', 'Api\v1\HomeController@globalSearch');
         Route::post('cms/page/detail', 'Api\v1\CMSPageController@getPageDetail');
         Route::post('brand/filters/{id?}', 'Api\v1\BrandController@brandFilters');
@@ -132,6 +136,9 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::get('home-restaurents', 'Api\v1\HomeController@homeRestaurents');
         Route::get('category-restaurents/{category_id}', 'Api\v1\HomeController@categoryRestaurents');
+        
+        Route::get('allergic-items', 'Api\v1\AllergicItemController@index');
+
     });
 
     Route::group(['middleware' => ['dbCheck', 'systemAuth']], function () { //apilogger
@@ -156,5 +163,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
     });
     Route::group(['middleware' => ['dbCheck']], function () {
         Route::post('header', 'Api\v1\HomeController@headerContent');
+        Route::post('rental-protection', 'Api\v1\CartController@getRentalProtection');
     });
 });

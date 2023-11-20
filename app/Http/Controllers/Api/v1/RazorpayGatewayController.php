@@ -76,7 +76,7 @@ class RazorpayGatewayController extends BaseController
 
             $orderData = [
 
-                'amount'          => $amount / 100,
+                'amount'          => (int)$amount,
 
                 'currency'        => 'INR'
             ];

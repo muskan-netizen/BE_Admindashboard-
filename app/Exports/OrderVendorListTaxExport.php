@@ -27,8 +27,11 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
         $user = Auth::user();
         if (Session::has('preferences') && !empty(Session::get('preferences'))) {
             $client_preference_detail = (object)Session::get('preferences');
+            if(!isset($client_preference_detail->is_tax_price_inclusive)){
+                $client_preference_detail =  (object)getAdditionalPreference(['is_tax_price_inclusive']);
+            }
         }else{
-            $client_preference_detail = ClientPreference::select('is_tax_price_inclusive')->first();
+            $client_preference_detail = (object)getAdditionalPreference(['is_tax_price_inclusive']);
         }
         $timezone = $user->timezone ? $user->timezone : 'Asia/Kolkata';
         $vendor_orders =  OrderVendor::with(['orderDetail.paymentOption', 'user','vendor','payment'])->orderBy('id', 'DESC');
@@ -68,6 +71,8 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
         }
         $vendor_orders = $vendor_orders->get();
         foreach ($vendor_orders as $vendor_order) {
+
+
             $adminDiscount = 0.00;
             $vendor_order->created_date = dateTimeInUserTimeZone($vendor_order->created_at, $timezone);
             $vendor_order->user_name = $vendor_order->user ? $vendor_order->user->name : '';
@@ -90,6 +95,15 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
             if ($vendor_order->orderDetail->payment_option_id == 1) {
                 $vendor_order->cash_payment = $vendor_order->payable_amount + $vendor_order->taxable_amount;
             }
+            if(!empty($vendor_order->orderDetail)){
+                $vendor_order->taxable_amount  =   (float) array_sum(explode(":", $vendor_order->orderDetail->total_other_taxes));
+            }else{
+                $vendor_order->taxable_amount = $vendor_order->orderDetail->total_other_taxes_amount;
+            }
+   
+            $vendor_order->taxable_amount  = round($vendor_order->taxable_amount,2);
+            $vendor_order->cash_payment  = $vendor_order->cash_payment + $vendor_order->taxable_amount;
+           
             $vendor_order->order_status = $order_status;
             $revenue = $vendor_order->admin_commission_percentage_amount + $vendor_order->admin_commission_fixed_amount + $vendor_order->total_markup_price;
             $vendor_order->online_payment = isset($vendor_order->payment) ? $vendor_order->payment->balance_transaction :'';
@@ -116,6 +130,7 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 'Wallet',
                 'Cash',
                 'Online',
+                'Total Discount',
                 'Promo Code Used',
                 'Promo Code Discount',
                 'Service Fee',
@@ -148,6 +163,7 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 'Wallet',
                 'Cash',
                 'Online',
+                'Total Discount',
                 'Promo Code Used',
                 'Promo Code Discount',
                 'Service Fee',
@@ -183,6 +199,7 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 decimal_format($order_vendors->orderDetail ? $order_vendors->orderDetail->wallet_amount_used : 0),
                 decimal_format($order_vendors->cash_payment),
                 decimal_format(floatval($order_vendors->online_payment)),
+                decimal_format(floatval($order_vendors->orderDetail->total_discount ?? 0)),
                 $order_vendors->coupon_code,
                 decimal_format($order_vendors->discount_amount),
                 decimal_format($order_vendors->service_fee_percentage_amount),
@@ -215,6 +232,7 @@ class OrderVendorListTaxExport implements FromCollection,WithHeadings,WithMappin
                 decimal_format($order_vendors->orderDetail ? $order_vendors->orderDetail->wallet_amount_used : 0),
                 decimal_format($order_vendors->cash_payment),
                 decimal_format(floatval($order_vendors->online_payment)),
+                decimal_format(floatval($order_vendors->orderDetail->total_discount ?? 0)),
                 $order_vendors->coupon_code,
                 decimal_format($order_vendors->discount_amount),
                 decimal_format($order_vendors->service_fee_percentage_amount),

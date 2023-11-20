@@ -25,7 +25,7 @@ class CategoryController extends BaseController
             $limit = $request->has('limit') ? $request->limit : 12;
             $page = $request->has('page') ? $request->page : 1;
             $product_list = $request->has('product_list') ? $request->product_list : 'false';
-            $mod_type = $request->has('type') ? $request->type : 'delivery';
+            $mod_type = $request->has('type') ? $request->type : 'pick_drop';
             if ($cid == 0) {
                 return response()->json(['error' => 'No record found.'], 404);
             }
@@ -46,7 +46,7 @@ class CategoryController extends BaseController
             ])
                 ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products')
                 ->where('id', $cid)->first();
-                // /pr($category->toArray());
+                // pr($category->toArray());
             $mode_of_service = "";
             // if (!empty($category)) {
             //     if (!empty($category->products) && count($category->products) > 0) {
@@ -536,6 +536,7 @@ class CategoryController extends BaseController
             if (!empty($order_type) && $order_type == 'popular_product') {
                 $products = $products->orderBy('order_product_count', 'desc');
             }
+            
             $paginate = $request->has('limit') ? $request->limit : 12;
             $products = $products->groupBy('id');
             $products = $products->paginate($paginate);

@@ -67,11 +67,13 @@ if (!function_exists('getAdditionalPreference')) {
         $return = [];
         $dbreturn= [];
         if(sizeof($key)){
-            // $result = ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
-            $cacheKey = 'client_preferences_additional_'.json_encode($key);
-            $result = Cache::remember($cacheKey, $time, function () use ($key) {
-                return ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
-            });
+            	
+            $result = ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
+            // $cacheKey = 'client_preferences_additional_'.json_encode($key);
+
+            // $result = Cache::remember($cacheKey, $time, function () use ($key) {
+            //     return ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
+            // });
             $return = array_column($result->toArray(), 'key_value', 'key_name');
             if (sizeof($result)) {
                 $dbreturn = array_column($result->toArray(), 'key_value', 'key_name');
@@ -577,11 +579,25 @@ if (!function_exists('loadDefaultImage')) {
         $image_path = \Config::get('app.IMG_URL2').'/'.\Storage::disk('s3')->url('default/default_image.png');
         $image_fit = \Config::get('app.FIT_URl');
         $default_url = $image_fit .'300/300'. $image_path.'@webp';
-        return $default_url;
+
+        if (imageExists($default_url)) {
+            return $default_url;
+        } else {
+            return asset('assets/images/bg-material.png');
+
+        }
     }
 }
 
 
+if (!function_exists('imageExists')) {
+
+     function imageExists($url) {
+        // You can use either File or Storage to check if the image exists.
+        // Here, I'm using the File class.
+        return \File::exists(public_path($url));
+    }
+}
 if (!function_exists('getImageUrl')) {
     function getImageUrl($image, $dim)
     {
@@ -743,6 +759,9 @@ if (!function_exists('showSlot')) {
                 return $q->where('day', $mytime)->where('laundry', '1');
             })->get();
         } else {
+            if(!empty($type) && $type == 'car_rental'){
+                $type ='rental';
+            }
             $slots = VendorSlot::where('vendor_id', $vid)
                     ->whereHas('days', function ($q) use ($mytime, $type) {
                         return $q->where('day', $mytime)->where($type, '1');
@@ -1319,13 +1338,16 @@ if (!function_exists('getServiceTypesCategory')) {
                 'taxi'         => ['pick_drop_service'],
                 'p2p'          => ['p2p'],
                 'home_service' => ['on_demand_service', 'appointment_service'],
+                'car_rental'   => ['car_rental'],
+                // 'car_rental'   => ['rental_services'],
             ];
             $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
             if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+              
                 $alltypes['p2p'] = ['p2p', 'rental_service'];
             }
             
-            if ($vendorType == 'delivery' || $vendorType == 'dine_in' || $vendorType == 'takeaway' || $vendorType == 'rental' || $vendorType == 'pick_drop' || $vendorType == 'on_demand' || $vendorType == 'laundry' || $vendorType == 'appointment' || $vendorType == 'p2p') {
+            if ($vendorType == 'delivery' || $vendorType == 'dine_in' || $vendorType == 'takeaway' || $vendorType == 'rental' || $vendorType == 'pick_drop' || $vendorType == 'on_demand' || $vendorType == 'laundry' || $vendorType == 'appointment' || $vendorType == 'p2p' || $vendorType == 'car_rental') {
                 $service_types = $alltypes[$vendorType];
             }
 
@@ -1336,6 +1358,7 @@ if (!function_exists('getServiceTypesCategory')) {
             if($client_preference->business_type == 'p2p' && @$getAdditionalPreference['is_rental_weekly_monthly_price']){
                 $service_types = $alltypes['p2p'];
             }
+          
             /* if ($vendorType == "delivery" || $vendorType == "dine_in" || $vendorType == "takeaway") {
                 $service_types = ['products_service'];
             } elseif ($vendorType == "rental") {
@@ -1371,7 +1394,9 @@ if (!function_exists('getServiceTypesCategory')) {
                 $service_types = ['p2p'];
             } */
             $types =  $types->whereIn('service_type', $service_types);
+           
             $types_id = $types->pluck('id')->toArray();
+           
             return $types_id ;
         } catch (\Throwable $th) {
            return [];
@@ -1400,7 +1425,7 @@ if (!function_exists('getCategoryTypes')) {
                 $typeArray =['laundry'];
             break;
             case "rental":
-                $typeArray = ['rental'];
+                $typeArray = ['rental','car_rental'];
                 break;
             case "p2p":
                 $typeArray = ['p2p'];
@@ -1409,7 +1434,7 @@ if (!function_exists('getCategoryTypes')) {
                 $typeArray = ['delivery'];
                 break;
             case "super_app":
-                $typeArray = ['delivery', 'dinein', 'takeaway', 'rental', 'pick_drop', 'on_demand', 'appointment', 'p2p' ];
+                $typeArray = ['delivery', 'dinein', 'takeaway', 'rental', 'pick_drop', 'on_demand', 'appointment', 'p2p','car_rental' ];
                 break;
             default:
             $typeArray =['delivery','dinein','takeaway','pick_drop','on_demand','appointment'];
@@ -1446,7 +1471,7 @@ if (!function_exists('getCategoryTypesServices')) {
                 $typeArray = ['p2p'];
                 break;
             case "super_app":
-                $typeArray = ['pick_drop_service', 'on_demand_service', 'appointment_service', 'rental_service', 'products_service', 'p2p'];
+                $typeArray = ['pick_drop_service', 'on_demand_service', 'appointment_service', 'rental_service', 'products_service', 'p2p','car_rental'];
 
                 break;
             default:
@@ -1601,6 +1626,7 @@ if( !function_exists('clientPrefrenceModuleStatus') ) {
 if( !function_exists('p2p_module_status') ) {
     function p2p_module_status() {
         $additional_preference = getAdditionalPreference(['is_attribute']);
+        
         if(clientPrefrenceModuleStatus('p2p_check') && $additional_preference['is_attribute']) {
             return true;
         }
@@ -2009,6 +2035,14 @@ if (!function_exists('getDatesBetweenTwoDates')) {
     }
 }
 
+if(!function_exists('getDaysBetweenTwoDates')){
+    function getDaysBetweenTwoDates($startDate, $endDate){
+        $startDate = Carbon::parse($startDate);
+        $endDate = Carbon::parse($endDate);
+        return $startDate->diffInDays($endDate) + 1;
+}
+
+}
 if (!function_exists('recurringCalculationFunction')) {    
     function recurringCalculationFunction($request)
     {
@@ -2077,5 +2111,27 @@ if (!function_exists('recurringCalculationFunction')) {
                 'daysCnt'=>@$daysCnt??'1'
             ];
 
+    }
+
+    if (!function_exists('shipEngineEnable')) {
+        function shipEngineEnable(){
+            $shipping_option = ShippingOption::select('id', 'code','status')->where(['code' => 'shipengine', 'status' => 1])->first();
+            if ($shipping_option) {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    if (!function_exists('taxJarEnable')) {
+        function taxJarEnable(){
+            $key = ['is_taxjar_enable','taxjar_testmode','taxjar_api_token'];
+            $creds = ClientPreferenceAdditional::select('key_name','key_value')->whereIn('key_name',$key)->get();
+            $creds = array_column($creds->toArray(), 'key_value', 'key_name');
+            if(isset($creds) && !empty($creds) && $creds['is_taxjar_enable'] == 1){
+                return true;
+            }
+            return false;
+        }
     }
 }

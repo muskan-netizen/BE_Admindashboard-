@@ -35,10 +35,11 @@ trait ProductTrait{
             'variantSet' => function ($z) use ($langId, $product_id) {
                 $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
                 $z->join('variant_translations as vt', 'vt.variant_id', 'vr.id');
-                $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
+                $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title', 'vr.position');
                 $z->where('vt.language_id', $langId);
                 $z->where('product_variant_sets.product_id', $product_id);
                 $z->where('vr.status', 1);
+                $z->orderBy('vr.position');
             },
             'variantSet.option2' => function ($zx) use ($langId, $product_id) {
                 $zx->where('vt.language_id', $langId)
@@ -59,7 +60,6 @@ trait ProductTrait{
             $with_array[] = 'ProductAttribute.attribute';
         }
         $product = Product::with($with_array);
-
             if($user){
                 $product = $product->with('inwishlist', function ($query) use($user) {
                     $query->where('user_wishlists.user_id', $user->id);
@@ -75,11 +75,14 @@ trait ProductTrait{
                     $q->whereDate('end_date_time', '>', now());
                 }]);
             }
+            $product = $product->select('id', 'sku', 'inquiry_only', 'url_slug', 'weight', 'weight_unit', 'vendor_id', 'has_variant', 'has_inventory', 'averageRating','sell_when_out_of_stock','minimum_order_count','batch_count','additional_increments_min','minimum_duration_min','buffer_time_duration_min','minimum_duration','additional_increments','buffer_time_duration','tags','is_long_term_service','service_duration', 'returnable' , 'replaceable' , 'return_days', 'same_day_delivery', 'next_day_delivery','hyper_local_delivery','is_recurring_booking', 'security_amount','captain_name', 'captain_profile', 'captain_description');
+          
             $product = $product->whereHas('vendor',function($q) use($vendor_slug){
                     $q->where('slug',$vendor_slug);
                 })->where('url_slug', $url_slug)
                 ->where('is_live', 1)
                 ->firstOrFail();
+                // pr($product->variantSet);
         return $product;
     }
 

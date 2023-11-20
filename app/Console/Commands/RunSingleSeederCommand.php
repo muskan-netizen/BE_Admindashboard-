@@ -43,7 +43,7 @@ class RunSingleSeederCommand extends Command
     public function handle()
     {
         $seeder_name = $this->option('seedername');
-        $clients = Client::all();
+        $clients = Client::orderBy('id','desc')->get();
         foreach ($clients as $key => $client) {
             $database_name = 'royo_' . $client->database_name;
             $this->info("select database start: {$database_name}!");

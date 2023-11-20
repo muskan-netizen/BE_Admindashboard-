@@ -1,13 +1,23 @@
 <div class="item">
     <div class="product-card-box position-relative al_box_third_template al test"  >
-        {{-- {{ dd($product)}} --}}
+      
         {{--<div class="add-to-fav 12">
             <input id="fav_pro_one" type="checkbox">
             <label for="fav_pro_one"><i class="fa fa-heart-o fav-heart" aria-hidden="true"></i></label>
         </div>--}}
         {{-- @dd($product['ProductAttribute'][0]->key_value) --}}
         <a class="common-product-box text-center" href="{{ $product->vendor_slug }}/product/{{ $product->url_slug }}">
-            <div class="img-outer-box position-relative"> <img class="blur-up lazyload" data-src="{{ get_file_path($product->path,'FILL_URL','260','260') }}" alt="" title="">
+            <div class="img-outer-box position-relative">
+                
+                
+            @if(@$product->type_id == 13)
+            <span class="for_sale">For Sale</span>
+            @endif
+            
+            @if(@$product->type_id == 10)
+            <span class="for_rent">For Rent</span>
+            @endif
+                <img class="blur-up lazyload" data-src="{{ get_file_path($product->path,'FILL_URL','260','260') }}" alt="" title="">
                 {{-- <div class="pref-timing"> </div> --}}
                 {{-- <div class="wishlist-icon btn-default" prosku="{{ $product['sku'] }}" remwishlist='<i class="fa fa-heart-o wishListCount" aria-hidden="true"></i>' addwishlist='<i class="fa fa-heart-o" aria-hidden="true"></i>'>
                     @if($product['is_inwishlist_btn'] == 0) 

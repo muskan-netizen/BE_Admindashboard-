@@ -234,5 +234,24 @@ trait smsManager{
         }
     }
 
+    public function sms_country($to, $message, $crendentials)
+    {
+        try {
+            return Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Basic '.base64_encode($crendentials->sms_auth_key.':'.$crendentials->sms_auth_token)
+            ])->post('https://restapi.smscountry.com/v0.1/Accounts/'.$crendentials->sms_auth_key.'/SMSes', [
+                "Text"=> $message,
+                "Number"=> str_replace("+","",$to),
+                "SenderId"=> $crendentials->sms_sender_id,
+                "DRNotifyUrl"=> "https://www.domainname.com/notifyurl",
+                "DRNotifyHttpMethod"=> "POST",
+                "Tool"=> "API"
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json(['data' => $th->getMessage()]);
+        }
+        
+    }
 
 }

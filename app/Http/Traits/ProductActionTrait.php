@@ -8,7 +8,9 @@ use Carbon\Carbon;
 use DB;
 use Grimzy\LaravelMysqlSpatial\Types\Point;
 use App\Http\Controllers\Front\FrontController;
-
+use DateTime;
+use DateTimeZone;
+use Carbon\CarbonPeriod;
 
 trait ProductActionTrait{
 
@@ -466,84 +468,95 @@ trait ProductActionTrait{
             
 
             $raw_query = "SELECT 
-                `products`.`id`, 
-                `products`.`sku`, 
-                `products`.`url_slug`, 
-                `products`.`weight_unit`, 
-                `products`.`weight`, 
-                `products`.`vendor_id`, 
-                `products`.`has_variant`, 
-                `products`.`has_inventory`, 
-                `products`.`sell_when_out_of_stock`, 
-                `products`.`requires_shipping`, 
-                `products`.`Requires_last_mile`, 
-                `products`.`inquiry_only`, 
-                `products`.`updated_at`, 
-                `products`.`is_featured`,
-                `products`.`is_new`,  
-                `products`.`category_id`,  
-                `products`.`calories`,  
-                `categories`.`id` as `category_id` ,
-                `categories`.`type_id`,
-                `product_images`.`media_id`,
-                `vendor_media`.`path`,
-                `product_translation`.`title`,
-                `product_translation`.`meta_title`,
-                `product_translation`.`meta_keyword`,
-                `product_translation`.`meta_description`,
-                `product_translation`.`language_id`,
-                `product_variant`.`compare_at_price` as `compare_price_numeric`,
-                `product_variant`.`price` as `price_numeric`,
-                `category_translation`.`name` as `category_name` ,
-                `category_translation`.`meta_title` as `category_meta_title` ,
-                `category_translation`.`meta_keywords` as `category_meta_keyword` ,
-                `category_translation`.`meta_description` as `category_meta_description`,
-                CAST((`products`.`averageRating`) AS DECIMAL(2,1)) AS averageRating,
-                CASE 
-                    when `product_variant`.`compare_at_price` > 0 then CAST((`product_variant`.`compare_at_price` - `product_variant`.`price`)/`product_variant`.`compare_at_price`*100 as decimal(12,2))
-                    else 0
-                end as discount_percentage,
-                `vendors`.`name` as `vendor_name`,
-                `vendors`.`id` as `vendor_id`,
-                `vendors`.`slug` as `vendor_slug`,
-                `product_attribute`.`key_name` as `attribute_key_name`,
-                `product_attribute`.`key_value` as `attribute_key_value`,
+            `products`.`id`, 
+            `products`.`sku`, 
+            `products`.`url_slug`, 
+            `products`.`weight_unit`, 
+            `products`.`weight`, 
+            `products`.`vendor_id`, 
+            `products`.`has_variant`, 
+            `products`.`has_inventory`, 
+            `products`.`sell_when_out_of_stock`, 
+            `products`.`requires_shipping`, 
+            `products`.`Requires_last_mile`, 
+            `products`.`inquiry_only`, 
+            `products`.`updated_at`, 
+            `products`.`is_featured`,
+            `products`.`is_new`,  
+            `products`.`category_id`,  
+            `products`.`calories`,  
+            `categories`.`id` as `category_id` ,
+            `categories`.`type_id`,
+            `product_images`.`media_id`,
+            `vendor_media`.`path`,
+            `product_translation`.`title`,
+            `product_translation`.`meta_title`,
+            `product_translation`.`meta_keyword`,
+            `product_translation`.`meta_description`,
+            `vendors`.`address`,
+            `product_translation`.`language_id`,
+            `product_variant`.`compare_at_price` as `compare_price_numeric`,
+            `product_variant`.`price` as `price_numeric`,
+            `category_translation`.`name` as `category_name` ,
+            `category_translation`.`meta_title` as `category_meta_title` ,
+            `category_translation`.`meta_keywords` as `category_meta_keyword` ,
+            `category_translation`.`meta_description` as `category_meta_description`,
+            CAST((`products`.`averageRating`) AS DECIMAL(2,1)) AS averageRating,
+            CASE 
+                when `product_variant`.`compare_at_price` > 0 then CAST((`product_variant`.`compare_at_price` - `product_variant`.`price`)/`product_variant`.`compare_at_price`*100 as decimal(12,2))
+                else 0
+            end as discount_percentage,
+            `vendors`.`name` as `vendor_name`,
+            `vendors`.`id` as `vendor_id`,
+            `vendors`.`slug` as `vendor_slug`,
+            IFNULL(`products`.`is_long_term_service`, 0) AS `is_long_term_service`,
+            
+             -- Retrieve product attributes as a JSON object
+             (
+                SELECT JSON_OBJECTAGG(`key_name`, 
+                    CASE
+                        WHEN `pa`.`attribute_option_id` = `pa`.`key_value` 
+                        THEN (SELECT `title` FROM `attribute_options` WHERE `id` = `pa`.`attribute_option_id`)
+                        ELSE `pa`.`key_value`
+                    END
+                )
+                FROM `product_attributes` AS `pa`
+                WHERE `pa`.`product_id` = `products`.`id`
+            ) AS `product_attributes`
 
-                IFNULL(`products`.`is_long_term_service`, 0) AS `is_long_term_service`
-                FROM 
-                    `products` LEFT JOIN   `categories` as `categories` ON `products`.`category_id` = `categories`.`id`  AND `categories`.`type_id` != 7
-                    LEFT JOIN   `product_images` as `product_images` ON `product_images`.`product_id` = `products`.`id` 
-                    LEFT JOIN   `vendors` as `vendors` ON `vendors`.`id` = `products`.`vendor_id` AND `vendors`.`status` = 1 
-                    LEFT JOIN   `vendor_media` as `vendor_media` ON `vendor_media`.`id` = `product_images`.`media_id`
-                    LEFT JOIN   `product_translations` as `product_translation` ON `product_translation`.`product_id` = `products`.`id` AND `product_translation`.`language_id` = $langId
-                    LEFT JOIN   `product_variants` as `product_variant` ON `product_variant`.`product_id` = `products`.`id`
-                    LEFT JOIN   `category_translations` as `category_translation` ON `category_translation`.`category_id` = `products`.`category_id` AND `category_translation`.`language_id` = $langId
-                    LEFT JOIN   `product_attributes` as `product_attribute` ON `product_attribute`.`product_id` = `products`.`id` AND `product_attribute`.`key_name` = 'Location'
-                    
-                WHERE 
-                    `products`.`deleted_at` IS NULL 
-                        AND `vendors`.`status` = 1 
-                        AND `products`.`is_live` = 1
-                        $whereComparePriceNotNull
-                        $completeWhere
-                                    
-                        $vendorWhereIN
+            
+            FROM `products` 
+            LEFT JOIN   `categories` as `categories` ON `products`.`category_id` = `categories`.`id`  AND `categories`.`type_id` != 7
+            LEFT JOIN   `product_images` as `product_images` ON `product_images`.`product_id` = `products`.`id` 
+            LEFT JOIN   `vendors` as `vendors` ON `vendors`.`id` = `products`.`vendor_id` AND `vendors`.`status` = 1 
+            LEFT JOIN   `vendor_media` as `vendor_media` ON `vendor_media`.`id` = `product_images`.`media_id`
+            LEFT JOIN   `product_translations` as `product_translation` ON `product_translation`.`product_id` = `products`.`id` AND `product_translation`.`language_id` = $langId
+            LEFT JOIN   `product_variants` as `product_variant` ON `product_variant`.`product_id` = `products`.`id`
+            LEFT JOIN   `category_translations` as `category_translation` ON `category_translation`.`category_id` = `products`.`category_id` AND `category_translation`.`language_id` = $langId
+            
+            WHERE 
+            `products`.`deleted_at` IS NULL 
+            AND `vendors`.`status` = 1 
+            AND `products`.`is_live` = 1
+            $whereComparePriceNotNull
+            $completeWhere
+            $vendorWhereIN
+            $getSubCatIdsIn
+            $whereProductType 
+            GROUP BY `products`.`id`
+            ORDER BY RAND() LIMIT 6";
 
-                        $getSubCatIdsIn 
 
-                        $whereProductType 
-                        GROUP BY `products`.`id`
-
-                        ORDER BY RAND() LIMIT 6";
-
-            $returnArray           = DB::select( DB::raw($raw_query));
+            $returnArray = DB::select( DB::raw($raw_query));
             // //$collectionproducts = collect($products)->unique('id');
             // if(empty($single_category_product_ids)){
             //     //$collectionproducts = $collectionproducts->random(10);
             // }
 
             // $returnArray = $products;
-            //pr($returnArray);
+          
+
+         
             return $returnArray;
         }
         catch (\Exception $e) {
@@ -554,8 +567,9 @@ trait ProductActionTrait{
     public function getEvenOddTime($time) {
         return ($time % 5 === 0) ? $time : ($time - ($time % 5));
     }
-    public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude, $vendor_ids = [], $set_template = NULL,$venderFilterOpenClose=null,$venderFilterbest=null)
+    public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude, $vendor_ids = [], $set_template = NULL,$venderFilterOpenClose=null,$venderFilterbest=null,$nearest_vendor=0)
     {
+        // pr('sd');
         try 
         {
             $mytime = Carbon::now()->setTimezone($timezone);
@@ -607,7 +621,7 @@ trait ProductActionTrait{
             
 
             
-            $mainQuery .= " GROUP BY `vendors`.`id` ";
+            $mainQuery .= " GROUP BY `vendors`.`id` ORDER BY `lineOfSightDistance` ASC";
 
             //------based on hyper location------------
             if (($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
@@ -628,6 +642,10 @@ trait ProductActionTrait{
                 }
             }
             
+            if (($latitude) && ($longitude) && $nearest_vendor == 1) {
+                $mainQuery.= " ORDER BY `lineOfSightDistance` ASC";
+            }
+            
             //if(!empty($set_template) && $set_template->template_id != 3){
                 $mainQuery .= " LIMIT 10";
             //}
@@ -635,6 +653,12 @@ trait ProductActionTrait{
             $vendors = DB::select( DB::raw($mainQuery));
             
             $vendor_ids = [];
+            $user = Auth::user();
+            $timezone = isset($user) && $user->timezone ?  $user->timezone : 'Asia/Kolkata';
+            $start_date = new DateTime("now", new  DateTimeZone($timezone) );
+            $start_date =  $start_date->format('Y-m-d');
+            $end_date = Date('Y-m-d', strtotime('+13 days'));
+
             foreach ($vendors as $key => $value) {
                 $vendor_ids[] = $value->id;
                 // get or update rating
@@ -683,6 +707,32 @@ trait ProductActionTrait{
                             }
                         }
                     }
+                }
+
+                $slotsDate = 0;
+                $value->date_with_slots = [];
+                if($value->closed_store_order_scheduled == 1){
+                    $slotsDate = findSlot('',$value->id,$type );
+                    $value->delaySlot = $slotsDate;
+                    $value->closed_store_order_scheduled = (($slotsDate)?$value->closed_store_order_scheduled:0);
+
+                    if(!empty($slotsDate)){
+                        $period = CarbonPeriod::create($start_date, $end_date);
+                        $slotWithDate = [];
+                        foreach($period as $key => $date){
+                            $slotDate = trim(date('Y-m-d', strtotime($date)));
+                            $slots = showSlot($slotDate,$value->id,'delivery');
+                            if(!empty($slots)){
+                                $slotData['date']  =  $slotDate;
+                                $slotData['slots'] = $slots;
+                                $slotWithDate[] = $slotData;
+                            }
+                        }
+                        $value->date_with_slots = $slotWithDate;
+                    }
+                }else{
+                    $value->delaySlot = 0;
+                    $value->closed_store_order_scheduled = 0;
                 }
 
                 if($value->closed_store_order_scheduled == 1){
@@ -847,6 +897,8 @@ trait ProductActionTrait{
                 $whereProductType = ' and `categories`.`type_id` IN ('.$categoryTypesArray.')';
             }
 
+            $user = auth()->user();
+            $vendor_id = $user->userVendor->vendor_id ?? 0;
             $raw_query = "";
 
             foreach($enable_layout as $enable_layout1){
@@ -897,7 +949,7 @@ trait ProductActionTrait{
                         `products`.`deleted_at` IS NULL 
                             AND `vendors`.`status` = 1 
                             AND `products`.`is_live` = 1
-    
+                            AND (`products`.`vendor_id` IS NULL OR `products`.`vendor_id` != $vendor_id)
                             $completeWhere
                                         
                             $vendorWhereIN 

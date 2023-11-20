@@ -292,9 +292,7 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
         prefix: " "
     });
     var ajaxCall = 'ToCancelPrevReq';
-    $('.js-range-slider').change(function(){
-        filterProducts();
-    });
+    
     $('.productFilter').click(function(){
         filterProducts();
     });
@@ -310,8 +308,14 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable']);
     $(document).on('change','.sortingFilter',function(){
         filterProducts();
     });
-    $('.js-range-slider').change(function(){
+   
+    var debounceTimeout;
+
+    $('.js-range-slider ').on('input', function() {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(function() {
         filterProducts();
+    }, 300);
     });
 
     $('.attr_radio, .dynamic_checkbox, .dropdown_select, .text_field').change(function() {

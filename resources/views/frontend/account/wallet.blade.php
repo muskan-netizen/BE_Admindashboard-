@@ -604,6 +604,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var inline='';
     var powertrans_payment_url = "{{ route('powertrans.payment') }}";
     var pesapal_payment_url = "{{ route('pesapal.payment') }}";
+    var payment_mpesa_safari_url = "{{route('mpesasafari.pay')}}";
     var livee_payment_url = "{{route('livee.pay')}}"
     // var livee_email={{auth()->user()->email}};
 

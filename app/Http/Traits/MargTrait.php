@@ -6,7 +6,7 @@ use Auth;
 use HttpRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use App\Models\{Client as CP, Order, ProductAddon, ProductAttribute, ProductCelebrity, ProductCrossSell, ProductRelated, ProductTag, ProductUpSell, SubscriptionInvoicesVendor};
+use App\Models\{Client as CP, Order, ProductAddon, ProductAttribute, ProductCelebrity, ProductCrossSell, ProductRelated, ProductTag, ProductUpSell, SubscriptionInvoicesVendor, VendorMargConfig};
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -42,97 +42,113 @@ trait MargTrait{
     }
 
 
-    public function addProduct($request)
+    public function addProduct($request,$vendor_id = null)
 	{
         try{
             DB::beginTransaction();	
-            $is_exist = Product::where('sku', $request->code)->first();
+          
+            $is_exist = Product::where(['sku' => $request->code.'_'.$vendor_id, 'vendor_id' => $vendor_id])->withTrashed()->first();
+            // $mega_vendor_id = $is_exist->vendor->mega_vendor_id;
+            $vendor_id = $vendor_id ?? 8;
 
-			if(isset($request->ProductCode) && isset($request->name) && is_null($is_exist)){
-                $url_slug = $this->validateSlug($request->name);
-                $request->catcode = 5;
+            if(isset($request->ProductCode) && isset($request->name) && is_null($is_exist)){
+                // $url_slug = $this->validateSlug($request->name);
+                // $request->catcode = 5;
 
-                $product = new Product();
-                $product->sku = $request->code;      // $request->sku;
-                $product->url_slug = $url_slug;             // $request->url_slug;
-                $product->title = $request->name;           // $request->product_name;        
-                $product->category_id = $request->catcode;  // $request->category_id;
-                $product->type_id = 1;
-                $product->vendor_id = 8;                    //$request->vendor_id;
-                $client_lang = ClientLanguage::where('is_primary', 1)->first();
-                if (!$client_lang) {
-                    $client_lang = ClientLanguage::where('is_active', 1)->first();
-                }
-                $product->save();
+                // $product = new Product();
+                // $product->sku = $request->code.'_'.$vendor_id;      // $request->sku;
+                // $product->url_slug = $url_slug.'_'.$vendor_id;             // $request->url_slug;
+                // $product->title = $request->name;           // $request->product_name;        
+                // $product->category_id = $request->catcode;  // $request->category_id;
+                // $product->type_id = 1;
+                // $product->is_live = 1;
+                // $product->vendor_id = $vendor_id;                    //$request->vendor_id;
+                // $client_lang = ClientLanguage::where('is_primary', 1)->first();
+                // if (!$client_lang) {
+                //     $client_lang = ClientLanguage::where('is_active', 1)->first();
+                // }
+                // $product->save();
                 
-                if ($product->id > 0) {
-                        $marg_product  =  new MargProduct();
-                        $marg_product->product_id   =       $product->id;
-                        $marg_product->rid          =       $request->rid;
-                        $marg_product->catcode      =       $request->catcode;               
-                        $marg_product->code         =       $request->code;               
-                        $marg_product->name         =       $request->name;               
-                        $marg_product->stock        =       $request->stock;
-                        $marg_product->remark       =       $request->remark;
-                        $marg_product->company      =       $request->company;
-                        $marg_product->shopcode     =       $request->shopcode;
-                        $marg_product->MRP          =       $request->MRP;
-                        $marg_product->Rate         =       $request->Rate;
-                        $marg_product->Deal         =       $request->Deal;
-                        $marg_product->Free         =       $request->Free;
-                        $marg_product->PRate        =       $request->PRate;
-                        $marg_product->Is_Deleted   =       $request->Is_Deleted;
-                        $marg_product->curbatch     =       $request->curbatch;
-                        $marg_product->exp          =       $request->exp;
-                        $marg_product->gcode        =       $request->gcode;
-                        $marg_product->MargCode     =       $request->MargCode;
-                        $marg_product->Conversion   =       $request->Conversion;
-                        $marg_product->Salt         =       $request->Salt;
-                        $marg_product->ENCODE       =       $request->ENCODE;
-                        $marg_product->remarks      =       $request->remarks;
-                        $marg_product->Gcode6       =       $request->Gcode6;
-                        $marg_product->ProductCode  =       $request->ProductCode;
-                        $marg_product->save();
+                // if ($product->id > 0) {
+                //         $marg_product  =  new MargProduct();
+                //         $marg_product->product_id   =       $product->id;
+                //         $marg_product->vendor_id    =       $vendor_id;
+                //         $marg_product->rid          =       $request->rid;
+                //         $marg_product->catcode      =       $request->catcode;               
+                //         $marg_product->code         =       $request->code;               
+                //         $marg_product->name         =       $request->name;               
+                //         $marg_product->stock        =       $request->stock;
+                //         $marg_product->remark       =       $request->remark;
+                //         $marg_product->company      =       $request->company;
+                //         $marg_product->shopcode     =       $request->shopcode;
+                //         $marg_product->MRP          =       $request->MRP;
+                //         $marg_product->Rate         =       $request->Rate;
+                //         $marg_product->Deal         =       $request->Deal;
+                //         $marg_product->Free         =       $request->Free;
+                //         $marg_product->PRate        =       $request->PRate;
+                //         $marg_product->Is_Deleted   =       $request->Is_Deleted;
+                //         $marg_product->curbatch     =       $request->curbatch;
+                //         $marg_product->exp          =       $request->exp;
+                //         $marg_product->gcode        =       $request->gcode;
+                //         $marg_product->MargCode     =       $request->MargCode;
+                //         $marg_product->Conversion   =       $request->Conversion;
+                //         $marg_product->Salt         =       $request->Salt;
+                //         $marg_product->ENCODE       =       $request->ENCODE;
+                //         $marg_product->remarks      =       $request->remarks;
+                //         $marg_product->Gcode6       =       $request->Gcode6;
+                //         $marg_product->ProductCode  =       $request->ProductCode;
+                //         $marg_product->save();
 
-                    $datatrans[] = [
-                        'title' => $request->name??null, // $request->product_name??null,
-                        'body_html' => '',
-                        'meta_title' => '',
-                        'meta_keyword' => '',
-                        'meta_description' => '',
-                        'product_id' => $product->id,
-                        'language_id' => $client_lang->language_id
-                    ];
-    
-                    $product_category = new ProductCategory();
-                    $product_category->product_id = $product->id;
-                    $product_category->category_id = $request->catcode; // $request->category_id;
-                    $product_category->save();
+                //         $datatrans[] = [
+                //             'title' => $request->name??null, // $request->product_name??null,
+                //             'body_html' => '',
+                //             'meta_title' => '',
+                //             'meta_keyword' => '',
+                //             'meta_description' => '',
+                //             'product_id' => $product->id,
+                //             'language_id' => $client_lang->language_id
+                //         ];
+        
+                //         $product_category = new ProductCategory();
+                //         $product_category->product_id = $product->id;
+                //         $product_category->category_id = $request->catcode; // $request->category_id;
+                //         $product_category->save();
 
-                    $proVariant = new ProductVariant();
-                    $proVariant->sku = $request->code; // $request->sku;
-                    $proVariant->product_id = $product->id;            
-                    $proVariant->price = $request->MRP;            
-                    $proVariant->quantity = $request->stock;            
-                    $proVariant->barcode = $this->generateBarcodeNumber();
-                    $proVariant->save();
+                //         $productVariant = ProductVariant::where(['sku' => $request->code.'_'.$vendor_id])->first();
 
-                    ProductTranslation::insert($datatrans);
+                //         if (is_null($productVariant)) {
+                //             $proVariant = new ProductVariant();
+                //             $proVariant->sku = $request->code.'_'.$vendor_id; // $request->sku;
+                //             $proVariant->product_id = $product->id;            
+                //             $proVariant->price = $request->MRP;            
+                //             $proVariant->quantity = $request->stock;            
+                //             $proVariant->barcode = $this->generateBarcodeNumber();
+                //             $proVariant->save();
+                //         }else{
+                //             $productVariant->price = $request->MRP;            
+                //             $productVariant->quantity = $request->stock;            
+                //             $productVariant->barcode = $this->generateBarcodeNumber();
+                //             $productVariant->save();
+                //         }
+                        
 
-                    if(@$request->Is_Deleted)
-                    {
-                        $product->delete();
-                    }
+                //         ProductTranslation::insert($datatrans);
 
-                // \Log::info('Insert MargProduct code --'.$request->code);
+                //         if(@$request->Is_Deleted)
+                //         {
+                //             $product->delete();
+                //             isset($proVariant) ? $proVariant->delete() : '';
+                //         }
 
-                }
+                // }
             }else{
                 $log = [
                     'stock'=>$request->stock,
                     'name'=>$request->name
                 ];
                 //Update Stock Details
+
+                $request->code = $request->code.'_'.$vendor_id; 
                 $this->updateProduct($request,$is_exist);
             }
 
@@ -151,15 +167,15 @@ trait MargTrait{
 		try{
 			// DB::beginTransaction();
             $url_slug = $this->validateSlug($request->name);
-            $product = Product::findOrFail($product->id);           
+            $product = Product::select('id','sku','url_slug','title')->withTrashed()->findOrFail($product->id);           
 
             if($product->id){
                 $product->sku = $request->code;      // $request->sku;
                 $product->url_slug = $url_slug;             // $request->url_slug;
                 $product->title = $request->name;           // $request->product_name;             
-                $client_lang = ClientLanguage::where('is_primary', 1)->first();
+                $client_lang = ClientLanguage::select('is_primary','is_active','language_id')->where('is_primary', 1)->first();
                 if (!$client_lang) {
-                    $client_lang = ClientLanguage::where('is_active', 1)->first();
+                    $client_lang = ClientLanguage::select('is_primary','is_active','language_id')->where('is_active', 1)->first();
                 }
                 $product->save();
 
@@ -167,7 +183,7 @@ trait MargTrait{
             
             if ($product->id > 0)
             {
-                    $marg_product  =  MargProduct::whereCode($request->code)->first();
+                    $marg_product  =  MargProduct::select('id','product_id','rid','code','name','stock','MRP')->whereCode($request->code)->first();
                     if($marg_product){
                         $marg_product->product_id   =       $product->id;
                         $marg_product->rid          =       $request->rid;           
@@ -178,7 +194,7 @@ trait MargTrait{
                         $marg_product->save();
                     }
 
-                $proVariant = ProductVariant::where('sku', $request->code)->first();
+                $proVariant = ProductVariant::select('id','price','quantity')->where('sku', $request->code)->first();
                 if(isset($request->ProductCode) && isset($request->name) && !is_null($proVariant)){
 
                     $proVariant->price = $request->MRP;            
@@ -202,6 +218,7 @@ trait MargTrait{
                 if(@$request->Is_Deleted)
                 {
                     $product->delete();
+                    isset($proVariant) ? $proVariant->delete() : '';
                 }
                 
             }
@@ -231,7 +248,7 @@ trait MargTrait{
     public function generateBarcodeNumber()
     {
         $random_string = substr(md5(microtime()), 0, 14);
-        while (ProductVariant::where('barcode', $random_string)->exists()) {
+        while (\DB::table('product_variants')->select('id','barcode')->where('barcode', $random_string)->exists()) {
             $random_string = substr(md5(microtime()), 0, 14);
         }
         return $random_string;
@@ -256,15 +273,17 @@ trait MargTrait{
 		}else{
 			foreach($order->products as $product)
 			{
-				$productCode[] = $product->product->sku;
+				$productCode[] = $product->sku;
 				$productQuantity[] = $product->quantity;
 			}
             $rid  = MargProduct::first();
 		} 
 		  
-        $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code','marg_company_url']);
+        // $hub_key = @getAdditionalPreference(['marg_access_token','is_marg_enable','marg_decrypt_key', 'marg_company_code','marg_company_url']);
+        $hub_key = VendorMargConfig::where('vendor_id',$order->ordervendor->vendor_id)->first()->toArray();
 
-        if($hub_key['is_marg_enable'] == 1){
+
+        if($hub_key && $hub_key['is_marg_enable'] == 1){
             $decryptionKey  = $hub_key['marg_decrypt_key'];
             $MargID  = $hub_key['marg_access_token'];
             $CompanyCode  = $hub_key['marg_company_code'];
@@ -293,7 +312,7 @@ trait MargTrait{
 				$updateOrder->marg_max_attempt =$updateOrder->marg_max_attempt + 1;
 				$updateOrder->save();
                 session()->flash('success',$encryptedData->Message??'Somthing Went Wrong!');
-                return false;
+                return $encryptedData->Message;
             }
             return true;
 

@@ -925,9 +925,9 @@ body.al_body_template_six.dark h6.card_title.ellips {
     z-index: 9;
     margin-bottom:30px;
 }
-.al_body_template_six .alSixMainMenu .slick-disabled {
+/* .al_body_template_six .alSixMainMenu .slick-disabled {
     display: none!important;
-}
+} */
 .alVender .inner_spacing h4 {
     font-size: 14px;
     padding-top: 2px;
@@ -1314,12 +1314,15 @@ body.al_body_template_six.homeHeader.dark .displayProducts .product-box .media-b
 
 @media screen and (max-width:1024px){
 .cab-footer button.btn.btn-solid.new-btn{font-size: 10px;font-weight: 100;padding: 10px 10px;}
-.nav-tabs.navigation-tab_al.nav-material{width: 300px;flex-wrap: nowrap;overflow-x: auto;padding:10px;}
+/* .nav-tabs.navigation-tab_al.nav-material{width: 300px;flex-wrap: nowrap;overflow-x: auto;padding:10px;}
 .nav-tabs.navigation-tab_al.nav-material span.al_textTabsText{width: 100%;display: inline-block;max-width: 100%!important;min-width:75px;text-align: center;}
-.al_body_template_six .alSixMainMenu {margin-top  : 20px;}
+.al_body_template_six .alSixMainMenu {margin-top  : 20px;} */
 }
 
 @media (max-width:576px) {
+    body[dir="rtl"] #alSixHomeServices .col-xl-8.offset-xl-2 {
+        margin-right: 0!important;
+    }
     html,
     body {
         overflow-x: hidden;
