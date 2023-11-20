@@ -11,7 +11,8 @@ use App\Http\Controllers\Client\BaseController;
 use App\Models\{Client, ClientPreference, ClientPreferenceAdditional, MapProvider, SmsProvider, NomenclatureTranslation, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption,StaticDropoffLocation,Facilty, RoleOld, User, Country, ClientCountries, VendorMargConfig};
 use GuzzleHttp\Client as GCLIENT;
 use DB;
-use App\Http\Traits\ApiResponser;   
+use App\Http\Traits\ApiResponser;
+use App\Http\Traits\ResetConfiguration;
 use App\Http\Traits\ValidatorTrait;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB as FacadesDB;
@@ -20,7 +21,7 @@ use Session;
 
 class ClientPreferenceController extends BaseController{
     use \App\Http\Traits\ClientPreferenceManager;
-    use ApiResponser;
+    use ApiResponser,ResetConfiguration;
 
     // client_preference_fillable_key this variables define in ClientPreferenceManager
 
@@ -1098,5 +1099,50 @@ class ClientPreferenceController extends BaseController{
         ]);
 
         return back();
+    }
+    public function resetToDefault(Request $request)
+    {
+        $client_preference = ClientPreference::select('business_type')->first();
+        
+        switch($client_preference->business_type)
+        {
+
+            case 'taxi':
+                $this->resetPickDropConfiguration();
+                break;
+            
+            case 'food_grocery_ecommerce':
+                $this->resetDeliveryConfiguration();
+                break;
+            
+            case 'home_service':
+                $this->resetOnDemandConfiguration();
+                break;
+            
+            case 'laundry':
+                $this->resetLaundryConfiguration();
+                break;
+            
+            case 'rental':
+                $this->resetRentalConfiguration();
+                break;
+                
+            case 'p2p':
+                $this->resetP2PConfiguration();
+                break;
+            
+            case 'emart':
+                $this->resetEmartConfiguration();
+                break;
+            case 'super_app':
+                $this->resetSuperAppConfiguration();
+                break;
+            
+            default:
+                break;
+         }
+
+        return redirect()->back()->with('success', 'Configuration resetted successfully!');
+
     }
 }
