@@ -3754,7 +3754,6 @@
             console.log(id);
         }
 
-<<<<<<< HEAD
         var square_enable_status_switch = $('#gofrugal_enable_status_switch');
         if (square_enable_status_switch.length > 0) {
             square_enable_status_switch[0].onchange = function() {
@@ -3767,7 +3766,6 @@
                 }
             }
         }
-=======
         function generateLumenToken() {
             var token = generateRandomString(30);
 
@@ -3782,6 +3780,5 @@
             $('.lumen-field').hide();
         }
         });
->>>>>>> pre_stage
     </script>
 @endsection
