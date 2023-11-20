@@ -60,7 +60,6 @@ class GoFrugalController extends BaseController
             dispatch(new GoFrugalSync)->onQueue('go_frugal');
             return redirect()->back()->with('success', 'Data is being Synced');
         }
-        \Log::info('already syncing');
         return redirect()->back()->with('success', 'Data is already being synced');
     }
 
@@ -265,7 +264,6 @@ class GoFrugalController extends BaseController
                 ],
                 $address
                 );
-                \Log::info($user);
             }
         } catch (\Exception $e) {
             DB::rollback();
@@ -285,7 +283,6 @@ class GoFrugalController extends BaseController
             if (!$categories['status']) {
                 return redirect()->back()->withErrors(['error' => $categories['message']]);
             }
-            \Log::info('categoriessssssssssssssssssssssssssssssssssss');
             $user = Auth::user();
             $code = $user->code ?? '245bae';
             foreach ($categories['data']->categories as $category) {
