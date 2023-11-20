@@ -4457,8 +4457,9 @@ class OrderController extends BaseController
         $order_status_options = [];
         $paginate = $request->has('limit') ? $request->limit : 12;
         $type = $request->has('type') ? $request->type : 'all';
+        
         $user_type = $request->has('user_type') ? $request->user_type : 'borrower';
-        $product_type =         $type = $request->has('productType') ? $request->productType : '';
+        $product_type = $request->has('productType') ? $request->productType : '';
         $orders = OrderVendor::with('products')->orderBy('id', 'DESC');
         $additionalPreference =getAdditionalPreference(['is_service_product_price_from_dispatch']);
         $vendorUser =  UserVendor::select('vendor_id')->where('user_id', $user->id)->first();
@@ -4481,7 +4482,7 @@ class OrderController extends BaseController
             $orders->whereHas('products');
                 break;
                 case 'upcoming': // which order not assign yet indriver
-
+                  
                 $orders->whereHas('products');
                 $orders->whereIn('order_status_option_id', [1,2]);
                 break;
@@ -4522,6 +4523,7 @@ class OrderController extends BaseController
                 });
                 break;
         }
+        
         $orders = $orders->with(['orderDetail.editingInCart', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing','user'=>function ($qq){
             $qq->select('id','name');
         },  'products.productReturn','cancelledBy.userVendor',
@@ -4561,26 +4563,26 @@ class OrderController extends BaseController
         $order_status_options = [];
         $paginate = $request->has('limit') ? $request->limit : 2;
         $type = $request->has('type') ? $request->type : 'all';
-        $product_type =         $type = $request->has('productType') ? $request->productType : '';
+        $product_type =$request->has('productType') ? $request->productType : '';
         $user_type = $request->has('user_type') ? $request->user_type : '';
         $additionalPreference =getAdditionalPreference(['is_service_product_price_from_dispatch']);
 
         $vendorUser =  UserVendor::select('vendor_id')->where('user_id', $user->id)->first();
         $orders = OrderVendor::with('products')->orderBy('id', 'DESC');
         $orders->where('user_id', $user->id) ; //borrower
-
+         
         switch ($type) {
+          
             case 'all': // which order not assign yet indriver
-
             $orders->whereHas('products');
                 break;
                 case 'upcoming': // which order not assign yet indriver
-
+                   
             $orders->whereHas('products');
             $orders->whereIn('order_status_option_id', [1,2]);
                 break;
                 case 'ongoing': // which order not assign yet indriver
-
+                  
                 $orders->whereHas('products');
             $orders->whereIn('order_status_option_id', [4]);
                     break;
@@ -4608,7 +4610,7 @@ class OrderController extends BaseController
                 });
                 break;
         }
-        
+      
         $orders = $orders->with(['orderDetail.editingInCart', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'user'=>function ($qq){
             $qq->select('id','name');
         }, 'products.productReturn',
@@ -4637,10 +4639,12 @@ class OrderController extends BaseController
             $lender->whereHas('products');
                 break;
             case 'upcoming': // which order not assign yet indriver
+                
             $lender->whereHas('products');
             $lender->whereIn('order_status_option_id', [1,2]);
                 break;
             case 'ongoing': // which order not assign yet indriver
+           
                 $lender->whereHas('products');
             $lender->whereIn('order_status_option_id', [4]);
                     break;
