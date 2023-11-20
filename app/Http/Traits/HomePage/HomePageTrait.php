@@ -631,7 +631,7 @@ trait HomePageTrait
                     $vendorData->delivery_fee = $deliver_charge;
                     $vendorData->delivery_time = $delivery_duration;
                 }
-                }elseif($preferences->static_delivey_fee == 1 &&  $vendorData->vendor->order_amount_for_delivery_fee != 0){
+                }elseif($preferences->static_delivey_fee == 1 ){
                     $vendorData->delivery_fee = 0.00;
                     $vendorData->delivery_time = 00.00;
                 } 
