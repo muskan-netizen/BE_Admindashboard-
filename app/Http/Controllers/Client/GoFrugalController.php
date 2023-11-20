@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Client\BaseController;
 use App\Http\Traits\GoFrugal;
+use App\Jobs\GoFrugalSync;
 use App\Models\Category;
 use App\Models\Category_translation;
 use App\Models\CategoryHistory;
@@ -25,7 +26,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Session;
 
 class GoFrugalController extends BaseController
 {
@@ -55,20 +56,29 @@ class GoFrugalController extends BaseController
 
     public function index(Request $request)
     {
+        if(!Session::has('job_running')){
+            dispatch(new GoFrugalSync)->onQueue('go_frugal');
+            return redirect()->back()->with('success', 'Data is being Synced');
+        }
+        \Log::info('already syncing');
+        return redirect()->back()->with('success', 'Data is already being synced');
+    }
+
+    public function syncData(){
+        
         $this->fetchCategories();
         $this->fetchCustomers();
         $this->fetchProducts();
-        return response()->json(['message' => 'Data Synced Successfully'], 200);
     }
 
-    private function fetchProducts(){
+    protected function fetchProducts(){
         $response = $this->checkCachedData('gofurgal_products', 'getProducts');
 
         if (!$response['status']) {
             return redirect()->back()->withErrors(['error' => $response['message']]);
         }
+        
         $products = $response['data'];
-
         $client_lang = ClientLanguage::where('is_primary', 1)->first();
         if (!$client_lang) {
             $client_lang = ClientLanguage::where('is_active', 1)->first();
@@ -79,7 +89,8 @@ class GoFrugalController extends BaseController
                 DB::beginTransaction();
                 $stock = $product->stock[0] ?? [];
                 $supplier = $stock->supplierName ?? '';
-                $vendor = Vendor::where('name', 'like', "%$supplier%")->first();
+                // $vendor = Vendor::where('name', 'like', "%$supplier%")->first();
+                $vendor = Vendor::first();
 
                 $filteredData = array_filter((array) $stock, function ($item, $key) {
                     return strpos($key, 'Cat') === 0 && !empty($item);
@@ -164,8 +175,7 @@ class GoFrugalController extends BaseController
                 ];
                 
                 $variant = ProductVariant::updateOrCreate([
-                    'sku' => $stock->itemReferenceCode,
-                    'product_id' => $item->id,
+                    'sku' => $stock->itemReferenceCode
                 ],$variant);
 
                 if(empty($variant))
@@ -210,111 +220,126 @@ class GoFrugalController extends BaseController
             }
         } catch (\Exception $e) {
             DB::rollback();
+            \Log::error($e->getMessage());
             return redirect()->back()->withInput()->withError($e->getMessage());
         }
         return response()->json(['message' => 'Products Added Successfully'], 200);
     }
 
-    private function fetchCustomers(){
-        $customers = $this->checkCachedData('gofurgal_customers', 'getCustomers');
-        if (!$customers['status']) {
-            return redirect()->back()->withErrors(['error' => $customers['message']]);
+    protected function fetchCustomers(){
+        try{
+            $customers = $this->checkCachedData('gofurgal_customers', 'getCustomers');
+            if (!$customers['status']) {
+                return redirect()->back()->withErrors(['error' => $customers['message']]);
+            }
+            foreach($customers['data']->eCustomers as $customer){
+                $country = Country::where('nicename', 'like', '%' . $customer->country. '%')->first();
+                $user = [
+                    'name' => $customer->name,
+                    'email' => $customer->email,
+                    'country_id' => $country->id ?? 1,
+                    'phone_number' => $customer->mobile,
+                    'is_superadmin' => 0,
+                    'created_at' => date('Y-m-d', $customer->syncTS),
+                    'updated_at' => date('Y-m-d', $customer->syncTS)
+                ];
+                $user = User::updateOrCreate([
+                    'email' => $customer->email
+                ],$user); 
+                $address = [
+                    'user_id' => $user->id,
+                    'address' => $customer->address1,
+                    'city' => $customer->city,
+                    'state' => $customer->state,
+                    'country' => $customer->country,
+                    'pincode' => $customer->pincode,
+                    'latitude' => $customer->latitude,
+                    'longitude' => $customer->longitude,
+                    'created_at' => date('Y-m-d', $customer->syncTS),
+                    'updated_at' => date('Y-m-d', $customer->syncTS)
+                ];
+                UserAddress::updateOrCreate([
+                    'user_id' => $user->id,
+                    'latitude' => $customer->latitude,
+                    'longitude' => $customer->longitude
+                ],
+                $address
+                );
+                \Log::info($user);
+            }
+        } catch (\Exception $e) {
+            DB::rollback();
+            \Log::error($e->getMessage());
+            return redirect()->back()->withInput()->withError($e->getMessage());
         }
-        foreach($customers['data']->eCustomers as $customer){
-            $country = Country::where('nicename', 'like', '%' . $customer->country. '%')->first();
-            $user = [
-                'name' => $customer->name,
-                'email' => $customer->email,
-                'country_id' => $country->id ?? 1,
-                'phone_number' => $customer->mobile,
-                'is_superadmin' => 0,
-                'created_at' => date('Y-m-d', $customer->syncTS),
-                'updated_at' => date('Y-m-d', $customer->syncTS)
-            ];
-            $user = User::updateOrCreate([
-                'email' => $customer->email
-            ],$user); 
-            $address = [
-                'user_id' => $user->id,
-                'address' => $customer->address1,
-                'city' => $customer->city,
-                'state' => $customer->state,
-                'country' => $customer->country,
-                'pincode' => $customer->pincode,
-                'latitude' => $customer->latitude,
-                'longitude' => $customer->longitude,
-                'created_at' => date('Y-m-d', $customer->syncTS),
-                'updated_at' => date('Y-m-d', $customer->syncTS)
-            ];
-            UserAddress::updateOrCreate([
-                'user_id' => $user->id,
-                'latitude' => $customer->latitude,
-                'longitude' => $customer->longitude
-            ],
-            $address
-            );
-        }
-
+    
         return response()->json(['message' => 'Customer Added Successfully'], 200);
     }
 
     //fetching categories
 
-    private function fetchCategories()
+    protected function fetchCategories()
     {
-        $categories = $this->checkCachedData('gofurgal_categories', 'getCategory');
-        if (!$categories['status']) {
-            return redirect()->back()->withErrors(['error' => $categories['message']]);
-        }
-        $user = Auth::user();
-        $code = $user->code ?? '245bae';
-        foreach ($categories['data']->categories as $category) {
-            $newCategory = [
-                'slug' => $category->displayName,
-                'created_at' => date('Y-m-d', $category->timeStamp),
-                'updated_at' => date('Y-m-d', $category->timeStamp),
-                'status' => $category->Status == 'Y' ? 1 : 0,
-                'client_code' => $code,
-                'position' => 1,
-                'parent_id' => 1,
-                'is_visible' => 1,
-                'type_id' => 6 //for subcategory
-            ];
+        try{
+            $categories = $this->checkCachedData('gofurgal_categories', 'getCategory');
+            if (!$categories['status']) {
+                return redirect()->back()->withErrors(['error' => $categories['message']]);
+            }
+            \Log::info('categoriessssssssssssssssssssssssssssssssssss');
+            $user = Auth::user();
+            $code = $user->code ?? '245bae';
+            foreach ($categories['data']->categories as $category) {
+                $newCategory = [
+                    'slug' => $category->displayName,
+                    'created_at' => date('Y-m-d', $category->timeStamp),
+                    'updated_at' => date('Y-m-d', $category->timeStamp),
+                    'status' => $category->Status == 'Y' ? 1 : 0,
+                    'client_code' => $code,
+                    'position' => 1,
+                    'parent_id' => 1,
+                    'is_visible' => 1,
+                    'type_id' => 6 //for subcategory
+                ];
 
-            $newCategory = Category::firstorCreate(['slug' => $category->displayName]);
-            Category_translation::updateOrCreate(
-                [
-                    'category_id' => $newCategory->id,
-                    'language_id' => 1
-                ],
-                [
-                    'category_id' => $newCategory->id,
-                    'language_id' => 1,
-                    'name' => $newCategory->slug,
-                    'meta_title' => '',
-                    'meta_description' => '',
-                    'meta_keywords' => ''
-                ]
-            );
-            $this->addCategoryHistory($newCategory, $user);
-            $this->addCategoryTranslation($newCategory);
-            if (!empty($category->categoryValues)) {
-                foreach ($category->categoryValues as $subCategory) {
-                    $newSubCategory = [
-                        'slug' => $subCategory->categoryValueName,
-                        'status' => $subCategory->catStatus == 'Y' ? 1 : 0,
-                        'created_at' => date('Y-m-d', $subCategory->syncTs),
-                        'updated_at' => date('Y-m-d', $subCategory->syncTs),
-                        'parent_id' => $newCategory->id,
-                        'client_code' => $code,
-                        'is_visible' => 1,
-                        'type_id' => 1 //for product
-                    ];
-                    $newSubCategory = Category::updateOrCreate(['slug' => $subCategory->categoryValueName], $newSubCategory);
-                    $this->addCategoryHistory($newSubCategory, $user);
-                    $this->addCategoryTranslation($newSubCategory);
+                $newCategory = Category::firstorCreate(['slug' => $category->displayName]);
+                Category_translation::updateOrCreate(
+                    [
+                        'category_id' => $newCategory->id,
+                        'language_id' => 1
+                    ],
+                    [
+                        'category_id' => $newCategory->id,
+                        'language_id' => 1,
+                        'name' => $newCategory->slug,
+                        'meta_title' => '',
+                        'meta_description' => '',
+                        'meta_keywords' => ''
+                    ]
+                );
+                $this->addCategoryHistory($newCategory, $user);
+                $this->addCategoryTranslation($newCategory);
+                if (!empty($category->categoryValues)) {
+                    foreach ($category->categoryValues as $subCategory) {
+                        $newSubCategory = [
+                            'slug' => $subCategory->categoryValueName,
+                            'status' => $subCategory->catStatus == 'Y' ? 1 : 0,
+                            'created_at' => date('Y-m-d', $subCategory->syncTs),
+                            'updated_at' => date('Y-m-d', $subCategory->syncTs),
+                            'parent_id' => $newCategory->id,
+                            'client_code' => $code,
+                            'is_visible' => 1,
+                            'type_id' => 1 //for product
+                        ];
+                        $newSubCategory = Category::updateOrCreate(['slug' => $subCategory->categoryValueName], $newSubCategory);
+                        $this->addCategoryHistory($newSubCategory, $user);
+                        $this->addCategoryTranslation($newSubCategory);
+                    }
                 }
             }
+        } catch (\Exception $e) {
+            DB::rollback();
+            \Log::error($e->getMessage());
+            return redirect()->back()->withInput()->withError($e->getMessage());
         }
         return response()->json(['message' => 'Categories Added Successfully'], 200);
     }
