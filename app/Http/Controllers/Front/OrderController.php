@@ -4484,6 +4484,7 @@ class OrderController extends FrontController
 
     public function driverSignup(Request $request)
     {
+      
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required',
@@ -4564,9 +4565,10 @@ class OrderController extends FrontController
                 $filedata = [];
                 $other = [];
                 $abc = [];
+           
                 foreach ($files as $file) {
                     if ($file['file_name'] != null) {
-                        if ($file['file_type'] != "Text") {
+                        if ($file['file_type'] != "Text"  && $file['file_type'] != "selector" && $file['file_type'] != "Date") {
                             $file_path = $file['file_name']->getPathname();
                             $file_mime = $file['file_name']->getMimeType('image');
                             $file_uploaded_name = $file['file_name']->getClientOriginalName();
