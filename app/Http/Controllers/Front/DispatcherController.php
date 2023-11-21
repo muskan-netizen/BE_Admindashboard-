@@ -505,6 +505,38 @@ class DispatcherController extends FrontController
                     }
                 }
 
+                // AAA
+                    $to = "";
+                    $username = "";
+                    $orderUserInfo= User::where('id',$checkiftokenExist->user_id)->first();
+                    $to = '+' . $orderUserInfo->dial_code . $orderUserInfo->phone_number;
+                    $username = $orderUserInfo->name;
+
+                    $arr = ['is_sms_complete_order','is_sms_booked_ride'];
+                    $config = ClientPreferenceAdditional::whereIn('key_name',$arr)->pluck('key_value','key_name');
+                    $data = ClientPreference::select('sms_credentials','sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
+
+                    if(!empty($data->sms_provider)  && !empty($data->sms_key) && !empty($data->sms_secret) && !empty($data->sms_from)) {
+
+                        if(isset($config['is_sms_booked_ride']) && $config['is_sms_booked_ride'] == 1 && $dispatch_status == 2)
+                        {
+                            $provider = $data->sms_provider;
+                            $keyData = ['{user_name}'=>$username??''];
+                            $body = sendSmsTemplate('ride-booked',$keyData);
+                            $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
+                        }
+
+                        if(isset($config['is_sms_complete_order']) && $config['is_sms_complete_order'] == 1 && $dispatch_status == 5)
+                        {
+                            $provider = $data->sms_provider;
+                            $keyData = ['{user_name}'=>$username??''];
+                            $body = sendSmsTemplate('order-completed',$keyData);
+                            $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
+                        }
+                    }
+
+                // END
+
                 $update = VendorOrderDispatcherStatus::updateOrCreate(['dispatcher_id' => null,
                     'order_id' =>  $checkiftokenExist->order_id,
                     'dispatcher_status_option_id' =>  $request->dispatcher_status_option_id,
@@ -1028,6 +1060,24 @@ class DispatcherController extends FrontController
                 $super_admin = User::where('is_superadmin', 1)->pluck('id');
                 // $user_vendors = UserVendor::where(['vendor_id' => $checkiftokenExist->vendor_id])->pluck('user_id');
                 $this->sendOrderCancelRequestNotification($super_admin, $order);
+
+                // AAA
+                $to = "";
+                $username = "";
+                $orderUserInfo= User::where('id',$checkiftokenExist->user_id)->first();
+                $to = '+' . $orderUserInfo->dial_code . $orderUserInfo->phone_number;
+                $username = $orderUserInfo->name;
+
+                $config = ClientPreferenceAdditional::where('key_name','is_sms_cancel_order')->first();
+                $data = ClientPreference::select('sms_credentials','sms_key', 'sms_secret', 'sms_from', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'sms_provider', 'mail_password', 'mail_encryption', 'mail_from')->where('id', '>', 0)->first();
+                if(isset($config) && $config->is_sms_cancel_order == 1 && !empty($data->sms_provider) && !empty($data->sms_key) && !empty($data->sms_secret) && !empty($data->sms_from))
+                { 
+                    $provider = $data->sms_provider;
+                    $keyData = ['{user_name}'=>$username??''];
+                    $body = sendSmsTemplate('order-canceled',$keyData);
+                    $this->sendSmsNew($provider, $data->sms_key, $data->sms_secret, $data->sms_from, $to, $body);
+                } 
+                //END
 
                 return $this->successResponse('', __('Request for order cancellation has been submitted'));
             }
