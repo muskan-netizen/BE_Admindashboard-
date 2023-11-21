@@ -2590,8 +2590,16 @@ class OrderController extends BaseController
 
             if ($vendor_id) {
                 $order = Order::with(['driver_rating','vendors.products.Routes','reports',
+                    // 'vendors' => function ($q) use ($vendor_id) {
+                    //     $q->where('vendor_id', $vendor_id);
+
+                    // },
                     'vendors' => function ($q) use ($vendor_id) {
-                        $q->where('vendor_id', $vendor_id);
+                        $q->where('vendor_id', $vendor_id)
+                          ->addSelect([
+                              'order_vendors.*',
+                              \DB::raw('(SELECT dispatch_traking_url FROM order_product_dispatch_routes WHERE order_product_dispatch_routes.order_id = order_vendors.order_id LIMIT 1) as dispatch_traking_url')
+                          ]);
                     },
                     'vendors.dineInTable.translations' => function ($qry) use ($language_id) {
                         $qry->where('language_id', $language_id);
@@ -2620,7 +2628,6 @@ class OrderController extends BaseController
                     },
                     'user.allergicItems'
                 ]);
-
                 $order = $order->with(['OrderFiles']);
 
                 $order = $order->where(function ($q1) {

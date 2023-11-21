@@ -945,7 +945,7 @@ class DispatcherController extends FrontController
                     $notification_content = NotificationTemplate::where('slug', 'order-cancelled')->first();
                     $body_content =  $OrderStatus ? ($OrderStatus->status_data ? $OrderStatus->status_data['driver_status'] : '') : '';
                     if($OrderStatus->status_data['driver_status'] == ''){
-                        $body_content = str_ireplace("{order_id}", "#" . $orderNumber->order_number, $notification_content->content);
+                        $body_content = str_ireplace("{order_id}", "#" . $orderNumber->order_number, $notification_content->content ?? "");
                     }
 
                     //pr($title);
