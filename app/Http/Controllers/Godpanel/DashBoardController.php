@@ -9,6 +9,7 @@ use App\Models\{BillingPlan, BillingPlanType, BillingTimeframe, BillingPricing, 
 use App\Http\Controllers\Client\BaseController;
 use App\Http\Traits\BillingPlanManager;
 use App\Providers\RouteServiceProvider;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
@@ -187,7 +188,8 @@ public function enableLumenService(Request $request)
         'database_name' => $client->database_name,
         'name' => $client->name ?? 'lumen',
         'email' => $client->email,
-        'password' => rand(11111111, 9999999)
+        'password' => rand(11111111, 9999999),
+        'is_lumen_key_expired' => $client->is_lumen_key_expired
     ];
 
     \Log::info('post data');
@@ -213,6 +215,8 @@ public function enableLumenService(Request $request)
             if (isset($responseData['api_key'])) {
                 $client->lumen_access_token = $responseData['api_key'];
                 $client->is_lumen_enabled = $request->is_lumen;
+                $client->is_lumen_key_expired = 0;
+                $client->lumen_timestamp = Carbon::now();
                 $client->save();
             }
         } else {

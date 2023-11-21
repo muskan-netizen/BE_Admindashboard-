@@ -4,7 +4,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     {!! Form::label('title', __('Select '. getNomenclatureName('Category')),['class' => 'control-label']) !!}
-                    <select class="selectize-select form-control" required id="cateSelectBox" name="cate_id">
+                    <select class="selectize-select form-control" required id="cateSelectBox" name="cate_id[]" multiple>
                         <option value="">{{ __("Select Category") }}...</option>
                         @foreach($categories as $cate)
                             <option value="{{$cate['id']}}">{{$cate['hierarchy']}}</option>
