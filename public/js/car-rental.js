@@ -129,6 +129,9 @@ $("#range-datepicker").flatpickr({
   mode: "range",
   enableTime: true,
   allowInput:true,
+  
+    minDate: "today",
+
   dateFormat: "d M Y H:i", //change format also 
   onClose: function(selectedDates, dateStr, instance) {
     readonlyElement($("#range-datepicker"), false)
