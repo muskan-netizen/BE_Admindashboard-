@@ -343,8 +343,8 @@ width: 16%;
 .alPostBoxOuter ul {
 /* border: 1px solid rgba(14,4,5,.2); */
 position: relative;
-display: flex;
-flex-wrap: wrap;
+/* display: flex;
+flex-wrap: wrap; */
 margin-top:40px!important;
 justify-content: center;
 }
