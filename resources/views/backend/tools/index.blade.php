@@ -164,7 +164,7 @@
             @method('POST')
                 <div class="card-box h-100 mb-0">
                     <div class="d-flex align-items-center justify-content-between mb-2">
-                        <h4 class="header-title mb-0">{{ __('Reset To Default Configuration Settings')}}</h4>
+                        <h4 class="header-title mb-0">{{ __('Reset to Default Configuration Settings')}}</h4>
                     </div>
                     <div class="row mt-2">
                        
