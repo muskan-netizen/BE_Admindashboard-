@@ -928,7 +928,7 @@ class OrderController extends FrontController
                 //     ->orderBy('id', 'DESC')
                 //     ->first();
                 // dd($vendor->OrderStatusOption->getStatusName($order->luxury_option_id));
-                $vendor->order_status = @strtolower($vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'';
+                $vendor->order_status = strtolower(@$vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'';
 
 
                 foreach ($vendor->products as $product) {
@@ -982,7 +982,7 @@ class OrderController extends FrontController
                 //     ->first();
                 // $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
 
-                $vendor->order_status = @strtolower($vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'n/a';
+                $vendor->order_status = strtolower(@$vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'n/a';
 
 
                 foreach ($vendor->products as $product) {
@@ -1105,7 +1105,7 @@ class OrderController extends FrontController
                 //     ->first();
                 // $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
          
-                $vendor->order_status = @strtolower($vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'';
+                $vendor->order_status = strtolower(@$vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'';
 
                 
                 if($vendor->cancelled_by == $user->id){
