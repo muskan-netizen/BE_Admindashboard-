@@ -176,7 +176,7 @@ class SocialController extends BaseController{
             }
             if( getClientPreferenceDetail()->p2p_check ) {
                 $vendorUser =  UserVendor::select('vendor_id')->where('user_id', $customer->id)->first();
-                $data['vendor_id'] = $vendorUser->vendor_id ?? '';
+                $response['vendor_id'] = $vendorUser->vendor_id ?? '';
              }
             
             $response['status'] = 'Success';
