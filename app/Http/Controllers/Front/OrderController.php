@@ -981,9 +981,9 @@ class OrderController extends FrontController
                 //     ->orderBy('id', 'DESC')
                 //     ->first();
                 // $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
-
+                 if(!empty($vendor->OrderStatusOption)){
                 $vendor->order_status = strtolower(@$vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'n/a';
-
+                 }
 
                 foreach ($vendor->products as $product) {
                     $product = $this->gettimeSlotName($product);
