@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-md-12">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="form-group">
                     {!! Form::label('title', __('Select '. getNomenclatureName('Category')),['class' => 'control-label']) !!}
                     <select class="selectize-select form-control" required id="cateSelectBox" name="cate_id[]" multiple>
