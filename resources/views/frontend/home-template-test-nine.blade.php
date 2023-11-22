@@ -24,6 +24,7 @@
 </style>
 @endsection
 @section('content')
+
 <!-- Shimmer Efferct Start -->
 <section class="section-b-space_  p-0 ratio_asos banner_shimmer">
 	<div class="container-fulid shimmer_effect  main_shimer topBar">
