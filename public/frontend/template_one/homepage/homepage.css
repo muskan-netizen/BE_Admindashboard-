@@ -4350,6 +4350,7 @@ span.fa.fa-eye-slash.toggle-password.eye::before {
 
 body.al_body_template_one #page-container .footer-theme .sub-title .contact-list li span {
     padding-left: 0;
+    direction: ltr;
 }
 
 .common-product-box .img-outer-box.position-relative.pr-0 {
@@ -5744,4 +5745,9 @@ body.dark .slick-slider .d-flex.align-items-center.justify-content-between.al_cl
      }
  }
  
+ .al_body_template_one .extra-items-price, .al_body_template_one .order-success-sec h3 {
+    font-weight: 600;
+    font-size: 10px;
+ }
+
  /*-------end here---*/

@@ -110,7 +110,7 @@
                         <div class="col-md-6" id="make_modelInput">
                             <div class="form-group" id="make_modelInputEdit">
                                 <label for="make_model" class="control-label">TRANSPORT DETAILS</label>
-                                <input type="text" class="form-control" id="make_model" placeholder="Year, Make, Model" name="make_model" value="">
+                                <input type="text" class="form-control required" id="make_model" placeholder="Year, Make, Model" name="make_model" value="">
                                 <span class="invalid-feedback" id="make_model_error" role="alert">
                                     <strong></strong>
                                 </span>
@@ -119,7 +119,7 @@
                         <div class="col-md-6" id="uidInput">
                             <div class="form-group" id="uidInputEdit">
                                 <label for="make_model" class="control-label">UID</label>
-                                <input type="text" class="form-control" id="uid" placeholder="897abd" name="uid" value="">
+                                <input type="text" class="form-control required" id="uid" placeholder="897abd" name="uid" value="" >
                                 <span class="invalid-feedback" id="uid_error" role="alert">
                                     <strong></strong>
                                 </span>
@@ -130,7 +130,7 @@
                         <div class="col-md-6" id="plate_numberInput">
                             <div class="form-group" id="plate_numberInputEdit">
                                 <label for="plate_number" class="control-label">LICENCE PLATE</label>
-                                <input type="text" class="form-control" id="plate_number" name="plate_number" placeholder="508.KLV" value="">
+                                <input type="text" class="form-control required" id="plate_number" name="plate_number" placeholder="508.KLV" value="">
                                 <span class="invalid-feedback" id="plate_number_error" role="alert">
                                     <strong></strong>
                                 </span>
@@ -139,7 +139,7 @@
                         <div class="col-md-6" id="colorInput">
                             <div class="form-group" id="colorInputEdit">
                                 <label for="color" class="control-label">COLOR</label>
-                                <input type="text" class="form-control" id="color" name="color" placeholder="Color" value="">
+                                <input type="text" class="form-control required" id="color" name="color" placeholder="Color" value="">
                                 <span class="invalid-feedback" id="color_error" role="alert">
                                     <strong></strong>
                                 </span>

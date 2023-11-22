@@ -569,7 +569,7 @@ trait ProductActionTrait{
     }
     public function getVendorForHomePage($preferences, $vendor_title, $timezone, $is_admin_vendor_rating = '', $type, $language_id, $latitude , $longitude, $vendor_ids = [], $set_template = NULL,$venderFilterOpenClose=null,$venderFilterbest=null,$nearest_vendor=0)
     {
-        
+        // pr('sd');
         try 
         {
             $mytime = Carbon::now()->setTimezone($timezone);

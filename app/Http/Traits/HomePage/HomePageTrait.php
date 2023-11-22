@@ -2,13 +2,15 @@
 
 namespace App\Http\Traits\HomePage;
 
-use App\Models\{CabBookingLayout, Category, HomePageLabel, HomeProduct, Order, OrderProductRating, OrderVendorProduct, Product, ProductCategory, ProductRecentlyViewed, Vendor, VendorCategory, VendorCities, PromoCodeDetail, Promocode, SubscriptionInvoicesVendor, VendorOrderStatus};
+use App\Models\{CabBookingLayout, Category, HomePageLabel, HomeProduct, Order, OrderProductRating, OrderVendorProduct, Product, ProductCategory, ProductRecentlyViewed, Vendor, VendorCategory, VendorCities, PromoCodeDetail, Promocode, SubscriptionInvoicesVendor, VendorOrderStatus, UserAddress, ClientPreference, User};
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
 use Session, DB, Auth;
 use Illuminate\Support\Str;
+use GuzzleHttp\Client as GCLIENT;
 use App\Http\Traits\{ProductActionTrait};
 use Kreait\Firebase\Auth as FirebaseAuth;
+use App\Http\Controllers\Api\v1\CartController;
 
 trait HomePageTrait
 {
@@ -459,7 +461,7 @@ trait HomePageTrait
      public function postHomePageDataV2($request,$set_template,$enable_layout,$additionalPreference,$user='', $getSubCatIds='')
     {
         $client_timezone = DB::table('clients')->first('timezone');
-      
+     
         
         if(!empty($user)){
             $timezone        = $user->timezone ? $user->timezone :  ($client_timezone->timezone ?? 'Asia/Kolkata' );
@@ -586,6 +588,7 @@ trait HomePageTrait
         $vendor_ids = $this->getRandomVendorIdsForHomePage($preferences, $request->type, $preferences['is_admin_vendor_rating'], $latitude, $longitude,@$request->momo);
         $home_page_labels = HomePageLabel::with('translations')->get();
         if (in_array('brands', $enable_layout)) {     # if enable brands section in
+             
             $brands = $this->getBrandsForHomePage($language_id, $this->field_status);
         }else{
             $brands = [];
@@ -611,10 +614,28 @@ trait HomePageTrait
             }
         }
 
+         
         
         if(count($vendor_ids) > 0){
-          
             $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids,null,$this->venderFilterOpenClose,$this->venderFilterbest);
+            $preferences = ClientPreference::first();
+            $getCartController = new CartController();
+            foreach($vendors as $k => $vendorData){
+                if($preferences->static_delivey_fee != 1){
+                $deliver_response_array = $getCartController->getDeliveryFeeDispatcher($vendorData->id, $dispatcher_tags='');
+                
+                if (!empty($deliver_response_array[0])){
+                    $totalRoute = '1';
+                    $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format(($deliver_response_array[0]['delivery_fee']*$totalRoute), 2, '.', ''):'0.00';
+                    $delivery_duration = (!empty($deliver_response_array[0]['total_duration']))?number_format($deliver_response_array[0]['total_duration'], 0, '.', ''):'0.00';
+                    $vendorData->delivery_fee = $deliver_charge;
+                    $vendorData->delivery_time = $delivery_duration;
+                }
+                }elseif($preferences->static_delivey_fee == 1 ){
+                    $vendorData->delivery_fee = 0.00;
+                    $vendorData->delivery_time = 00.00;
+                } 
+            }
         }
         
         $trendingVendors = [];
@@ -761,7 +782,7 @@ trait HomePageTrait
 
 
         /** Respose data */
-      
+            //   print_r($vendors);exit;
         
             $data = [
                 'vendor_ids'=>$vendor_ids,
@@ -785,10 +806,8 @@ trait HomePageTrait
                 'banners' => $banners,
                 'additionalPreference' => $additionalPreference,
             ];
-            //pr( $data);
+            // pr( $data);
             return $data ;
     }
-
-    
 
 }

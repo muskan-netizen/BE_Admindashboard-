@@ -188,7 +188,7 @@ class PickupDeliveryController extends FrontController{
         if($request->recurringformPost)
         {
            $recurring = recurringCalculationFunction($request);
-           $recurringDays  = $recurring->daysCnt??1; 
+           $recurringDays  = $recurring->daysCnt??1;
         }
 
         $schedule_datetime_del = '';
@@ -242,6 +242,21 @@ class PickupDeliveryController extends FrontController{
         $product->min_tags_price = decimal_format($tags_price['min_delivery_fee']);
 
         //for cab pooling
+
+        $loyalty_amount_saved = 0;
+        $redeem_points_per_primary_currency = '';
+        $loyalty_card = LoyaltyCard::where('status', '0')->first();
+        if ($loyalty_card) {
+            $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
+        }
+        $loyalty_points_used = 0;
+        $order_loyalty_points_earned_detail = Order::where('user_id', $user->id)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
+        if ($order_loyalty_points_earned_detail) {
+            $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
+            if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
+                $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
+            }
+        }
         $product->seats_for_booking = ($product->seats_for_booking > 0)?$product->seats_for_booking:1;
         $no_seats_for_pooling = isset($request->no_seats_for_pooling)?$request->no_seats_for_pooling:1;
         $product->no_seats_for_pooling = $no_seats_for_pooling;
@@ -283,8 +298,6 @@ class PickupDeliveryController extends FrontController{
         $curId = Session::get('customerCurrency');
         $customerCurrency = ClientCurrency::where('currency_id', $curId)->first();
         $price_in_doller_compare = $product->total_tags_price  * $customerCurrency->doller_compare;
-
-        // dd($product->taxCategory);
         //Add Tax on product
         $taxData = array();
         if (!empty($product->taxCategory) && count($product->taxCategory->taxRate) > 0) {
@@ -302,7 +315,6 @@ class PickupDeliveryController extends FrontController{
                 $taxCharges = $taxCharges + $product_tax;
             }
         }
-        // dd($price_in_doller_compare);
         $product->taxable_amount =  $product_tax;
         $product->total_tags_price = $product->total_tags_price - $loyalty_amount_saved??0.0;
 
@@ -311,8 +323,8 @@ class PickupDeliveryController extends FrontController{
                 if(isset($taxRates[$product->vendor->service_charges_tax_id])){
                        $service_charges_tax_rate=$taxRates[$product->vendor->service_charges_tax_id]['tax_rate'];
                 }
-            } 
-            
+            }
+
 
         if($product->service_charge_amount && $service_charges_tax_rate)
         {
@@ -333,7 +345,7 @@ class PickupDeliveryController extends FrontController{
         $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
         $product->faqlist = count($product->ProductFaq);
 
-      
+
         if(isset($request->rider_id) && $request->rider_id)
         {
             $rider = Rider::where('id',$request->rider_id)->first();
@@ -346,7 +358,6 @@ class PickupDeliveryController extends FrontController{
             $product->variant[$k]->toll_fee = $product->toll_fee;
             $product->variant[$k]->multiplier = 1;
         }
-
         $product->loyalty_amount_saved = decimal_format((float)$loyalty_amount_saved ?? 0);
 
         if($product->loyalty_amount_saved > $product->total_tags_price)
@@ -810,7 +821,7 @@ class PickupDeliveryController extends FrontController{
                 $order = $order_place['data'];
                 $request_to_dispatch = $this->placeRequestToDispatch($request, $order, $request->vendor_id);
                 if($request_to_dispatch && isset($request_to_dispatch['task_id']) && $request_to_dispatch['task_id'] > 0){
-                   
+
                     $order_place['data']['dispatch_traking_url'] = $request_to_dispatch['dispatch_traking_url'];
                     $order_place['data']['user_name'] = $user->email;
                     $order_place['data']['phone_number'] = '+'.$user->dial_code.''.$user->phone_number;
@@ -1008,7 +1019,7 @@ class PickupDeliveryController extends FrontController{
                 {
                     //This Function Return objected array of recurring data
                     $recurringformPost = recurringCalculationFunction($request);
-    
+
                      //Check if recurring_booking_type,recurring_week_day,recurring_week_type,recurring_day_data,recurring_booking_time coulmn exists in table
                     $order->recurring_booking_type  =@$recurringformPost->action??null;
                     $order->recurring_week_day      =@$recurringformPost->weekTypes??null;
@@ -1085,7 +1096,7 @@ class PickupDeliveryController extends FrontController{
                 $product_taxable_amount   = 0;
                 $product_payable_amount   = 0;
                 $vendor_taxable_amount    = 0;
-                
+
                 if ($request->total_other_taxes) {
                     $payable_amount = $payable_amount + $request->total_other_taxes;
                 }
@@ -1128,7 +1139,7 @@ class PickupDeliveryController extends FrontController{
                         $payable_amount += $addon->price;
                     }
                 }
-                
+
                 $coupon_id     = null;
                 $coupon_name   = null;
                 $actual_amount = $vendor_payable_amount;
@@ -1226,7 +1237,7 @@ class PickupDeliveryController extends FrontController{
                     }
                 }
 
-                $order->payable_amount = $finalAmount;
+              //  $order->payable_amount = $finalAmount;
 
                 if(!empty($request->subscription_payable_amount)){
                     $order->subscription_discount = $request->amount - $request->subscription_payable_amount;
@@ -1237,7 +1248,6 @@ class PickupDeliveryController extends FrontController{
                 if (($request->has('transaction_id')) && (!empty($request->transaction_id))) {
                     $order->payment_status = 1;
                 }
-                
                 $wallet_amount_used = 0;
                 // $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
                 if ($user->balanceFloat > 0) {
@@ -1323,7 +1333,7 @@ class PickupDeliveryController extends FrontController{
                 if(empty($friendPhoneNumber)){
                     $type=0;
                 }
-         
+
                 $task_type = 'now';
                 if(!empty($request->task_type)){
                     $task_type = $request->task_type;
@@ -1413,7 +1423,7 @@ class PickupDeliveryController extends FrontController{
                 if(isset($request->bid_task_type) && !empty($request->bid_task_type)){
                     $postdata['bid_task_type']    = $request->bid_task_type;
                 }
-                
+
 
                 //use Guzzle for send request at other panel
                 $endPoints = '/api/task/create';

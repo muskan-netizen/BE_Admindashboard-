@@ -2104,7 +2104,7 @@ class VendorController extends BaseController{
             $preferences = ClientPreference::select('distance_to_time_multiplier','distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
             $langId = $user->language;
             $vendor = Vendor::select('id', 'name', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'slug', 'show_slot', 'instagram_url',
-                        'order_min_amount', 'vendor_templete_id', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery','closed_store_order_scheduled')
+                        'order_min_amount', 'vendor_templete_id', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery','closed_store_order_scheduled','orders_per_slot')
                         ->withAvg('product', 'averageRating');
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
 
@@ -2300,23 +2300,23 @@ class VendorController extends BaseController{
                     $products = $products->where('products.category_id',$request->category_id);
 
                     $products = $products->orderBy('product_translations.title', 'asc')->paginate($limit, $page);
-                // if(!empty($products)){
-                //     foreach ($products as $key => $product) {
+                    if(!empty($products)){
+                        foreach ($products as $key => $product) {
 
-                //         $p_id = $product->id;
+                            $p_id = $product->id;
 
 
-                //         $product->product_image = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
-                //         $product->translation_title = ($product->translation->isNotEmpty()) ? $product->translation->first()->title : $product->sku;
-                //         $product->translation_description = ($product->translation->isNotEmpty()) ? html_entity_decode(strip_tags($product->translation->first()->body_html),ENT_QUOTES) : '';
-                //         $product->translation_description = !empty($product->translation_description) ? mb_substr($product->translation_description, 0, 70) . '...' : '';
-                //         $product->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
-                //         $product->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
-                //         $product->variant_id = ($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
-                //         $product->variant_quantity = ($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
+                            $product->product_image = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
+                            $product->translation_title = ($product->translation->isNotEmpty()) ? $product->translation->first()->title : $product->sku;
+                            $product->translation_description = ($product->translation->isNotEmpty()) ? html_entity_decode(strip_tags($product->translation->first()->body_html),ENT_QUOTES) : '';
+                            $product->translation_description = !empty($product->translation_description) ? mb_substr($product->translation_description, 0, 70) . '...' : '';
+                            $product->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
+                            $product->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
+                            $product->variant_id = ($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
+                            $product->variant_quantity = ($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
 
-                //     }
-                // }
+                        }
+                    }
             }
 
             // dd($products->toArray());
