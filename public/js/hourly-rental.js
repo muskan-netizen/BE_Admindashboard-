@@ -4,7 +4,8 @@ var current_fs, next_fs, previous_fs; //fieldsets
 var left, opacity, scale; //fieldset properties which we will animate
 var animating; //flag to prevent quick multi-click glitches
 
-$(".next").click(function(){
+$(document).on('click', '.next', function() {
+
 
 
     var div_id = $(this).attr('id');
@@ -113,7 +114,8 @@ $(".next").click(function(){
     }
 });
 
-$(".previous").click(function(){
+$(document).on('click', '.previous', function() {
+
 	if(animating) return false;
 	animating = true;
 	
