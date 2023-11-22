@@ -1923,15 +1923,22 @@ input[type=number]::-webkit-outer-spin-button {
                 $('.address-form').removeClass('d-none');
                 $(".hourly-rental-container").addClass('d-none');
                 $('.hourly-rental-container').empty();
+                $(".hourly-rental-container").removeClass('active');
+
+                $('.location-containerNew').removeClass('d-none');
 
             });
            
             $('#label_for_hourly_rental').click(function() {
 
+            $('.address-form').addClass('d-none');
+            $('.location-containerNew').addClass('d-none');
+            $('.check-dropoff-secpond').addClass('d-none');
             $('.for_friend').removeClass('active');
             $(".hourly-rental-container").removeClass('d-none');
+            $(".hourly-rental-container").removeClass('active');
             $('#label_for_friend').removeClass('active');
-            $('.address-form').addClass('d-none');
+           
             $('.hourly-rental-container').empty();
 
             // Make an AJAX request to load the view.
@@ -1941,6 +1948,7 @@ input[type=number]::-webkit-outer-spin-button {
                 success: function(response) {
                     // Append the retrieved view to the desired element.
                     $('.hourly-rental-container').html(response.view);
+                    
                 },
                 error: function(xhr, status, error) {
                     // Handle errors if necessary.

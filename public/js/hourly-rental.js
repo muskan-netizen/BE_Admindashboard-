@@ -564,42 +564,46 @@ $(".previous").click(function(){
             return true;
         }
 
-        $('.is_for_friend').click(function() {
 
-            if($(this).attr('id') != 'label_for_hourly_rental')
-            {
-                $('#label_for_me').removeClass('active');
-                $('.address-form').removeClass('d-none');
-                $(".hourly-rental-container").addClass('d-none');
-                $('.hourly-rental-container').empty();
-            }
-           
-
-        });
-       
-        $('#label_for_friend').click(function() {
-            $('#label_for_me').removeClass('active');
+        $('#label_for_me1').click(function() {
+            $('#label_for_me').addClass('active');
+            $('#label_for_friend').removeClass('active');
             $('.address-form').removeClass('d-none');
             $(".hourly-rental-container").addClass('d-none');
             $('.hourly-rental-container').empty();
+        $(".hourly-rental-container").removeClass('d-none');
+        $(".hourly-rental-container").removeClass('active');
+        $('.location-containerNew').removeClass('d-none');
 
         });
+        $('#label_for_friend1').click(function() {
+            $('#label_for_me').removeClass('active');
+            $('#label_for_friend').addClass('active');
+            $('.address-form').removeClass('d-none');
+            $(".hourly-rental-container").addClass('d-none');
+            $(".hourly-rental-container").removeClass('active');
+            $('.hourly-rental-container').empty();
+            $('.location-containerNew').removeClass('d-none');
+            $('.check-dropoff-secpond').removeClass('d-none');
+        });
        
-        $('.for_hourly_rental').click(function() {
+        $('#label_for_hourly_rental1').click(function() {
 
+        $('.address-form').addClass('d-none');
         $('.for_friend').removeClass('active');
         $(".hourly-rental-container").removeClass('d-none');
         $('#label_for_friend').removeClass('active');
-        $('.address-form').addClass('d-none');
+        $('.location-containerNew').addClass('d-none');
         $('.hourly-rental-container').empty();
-
+      
         // Make an AJAX request to load the view.
         $.ajax({
-            url: get_rental_view,
+            url: "{{route('get-rental-view')}}",
             method: 'POST',
             success: function(response) {
                 // Append the retrieved view to the desired element.
                 $('.hourly-rental-container').html(response.view);
+                
             },
             error: function(xhr, status, error) {
                 // Handle errors if necessary.

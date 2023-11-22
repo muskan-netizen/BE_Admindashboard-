@@ -439,21 +439,21 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
 </style>
 @if (isset($client_preference_detail) && $client_preference_detail->book_for_friend == 1)
 <div class="tip_radio_controls_book_friend text-center mt-2">
-    <input type="radio" class="tip_radio is_for_friend" id="for_me" name="is_for_friend"
+    <input type="radio" class="tip_radio" id="for_me1" name="is_for_friend"
         value="0">
-    <label class="tip_label mb-0  my-2 active " for="for_me" id="label_for_me">
-        <h5 class="m-0" id="tip_5">{{ __('For Me') }}</h5>
+    <label class="tip_label mb-0  my-2 active is_for_friend" for="for_me" id="label_for_me1">
+        <h5 class="m-0" id="tip_11">{{ __('For Me') }}</h5>
     </label>
-    <input type="radio" class="tip_radio is_for_friend" id="for_friend" name="is_for_friend"
+    <input type="radio" class="tip_radio" id="for_friend1" name="is_for_friend"
         value="1">
-    <label class="tip_label mb-0  my-2" for="for_friend" id="label_for_friend">
-        <h5 class="m-0" id="tip_5">{{ __('For Others') }}</h5>
+    <label class="tip_label mb-0  my-2 is_for_friend" for="for_friend1" id="label_for_friend1">
+        <h5 class="m-0" id="tip_15">{{ __('For Others') }}</h5>
     </label>
     @if (isset($client_preference_detail) && $client_preference_detail->is_hourly_pickup_rental == 1)
-    <input type="radio" class="tip_radio for_hourly_rental" id="hourly_rental" name="is_for_friend"
+    <input type="radio" class="tip_radio " id="hourly_rental" name="is_for_friend"
     value="1">
-    <label class="tip_label mb-0  my-2" for="hourly_rental" id="label_for_hourly_rental">
-        <h5 class="m-0" id="tip_5">{{ __('Hourly Rental') }}</h5>
+    <label class="tip_label mb-0  my-2 for_hourly_rental" for="hourly_rental" id="label_for_hourly_rental1">
+        <h5 class="m-0" id="tip_51">{{ __('Hourly Rental') }}</h5>
     </label>
     @endif
 </div>
@@ -461,8 +461,8 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
 <div class="tip_radio_controls_book_friend text-center mt-2">
     <input type="radio" class="tip_radio is_for_friend" id="hourly_rental" name="hourly_rental"
         value="1">
-    <label class="tip_label mb-0  my-2" for="hourly_rental" id="label_for_hourly_rental">
-        <h5 class="m-0" id="tip_5">{{ __('Hourly Rental') }}</h5>
+    <label class="tip_label mb-0  my-2" for="hourly_rental" id="label_for_hourly_rental1">
+        <h5 class="m-0" id="tip_51">{{ __('Hourly Rental') }}</h5>
     </label>
 </div>
 @endif
@@ -605,17 +605,7 @@ a.product-detail-box.d-flex.align-items-center.no-gutters.px-2.active {
             </fieldset>
             <fieldset>
                 <h2 class="fs-title">Choose your pick-up location</h2>
-                <div class="location-box check-dropoff-secpond">
-                    <ul class="location-inputs position-relative pl-2" id="location_input_main_div">
-                        <li class="d-flex dots">
-                            <div class="title title-24 position-relative edit-pickup"> {{ __('From') }} - <span
-                                    id="pickup-where-from"></span><i class="fa fa-angle-down" aria-hidden="true"></i>
-                            </div>
-                        </li>
-                    </ul>
-                    <a class="add-more-location position-relative pl-2" style="display:none"
-                        href="javascript:void(0)">{{ __('Add Destination') }}</a>
-                </div>
+                
                 <div class="location-search d-flex align-items-center check-pickup">
                     <i class="fa fa-search" aria-hidden="true"></i>
                     <input class="form-control pickup-text pac-target-input" type="text"
