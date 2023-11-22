@@ -152,7 +152,7 @@ article#page-container section .vendors section {
     content: '\f104';
 }
 .slick-slider .slick-next {
-    right: 11px;
+    right: 0;
 }
 
 .al_body_template_eight .al_custom_brand .brand-box h6 {
@@ -214,7 +214,7 @@ article#page-container section .vendors section {
 
 .slick-next:before,
 .slick-prev:before {
-    font-size: 20px;
+    /* font-size: 20px; */
     line-height: 1;
     color: #fff;
     opacity: .75;
