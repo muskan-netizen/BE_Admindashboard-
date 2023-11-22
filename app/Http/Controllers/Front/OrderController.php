@@ -1788,6 +1788,8 @@ class OrderController extends FrontController
     public function placeOrder(Request $request, $domain = '')
     {
 
+      
+
        
         // dd($request->other_taxes_string);
         // $stock = $this->ProductVariantStock('18');
@@ -1828,6 +1830,8 @@ class OrderController extends FrontController
 
     public function orderSave($request, $paymentStatus)
     {
+
+       
         try {
             $latitude = '';
             $longitude = '';
@@ -2951,13 +2955,19 @@ class OrderController extends FrontController
             if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
                 $order->total_amount = $request->total_amount;
             }
-            if($vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
-                $date       = explode(",",$vendor_cart_product->recurring_day_data);
-                if($vendor_cart_product->recurring_booking_type == 1 ||$vendor_cart_product->recurring_booking_type == 2 || $vendor_cart_product->recurring_booking_type == 3 || $vendor_cart_product->recurring_booking_type == 4){
-                    $days_count                         =  count($date);
-                    $pvariant_new_price                 =   $order->total_amount * $days_count;
-                    //$order->total_amount                =  decimal_format($pvariant_new_price);
+
+            if(isset($vendor_cart_product))
+            {
+
+                if($vendor_cart_product->recurring_day_data && !empty($vendor_cart_product->recurring_day_data)){
+                    $date       = explode(",",$vendor_cart_product->recurring_day_data);
+                    if($vendor_cart_product->recurring_booking_type == 1 ||$vendor_cart_product->recurring_booking_type == 2 || $vendor_cart_product->recurring_booking_type == 3 || $vendor_cart_product->recurring_booking_type == 4){
+                        $days_count                         =  count($date);
+                        $pvariant_new_price                 =   $order->total_amount * $days_count;
+                        //$order->total_amount                =  decimal_format($pvariant_new_price);
+                    }
                 }
+
             }
 
 
@@ -3066,7 +3076,7 @@ class OrderController extends FrontController
             $payable_amount = $payable_amount - $Order_bid_discount ?? 0;
             if (! $additionalPreferences->is_tax_price_inclusive) {
 
-                $orderTotalPay = decimal_format($payable_amount + $slot_based_price);
+                $orderTotalPay = decimal_format($payable_amount + isset($slot_based_price) ? $slot_based_price: 0);
                 // gift card calculation
                 if ($giftCardTotalAmount > 0 && $orderTotalPay > 0) {
                     $calCulateGiftCard = $this->calCulateGiftCard($orderTotalPay, $giftCardTotalAmount);
@@ -3076,7 +3086,7 @@ class OrderController extends FrontController
                 $order->payable_amount = $orderTotalPay;
             } else {
                 // Slot based price added to payable amount column
-                $order->payable_amount = decimal_format($payable_amount + $slot_based_price);
+                $order->payable_amount = decimal_format($payable_amount + isset($slot_based_price) ? $slot_based_price: 0 ) ;
 
                 $orderTotalPay = decimal_format($payable_amount - $total_other_taxes);
                 // gift card calculation
@@ -3143,7 +3153,11 @@ class OrderController extends FrontController
 
             $order->payable_amount = $request->total_amount;
             $order->save();
-            ProductAvailability::where('product_id', @$order_product->product_id)->whereIn('date_time', $datesInRange)->update(['not_available' => 1]);
+            if(isset($datesInRange))
+            {
+
+                ProductAvailability::where('product_id', @$order_product->product_id)->whereIn('date_time', $datesInRange)->update(['not_available' => 1]);
+            }
             OrderFiles::where('cart_id',$cart->id)->update(['order_id'=>$order->id,'cart_id'=>'']);
 
             // $this->sendOrderNotification($user->id, $vendor_ids);
@@ -3296,13 +3310,14 @@ class OrderController extends FrontController
 
                     }
                     $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
+                    
                     $super_admin = User::where('is_superadmin', 1)->pluck('id');
                     if ($request->payment_option_id == 1 || $order->is_postpay == 1 || $order->payment_status == 1) {
                         $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
                     }
                 } else {
                     $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
-
+ 
                     $getAllVendorAdmin = Order::join('order_vendors as ov', 'ov.order_id', 'orders.id')->leftjoin('user_vendors as uv', 'uv.vendor_id', 'ov.vendor_id')
                         ->where('order_number', $order->order_number)
                         ->pluck('uv.user_id');
@@ -4782,6 +4797,7 @@ class OrderController extends FrontController
             }
         });
         $order = $order->find($order_id);
+        
         return $order;
     }
 

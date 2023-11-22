@@ -205,18 +205,39 @@ class PickupDeliveryController extends FrontController{
                             $q->groupBy('product_id');
                         },
                         'addOn.addOnName.option'
-                        ])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags', 'products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id','seats')->where('products.id', $product_id)->where('products.is_live', 1)->first();
+                        ])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id','products.tags', 'products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id','seats','products.per_hour_price','products.km_included')->where('products.id', $product_id)->where('products.is_live', 1)->first();
         $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'360/360'.$product->media->first()->image->path['image_path'] : '';
         $product->image_url = $image_url;
-        $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
+
+        if($preferences->is_hourly_pickup_rental == 1)
+        {
+        $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del,1);
+      
+            
+        }
+        else{
+            $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del);
+
+        }
+ 
 
         // $product->service_charge_amount  = ($product->vendor->fixed_service_charge == 1)?$product->vendor->service_charge_amount:0.00;
 
         $product->original_tags_price = decimal_format($tags_price['delivery_fee']);
         $product->tags_price = decimal_format($tags_price['delivery_fee']);
+        if(isset($request->rental_hour))
+        {
+        $product->tags_price = decimal_format($request->rental_hour * $product->per_hour_price);
+        $product->distance =  $product->km_included;
+        }
+        else{
+            $product->distance = decimal_format($tags_price['distance']);
+        }
+        
+       
         $product->toll_fee = decimal_format($tags_price['toll_fee']);
 
-        $product->distance = decimal_format($tags_price['distance']);
+       
         $product->duration = decimal_format($tags_price['duration']);
         $product->min_tags_price = decimal_format($tags_price['min_delivery_fee']);
 
@@ -484,6 +505,127 @@ class PickupDeliveryController extends FrontController{
             return $this->errorResponse($e->getMessage().''.$e->getLineNo(), $e->getCode());
         }
     }
+    public function productsByRentalVendorInPickupDelivery(Request $request, $domain = '',$cid = 0){
+        try {
+            
+ 
+            $cid = $request->category_id;
+           
+
+            $preferences = ClientPreference::where('id', '>', 0)->first();
+            $user = Auth::user();
+            $userid = $user->id;
+            if(empty($user->timezone)){
+                $client_timezone = DB::table('clients')->first('timezone');
+                $user->timezone = $client_timezone->timezone ?? $user->timezone;
+            }
+    
+            $vendor_category = VendorCategory::where('category_id',$cid)->where('status',1)->first();
+
+          
+            $vid = $vendor_category->vendor_id;
+            $schedule_datetime_del = '';
+            if (isset($request->schedule_date_delivery) && !empty($request->schedule_date_delivery)) {
+                $schedule_datetime_del = Carbon::parse($request->schedule_date_delivery, $user->timezone)->setTimezone('UTC')->format('Y-m-d H:i:s');
+            }else{
+                $schedule_datetime_del = Carbon::now()->timezone('UTC')->format('Y-m-d H:i:s');
+            }
+   
+           
+            $paginate = $request->has('limit') ? $request->limit : 12;
+            $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
+            $language_id = Session::get('customerLanguage');
+            $vendor = Vendor::select('id', 'name', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude',
+                        'order_min_amount', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery', 'fixed_service_charge', 'service_charge_amount')
+                        ->where('id', $vid)->first();
+            if(!$vendor){
+                return response()->json(['error' => 'No record found.'], 200);
+            }
+            
+            $products = Product::with(['category.categoryDetail', 'tollpass', 'travelmode', 'emissiontype', 'inwishlist' => function($qry) use($userid){
+                            $qry->where('user_id', $userid);
+                        },'media.image', 'translation' => function($q) use($language_id){
+                            $q->select('product_id', 'title', 'body_html', 'meta_title', 'meta_keyword', 'meta_description')->where('language_id', $language_id);
+                        },'variant' => function($q) use($language_id){
+                            $q->select('id','sku', 'product_id', 'quantity', 'price', 'barcode');
+                            $q->groupBy('product_id');
+                        },
+                    ])->join('product_categories as pc', 'pc.product_id', 'products.id')
+                    ->whereNotIn('pc.category_id', function($qr) use($vid){
+                                $qr->select('category_id')->from('vendor_categories')
+                                    ->where('vendor_id', $vid)->where('status', 0);
+                    })
+                    ->whereHas('category.categoryDetail' ,function($qryd) {
+                        $qryd->where('type_id', 7);   # check only products get of pickup
+                    })
+                    ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.category_id','products.tags','products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id','products.per_hour_price','products.km_included')
+                    ->where('products.vendor_id', $vid);
+                    if($cid > 0){
+                        $products = $products->where('products.category_id', $cid);
+                    }
+
+                    if(!empty($request->is_cab_pooling) && $request->is_cab_pooling == 1 && !empty($preferences) && $preferences->is_cab_pooling == 1)
+                    {
+                        $products = $products->where('products.available_for_pooling', 1);
+                    }
+                    $products = $products->where('products.is_live', 1)->distinct()->get();
+
+             if(!empty($products)){
+                foreach ($products as $key => $product) {
+                    $tags_price = $this->getDeliveryFeeDispatcher($request, $product, $schedule_datetime_del,1);
+
+                   
+                    $image_url = $product->media->first() ? $product->media->first()->image->path['image_fit'].'93/93'.$product->media->first()->image->path['image_path'] : '';
+                    $product->image_url = $image_url;
+                    $product->service_charge_amount  = ($vendor->fixed_service_charge == 1)?$vendor->service_charge_amount:0.00;
+                    $product->name = $product->translation->first() ? $product->translation->first()->title :'';
+                    $product->description = $product->translation->first() ? $product->translation->first()->meta_description :'';
+
+                    $product->seats_for_booking = ($product->seats_for_booking > 0)?$product->seats_for_booking:1;
+                    if(isset($request->is_cab_pooling) && $request->is_cab_pooling==1 && !empty($preferences) && $preferences->is_cab_pooling == 1){
+                        $product->tags_price = decimal_format(($tags_price['delivery_fee'] + $tags_price['toll_fee'])/$product->seats_for_booking);
+                    }else{
+                        if($preferences->is_hourly_pickup_rental == 1){
+
+                            $product->tags_price = decimal_format($request->rental_hours * $product->per_hour_price);
+
+                        }else {
+                            $product->tags_price = decimal_format($tags_price['delivery_fee'] + $tags_price['toll_fee'] );
+
+                        }
+                    }
+                    $product->original_tags_price = $product->tags_price + $product->service_charge_amount;
+
+                    $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
+                    foreach ($product->variant as $k => $v) {
+                        $product->variant[$k]->price = $product->tags_price;
+                        $product->variant[$k]->multiplier = 1;
+                    }
+                }
+            }
+            $loyalty_amount_saved = 0;
+            $redeem_points_per_primary_currency = '';
+            $loyalty_card = LoyaltyCard::where('status', '0')->first();
+            if ($loyalty_card) {
+                $redeem_points_per_primary_currency = $loyalty_card->redeem_points_per_primary_currency;
+            }
+            $loyalty_points_used = 0;
+            $order_loyalty_points_earned_detail = Order::where('user_id', $userid)->select(DB::raw('sum(loyalty_points_earned) AS sum_of_loyalty_points_earned'), DB::raw('sum(loyalty_points_used) AS sum_of_loyalty_points_used'))->first();
+            if ($order_loyalty_points_earned_detail) {
+                $loyalty_points_used = $order_loyalty_points_earned_detail->sum_of_loyalty_points_earned - $order_loyalty_points_earned_detail->sum_of_loyalty_points_used;
+                if ($loyalty_points_used > 0 && $redeem_points_per_primary_currency > 0) {
+                    $loyalty_amount_saved = $loyalty_points_used / $redeem_points_per_primary_currency;
+                }
+            }
+
+            $response['vendor'] = $vendor;
+            $response['products'] = $products;
+            $response['loyalty_amount_saved'] = decimal_format((float)$loyalty_amount_saved ?? 0 ) ;
+            return $this->successResponse($response);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage().''.$e->getLineNo(), $e->getCode());
+        }
+    }
     /**
      * list of vehicles details
     */
@@ -556,7 +698,7 @@ class PickupDeliveryController extends FrontController{
 
 
      # get delivery fee from dispatcher
-     public function getDeliveryFeeDispatcher($request, $product=null, $schedule_datetime_del = ''){
+     public function getDeliveryFeeDispatcher($request, $product=null, $schedule_datetime_del = '',$is_rental = 0){
         try {
             $dispatch_domain = $this->checkIfPickupDeliveryOn();
             if ($dispatch_domain && $dispatch_domain != false) {
@@ -564,11 +706,24 @@ class PickupDeliveryController extends FrontController{
                 $postdata =  ['locations' => $request->locations,'agent_tag' => $product->tags??'', 'schedule_datetime_del' => $schedule_datetime_del, 'toll_passes' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->tollpass)?$product->tollpass->toll_pass:'IN_FASTAG':'IN_FASTAG'), 'VehicleEmissionType' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->emissiontype)?$product->emissiontype->emission_type:'GASOLINE':'GASOLINE'), 'travelMode' => ((!empty($product) && $product->is_toll_tax == 1)?isset($product->travelmode)?$product->travelmode->travelmode:'TAXI':'TAXI')];
                 $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key,'shortcode' => $dispatch_domain->pickup_delivery_service_key_code,'content-type' => 'application/json']]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
-                $res = $client->post($url.'/api/get-delivery-fee',
+                
+                if($is_rental)
+                {
+                    
+                    $res = $client->post($url.'/api/get-delivery-fee-rental',
                     ['form_params' => ($postdata)]
                 );
+                }else
+                {
+                    $res = $client->post($url.'/api/get-delivery-fee',
+                    ['form_params' => ($postdata)]
+                );  
+                }
+                
                 $response = json_decode($res->getBody(), true);
                 //pr($response);
+                \Log::info('response');
+                \Log::info($response);
                 if($response && $response['message'] == 'success'){
                     return array('delivery_fee' => $response['total'], 'toll_fee' => isset($response['toll_fee'])?((!empty($product) && $product->is_toll_tax == 1)?$response['toll_fee']:0.00):0.00, 'distance' => isset($response['total_distance']) ? $response['total_distance'] : 0, 'duration' => isset($response['total_duration']) ? $response['total_duration'] :0, 'min_delivery_fee' => isset($response['total_minimum']) ? $response['total_minimum'] : 0);
                 }else{
@@ -591,6 +746,9 @@ class PickupDeliveryController extends FrontController{
      * create order for booking
     */
      public function createOrder(Request $request){
+
+          
+       
         try {
             DB::beginTransaction();
             if(isset($request->schedule_datetime) && !empty($request->schedule_datetime))
@@ -873,11 +1031,16 @@ class PickupDeliveryController extends FrontController{
                 $order->luxury_option_id    = $luxury_option->id;
 
                 $order->specific_instructions = $request->task_description ?? '';
-                $order->recurring_booking_time = $returnBookingTime;
+               
+                if ($client_preference->is_hourly_pickup_rental != 1) {
+
+                $order->recurring_booking_time = $returnBookingTime ;
                 $order->recurring_week_type = $returnBookingTime ? 2 : null; //once
+                }
                 $order->flight_no = $request->flight_number ?? '';
                 $order->adults = $request->number_of_adult ?? 0;
                 $order->name_sign_board = $request->name_sign_board ?? '';
+                $order->rental_hours = $request->rental_hours ?? 0;
                 $order->save();
 
 

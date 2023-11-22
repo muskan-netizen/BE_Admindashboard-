@@ -592,5 +592,23 @@ class CategoryController extends BaseController
             ]);
        
     }
+    public function getHourlyBasePrice(Request $request)
+
+    {
+    
+        if($request->has('cat_id'))
+        {
+            $category_id = $request->get('cat_id');
+            $product = ProductVariant::whereHas('product', function ($query) use ($category_id) {
+                $query->where('category_id', $category_id);
+            })->orderBy('price','asc')->first();
+           
+             return $this->successResponse($product,null,200);
+
+        }
+        return $this->errorResponse('No Product Found ', 404);
+
+    }
+
 
 }

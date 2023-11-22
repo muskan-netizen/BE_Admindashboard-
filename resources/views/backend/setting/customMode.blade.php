@@ -740,7 +740,19 @@
             name="is_role_and_permission_enable" id="is_role_and_permission_enable" />
     </div>
 </div>
-
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_hourly_pickup_rental" class="mr-2 mb-0">{{ __('Hourly Pick & Drop Rental') }}<small
+            class="d-block pr-5">{{ __('Enable Hourly Pick & Drop Rental') }}</small></label>
+    <span> <input type="checkbox" data-plugin="switchery" name="is_hourly_pickup_rental_switch"
+            id="is_hourly_pickup_rental_switch" class="form-control checkbox_change"
+            data-className="is_hourly_pickup_rental" data-color="#43bee1"
+            @if (isset($preference) && $preference->is_hourly_pickup_rental == '1') checked='checked' @endif>
+    </span>
+    <input type="hidden" @if (isset($preference) && $preference->is_hourly_pickup_rental == '1')  value="1" @else value="0" @endif
+        name="is_hourly_pickup_rental" id="is_hourly_pickup_rental" />
+</div>
+</div>
 <div class="col-md-4 ">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="is_vendor_marg_configuration" class="mr-2 mb-0">{{ __('Car Rental') }}<small

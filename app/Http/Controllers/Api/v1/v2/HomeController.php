@@ -379,7 +379,6 @@ class HomeController extends BaseController
             $homeData['banner_image'] = $banners??[];
             //$homeData['categories'] = $categories;
             $homeData['cacheKey'] = $cacheKey??'';
-
             $locations = [
                 [
                     'latitude' => $latitude,
