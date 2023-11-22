@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, Product, Cart, ClientCurrency, Brand, CartAddon, UserDevice, ClientPreference, CartProduct};
+use App\Models\{User, Product, Cart, ClientCurrency, Brand, CartAddon, UserDevice, ClientPreference, CartProduct, UserVendor};
 use Log;
 
 class SocialController extends BaseController{
@@ -174,6 +174,10 @@ class SocialController extends BaseController{
                     ]
                 );
             }
+            if( getClientPreferenceDetail()->p2p_check ) {
+                $vendorUser =  UserVendor::select('vendor_id')->where('user_id', $customer->id)->first();
+                $data['vendor_id'] = $vendorUser->vendor_id ?? '';
+             }
             
             $response['status'] = 'Success';
             $response['auth_token'] =  $token;
