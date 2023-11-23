@@ -9,13 +9,13 @@ use Carbon\Carbon;
 use Auth;
 use Session;
 use DB;
-use App\Http\Traits\{ApiResponser,OrderTrait};
-use App\Models\{Order, OrderProduct, OrderTax, OrderCancelRequest, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, UserVendor, LuxuryOption, EmailTemplate, OrderQrcodeLinks, ProductVariantSet, QrcodeImport,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus,OrderLongTermServiceSchedule,PickDropDriverBid,VendorOrderProductStatus,UserBidRideRequest};
+use App\Http\Traits\{ApiResponser, OrderBlockchain, OrderTrait};
+use App\Models\{Order, OrderProduct, OrderTax, OrderCancelRequest, Cart, CartAddon, CartProduct, CartProductPrescription, Product, OrderProductAddon, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, VendorOrderStatus, VendorOrderDispatcherStatus, OrderStatusOption, Vendor, LoyaltyCard, NotificationTemplate, User, Payment, SubscriptionInvoicesUser, UserDevice, Client, ClientPreferenceAdditional, UserVendor, LuxuryOption, EmailTemplate, OrderQrcodeLinks, ProductVariantSet, QrcodeImport,OrderProductDispatchRoute,VendorOrderProductDispatcherStatus,OrderLongTermServiceSchedule,PickDropDriverBid,VendorOrderProductStatus,UserBidRideRequest};
 use Illuminate\Support\Facades\Log;
 
 class DispatcherController extends FrontController
 {
-    use ApiResponser,OrderTrait;
+    use ApiResponser,OrderTrait,OrderBlockchain;
 
 
     /******************    ---- order status update from dispatch (Need to dispatcher_status_option_id ) -----   ******************/
@@ -81,7 +81,7 @@ class DispatcherController extends FrontController
 
                     # vendor status update
 
-                    if(isset($request->status_option_id) && !empty($request->status_option_id) && (in_array($request->status_option_id ,[6,3])) && $type == 2){
+                    if(isset($request->status_option_id) && !empty($request->status_option_id) && (in_array($request->status_option_id ,[6,3,4])) && $type == 2){
 
                         $checkif= VendorOrderStatus::where(['order_id' =>  $checkiftokenExist->order_id,
                         'order_status_option_id' =>  $request->status_option_id,
@@ -125,9 +125,20 @@ class DispatcherController extends FrontController
             {
                 $update_tr = OrderVendor::where('web_hook_code',$web_hook_code)->update(['dispatch_traking_url' =>  $request->dispatch_traking_url]);
             }
-            OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['dispatcher_status_option_id' => $request->dispatcher_status_option_id]);
+         
+                OrderVendor::where('vendor_id', $checkiftokenExist->vendor_id)->where('order_id', $checkiftokenExist->order_id)->update(['dispatcher_status_option_id' => $request->dispatcher_status_option_id]);
              $data = ['order'=>$update,'vendor_detail'=>$code->vendorDetail??[]];
-            DB::commit();
+             $orderData = Order::find($checkiftokenExist->order_id);
+
+              DB::commit();
+
+                $blockchain_route = ClientPreferenceAdditional::where('key_name','blockchain_route_formation')->first();
+    
+                if(isset($blockchain_route) && ($blockchain_route->key_value == 1))
+                { 
+                    @$this->moveOrderToWarehouse($orderData,$request ?? null);
+
+                }
                     $message = "Order status updated.";
                     return $this->successResponse($data??[], $message);
 
@@ -443,6 +454,7 @@ class DispatcherController extends FrontController
     /******************    ---- pickup delivery status update (Need to dispatcher_status_option_id ) -----   ******************/
     public function dispatchPickupDeliveryUpdate(Request $request, $domain = '', $web_hook_code)
     {
+   
         try {
             DB::beginTransaction();
             $checkiftokenExist = OrderVendor::where('web_hook_code',$web_hook_code)->first();

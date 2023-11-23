@@ -269,7 +269,8 @@ body .create_box a.btn.btn-solid.mt-2 {
 }
 
 .al_body_template_three .btn.btn-solid {
-    border-radius: 30px;border:none;
+    border-radius: 30px;
+    /* border:none;  */
 }
 
 .al_body_template_three .address-btn .btn.btn-solid {
@@ -580,12 +581,16 @@ span.fa.fa-eye-slash.toggle-password.eye::before {
 }
 
 .al_body_template_three .add-on-main-div .slick-slider .slick-prev {
-    left: -25px;
+    left: 0;
     top: 20px;
+    background-color: transparent!important;
 }
-
+.al_body_template_three .add-on-main-div .slick-slider .slick-prev:before{
+    color:#000!important;
+    font-size: 20px;
+}
 .al_body_template_three .add-on-main-div .slick-slider .slick-next {
-    right: -25px;
+    right: 0;
     top: 20px;
 }
 
@@ -999,7 +1004,7 @@ form#filterData {
     right: 20px!important;
     top: 5px;
     margin-left: 0;
-    content: ""
+    content: "";
 }
 
 .location-bar.d-inline-flex.align-items-center.position-relative {
@@ -1053,6 +1058,7 @@ h2.homepage-address {
     font-weight: 600;
     color: #000;
     text-transform: capitalize;
+    word-break: break-all;
 }
 .al_body_template_three h2.h2-heading {
     text-transform: uppercase!important;
@@ -2695,7 +2701,8 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
 }
 
 .show-div.shopping-cart .text-danger {
-    font-size: 12px;
+    font-size: 12px;    
+    padding-left: 10px;
 }
 
 .code-outer label {
@@ -3383,11 +3390,16 @@ input.addon-input-number {
 }
 
 .al_body_template_three .extra-items-price,
-.al_body_template_three .order-success-sec h3,
-.al_body_template_three .total-sec span {
+.al_body_template_three .order-success-sec h3{
     font-weight: 600;
 }
-
+.al_body_template_three .total-sec span{
+    font-weight: 400;
+}
+.product-order .final-total h3{
+    font-weight: 400;
+    padding: 0 12px;
+}
 .al_body_template_three .product-order h3 {
     text-transform: capitalize;
 }
@@ -3828,9 +3840,9 @@ body[dir="rtl"] .product-description {
 }
 
 .start_chat {
-    float: right;
+    /* float: right;
     margin: -15px;
-    padding: 0px 132px 0px 0px;
+    padding: 0px 132px 0px 0px; */
 }
 
 

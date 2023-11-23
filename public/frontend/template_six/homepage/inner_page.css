@@ -528,12 +528,12 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
 .al_body_template_six.homeHeader .product-bottom-bar {
     padding: 20px 0;
     max-width: 1400px;
-    margin: -70px auto 0;
+    margin: 20px auto 0;
     background-color: #fff;
     width: 100%;
     position: relative;
     border-radius: 20px 20px 0 0;
-    box-shadow: 0 -30px 20px rgb(0 0 0 / 20%);
+    box-shadow:  0 0 4px rgb(0 0 0 / 20%);
 }
 
 .al_body_template_six.homeHeader .container.homepageSix,
@@ -615,8 +615,8 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
 }
 
 .add-cart-btn.add_vendor_product {
-    background-color: #caae73;
-    color: #fff;
+    background-color: var(--theme-deafult);
+    color: #fff!important;
     font-size: 14px;
     max-width: 100px;
     display: inline-block;
@@ -774,16 +774,20 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
 }
 
 .cart-main-box .checkout-btn {
-    padding: 20px;
+    padding: 10px;
     background-color: var(--top-header-color);
-    ;
-    color: #fff;
+    color: #fff!important;
 }
 
 .cart-main-box .checkout-btn:hover {
     background-color: #0c0c0c;
 }
-
+.add-on-main-div button.slick-prev{
+    left: 0;
+}
+.add-on-main-div button.slick-next {
+    right: 0;
+}
 .badge.badge-light {
     background-color: #0c0c0c;
     padding: 10px 0;
@@ -902,7 +906,7 @@ a.action-icon.d-block.remove_product_via_cart {
 }
 
 .al_body_template_six .btn-solid {
-    font-size: 10px;
+    font-size: 12px;
     padding: 5px 12px;
     border-radius: 7px;
 }

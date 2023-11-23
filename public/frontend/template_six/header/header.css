@@ -108,7 +108,7 @@ body.al_body_template_six span.rating.main-rating {
 
 .nav-tabs.navigation-tab_al.nav-material .nav-link.active {
     background-color: var(--theme-deafult);
-    color: #fff;
+    color: #fff!important;
 }
 
 .logo a.navbar-brand {

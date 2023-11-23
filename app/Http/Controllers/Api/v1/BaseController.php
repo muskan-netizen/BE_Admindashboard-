@@ -16,7 +16,7 @@ use GuzzleHttp\Client as GCLIENT;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Twilio\Rest\Client as TwilioClient;
-use App\Models\{Client, Category, Product,UserSavedPaymentMethods, ClientPreference, ClientCurrency, Wallet, UserLoyaltyPoint, LoyaltyCard, Order, Nomenclature, ProductVariant, Vendor, VendorCategory};
+use App\Models\{Client, Category, Product,UserSavedPaymentMethods, ClientPreference, ClientCurrency, Wallet, UserLoyaltyPoint, LoyaltyCard, Order, Nomenclature, ProductVariant, ServiceArea, Vendor, VendorCategory};
 use Illuminate\Support\Facades\Crypt;
 use JWT\Token;
 
@@ -74,6 +74,11 @@ class BaseController extends Controller{
             {
             $crendentials = json_decode($client_preference->sms_credentials);
             $send = $this->ethiopia($to,$body,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 10) //sms country
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->sms_country($to,$body,$crendentials);
             }
             else{
                 $client = new TwilioClient($sms_key, $sms_secret);
@@ -135,6 +140,11 @@ class BaseController extends Controller{
             {
             $crendentials = json_decode($client_preference->sms_credentials);
             $send = $this->ethiopia($to,$body,$crendentials);
+            }
+            elseif($client_preference->sms_provider == 10) //sms country
+            {
+            $crendentials = json_decode($client_preference->sms_credentials);
+            $send = $this->sms_country($to,$body,$crendentials);
             }
             else{
                 $client = new TwilioClient($sms_key, $sms_secret);
@@ -312,42 +322,86 @@ class BaseController extends Controller{
         return $category_list;
     }
 
-    public function categoryNav($lang_id, $vends=[],$type = 'delivery') {
+    public function categoryNav($lang_id, $vends=[],$type = 'delivery', $request = []) {
 
         $categoryTypes = getServiceTypesCategory($type);
 
+        // pr($categoryTypes);
+        $getAdditionalPreference = getAdditionalPreference(['is_rental_weekly_monthly_price']);
         $preferences = ClientPreference::select('is_hyperlocal', 'client_code', 'language_id', 'celebrity_check')->first();
         $categories = Category::join('category_translations as cts', 'categories.id', 'cts.category_id')
-                    ->select('categories.id', 'categories.icon', 'categories.image', 'categories.slug', 'categories.parent_id', 'cts.name', 'categories.warning_page_id', 'categories.template_type_id', 'types.title as redirect_to')
-                    ->whereIn('categories.type_id',$categoryTypes )
-                    ->distinct('categories.slug');
-
+        ->leftjoin('types', 'types.id', 'categories.type_id') // Include the join with "types" table
+        ->select(
+            'categories.id',
+            'categories.icon',
+            'categories.image',
+            'categories.slug',
+            'categories.parent_id',
+            'cts.name',
+            'categories.warning_page_id',
+            'categories.template_type_id',
+            'types.title as redirect_to',
+            'categories.type_id'
+        );
+    
+                    // if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+                    //     $categories->whereIn('categories.type_id',[10] );
+                    // }else{
+                        $categories->whereIn('categories.type_id',$categoryTypes );
+                    // }
+        
+                $categories =  $categories->distinct('categories.slug');
+                         
         $status = $this->field_status;
         $include_categories = [4,8]; // type 4 for brands
+        if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
+            $include_categories[] = 10;
+        }
+        
         $celebrity_check = 0;
         if ($preferences) {
             if((isset($preferences->celebrity_check)) && ($preferences->celebrity_check == 1)){
                 $celebrity_check = 1;
                 $include_categories[] = 5; // type 5 for celebrity
             }
-           // if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
-                $categories = $categories->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
-                    ->where(function ($q1) use ($vends, $include_categories) {
-                        $q1->whereIn('vct.vendor_id', $vends)
-                            ->where('vct.status', 1)
-                            ->orWhere(function ($q2) use($include_categories) {
-                                $q2->whereIn('categories.type_id', $include_categories);
+           if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
+
+                // $categories = $categories->when($vends, function ($query) use($vends , $include_categories) {
+                //         $query->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
+                //                 ->where(function ($q1) use ($vends , $include_categories) {
+                //                     $q1->whereIn('vct.vendor_id', $vends)
+                //                         ->where('vct.status', 1)
+                //                         ->orWhere(function ($q2) use($include_categories) {
+                //                             $q2->whereIn('categories.type_id', $include_categories);
+                //                         });
+                //                 });
+                //         });
+ 
+               
+                $categories = $categories->when($vends, function ($query) use($vends , $include_categories) {
+                    $query->leftJoin('vendor_categories as vct', 'categories.id', 'vct.category_id')
+                            ->where(function ($q1) use ($vends , $include_categories) {
+                                $q1->whereIn('vct.vendor_id', $vends)
+                                    ->where('vct.status', 1)
+                                    ->orWhere(function ($q2) use($include_categories) {
+                                        $q2->whereIn('categories.type_id', $include_categories);
+                                    });
                             });
                     });
-           // }
+                    
+           }
         }
-        $categories = $categories->leftjoin('types', 'types.id', 'categories.type_id')
+
+        
+    
+        
+        $categories = $categories
                         ->where('categories.id', '>', '1')
                         ->whereNotNull('categories.type_id');
         if($celebrity_check == 0){
             $categories = $categories->where('categories.type_id', '!=', 5);
         }
-
+     
         $categories = $categories->where('categories.is_visible', 1)
                         ->where('categories.status', '!=', $status)
                         ->where('categories.is_core', 1)
@@ -357,7 +411,18 @@ class BaseController extends Controller{
                         ->whereNull('categories.vendor_id')
                         ->withCount('products')
                         ->orderBy('categories.position', 'asc')
-                        ->groupBy('id')->get();
+                        ->groupBy('id');
+
+                           
+        if(@$request['category_limit'] && $request['category_limit'] > 0){
+            $categories = $categories->take($request['category_limit'])->get();
+        }else{
+           
+            $categories = $categories->get();
+        }
+       
+        
+        // dd($categories);
         if($categories){
             $categories = $this->buildTree($categories->toArray());
         }
@@ -805,7 +870,6 @@ class BaseController extends Controller{
         $d = floor ($minutes / 1440);
         $h = floor (($minutes - $d * 1440) / 60);
         $m = $minutes - ($d * 1440) - ($h * 60);
-        
 
         if(isset($user) && !empty($user))
         $user =  $user;
@@ -843,7 +907,6 @@ class BaseController extends Controller{
             $searchTerm = $result->translations->count() != 0 ? $result->translations->first()->name : ucfirst($searchTerm);
         }
         return $searchTerm;
-        // return $plural ? $searchTerm : rtrim($searchTerm, 's');
     }
 
     /* doller compare amount */
@@ -963,14 +1026,7 @@ class BaseController extends Controller{
                 $mail_from = 'dineshk@codebrewinnovations.com';
                 $sendto = 'dkdenni7@gmail.com';
                 try{
-                    // $data = [
-                    //     'customer_name' => 'Test',
-                    //     'code_text' => '',
-                    //     'logo' => $client->logo['original'],
-                    //     'frequency' => $subscription->frequency,
-                    //     'end_date' => $subscription->end_date,
-                    //     'link'=> "http://local.myorder.com/user/subscription/select/".$subscription->plan->slug,
-                    // ];
+
                     Mail::send([], [],
                     function ($message) use($sendto, $client_name, $mail_from) {
                         $message->from($mail_from, $client_name);
@@ -1110,4 +1166,51 @@ class BaseController extends Controller{
     }
 
 
+    public function getServiceArea($lat = 0, $lng = 0, $type = 'delivery')
+    {
+        $preferences = ClientPreference::where('id', '>', 0)->first();
+        $user = Auth::user();
+        $latitude = ($user->latitude) ? $user->latitude : $lat;
+        $longitude = ($user->longitude) ? $user->longitude : $lng;
+        $vendorType = $user->vendorType ? $user->vendorType : $type;
+        $serviceAreaVendors = Vendor::select('id', 'show_slot');
+        $vendors = [];
+        if ($vendorType) {
+            $serviceAreaVendors = $serviceAreaVendors->where($vendorType, 1);
+        }
+        if ((isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1)) {
+            $latitude = ($latitude) ? $latitude : $preferences->Default_latitude;
+            $longitude = ($longitude) ? $longitude : $preferences->Default_longitude;
+            if (!empty($latitude) && !empty($longitude)) {
+                $serviceAreaVendors = ServiceArea::whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")
+                             ->pluck('id');
+                // if (isset($preferences->slots_with_service_area) && ($preferences->slots_with_service_area == 1)) {
+                //     $slot_vendors = clone $serviceAreaVendors;
+                //     $data = $slot_vendors->get();
+                //     foreach ($data as $key => $value) {
+                //         $serviceAreaVendors = $serviceAreaVendors->when(($value->show_slot == 0), function ($query) use ($latitude, $longitude) {
+                //             return $query->where(function ($query1) use ($latitude, $longitude) {
+                //                 $query1->whereHas('slot.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                //                     $q->select('id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                //                 })
+                //                     ->orWhereHas('slotDate.geos.serviceArea', function ($q) use ($latitude, $longitude) {
+                //                         $q->select('id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))")->where('is_active_for_vendor_slot', 1);
+                //                     });
+                //             });
+                //         });
+                //     }
+                // }
+            }
+        }
+    
+        if ($serviceAreaVendors->isNotEmpty()) {
+            foreach ($serviceAreaVendors as $value) {
+          
+                $vendors[] = $value;
+            }
+        }
+      
+        return $vendors;
+    }
+    
 }

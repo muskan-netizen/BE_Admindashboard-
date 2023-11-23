@@ -30,6 +30,7 @@ use App\Http\Controllers\LiveePaymentController;
 use App\Http\Requests\OrderStoreRequest;
 use Illuminate\Support\Facades\Validator;
 use App\Models\{Order, OrderProduct, Cart, CartAddon, CartProduct, Product, OrderProductAddon, Client, ClientPreference, ClientCurrency, OrderVendor, UserAddress, CartCoupon, CartDeliveryFee, CartProductPrescription, VendorOrderStatus, OrderStatusOption, Vendor, LoyaltyCard, User, Payment, Transaction, UserVendor};
+use App\Http\Controllers\Front\MpesaSafariController;
 
 class PaymentOptionController extends BaseController
 {
@@ -150,6 +151,12 @@ class PaymentOptionController extends BaseController
     {
         $gateway = new MyCashGatewayController();
         return $gateway->purchase($request);
+    }
+    
+    public function postPaymentVia_mpesasafari(Request $request)
+    {
+        $gateway = new MpesaSafariController();
+        return $gateway->createPayment($request);
     }
 
     public function postPaymentVia_ccavenue(Request $request)
@@ -390,8 +397,6 @@ class PaymentOptionController extends BaseController
             return $this->errorResponse($ex->getMessage(), 400);
         }
     }
-
-
 
     public function creditMyWallet(Request $request)
     {
@@ -662,7 +667,6 @@ class PaymentOptionController extends BaseController
                     }
 
 
-
                     DB::commit();
                     return $this->successResponse($order, __('Order placed successfully.'), 201);
                 }
@@ -812,7 +816,6 @@ class PaymentOptionController extends BaseController
         // Auto accept order
         $orderController = new OrderController();
         $orderController->autoAcceptOrderIfOn($order->id);
-
 
         // Send Notification
         if (!empty($order->vendors)) {

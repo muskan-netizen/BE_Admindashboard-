@@ -253,5 +253,12 @@
 .irs-to {
 	background-color: var(--theme-deafult);
 	color: #fff;
-	padding: 3px
+	padding: 3px;
+	right: 0;
+}
+body.al_body_template_one .irs-to{
+	left: auto!important;
+}
+body.al_body_template_one span.irs-single {
+    left: 0!important;
 }

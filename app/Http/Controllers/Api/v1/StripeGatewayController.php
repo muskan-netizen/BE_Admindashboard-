@@ -11,13 +11,14 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Api\v1\OrderController;
 use App\Http\Controllers\Api\v1\WalletController;
 use App\Http\Controllers\Api\v1\PickupDeliveryController;
+use App\Http\Traits\StripeTrait;
 use Illuminate\Support\Facades\Validator;
 use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, Payment, PaymentOption, Client, ClientPreference, ClientCurrency, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser, UserAddress};
 
 class StripeGatewayController extends BaseController
 {
 
-    use ApiResponser;
+    use ApiResponser, StripeTrait;
     public $gateway;
     public $currency;
 
@@ -201,6 +202,13 @@ class StripeGatewayController extends BaseController
         //     return $this->errorResponse($ex->getMessage(), 400);
         // }
     }
+
+
+    public function createPaymentIntent(Request $request){
+        $domain = $request->getHost();
+        $response = $this->paymentInit($request, $domain);
+    }
+
 
     public function subscriptionPaymentViaStripe(request $request)
     {

@@ -59,9 +59,7 @@ $preference = $client_preference_detail;
                 }
                 @endphp
                 <ul class="header-dropdown d-none d-sm-inline">
-                @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
-                        <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
-                    @endif
+                
                     @if( $is_ondemand_multi_pricing ==1 )
                         @include('layouts.store.onDemandTopBarli')
                     @endif
@@ -134,6 +132,7 @@ $preference = $client_preference_detail;
                         </ul>
                     </li>
                     @endif
+                    @if( Session::get('vendorType') != 'p2p')
                     <li class="onhover-dropdown mobile-account"> <i class="fa fa-user" aria-hidden="true"></i>
                         {{__('My Account')}}
                         <ul class="onhover-show-div">
@@ -150,15 +149,27 @@ $preference = $client_preference_detail;
                                 <a href="{{route('user.logout')}}" data-lng="es">{{__('Logout')}}</a>
                             </li>
                         @else
-                        <li>
-                            <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
-                        </li>
-                        <li>
-                            <a href="{{route('customer.register')}}" data-lng="es">{{__('Register')}}</a>
-                        </li>
+                         @php
+                                $getAdditionalPreference = getAdditionalPreference(['is_user_pre_signup']);
+                                @endphp
+                                @if(isset($getAdditionalPreference) && ($getAdditionalPreference['is_user_pre_signup'] == 1))
+                                
+                                 <li>
+                                    <a href="{{route('customer.register')}}" data-lng="es">{{__('Pre Signup')}}</a>
+                                </li>
+                               @else
+                                  
+                                <li>
+                                    <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
+                                </li>
+                                <li>
+                                    <a href="{{route('customer.register')}}" data-lng="es">{{__('Register')}}</a>
+                                </li>
+                                @endif
                         @endif
                         </ul>
                     </li>
+                    @endif
                 </ul>
             </div>
 
@@ -198,6 +209,15 @@ $preference = $client_preference_detail;
                         @endif
                     </ul>
                 </li>
+                
+                @if( Session::get('vendorType') == 'p2p' )
+                    <li class="add_post"><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn">
+                        <span>
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                            {{ __('') }}</span>
+                        </a></li>
+                @endif
+
                 @if($client_preference_detail->show_wishlist == 1)
                 <li class="mobile-wishlist d-inline d-sm-none al_iconsMb">
                     <a href="{{route('user.wishlists')}}">
@@ -231,6 +251,7 @@ $preference = $client_preference_detail;
                     </ul>
                 </li>
                 @endif
+
             </ul>
         </div>
     </div>

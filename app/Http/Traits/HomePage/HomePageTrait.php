@@ -339,7 +339,6 @@ trait HomePageTrait
                         $query2->whereNotIn('id', $promo_code_details->toArray());
                     }
                 });
-
                 $query->orWhere(function ($query1) use ($promo_code_details) {
                     $query1->where('restriction_type', 0);
                     if (!empty($promo_code_details->toArray())) {
@@ -352,41 +351,38 @@ trait HomePageTrait
             if($firstOrderCheck){
                 $result1->where('first_order_only', 0);
             }
-
             $result1->where(['promo_visibility' => 'public']);
     
             $result1 = $result1->where('is_deleted', 0)->get();
-
             $promo_codes = $promo_codes->merge($result1);
-        
         }
 
         if(!empty($vendor_ids)){
             $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->whereIn('refrence_id', $vendor_ids)->pluck('promocode_id');
-            $result2 = Promocode::where('restriction_on', 1)->where(function ($query) use ($vendor_promo_code_details ) {
-                $query->where(function ($query2) use ($vendor_promo_code_details) {
-                    $query2->where('restriction_type', 1);
-                    if (!empty($vendor_promo_code_details->toArray())) {
-                        $query2->whereNotIn('id', $vendor_promo_code_details->toArray());
-                    }
-                });
-
-                $query->orWhere(function ($query1) use ($vendor_promo_code_details) {
-                    $query1->where('restriction_type', 0);
-                    if (!empty($vendor_promo_code_details->toArray())) {
-                        $query1->whereIn('id', $vendor_promo_code_details->toArray());
-                    } else {
-                        $query1->where('id', 0);
-                    }
-                });
-            });
-            if($firstOrderCheck){
-                $result2->where('first_order_only', 0);
-            }
-
-            $result2->where(['promo_visibility' => 'public']);
-
-            $result2 = $result2->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->get();
+            $result2 = Promocode::where('restriction_on', 1)
+                ->where(function ($query) use ($vendor_promo_code_details) {
+                    $query->where(function ($query2) use ($vendor_promo_code_details) {
+                        $query2->where('restriction_type', 1);
+                        if ($vendor_promo_code_details->isNotEmpty()) {
+                            $query2->whereNotIn('id', $vendor_promo_code_details);
+                        }
+                    })
+                    ->orWhere(function ($query1) use ($vendor_promo_code_details) {
+                        $query1->where('restriction_type', 0);
+                        if ($vendor_promo_code_details->isNotEmpty()) {
+                            $query1->whereIn('id', $vendor_promo_code_details);
+                        } else {
+                            $query1->where('id', 0);
+                        }
+                    });
+                })
+                ->when($firstOrderCheck, function ($query) {
+                    return $query->where('first_order_only', 0);
+                })
+                ->where('promo_visibility', 'public')
+                ->where('is_deleted', 0)
+                ->whereDate('expiry_date', '>=', $now)
+                ->get();
             $promo_codes = $promo_codes->merge($result2);
         }
         return $promo_codes;

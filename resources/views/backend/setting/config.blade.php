@@ -971,6 +971,48 @@
                             </div>
                         </div>
 
+                  <div class="row sms_fields mx-0" id="sms_country_fields"style="display : {{ $preference->sms_provider == 10 ? 'flex' : 'none' }};">
+                    <div class="col-12">
+                        <div class="form-group mb-2">
+                            <label for="sms_sender_id">{{ __('Sender Id') }}</label>
+                            <input type="text" name="sms_sender_id" id="sms_sender_id" placeholder=""
+                                class="form-control"
+                                value="{{ old('sms_sender_id', $sms_crendential->sms_sender_id ?? '') }}">
+                            @if ($errors->has('sms_sender_id'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('sms_sender_id') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group mb-2">
+                            <label for="sms_auth_key">{{ __('Auth Key') }}</label>
+                            <input type="text" name="sms_auth_key" id="sms_auth_key" placeholder=""
+                                class="form-control"
+                                value="{{ old('sms_auth_key', $sms_crendential->sms_auth_key ?? '') }}">
+                            @if ($errors->has('sms_auth_key'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('sms_auth_key') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group mb-2">
+                            <label for="sms_auth_token">{{ __('Auth Token') }}</label>
+                            <input type="text" name="sms_auth_token" id="sms_auth_token" placeholder=""
+                                class="form-control"
+                                value="{{ old('sms_auth_token', $sms_crendential->sms_auth_token ?? '') }}">
+                            @if ($errors->has('sms_auth_token'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('sms_auth_token') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                
                     </div>
                 </div>
             </form><!-- SMS Configuration end -->
@@ -1576,6 +1618,7 @@
                                 <hr />
                             </div>
                         </div>
+                       
 
                         <div class="col-12 mt-2">
                             <div class="form-group mt-2 d-flex switchery-demo">
@@ -2013,12 +2056,13 @@
 
 
         {{-- marg form --}}
-        <div class="col-xl-4 col-lg-4 mb-3">
+        {{-- <div class="col-xl-4 col-lg-4 mb-3">
             <!-- Social Logins title start -->
             <div class="page-title-box">
                 <h4 class="page-title text-uppercase">Marg</h4>
             </div><!-- Social Logins title end -->
-            <div class="card-box">
+                <div class="card-box">
+
             <form method="POST" action="{{ route('additional.update') }}">
                 @csrf
                 <!-- marg card start -->
@@ -2075,7 +2119,7 @@
                         <div class="col-12">
                             <div class="form-group mb-2 mt-2">
                                 <label for="marg_company_code">{{ __('Company Code') }}</label>
-                                <input type="password" name="marg_company_code" id="marg_company_code"
+                                <input type="text" name="marg_company_code" id="marg_company_code"
                                     placeholder="" class="form-control"
                                     value="{{ old('marg_company_code', $getAdditionalPreference['marg_company_code'] ?? '') }}">
                                 @if ($errors->has('marg_company_code'))
@@ -2091,7 +2135,7 @@
                         <div class="col-12">
                             <div class="form-group mb-2 mt-2">
                                 <label for="marg_access_token">{{ __('Marg ID') }}</label>
-                                <input type="password" name="marg_access_token" id="marg_access_token"
+                                <input type="text" name="marg_access_token" id="marg_access_token"
                                     placeholder="" class="form-control"
                                     value="{{ old('marg_access_token', $getAdditionalPreference['marg_access_token'] ?? '') }}">
                                 @if ($errors->has('marg_access_token'))
@@ -2107,7 +2151,7 @@
                         <div class="col-12">
                             <div class="form-group mb-2 mt-2">
                                 <label for="marg_decrypt_key">{{ __('Decrypt Key') }}</label>
-                                <input type="password" name="marg_decrypt_key" id="marg_decrypt_key" placeholder=""
+                                <input type="text" name="marg_decrypt_key" id="marg_decrypt_key" placeholder=""
                                     class="form-control"
                                     value="{{ old('marg_decrypt_key', $getAdditionalPreference['marg_decrypt_key'] ?? '') }}">
                                 @if ($errors->has('marg_decrypt_key'))
@@ -2118,23 +2162,82 @@
                             </div>
                         </div>
                     </div>
-                </form>
-                <div class="row marg_row" style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
+            </form>
+
+            <div class="row marg_row"
+                style="{{ isset($getAdditionalPreference['is_marg_enable']) && $getAdditionalPreference['is_marg_enable'] == 1 ? '' : 'display:none;' }}">
                 <div class="col-12">
-                    @php
-                    {
-                        $marg_order =  App\Models\Order::where('marg_status', '=',null)->where('marg_max_attempt', '>',2)->first();
-                        $class= "";
-                        if($marg_order){
-                            $class= "disabled";
-                        }
-                    }
-                    @endphp
-                    <button class="btn btn-info btn-block" id="sync_marg_btn" {{$class }}>{{ __('Sync Data') }} </button>
+       @php
+        {
+                $marg_order =  App\Models\Order::where('marg_status', '=',null)->
+                  where('marg_max_attempt', '>',2)->first();
+                 $class= "";
+                 if($marg_order){
+                    $class= "disabled";
+                 }
+        }
+        @endphp
+                <button class="btn btn-info btn-block" id="sync_marg_btn" {{$class }}>{{ __('Sync Data') }} </button>
+
                 </div>
             </div>
+        </div><!-- marg card end --> --}}
+    {{-- </div> --}}
+
+    <div class="col-xl-4 col-lg-4 mb-3">
+        <div class="page-title-box">
+            <h4 class="page-title text-uppercase">{{ __('Marg Cron Schedular') }}</h4>
         </div>
-    </div><!-- marg card end -->
+        <div class="card-box">
+        <form method="POST" action="{{ route('additional.update') }}">
+            <input type="hidden" name="crm" id="crm" value="1">
+            <input type="hidden" name="send_to" id="send_to" value="configure">
+            @csrf
+
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <h4 class="header-title text-uppercase mb-0">{{ __('Marg Cron Schedular') }}
+                </h4>
+                <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
+                </button>
+            </div>
+
+            <div class="col-12">
+
+                <div class="form-group mb-0 d-flex switchery-demo">
+                    <label for="" class="mr-3">{{ __('Select Marg Cron Configuration') }}</label>
+                </div>
+                @if (@$getAdditionalPreference['marg_cron_schedular_time'] != 0 && @$getAdditionalPreference['marg_cron_schedular_time'] != '')
+                    @php
+                        $marg_cron_schedular_time = '';
+                    @endphp
+                @else
+                    @php
+                        $marg_cron_schedular_time = $getAdditionalPreference['marg_cron_schedular_time'];
+                    @endphp
+                @endif
+                <select name="marg_cron_schedular_time" id="" class="form-control">
+                    <option value="">{{ __("Select Marg Cron") }}</option>
+                    <option @if($marg_cron_schedular_time === "everyMinute") selected @endif value="everyMinute">{{ __("everyMinute")}}</option>
+                    <option @if($marg_cron_schedular_time === "everyFiveMinutes") selected @endif value="everyFiveMinutes">{{ __("everyFiveMinutes")}}</option>
+                    <option @if($marg_cron_schedular_time === "everyTenMinutes") selected @endif value="everyTenMinutes">{{ __("everyTenMinutes")}}</option>
+                    <option @if($marg_cron_schedular_time === "everyFifteenMinutes") selected @endif value="everyFifteenMinutes">{{ __("everyFifteenMinutes")}}</option>
+                    <option @if($marg_cron_schedular_time === "everyThirtyMinutes") selected @endif value="everyThirtyMinutes">{{ __("everyThirtyMinutes")}}</option>
+                    <option @if($marg_cron_schedular_time === "hourly") selected @endif value="hourly">{{ __("hourly")}}</option>
+                    <option @if($marg_cron_schedular_time === "everyTwoHours") selected @endif value="everyTwoHours">{{ __("everyTwoHours")}}</option>
+                    <option @if($marg_cron_schedular_time === "everyThreeHours") selected @endif value="everyThreeHours">{{ __("everyThreeHours")}}</option>
+                    <option @if($marg_cron_schedular_time === "everySixHours") selected @endif value="everySixHours">{{ __("everySixHours")}}</option>
+                    <option @if($marg_cron_schedular_time === "daily") selected @endif value="daily">{{ __("daily")}}</option>
+                    <option @if($marg_cron_schedular_time === "twiceDaily") selected @endif value="twiceDaily">{{ __("twiceDaily")}}</option>
+                    <option @if($marg_cron_schedular_time === "weekly") selected @endif value="weekly">{{ __("weekly")}}</option>
+                    <option @if($marg_cron_schedular_time === "monthly") selected @endif value="monthly">{{ __("monthly")}}</option>
+                </select>
+
+            </div>
+        </form>
+        </div>
+    </div>
+
+    
     <div class="col-xl-4 col-lg-4 mb-3">
         <div class="page-title-box">
             <h4 class="page-title text-uppercase">{{ __('Vendor Notification Product Stock') }}</h4>
@@ -2154,8 +2257,6 @@
             <p class="sub-header">
                 {{ __('Send Vendor Notification when Product Stock Out.') }}
             </p>
-
-            <div class="col-12">
 
                 <div class="form-group mb-0 d-flex switchery-demo">
                     <label for="" class="mr-3">{{ __('Notification Enable') }}</label>
@@ -2180,16 +2281,199 @@
                     <hr />
                 </div>
             </div>
+        </form>
+        </div>
+        <div class="col-xl-4 col-lg-4 mb-3">
+            <form method="POST" class="h-100" action="{{ route('additional.update')}}">
+            @csrf
+                <input type="hidden" name="is_lumen" value="1">
+                <div class="card-box h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h4 class="header-title text-uppercase mb-0">{{__("Lumen")}}</h4>
+                        <button class="btn btn-outline-info d-block" type="submit"> {{__('Save')}} </button>
+                    </div>
+                    <div class="row align-items-start">
+                        <div class="col-md-12">
+                            <div class="form-group d-flex justify-content-between mb-3">
+                                <label for="lumen" class="mr-2 mb-0">{{__("Enable")}} </label>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input " id="is_lumen_enabled" name="is_lumen_enabled" {{ ($getAdditionalPreference['is_lumen_enabled'] && ($getAdditionalPreference['is_lumen_enabled'] == 'on'))  ? 'checked':'' }}>
+                                        <label class="custom-control-label" for="is_lumen_enabled"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="row lumen-field" style="display:{{ ($getAdditionalPreference['is_lumen_enabled'] && ($getAdditionalPreference['is_lumen_enabled'] == 'on'))  ? 'block':'none' }}">
+                <div class="col-12 ">
+                    <div class="form-group mb-3">
+                        <div class="domain-outer border-0 d-flex align-items-center justify-content-between">
+                            <label for="lumen_domain_url">{{ __('LUMEN DOMAIN URL') }}</label>
+
+                        </div>
+                        <input type="text" name="lumen_domain_url" id="lumen_domain_url"
+                            placeholder="" class="form-control"
+                            value="{{ old('lumen_domain_url', $getAdditionalPreference['lumen_domain_url'] ?? '') }}">
+                        @if ($errors->has('lumen_domain_url'))
+                            <span class="text-danger" role="alert">
+                                <strong>{{ $errors->first('lumen_domain_url') }}</strong>
+                            </span>
+                        @endif
+                    </div>
+                </div>
+                        </div>
+                        <div class="row lumen-field" style="display: {{ ($getAdditionalPreference['is_lumen_enabled'] && ($getAdditionalPreference['is_lumen_enabled'] == 'on'))  ? 'block':'none' }}">
+
+                <div class="col-12">
+                    <div class="form-group mb-3">
+                        <div class="domain-outer border-0 d-flex align-items-center justify-content-between">
+                            <label for="lumen_access_token">{{ __('LUMEN ACCESS TOKEN') }}</label>
+                            <span class="text-right col-6 col-md-6"><a
+                                    href="javascript: generateLumenToken();">{{ __('Generate Key') }}</a></span>
+
+                        </div>
+                        <input type="text" name="lumen_access_token" id="lumen_access_token"
+                            placeholder="kjadsasd66asdas" class="form-control"
+                            value="{{ old('lumen_access_token',  $getAdditionalPreference['lumen_access_token'] ?? '') }}">
+                        @if ($errors->has('lumen_access_token'))
+                            <span class="text-danger" role="alert">
+                                <strong>{{ $errors->first('lumen_access_token') }}</strong>
+                            </span>
+                        @endif
+                    </div>
+                </div>
+                </div>
+       
+                </div>
+            </form>
+    
+    </div>
+</div>
+
+    <div class="col-xl-4 col-lg-4 mb-3">
+        <div class="page-title-box">
+            <h4 class="page-title text-uppercase">{{ __("Tax-Jar")}}</h4>
+        </div>
+
+        <form method="POST" action="{{ route('additional.update') }}">
+            @csrf
+            <div class="card-box h-100">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group mb-0 switchery-demo">
+                            <label for="fb_login" class="d-flex align-items-center justify-content-between">
+                                <h5 class="social_head"><i style="font-size: 24px;" class="mdi mdi-marg"></i>
+                                    <span>{{ __('Tax-Jar Api') }}</span>
+                                </h5>
+
+                                <button class="btn btn-info btn-block save_btn" name="taxjar_submit" type="submit">{{ __('Save') }} </button>
+                            </label>
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <label for="is_taxjar_enable" class="mr-3">{{ __('Enable') }}</label>
+                                    <input type="checkbox" data-plugin="switchery" id="is_taxjar_enable" class="form-control checkbox_change" data-className="is_taxjar_enable_hidden" data-color="#43bee1"
+                                        @if (@$getAdditionalPreference['is_taxjar_enable'] == '1') checked='checked' value="1" @endif>
+                                        <input type="hidden" @if (isset($getAdditionalPreference['is_taxjar_enable']) == 1) value="1" @else value="0" @endif
+                                        name="is_taxjar_enable" id="is_taxjar_enable_hidden" />
+                                </div>
+
+                                <div>
+                                    <label for="taxjar_testmode" class="mr-3">{{ __('Sandbox') }}</label>
+                                    <input type="checkbox" data-plugin="switchery" id="taxjar_testmode" class="form-control checkbox_change" data-className="taxjar_testmode_hidden" data-color="#43bee1"
+                                        @if (@$getAdditionalPreference['taxjar_testmode'] == '1') checked='checked' value="1" @endif>
+                                        <input type="hidden" @if (isset($getAdditionalPreference['taxjar_testmode']) == 1) value="1" @else value="0" @endif
+                                        name="taxjar_testmode" id="taxjar_testmode_hidden" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row taxjar_row"
+                    style="{{ isset($getAdditionalPreference['is_taxjar_enable']) && $getAdditionalPreference['is_taxjar_enable'] == 1 ? '' : 'display:none;' }}">
+                    <div class="col-12">
+                        <div class="form-group mb-2 mt-2">
+                            <label for="taxjar_api_token">{{ __('Api Token') }}</label>
+                            <input type="text" name="taxjar_api_token" id="taxjar_api_token"
+                                placeholder="" class="form-control"
+                                value="{{ old('taxjar_api_token', $getAdditionalPreference['taxjar_api_token'] ?? '') }}">
+                            @if ($errors->has('taxjar_api_token'))
+                                <span class="text-danger" role="alert">
+                                    <strong>{{ $errors->first('taxjar_api_token') }}</strong>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+        </form>
+        
+    
+
+    </div>
+    
+    {{-- ends here marg form --}}
+    </div>
+    <div class="col-xl-4 col-lg-4 mb-3">
+        <div class="page-title-box">
+            <h4 class="page-title text-uppercase">{{ __('Blockchain Route Formation') }}</h4>
+        </div>
+        <div class="card-box">
+        <form method="POST" action="{{ route('additional.update') }}">
+        <input type="hidden" name="is_blockchain_route" id="is_blockchain_route" value="1">
+          @csrf
+
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <h4 class="header-title text-uppercase mb-0">{{ __('Blockchain Route Formation') }}
+                </h4>
+                <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
+                </button>
+            </div>
+            
+
+            <div class="col-12">
+                
+                <div class="form-group mb-0 d-flex switchery-demo">
+                    <label for="" class="mr-3">{{ __('Enable') }}</label>
+                    <input type="checkbox" data-plugin="switchery" name="blockchain_route_formation_switch"
+                        id="blockchain_route_formation_switch" class="form-control checkbox_change"
+                        data-className="blockchain_route_formation" data-color="#43bee1"
+                        @if (@$getAdditionalPreference['blockchain_route_formation'] == 1) checked @endif>
+                    <input type="hidden" @if (@$getAdditionalPreference['blockchain_route_formation'] == 1) value="1" @else value="0" @endif
+                        name="blockchain_route_formation" id="blockchain_route_formation" />
+                </div>
+        
+                <div class="row mt-2  @if (@$getAdditionalPreference['blockchain_route_formation'] != 1) d-none @endif;" id="blockchain_configuration_div">
+                   
+                    <div class="col-6">
+                    <label for="" class="mr-3">{{ __('Blockchain Api Domain') }}</label>
+                        <input type="text" name="blockchain_api_domain" id="blockchain_api_domain"
+                            placeholder="" class="form-control"
+                            value="{{ old('blockchain_api_domain', @$getAdditionalPreference['blockchain_api_domain'] ?? '') }}">
+                    </div>
+                    <div class="col-6">
+                    <label for="" class="mr-3">{{ __('Blockchain Address Id') }}</label>
+                        <input type="text" name="blockchain_address_id" id="blockchain_address_id"
+                            placeholder="" class="form-control"
+                            value="{{ old('blockchain_address_id', @$getAdditionalPreference['blockchain_address_id'] ?? '') }}">
+                    </div>
+                    <hr />
+                </div>
+
                 </form>
             </div>
         </div>
-        @if( Request::get('google_tag'))
+    </div>
+      @if( Request::get('google_tag'))
         <div class="col-xl-4 col-lg-4 mb-3">
             <!-- Social Logins title start -->
             <div class="page-title-box">
                 <h4 class="page-title text-uppercase">{{ __('Google Analytics') }}</h4>
             </div><!-- Social Logins title end -->
                             <div class="card-box">
+
+
             <form method="POST" action="{{ route('additional.update') }}">
                 <input type="hidden" name="crm" id="crm" value="1">
                 <input type="hidden" name="send_to" id="send_to" value="configure">
@@ -2229,53 +2513,7 @@
         </div>
         </div>
 	@endif
-     <div class="col-xl-4 col-lg-4 mb-3 d-none">
-        <div class="page-title-box">
-            <h4 class="page-title text-uppercase">{{ __('Testing Database Toggle ') }}</h4>
-        </div>
-        <div class="card-box">
-        <form method="POST" action="{{ route('configure.toggleDatabase') }}">
-            <input type="hidden" name="crm" id="crm" value="1">
-            <input type="hidden" name="send_to" id="send_to" value="configure">
-            @csrf
-
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <h4 class="header-title text-uppercase mb-0">{{ __('Testing Database Toggle') }}
-                </h4>
-                <button class="btn btn-info d-block" type="submit"> {{ __('Save') }}
-                </button>
-            </div>
-
-            <div class="col-12">
-
-            <select class="form-control" id="db_toggle" name="db_toggle">
-
-                <option value="2d98b5"   @if (@$client_detail->code == '2d98b5') checked='checked' @endif>Ace</option>
-                <option value="245bae" @if (@$client_detail->code == '245bae')   checked='checked' @endif>Ace UAT</option>
-
-           </select>
-                </div>
-
-                </form>
-            </div>
-        </div>
-
-    </div>
-    {{-- ends here marg form --}}
-    </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
+</div>
     <div class="row">
 
         <div class="col-md-12">
@@ -2295,15 +2533,11 @@
 
 
                 </div>
+                        </form>
+
         </div>
-        </form>
         <!-- Custom Mods end -->
     </div>
-</div>
-
-
-
-
 
     <div style="display:none;">
         <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
@@ -2626,7 +2860,7 @@
             $('.optionTableAdd').append($clone);
 
         });
-        $('#add_slot_modal_btn').click(function(e) {
+        $('#add_slot_modal_btn').click(function(e) {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
             document.getElementById("slotForm").reset();
             $('#add_slot_modal input[name=slot_id]').val("");
             $('#add_slot_modal').modal('show');
@@ -2635,7 +2869,7 @@
 
 
         $(document).on("click", "#sync_marg_btn", function(e) {
-            e.preventDefault();
+            e.preventDefault();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
             $.ajax({
                 type: "GET",
                 dataType: 'json',
@@ -2678,6 +2912,25 @@
                     }
                 });
             }
+        });
+
+        // Mark ////
+
+        $(document).on("click", "#sync_marg_btn", function() {
+                $.ajax({
+                    type: "GET",
+                    dataType: 'json',
+                    url: "{{ route('sync.marg') }}",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                    },
+                    success: function(response) {
+                        dd(response);
+                        if (response.status == "Success") {
+
+                        }
+                    }
+                });
         });
 
         $(document).on('click', '.show-custom-mods-btn', function(e) {
@@ -2996,7 +3249,7 @@
             $('#add-customer-modal').removeClass('fadeIn');
 
         });
-
+    //*************configurations hyperlocal map location selected by map*********************//
         $(document).on('click', '.showMap', function() {
             var no = $(this).attr('num');
             var lats = document.getElementById('Default_latitude').value;
@@ -3004,48 +3257,60 @@
 
             document.getElementById('map_for').value = no;
 
-            if (lats == null || lats == '0') {
-                lats = 30.53899440;
-            }
-            if (lngs == null || lngs == '0') {
-                lngs = 75.95503290;
-            }
+                    if (lats == null || lats == '0') {
+                    lats = 30.53899440;
+                    }
+                    if (lngs == null || lngs == '0') {
+                    lngs = 75.95503290;
+                    }
 
             var myLatlng = new google.maps.LatLng(lats, lngs);
-            var mapProp = {
+                var mapProp = {
                 center: myLatlng,
                 zoom: 13,
                 mapTypeId: google.maps.MapTypeId.ROADMAP
 
-            };
+                };
             var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
-            var marker = new google.maps.Marker({
+                var marker = new google.maps.Marker({
                 position: myLatlng,
                 map: map,
                 title: 'Hello World!',
                 draggable: true
-            });
-            document.getElementById('lat_map').value = lats;
-            document.getElementById('lng_map').value = lngs;
-            google.maps.event.addListener(marker, 'drag', function(event) {
+                });
+                document.getElementById('lat_map').value = lats;
+                document.getElementById('lng_map').value = lngs;
+                google.maps.event.addListener(marker, 'drag', function(event) {
+
                 document.getElementById('lat_map').value = event.latLng.lat();
                 document.getElementById('lng_map').value = event.latLng.lng();
             });
 
             google.maps.event.addListener(marker, 'dragend', function(event) {
-                var zx = JSON.stringify(event);
-                console.log(zx);
 
-
-                document.getElementById('lat_map').value = event.latLng.lat();
-                document.getElementById('lng_map').value = event.latLng.lng();
-            });
+            var newLat = event.latLng.lat();
+            var newLng = event.latLng.lng();
+            var geocoder = new google.maps.Geocoder();
+            var latlng = new google.maps.LatLng(newLat, newLng);
+                geocoder.geocode({
+                'latLng': latlng
+                }, function(results, status) {
+                if (status === google.maps.GeocoderStatus.OK) {
+                    if (results[0]) {
+                    var locationName = results[0].formatted_address;
+                    document.getElementById('Default_location_name').value = locationName;
+                }
+                }
+                });
+                    document.getElementById('lat_map').value = newLat;
+                    document.getElementById('lng_map').value = newLng;
+                });
             $('#add-customer-modal').addClass('fadeIn');
             $('#show-map-modal').modal({
-                keyboard: false
+            keyboard: false
             });
 
-        });
+            });
 
         $(document).on('click', '.selectMapLocation', function() {
 
@@ -3079,6 +3344,7 @@
         var laundry_service = $('#need_laundry_service');
 
         var is_hubspot_enable = $('#is_hubspot_enable');
+        var is_marg_enable = $('#is_marg_enable');
 
         if (laundry_service.length > 0) {
             laundry_service[0].onchange = function() {
@@ -3097,6 +3363,16 @@
                     $('.hub_row').hide();
                 } else {
                     $('.hub_row').show();
+                }
+            }
+        }
+        if (is_marg_enable.length > 0) {
+            is_marg_enable[0].onchange = function() {
+
+                if ($('#is_marg_enable:checked').length != 1) {
+                    $('.marg_row').hide();
+                } else {
+                    $('.marg_row').show();
                 }
             }
         }
@@ -3233,6 +3509,18 @@
             }
         }
 
+        var is_taxjar_enable = $('#is_taxjar_enable');
+        if (is_taxjar_enable.length > 0) {
+            is_taxjar_enable[0].onchange = function() {
+
+                if ($('#is_taxjar_enable:checked').length != 1) {
+                    $('.taxjar_row').hide();
+                } else {
+                    $('.taxjar_row').show();
+                }
+            }
+        }
+
         $('#pickup_notification_switch')[0].onchange = function() {
             if ($('#pickup_notification_switch:checked').length != 1) {
                 $('#pickup_notification_div').hide();
@@ -3250,7 +3538,17 @@
                 $('#stock_notification_div').show();
             }
         }
+        $('#blockchain_route_formation_switch').on('change', function() {
+  
+            if ($('#blockchain_route_formation_switch:checked').length != 1) {
+                $('#blockchain_configuration_div').hide();
+            } else {
+                $('#blockchain_configuration_div').show();
+            }
+      
+         });
 
+       
         $('#pickup_notification_switch2')[0].onchange = function() {
             if ($('#pickup_notification_switch2:checked').length != 1) {
                 $('#pickup_notification_div2').hide();
@@ -3291,6 +3589,7 @@
                 $('#xero_config_div').show();
             }
         }
+        
 
         var xero_enable_switch = $('#xero_enable_switch');
         if (xero_enable_switch.length > 0) {
@@ -3349,5 +3648,20 @@
             $('#' + id).css('display', 'flex');
             console.log(id);
         }
+
+        function generateLumenToken() {
+            var token = generateRandomString(30);
+
+            $('#lumen_access_token').val(token);
+        }
+
+        $('#is_lumen_enabled').on('change',function(){
+
+        if ($(this).is(":checked")) {
+            $('.lumen-field').show();
+        }else{
+            $('.lumen-field').hide();
+        }
+        });
     </script>
 @endsection
