@@ -146,7 +146,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                                                         @if($data->products->total() > 12)
                                                         :
                                                             <span class="font-12">
-                                                                <a target="_blank" href="{{route('products',[$data->category->id,isset($data->vendor)?$data->vendor->slug:request()->segment(2)])}}">view all</a>
+                                                                <a target="_blank" href="{{route('products',[$data->category_id,isset($data->vendor)?$data->vendor->id:0])}}">view all</a>
                                                             </span>
                                                         @endif
                                                     </h2>
