@@ -1189,16 +1189,6 @@ class VendorController extends FrontController
             $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
             if (!empty($products)) {
                 foreach ($products as $key => $value) {
-                   /* foreach ($value->addOn as $key => $val) {
-                        foreach ($val->setoptions as $k => $v) {
-                            if ($v->price == 0) {
-                                $v->is_free = true;
-                            } else {
-                                $v->is_free = false;
-                            }
-                        }
-                    }*/
-                    
                     $p_id = $value->id;
                     $variantData = $value->with(['variantSet' => function ($z) use ($langId, $p_id) {
                         $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
