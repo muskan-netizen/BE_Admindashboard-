@@ -537,6 +537,8 @@
             $('#dialCode').val(dial_code);
         });
         $('#register_btn').click(function() {
+            $(".invalid-feedback strong").empty();
+            $(" input").removeClass("is-invalid");
             var that = $(this);
             var loop_length = $('.required').length;
             var hasErrors = false;
