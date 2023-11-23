@@ -1175,10 +1175,10 @@ class VendorController extends FrontController
     
     
     public function vendorAllProducts(Request $request, $domain, $cat_id, $vendor_id)
-    {
+    {        
         $vendor = Vendor::with('slot.day', 'slotDate', 'productsLive.reviews')
         ->select('id','email','name','slug','desc','short_desc','logo','banner','address','latitude','longitude','order_min_amount','order_pre_time','auto_reject_time','dine_in','takeaway','delivery','vendor_templete_id','is_show_vendor_details','website','show_slot','closed_store_order_scheduled','instagram_url','country','state','dynamic_html'
-            )->where('slug', $vendor_id)->firstOrFail();
+            )->where('id', $vendor_id)->firstOrFail();
             $luxury_type = Session::get('vendorType');
             $products = Product::byProductCategoryServiceType($luxury_type)
             ->whereHas('vendor', function ($q) use ($luxury_type) {
@@ -1187,7 +1187,6 @@ class VendorController extends FrontController
             ->where('is_live', 1)->where('category_id', $cat_id)->where('vendor_id', $vendor->id)->paginate(12);
             $langId = Session::get('customerLanguage');
             $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
-            pr($cat_id);
             if (!empty($products)) {
                 foreach ($products as $key => $value) {
                    /* foreach ($value->addOn as $key => $val) {
