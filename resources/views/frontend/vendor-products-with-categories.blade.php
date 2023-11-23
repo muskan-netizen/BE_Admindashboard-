@@ -24,6 +24,9 @@ span.alPriceValue, span.alPriceValue i {
     display: inline-flex;
     align-items: baseline;
 }
+.vendor-products-wrapper .price_head h5{
+    max-width:70%;
+}
 </style>
 @endsection
 @section('css-links')
