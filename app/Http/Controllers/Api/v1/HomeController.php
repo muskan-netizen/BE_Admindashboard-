@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\UserRegistrationDocuments;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart, VerificationOption, ShowSubscriptionPlanOnSignup, ClientCountries};
+use App\Models\{UserVendorWishlist,User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart, VerificationOption, ShowSubscriptionPlanOnSignup, ClientCountries};
 use DateTime;
 use DateInterval;
 use DateTimeZone;
@@ -1687,6 +1687,74 @@ class HomeController extends BaseController
 
             return $this->successResponse($homeData);
         } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function addVendorWishList(Request $request) {
+        try {
+            // dd('sdd');
+           $user = Auth::user();
+           $InsertUpdate['user_id'] = $user->id;
+           $InsertUpdate['vendor_id'] = $request->vendor_id;
+           UserVendorWishlist::updateOrCreate($InsertUpdate,$InsertUpdate);
+           return response()->json(['status' => 'success', 'message' => 'Vendor is added in your wish list successfully'],200);
+        } catch(\Exception $e) {
+            \Log::error($e->getMessage());
+            \Log::error($e->getLine());
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function viewVendorWishList(Request $request) {
+
+        try{
+        $latitude  = $request->has('latitude') ? $request->latitude : 0;
+        $longitude = $request->has('longitude') ? $request->longitude : 0;
+        $type      = $request->has('type') ? $request->type : 'delivery';
+        $user = Auth::user();
+        $vendorIds = UserVendorWishlist::where('user_id',$user->id)->pluck('vendor_id')->toArray();
+        $vendors = Vendor::with('offers')->whereIn('id',$vendorIds)->get();
+        $offer_favorite_vendorss = [];
+        $langId = $user->language;
+        foreach($vendors as $key => $vendor) {
+            $distanceDetail = $this->getVendorDistance($latitude,$longitude,$vendor->id,$type);
+            $vendor->timeofLineOfSightDistance = $distanceDetail['timeofLineOfSightDistance'];
+            //get categoryList
+            $categoriesIds = Product::where('vendor_id',$vendor->id)->distinct()->pluck('id')->toArray();
+            if(count($categoriesIds) > 0) {
+                $categoryNames = Category::whereIn('id',$categoriesIds)->with(['translation' => function($q) use($langId){
+                    $q->where('category_translations.language_id', $langId);
+                }])->get();
+                $categoryNamess = [];
+                foreach($categoryNames as $categoryName) {
+                    $categoryNamess[] = $categoryName->translation[0]->name;
+                }
+                $implodeCategory = implode(',',$categoryNamess);
+            } else {
+                $implodeCategory = '';
+            }
+            $vendor->categoriesList = $implodeCategory;
+            $offer_favorite_vendorss[] = $vendor;
+        }
+
+        $data['vendors'] = $offer_favorite_vendorss;
+        return $this->successResponse($data);
+        }catch(\Exception $e){
+            \Log::error($e->getMessage());
+            \Log::error($e->getLine());
+        }
+    }
+    public function removeVendorWishList(Request $request) {
+        try {
+           $user = Auth::user();
+           $InsertUpdate['user_id'] = $user->id;
+           $InsertUpdate['vendor_id'] = $request->vendor_id;
+           UserVendorWishlist::where(['user_id' => $user->id, 'vendor_id' => $request->vendor_id])->delete();
+           return response()->json(['status' => 'success', 'message' => 'Vendor is remove in your wish list successfully'],200);
+        } catch(\Exception $e) {
+            \Log::error($e->getMessage());
+            \Log::error($e->getLine());
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }

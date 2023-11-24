@@ -113,6 +113,7 @@ class HomeController extends BaseController
     }
     public function homepage(Request $request, $domain = '')
     {
+       
         try {           
             $this->config();
             $home = array();
@@ -294,6 +295,7 @@ class HomeController extends BaseController
             $enable_layout = $enable_layout->orderBy('order_by', 'asc')->pluck('slug')->toArray();
             //$homePageData = $this->postHomePageData($request);
             if($request->action=='2'){
+                // dd('sdsd');
                 $homePageData = $this->postHomePageDataV2($request, $set_template, $enable_layout, $additionalPreference,$user);
             } else {
                 $homePageData = $this->postHomePageData($request);
