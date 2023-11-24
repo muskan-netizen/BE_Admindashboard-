@@ -17,26 +17,19 @@ trait ResetConfiguration
     public function  updateStylingsAndPreferences($web_styling_id, $app_styling_id)
     {
 
-        // app stylings from 34 to 41
-        try {
-            DB::beginTransaction();
+      
         
-            $web_font = WebStylingOption::where('id', $web_styling_id)->first();
-            WebStylingOption::where('id', '!=', $web_font->id)->update(['is_selected' => 0]);
-            $web_font->is_selected = 1;
-            $web_font->save();
+    $web_font = WebStylingOption::where('id', $web_styling_id)->first();
+    WebStylingOption::where('id', '!=', $web_font->id)->update(['is_selected' => 0]);
+    $web_font->is_selected = 1;
+    $web_font->save();
+
+    $app_font = AppStylingOption::where('id', $app_styling_id)->first();
+    AppStylingOption::where('app_styling_id','!=', $app_font->app_styling_id)->update(['is_selected' => 0]);
+    $app_font->is_selected = 1;
+    $app_font->save();
         
-            $app_font = AppStylingOption::where('id', $app_styling_id)->first();
-            AppStylingOption::where('app_styling_id','!=', $app_font->app_styling_id)->update(['is_selected' => 0]);
-            $app_font->is_selected = 1;
-            $app_font->save();
-        
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollback();
-            // Handle the exception (log or rethrow, depending on your needs)
-            throw $e;
-        }
+         
     }
 
     public function initialize()
@@ -45,15 +38,17 @@ trait ResetConfiguration
             $client_preference = ClientPreference::select('business_type')->first();
             $client_preference->hide_order_address = 1;
         
+
+            $vendor_type =  ["dinein_check","takeaway_check","delivery_check","rental_check","pick_drop_check","on_demand_check","laundry_check","appointment_check","p2p_check"];
+            
+            foreach($vendor_type as $type)
+            {
+                $client_preference->$type = 0;
+
+            }
+        
             $client_preference->save();
 
-            $vendor_type = ["dinein_check", "takeaway_check", "delivery_check", "rental_check", "pick_drop_check", "on_demand_check", "laundry_check", "appointment_check", "p2p_check"];
-
-            $updateData = array_fill_keys($vendor_type, 0);
-            $updateData['hide_order_address'] = 1;
-            
-            $client_preference->update($updateData);            
-            
             $additional_preference= getAdditionalPreference([
                 'is_price_by_role',
                 'is_phone_signup',
