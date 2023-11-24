@@ -8,4 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class AppStylingOption extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['is_selected'];
+
 }

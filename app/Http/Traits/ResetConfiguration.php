@@ -8,6 +8,7 @@ use App\Models\ClientPreference;
 use App\Models\ClientPreferenceAdditional;
 use App\Models\WebStylingOption;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 trait ResetConfiguration
 {
@@ -17,63 +18,119 @@ trait ResetConfiguration
     {
 
         // app stylings from 34 to 41
-        $web_font = WebStylingOption::where('id', $web_styling_id)->first();
-        $option_change = WebStylingOption::where('web_styling_id', '=', $web_font->web_styling_id)->update(array('is_selected' => 0));
-        $web_font->is_selected = 1;
-        $web_font->save();
-
-        $app_font = AppStylingOption::where('id', $app_styling_id)->first();
-        $option_change = AppStylingOption::where('app_styling_id', '=', $app_font->app_styling_id)->update(array('is_selected' => 0));
-        $app_font->is_selected = 1;
-        $app_font->save();
+        try {
+            DB::beginTransaction();
+        
+            $web_font = WebStylingOption::where('id', $web_styling_id)->first();
+            WebStylingOption::where('id', '!=', $web_font->id)->update(['is_selected' => 0]);
+            $web_font->is_selected = 1;
+            $web_font->save();
+        
+            $app_font = AppStylingOption::where('id', $app_styling_id)->first();
+            AppStylingOption::where('app_styling_id','!=', $app_font->app_styling_id)->update(['is_selected' => 0]);
+            $app_font->is_selected = 1;
+            $app_font->save();
+        
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            // Handle the exception (log or rethrow, depending on your needs)
+            throw $e;
+        }
     }
 
     public function initialize()
     {
        
-        $additional_preference= getAdditionalPreference([
-            'update_order_product_price',
-            'is_bid_enable',
-            'is_attribute',
-            'is_long_term_service',
-            'is_gst_required_for_vendor_registration',
-            'is_baking_details_required_for_vendor_registration',
-            'is_advance_details_required_for_vendor_registration',
-            'is_vendor_category_required_for_vendor_registration',
-            'is_seller_module',
-            'is_gift_card',
-            'is_tracking_url',
-            'is_tracking_sms_url',
-            'is_place_order_delivery_zero',
-            'is_user_kyc_for_registration',
-            'is_cust_success_signup_email',
-            'is_file_cart_instructions',
-            'is_admin_vendor_rating',
-            'is_enable_compare_product',
-            'is_service_product_price_from_dispatch',
-            'is_service_price_selection',
-            'is_particular_driver',
-            'is_recurring_booking',
-            'is_rental_weekly_monthly_price',
-            'is_share_ride_users',
-            'is_enable_curb_side',
-            'is_enable_allergic_items',
-            'is_vendor_marg_configuration',
-            'is_role_and_permission_enable',
-            'is_car_rental_enable',
-            'is_cab_pooling'
-        ]);
+            $client_preference = ClientPreference::select('business_type')->first();
 
-         
-        $client = Client::first();
+            $additional_preference= getAdditionalPreference([
+                'update_order_product_price',
+                'is_bid_enable',
+                'is_attribute',
+                'is_long_term_service',
+                'is_gst_required_for_vendor_registration',
+                'is_baking_details_required_for_vendor_registration',
+                'is_advance_details_required_for_vendor_registration',
+                'is_vendor_category_required_for_vendor_registration',
+                'is_seller_module',
+                'is_gift_card', 
+                'is_tracking_url',
+                'is_tracking_sms_url',
+                'is_place_order_delivery_zero',
+                'is_user_kyc_for_registration',
+                'is_cust_success_signup_email',
+                'is_file_cart_instructions',
+                'is_admin_vendor_rating',
+                'is_enable_compare_product',
+                'is_service_product_price_from_dispatch',
+                'is_service_price_selection',
+                'is_particular_driver',
+                'is_recurring_booking',
+                'is_rental_weekly_monthly_price',
+                'is_share_ride_users',
+                'is_enable_curb_side',
+                'is_enable_allergic_items',
+                'is_vendor_marg_configuration',
+                'is_role_and_permission_enable',
+                'is_car_rental_enable',
+                'is_cab_pooling',
+                'is_hourly_pickup_rental'
+            ]);
 
-      
-        foreach($additional_preference as $key => $value){
-         
-          ClientPreferenceAdditional::updateOrCreate(
-              ['key_name' => $key, 'client_code' => $client->code],
-              ['key_name' => $key, 'key_value' => 0,'client_code' => $client->code,'client_id'=> $client->id]);
-        }
+            
+            $client = Client::first();
+
+        
+            
+            foreach ($additional_preference as $key => $value) {
+                $preferenceValue = 0; // Default value
+
+                // Set values based on conditions
+                switch ($key) {
+                    case 'is_cab_pooling':
+                        if (in_array($client_preference->business_type, ['taxi', 'super_app'])) {
+                            $preferenceValue = 1;
+                        }
+                        break;
+                    case 'is_attribute':
+                        if (in_array($client_preference->business_type, ['emart', 'super_app','p2p','rental'])) {
+                            $preferenceValue = 1;
+                        }
+                        break;
+                    case 'is_tracking_url':
+                        if (in_array($client_preference->business_type, ['taxi', 'super_app','emart'])) {
+                            $preferenceValue = 1;
+                        }
+                        break;
+
+                    case 'is_tracking_sms_url':
+                        if (in_array($client_preference->business_type, ['taxi', 'emart', 'super_app'])) {
+                            $preferenceValue = 1;
+                        }
+                        break;
+                    case 'is_place_order_delivery_zero':
+                        if (in_array($client_preference->business_type, ['taxi', 'emart', 'super_app','rental','food_grocery_ecommerce'])) {
+                            $preferenceValue = 1;
+                        }
+                        break;
+
+                    case 'is_enable_compare_product':
+                        if (in_array($client_preference->business_type, ['emart', 'super_app'])) {
+                            $preferenceValue = 1;
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+
+                // Update or create the ClientPreferenceAdditional record
+                ClientPreferenceAdditional::updateOrCreate(
+                    ['key_name' => $key, 'client_code' => $client->code],
+                    ['key_name' => $key, 'key_value' => $preferenceValue, 'client_code' => $client->code, 'client_id' => $client->id]
+                );
+            }
     
     }
 
@@ -200,7 +257,7 @@ trait ResetConfiguration
             'vendor_return_request' => 0,
             'hide_order_prepare_time' => 0,
             'is_cancel_order_user' => 0,
-            'book_for_friend' => 0,
+            'book_for_friend' => 1,
             'is_static_dropoff' => 0,
             'is_scan_qrcode_bag' => 0,
             'is_vendor_tags' => 0,
@@ -379,9 +436,9 @@ trait ResetConfiguration
             'max_safety_mod' => 0,
             'hide_order_address' => 0,
             'category_kyc_documents' => 0,
-            'vendor_return_request' => 0,
+            'vendor_return_request' => 1,
             'hide_order_prepare_time' => 0,
-            'is_cancel_order_user' => 0,
+            'is_cancel_order_user' => 1,
             'book_for_friend' => 0,
             'is_static_dropoff' => 0,
             'is_scan_qrcode_bag' => 0,
@@ -425,10 +482,10 @@ trait ResetConfiguration
             'max_safety_mod' => 0,
             'hide_order_address' => 0,
             'category_kyc_documents' => 0,
-            'vendor_return_request' => 0,
+            'vendor_return_request' => 1,
             'hide_order_prepare_time' => 0,
-            'is_cancel_order_user' => 0,
-            'book_for_friend' => 0,
+            'is_cancel_order_user' => 1,
+            'book_for_friend' => 1,
             'is_static_dropoff' => 0,
             'is_scan_qrcode_bag' => 0,
             'is_vendor_tags' => 0,

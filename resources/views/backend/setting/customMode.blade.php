@@ -747,9 +747,9 @@
     <span> <input type="checkbox" data-plugin="switchery" name="is_hourly_pickup_rental_switch"
             id="is_hourly_pickup_rental_switch" class="form-control checkbox_change"
             data-className="is_hourly_pickup_rental" data-color="#43bee1"
-            @if (isset($preference) && $preference->is_hourly_pickup_rental == '1') checked='checked' @endif>
+            @if (isset($getAdditionalPreference) && $getAdditionalPreference['is_hourly_pickup_rental'] == '1') checked='checked' @endif>
     </span>
-    <input type="hidden" @if (isset($preference) && $preference->is_hourly_pickup_rental == '1')  value="1" @else value="0" @endif
+    <input type="hidden" @if (isset($getAdditionalPreference) && $getAdditionalPreference['is_hourly_pickup_rental'] == '1')  value="1" @else value="0" @endif
         name="is_hourly_pickup_rental" id="is_hourly_pickup_rental" />
 </div>
 </div>
