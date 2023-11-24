@@ -44,7 +44,16 @@ trait ResetConfiguration
        
             $client_preference = ClientPreference::select('business_type')->first();
             $client_preference->hide_order_address = 1;
+        
             $client_preference->save();
+
+            $vendor_type = ["dinein_check", "takeaway_check", "delivery_check", "rental_check", "pick_drop_check", "on_demand_check", "laundry_check", "appointment_check", "p2p_check"];
+
+            $updateData = array_fill_keys($vendor_type, 0);
+            $updateData['hide_order_address'] = 1;
+            
+            $client_preference->update($updateData);            
+            
             $additional_preference= getAdditionalPreference([
                 'is_price_by_role',
                 'is_phone_signup',
@@ -204,7 +213,7 @@ trait ResetConfiguration
     
     }
 
-    public function  resetDeliveryConfiguration()
+    public function  resetDeliveryConfiguration($type)
     {
         $this->initialize();
 
@@ -212,7 +221,8 @@ trait ResetConfiguration
         $this->updateStylingsAndPreferences(3,37);
 
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
-
+        $preference->$type = 1;
+        $preference->save();
 
 
         $data = [
@@ -252,13 +262,14 @@ trait ResetConfiguration
         \Illuminate\Support\Facades\Redis::flushall();
     }
 
-    public function  resetRentalConfiguration()
+    public function  resetRentalConfiguration($type)
     {
         $this->initialize();
         $this->updateStylingsAndPreferences(1,34);
 
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
-
+        $preference->$type = 1;
+        $preference->save();
 
         $data = [
             'enquire_mode' => 0,
@@ -297,13 +308,14 @@ trait ResetConfiguration
         \Illuminate\Support\Facades\Redis::flushall();
 
     }
-    public function  resetPickDropConfiguration()
+    public function  resetPickDropConfiguration($type)
     {
         $this->initialize();
         $this->updateStylingsAndPreferences(3,35);
 
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
-
+        $preference->$type = 1;
+        $preference->save();
 
         $data = [
             'enquire_mode' => 0,
@@ -342,13 +354,14 @@ trait ResetConfiguration
         \Illuminate\Support\Facades\Redis::flushall();
 
     }
-    public function  resetOnDemandConfiguration()
+    public function  resetOnDemandConfiguration($type)
     {
         $this->initialize();
         $this->updateStylingsAndPreferences(5,39);
 
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
-
+        $preference->$type = 1;
+        $preference->save();
         
         $data = [
             'enquire_mode' => 0,
@@ -387,13 +400,14 @@ trait ResetConfiguration
         \Illuminate\Support\Facades\Redis::flushall();
 
     }
-    public function  resetLaundryConfiguration()
+    public function  resetLaundryConfiguration($type)
     {
         $this->initialize();
         $this->updateStylingsAndPreferences(5,39);
 
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
-
+        $preference->$type = 1;
+        $preference->save();
 
         $data = [
             'enquire_mode' => 0,
@@ -433,13 +447,14 @@ trait ResetConfiguration
 
     }
 
-    public function  resetP2PConfiguration()
+    public function  resetP2PConfiguration($type)
     {
         $this->initialize();
         $this->updateStylingsAndPreferences(7,38);
 
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
-
+        $preference->$type = 1;
+        $preference->save();
 
         $data = [
             'enquire_mode' => 0,
@@ -478,13 +493,14 @@ trait ResetConfiguration
         \Illuminate\Support\Facades\Redis::flushall();
 
     }
-    public function  resetEmartConfiguration()
+    public function  resetEmartConfiguration($type)
     {
         $this->initialize();
         $this->updateStylingsAndPreferences(6,40);
 
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
-       
+        $preference->$type = 1;
+        $preference->save();
 
 
         $data = [
@@ -524,7 +540,7 @@ trait ResetConfiguration
         \Illuminate\Support\Facades\Redis::flushall();
 
     }
-    public function  resetSuperAppConfiguration()
+    public function  resetSuperAppConfiguration($type)
     {
  
         
@@ -532,7 +548,8 @@ trait ResetConfiguration
         $this->updateStylingsAndPreferences(3,34);
 
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
-
+        $preference->$type = 1;
+        $preference->save();
           $data = [
             'enquire_mode' => 0,
             'pharmacy_check' => 0,

@@ -1129,34 +1129,34 @@ class ClientPreferenceController extends BaseController{
         {
 
             case 'taxi':
-                $this->resetPickDropConfiguration();
+                $this->resetPickDropConfiguration("pickup_drop_check");
                 break;
             
             case 'food_grocery_ecommerce':
-                $this->resetDeliveryConfiguration();
+                $this->resetDeliveryConfiguration("delivery_check");
                 break;
             
             case 'home_service':
-                $this->resetOnDemandConfiguration();
+                $this->resetOnDemandConfiguration("on_demand_check");
                 break;
             
             case 'laundry':
-                $this->resetLaundryConfiguration();
+                $this->resetLaundryConfiguration("laundry_check");
                 break;
             
             case 'rental':
-                $this->resetRentalConfiguration();
+                $this->resetRentalConfiguration("rental_check");
                 break;
                 
             case 'p2p':
-                $this->resetP2PConfiguration();
+                $this->resetP2PConfiguration("p2p_check");
                 break;
             
             case 'emart':
-                $this->resetEmartConfiguration();
+                $this->resetEmartConfiguration("delivery_check");
                 break;
             case 'super_app':
-                $this->resetSuperAppConfiguration();
+                $this->resetSuperAppConfiguration("delivery_check");
                 break;
             
             default:
