@@ -24,12 +24,11 @@ trait ResetConfiguration
     WebStylingOption::where('id', '!=', $web_font->id)->update(['is_selected' => 0]);
     $web_font->is_selected = 1;
     $web_font->save();
-    Cache::flush();
+
+
     $app_font = AppStylingOption::where('id', $app_styling_id)->first();
     AppStylingOption::where('id','!=', $app_font->app_styling_id)->update(['is_selected' => 0]);
-    AppStylingOption::where('id','!=', $app_font->app_styling_id)->update(['is_selected' => 0]);
     $app_font->is_selected = 1;
-    $app_font->save();
     $app_font->save();
         
          
