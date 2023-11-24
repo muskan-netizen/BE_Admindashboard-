@@ -84,7 +84,8 @@ trait ResetConfiguration
                 'stock_notification_before',
                 'is_hubspot_enable',
                 'is_free_delivery_by_roles',
-                'pickup_notification_before'
+                'pickup_notification_before',
+                'is_free_delivery_by_roles'
             ]);
 
             
