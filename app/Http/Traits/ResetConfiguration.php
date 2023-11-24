@@ -43,7 +43,8 @@ trait ResetConfiguration
     {
        
             $client_preference = ClientPreference::select('business_type')->first();
-
+            $client_preference->hide_order_address = 1;
+            $client_preference->save();
             $additional_preference= getAdditionalPreference([
                 'update_order_product_price',
                 'is_bid_enable',
@@ -75,7 +76,15 @@ trait ResetConfiguration
                 'is_role_and_permission_enable',
                 'is_car_rental_enable',
                 'is_cab_pooling',
-                'is_hourly_pickup_rental'
+                'is_hourly_pickup_rental',
+                'is_same_day_delivery',
+                'is_next_day_delivery',
+                'is_hyper_local_delivery',
+                'is_hubspot_enable',
+                'stock_notification_before',
+                'is_hubspot_enable',
+                'is_free_delivery_by_roles',
+                'pickup_notification_before'
             ]);
 
             
@@ -170,7 +179,7 @@ trait ResetConfiguration
             'book_for_friend' => 0,
             'is_static_dropoff' => 0,
             'is_scan_qrcode_bag' => 0,
-            'is_vendor_tags' => 1,
+            'is_vendor_tags' => 0,
             'is_service_area_for_banners' => 0,
             'stop_order_acceptance_for_users' => 0,
             'map_on_search_screen' => 0,
