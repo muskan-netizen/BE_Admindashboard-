@@ -22,15 +22,21 @@ trait ResetConfiguration
         
     $web_font = WebStylingOption::where('id', $web_styling_id)->first();
     WebStylingOption::where('id', '!=', $web_font->id)->update(['is_selected' => 0]);
+    $web_font = $web_font->fresh();
+
     $web_font->is_selected = 1;
     $web_font->save();
 
 
     $app_font = AppStylingOption::where('id', $app_styling_id)->first();
-    AppStylingOption::where('id','!=', $app_font->app_styling_id)->update(['is_selected' => 0]);
+
+    AppStylingOption::where('id', '!=', $app_font->id)->update(['is_selected' => 0]);
+    
+    // Reload the model
+    $app_font = $app_font->fresh();
+    
     $app_font->is_selected = 1;
     $app_font->save();
-        
          
     }
 
