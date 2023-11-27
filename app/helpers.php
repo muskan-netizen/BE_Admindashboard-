@@ -702,20 +702,17 @@ if (!function_exists('SplitTime')) {
         $nowA = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$StartTime);
         $nowS = Carbon::createFromFormat('Y-m-d H:i:s', $nowA)->timestamp;
         $nowE = Carbon::createFromFormat('Y-m-d H:i:s', $myDate.' '.$EndTime)->timestamp;
-        if ($nowT > $nowE) {
-            return [];
-        /* } elseif ($nowT>$nowS) {
-            $StartTime = date('H:i', strtotime($now)); */
-        } else {
-            $StartTime = date('H:i', strtotime($nowA));
-        }
-
+        // dd($nowT);
+        // if ($nowT > $nowE) {
+        //     return [];
+        // } else {
+        //     $StartTime = date('H:i', strtotime($nowA));
+        // }
         $ReturnArray = array();
         $StartTime = strtotime($StartTime); //Get Timestamp
-    $EndTime = strtotime($EndTime); //Get Timestamp
-    $AddMins = $Duration * 60;
+        $EndTime = strtotime($EndTime); //Get Timestamp
+        $AddMins = $Duration * 60;
         $endtm = 0;
-
         while ($StartTime <= $EndTime) {
             $endtm = $StartTime + $AddMins;
             if ($endtm>$EndTime) {
@@ -792,10 +789,12 @@ if (!function_exists('showSlot')) {
                         if (!in_array($new_slot, $slotss)) {
                             $slotss[] = $new_slot;
                         }
+                        
                     } else {
                         $slotss[] = [];
                     }
                 }
+          
 
                 $arr = array();
                 $count = count($slotss);
