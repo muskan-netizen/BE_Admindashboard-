@@ -740,7 +740,7 @@
             name="is_role_and_permission_enable" id="is_role_and_permission_enable" />
     </div>
 </div>
-<div class="col-md-4 ">
+<div class="col-md-4 d-none">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="is_hourly_pickup_rental" class="mr-2 mb-0">{{ __('Hourly Pick & Drop Rental') }}<small
             class="d-block pr-5">{{ __('Enable Hourly Pick & Drop Rental') }}</small></label>

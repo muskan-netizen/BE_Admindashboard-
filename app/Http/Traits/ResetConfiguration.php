@@ -20,7 +20,7 @@ trait ResetConfiguration
 
       
         
-    $web_font = WebStylingOption::where('id', $web_styling_id)->first();
+    $web_font = WebStylingOption::where('template_id', $web_styling_id)->where('is_template', 1)->first();
     WebStylingOption::where('id', '!=', $web_font->id)->update(['is_selected' => 0]);
     $web_font = $web_font->fresh();
 
@@ -28,11 +28,10 @@ trait ResetConfiguration
     $web_font->save();
 
 
-    $app_font = AppStylingOption::where('id', $app_styling_id)->first();
+    $app_font = AppStylingOption::where('template_id', $app_styling_id)->where('is_template', 1)->first();
 
     AppStylingOption::where('id', '!=', $app_font->id)->update(['is_selected' => 0]);
     
-    // Reload the model
     $app_font = $app_font->fresh();
     
     $app_font->is_selected = 1;
@@ -202,6 +201,11 @@ trait ResetConfiguration
                             $preferenceValue = 1;
                         }
                         break;
+                    case 'is_free_delivery_by_roles':
+                        if (in_array($client_preference->business_type, ['p2p'])) {
+                            $preferenceValue = 1;
+                        }
+                        break;
 
                     default:
                         break;
@@ -221,7 +225,7 @@ trait ResetConfiguration
         $this->initialize();
 
 
-        $this->updateStylingsAndPreferences(3,37);
+        $this->updateStylingsAndPreferences(3,3);
 
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
         $preference->$type = 1;
@@ -268,7 +272,7 @@ trait ResetConfiguration
     public function  resetRentalConfiguration($type)
     {
         $this->initialize();
-        $this->updateStylingsAndPreferences(1,34);
+        $this->updateStylingsAndPreferences(1,9);
 
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
         $preference->$type = 1;
@@ -278,7 +282,7 @@ trait ResetConfiguration
             'enquire_mode' => 0,
             'pharmacy_check' => 0,
             'isolate_single_vendor_order' => 1,
-            'subscription_mode' => 0,
+            'subscription_mode' => 1,
             'subscription_tab_taxi' => 0,
             'tip_before_order' => 0,
             'tip_after_order' => 0,
@@ -314,7 +318,7 @@ trait ResetConfiguration
     public function  resetPickDropConfiguration($type)
     {
         $this->initialize();
-        $this->updateStylingsAndPreferences(3,35);
+        $this->updateStylingsAndPreferences(3,4);
 
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
         $preference->$type = 1;
@@ -324,7 +328,7 @@ trait ResetConfiguration
             'enquire_mode' => 0,
             'pharmacy_check' => 0,
             'isolate_single_vendor_order' => 1,
-            'subscription_mode' => 0,
+            'subscription_mode' => 1,
             'subscription_tab_taxi' => 0,
             'tip_before_order' => 0,
             'tip_after_order' => 0,
@@ -360,7 +364,7 @@ trait ResetConfiguration
     public function  resetOnDemandConfiguration($type)
     {
         $this->initialize();
-        $this->updateStylingsAndPreferences(5,39);
+        $this->updateStylingsAndPreferences(6,9);
 
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
         $preference->$type = 1;
@@ -370,7 +374,7 @@ trait ResetConfiguration
             'enquire_mode' => 0,
             'pharmacy_check' => 0,
             'isolate_single_vendor_order' => 1,
-            'subscription_mode' => 0,
+            'subscription_mode' => 1,
             'subscription_tab_taxi' => 0,
             'tip_before_order' => 0,
             'tip_after_order' => 0,
@@ -406,7 +410,7 @@ trait ResetConfiguration
     public function  resetLaundryConfiguration($type)
     {
         $this->initialize();
-        $this->updateStylingsAndPreferences(5,39);
+        $this->updateStylingsAndPreferences(6,9);
 
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
         $preference->$type = 1;
@@ -453,7 +457,7 @@ trait ResetConfiguration
     public function  resetP2PConfiguration($type)
     {
         $this->initialize();
-        $this->updateStylingsAndPreferences(7,38);
+        $this->updateStylingsAndPreferences(9,8);
 
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
         $preference->$type = 1;
@@ -470,7 +474,7 @@ trait ResetConfiguration
             'auto_implement_5_percent_tip' => 0,
             'product_order_form' => 0,
             'gifting' => 0,
-            'pickup_delivery_service_area' => 0,
+            'pickup_delivery_service_area' => 1,
             'minimum_order_batch' => 0,
             'static_delivey_fee' => 0,
             'get_estimations' => 0,
@@ -499,7 +503,7 @@ trait ResetConfiguration
     public function  resetEmartConfiguration($type)
     {
         $this->initialize();
-        $this->updateStylingsAndPreferences(6,40);
+        $this->updateStylingsAndPreferences(8,10);
 
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
         $preference->$type = 1;
@@ -548,7 +552,7 @@ trait ResetConfiguration
  
         
         $this->initialize();
-        $this->updateStylingsAndPreferences(3,34);
+        $this->updateStylingsAndPreferences(3,3);
 
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
         $preference->$type = 1;
