@@ -237,8 +237,8 @@ $(document).ready( async function () {
         sessionType = $(this).data("sessiontype");
       
         if(type == sessionType){
-        window.location.href = home_page_url;
-        return false;
+            window.location.href = home_page_url;
+            return false;
         }
         if($("#address-latitude").length > 0){
             latitude = $("#address-latitude").val();
@@ -337,12 +337,12 @@ $(document).ready( async function () {
         // return 0;
         let selected_place_id = $("#address-place-id").val();
         $(".homepage-address span").text(selected_address).attr({ "title": selected_address, "data-original-title": selected_address });
-        $("#edit-address").modal('hide');
         let ajaxData = { type: vendor_type };
         if ((latitude) && (longitude) && (selected_address)) {
             ajaxData.latitude = latitude;
             ajaxData.longitude = longitude;
-            ajaxData.selectedAddress = selected_address;
+            ajaxData.selectedAddress = sele
+            cted_address;
             ajaxData.selectedPlaceId = selected_place_id;
         }
        /// remove_spinner('#our_vendor_main_div');
@@ -883,7 +883,7 @@ $(document).ready( async function () {
         let latitude = $("#address-latitude").val();
         let longitude = $("#address-longitude").val();
         let address = $("#address-input").val();
-       
+
         setSessionLocatin(latitude,longitude,address)
         //bindLatestCoords(latitude, longitude);
         
@@ -914,6 +914,11 @@ $(document).ready( async function () {
     });
 
     $(document).delegate("#remove_cart_button", "click", function () {
+        let latitude = $("#address-latitude").val();
+        let longitude = $("#address-longitude").val();
+        let address = $("#address-input").val();
+        setSessionLocatin(latitude,longitude,address);
+        
         let cart_id = $(this).attr("data-cart_id");
         let ondemand_pricing_mode = $(this).attr("data-ondemand_vendor_type");
         $("#remove_cart_modal").modal('hide');
@@ -1144,7 +1149,7 @@ async function setSessionLocatin(latitude, longitude,address){
     if(cartProductCount > 0){
         $("#remove_cart_modal").modal('show');
         $("#remove_cart_modal #remove_cart_button").attr("data-cart_id", cartData.id);
-        $(".nav-tabs.vendor_mods").attr("data-mod", type);
+        $(".nav-tabs.vendor_mods").attr("data-mod");
         return false;
     }
     let url = `/updateLocation?latitude=${latitude}&&longitude=${longitude}&&address=${address}` ;
@@ -1291,7 +1296,9 @@ function initMap() {
                         console.log(marker.getPosition().lat());
                         console.log(marker.getPosition().lng());
                         $('#address-input').val(results[0].formatted_address);
+                        setSessionLocatin( marker.getPosition().lat(), marker.getPosition().lng(),autocomplete.key)
                         setLocationCoordinates(autocomplete.key, marker.getPosition().lat(), marker.getPosition().lng());
+
                     }
                 }
             });

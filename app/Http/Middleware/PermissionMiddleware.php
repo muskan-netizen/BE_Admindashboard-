@@ -23,7 +23,6 @@ class PermissionMiddleware
         $checkPermissionEnable = @getAdditionalPreference(['is_role_and_permission_enable'])['is_role_and_permission_enable'];
                 if($checkPermissionEnable)
                 {
-                    // dd('ddd');
                         $user = auth()->user();
                         $authGuard = app('auth')->guard($guard);
                         $permissionArray = $this->permissionUser($user);
@@ -43,7 +42,6 @@ class PermissionMiddleware
                                 if(@$user->is_superadmin || @$user->is_admin){
                                     return $next($request);
                                 }
-                            // dd($page);
 
                                 throw UnauthorizedException::forPermissions($permissions);
                             }
@@ -55,7 +53,7 @@ class PermissionMiddleware
                         }
 
                         throw UnauthorizedException::forPermissions($permissions);
-            }else{
+                }else{
                 return $next($request);
             }
     }
@@ -63,14 +61,6 @@ class PermissionMiddleware
 
     public function permissionUser($user)
     {
-        
-        // if(@$user->is_superadmin){
-        //     //Assign all selected permisson to role
-        //     $role = Role::first();
-        //     $permissions = Permission::all();
-        //     $role->syncPermissions('');
-        // }
-
         $permissionArray = array();
         foreach ($user->roles as $role) {
             foreach ($role->permissions as $key=> $perm) {

@@ -443,7 +443,7 @@ $(document).ready(function () {
                     let order_number = response.data.order_number;
                     let reload_route = response.data.route;
                     if((payment_option_id == 1) || (payment_option_id == 2)){
-                        placeOrderBeforePayment('',payment_option_id,0,order_number);
+                        // placeOrderBeforePayment('',payment_option_id,0,order_number);
                         window.location.replace(response.data.route);
 
                         // $('#cab_detail_box').html('');
@@ -1259,6 +1259,18 @@ $(document).ready(function () {
                         $('#subscription-amout').text(response.data.currency_symbol+''+subscriptionAmout);
                         $('#pickup_now').attr("data-subscriptionPayableAmount",subscriptionAmout);
                     }
+                    let elementsToHide = document.getElementsByClassName("cab_payment_method_selection");
+                    if(amount <= 0){
+                        amount = 0.00;
+                        // Loop through the selected elements and set an inline style with !important
+                        for (let i = 0; i < elementsToHide.length; i++) {
+                            elementsToHide[i].style.setProperty('display', 'none', 'important');
+                        }
+                    }else{
+                        for (let i = 0; i < elementsToHide.length; i++) {
+                            elementsToHide[i].style.removeProperty('display');
+                        }
+                    }
                     $('#pickup_now').attr("data-coupon_id",'');
                     $('#pickup_later').attr("data-coupon_id",'');
                 }
@@ -1294,6 +1306,18 @@ $(document).ready(function () {
                         let newPayableAmount = current_amount - (subscriptionPercent * current_amount / 100);
                         $('#subscription-amout').text(response.data.currency_symbol+''+newPayableAmount);
                         $('#pickup_now').attr("data-subscriptionPayableAmount",newPayableAmount);
+                    }
+                    let elementsToHide = document.getElementsByClassName("cab_payment_method_selection");
+                    if(current_amount <= 0){
+                        current_amount = 0.00;
+                        // Loop through the selected elements and set an inline style with !important
+                        for (let i = 0; i < elementsToHide.length; i++) {
+                            elementsToHide[i].style.setProperty('display', 'none', 'important');
+                        }
+                    }else{
+                        for (let i = 0; i < elementsToHide.length; i++) {
+                            elementsToHide[i].style.removeProperty('display');
+                        }
                     }
                     $('.cab-detail-box #real_amount').text(response.data.currency_symbol+''+current_amount);
                 }

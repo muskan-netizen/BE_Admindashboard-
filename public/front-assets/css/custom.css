@@ -3941,7 +3941,8 @@ p.vendor_address, p.vendor_email {
     height: 30px;
     padding: 0 10px;
     line-height: 30px;
-    border: .5px solid #ed5a6b;
+    border: .5px solid var(--theme-deafult);
+    color: var(--theme-deafult)!important;
     border-radius: 8px;
     overflow: hidden;
     cursor: pointer;
@@ -3980,7 +3981,7 @@ p.vendor_address, p.vendor_email {
 }
 
 .categories-product-list .number {
-    border: .5px solid #ed5a6b;
+    border: .5px solid var(--theme-deafult);
     border-radius: 8px
 }
 
@@ -4031,8 +4032,9 @@ p.vendor_address, p.vendor_email {
 }
 
 .checkout-btn {
-    background: var(--theme-deafult);
-    color: #fff;
+    background: #1b1b1b;
+    border-top: 1px solid #ccc!important;
+    color: #fff!important;
     font-size: 18px;
     font-weight: 700;
     padding: 9px 0 11px;
@@ -5056,7 +5058,8 @@ body[dir="rtl"] .inner_spacing {
 }
 
 body[dir="rtl"] .footer-theme .sub-title .contact-list li {
-    padding: 0 25px 0 0
+    padding: 0;
+    padding-right: 50px;
 }
 
 body[dir="rtl"] .footer-theme .sub-title .contact-list i {
@@ -5219,6 +5222,7 @@ body[dir=rtl] .alSectionTop {
 
 body a.navbar-brand img {
     height: 100%;
+    object-fit: contain;
 }
 
 .product-4.product-m.no-arrow.related-products.pb-2.slick-initialized.slick-slider .slick-list.draggable {
@@ -18980,17 +18984,4 @@ section#alTaxiBookingWrapper .address-form .pool_radio_controls.text-center labe
 
 
 
-/*-------------p2p----------*/
-body.al_body_template_nine.p2p-module .common-product-box,
-.product-box,
-.product-card-box,
-.suppliers-box {
-    background:transparent !important;
-    box-shadow:none !important;
-}
-body.al_body_template_nine.p2p-module .common-product-box,
-.product-box,
-.product-card-box,
-.suppliers-box:hover{
-    box-shadow: 0px 0px 11px 2px rgb(0 0 0 / 32%) !important;
-}
+

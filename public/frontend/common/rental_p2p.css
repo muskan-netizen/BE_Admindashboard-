@@ -439,6 +439,7 @@ html body header .header-dropdown li a.sell-btn span i{
     padding-top: 0!important;
     font-size: 14px!important;
     color: #fff!important;
+    padding-right: 5px;
 }
 html body header .header-dropdown li{
     padding-top:0!important;
@@ -532,11 +533,11 @@ body.al_body_template_nine.p2p-module.p2p_module_enable .start_form_register {
 body.al_body_template_nine.p2p-module.p2p_module_enable .cate-item img{
     width: 170px;
 }
-body.al_body_template_nine.p2p-module.p2p_module_enable .category_responsive .slick-next:before, .slick-prev:before {
+body.al_body_template_nine.p2p-module.p2p_module_enable .category_responsive .slick-next:before, body.al_body_template_nine.p2p-module.p2p_module_enable .category_responsive  .slick-prev:before {
     font-size: 14px;
     color: #fff !important;
 }
-body.al_body_template_nine.p2p-module.p2p_module_enable .category_responsive .slick-next, .slick-prev {
+body.al_body_template_nine.p2p-module .category_responsive .slick-next, body.al_body_template_nine.p2p-module.p2p_module_enable .category_responsive  .slick-prev {
     top: 35% !important;
     background: #000 !important;
     color: #fff !important;

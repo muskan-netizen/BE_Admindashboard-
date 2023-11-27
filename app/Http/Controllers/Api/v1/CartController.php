@@ -124,7 +124,6 @@ class CartController extends BaseController
     /**     * Add product In Cart    *           */
     public function add(Request $request)
     {
-
         try {
             $preference = ClientPreference::first();
             $luxury_option = LuxuryOption::where('title', $request->type)->first();            
@@ -157,10 +156,13 @@ class CartController extends BaseController
                 'is_gift' => 0,
                 'status' => '0',
                 'item_count' => 0,
-                'user_id' => $user->id,
+                'user_id' => $user->id, 
                 'created_by' => $user->id,
                 'unique_identifier' => $unique_identifier,
                 'currency_id' => $client_currency->currency_id,
+                'scheduled_date_time' =>  $request->has('scheduled_date_time') ? $request->scheduled_date_time : null,
+                'schedule_type' =>  $request->has('schedule_type') ? $request->schedule_type : null,
+                'scheduled_slot' =>  $request->has('schedule_slot') ? $request->schedule_slot : null
             ];
             if (!empty($user_id)) {
                 $cart_detail = Cart::updateOrCreate(['user_id' => $user->id], $cart_detail);
@@ -679,7 +681,7 @@ class CartController extends BaseController
     /**         *      Cart  Date      *          */
     public function getCart($cart, $langId = '1', $currency = '1', $type = 'delivery',$code = 'D')
     {
-           
+   
          try{
         $container_charges_tax = 0;
         $deliver_fee_charges_tax = 0;
@@ -1807,7 +1809,7 @@ class CartController extends BaseController
             $loyalty_amount_saved = $temp_total_paying;
             $cart->total_payable_amount = 0.00;
         } else {
-            $cart->total_payable_amount = ($total_paying  + $cart->total_tax);
+            $cart->total_payable_amount = ($total_paying  + $cart->total_tax) -   ($total_disc_amount + $loyalty_amount_saved);
         }
         
         /* if($total_taxable_amount>0){

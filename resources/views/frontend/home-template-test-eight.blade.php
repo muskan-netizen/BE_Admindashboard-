@@ -761,7 +761,7 @@
 			</div>
 			<div class="row">
 				<div class="col-12">
-					<div class="product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
+					<div class="Product-4-{{$homePageLabel->slug}} product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 						<div class="row p2p_single_slider">
 							@foreach ($homePageData[$homePageLabel->slug] as $product )
 							@include('frontend.home_page_8.single_category_products')

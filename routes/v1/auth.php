@@ -39,6 +39,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('social/login/{driver}', 'Api\v1\SocialController@login');
         Route::post('get_product_price_from_dispatcher',   'Api\v1\ProductController@getFreeLincerFromDispatcher');
         Route::post('product/search',   'Api\v1\YachtController@productsSearchResult');
+        Route::post('check-product-availability/{id}','Api\v1\YachtController@checkProductAvailability');
     });
     Route::group(['middleware' => ['dbCheck', 'AppAuth']], function() {
 

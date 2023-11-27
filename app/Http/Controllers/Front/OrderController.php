@@ -928,7 +928,7 @@ class OrderController extends FrontController
                 //     ->orderBy('id', 'DESC')
                 //     ->first();
                 // dd($vendor->OrderStatusOption->getStatusName($order->luxury_option_id));
-                $vendor->order_status = strtolower($vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'';
+                $vendor->order_status = strtolower(@$vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'';
 
 
                 foreach ($vendor->products as $product) {
@@ -981,9 +981,9 @@ class OrderController extends FrontController
                 //     ->orderBy('id', 'DESC')
                 //     ->first();
                 // $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
-
-                $vendor->order_status = strtolower($vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'';
-
+                 if(!empty($vendor->OrderStatusOption)){
+                $vendor->order_status = strtolower(@$vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'n/a';
+                 }
 
                 foreach ($vendor->products as $product) {
                     $product = $this->gettimeSlotName($product);
@@ -1104,8 +1104,8 @@ class OrderController extends FrontController
                 //     ->orderBy('id', 'DESC')
                 //     ->first();
                 // $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
-
-                $vendor->order_status = strtolower($vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'';
+         
+                $vendor->order_status = strtolower(@$vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'';
 
                 
                 if($vendor->cancelled_by == $user->id){
@@ -2171,6 +2171,13 @@ class OrderController extends FrontController
                     $OrderVendor = new OrderVendor();
                 }
 
+                if(!empty($order->total_other_taxes)){
+                    $tax_amount  =   (float) array_sum(explode(":", $order->total_other_taxes));
+                }else{
+                    $tax_amount = $order->taxable_amount;
+                }
+       
+                $tax_amount  = round($order->total_other_taxes_amount,2);
                 $OrderVendor->status = 0;
                 $OrderVendor->user_id = $user->id;
                 $OrderVendor->order_id = $order->id;
@@ -2872,14 +2879,20 @@ class OrderController extends FrontController
                 }
                 $OrderVendor->fixed_fee = $fixedFeeAmount;
                 $OrderVendor->additional_price = $additionalPrice;
-                $OrderVendor->taxable_amount =$new_vendor_taxable_amount;
+                $OrderVendor->taxable_amount =$new_vendor_taxable_amount + $tax_amount;
                 $OrderVendor->payment_option_id = $request->payment_option_id;
                 $OrderVendor->subtotal_amount = $OrderVendor->subtotal_amount - $bid_vendor_discount??0;
 
 
 
-                // $OrderVendor->payable_amount = $vendor_payable_amount +$fixedFeeAmount+$new_vendor_taxable_amount;
-                $OrderVendor->payable_amount = $request->$total_amount;
+                if($action == 'p2p'){
+                    $OrderVendor->payable_amount = $request->$total_amount;
+
+                }
+                else{
+                    $OrderVendor->payable_amount = $vendor_payable_amount +$fixedFeeAmount+$new_vendor_taxable_amount;
+
+                }
                 if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
                     $OrderVendor->subtotal_amount = $OrderVendor->payable_amount = $request->total_amount;
                 }
@@ -3605,7 +3618,7 @@ class OrderController extends FrontController
                     'is_tracking_url'
                 ])['is_tracking_url'] == 1) {
                     \Log::info('test');
-                    $this->sendTrackingUrlSMS($orderData);
+                    $this->sendTrackingUrlSMS($orderData,$request->order_id);
                 }
             }
         }
@@ -4553,7 +4566,7 @@ class OrderController extends FrontController
                 $abc = [];
                 foreach ($files as $file) {
                     if ($file['file_name'] != null) {
-                        if ($file['file_type'] != "Text") {
+                        if ($file['file_type'] != "Text" && $file['file_type'] != "selector" && $file['file_type'] != "Date") {
                             $file_path = $file['file_name']->getPathname();
                             $file_mime = $file['file_name']->getMimeType('image');
                             $file_uploaded_name = $file['file_name']->getClientOriginalName();

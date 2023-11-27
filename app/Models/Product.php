@@ -36,15 +36,20 @@ class Product extends Model implements Auditable
   public function vendor()
   {
     if (checkColumnExists('vendors', 'need_sync_with_order') && checkColumnExists('vendors', 'is_seller')) {
-      return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status', 'closed_store_order_scheduled', 'need_container_charges', 'fixed_fee', 'fixed_fee_amount', 'price_bifurcation', 'fixed_fee_tax_id', 'add_markup_price', 'latitude', 'longitude', 'need_sync_with_order', 'is_seller', 'fixed_service_charge', 'service_charge_amount', 'pick_drop', 'return_request', 'phone_no', 'dial_code', 'same_day_delivery', 'next_day_delivery', 'hyper_local_delivery', 'cutOff_time','service_fee_percent','service_charges_tax_id','service_charges_tax');
+      return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status', 'closed_store_order_scheduled', 'need_container_charges', 'fixed_fee', 'fixed_fee_amount', 'price_bifurcation', 'fixed_fee_tax_id', 'add_markup_price', 'latitude', 'longitude', 'need_sync_with_order', 'is_seller', 'fixed_service_charge', 'service_charge_amount', 'pick_drop', 'return_request', 'phone_no', 'dial_code', 'same_day_delivery', 'next_day_delivery', 'hyper_local_delivery', 'cutOff_time','service_fee_percent','service_charges_tax_id','service_charges_tax','orders_per_slot');
     }
 
-    return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status', 'closed_store_order_scheduled', 'need_container_charges', 'fixed_fee', 'fixed_fee_amount', 'price_bifurcation', 'fixed_fee_tax_id', 'add_markup_price', 'latitude', 'longitude', 'fixed_service_charge', 'service_charge_amount', 'pick_drop', 'return_request', 'phone_no', 'dial_code', 'same_day_delivery', 'next_day_delivery', 'hyper_local_delivery', 'cutOff_time','service_fee_percent','service_charges_tax_id','service_charges_tax');
+    return $this->belongsTo('App\Models\Vendor')->select('id', 'slug', 'name', 'desc', 'logo', 'show_slot', 'status', 'closed_store_order_scheduled', 'need_container_charges', 'fixed_fee', 'fixed_fee_amount', 'price_bifurcation', 'fixed_fee_tax_id', 'add_markup_price', 'latitude', 'longitude', 'fixed_service_charge', 'service_charge_amount', 'pick_drop', 'return_request', 'phone_no', 'dial_code', 'same_day_delivery', 'next_day_delivery', 'hyper_local_delivery', 'cutOff_time','service_fee_percent','service_charges_tax_id','service_charges_tax','orders_per_slot');
   }
 
   public function related()
   {
     return $this->hasMany('App\Models\ProductRelated')->select('product_id', 'related_product_id');
+  }
+
+  public function categories()
+  {
+    return $this->hasOne('App\Models\Category','category_id','id');
   }
 
   public function celebrities()

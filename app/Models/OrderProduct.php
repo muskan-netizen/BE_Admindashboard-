@@ -10,7 +10,7 @@ class OrderProduct extends Model{
 
     protected $table = 'order_vendor_products';
     protected $casts = ['price' => 'double'];
-    protected $appends = ['image_base64']; 
+    protected $appends = ['image_base64'];
     public static $withoutAppends = false;
 
     public function scopeWithoutAppends($query){
@@ -36,6 +36,11 @@ class OrderProduct extends Model{
     public function vendor(){
         return $this->belongsTo('App\Models\Vendor', 'vendor_id', 'id')->select('id', 'name', 'desc', 'logo', 'banner', 'order_pre_time', 'auto_reject_time', 'order_min_amount');
     }
+    public function categories()
+    {
+      return $this->hasOne('App\Models\Category','category_id','id');
+    }
+  
     public function coupon(){
       return $this->hasOne('App\Models\CartCoupon', 'vendor_id', 'vendor_id')->select("cart_id", "coupon_id", 'vendor_id');
     }
@@ -123,12 +128,12 @@ class OrderProduct extends Model{
                 return $this->price;
     }
 
-   
+
     // public function getMarkupPriceAttribute($value)
     // {
     //   if(auth()->user() !=null && auth()->user()->is_admin == 1){
-    //             return 0;   
-    //   }  
+    //             return 0;
+    //   }
     //   return $value;
     // }
 
@@ -144,7 +149,7 @@ class OrderProduct extends Model{
         //    }
         //        // return $value + $this->markup_price??0;
                 return $value??0;
-           
+
     }
     // get dispatch route for single product in case of on demand and appointmenet by harbans :)
     public function Routes(){

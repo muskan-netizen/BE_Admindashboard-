@@ -210,7 +210,7 @@ $preference = $client_preference_detail;
                     </ul>
                 </li>
                 
-                @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
+                @if( Session::get('vendorType') == 'p2p' )
                     <li class="add_post"><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn">
                         <span>
                             <i class="fa fa-plus" aria-hidden="true"></i>
