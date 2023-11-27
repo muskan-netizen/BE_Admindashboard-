@@ -582,6 +582,13 @@ trait ProductActionTrait{
                 `vendors`.`admin_rating`,
                 `vendors`.`rating`,
                 `vendors`.`closed_store_order_scheduled`,
+                (
+                    SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+                    FROM user_vendor_wishlists
+                    WHERE user_vendor_wishlists.vendor_id = vendors.id
+                    AND user_vendor_wishlists.user_id = :user_id
+                ) AS is_wishlist,
+
                 (SELECT (CASE WHEN `promo`.`promo_type_id` = 1 THEN CONCAT(CAST(`promo`.`amount` AS DECIMAL(2,0)), '% OFF | use ', `promo`.`name`) ELSE CONCAT('FLAT ', '$currencySymbol', '', CAST(`promo`.`amount`* $multiply AS DECIMAL(2,0)), ' OFF | use ', `promo`.`name`) END) FROM `promocodes` AS `promo` left join `promocode_details` AS `promo_info` ON `promo_info`.`promocode_id` = `promo`.`id` WHERE `promo`.`restriction_on` = 1 AND ((`promo`.`restriction_type` = 0 AND `promo_info`.`refrence_id` = `vendors`.`id`) OR (`promo`.`restriction_type` = 1 AND `promo_info`.`refrence_id` != `vendors`.`id`)) AND `promo`.`expiry_date` >= $current_date AND `promo`.`amount` > 0 ORDER BY `promo`.`amount` DESC LIMIT 1) as `promo_discount`,
                 (select MIN(`price`) FROM `product_variants` AS `pv` JOIN `products` AS `pr` ON `pr`.`id` = `pv`.`product_id` where `pr`.`vendor_id` = `vendors`.`id`) AS `minimum_price`,
                 GROUP_CONCAT(DISTINCT `category_translations`.`name` SEPARATOR ', ') AS `categoriesList`,
@@ -639,7 +646,7 @@ trait ProductActionTrait{
                 $mainQuery .= " LIMIT 10";
             //}
                         
-            $vendors = DB::select( DB::raw($mainQuery));
+            $vendors = DB::select( DB::raw($mainQuery),['user_id' => Auth::id()]);
             
             $vendor_ids = [];
             $user = Auth::user();

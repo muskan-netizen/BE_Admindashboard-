@@ -113,7 +113,6 @@ class HomeController extends BaseController
     }
     public function homepage(Request $request, $domain = '')
     {
-       
         try {           
             $this->config();
             $home = array();
@@ -300,7 +299,7 @@ class HomeController extends BaseController
             } else {
                 $homePageData = $this->postHomePageData($request);
             }
-
+            
             if($type == 'p2p')
             {
 
