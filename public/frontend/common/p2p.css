@@ -321,7 +321,7 @@ body.al_body_template_nine.p2p-module .common-banner {
 
 body.al_body_template_nine.p2p-module section.section-b-space.ratio_asos.al_vendor_product_page .common-banner img {
     object-fit: cover;
-    min-height: 450px;
+    min-height: inherit;
 }
 
 body.al_body_template_nine.p2p-module .ratio_asos .top-banner-wrapper .top-banner-content h4 {

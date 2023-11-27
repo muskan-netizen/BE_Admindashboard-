@@ -1620,6 +1620,14 @@ ul.product_list_order_page .items_price{
     line-height: 1;
     margin: 10px auto 0;    
 }
+.al_body_template_nine .outter-fillter-data .media-body .inner_spacing p:nth-of-type(1) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
 @media(min-width:1440px){
     .al_body_template_eight .container {
         max-width: 1500px;
