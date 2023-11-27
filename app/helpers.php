@@ -767,7 +767,6 @@ if (!function_exists('showSlot')) {
         }
 
         // check if vendor has added slots. if not added then no need to execute this.
-        // dd($slots);
         if (isset($slots) && count($slots)>0) {
             $min[] = '';
             $cart = CartProduct::where('vendor_id', $vid);

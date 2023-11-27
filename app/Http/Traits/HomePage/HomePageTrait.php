@@ -637,7 +637,7 @@ trait HomePageTrait
                 } 
             }
         }
-        // dd($vendors);
+        
         $trendingVendors = [];
         if (in_array('trending_vendors', $enable_layout)) {  # if enable trending_vendors section in 
             $now = Carbon::now()->toDateTimeString();

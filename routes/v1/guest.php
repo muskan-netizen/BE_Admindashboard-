@@ -26,12 +26,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         });
     });
 
-    
-
-    // Route::post('addvendorwishlist', 'Api\v1\HomeController@addVendorWishList');
-    // Route::post('removevendorwishlist', 'Api\v1\HomeController@removevendorwishlist');
-    // Route::post('viewvendorwishlist', 'Api\v1\HomeController@viewVendorWishList');
-
     Route::group(['middleware' => ['dbCheck', 'checkAuth']], function () { //apilogger
 
         Route::get('static-dropoff-locations', 'Api\v1\AddressController@staticDropoffLocations');
