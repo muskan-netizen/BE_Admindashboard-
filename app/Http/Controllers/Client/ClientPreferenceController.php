@@ -1129,7 +1129,7 @@ class ClientPreferenceController extends BaseController{
         {
 
             case 'taxi':
-                $this->resetPickDropConfiguration("pickup_drop_check");
+                $this->resetPickDropConfiguration("pick_drop_check");
                 break;
             
             case 'food_grocery_ecommerce':

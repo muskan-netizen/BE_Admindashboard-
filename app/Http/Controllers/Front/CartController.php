@@ -3267,6 +3267,10 @@ class CartController extends FrontController
                 $daysCnt = count($recurringformPost->selectedCustomdates);
                 $selectedCustomdates = implode(',', $recurringformPost->selectedCustomdates);
             }
+            if (!empty($recurringformPost->selected_custom_dates)) {
+                $daysCnt = count($recurringformPost->selected_custom_dates);
+                $selectedCustomdates = implode(',', $recurringformPost->selected_custom_dates);
+            }
         } elseif ($recurringformPost->action == '6') {
             $startDate = $recurringformPost->startDate;
             $endDate = $recurringformPost->endDate;

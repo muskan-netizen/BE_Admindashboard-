@@ -32,31 +32,7 @@ trait ResetConfiguration
         $app_font = AppStylingOption::where('template_id', $app_styling_id)->where('is_template', 1)->first();
 
         AppStylingOption::where('id', '!=', $app_font->id)->update(['is_selected' => 0]);
-        $primary_color = AppStyling::where('name', 'Primary Color')->first();
-        if ($primary_color) {
-            $primary_color_options = AppStylingOption::where('app_styling_id', $primary_color->id)->first();
-            $primary_color_options->name = "#41A2E6";
-            $primary_color_options->save();
-        }
-        $secondary_color = AppStyling::where('name', 'Secondary Color')->first();
-        if ($secondary_color) {
-            $secondary_color_options = AppStylingOption::where('app_styling_id', $secondary_color->id)->first();
-            $secondary_color_options->name = "#FFFFFF";
-            $secondary_color_options->save();
-        }
-        $tertiary_color = AppStyling::where('name', 'Tertiary Color')->first();
-        if ($tertiary_color) {
-            $tertiary_color_options = AppStylingOption::where('app_styling_id', $tertiary_color->id)->first();
-            $tertiary_color_options->name = "#FFFFFF";
-            $tertiary_color_options->save();
-        }
-
-        $tab_style = AppStyling::where('name', 'Tab Bar Style')->first();
-        if ($tab_style) {
-            $tab_style_options = AppStylingOption::where('app_styling_id', $tab_style->id)->where('name','Tab 1')->first();
-            $tab_style_options->is_selected = 1;
-            $tab_style_options->save();
-        }
+       
         $app_font = $app_font->fresh();
 
         $app_font->is_selected = 1;
@@ -69,6 +45,7 @@ trait ResetConfiguration
         $client_preference = ClientPreference::select('business_type')->first();
         $client_preference->hide_order_address = 1;
         $client_preference->celebrity_check = 0;
+        $client_preference->is_hyperlocal = 0;
 
 
         $vendor_type =  ["dinein_check", "takeaway_check", "delivery_check", "rental_check", "pick_drop_check", "on_demand_check", "laundry_check", "appointment_check", "p2p_check"];

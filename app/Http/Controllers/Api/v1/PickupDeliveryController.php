@@ -1193,7 +1193,7 @@ class PickupDeliveryController extends BaseController{
                 }else{
                     $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
                 }
-                $call_back_url = "http://".$domain."/dispatch-pickup-delivery/".$dynamic;
+                $call_back_url = "https://".$domain."/dispatch-pickup-delivery/".$dynamic;
                 $tasks = array();
                 $meta_data = '';
                 $team_tag = $unique."_".$vendor;
@@ -1952,7 +1952,7 @@ class PickupDeliveryController extends BaseController{
                 }else{
                     $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
                 }
-                $call_back_url = "http://".$domain."/dispatch-pickup-delivery/".$order_vendor->web_hook_code;
+                $call_back_url = "https://".$domain."/dispatch-pickup-delivery/".$order_vendor->web_hook_code;
                 $tasks = array();
 
                 $product = Product::find($request->product_id);
@@ -2144,7 +2144,7 @@ class PickupDeliveryController extends BaseController{
                 }else{
                     $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
                 }
-                $call_back_url = "http://".$domain."/dispatch-pickup-delivery/".$dynamic;
+                $call_back_url = "https://".$domain."/dispatch-pickup-delivery/".$dynamic;
 
                 $client = Client::orderBy('id', 'asc')->first();
 
@@ -2301,7 +2301,7 @@ class PickupDeliveryController extends BaseController{
                     $domain = $client_do->sub_domain.env('SUBMAINDOMAIN');
                 }
 
-                $call_back_url = "http://".$domain."/dispatch/driver/bids/update/".$UserBidRideRequest->web_hook_code;
+                $call_back_url = "https://".$domain."/dispatch/driver/bids/update/".$UserBidRideRequest->web_hook_code;
 
                 $postdata =  [
                             'tasks'                   => $request->tasks,
