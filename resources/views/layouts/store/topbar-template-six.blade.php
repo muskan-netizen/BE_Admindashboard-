@@ -146,7 +146,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                   </div>
                   <!-- logo end -->
                   <!-- alFindSec start -->
-                  <div class="alFindSec d-none d-lg-block">
+                  <div class="alFindSec  d-lg-block">
                      <ul class="p-0 m-0 d-flex align-items-center justify-content-between">
                         @if(isset($preference))
                         @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
@@ -189,7 +189,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                <div class="rightHead d-flex align-items-end">
                   <ul class="p-0 m-0 d-flex align-items-center ml-auto">
                      <!-- alUserIcon start -->
-                     @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
+                     @if( Session::get('vendorType') == 'p2p' )
                         <li class="add_post pr-3"><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span> {{__('Add Post')}}</span></a></li>
                     @endif
 

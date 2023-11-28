@@ -32,7 +32,7 @@ span.alPriceValue, span.alPriceValue i {
 @php
 $add_to_cart =  route('addToCart') ;
 $is_service_product_price_from_dispatch_forOnDemand = 0;
-$additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch','is_service_price_selection']);
+$additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch','is_service_price_selection','is_enable_allergic_items']);
 $getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'), (@Session::get('onDemandPricingSelected') ?? ''),$additionalPreference);
 $category_type_idForNotShowshPlusMinus = ['12'];
 if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
@@ -91,6 +91,10 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                                                 <option value="high_to_low">{{ __('Cost : High to Low') }}</option>
                                                 <option value="rating">{{ __('Avg. Customer Review') }}</option>
                                                 <option value="newly_added">{{ __('Newest Arrivals') }}</option>
+                                                @if ($additionalPreference['is_enable_allergic_items'] == 1)
+                                                    <option value="cal_asc">{{ __('Calories : Low to High') }}</option>
+                                                    <option value="cal_desc">{{ __('Calories : High to Low') }}</option>
+                                                @endif
                                             </select>
                                         </div>
                                     </div>
@@ -385,7 +389,6 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                                                                         @endif
                                                                     </p>
                                                                     <div class="member_no d-block mb-0">
-
                                                                         <span>{!! $prod->translation_description !!}</span>
                                                                     </div>
                                                                     <div id="product_variant_options_wrapper">
@@ -1115,7 +1118,6 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                 success: function(response) {
                     if (response.status == 'Success') {
                         response = response.data;
-                        // console.log(response);
                         $(that).parents('.product_row').find(".variant_response span").html('');
                         if (response.variant != '') {
 
@@ -1180,7 +1182,9 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
             }, 1000);
         }
 
-        function vendorProductsSearchResults() {
+        function vendorProductsSearchResults(id = '') {
+            
+       
             let keyword = $("#vendor_search_box").val();
             let order_type = $("#order_type").val();
             var checkboxesChecked = [];
@@ -1203,7 +1207,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                     keyword: keyword,
                     order_type: order_type,
                     vendor: "{{ $vendor->id }}",
-                    vendor_category: "{{ $vendor_category ?? '' }}"
+                    vendor_category: id ?? "{{ $vendor_category ?? '' }}"
                 },
                 beforeSend: function() {
                     if (ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {

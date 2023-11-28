@@ -147,7 +147,7 @@ $(document).ready(function () {
         }
         var options = {
             chart: {
-                height: 257,
+                height: 364,
                 type: 'bar',
                 stacked: !0
             },

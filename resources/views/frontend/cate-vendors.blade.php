@@ -177,7 +177,7 @@
                                                         $vendor_url = route('vendorDetail', $data->slug);
                                                     }
                                                     @endphp
-                                                    <div class="col-xl-3 col-lg-4 col-6 col-grid-box mt-sm-3 mt-1" >
+                                                    <div class="col-xl-3 col-lg-3 col-6 col-grid-box mt-sm-3 mt-1" >
                                                         <div class="product-card-box position-relative alInnerBox">
                                                             <div class="add-to-fav">
                                                                 <input id="fav_pro_one" type="checkbox">
@@ -373,6 +373,9 @@
         filterProducts();
     });
     function filterProducts(){
+
+
+        
         var brands = [];
         var variants = [];
         var options = [];

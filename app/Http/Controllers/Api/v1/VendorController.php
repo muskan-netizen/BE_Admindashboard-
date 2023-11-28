@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{Client, Type, User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, ClientPreference, ClientLanguage, Vendor, Brand, VendorCategory, PermissionsOld, UserPermissions, UserVendor, VendorDocs, VendorRegistrationDocument, EmailTemplate, Country, OrderReturnRequest, Order, VendorOrderStatus, LuxuryOption,OrderVendor, OrderStatusOption, VendorAdditionalInfo};
+use App\Models\{Client, Type, User, Product, Category, ProductVariantSet, ProductVariant, ProductAddon, ProductRelated, ProductUpSell, ProductCrossSell, ClientCurrency, ClientPreference, ClientLanguage, Vendor, Brand, VendorCategory, PermissionsOld, UserPermissions, UserVendor, VendorDocs, VendorRegistrationDocument, EmailTemplate, Country, OrderReturnRequest, Order, VendorOrderStatus, LuxuryOption,OrderVendor, OrderStatusOption, VendorAdditionalInfo, VendorBankDetail, VendorFacilty, VendorMinAmount};
 use Log;
 class VendorController extends BaseController{
     use ApiResponser;
@@ -369,6 +369,156 @@ class VendorController extends BaseController{
      * vendor -> category -> product
      * @return \Illuminate\Http\Response
      */
+
+     public function updateConfig(Request $request, $domain = '',  $id)
+    {
+        $vendor = Vendor::where('id', $id)->first();
+        $msg = 'Order configuration';
+
+        if (!$request->has('commission_percent')) {
+
+            $vendor->show_slot = ($request->has('show_slot') && $request->show_slot == 'on') ? 1 : 0;
+            $vendor->auto_accept_order = ($request->has('auto_accept_order') && $request->auto_accept_order == 'on') ? 1 : 0;
+            $vendor->need_container_charges = ($request->has('need_container_charges') && $request->need_container_charges == 'on') ? 1 : 0;
+            $vendor->return_request = ($request->has('return_request') && $request->return_request == 'on') ? 1 : 0;
+            $vendor->cancel_order_in_processing = ($request->has('cancel_order_in_processing') && $request->cancel_order_in_processing == 'on') ? 1 : 0;
+            $vendor->return_auto_approve = ($request->has('return_auto_approve') && $request->return_auto_approve == 'on') ? 1 : 0;
+            // $vendor->cron_for_service_area = ($request->has('cron_for_service_area') && $request->cron_for_service_area == 'on') ? 1 : 0;
+            if($request->has('slot_minutes')){
+                $vendor->slot_minutes   = ($request->slot_minutes>0)?$request->slot_minutes:0;
+            }
+            $vendor->closed_store_order_scheduled = (($request->has('show_slot')) ? 0 : ($request->closed_store_order_scheduled == 'on')) ? 1 : 0;
+            $vendor->fixed_fee = ($request->has('fixed_fee') && $request->fixed_fee == 'on') ? 1 : 0;
+            $vendor->price_bifurcation = ($request->has('price_bifurcation') && $request->price_bifurcation == 'on') ? 1 : 0;
+            // $vendor->fixed_fee_amount = $request->has('fixed_fee_amount') ? $request->fixed_fee_amount : 0.00;
+
+            $vendor->fixed_fee_amount = $request->has('fixed_fee') ? $request->fixed_fee_amount : 0.00;
+
+        }else{
+
+            //Commission & Taxes (Visible For Admin)
+            $vendor->commission_percent         = $request->commission_percent;
+            $vendor->commission_fixed_per_order = $request->commission_fixed_per_order;
+            $vendor->commission_monthly         = $request->commission_monthly;
+            $vendor->service_fee_percent        = $request->service_fee_percent;
+            $vendor->fixed_service_charge       = ($request->has('fixed_service_charge') && $request->fixed_service_charge == 'on') ? 1 : 0;
+            $vendor->service_charge_amount      = $request->has('service_charge_amount') ? $request->service_charge_amount : 0.00;
+            //$vendor->add_category = ($request->has('add_category') && $request->add_category == 'on') ? 1 : 0;
+            $msg = 'commission configuration';
+
+            $vendor->service_charges_tax = ($request->has('service_charges_tax') && $request->service_charges_tax == 'on') ? 1 : 0;
+            $vendor->service_charges_tax_id=$request->service_charges_tax_id != 0 && $vendor->service_charges_tax !=0 ? $request->service_charges_tax_id:0;
+            $vendor->add_markup_price = ($request->has('add_markup_price') && $request->add_markup_price == 'on') ? 1 : 0;
+            $vendor->markup_price_tax_id=$request->markup_price_tax_id != 0 && $vendor->add_markup_price !=0 ? $request->markup_price_tax_id:0;
+
+            $vendor->delivery_charges_tax = ($request->has('delivery_charges_tax') && $request->delivery_charges_tax == 'on') ? 1 : 0;
+            $vendor->delivery_charges_tax_id=$request->delivery_charges_tax_id != 0 && $vendor->delivery_charges_tax !=0 ? $request->delivery_charges_tax_id:0;
+
+            $vendor->container_charges_tax = $request->container_charges_tax == 'on' ? 1 : 0;
+            $vendor->container_charges_tax_id=$request->container_charges_tax_id != 0 && $vendor->container_charges_tax !=0 ? $request->container_charges_tax_id:0;
+
+            $vendor->fixed_fee_tax = $request->fixed_fee_tax == 'on' ? 1 : 0;
+            $vendor->fixed_fee_tax_id=$request->fixed_fee_tax_id != 0 && $vendor->fixed_fee_tax !=0 ? $request->fixed_fee_tax_id:0;
+
+            }
+
+
+
+        // Set order limit - By Ovi
+        $vendor->same_day_delivery   = ($request->has('same_day_delivery') && $request->same_day_delivery == 'on') ? 1 : 0;
+        
+        $vendor->next_day_delivery   = ($request->has('next_day_delivery') && $request->next_day_delivery == 'on') ? 1 : 0;
+        
+        $vendor->hyper_local_delivery = ($request->has('hyper_local_delivery') && $request->hyper_local_delivery == 'on') ? 1 : 0;
+
+
+        if ($request->has('cutoff_time') && $request->cutoff_time != '') {
+            $vendor->cutoff_time = $request->cutoff_time;
+        }
+
+        if($request->has('orders_per_slot')){
+            $vendor->orders_per_slot   = $request->orders_per_slot;
+        }
+
+        if ($request->has('order_min_amount')) {
+            $vendor->order_min_amount   = $request->order_min_amount;
+        }
+        if ($request->has('order_pre_time')) {
+            $vendor->order_pre_time     = $request->order_pre_time;
+        }
+        if (empty($vendor->auto_accept_order) && $request->has('auto_reject_time')) {
+            $vendor->auto_reject_time = $request->auto_reject_time;
+        } else {
+            $vendor->auto_reject_time = "";
+        }
+        if ($request->has('order_amount_for_delivery_fee')) {
+            $vendor->order_amount_for_delivery_fee   = $request->order_amount_for_delivery_fee;
+        }
+        if ($request->has('delivery_fee_minimum')) {
+            $vendor->delivery_fee_minimum   = $request->delivery_fee_minimum;
+        }
+        if ($request->has('delivery_fee_maximum')) {
+            $vendor->delivery_fee_maximum   = $request->delivery_fee_maximum;
+        }
+
+        if($request->has('rescheduling_charges')){
+            $vendor->rescheduling_charges   = $request->rescheduling_charges;
+        }
+        if($request->has('pickup_cancelling_charges')){
+            $vendor->pickup_cancelling_charges   = $request->pickup_cancelling_charges;
+        }
+        // if ($request->has('service_fee_percent')) {
+        //     $vendor->service_fee_percent         = $request->service_fee_percent;
+        //     $msg = 'commission configuration';
+        // }
+        if ($request->has('instagram_url')) {
+            $vendor->instagram_url = $request->has('instagram_url') ? $request->instagram_url : NULL;
+        }
+        if ($request->has('easebuzz_sub_merchent_id')) {
+            $vendor->easebuzz_sub_merchent_id = $request->has('easebuzz_sub_merchent_id') ? $request->easebuzz_sub_merchent_id : NULL;
+        }
+        if ($request->has('subscription_discount_percent')) {
+            $vendor->subscription_discount_percent = $request->has('subscription_discount_percent') ? $request->subscription_discount_percent : NULL;
+        }
+
+        if ($request->has('is_vendor_instant_booking')) {
+            $vendor->is_vendor_instant_booking = ($request->is_vendor_instant_booking == 'on') ? 1 : 0;
+        }
+
+        if($request->has('is_featured')){
+            $vendor->is_featured   = $request->is_featured == 'on' ? 1 : 0;
+        }
+
+        $vendor->save();
+
+        if ($request->has('facilty_ids')) {
+            foreach($request->facilty_ids as $facilty_id){
+                $VendorFacilty =  VendorFacilty::where(['vendor_id' =>   $vendor->id, 'facilty_id'=> $facilty_id])->first();
+                if(!$VendorFacilty){
+                    $vendor_facilty = new VendorFacilty();
+                    $vendor_facilty->vendor_id  = $vendor->id;
+                    $vendor_facilty->facilty_id  = $facilty_id;
+                    $vendor_facilty->save();
+                }
+            }
+        }
+
+        // vendor min amount by role
+        if(isset($request->order_min_amount_arr)){
+            $min_amounts = $request->order_min_amount_arr;
+            foreach($min_amounts  as $key => $min_amount ){
+                $where = ['vendor_id' => $id, 'role_id' => $key];
+                $create = ['vendor_id' => $id, 'role_id' => $key, 'order_min_amount' => $min_amount ];
+                VendorMinAmount::updateOrCreate($where, $create);
+            }
+        }
+
+        $return_json   = $request->has('return_json') && $request->return_json ? $request->return_json : 0;
+        if($return_json ==  1 ){
+            return $this->successResponse($vendor,__("Vendor update successfully!"));
+        }
+        return redirect()->back()->with('success', $msg . ' updated successfully!');
+    }
     public function vendorCategoryProducts(Request $request, $slug1 = 0, $slug2 = 0){
         try{
             $paginate = $request->has('limit') ? $request->limit : 12;
@@ -1392,15 +1542,22 @@ class VendorController extends BaseController{
                 if($client_preference->delivery_check == 1){$count++;}
             }
             if($count > 1){
-                $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 'on') ? 1 : 0;
-                $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 'on') ? 1 : 0;
-                $vendor->delivery = ($request->has('delivery') && $request->delivery == 'on') ? 1 : 0;
+                $vendor->dine_in = ($request->has('dine_in') && $request->dine_in == 1) ? 1 : 0;
+                $vendor->takeaway = ($request->has('takeaway') && $request->takeaway == 1) ? 1 : 0;
+                $vendor->delivery = ($request->has('delivery') && $request->delivery == 1) ? 1 : 0;
             }
             else{
                 $vendor->dine_in = $client_preference->dinein_check == 1 ? 1 : 0;
                 $vendor->takeaway = $client_preference->takeaway_check == 1 ? 1 : 0;
                 $vendor->delivery = $client_preference->delivery_check == 1 ? 1 : 0;
             }
+
+            $vendor->rental = ($client_preference->rental_check == 1 && $request->rental == 1) ? 1 : 0;
+            $vendor->appointment = ($client_preference->appointment_check == 1 && $request->appointment == 1) ? 1 : 0;
+            $vendor->p2p = ($client_preference->p2p_check == 1 && $request->p2p == 1) ? 1 : 0;
+            $vendor->pick_drop = ($client_preference->pick_drop_check == 1 && $request->pick_drop == 1) ? 1 : 0;
+            $vendor->on_demand = ($client_preference->on_demand_check == 1 && $request->on_demand == 1) ? 1 : 0;
+
             $vendor->logo = 'default/default_logo.png';
             $vendor->banner = 'default/default_image.png';
             if ($request->hasFile('upload_logo')) {
@@ -2030,7 +2187,7 @@ class VendorController extends BaseController{
                     cos( radians( latitude ) ) * cos( radians( longitude ) - radians(' . $longitude . ') ) +
                     sin( radians(' . $latitude . ') ) *
                     sin( radians( latitude ) ) ) )  AS vendorToUserDistance'))->withAvg('product', 'averageRating');
-            $vendorData = $vendorData->whereIn('id', $ses_vendors);
+            $vendorData = $vendorData->whereIn('id', $ses_vendors)->orderBy('vendorToUserDistance', 'ASC');
             //if($venderFilternear && ($venderFilternear == 1) ){
                 //->orderBy('vendorToUserDistance', 'ASC')
                 // $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
@@ -2313,7 +2470,7 @@ class VendorController extends BaseController{
                         'tags.tag.translations' => function ($q) use ($langId) {
                             $q->where('language_id', $langId);
                         }
-                    ])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id', 'products.minimum_order_count', 'products.batch_count','products.is_recurring_booking')
+                    ])->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'products.category_id', 'products.minimum_order_count', 'products.batch_count','products.is_recurring_booking','products.inquiry_only')
                     ->where('products.vendor_id', $vid)
                     ->where('products.is_live', 1)->withCount(['variantSet','addOn'])->paginate($limit, $page);
                 if(!empty($products)){
@@ -2367,9 +2524,6 @@ class VendorController extends BaseController{
             $userid = $user->id;
              $limit = $request->has('limit') ? $request->limit : 12;
             $langId = $user->language;
-
-
-
             $variantSets =  ProductVariantSet::with(['options' => function($zx) use($langId){
                                 $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id');
                                 $zx->select('variant_options.*', 'vt.title');
@@ -2767,5 +2921,35 @@ class VendorController extends BaseController{
         'message' => 'Connected',
         'data' => $request->toArray()]);
     }
+    public function saveVenderBankDetails(Request $request){
+        $user = Auth::user();
+         // Define validation rules for the request data
+        $rules = [
+            'name' => 'required|string|max:56',
+            'bank_name' => 'required|string|max:56',
+            'address' => 'required|nullable|string',
+        ];
 
+        // Create a Validator instance and apply the rules
+        $validator = Validator::make($request->all(), $rules);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return $this->errorResponse($validator->errors()->all(), 400);
+        }
+        try{
+            $data = VendorBankDetail::create([
+                'vendor_id' => Auth::user()->userVendor->vendor_id,
+                'name' => $request->input('name'),
+                'bank_name' => $request->input('bank_name'),
+                'IBAN' => $request->input('IBAN'),
+                'address' => $request->input('address'),
+            ]);
+            $this->sendCustomerAddIBANDetailEmail($user);
+            return $this->successResponse($data, '', 200);
+        }
+        catch (Exception $e) {
+            return $this->errorResponse($e->getMessage().''.$e->getLineNo(), $e->getCode());
+        }
+    }
 }

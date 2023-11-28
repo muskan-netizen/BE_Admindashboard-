@@ -309,50 +309,6 @@ class PaymentOptionController extends BaseController
                                 'api_key' => $request->ozow_api_key
                             ));
                             break;
-
-                        case 'azul':
-                            $creds = ! empty($json_creds) ? json_decode($json_creds) : '';
-                            $validatedData = $request->validate([
-                                'azul_main_url' => 'required',
-                                'azul_alternate_url' => 'required',
-                                'azul_ecommerce_url' => 'required',
-                                'azul_merchant_id' => 'required',
-                                'azul_auth_header_one' => 'required',
-                                'azul_auth_header_two' => 'required',
-                                'azul_test_url' => 'required'
-                                // 'azul_ssl_certificate' => 'required',
-                                // 'azul_ssl_key' => 'required'
-                            ]);
-                            if ($request->hasFile('azul_ssl_certificate')) {
-                                $file = $request->file('azul_ssl_certificate');
-                                $file_name = 'Cert/' . uniqid() . '.' . $file->getClientOriginalExtension();
-                                $path = Storage::disk('local')->put($file_name, file_get_contents($file), 'public');
-                                $azul_ssl_certificate = $file_name;
-                            } else {
-                                $azul_ssl_certificate = (! empty($creds) && isset($creds->azul_ssl_certificate)) ? $creds->azul_ssl_certificate : '';
-                            }
-
-                            if ($request->hasFile('azul_ssl_key')) {
-                                $file = $request->file('azul_ssl_key');
-                                $file_name = 'Cert/' . uniqid() . '.' . $file->getClientOriginalExtension();
-                                $path = Storage::disk('local')->put($file_name, file_get_contents($file), 'public');
-                                $azul_ssl_key = $file_name;
-                            } else {
-                                $azul_ssl_key = (! empty($creds) && isset($creds->azul_ssl_key)) ? $creds->azul_ssl_key : '';
-                            }
-
-                            $json_creds = json_encode(array(
-                                'azul_main_url' => $request->azul_main_url,
-                                'azul_alternate_url' => $request->azul_alternate_url,
-                                'azul_ecommerce_url' => $request->azul_ecommerce_url,
-                                'azul_test_url' => $request->azul_test_url,
-                                'azul_merchant_id' => $request->azul_merchant_id,
-                                'azul_auth_header_one' => $request->azul_auth_header_one,
-                                'azul_auth_header_two' => $request->azul_auth_header_two,
-                                'azul_ssl_certificate' => $azul_ssl_certificate,
-                                'azul_ssl_key' => $azul_ssl_key
-                            ));
-                            break;
                         case 'pagarme':
                             $validatedData = $request->validate([
                                 'pagarme_api_key' => 'required',
@@ -652,7 +608,6 @@ class PaymentOptionController extends BaseController
                                 'openpay_verification_key' => $request->openpay_verification_key
                             ));
                             break;
-
                         case 'azul':
                             $creds = ! empty($json_creds) ? json_decode($json_creds) : '';
                             $validatedData = $request->validate([
@@ -674,7 +629,7 @@ class PaymentOptionController extends BaseController
                             } else {
                                 $azul_ssl_certificate = (! empty($creds) && isset($creds->azul_ssl_certificate)) ? $creds->azul_ssl_certificate : '';
                             }
-
+                            
                             if ($request->hasFile('azul_ssl_key')) {
                                 $file = $request->file('azul_ssl_key');
                                 $file_name = 'Cert/' . uniqid() . '.' . $file->getClientOriginalExtension();
@@ -683,7 +638,7 @@ class PaymentOptionController extends BaseController
                             } else {
                                 $azul_ssl_key = (! empty($creds) && isset($creds->azul_ssl_key)) ? $creds->azul_ssl_key : '';
                             }
-
+                            
                             $json_creds = json_encode(array(
                                 'azul_main_url' => $request->azul_main_url,
                                 'azul_alternate_url' => $request->azul_alternate_url,
@@ -834,6 +789,20 @@ class PaymentOptionController extends BaseController
                                 'powertrans_password' => $request->powertrans_password,
                             ));
                         break;
+                        case 'mpesasafari':
+                            $request->validate([
+                            'mpesasafari_consumer_key' => 'required',
+                            'mpesasafari_consumer_secret' => 'required',
+                            'mpesasafari_shortcode' => 'required',
+                            'mpesasafari_webhook' => 'required'
+                            ]);
+                            $json_creds = json_encode(array(
+                                'mpesasafari_consumer_key' => $request->mpesasafari_consumer_key,
+                                'mpesasafari_consumer_secret' => $request->mpesasafari_consumer_secret,
+                                'mpesasafari_shortcode' => $request->mpesasafari_shortcode,
+                                'mpesasafari_webhook' => $request->mpesasafari_webhook
+                            ));
+                            break;
 
                         case 'livee':
                             $request->validate([

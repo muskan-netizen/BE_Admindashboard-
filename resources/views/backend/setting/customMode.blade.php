@@ -38,7 +38,9 @@
             </span>
         </div>
     </div>
-    <div class="col-md-4">
+   
+{{-- @endif --}}
+ <div class="col-md-4">
         <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
             <label for="subscription_mode" class="mr-2 mb-0">{{ __('Subscription Mod') }}<small
                     class="d-block pr-5">{{ __('Enable the option to create Subscriptions for Customers and Vendors.') }}</small></label>
@@ -538,9 +540,6 @@
     </div>
 </div>
 
-
-
-
 <div class="col-md-4">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="is_user_kyc_for_registration_switch"
@@ -579,14 +578,14 @@
                 data-className="is_file_cart_instructions" data-color="#43bee1"
                 @if ($getAdditionalPreference['is_file_cart_instructions'] == '1') checked='checked' @endif>
             <input type="hidden" @if ($getAdditionalPreference['is_file_cart_instructions'] == 1) value="1" @else value="0" @endif
-                name="is_file_cart_instructions" id="is_file_cart_instructions" />
+                  name="is_file_cart_instructions" id="is_file_cart_instructions" />
         </span>
     </div>
 </div>
 <div class="col-md-4">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="is_admin_vendor_rating" class="mr-2 mb-0">{{ __('Admin Vendor Rating') }}<small
-                class="d-block pr-5">{{ __('Enable to Send Email on Customer Successfull Signup.') }}</small></label>
+                class="d-block pr-5">{{ __('Enable to show vendor on the basis of rating .') }}</small></label>
         <span> <input type="checkbox" data-plugin="switchery" name="is_admin_vendor_rating_switch"
                 id="is_admin_vendor_rating_switch" class="form-control checkbox_change"
                 data-className="is_admin_vendor_rating" data-color="#43bee1"
@@ -698,5 +697,101 @@
         </span>
         <input type="hidden" @if (@$getAdditionalPreference['is_enable_curb_side'] == 1) value="1" @else value="0" @endif
             name="is_enable_curb_side" id="is_enable_curb_side" />
+    </div>
+</div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_enable_allergic_items" class="mr-2 mb-0">{{ __('Customer Allergic Items') }}<small
+                class="d-block pr-5">{{ __('Enable this for Customer add Allergic Items.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_enable_allergic_items"
+                id="is_enable_allergic_items_switch" class="form-control checkbox_change"
+                data-className="is_enable_allergic_items" data-color="#43bee1"
+                @if (@getAdditionalPreference(['is_enable_allergic_items'])['is_enable_allergic_items']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['is_enable_allergic_items'] == 1) value="1" @else value="0" @endif
+            name="is_enable_allergic_items" id="is_enable_allergic_items" />
+    </div>
+</div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_vendor_marg_configuration" class="mr-2 mb-0">{{ __('Vendor Marg Configuration') }}<small
+                class="d-block pr-5">{{ __('Enable this for Vendor add own Marg Configuration.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_vendor_marg_configuration"
+                id="is_vendor_marg_configuration_switch" class="form-control checkbox_change"
+                data-className="is_vendor_marg_configuration" data-color="#43bee1"
+                @if (@getAdditionalPreference(['is_vendor_marg_configuration'])['is_vendor_marg_configuration']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['is_vendor_marg_configuration'] == 1) value="1" @else value="0" @endif
+            name="is_vendor_marg_configuration" id="is_vendor_marg_configuration" />
+    </div>
+</div>
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_vendor_marg_configuration" class="mr-2 mb-0">{{ __('Manage Roles & Permission') }}<small
+                class="d-block pr-5">{{ __('Enable role and permission for users.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_role_and_permission_enable"
+                id="is_role_and_permission_enable_switch" class="form-control checkbox_change"
+                data-className="is_role_and_permission_enable" data-color="#43bee1"
+                @if (@$getAdditionalPreference['is_role_and_permission_enable']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['is_role_and_permission_enable'] == 1) value="1" @else value="0" @endif
+            name="is_role_and_permission_enable" id="is_role_and_permission_enable" />
+    </div>
+</div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_vendor_marg_configuration" class="mr-2 mb-0">{{ __('Car Rental') }}<small
+                class="d-block pr-5">{{ __('Enable For Rental Protection,Booking Options and for Destination.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_car_rental_enable"
+                id="is_car_rental_enable_switch" class="form-control checkbox_change"
+                data-className="is_car_rental_enable" data-color="#43bee1"
+                @if (@$getAdditionalPreference['is_car_rental_enable']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['is_car_rental_enable'] == 1) value="1" @else value="0" @endif
+            name="is_car_rental_enable" id="is_car_rental_enable" />
+    </div>
+</div>
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_vendor_marg_configuration" class="mr-2 mb-0">{{ __('SMS on Complete Order') }}<small
+                class="d-block pr-5">{{ __('Enable sms for complete order.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_sms_complete_order"
+                id="is_sms_complete_order_switch" class="form-control checkbox_change"
+                data-className="is_sms_complete_order" data-color="#43bee1"
+                @if (@$getAdditionalPreference['is_sms_complete_order']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['is_sms_complete_order'] == 1) value="1" @else value="0" @endif
+            name="is_sms_complete_order" id="is_sms_complete_order" />
+    </div>
+</div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_vendor_marg_configuration" class="mr-2 mb-0">{{ __('SMS on Cancel Order') }}<small
+                class="d-block pr-5">{{ __('Enable sms for cancel order.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_sms_cancel_order"
+                id="is_sms_cancel_order_switch" class="form-control checkbox_change"
+                data-className="is_sms_cancel_order" data-color="#43bee1"
+                @if (@$getAdditionalPreference['is_sms_cancel_order']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['is_sms_cancel_order'] == 1) value="1" @else value="0" @endif
+            name="is_sms_cancel_order" id="is_sms_cancel_order" />
+    </div>
+</div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_vendor_marg_configuration" class="mr-2 mb-0">{{ __('SMS on Booked Ride') }}<small
+                class="d-block pr-5">{{ __('Enable sms for booked ride.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_sms_booked_ride"
+                id="is_sms_booked_ride_switch" class="form-control checkbox_change"
+                data-className="is_sms_booked_ride" data-color="#43bee1"
+                @if (@$getAdditionalPreference['is_sms_booked_ride']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['is_sms_booked_ride'] == 1) value="1" @else value="0" @endif
+            name="is_sms_booked_ride" id="is_sms_booked_ride" />
     </div>
 </div>

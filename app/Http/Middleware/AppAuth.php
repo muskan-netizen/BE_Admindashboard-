@@ -9,7 +9,7 @@ use JWT\Token;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
-use App\Models\{BlockedToken, User, ClientLanguage, ClientCurrency,UserDevice};
+use App\Models\{BlockedToken, User, ClientLanguage, ClientCurrency, Currency, UserDevice};
 
 class AppAuth{
     /**
@@ -78,6 +78,8 @@ class AppAuth{
             $checkCur = ClientCurrency::where('currency_id', $header['currency'][0])->first();
             if($checkCur){
                 $currency_id = $checkCur->currency_id;
+            } else{
+                $currency_id = Currency::where('id',147)->first()->id;
             }
         }
         if(isset($header['timezone'][0]) && !empty($header['timezone'][0])){

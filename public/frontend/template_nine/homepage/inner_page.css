@@ -217,11 +217,13 @@ body .create_box a.btn.btn-solid.mt-2 {
 
 .product-right p {
     margin-bottom: 0;
-    line-height: 1.5em;
-    font-size: 14px;
-    margin-top: 10px
+    line-height: 1.3;
+    font-size: 16px;
+    margin-top: 2px
 }
-
+.product-right.inner_spacing.third-temp-lan hr{
+    display: none;
+}
 .al_body_template_three label {
     font-weight: 400
 }
@@ -390,7 +392,8 @@ body .create_box a.btn.btn-solid.mt-2 {
     height: 30px;
     width: 30px;
     border-radius: 50%;
-    background: #c2c2c2;
+    background: transparent;
+    margin-right: 10px;
     font-size: 10px;
     text-align: center;
     color: #fff;
@@ -2001,8 +2004,13 @@ body .modal-content #address-map-container {
 .al_body_template_three .suppliers-box:hover{box-shadow:none;box-sizing:border-box;border:1px solid transparent} */
 
 .wishlist-row .product-icon img {
-    border-radius: 35px;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border: 1px solid #cccc;
 }
+
 
 body #page-container #footer .footer-theme .sub-title .contact-list li span {
     padding-left: 0
@@ -2542,6 +2550,160 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2 {
 a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
     background-color: #f5f5f5;
 }
+.inner_spacing h3, .inner_spacing h3 span, .inner_spacing h3 label{
+    margin-bottom: 10px!important;
+}
+.product-right .border-product{
+    padding-top: 0;
+    padding-bottom: 0;
+}
+#productPriceValue span.product_fixed_price, #productPriceValue b{
+    font-size: 25px!important;
+    letter-spacing: 0!important;
+}
+#productPriceValue .org_price, #productPriceValue .org_price span.product_original_price {
+    font-size: 20px!important;
+    letter-spacing: 0!important;
+}
+.inner_spacing .productAddonSet{
+    padding: 0 0 10px;
+    padding-bottom: 3px!important;
+}
+div#product_variant_quantity_wrapper {
+    display: block;
+    width: 100%;
+    margin-top: 5px;
+}
+.product-description.border-product  h6.product-title.mt-0 {
+    padding-top: 5px;
+}
+.vendor-design_new{
+    width: 100%;
+    position: relative;
+    z-index: 9;
+    padding:0 10px;
+}
+.product-addon-modal button.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    opacity: 1!important;
+    background: #fff;
+    margin: 0;
+    border-radius: 50px;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.product-addon-modal button.close span{
+    font-size: 20px;
+    line-height: 1;
+}
+.al_body_template_nine .common-banner:after{
+    border-radius: 10px 10px 0 0!important;
+}
+.vendor-products-wrapper > .al_white_bg_round , .vendor-products-wrapper > .col-12.col-lg-3.d-lg-inline-block.d-none{
+    margin-top: -59px;
+}
+select#order_type {
+    appearance: none;
+    padding: 0px 11px!important;
+    background: url('https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/jgogrnme6JZ4cE9MfxKWToB0it5TZecrzPrQLpgf.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-size: 14px;
+    background-position: 95%;
+}
+.dark select#order_type {
+    background: url('https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/668jWeBrePbn0Lf43aZbqZBJQ7n25qoh6IJAL5ZE.png');
+    appearance: none;
+    padding: 0px 11px!important;    
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-size: 14px;
+    background-position: 95%;
+}
+.category-head{
+    top: 167px;
+    padding: 10px;
+}
+.price_head .member_no span {
+    color: #777;
+    font-size: 16px;
+    line-height: 1.3!important;
+}
+.product-addon-modal .modal-header .flex-column > span small {
+    font-size: 16px;
+}
+.customizable-text{
+    color: var(--theme-deafult);
+}
+.dark .category-head{
+    color: #fff;
+}
+.dark .al_white_bg_round .scrollspy-menu{
+    background: #ffffff36;
+}
+/* .al_body_template_nine .vendor-info li{
+    color: #000;
+}
+.al_body_template_nine .vendor-info li svg g g{
+    fill: #000;
+    stroke: #000;
+}
+.product-bottom-bar{
+    padding: 0;
+    margin:0;
+}
+.vendor-details-left {
+    margin-top: 0;
+    width: 100%;
+    box-shadow: 0 0 2px #ccc;
+    padding: 10px;
+    border-radius: 0 0 11px 10px;
+} */
+.product-bottom-bar{
+    background-color: transparent;
+}
+span.org_price.ml-1.font-14{
+    color: var(--theme-deafult);
+}
+.product-addon-modal .modal-header  .d-flex.flex-column {
+    flex-direction: row!important;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.product-addon-modal .modal-header  .d-flex.flex-column h5#product_addonLabel {
+    margin-bottom: 10px;
+}
+.dark .vendor-details-left h3{
+    color: #000;
+}
+.dark  .displayProducts .inner_spacing h3 label b,  body.al_body_template_nine.dark .product-wrapper-grid .media-body h6{
+    color: #fff;
+}
+.al_body_template_nine  .product-order .product-order-detail .order_detail h4{
+    font-size: 18px;
+}
+.al_body_template_nine  .product-order .product-order-detail .order_detail h5{
+    font-size: 14px;
+}
+.al_body_template_nine  .pro-scroller .product-order-detail .col-10 .row .order_detail:last-child {
+    justify-content: flex-end;
+    padding-right: 25px;
+}
+button#transfer_wallet_btn, #topup_wallet_btn {
+    font-size: 12px;
+    padding: 7px;
+    border-radius: 8px;
+    line-height: 1.5;
+    font-weight: 400;
+    text-transform: capitalize;
+}
 
 @media (min-width: 1024px) {
     .ds {
@@ -2726,18 +2888,25 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
     right: 11px;
 }
 
-.vendor-reviwes {
+/* .vendor-reviwes {
     position: absolute;
     top: 0;
     right: 0;
+} */
+.vendor-reviwes {
+    position: unset;
+    top: 0;
+    right: 0;
+    padding: 0;
+    width: auto;
+    display: inline-block;
 }
-
 .rating-text-box.ml-sm-auto {
     padding: 0 6px;
 }
 
 .vender-icon {
-    margin-top: -70px;
+    margin-top: 0;
     position: relative
 }
 
@@ -2753,7 +2922,7 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
 
 select#order_type {
     border: 1px solid #ced4da;
-    border-radius: 40px;
+    border-radius: 0;
 }
 
 .switch+.lable {
@@ -3082,6 +3251,9 @@ input.addon-input-number {
     align-items: center;
     padding: 0 15px;
 }
+#alSixHomeServices .step-indicator > .indicator-line {
+    display: block;
+}
 
 .step {
     display: flex;
@@ -3217,9 +3389,20 @@ input.addon-input-number {
 #header_cart_main_ul_ondemand .close-circle {
     position: absolute;
     right: 0;
-    top: 7px;
+    top: 0;
+}
+#header_cart_main_ul_ondemand .close-circle:hover i{
+    color: red;
+}
+.side-card .product-order .total-sec h5 {
+    margin-bottom: 0;
+    padding-bottom: 0px;
 }
 
+#header_cart_main_ul_ondemand li h6 {
+    margin-top: 0;
+    margin-bottom: 3px;
+}
 .action-icon.d-block.mb-3 {
     margin-bottom: 0!important;
 }
@@ -3459,7 +3642,40 @@ footer#footer {
     bottom: 0;
     width: 100%;
 }
-
+select.delivery-fee {
+    appearance: none;
+    padding: 0px 11px!important;
+    background: url('https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/jgogrnme6JZ4cE9MfxKWToB0it5TZecrzPrQLpgf.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-size: 14px;
+    background-position: 95%;
+}
+.dark select.delivery-fee {
+    background: url('https://s3.us-west-2.amazonaws.com/royoorders2.0-assets/prods/668jWeBrePbn0Lf43aZbqZBJQ7n25qoh6IJAL5ZE.png');
+    appearance: none;
+    padding: 0px 11px!important;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-size: 14px;
+    background-position: 95%;
+}
+@media (max-width:1200px) {
+    body.al_body_template_eight .product-right .product-buttons .btn-outline, .product-right .product-buttons .btn-solid{
+        font-size: 10px;
+    }
+}
+@media (max-width:991px) {
+    .inner_spacing {
+        width: 100% !important;
+        padding: 0!important;
+    }
+    body.al_body_template_nine.p2p-module.p2p_module_enable #summary-table {
+        width: 100%;
+        min-width: 100%;
+        margin:30px;
+    }
+}
 @media (max-width:767px) {
     body.al_body_template_three.dark .sm-horizontal {
         background-color: transparent;
@@ -3472,6 +3688,11 @@ footer#footer {
     }
     .al_body_template_three h2.category-head {
         top: 140px;
+    }
+    body.al_body_template_nine.p2p-module.p2p_module_enable #summary-table {
+        width: 100%;
+        min-width: 100%;
+        margin:30px;
     }
 }
 
@@ -3651,4 +3872,59 @@ body.dark.al_body_template_nine .number input {
     border-left: 1px solid #ffffff;
     border-right: 1px solid #ffffff;
     color: #fff;
+}
+
+
+
+body.al_body_template_nine.p2p-module.p2p_module_enable .readmore__content {
+    display: contents;
+}
+  body.al_body_template_nine.p2p-module.p2p_module_enable button.readmore__toggle {
+    display: inline-block;
+    margin-top: 0;
+    border: none;
+    background: transparent;
+    color: #508c96;
+    padding: 0;
+    cursor: pointer;
+    border-radius: 0;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable section.section-b-space.alSingleProducts.product_ddetails_page h2 {
+    padding: 5px;
+}
+
+
+body.al_body_template_nine.p2p-module.p2p_module_enable #summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 820px;
+    margin: 30px 5rem 30px 7rem;
+    display: inline-table;
+    background-color: #fff;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable #summary-table tr td {
+    padding: 12px 30px;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable #summary-table tr th {
+    padding: 12px 30px;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable section.section-b-space.alSingleProducts.product_ddetails_page .img-outer-box.position-relative {
+    height: auto;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable section.section-b-space.alSingleProducts.product_ddetails_page .img-outer-box.position-relative img {
+    height: 250px;
+    object-fit: cover;
+}
+body.al_body_template_nine.p2p-module section.section-b-space.alSingleProducts.product_ddetails_page .product-card-box.position-relative.al_box_third_template.al:hover {
+    box-shadow: 0px 0px 11px 2px rgb(0 0 0 / 14%) !important;
+    background-color: #fff !important;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable section.section-b-space.alSingleProducts.product_ddetails_page h2 {
+    padding: 0;
+    font-size: 18px;
+    margin: 6px 4px;
+}
+body.al_body_template_nine.p2p-module.p2p_module_enable .item-price {
+    margin: 10px 4px !important;
+    padding:10px 4px !important;
 }

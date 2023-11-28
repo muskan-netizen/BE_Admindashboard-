@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, ProductVariant, MapProvider, Category, Category_translation, ClientLanguage, Variant, Brand, CategoryHistory, Type, CategoryTag, Vendor, DispatcherWarningPage, DispatcherTemplateTypeOption, Product,CategoryTranslation,CategoryKycDocumentMapping,CategoryKycDocuments,CategoryKycDocumentTranslation, Tag,Facilty, RoleOld, CategoryRole, Attribute};
+use App\Models\{AddonSet, Client, ClientPreference, ProductVariant, MapProvider, Category, Category_translation, ClientLanguage, Variant, Brand, CategoryHistory, Type, CategoryTag, Vendor, DispatcherWarningPage, DispatcherTemplateTypeOption, Product,CategoryTranslation,CategoryKycDocumentMapping,CategoryKycDocuments,CategoryKycDocumentTranslation, Tag,Facilty, RoleOld, CategoryRole, Attribute, ClientCurrency};
 use GuzzleHttp\Client as GCLIENT;
 use App\Models\AdditionalAttributeOptionTranslation;
 use App\Models\AdditionalAttributeOption;
@@ -32,6 +32,7 @@ class CategoryController extends BaseController
      */
     public function index()
     {
+     
         $langId = Session::has('adminLanguage') ? Session::get('adminLanguage') : 1;
         $celebrity_check = ClientPreference::first()->value('celebrity_check');
 
@@ -55,7 +56,7 @@ class CategoryController extends BaseController
         }
 
         $categories = Category::with('translation_one','type')->where('id', '>', '1')->where('is_core', 1)->orderBy('parent_id', 'asc')->orderBy('position', 'asc')->where('deleted_at', NULL)->where('status', 1);
-
+   
         if ($celebrity_check == 0)
             $categories = $categories->where('type_id', '!=', 5);   # if celebrity mod off .
 
@@ -66,13 +67,17 @@ class CategoryController extends BaseController
         }
         $tags = Tag::with('primary')->get();
         $facilties = Facilty::with('primary')->get();
-        $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
-            ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
-            ->where('client_languages.client_code', Auth::user()->code)
-            ->where('client_languages.is_active', 1)
-            ->orderBy('client_languages.is_primary', 'desc')->get();
-
-        return view('backend.catalog.index')->with(['categories' => $categories, 'html' => $tree,  'languages' => $langs, 'variants' => $variants, 'brands' => $brands, 'build' => $build, 'tags'=>$tags,'facilties'=>$facilties,'client_languages'=>$langs, 'attributes'=>$attributes]);
+        // $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
+        //     ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
+        //     // ->where('client_languages.client_code', Auth::user()->code)
+        //     ->where('client_languages.is_active', 1)
+        //     ->orderBy('client_languages.is_primary', 'desc')->get();
+        $langs = ClientLanguage::with('language')->select('language_id', 'is_primary', 'is_active')
+            ->where('is_active', 1)
+            ->orderBy('is_primary', 'desc')->get();
+        $addon_sets = AddonSet::with('option')->orderBy('id', 'desc')->get();
+        $clientCurrency = ClientCurrency::select('currency_id')->where('is_primary', 1)->with('currency')->first();
+        return view('backend.catalog.index')->with(['clientCurrency' => $clientCurrency, 'categories' => $categories, 'addon_sets' => $addon_sets ,'html' => $tree,  'languages' => $langs, 'variants' => $variants, 'brands' => $brands, 'build' => $build, 'tags'=>$tags,'facilties'=>$facilties,'client_languages'=>$langs, 'attributes'=>$attributes]);
     }
 
     /**
@@ -87,8 +92,9 @@ class CategoryController extends BaseController
         $category = new Category();
         $preference = ClientPreference::first();
         $type_service =  getCategoryTypesServices();
-        //pr( $type_service);
+       
         $type = Type::whereIn('service_type',$type_service)->orderBY('sequence', 'ASC')->get();
+        // pr( $type);
         // switch($preference->business_type){
         //     case "taxi":
         //     $type =Type::where('title','Pickup/Delivery')->orderBY('sequence', 'ASC')->get();
@@ -108,7 +114,7 @@ class CategoryController extends BaseController
 
 
 
-        $parCategory = Category::with('translation_one')->select('id', 'slug')->where('deleted_at', NULL)->whereIn('type_id', ['1', '3', '6', '8','9','11'])->where('is_core', 1)->where('status', 1)->get();
+        $parCategory = Category::with('translation_one')->select('id', 'slug')->where('deleted_at', NULL)->whereIn('type_id', ['1', '3', '6', '8','9','11','14'])->where('is_core', 1)->where('status', 1)->get();
         $vendor_list = Vendor::select('id', 'name')->where('status', '!=', $this->blocking)->get();
         $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
             ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')
@@ -202,6 +208,7 @@ class CategoryController extends BaseController
             default:
             $type = Type::where('title', '!=', 'Pickup/Parent')->orderBY('sequence', 'ASC')->get();
         }
+        
 
      //   $get_multi_cat = CategoryTranslation::where('category_id',$id)->groupBy('language_id')->orderBY('updated_at','desc')->pluck('id');
 
@@ -220,7 +227,7 @@ class CategoryController extends BaseController
         foreach ($category->translationSetUnique as $key => $value) {
             $existlangs[] = $value->language_id;
         }
-        $parCategory = Category::with('translation_one')->select('id', 'slug')->where('categories.id', '!=', $id)->where('status', '!=', $this->blocking)->whereIn('type_id', ['1', '3', '6', '8','9','11'])->where('deleted_at', NULL)->get();
+        $parCategory = Category::with('translation_one')->select('id', 'slug')->where('categories.id', '!=', $id)->where('status', '!=', $this->blocking)->whereIn('type_id', ['1', '3', '6', '8','9','11','10'])->where('deleted_at', NULL)->get();
         $dispatcher_warning_page_options = DispatcherWarningPage::where('status', 1)->get();
         $dispatcher_template_type_options = DispatcherTemplateTypeOption::where('status', 1)->get();
 
@@ -269,6 +276,7 @@ class CategoryController extends BaseController
      */
     public function update(Request $request, $domain = '', $id)
     {
+       
         $rules = array(
             'slug' => 'required|string|max:30|unique:categories,slug,' . $id,
             'cat_lang.name' => 'required|string|max:60',

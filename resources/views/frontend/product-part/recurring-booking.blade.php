@@ -616,35 +616,35 @@ div#custom_date_recurring {
 <div class="addManualTime">
   <div class="addManualTimeGroup" style="text-align:left;">
       <div class="row mb-3 recurring_booking_warpper">
-          <div class="col-md-2 once">
+          <div class="col-md-4 once mt-1">
               <label class="check_recurring m-0">
                   <span>{{__('Once')}}</span>
                   <input type="radio" name="booking_type" checked value="5">
                   <span class="checkmark"></span>
               </label>
           </div>
-          <div class="col-md-2">
+          <div class="col-md-4 mt-1">
               <label class="check_recurring m-0">
                   <span>{{__('Daily')}}</span>
                   <input type="radio" name="booking_type" value="1">
                   <span class="checkmark"></span>
               </label>
           </div>
-          <div class="col-md-2">
+          <div class="col-md-4 mt-1">
               <label class="check_recurring m-0">
                   <span>{{__('Weekly')}}</span>
                   <input type="radio" name="booking_type" value="2">
                   <span class="checkmark"></span>
               </label>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-4 mt-1">
               <label class="check_recurring m-0">
                   <span>{{__('Monthly')}}</span>
                   <input type="radio" name="booking_type" value="3">
                   <span class="checkmark"></span>
               </label>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-4 mt-1">
               <label class="check_recurring m-0">
                   <span>{{__('Custom')}}</span>
                   <input type="radio" name="booking_type" value="4">
@@ -826,6 +826,7 @@ div#custom_date_recurring {
 
     function formData(action='',start_date='',end_date=''){
         var booking_type = $("input[type='radio'][name='booking_type']:checked").val();
+        
         if(action!=1){
           pushsliceSelected_custom_dates(selected_custom_dates,start_date)
         } 
@@ -833,7 +834,7 @@ div#custom_date_recurring {
             selectedCustomdates:selected_custom_dates,
             startDate:  start_date,
             endDate  :  end_date,
-            action   :  booking_type ,
+            action   :  booking_type ?? '1',
             schedule_time : daily_booking_time,
             month_number : monthNumber,
             weekDay:weeks

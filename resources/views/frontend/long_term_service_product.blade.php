@@ -7,19 +7,19 @@
 
 @section('css')
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"/>
-        <link rel="stylesheet" href="{{ asset('front-assets/css/swiper.min.css') }}" />
-        <link rel="stylesheet" href="{{ asset('front-assets/css/easyzoom.css') }}" />
-        <link rel="stylesheet" href="{{ asset('front-assets/css/main.css') }}" /> -->
+            <link rel="stylesheet" href="{{ asset('front-assets/css/swiper.min.css') }}" />
+            <link rel="stylesheet" href="{{ asset('front-assets/css/easyzoom.css') }}" />
+            <link rel="stylesheet" href="{{ asset('front-assets/css/main.css') }}" /> -->
 
     <link rel="stylesheet" href="{{ asset('css/jquery.exzoom.css') }}">
     <style type="text/css">
         /* .main-menu .brand-logo{display:inline-block;padding-top:20px;padding-bottom:20px}.btn-disabled{opacity:.5;pointer-events:none}.fab{font:normal normal normal 14px/1 FontAwesome;font-size:inherit}
-        #number{display:block}#exzoom{display:none}.exzoom .exzoom_btn a.exzoom_next_btn{right:-12px} .exzoom .exzoom_nav .exzoom_nav_inner{-webkit-transition:all .5s;-moz-transition:all .5s;transition:all .5s}
+            #number{display:block}#exzoom{display:none}.exzoom .exzoom_btn a.exzoom_next_btn{right:-12px} .exzoom .exzoom_nav .exzoom_nav_inner{-webkit-transition:all .5s;-moz-transition:all .5s;transition:all .5s}
 
-        @media screen and (max-width:768px){
-            .exzoom .exzoom_zoom_outer{display:none}
-            }
-        */
+            @media screen and (max-width:768px){
+                .exzoom .exzoom_zoom_outer{display:none}
+                }
+            */
         .border-product.al_disc ol,
         .border-product.al_disc ul {
             padding-left: 30px
@@ -103,13 +103,13 @@
             display: none;
         }
 
- .select2-results__option{
-    width:100%;
-   }
-   .select2-container{
-    width:100%!important;
-   }
+        .select2-results__option {
+            width: 100%;
+        }
 
+        .select2-container {
+            width: 100% !important;
+        }
     </style>
 @endsection
 
@@ -263,11 +263,12 @@
                                                                 {{ !empty($LongTermProducts->long_term_product) ? $LongTermProducts->long_term_product->quantity : '' }}
                                                             </span>
                                                         </h6>
-                                                        
+
                                                         <div class="hsProductTimingDuration">
                                                             <h6 class="product-title mt-0">
                                                                 {{ __('Service Duration') }}:
-                                                                <span class="ml-2"> {{ $product->service_duration . __(' Months') }}</span>
+                                                                <span class="ml-2">
+                                                                    {{ $product->service_duration . __(' Months') }}</span>
                                                             </h6>
                                                         </div>
                                                     </div>
@@ -281,7 +282,8 @@
                                                     <div class="row addon-product mb-2">
                                                         @foreach ($LongTermProducts->addOn as $row => $addon)
                                                             @if (array_key_exists($addon->addon_id, $LongTermProducts->product_addon))
-                                                                <div class="col-md-12 d-flex justify-content-between align-items-center">
+                                                                <div
+                                                                    class="col-md-12 d-flex justify-content-between align-items-center">
                                                                     <b addon_id="{{ $addon->addon_id }}"
                                                                         class="text-capitalize">{{ $addon->title }}:</b>
                                                                     @if ($addon->setoptions->isNotEmpty())
@@ -307,7 +309,8 @@
                                                                 id="service_period" name="service_period">
                                                                 @foreach (config('constants.Period') as $key => $value)
                                                                     @if (in_array($key, $product->ServicePeriods))
-                                                                        <option value="{{ $key }}" {{ $product_in_cart ? ($product_in_cart->service_period == $key ? 'selected' : '') : '' }}>
+                                                                        <option value="{{ $key }}"
+                                                                            {{ $product_in_cart ? ($product_in_cart->service_period == $key ? 'selected' : '') : '' }}>
                                                                             {{ __($value) }}</option>
                                                                     @endif
                                                                 @endforeach
@@ -315,13 +318,17 @@
                                                         </div>
                                                         <div class="service_date_div col-sm-4">
                                                             <label for="">{{ __('Date') }}</label>
-                                                            <select class="form-control selectize-select" id="service_date"
-                                                                name="date">
+                                                            <select class="form-control selectize-select"
+                                                                id="service_date" name="date">
                                                                 @for ($i = 1; $i <= 28; $i++)
-                                                                    <option value="{{ $i }}" {{ $product_in_cart ? ($product_in_cart->service_date == $i ? 'selected' : '') : '' }}>{{ $i }}
+                                                                    <option value="{{ $i }}"
+                                                                        {{ $product_in_cart ? ($product_in_cart->service_date == $i ? 'selected' : '') : '' }}>
+                                                                        {{ $i }}
                                                                     </option>
                                                                     @if ($i == 28)
-                                                                        <option value="0"  {{ $product_in_cart ? ($product_in_cart->service_date == 0 ? 'selected' : '') : '' }}> {{ __('Last day of month') }}
+                                                                        <option value="0"
+                                                                            {{ $product_in_cart ? ($product_in_cart->service_date == 0 ? 'selected' : '') : '' }}>
+                                                                            {{ __('Last day of month') }}
                                                                         </option>
                                                                     @endif
                                                                 @endfor
@@ -332,33 +339,35 @@
                                                             <select class="form-control selectize-select" id="service_day"
                                                                 name="day">
                                                                 @foreach (config('constants.weekDay') as $dayKey => $day)
-                                                                    <option value="{{ $dayKey }}"  {{ $product_in_cart ? ($product_in_cart->service_day == $dayKey ? 'selected' : '') : '' }}>{{ __($day) }}
+                                                                    <option value="{{ $dayKey }}"
+                                                                        {{ $product_in_cart ? ($product_in_cart->service_day == $dayKey ? 'selected' : '') : '' }}>
+                                                                        {{ __($day) }}
                                                                     </option>
                                                                 @endforeach
                                                             </select>
                                                         </div>
                                                         <div class="service_time_div col-sm-4">
                                                             <label for="">{{ __('Time') }}</label>
-                                                            <input type="time" id="service_start_time" value="{{ $product_in_cart ? $product_in_cart->$product_in_cart  : ''  }}" class="form-control">
+                                                            <input type="time" id="service_start_time"
+                                                                value="{{ $product_in_cart ? $product_in_cart->$product_in_cart : '' }}"
+                                                                class="form-control">
                                                         </div>
-                                                        
+
                                                     </div>
 
                                                 </div>
-                                                
+
 
                                             </div>
                                             <div class="col-3">
                                                 <label for=""></label>
                                                 <a href="#" data-toggle="modal" data-target="#addtocart"
-                                                    class="btn btn-solid  px-2 mt-3 py-1 w-100 {{ $product_in_cart ? 'btn-disabled' : 'addToCart' }}">{{ $product_in_cart ?__('Added') :__('Add To Cart') }}</a>
+                                                    class="btn btn-solid  px-2 mt-3 py-1 w-100 {{ $product_in_cart ? 'btn-disabled' : 'addToCart' }}">{{ $product_in_cart ? __('Added') : __('Add To Cart') }}</a>
                                             </div>
 
                                         </div>
-                                        
-                                        @if (!empty($product->translation) &&
-                                            isset($product->translation[0]) &&
-                                            $product->translation[0]->body_html != '')
+
+                                        @if (!empty($product->translation) && isset($product->translation[0]) && $product->translation[0]->body_html != '')
                                             <div class="border-product al_disc">
                                                 <h6 class="product-title">{{ __('Service Details') }}</h6>
                                                 <p></p>
@@ -376,22 +385,29 @@
                                     <div class="col-sm-12 col-lg-12">
                                         <ul class="nav nav-tabs nav-material" id="top-tab" role="tablist">
                                             <!-- <li class="nav-item"><a class="nav-link active" id="top-home-tab" data-toggle="tab" href="#top-home" role="tab" aria-selected="true"><i class="icofont icofont-ui-home"></i>{{ __('Description') }}</a>
-                                            <div class="material-border"></div>
-                                        </li> -->
+                                                <div class="material-border"></div>
+                                            </li> -->
                                             <!-- <li class="nav-item"><a class="nav-link" id="profile-top-tab" data-toggle="tab"
-                                                href="#top-profile" role="tab" aria-selected="false"><i
-                                                    class="icofont icofont-man-in-glasses"></i>Details</a>
-                                            <div class="material-border"></div>
-                                        </li> -->
-                                        @if($client_preference_detail && $client_preference_detail->rating_check == 1 && count($rating_details)>0)
-                                        <li class="nav-item "><a class="nav-link active" id="review-top-tab" data-toggle="tab" href="#top-review" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Ratings & Reviews')}}</a>
-                                            <div class="material-border"></div>
-                                        </li>
-                                        @endif
+                                                    href="#top-profile" role="tab" aria-selected="false"><i
+                                                        class="icofont icofont-man-in-glasses"></i>Details</a>
+                                                <div class="material-border"></div>
+                                            </li> -->
+                                            @if ($client_preference_detail && $client_preference_detail->rating_check == 1 && count($rating_details) > 0)
+                                                <li class="nav-item "><a class="nav-link active" id="review-top-tab"
+                                                        data-toggle="tab" href="#top-review" role="tab"
+                                                        aria-selected="false"><i
+                                                            class="icofont icofont-contacts"></i>{{ __('Ratings & Reviews') }}</a>
+                                                    <div class="material-border"></div>
+                                                </li>
+                                            @endif
 
-                                        <li class="nav-item ml-3"><a class="nav-link {{(count($rating_details)>0)?'':'active'}}" id="compare-product-tab" data-toggle="tab" href="#compare-product" role="tab" aria-selected="false"><i class="icofont icofont-contacts"></i>{{__('Compare products')}}</a>
-                                            <div class="material-border"></div>
-                                        </li>
+                                            <li class="nav-item ml-3"><a
+                                                    class="nav-link {{ count($rating_details) > 0 ? '' : 'active' }}"
+                                                    id="compare-product-tab" data-toggle="tab" href="#compare-product"
+                                                    role="tab" aria-selected="false"><i
+                                                        class="icofont icofont-contacts"></i>{{ __('Compare products') }}</a>
+                                                <div class="material-border"></div>
+                                            </li>
 
 
                                         </ul>
@@ -404,8 +420,8 @@
                                                 aria-labelledby="profile-top-tab">
                                                 <p>{!! !empty($product->translation) && isset($product->translation[0]) ? $product->translation[0]->body_html : '' !!}</p>
                                             </div>
-                                            <div class="tab-pane show {{(count($rating_details)>0)?'active':''}}" id="top-review" role="tabpanel"
-                                                aria-labelledby="review-top-tab">
+                                            <div class="tab-pane show {{ count($rating_details) > 0 ? 'active' : '' }}"
+                                                id="top-review" role="tabpanel" aria-labelledby="review-top-tab">
                                                 @forelse ($rating_details as $rating)
                                                     <div v-for="item in list"
                                                         class="w-100 d-flex justify-content-between mb-3">
@@ -815,6 +831,7 @@
                         $("#variant_response span").html('');
                         var response = resp.data;
                         if (response.variant != '') {
+                            console.log('test');
                             if (vendor_type == 'rental') {
                                 // $('.incremental_hrs').val(0);
                                 // $('.base_hours_min').val();
@@ -828,6 +845,7 @@
                             let variant_template = _.template($('#variant_template').html());
                             response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response
                                 .variant.productPrice)).toFixed(digit_count);
+                            console.log(response.variant.productPrice);
                             response.variant.compare_at_price = (parseFloat(checkAddOnPrice()) + parseFloat(
                                 response.variant.compare_at_price)).toFixed(digit_count);
                             $("#product_variant_wrapper").append(variant_template({

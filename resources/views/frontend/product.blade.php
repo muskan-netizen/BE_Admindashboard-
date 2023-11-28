@@ -6,6 +6,8 @@
 ])
 @php
 $clientData = \App\Models\Client::select('socket_url')->first();
+
+
 @endphp
 @section('css')
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"/>
@@ -76,6 +78,39 @@ $clientData = \App\Models\Client::select('socket_url')->first();
     .customer_review_item_row  img{width:50px;height: 50px;border-radius:50%;}
     .customer_review_item_row h4{margin-bottom:0;font-size:18px;font-weight:600;padding-left:15px;margin-top:0;}
     .review-images img {width: 100%;max-width: 100px;margin: 10px 10px 10px 0px;}
+    .label-disabled {pointer-events: none;opacity: 0.5;}
+
+    .flex-container {
+    display: flex;
+    justify-content: space-between; /* Distribute items evenly */
+}
+
+.item-price {
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 10px;
+    flex: 1; /* Distribute available space evenly */
+    background-color: #f7f7f7;
+}
+
+#summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 30px 0px;
+}
+#summary-table  > th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+#summary-table > .text-right {
+    text-align: right;
+}
+
+
+  
     </style>
 
 @endsection
@@ -219,22 +254,20 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             @if(!empty($product->media) && count($product->media) > 0)
 
                                                 @foreach($product->media as $k => $image)
-                                                        @php
-                                                            if(isset($image->pimage)){
-                                                                $img = $image->pimage->image;
-                                                            }else{
-                                                                $img = $image->image;
-                                                            }
-                                                        @endphp
+                                                    @php
+                                                        if(isset($image->pimage)){
+                                                            $img = $image->pimage->image;
+                                                        }else{
+                                                            $img = $image->image;
+                                                        }
+                                                    @endphp
                                                 @endforeach
                                                 @if(!is_null($img))
-                                                <img id="main_image" src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}" />
+                                                    <img id="main_image" src="{{@$img->path['image_fit'].'1000/1000'.@$img->path['image_path']}}" />
                                                 @endif
                                                 @else
-
                                                     <img id="main_image" class="blur-up lazyload" data-src="{{loadDefaultImage()}}" alt="">
-
-                                            @endif
+                                                @endif
                                             </ul>
                                         </div>
                                         {{-- @if(count($product->media) > 1)
@@ -268,7 +301,6 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                     </div>
                                     <div id="myresult" class="img-zoom-result"></div>
                                 </div>
-
                                 <div class="@php if(is_category_p2p($product->category)){ echo 'col-lg-6'; }elseif(!empty($product->media) && count($product->media) > 0){ echo 'col-lg-4'; } else { echo 'col-lg-4'; } @endphp rtl-text p-0">
                                     <div class="product-right inner_spacing pl-sm-3 p-0 third-temp-lan">
                                         <h2 class="mb-0">
@@ -295,6 +327,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
 
                                         <div id="product_variant_wrapper">
                                             <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
+                                            @if(Session::get('vendorType') != 'p2p' )
                                             @if($product->inquiry_only == 0)
                                                 <h3 id="productPriceValue" class="mb-md-3">
                                                     @if($additionalPreference ['is_token_currency_enable'])
@@ -310,13 +343,37 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                     @endif
                                                 </h3>
                                             @endif
+                                            @endif
                                         </div>
                                         
                                     @if(!empty($product->translation) && isset($product->translation->first()->body_html))
                                         <div class="border-product al_disc">
                                             <h6 class="product-title">{{__('Product Details')}}</h6>
-                                            <p></p>
-                                            {!! $product->translation->first()->body_html !!}
+                                            
+                                            <?php
+                                            $content = strip_tags($product->translation->first()->body_html); // Strip HTML tags
+                                            $maxContentLength = 200; // Set the maximum length (adjust as needed)
+                                            
+                                            if (strlen($content) > $maxContentLength) {
+                                                $content = substr($content, 0, $maxContentLength) . '...';
+                                                $fullContent = $product->translation->first()->body_html;
+                                                $readMore = true;
+                                            } else {
+                                                $readMore = false;
+                                            }
+                                            ?>
+                                            
+                                            <p>
+                                                <span id="productContent"><?= $content ?></span>
+                                                @if ($readMore)
+                                                  <span id="readMoreButton">
+                                                    <a href="#" id="readMoreLink" class="read-more-button btn btn-solid">Read More</a>
+                                                  </span>
+                                                @endif
+                                              </p>
+                                              
+                                              
+
                                         </div>
                                     @endif
 
@@ -335,29 +392,54 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                         </div>
                                     @endif
                                     @endif
+                                    @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
+
+                                     
+
+                                     @if($product->category->categoryDetail->type_id == 13)
+                                     <div class="border-product al_disc">
+                                        <h6 class="product-title">{{__('Price')}}</h6>
+                                        <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->price)}}</p>
+                                    </div>
+                                     
+                                     @endif
+                                     @if($product->category->categoryDetail->type_id == 10)
+
+                                     <div class="flex-container">
+                                        <div class="item-price">
+                                            <h2>Daily</h2>
+                                            <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->price)}}</p>
+                                        </div>
+                                        <div class="item-price">
+                                            <h2>7 Days+</h2>
+                                            <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->week_price)}}</p>
+                                        </div>
+                                        <div class="item-price">
+                                            <h2>30 Days+</h2>
+                                            <p>{{Session::get('currencySymbol') . decimal_format($product->variant[0]->month_price)}}</p>
+                                        </div>
+                                    </div>
+                                     @endif
+                               
+                                 
+                                    @endif
                                         
-
-
-
                                         @if( is_category_p2p($product->category) || is_attribute_enabled())
-
                                             @if( !empty($attr_array) )
                                                 @foreach($attr_array as $attr_key => $attr_val)
                                                     <div class="container-badge">
-                                                        <div class="value-badge pr-1">{{ $attr_key }} : </div>
+                                                        <div class="value-badge pr-1"><b>{{ $attr_key }} :</b>
                                                         @if( !empty($attr_val) )
-                                                            <div class="container-badge-value">
-                                                                @foreach($attr_val as $inn_key => $inn_val)
+                                                            @foreach($attr_val as $inn_key => $inn_val)
 
-                                                                @if($inn_val['type'] == 2) <!--- for color---->
-                                                                    <span style="background-color: {{$inn_val['hexacode']}}; width: 20px;height: 20px;margin-left: 5px;display: inline-block;border: 1px solid #ccc;"></span>
-                                                                @else
-                                                                    <span> {{$inn_val['value']}}</span>
-                                                                @endif
-                                                                @endforeach
-                                                            </div>
+                                                            @if($inn_val['type'] == 2) <!--- for color---->
+                                                                <span style="background-color: {{$inn_val['hexacode']}}; width: 20px;height: 20px;margin-left: 5px;display: inline-block;border: 1px solid #ccc;"></span>
+                                                            @else
+                                                                <span> {{$inn_val['value']}}</span>
+                                                            @endif
+                                                            @endforeach
                                                         @endif
-
+                                                        </div>
                                                     </div>
                                                 @endforeach
                                             @endif
@@ -365,19 +447,19 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                             {{-- Chat Button --}}
                                             <hr>
                                                 <h6 class="sold-by">
-                                            @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
-                                                    <?php /*<span>Sold by : </span>
-                                                    <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a> */ ?>
-                                                    <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}"><i class="fa fa-comments" aria-hidden="true"></i></a>
-                                                    {{-- {{__('Chat')}} --}}
-                                                
-                                            @endif
-                                            @if(getAdditionalPreference(['call_button'])['call_button'])
-                                                <a class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone-square" aria-hidden="true"></i></a>
-                                                {{-- {{__('Call Button')}} --}}
-                                            @endif
+                                                    @if($clientData->socket_url !='' && getAdditionalPreference(['chat_button'])['chat_button'])
+                                                            <?php /*<span>Sold by : </span>
+                                                            <b> <img class="blur-up lazyload" data-src="{{$product->vendor->logo['image_fit']}}200/200{{$product->vendor->logo['image_path']}}" alt="{{$product->vendor->Name}}"></b> <a href="{{ route('vendorDetail', $product->vendor->slug) }}"><b> {{$product->vendor->name}} </b></a> */ ?>
+                                                            <a class="start_chat chat-icon btn btn-solid"  data-vendor_order_id="" data-chat_type="userToUser" data-vendor_id="{{ $product->vendor->id }}" data-orderid="" data-order_id="" data-product_id="{{ $product->id }}"><i class="fa fa-comments" aria-hidden="true"></i></a>
+                                                            {{-- {{__('Chat')}} --}}
+                                                        
+                                                    @endif
+                                                    @if(getAdditionalPreference(['call_button'])['call_button'])
+                                                        <a class="call-icon btn btn-solid" href="tel:"><i class="fa fa-phone-square" aria-hidden="true"></i></a>
+                                                        {{-- {{__('Call Button')}} --}}
+                                                    @endif
                                                 </h6>
-                                    @endif
+                                        @endif
 
 
                                         @if(((@$product->returnable && @$product->vendor->return_request) || $product->replaceable) && ($product->return_days > 0))
@@ -386,7 +468,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 <p>  <span>{{ $product->return_days }} days return policy is applicable on this product </span> </p>
 
                                             </div>
-                                            @endif
+                                        @endif
                                        
                                         @if(!empty($product->variantSet))
                                             @include('frontend.product-part.product-variant')
@@ -395,121 +477,28 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
 
 
                                         <div id="variant_response">
-                                            <span class="text-danger mb-2 mt-2"></span>
+                                            @if( p2p_module_status() && Session::get('vendorType') == 'p2p' && $product->category->categoryDetail->type_id == 10 )
+                                            <input type="text" class="form-control" name="booking_availability" id="range-datepicker" placeholder="{{date('Y-m-d')}}">
+                                            @endif
                                         </div>
+                                        
 
-                                        @if($product->is_recurring_booking == 1)
-                                            @include('frontend.product-part.recurring-booking')
-                                        @endif
-                                        @if(@getAdditionalPreference(['is_rental_weekly_monthly_price'])['is_rental_weekly_monthly_price'] && $product->category->categoryDetail->type_id == 10)
-                                            @include('frontend.product-part.booking-slot-p2p-rental')
-                                        @elseif($product->category->categoryDetail->type_id == 10)
-                                            @include('frontend.product-part.booking-slot')
-                                        @endif
-
-
-                                        @if(!empty($product->addOn) && $product->addOn->count() > 0)
-                                        <div class="border-product">
-                                            <h6 class="product-title">{{ __('Addon List')}}</h6>
-
-                                            <div id="addon-table">
-                                                @foreach($product->addOn as $row => $addon)
-                                                    <div class="addon-product">
-                                                        <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet mb-2">{{$addon->title}}
-                                                            @php
-                                                                $min_select = '';
-                                                                $minText = __('Minimum');
-                                                                $maxText = __('Maximum');
-                                                                $andText = __('and');
-                                                                if($addon->min_select > 0){
-                                                                    $min_select = $minText.' '.$addon->min_select;
-                                                                }
-                                                                $max_select = '';
-                                                                if($addon->max_select > 0){
-                                                                    $max_select = $maxText.' '.$addon->max_select;
-                                                                }
-                                                                if( ($min_select != '') && ($max_select != '') ){
-                                                                    $min_select = $min_select.' '.$andText.' ';
-                                                                }
-                                                            @endphp
-                                                            @if( ($min_select != '') || ($max_select != '') )
-                                                                <small>({{__($min_select).__($max_select)}} {{ __('Selections Allowed')}})</small>
-                                                            @endif
-                                                        </h4>
-
-                                                        <div class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
-                                                            @foreach($addon->setoptions as $k => $option)
-                                                            <div class="checkbox checkbox-success form-check-inline mb-1">
-                                                                <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}" data-price="{{$option->price * $option->multiplier}}" data-fixed_price="{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}" data-original_price="{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}">
-                                                                @if($additionalPreference ['is_token_currency_enable'])
-                                                                <label class="pl-2 mb-0" for="inlineCheckbox_{{$row.'_'.$k}}" data-toggle="tooltip" data-placement="top" title="{{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price).')' }}">
-                                                                {{$option->title ." ("}}<i class='fa fa-money' aria-hidden='true'></i> {{getInToken($option->price * $option->multiplier).')' }}</label>
-                                                                @else
-                                                                <label class="pl-2 mb-0" for="inlineCheckbox_{{$row.'_'.$k}}" data-toggle="tooltip" data-placement="top" title="{{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price).')' }}">
-                                                                {{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price * $option->multiplier).')' }}</label>
-                                                                @endif
-                                                            </div>
-                                                            @endforeach
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                            </div>
+                                            @if($product->is_recurring_booking == 1)
+                                                 @include('frontend.product-part.recurring-booking')
+                                            @endif
+                                            @if(@getAdditionalPreference(['is_rental_weekly_monthly_price'])['is_rental_weekly_monthly_price'] && $product->category->categoryDetail->type_id == 10 && Session::get('vendorType') == 'rental')
+                                                @include('frontend.product-part.booking-slot-p2p-rental')
+                                            @elseif($product->category->categoryDetail->type_id == 10 && Session::get('vendorType') == 'car_rental')
+                                                @include('frontend.product-part.booking-slot')
+                                            @endif
 
 
-                                            {{--<table class="table table-centered table-nowrap table-striped d-none" id="addon-table">
-                                                <tbody>
-                                                    @foreach($product->addOn as $row => $addon)
-                                                    <tr>
-                                                        <td>
-                                                            <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet">{{$addon->title}}
-                                                                @php
-                                                                    $min_select = '';
-                                                                    if($addon->min_select > 0){
-                                                                        $min_select = 'Minimum '.$addon->min_select;
-                                                                    }
-                                                                    $max_select = '';
-                                                                    if($addon->max_select > 0){
-                                                                        $max_select = 'Maximum '.$addon->max_select;
-                                                                    }
-                                                                    if( ($min_select != '') && ($max_select != '') ){
-                                                                        $min_select = $min_select.' and ';
-                                                                    }
-                                                                @endphp
-                                                                @if( ($min_select != '') || ($max_select != '') )
-                                                                    <small>({{$min_select.$max_select}} {{ __('Selections Allowed')}})</small>
-                                                                @endif
-                                                            </h4>
-                                                        </td>
-                                                    </tr>
-                                                    <tr class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
-                                                        <td>
-                                                            @foreach($addon->setoptions as $k => $option)
-                                                            <div class="checkbox checkbox-success form-check-inline">
-                                                                <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}">
-                                                                <label class="pl-2" for="inlineCheckbox_{{$row.'_'.$k}}">
-                                                                    {{$option->title .' ($'.decimal_format($option->price).')' }}</label>
-                                                            </div>
-                                                            @endforeach
-                                                        </td>
-                                                    </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>--}}
-                                        </div>
-                                        @endif
-
-                                        @if(@Auth::user()->role_id == 3)
+                                            @if(!empty($product->addOn) && $product->addOn->count() > 0)
                                             <div class="border-product">
-                                                <h6 class="product-title">{{ __('Bulk Order')}}</h6>
-                                                <div id="bulk-order-table">
+                                                <h6 class="product-title">{{ __('Addon List')}}</h6>
 
-                                                    @foreach ($product->productVariantByRoles as $key => $data)
-                                                        @if($data->role_id == 3)
-                                                            <h6 bulk_id="{{$data->id}}" class="header-title productAddonSet mb-1">{{__('Greater than or equal to quantity ').$data->quantity.' ( price '.Session::get('currencySymbol').''.$data->amount.' )'}}
-                                                            </h6>
-                                                        @endif
-                                                    @endforeach
-                                                    {{-- @foreach($product->addOn as $row => $addon)
+                                                <div id="addon-table">
+                                                    @foreach($product->addOn as $row => $addon)
                                                         <div class="addon-product">
                                                             <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet mb-2">{{$addon->title}}
                                                                 @php
@@ -532,8 +521,23 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                                     <small>({{__($min_select).__($max_select)}} {{ __('Selections Allowed')}})</small>
                                                                 @endif
                                                             </h4>
+
+                                                            <div class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
+                                                                @foreach($addon->setoptions as $k => $option)
+                                                                <div class="checkbox checkbox-success form-check-inline mb-1">
+                                                                    <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}" data-price="{{$option->price * $option->multiplier}}" data-fixed_price="{{decimal_format($product->variant[0]->price * $product->variant[0]->multiplier)}}" data-original_price="{{decimal_format($product->variant[0]->compare_at_price * $product->variant[0]->multiplier)}}">
+                                                                    @if($additionalPreference ['is_token_currency_enable'])
+                                                                    <label class="pl-2 mb-0" for="inlineCheckbox_{{$row.'_'.$k}}" data-toggle="tooltip" data-placement="top" title="{{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price).')' }}">
+                                                                    {{$option->title ." ("}}<i class='fa fa-money' aria-hidden='true'></i> {{getInToken($option->price * $option->multiplier).')' }}</label>
+                                                                    @else
+                                                                    <label class="pl-2 mb-0" for="inlineCheckbox_{{$row.'_'.$k}}" data-toggle="tooltip" data-placement="top" title="{{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price).')' }}">
+                                                                    {{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price * $option->multiplier).')' }}</label>
+                                                                    @endif
+                                                                </div>
+                                                                @endforeach
+                                                            </div>
                                                         </div>
-                                                    @endforeach --}}
+                                                    @endforeach
                                                 </div>
 
 
@@ -577,7 +581,88 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                     </tbody>
                                                 </table>--}}
                                             </div>
-                                        @endif
+                                            @endif
+
+                                            @if(@Auth::user()->role_id == 3)
+                                                <div class="border-product">
+                                                    <h6 class="product-title">{{ __('Bulk Order')}}</h6>
+                                                    <div id="bulk-order-table">
+
+                                                        @foreach ($product->productVariantByRoles as $key => $data)
+                                                            @if($data->role_id == 3)
+                                                                <h6 bulk_id="{{$data->id}}" class="header-title productAddonSet mb-1">{{__('Greater than or equal to quantity ').$data->quantity.' ( price '.Session::get('currencySymbol').''.$data->amount.' )'}}
+                                                                </h6>
+                                                            @endif
+                                                        @endforeach
+                                                        {{-- @foreach($product->addOn as $row => $addon)
+                                                            <div class="addon-product">
+                                                                <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet mb-2">{{$addon->title}}
+                                                                    @php
+                                                                        $min_select = '';
+                                                                        $minText = __('Minimum');
+                                                                        $maxText = __('Maximum');
+                                                                        $andText = __('and');
+                                                                        if($addon->min_select > 0){
+                                                                            $min_select = $minText.' '.$addon->min_select;
+                                                                        }
+                                                                        $max_select = '';
+                                                                        if($addon->max_select > 0){
+                                                                            $max_select = $maxText.' '.$addon->max_select;
+                                                                        }
+                                                                        if( ($min_select != '') && ($max_select != '') ){
+                                                                            $min_select = $min_select.' '.$andText.' ';
+                                                                        }
+                                                                    @endphp
+                                                                    @if( ($min_select != '') || ($max_select != '') )
+                                                                        <small>({{__($min_select).__($max_select)}} {{ __('Selections Allowed')}})</small>
+                                                                    @endif
+                                                                </h4>
+                                                            </div>
+                                                        @endforeach --}}
+                                                    </div>
+
+
+                                                    {{--<table class="table table-centered table-nowrap table-striped d-none" id="addon-table">
+                                                        <tbody>
+                                                            @foreach($product->addOn as $row => $addon)
+                                                            <tr>
+                                                                <td>
+                                                                    <h4 addon_id="{{$addon->addon_id}}" class="header-title productAddonSet">{{$addon->title}}
+                                                                        @php
+                                                                            $min_select = '';
+                                                                            if($addon->min_select > 0){
+                                                                                $min_select = 'Minimum '.$addon->min_select;
+                                                                            }
+                                                                            $max_select = '';
+                                                                            if($addon->max_select > 0){
+                                                                                $max_select = 'Maximum '.$addon->max_select;
+                                                                            }
+                                                                            if( ($min_select != '') && ($max_select != '') ){
+                                                                                $min_select = $min_select.' and ';
+                                                                            }
+                                                                        @endphp
+                                                                        @if( ($min_select != '') || ($max_select != '') )
+                                                                            <small>({{$min_select.$max_select}} {{ __('Selections Allowed')}})</small>
+                                                                        @endif
+                                                                    </h4>
+                                                                </td>
+                                                            </tr>
+                                                            <tr class="productAddonSetOptions" data-min="{{$addon->min_select}}" data-max="{{$addon->max_select}}" data-addonset-title="{{$addon->title}}">
+                                                                <td>
+                                                                    @foreach($addon->setoptions as $k => $option)
+                                                                    <div class="checkbox checkbox-success form-check-inline">
+                                                                        <input type="checkbox" id="inlineCheckbox_{{$row.'_'.$k}}" class="productDetailAddonOption" name="addonData[$row][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}">
+                                                                        <label class="pl-2" for="inlineCheckbox_{{$row.'_'.$k}}">
+                                                                            {{$option->title .' ($'.decimal_format($option->price).')' }}</label>
+                                                                    </div>
+                                                                    @endforeach
+                                                                </td>
+                                                            </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>--}}
+                                                </div>
+                                            @endif
 
                                         @if($product->same_day_delivery == 1 && $product->next_day_delivery == 1 && $product->hyper_local_delivery == 1)
                                         <div class="enterPincodeMsg desktop-pin-message">
@@ -609,11 +694,17 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                         @endphp
 
                                         @if( $product->category->categoryDetail->type_id != 13 )
-                                        <div class="btn-wrapper">
+                                        <div class="btn-wrapper mt-3">
                                             <div id="product_variant_quantity_wrapper" style="display: <?php echo ($product->category->categoryDetail->type_id == 10) ? 'none':'inline-block'; ?>">
                                                 @if($product->inquiry_only == 0)
                                                 <div class="product-description border-product pb-0">
-                                                    <h6 class="product-title mt-0">{{__('Quantity')}}:
+                                                    <h6 class="product-title mt-0">
+                                                        @if($product->category->categoryDetail->slug == 'yacht')
+                                                        {{__('Seats Booking')}}
+                                                        @else
+                                                        {{__('Quantity')}}
+                                                        @endif
+                                                        :
                                                         @if($product->has_inventory && !$product->variant[0]->quantity > 0 && $product->sell_when_out_of_stock != 1)
                                                             <span id="outofstock" style="color: red;">{{ __('Out of Stock')}}</span>
                                                         @else
@@ -648,6 +739,13 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                                 @endif
 
                                             </div>
+
+                                            @if($product->category && $product->category->categoryDetail->slug == 'yacht')
+                                                <div>
+                                                    <label for="">Pickup Service</label>
+                                                    <input type="checkbox" name="pickup_service" id="pickup_service">
+                                                </div>
+                                            @endif
 
                                             <div class="product-buttons">
 
@@ -730,6 +828,36 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                     </div>
 
                                 </div>
+                                @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="summary-box" style="display:none;">
+                                                <table id="summary-table">
+                                                    <tr>
+                                                        <th>Description</th>
+                                                        <th class="text-right">Amount</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Days <span class="days-count"></span></td>
+                                                        <td class="text-right date-range"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><span class="applied-price"></span> x <span class="days-count"></span> Days</td>
+                                                        <td class="text-right applied-total-amount"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Platform Fee</td>
+                                                        <td class="text-right platform-fee">$200</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>Total</strong></td>
+                                                        <td class="text-right"><strong class="total-amount"></strong></td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                </div>
+                                @endif
                                 @if( !is_category_p2p($product->category) && @$set_template->template_id == '8' )
                                     @include('frontend.product-coupon')
                             @endif
@@ -922,7 +1050,7 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
     <% } %>
 </script>
 <script type="text/template" id="variant_options_template">
-    <% _.each(availableSets, function(type, key){ %>
+    <% _.each(availableSets, function(type, kkey){ %>
         <% if(type.variant_detail.type == 1 || type.variant_detail.type == 2) { %>
             <div class="size-box">
                 <ul class="productVariants">
@@ -1357,15 +1485,21 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     $(document).ready(function() {
         $(".starrate span.ctrl").width($(".starrate span.cont").width());
         $(".starrate span.ctrl").height($(".starrate span.cont").height());
-        $(".color_var").click(function () {
-        	var name  = $(this).attr("data-id");
-            $(".var_"+name).removeClass("var-active");
-            $(this).toggleClass("var-active");
-            });
-        $(".radio_var").click(function () {
-        	var name  = $(this).attr("data-id");
-            $(".radio_"+name).removeClass("radio-active");
-            $(this).toggleClass("radio-active");
+        // $(document).on("click",".color_var", function() {
+        // 	var name  = $(this).attr("data-id");
+        //     $(".var_"+name).removeClass("var-active");
+        //     $(this).toggleClass("var-active");
+        // });
+        // $(document).on("click",".radio_var", function() {
+        // 	var name  = $(this).attr("data-id");
+        //     $(".radio_"+name).removeClass("radio-active");
+        //     //$(this).toggleClass("radio-active");
+        // });
+        $(document).on("click",".radio", function() {
+             var name = $(this).find(".changeVariant").attr("vid");
+            $(`.var_${name}`).removeClass("radio-active");
+            $(this).children().last().addClass("radio-active");
+ 
         });
     });
 </script>
@@ -1377,87 +1511,168 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
     let vendor_id = "{{ $product->vendor_id }}";
     let product_id = "{{ $product->id }}";
     var add_to_cart_url = "{{ route('addToCart') }}";
-    $('.changeVariant').click(function() {
-        updatePrice();
-    });
-    function updatePrice()
-    {
+    $(document).on('click', '.changeVariant', function() {
+        var $this = $(this);
+         
+        // var data_id = $(this).attr('data-variant-id');
+        // // Set session variable
+        // sessionStorage.setItem('selected_variant', data_id);
+        // var myValue = sessionStorage.getItem('selected_variant');
+        var myValue = []; // Initialize an empty array
 
+        $('.selected_variant:checked').each(function() {
+            var value = $(this).attr('data-variant-id'); // Get the value of the 'data' attribute
+            myValue.push(value); // Push the value into the array
+        });
+
+        var variant_val = $(this).val();
+        var option_title = $(this).data('option-title');
+        $('.changeVariant_'+option_title).removeAttr('checked');
+        $this.attr('checked', 'checked');
+       $key =  $(this).data('row-key');
+        updatePrice(myValue ,$key);
+    });
+
+    $(document).on('click', '.selected_variant', function() {
+        var $this = $(this);
+        var option_title = $(this).data('option-title');
+        $('.changeVariant_'+option_title).removeAttr('checked');
+        // $this.attr('checked', 'checked');
+        // var isSelected = $this.is(':checked');
+        // if(isSelected){
+        //     // alert($(this).data('variant-id'));
+        //     $('#prod_variant_id').val($(this).data('variant-id'));
+        // }
+    });
+
+    function updatePrice(myValue ,key){
         var variants = [];
         var options = [];
+        var firstCheckedSelectedTitle = $('.changeVariant:checked').first().parent().data('title');
         $('.changeVariant').each(function() {
-            var that = this;
             if (this.checked == true) {
+                var that = this;
                 variants.push($(that).attr('vid'));
                 options.push($(that).attr('optid'));
             }
         });
-        ajaxCall = $.ajax({
-            type: "post",
-            dataType: "json",
+        $.ajax({
             url: "{{ route('productVariant', $product->sku) }}",
+            type: 'POST',
             data: {
                 "_token": "{{ csrf_token() }}",
                 "variants": variants,
                 "options": options,
+                "selected_variant_title": firstCheckedSelectedTitle,
+                "key": key,
+                'is_variant_checked':myValue
             },
-            beforeSend: function() {
-                if (ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {
-                    ajaxCall.abort();
-                }
-            },
-            success: function(resp) {
-                // console.log(resp);
-                if(resp.status == 'Success'){
-                    $("#variant_response span").html('');
-                    var response = resp.data;
-                    if(response.variant != ''){
-                        if(vendor_type == 'rental'){
-                            // $('.incremental_hrs').val(0);
-                            // $('.base_hours_min').val();
-                            $('.incremental_hrs').val(0);
-                            $('#incremental_hrs_hidden').val(base_hours_min);
-                            $('.incremental-left-minus').click();
-                            //$('#blocktime, #blocktime2').change();
-                        }
-                        // if(additionalPreference != 0){
-                        //     response.variant.productPrice = token_currency * response.variant.productPrice;
-                        // }
-                        $('#product_variant_wrapper').html('');
-                        let variant_template = _.template($('#variant_template').html());
-                        response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count);
-                        response.variant.compare_at_price = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.compare_at_price)).toFixed(digit_count);
-                        $("#product_variant_wrapper").append(variant_template({ Helper: NumberFormatHelper, variant:response.variant, tokenAmount: response.tokenAmount, is_token_enable: response.is_token_enable}));
-                        $('#product_variant_quantity_wrapper').html('');
-                        let variant_quantity_template = _.template($('#variant_quantity_template').html());
-                        $("#product_variant_quantity_wrapper").append(variant_quantity_template({variant:response.variant}));
-                        // console.log(response.variant.quantity);
-                        if(!response.is_available){
-                            $(".addToCart, #addon-table").hide();
-                        }else{
-                            $(".addToCart, #addon-table").show();
-                        }
-                        let variant_image_template = _.template($('#variant_image_template').html());
-                        $(".product__carousel .gallery-parent").html('');
-                        $(".product__carousel .gallery-parent").append(variant_image_template({variant:response.variant}));
-                        // easyZoomInitialize();
-                        // $('.easyzoom').easyZoom();
-
-                        if(response.variant.media != ''){
-                            $(".product-slick").slick({ slidesToShow: 1, slidesToScroll: 1, arrows: !0, fade: !0, asNavFor: ".slider-nav" });
-                            $(".slider-nav").slick({ vertical: !1, slidesToShow: 3, slidesToScroll: 1, asNavFor: ".product-slick", arrows: !1, dots: !1, focusOnSelect: !0 });
-                        }
+            success: function(response) {
+                if(response.status == "Success"){
+                    if(response.html != ''){
+                        $("#variant_options").html('');
+                        $("#variant_options").html(response.html);
+                        $('#prod_variant_id').val(response.selected_variant.product_variant_id);                     
                     }
-                }else{
-                    $("#variant_response span").html(resp.message);
-                    $(".addToCart, #addon-table").hide();
-                }
-            },
-            error: function(data) {
 
+                    if(response.selected_variant.price != null){
+                        let price = parseFloat(response.selected_variant.price);
+                        let compare_at_price = parseFloat(response.selected_variant.compare_at_price);  
+                        $('.product_fixed_price').html(price.toFixed(2));
+                        $('.product_original_price').html(compare_at_price.toFixed(2));
+                    }
+                   
+                }
+                // Handle the successful response
             },
+            error: function(xhr) {
+                console.log(xhr);
+                // Handle the error
+            }
         });
     }
+
+
+    // function updatePrice(){
+    //     var variants = [];
+    //     var options = [];
+    //     var selected_variant_title = "";
+    //     $('.changeVariant').each(function() {
+    //         var that = this;
+    //         if (this.checked == true) {
+    //             variants.push($(that).attr('vid'));
+    //             options.push($(that).attr('optid'));
+    //             selected_variant_title = $(that).parent().attr('data-title');
+    //         }
+    //     });
+    //     ajaxCall = $.ajax({
+    //         type: "post",
+    //         dataType: "json",
+    //         url: "{{ route('productVariant', $product->sku) }}",
+    //         data: {
+    //             "_token": "{{ csrf_token() }}",
+    //             "variants": variants,
+    //             "options": options,
+    //             "selected_variant_title": selected_variant_title
+    //         },
+    //         beforeSend: function() {
+    //             if (ajaxCall != 'ToCancelPrevReq' && ajaxCall.readyState < 4) {
+    //                 ajaxCall.abort();
+    //             }
+    //         },
+    //         success: function(resp) {
+    //             console.log(resp);
+    //             if(resp.status == 'Success'){
+    //                 $("#variant_response span").html('');
+    //                 var response = resp.data;
+    //                 if(response.variant != ''){
+    //                     if(vendor_type == 'rental'){
+    //                         // $('.incremental_hrs').val(0);
+    //                         // $('.base_hours_min').val();
+    //                         $('.incremental_hrs').val(0);
+    //                         $('#incremental_hrs_hidden').val(base_hours_min);
+    //                         $('.incremental-left-minus').click();
+    //                         //$('#blocktime, #blocktime2').change();
+    //                     }
+    //                     // if(additionalPreference != 0){
+    //                     //     response.variant.productPrice = token_currency * response.variant.productPrice;
+    //                     // }
+    //                     $('#product_variant_wrapper').html('');
+    //                     let variant_template = _.template($('#variant_template').html());
+    //                     response.variant.productPrice = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.productPrice)).toFixed(digit_count);
+    //                     response.variant.compare_at_price = (parseFloat(checkAddOnPrice()) + parseFloat(response.variant.compare_at_price)).toFixed(digit_count);
+    //                     $("#product_variant_wrapper").append(variant_template({ Helper: NumberFormatHelper, variant:response.variant, tokenAmount: response.tokenAmount, is_token_enable: response.is_token_enable}));
+    //                     $('#product_variant_quantity_wrapper').html('');
+    //                     let variant_quantity_template = _.template($('#variant_quantity_template').html());
+    //                     $("#product_variant_quantity_wrapper").append(variant_quantity_template({variant:response.variant}));
+    //                     // console.log(response.variant.quantity);
+    //                     if(!response.is_available){
+    //                         $(".addToCart, #addon-table").hide();
+    //                     }else{
+    //                         $(".addToCart, #addon-table").show();
+    //                     }
+    //                     let variant_image_template = _.template($('#variant_image_template').html());
+    //                     $(".product__carousel .gallery-parent").html('');
+    //                     $(".product__carousel .gallery-parent").append(variant_image_template({variant:response.variant}));
+    //                     // easyZoomInitialize();
+    //                     // $('.easyzoom').easyZoom();
+
+    //                     if(response.variant.media != ''){
+    //                         $(".product-slick").slick({ slidesToShow: 1, slidesToScroll: 1, arrows: !0, fade: !0, asNavFor: ".slider-nav" });
+    //                         $(".slider-nav").slick({ vertical: !1, slidesToShow: 3, slidesToScroll: 1, asNavFor: ".product-slick", arrows: !1, dots: !1, focusOnSelect: !0 });
+    //                     }
+    //                 }
+    //             }else{
+    //                 $("#variant_response span").html(resp.message);
+    //                 $(".addToCart, #addon-table").hide();
+    //             }
+    //         },
+    //         error: function(data) {
+
+    //         },
+    //     });
+    // }
+    
     function checkAddOnPrice()
     {
         price  = 0;
@@ -1526,12 +1741,64 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
                 $('#review-rating-form-modal').html(markup);
             });
         });
+
+
+        var enableDates = {!! $productAvailability !!};
+     
+        
+        
+        if (typeof enableDates === 'string') {
+            enableDates = enableDates.split(',').map(function(dateString) {
+                return dateString.trim();
+            });
+        }
+        $("#range-datepicker").flatpickr({
+                dateFormat: "Y-m-d",
+                mode: "range",
+                enable : enableDates,
+                onChange: function (selectedDates, dateStr, instance) {
+                    // Update the summary-data template
+                    updateSummary(selectedDates);
+                }
+            });
+            // Function to update summary data
+            function updateSummary(selectedDates) {
+                const startDate = selectedDates[0];
+                const endDate = selectedDates[selectedDates.length - 1];
+                const days = Math.round((endDate - startDate) / (24 * 60 * 60 * 1000)) + 1;
+                
+
+              
+                let dailyRate;
+                if (days < 7) {
+                    dailyRate = {{$product->variant[0]->price}};
+                } else if (days >= 7 && days < 30) {
+                    dailyRate = {{$product->variant[0]->week_price ?? 0 }};
+                } else {
+                    dailyRate = {{$product->variant[0]->month_price ?? 0 }};
+                }
+                const totalAmount = days * dailyRate ;
+
+             
+                // Update values in the template
+                $(".summary-box").show();
+                $(".days-count").text(days);
+                $(".applied-total-amount").text(showCurrencySymbol(days * dailyRate));
+                $(".applied-price").text(showCurrencySymbol(dailyRate));
+                $(".date-range").text(startDate.toDateString() + " - " + endDate.toDateString());
+                $(".total-amount").text(showCurrencySymbol(totalAmount));
+            }
+            function showCurrencySymbol(amount){
+                return "{{Session::get('currencySymbol')}}" + amount;
+            }
     });
 </script>
 
 
 <script>
     var timeout= null;
+    var width =250;
+    var height = 250;
     function imageZoom(imgID, resultID) {
         var img, lens, result, cx, cy;
         img = document.getElementById(imgID);
@@ -1542,8 +1809,8 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
         /*insert lens:*/
         img.parentElement.insertBefore(lens, img);
         /*calculate the ratio between result DIV and lens:*/
-        cx = result.offsetWidth / lens.offsetWidth;
-        cy = result.offsetHeight / lens.offsetHeight;
+        cx = result.offsetWidth / width;
+        cy = result.offsetHeight / height;
         console.log(cx+4);
         /*set background properties for the result DIV:*/
 
@@ -1565,9 +1832,9 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
           x = pos.x - (lens.offsetWidth / 2);
           y = pos.y - (lens.offsetHeight / 2);
           /*prevent the lens from being positioned outside the image:*/
-          if (x > img.width - lens.offsetWidth) {x = img.width - lens.offsetWidth;}
+          if (x > img.width - lens.offsetWidth) {x = img.width - width;}
           if (x < 0) {x = 0;}
-          if (y > img.height - lens.offsetHeight) {y = img.height - lens.offsetHeight;}
+          if (y > img.height - lens.offsetHeight) {y = img.height - height;}
           if (y < 0) {y = 0;}
           /*set the position of the lens:*/
           lens.style.left = x + "px";
@@ -1649,6 +1916,27 @@ $fetchDe = 'fetchRoomByUserIdUserToUser';
             $("#show_product_text_more").attr("style", "display:none");
         }
 
+
+        document.addEventListener("DOMContentLoaded", function() {
+        var content = document.getElementById("productContent");
+        var readMoreLink = document.getElementById("readMoreLink");
+        var fullContent = <?= json_encode($fullContent ?? "") ?>;
+        var isFullContentDisplayed = false;
+
+    if (readMoreLink) { // Check if readMoreLink exists
+        readMoreLink.addEventListener("click", function(e) {
+            e.preventDefault();
+            if (isFullContentDisplayed) {
+                content.innerHTML = <?= json_encode($content ?? "") ?>;
+                readMoreLink.innerText = "Read More";
+            } else {
+                content.innerHTML = fullContent;
+                readMoreLink.innerText = "Read Less";
+            }
+            isFullContentDisplayed = !isFullContentDisplayed;
+        });
+    }
+});
 
         </script>
 

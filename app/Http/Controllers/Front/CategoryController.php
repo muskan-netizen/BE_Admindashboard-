@@ -17,6 +17,7 @@ use App\Models\{Currency, CategoryKycDocuments,Banner, Category, Brand, Product,
 use Redirect;
 use Log;
 use \App\Http\Traits\{VendorTrait};
+use App\Models\Client as ModelsClient;
 class CategoryController extends FrontController{
     private $field_status = 2;
     use \App\Http\Traits\DispatcherSlot,VendorTrait;
@@ -188,11 +189,14 @@ class CategoryController extends FrontController{
      *
      * @return \Illuminate\Http\Response
      */
-    public function categoryProduct(Request $request, $domain = '',$slug = 0)
+    public function categoryProduct(Request $request, $domain = '', $slug = 0, $service = null)
     {        
-        
+  
         //$preferences = Session::get('preferences');
-        $vendorType = Session::get('vendorType');
+        if(!empty($service) && $service == 'pick_drop'){
+            Session::forget('vendorType');
+            $vendorType = Session::put('vendorType', $service);
+        }
         $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'):  getClientPreferenceDetail();
         $langId = Session::get('customerLanguage');
         $curId = Session::get('customerCurrency');
@@ -219,6 +223,7 @@ class CategoryController extends FrontController{
             $child->translation_name = ($child->translationLatest) ? $child->translationLatest->name : $child->slug;
         }
         $service_type = $category->type->service_type;
+        
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && (isset($category->type_id)) && !in_array($category->type_id,[4,5]) ){
             $latitude = Session::get('latitude');
             $longitude = Session::get('longitude');
@@ -303,6 +308,7 @@ class CategoryController extends FrontController{
         $redirect_to = $category->type->redirect_to;
         
         $listData = $this->listData($langId, $category->id, $redirect_to,$vendorIds,false);
+        
         $maxPrice = DB::select("SELECT MAX(product_variants.price) as max_price FROM product_variants INNER JOIN products ON products.id = product_variants.product_id WHERE product_variants.status = 1 AND products.is_live = 1 AND products.category_id = ?", [$category->id])[0]->max_price;
         $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';
         // $newProducts =  $this->getNewProducts($vendorIds, $langId, $curId);
@@ -322,8 +328,9 @@ class CategoryController extends FrontController{
             }
         }
         
+       
         $newProducts = [];
-        if($page == 'pickup/delivery'){
+        if($page == 'pickup/delivery' || $page == 'product' && $slug == 'yacht'){
             if(!Auth::user()){
                 return redirect()->route('customer.login');
             }else{
@@ -367,8 +374,10 @@ class CategoryController extends FrontController{
             $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
             return view('frontend.ondemand.index')->with(['maxPrice'=>$maxPrice,'clientCurrency' => $clientCurrency,'time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
         }else{
+
             if($page == 'laundry' || $service_type == 'rental_service')
                 $page = 'product';
+                
             if(view()->exists('frontend/cate-'.$page.'s')){
                 return view('frontend/cate-'.$page.'s')->with(['maxPrice'=>$maxPrice,'listData' => $listData, 'category' => $category, 'navCategories' => $navCategories, 'newProducts' => $newProducts, 'variantSets' => $variantSets, 'productAttributes'=> $productAttributes]);
             }else{
@@ -528,7 +537,7 @@ class CategoryController extends FrontController{
      */
     public function categoryVendorProducts(Request $request, $domain = '', $slug1 = 0, $slug2 = 0)
     {
-        
+   
         // slug1 => category slug
         // slug2 => vendor slug
         $maxPrice = 0;
@@ -850,16 +859,21 @@ class CategoryController extends FrontController{
             $last_mile_check       = $product ? $product->Requires_last_mile  : '';
             $vendorStartDate       = $vendorStartTime  = '';
             $slotsDate = findSlot('',$product->vendor_id,'','webFormet');
+
+            
             if($slotsDate){
                 $vendorStartDate = (($slotsDate)?$slotsDate['date']:'');
                 $vendorStartTime = (($slotsDate)?$slotsDate['time']:'');
             }
+      
             // ch
             if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ( $last_mile_check ==1) ){ 
                 $Dispatch =  $this->getDispatchAppointmentDomain();
                 $dispatchAgents = [];
                 $cart_product_id = $request->cart_product_id??0;
                 if($Dispatch){
+                   $unique = ModelsClient::first()->code;
+                   $email =  $unique.$product->vendor->id."_royodispatch@dispatch.com"; 
                    $vendor_latitude =  $product->vendor ? $product->vendor->latitude : 30.71728880;
                    $vendor_longitude =  $product->vendor ? $product->vendor->longitude : 76.80350870;
                     $location[] = array(
@@ -876,7 +890,8 @@ class CategoryController extends FrontController{
                         'longitude'        => $vendor_longitude,
                         'service_time'     => $product->minimum_duration_min,
                         'schedule_date'    => $request->cur_date,
-                        'slot_start_time'  => $vendorStartTime
+                        'slot_start_time'  => $vendorStartTime,
+                        'team_email'       => $email
                     ];
                     $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
                 }
@@ -905,8 +920,10 @@ class CategoryController extends FrontController{
         
         $slots = showSlot($date,$request->product_vendor_id,'delivery');
 
-      
-
+        
+        $vendor = Vendor::where('id', $product->vendor_id)->select('show_slot')->first();
+     
+        
         $time_slots = [];
         if(!empty($slots)){
             $time_slots = $slots;
@@ -917,19 +934,26 @@ class CategoryController extends FrontController{
             // }
         }else{
             $end_time = date('Y-m-d 23:59');
-            $timing   = $this->SplitTime($curr_time, $end_time, "60");
-            foreach ($timing as $k=> $slt) {
-                if($k+1 < count($timing)){
-                    $viewSlot['name'] = date('h:i:A', strtotime($slt)).' - '.date('h:i:A', strtotime($timing[$k+1]));
-                    $viewSlot['value'] = $slt.' - '.$timing[$k+1]; 
-                    $time_slots[] =  $viewSlot;
+            if($vendor->show_slot == 1)
+            { 
+                $timing   = $this->SplitTime($curr_time, $end_time, "60");
+                foreach ($timing as $k=> $slt) {
+                    if($k+1 < count($timing)){
+                        $viewSlot['name'] = date('h:i:A', strtotime($slt)).' - '.date('h:i:A', strtotime($timing[$k+1]));
+                        $viewSlot['value'] = $slt.' - '.$timing[$k+1]; 
+                        $time_slots[] =  $viewSlot;
+                    }
                 }
+
             }
+           
           //$time_slots  // this is for static slots 
         }
 
         //pr($time_slots);
         $cart_product_id = $request->cart_product_id??0;
+
+     
         if ($request->ajax()) {
            return \Response::json(\View::make('frontend.ondemand.time-slots-for-date', array('time_slots' => $time_slots,'cart_product_id'=> $cart_product_id))->render());
         }

@@ -24,7 +24,7 @@ use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Http\Controllers\ShiprocketController;
 
-use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, CartProductPrescription, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, VerificationOption, TaxRate,VendorMinAmount, WebStylingOption, ProcessorProduct,OrderFiles};
+use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, CartProductPrescription, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, BookingOption, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, CartBookingOption, CartRentalProtection, VerificationOption, TaxRate,VendorMinAmount, WebStylingOption, ProcessorProduct,OrderFiles, ProductBookingOption, ProductRentalProtection, RentalProtection};
 
 use GuzzleHttp\Client as GCLIENT;
 use Log;
@@ -49,7 +49,7 @@ class CartController extends BaseController
             $cart = $cart->first();
             $cartData = [];
             if ($cart) {
-
+                
                 $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
 
                 if(isset($cart->editingOrder) && !empty($cart->editingOrder) && !empty($cartData))
@@ -124,7 +124,6 @@ class CartController extends BaseController
     /**     * Add product In Cart    *           */
     public function add(Request $request)
     {
-
         try {
             $preference = ClientPreference::first();
             $luxury_option = LuxuryOption::where('title', $request->type)->first();            
@@ -157,10 +156,13 @@ class CartController extends BaseController
                 'is_gift' => 0,
                 'status' => '0',
                 'item_count' => 0,
-                'user_id' => $user->id,
+                'user_id' => $user->id, 
                 'created_by' => $user->id,
                 'unique_identifier' => $unique_identifier,
                 'currency_id' => $client_currency->currency_id,
+                'scheduled_date_time' =>  $request->has('scheduled_date_time') ? $request->scheduled_date_time : null,
+                'schedule_type' =>  $request->has('schedule_type') ? $request->schedule_type : null,
+                'scheduled_slot' =>  $request->has('schedule_slot') ? $request->schedule_slot : null
             ];
             if (!empty($user_id)) {
                 $cart_detail = Cart::updateOrCreate(['user_id' => $user->id], $cart_detail);
@@ -263,6 +265,23 @@ class CartController extends BaseController
                         'message' => 'You can select maximum ' . $addon->min_select . ' options of ' . $addon->title,
                         'data' => $addon
                     ], 404);
+                }
+            }
+
+            if($request->has('rental_protection')){
+                $saveProtections = [];
+                foreach($request->rental_protection as $protectionId){
+                    $rentalProtection = RentalProtection::find($protectionId);
+                    if($rentalProtection){
+                        $saveProtections[] = [
+                            'cart_id' => $cart_detail->id,
+                            'rental_protection_id' => $rentalProtection->id,
+                            'product_id' => $product->id,
+                        ];
+                    }
+                }
+                if(!empty($saveProtections)){
+                    CartRentalProtection::insert($saveProtections);
                 }
             }
 
@@ -614,6 +633,8 @@ class CartController extends BaseController
         $cartProductVendor_id = @$cartProduct->vendor_id??null;
         $cartProduct->delete();
         $totalProducts = CartProduct::where('cart_id', $cart->id)->sum('quantity');
+        CartRentalProtection::where('cart_id', $cart->id)->delete();
+        CartBookingOption::where('cart_id', $cart->id)->delete();
         if (!$totalProducts || $totalProducts < 1) {
             $cart->delete();
 
@@ -660,7 +681,7 @@ class CartController extends BaseController
     /**         *      Cart  Date      *          */
     public function getCart($cart, $langId = '1', $currency = '1', $type = 'delivery',$code = 'D')
     {
-           
+   
          try{
         $container_charges_tax = 0;
         $deliver_fee_charges_tax = 0;
@@ -727,10 +748,14 @@ class CartController extends BaseController
                 $qry->select('addon_options.id', 'addon_options.price', 'apt.title', 'addon_options.addon_id', 'apt.language_id');
                 $qry->where('apt.language_id', $langId)->groupBy(['addon_options.id', 'apt.language_id']);
             }, 'vendorProducts.product.taxCategory.taxRate',
+            'vendorProducts.product.cartRentalProtections',
+            'vendorProducts.product.bookingOptions.bookingOption',
+            'vendorProducts.product.cartBookingOptions.bookingOption',
         ]);
-
-        $cartData = $cartData->select('vendor_id', 'vendor_dinein_table_id','dispatch_agent_id', 'is_cart_checked')->where('status', [0, 1])->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
         
+        $cartData = $cartData->select('vendor_id', 'vendor_dinein_table_id','dispatch_agent_id', 'is_cart_checked')->where('status', [0, 1])->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
+    
+
         $taxes=TaxRate::all();
         $taxRates=array();
         foreach($taxes as $tax){
@@ -739,7 +764,6 @@ class CartController extends BaseController
 
         $client_timezone = DB::table('clients')->first('timezone');
         $user_timezone = $client_timezone->timezone ?? 'Asia/Kolkata';
-
         $loyalty_amount_saved = 0;
         $subscription_features = array();
         $user_subscription = null;
@@ -801,6 +825,9 @@ class CartController extends BaseController
             $PromoDelete = 0;
             $couponApplied = 0;
             $total_container_charges = 0 ;
+            $rentalProtection = 0;
+            $bookingOption = 0 ;
+            $securityAmount = 0;
 
             $total_markup_charges = 0 ;
             $deliver_fee_charges = 0;
@@ -911,7 +938,26 @@ class CartController extends BaseController
                     }
                 }
                 foreach ($vendorData->vendorProducts as $pkey => $prod) {
-                    $vendorData->product_address = $prod->product->address ?? '';
+                    $fields = [];
+                    foreach ($prod->product->ProductAttribute as $productAttribute) {
+                        if ($productAttribute->attributeOption()->exists()) {
+                            if(!empty($title = $productAttribute->attributeOption->title)){
+                                $fields[$productAttribute->key_name] = $title;
+                            }else{
+                                $fields[$productAttribute->key_name] = $productAttribute->key_value;
+                            }
+                        }
+                    }
+                    $prod->product->transmission = $fields['Transmission'] ?? '';
+                    $prod->product->fuel_type = $fields['Fuel Type'] ?? '';
+                    $prod->product->Seats = $fields['Seats'] ?? '' .' Seats';
+                    $prod->product->cabins = $fields['Cabins'] ?? '' .' Cabins';
+                    $prod->product->baths = $fields['Baths'] ?? '' .'Baths';
+
+                    $rentalProtection += $prod->product->cartRentalProtections->rentalProtection->price ?? 0;
+                    $bookingOption += $prod->product->cartBookingOptions->bookingOption->price ?? 0;
+                    $securityAmount += $prod->product->security_amount ?? 0;
+
                     //mohit sir branch code updated by sohail farm meat
                     if ($action == 'takeaway') {
                         $processorProduct = ProcessorProduct::where('product_id', $prod->product_id)->first();
@@ -1211,6 +1257,7 @@ class CartController extends BaseController
                                 }
                             }
                             $prod->taxdata = $taxData;
+                            // if($prod->product->)
                             if ( (in_array($action,['delivery','on_demand']) )  && ( $is_service_product_price_from_dispatch !=1 )) {
                                 $checkLastMile = 0;
                                 $product_tags = '';
@@ -1728,7 +1775,6 @@ class CartController extends BaseController
             ['label' => "Total ".@$taxData[0]['identifier']." amount", 'value' => decimal_format($total_taxable_amount)]
         );
 
-
         $cart->total_service_fee = decimal_format($total_service_fee);
         $cart->total_container_charges = decimal_format($total_container_charges);
         $cart->total_markup_charges = decimal_format($total_markup_charges);
@@ -1763,7 +1809,7 @@ class CartController extends BaseController
             $loyalty_amount_saved = $temp_total_paying;
             $cart->total_payable_amount = 0.00;
         } else {
-            $cart->total_payable_amount = ($total_paying  + $cart->total_tax) - ($total_disc_amount + $loyalty_amount_saved);
+            $cart->total_payable_amount = ($total_paying  + $cart->total_tax) -   ($total_disc_amount + $loyalty_amount_saved);
         }
         
         /* if($total_taxable_amount>0){
@@ -1807,17 +1853,20 @@ class CartController extends BaseController
             $cart->deliver_status = $delivery_status;
         }
         $cart->loyalty_amount = $loyalty_amount_saved;
-
-
+        
         if (isset($cart_product_luxury_id) && isset($cart_product_luxury_id->luxury_option_id) && $cart_product_luxury_id->luxury_option_id ==4) {
-        $additional_price= isset($prod->pvariant)  && $prod->pvariant->incremental_price_per_min > 0 ? ($cart_product_luxury_id->additional_increments_hrs_min/$prod->pvariant->incremental_price_per_min) : 0;
-        $cart->total_payable_amount= number_format((float)$cart->total_payable_amount+$additional_price, 2, '.', '');
-        $cart->additional_price=$additional_price;
+            if($cart_product_luxury_id->additional_increments_hrs_min && $prod->pvariant->incremental_price_per_min){
+                $additional_price = ($cart_product_luxury_id->additional_increments_hrs_min / $prod->pvariant->incremental_price_per_min);
+                $cart->total_payable_amount = number_format((float)$cart->total_payable_amount + $additional_price, 2, '.', '');
+                $cart->additional_price = $additional_price;
+            }
         }
         else{
             $cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
         }
-        $cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
+        
+        $cart->total_payable_amount += ($securityAmount + $rentalProtection + $bookingOption);
+        //$cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
         
         //mohit sir branch code updated by sohail farm meat
         $pendingAmount = 0;
@@ -1831,6 +1880,7 @@ class CartController extends BaseController
             $totalAmount = $cart->total_payable_amount;
             $cart->total_payable_amount = $advancePayableAmount;
         }
+
         // $cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
         $cart->total_amount= number_format((float)$totalAmount, 2, '.', '');
         $cart->advance_payable_amount= number_format((float)$advancePayableAmount, 2, '.', '');
@@ -1862,10 +1912,11 @@ class CartController extends BaseController
         return $cart;
 
 
-        }catch(\Exception $ex)
-        {
+     }catch(\Exception $ex)
+     {
+         \Log::info($ex->getMessage());
             return [];
-        }
+     }
     }
 
     public function uploadPrescriptions(Request $request){
@@ -1901,7 +1952,9 @@ class CartController extends BaseController
         //type must be a : delivery , takeaway,dine_in
         $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
         $duration = $duration->slot_minutes??'';
+        
         $slots = showSlot($request->date,$vendorId,$delivery,$duration, 1, 'pickup',$cartId); // Added 1 for pickup
+       
         if(count($slots)<=0){
             $slot = [];
         }else{
@@ -2492,4 +2545,53 @@ class CartController extends BaseController
         return response()->json(['status'=>'Success', 'message'=>'Success']);
      }
 
+     public function updateCartWalletAmount(Request $request)
+    {
+        try {
+            $cart = Cart::findOrFail($request->cart_id);
+            $cart->update(['pay_via_wallet' => $request->paid_via_wallet]);
+
+            return response()->json([
+                "message" => __("Wallet amount added successfully."),
+                'data' => array(),
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => __('User cart not exist.')], 404);
+        }
+    }
+     public function getRentalProtection(Request $request){
+        $protection = ProductRentalProtection::with('rentalProtection')->where('product_id', $request->product_id);
+        $addon = AddonSet::with('option', 'translation')->where('vendor_id', $request->vendor_id)->where('status',1)->get();
+        $included = clone $protection;
+        $data['included'] = $protection->where('type_id', 1)->get();
+        $data['excluded'] = $included->where('type_id', 2)->get();
+        $data['addons'] = $addon;
+        return response()->json(['status'=>'Success', 'data' => $data]);
+     }
+
+     public function addBookingOptionToCart(Request $request){
+        $bookingOption = BookingOption::where('id', $request->booking_option_id)->firstOrFail();
+
+        if(empty($bookingOption)){
+            return response()->json(['status'=>'error', 'message' => 'Booking Option not found'], 404);
+        }
+
+        $cartBookingOption = CartBookingOption::where([
+            'product_id' => $request->product_id,
+            'booking_option_id' =>$request->booking_option_id,
+            'cart_id' => $request->cart_id
+        ])->first();
+
+        if(!empty($cartBookingOption)){
+            $cartBookingOption->delete();
+            return response()->json(['status'=>'Success', 'data' => 'Booking Option has been deleted successfully'], 200);
+        }
+        
+        $cartBookingOption = new CartBookingOption();
+        $cartBookingOption->product_id = $request->product_id;
+        $cartBookingOption->booking_option_id = $bookingOption->id;
+        $cartBookingOption->cart_id = $request->cart_id;
+        $cartBookingOption->save();
+        return response()->json(['status'=>'Success', 'data' => 'Booking Option has been updated successfully'], 200);
+     }
 }

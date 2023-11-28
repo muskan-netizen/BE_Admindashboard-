@@ -271,9 +271,50 @@ body .rating-form .btn-reset {
 </div> -->
 
 {{-- @if(auth()->user()->can('vendor-setting') || auth()->user()->is_superadmin) --}}
+
 @php
-    $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery']);
+    $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery','is_marg_enable','is_vendor_marg_configuration']);
 @endphp
+
+@if(Auth::user()->is_admin == 1 && isset($getAdditionalPreference['is_vendor_marg_configuration']) && $getAdditionalPreference['is_vendor_marg_configuration'] == '1')
+    <div class="card-box cate-vendor">
+        <div class="row text-left">
+            <div class="col-md-12">
+                <a class="" href="{{ route('vendor.margConfig',$vendor->id) }}">
+                @php
+                    $vendormenu = getNomenclatureName('Marg Configuration', true);
+                @endphp 
+                    <span>{{ __('Marg Configuration') }}</span>
+                </a>
+            </div>
+        </div>
+    </div>
+@endif
+@if( p2p_module_status())
+<div class="card-box">
+    <div class="row text-left">
+        <div class="col-md-12">
+            <form name="config-form" action="{{route('vendor.config.update', $vendor->id)}}" class="needs-validation" id="slot-configs" method="post">
+                @csrf
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="mb-2 "> <span class="">{{ __("Settings") }}</span></h4>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        {!! Form::label('title', __('24*7 Availability'),['class' => 'control-label']) !!}
+                        <input type="checkbox" data-plugin="switchery" name="show_slot" class="form-control" data-color="#43bee1" @if($vendor->show_slot == 1) checked @endif {{$vendor->status == 1 ? '' : 'disabled'}}>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-info waves-effect waves-light w-100" {{$vendor->status == 1 ? '' : 'disabled'}}>{{ __("Save") }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
 @if( !p2p_module_status() )
 <div class="card-box cate-vendor">
     <div class="row text-left">
@@ -509,7 +550,8 @@ body .rating-form .btn-reset {
                             </textarea>
                         </div>
                     </div> --}}
-                   
+
+
                     @if(Auth::user()->is_superadmin == 1 && $client_preferences->is_one_push_book_enable == 1 && $vendor->pick_drop == 1)
                         <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
                             {!! Form::label('title', __('Instant Booking'),['class' => 'control-label']) !!}

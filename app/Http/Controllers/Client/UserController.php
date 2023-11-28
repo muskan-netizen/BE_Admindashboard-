@@ -52,6 +52,10 @@ class UserController extends BaseController
 
     public function index()
     {
+        if(!auth()->user()->can('customers-view') && !auth()->user()->is_superadmin)
+        {
+            return redirect('client/dashboard')->with('error','You do not have permission to do this task.');
+        }
         $roles = RoleOld::all();
         $countries = Country::all();
         $active_users = User::where('status', 1)->where('is_superadmin', '!=', 1)->count();
@@ -108,7 +112,7 @@ class UserController extends BaseController
 
 
         if ($request->type == 'active') {
-            $users->where('status', 1);
+                $users->where('status', 1)->where('is_superadmin', '!=', 1);
         } else if ($request->type == 'inactive') {
             $users->where('status', 3);
         }
@@ -148,7 +152,7 @@ class UserController extends BaseController
                 }
             })
             ->addColumn('is_superadmin', function ($users) use ($current_user) {
-                return $current_user->is_superadmin;
+                return $current_user->is_superadmin??'-';
             })
             ->addColumn('wallet_id', function ($users) {
                 return $users->wallet->id ?? '';

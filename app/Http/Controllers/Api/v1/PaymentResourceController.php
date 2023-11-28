@@ -25,7 +25,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\WalletController;
 use App\Http\Controllers\Front\UserSubscriptionController;
-use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, Client, ClientPreference, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SubscriptionPlansUser};
+use App\Models\{User, UserVendor, Cart, CartAddon, CartCoupon, CartProduct, CartProductPrescription, CartDeliveryFee, Client, ClientPreference, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, OrderTax, SavedCards, SubscriptionPlansUser};
 
 class PaymentResourceController extends BaseController
 {
@@ -75,43 +75,75 @@ class PaymentResourceController extends BaseController
 
         $user = Auth::user();
         \Stripe\Stripe::setApiKey($api_key);
-
+        $customer_id = $user->stripe_customer_id;
         $payment_form = $request->action;
-        // $saved_payment_method = UserSavedPaymentMethods::where('user_id', $user->id)->where('payment_option_id', $request->payment_option_id)->first();
-        // if (!$saved_payment_method) {
+        if(empty($customer_id)){ //if customer is not created and no saved card is being used to pay
             $customerResponse = \Stripe\Customer::create(array(  
                 'description' => 'Creating Customer',
                 'name' => $user->name,
-                'email' => $user->email,
+                'email' => $user->email, 
                 'metadata' => [
                     'user_id' => $user->id,
                     'phone_number' => $user->phone_number
                 ]
             ));  
             $customer_id = $customerResponse['id'];
-            if ($customer_id) {
-                $payment_method = new UserSavedPaymentMethods;
-                $payment_method->user_id = Auth::user()->id;
-                $payment_method->payment_option_id = $request->payment_option_id;
-                $payment_method->customerReference = $customer_id;
-                $payment_method->save();
+            $user->stripe_customer_id = $customer_id;
+            User::find($user->id)->update(['stripe_customer_id' => $customer_id]);
+        }
+            #  Create the Customer if not exists
+            if(isset($request->card_id)){
+                $savedPaymentMethod = SavedCards::where('user_id', $user->id)->where('card_id',$request->card_id)->orderBy('id', 'DESC')->first();
             }
-        // }else {
-        //     $customer_id = $saved_payment_method->customerReference;
-        // }
+            $customer_id = $savedPaymentMethod->customer_id ?? $customer_id;
+            $postdata = array(
+                'payment_method'       => $savedPaymentMethod->card_id ?? $request->payment_method_id,
+                'amount'               => $request->amount * 100,
+                'currency'             => $this->currency,
+                'confirmation_method'  => 'automatic',
+                'confirm'              => true,
+                'customer'             => $customer_id,
+                'metadata' => [
+                    'user_id' => $user->id,
+                    'payment_form' => $payment_form
+                ]
+            );
+        // $saved_payment_method = UserSavedPaymentMethods::where('user_id', $user->id)->where('payment_option_id', $request->payment_option_id)->first();
+        // if (!$saved_payment_method) {
+            // $customerResponse = \Stripe\Customer::create(array(  
+            //     'description' => 'Creating Customer',
+            //     'name' => $user->name,
+            //     'email' => $user->email,
+            //     'metadata' => [
+            //         'user_id' => $user->id,
+            //         'phone_number' => $user->phone_number
+            //     ]
+            // ));  
+        //     $customer_id = $customerResponse['id'];
+        //     User::find($user->id)->update(['stripe_customer_id' => $customer_id]);
+        //     if ($customer_id) {
+        //         $payment_method = new UserSavedPaymentMethods;
+        //         $payment_method->user_id = Auth::user()->id;
+        //         $payment_method->payment_option_id = $request->payment_option_id;
+        //         $payment_method->customerReference = $customer_id;
+        //         $payment_method->save();
+        //     }
+        // // }else {
+        // //     $customer_id = $saved_payment_method->customerReference;
+        // // }
 
-        $postdata = array(
-            'payment_method'       => $request->payment_method_id,
-            'amount'               => $request->amount * 100,
-            'currency'             => $this->currency,
-            'confirmation_method'  => 'automatic',
-            'confirm'              => true,
-            'customer'             => $customer_id,
-            'metadata' => [
-                'user_id' => $user->id,
-                'payment_form' => $payment_form
-            ]
-        );
+        // $postdata = array(
+        //     'payment_method'       => $request->payment_method_id,
+        //     'amount'               => $request->amount * 100,
+        //     'currency'             => $this->currency,
+        //     'confirmation_method'  => 'automatic',
+        //     'confirm'              => true,
+        //     'customer'             => $customer_id,
+        //     'metadata' => [
+        //         'user_id' => $user->id,
+        //         'payment_form' => $payment_form
+        //     ]
+        // );
 
         if($payment_form == 'cart'){
             $address_id = $request->address_id;

@@ -77,7 +77,7 @@
         <div class="collection-collapse-block-content">
             <div class="wrapper mt-3">
                 <div class="range-slider">
-                    <input type="text" class="js-range-slider rangeSliderPrice" value="" />
+                    <input type="text" class="js-range-slider rangeSliderPrice" value="" debounce="500"  />
                 </div>
             </div>
         </div>

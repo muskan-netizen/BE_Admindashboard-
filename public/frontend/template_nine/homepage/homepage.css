@@ -125,25 +125,34 @@ article#page-container section .vendors section {
     left: 0;
 }
 
-.product-m .slick-next:before,
-.product-m .slick-prev:before {
+.product-m .slick-next:before, .product-m .slick-prev:before {
     height: 30px;
     width: 30px;
     border-radius: 50px;
     background-color: #fff;
     display: inline-block;
-    line-height: 30px;
     opacity: 1;
+    color: #000!important;
     box-shadow: 0 0 5px rgba(0, 0, 0, .2);
+    transform: unset;
+    font-size: 24px;
+    line-height: 30px;
 }
 
 .slick-slider .slick-prev {
     left: 1px;
     z-index: 9;
 }
-
+.product-m .slick-next:before{
+    background-image: unset;
+    content: '\f105';
+}
+.product-m .slick-prev:before {
+    background-image: unset;
+    content: '\f104';
+}
 .slick-slider .slick-next {
-    right: 11px;
+    right: 0;
 }
 
 .al_body_template_eight .al_custom_brand .brand-box h6 {
@@ -205,7 +214,7 @@ article#page-container section .vendors section {
 
 .slick-next:before,
 .slick-prev:before {
-    font-size: 20px;
+    /* font-size: 20px; */
     line-height: 1;
     color: #fff;
     opacity: .75;
@@ -716,6 +725,9 @@ footer#footer {
     transform: scale(1);
 }
 
+.search_bar  a svg {
+    width: 16px;
+}
 
 /* shimmer_effect end */
 
@@ -1145,7 +1157,7 @@ article#page-container section .vendors section a {
 
 .main-product {
     /* background: linear-gradient(to right, #8135122b , #e79b777d ); */
-    padding: 40px 0 !important;
+    padding: 30px 0 !important;
 }
 
 section.home-headings {
@@ -1484,7 +1496,7 @@ body.al_body_template_nine.p2p-module section.p2p-categories .cate-item a {
     /* background: linear-gradient(180deg, #e1dfdf 0%, #efe7e7 100%); */
     border-radius: 9px;
     padding: 20px 10px;
-    margin-bottom: 25px;
+    margin-bottom: 0;
     min-height: inherit;
     cursor: pointer;
     display: block;
@@ -1503,7 +1515,8 @@ body.al_body_template_nine.p2p-module section.p2p-categories .cate-item h3 {
 body.al_body_template_nine.p2p-module section.p2p-categories .cate-item img {
     width: 100%;
     height: 100px;
-    object-fit: contain;
+    object-fit: cover;
+    padding: 0;
 }
 
 body.al_body_template_nine section.main-product.mb-0.render_full_on_sale {
@@ -1586,8 +1599,18 @@ body.al_body_template_nine  .product-description .update_year  b{
 
 
 /*---------- 07-02-2023 home page css ---------*/
-body.al_body_template_nine  .common-product-box:hover,  body.al_body_template_nine  .product-box:hover, body.al_body_template_nine  .product-card-box:hover, body.al_body_template_nine  .suppliers-box:hover {
-    box-shadow: 0 0 0 1px rgb(113 91 204 / 14%), 0 1px 5px 0 rgb(113 91 204 / 14%);
+ body.al_body_template_nine  .product-box:hover, body.al_body_template_nine  .product-card-box:hover, body.al_body_template_nine  .suppliers-box:hover {
+    box-shadow: 0px 0px 11px 2px rgb(0 0 0 / 12%) !important;
+}
+.al_body_template_nine.p2p-module .product-m .slick-slide>div{
+    margin: 0 ;
+}
+.al_body_template_nine .product-m .slick-list .slick-track {
+    margin: 0;
+}
+body.al_body_template_nine  .common-product-box:hover{
+    box-shadow:unset!important;
+    background-color: transparent;
 }
 body.al_body_template_nine .p2p-full-width {
     max-width: 98% !important;
@@ -1612,12 +1635,13 @@ body.al_body_template_nine  .product-description  h6.card_title{
     text-align: left;
 }
 body.al_body_template_nine .product-m .item {
-    width: 16.33%;
-    padding: 0 10px;
+    width: 100%;
+    /* padding: 0; */
     
 }
 body.al_body_template_nine .product-m .item  .product-card-box{
     min-height: inherit;
+    border:none !important;
 }
 body.al_body_template_nine.p2p-module .top-header.site-topbar.al_custom_head a.sell-btn{
     background: var(--theme-deafult)!important;
@@ -1659,6 +1683,9 @@ body.al_body_template_nine .product-m .item .media-body{
 body.al_body_template_nine .menu-navigation.al{
     display: none;
 }
+body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect a span:first-child{
+    padding-top: 0;
+}
 body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect  a span {
     font-size: 12px;
     padding-top: 5px;
@@ -1669,7 +1696,9 @@ body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect  a span {
     line-height: 1;
 }               
 
-
+.common-product-box{
+    background-color: transparent;
+}
 
 
 /*------------ipad view css-------------*/
@@ -1980,4 +2009,72 @@ body.al_body_template_nine.p2p-module li.onhover-div.pl-0.shake-effect  a span {
     body.al_body_template_nine .product-m .item{
         width: 100%;
     }
+}
+
+/*-----------------p2p css---------*/
+
+body.al_body_template_nine.p2p-module.product-m .item {
+    width:20%;
+    padding: 0 10px;
+    
+}
+body.al_body_template_nine.p2p-module.al_clock b {
+    font-size: 18px;
+    color: #105d72;
+}
+body.al_body_template_nine.p2p-module article#page-container section .vendors section a i{
+    color: #105d72;
+}
+body.al_body_template_nine.p2p-module.update_year b{
+    color:#666;
+}
+body.al_body_template_nine.p2p-modulearticle#page-container section .vendors section{background-color:#fff !important;}
+body.al_body_template_nine.p2p-module.product-m .item .product-card-box:hover{
+    box-shadow:0px 0px 11px 2px rgb(0 0 0 / 12%) !important;
+}
+body.al_body_template_nine.p2p-module.home-slider-wrapper .banner-img-outer img {
+    max-height: 650px !important;
+    height: 650px !important;
+    object-fit: cover;
+    max-height: 550px;
+}
+body.al_body_template_nine.p2p-modulesection.home-slider-wrapper .carousel-indicators {
+    bottom: 0px !important;
+}
+body.al_body_template_nine.p2p-modulesection.home-slider-wrapper .carousel-indicators li {
+    background-color: #fff;
+    border-radius: 0;
+    width: 30px;
+    height: 4px;
+    margin-top: 2px;
+}
+body.al_body_template_nine.p2p-modulesection.home-slider-wrapper .carousel-indicators li.active {
+    background-color: #fff;
+    border-radius: 5px;
+    width: 30px;
+    height: 4px;
+    margin-top: 2px;
+}
+body.al_body_template_nine.p2p-module.chat-button{
+    display:none;
+}
+body.al_body_template_nine.p2p-module span.for_sale {
+    background-color: #1667c6;
+    padding: 4px 10px;
+    font-size: 14px;
+    color: #fff;
+    position: absolute;
+    bottom: 11px;
+    z-index: 999;
+    left: 10px;
+}
+body.al_body_template_nine.p2p-module span.for_rent {
+    background-color: #C361AD;
+    padding: 4px 10px;
+    font-size: 14px;
+    color: #fff;
+    position: absolute;
+    bottom: 11px;
+    z-index: 999;
+    left: 10px;
 }

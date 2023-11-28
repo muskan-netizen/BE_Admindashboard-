@@ -812,6 +812,7 @@ class VendorController extends FrontController
         $langId = Session::get('customerLanguage');
         $preferences = Session::get('preferences');
 
+      
         $clientCurrency = ClientCurrency::where('currency_id', Session::get('customerCurrency'))->first();
 
         $vendor = Vendor::with('slot.day', 'slotDate')
@@ -879,7 +880,7 @@ class VendorController extends FrontController
                     $q2->select('addon_options.id', 'addon_options.title', 'addon_options.price', 'apt.title', 'addon_options.addon_id');
                     $q2->where('apt.language_id', $langId);
                 },'tags'
-            ])->select('products.id', 'products.sku','products.title', 'products.url_slug','products.weight_unit','products.category_id', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count','products.is_recurring_booking')
+            ])->select('products.id', 'products.sku','products.title', 'products.url_slug','products.weight_unit','products.category_id', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock','products.inquiry_only', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count','products.is_recurring_booking', 'products.calories')
             ->join('product_variants', 'product_variants.product_id', '=', 'products.id') // Or whatever the join logic is
             ->join('product_translations', 'product_translations.product_id', '=', 'products.id');
 
@@ -919,6 +920,14 @@ class VendorController extends FrontController
                 $products = $products->orderBy('product_translations.title', 'asc');
             }elseif (!empty($order_type) && $order_type == 'z_to_a') {
                 $products = $products->orderBy('product_translations.title', 'desc');
+            }elseif (!empty($order_type) && ($order_type == 'cal_asc' || $order_type == 'cal_desc')) {
+                if ($order_type == 'cal_asc') {
+                    $products = $products->orderByRaw('CAST(products.calories AS SIGNED) IS NULL')
+                    ->orderByRaw('CAST(products.calories AS SIGNED) asc');
+                } elseif ($order_type == 'cal_desc') {
+                    $products = $products->orderByRaw('CAST(products.calories AS SIGNED) IS NULL')
+                    ->orderByRaw('CAST(products.calories AS SIGNED) desc');
+                }
             }else{
                 //
             }
@@ -977,6 +986,7 @@ class VendorController extends FrontController
                             // });
                         }
                         $vendor_category = $vendor_category->where('status', 1)->where('vendor_id', $vid)->where('category_id', $cid)->first();
+                        
                         if($vendor_categories){
                             $vendorProducts = $products->where('category_id', $cid);
                             if($vendor_category){

@@ -21,36 +21,39 @@
 
                     <div class=" row">
                         <div class="alPostBoxOuter form_top  col-md-11 mx-auto mt-2   ">
-                            <div class="px-3">
+                            <div class="px-0">
                                 <div class="d-flex mb-2 align-items-center justify-content-between alCategoryItemsHead">
                                     <h6 class="m-0">CHOOSE A CATEGORY </h6>
                                     <div class="fillter_div">
-                                        <span>Fillter:</span>
+                                        <span>Filter:</span>
                                         <select name="category-filter" id="category_filter" value="">
                                             <option value="all">All</option>
-                                            <option value="10">Rental</option>
+                                            <option value="10">Rent</option>
                                             <option value="13">Sell</option>
                                         </select>
                                     </div>
                                 </div>
-                                <ul class=" p-0 m-0 no-gutters view-all_cats">
-                                    @if (@$categories)
-                                        @foreach ($categories as $key => $category)
-                                            @php  $icon = $category['icon']['proxy_url'] . '200/200' . $category['icon']['image_path'];  @endphp
-                                            <li class="px-1 category-list" id="category_{{ $category->id }}">
-                                                <a class="cate-item text-center w-100 py-3 mb-0 rounded select-category"
-                                                    data-name="{{@$category['translation_one']['name'] }}"
-                                                    data-id="{{ $category['id'] }}" data-type-id="{{$category->type_id}}" href="javascript:void(0);">
-                                                    <div class="alCategoryItems">
-                                                        <img class="" src="{{ $icon }}">                                                                                                              
-                                                        <h3>{{ @$category['translation_one']['name'] }}</h3>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                        @endforeach
-                                    @endif
-                                </ul>
-                                <ul class=" p-0 m-0 no-gutters view-rental_cats d-none">
+                                <div class="categoriesSlider">
+                                    <ul class=" p-0 m-0 no-gutters view-all_cats slider category_responsive">
+                                        @if (@$categories)
+                                            @foreach ($categories as $key => $category)
+                                                @php  $icon = $category['icon']['proxy_url'] . '200/200' . $category['icon']['image_path'];  @endphp
+                                                <li class="px-1 category-list" id="category_{{ $category->id }}">
+                                                    <a class="cate-item text-center w-100 py-3 mb-0 rounded select-category"
+                                                        data-name="{{@$category['translation_one']['name'] }}"
+                                                        data-id="{{ $category['id'] }}" data-type-id="{{$category->type_id}}" href="javascript:void(0);">
+                                                        <div class="alCategoryItems">
+                                                            <img class="" src="{{ $icon }}">                                                                                                              
+                                                            <h3>{{ @$category['translation_one']['name'] }}</h3>
+                                                        </div>
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                        @endif
+                                    </ul>
+                                </div>
+                                <ul class=" p-0 m-0 no-gutters view-rental_cats d-none  ">
+                                    <div class="category_responsive">
                                     @if (@$categories)
                                         @foreach ($categories as $key => $category)
                                             @php  $icon = $category['icon']['proxy_url'] . '200/200' . $category['icon']['image_path'];  @endphp
@@ -68,8 +71,10 @@
                                             @endif
                                         @endforeach
                                     @endif
+                                    </div>
                                 </ul>
-                                <ul class=" p-0 m-0 no-gutters view-p2psell_cats d-none">
+                                <ul class=" p-0 m-0 no-gutters   view-p2psell_cats d-none ">
+                                    <div class="category_responsive">
                                     @if (@$categories)
                                         @foreach ($categories as $key => $category)
                                             @php  $icon = $category['icon']['proxy_url'] . '200/200' . $category['icon']['image_path'];  @endphp
@@ -87,6 +92,7 @@
                                             @endif
                                         @endforeach
                                     @endif
+                                    </div>
                                 </ul>
                                 <label class="cat-error text-danger mt-2 pl-1 d-none">Please select category.</label>
                             </div>
@@ -130,7 +136,7 @@
                                                         id="" aria-describedby="">
                                                 </div> --}}
                                                 <div class="form-group">
-                                                    <label for="inputAddress">Location Avialability *</label>
+                                                    <label for="inputAddress">Location Availability *</label>
                                                     <input type="hidden" name="lat" id="latitude" value="">
                                                     <input type="hidden" name="long" id="longitude" value="">
                                                     <input type="text" name="address" class="form-control" id="address"
@@ -223,8 +229,8 @@
                                                 <div class="form-group choose_file">
                                                     {{-- <input type="file" accept="image/*"   data-plugins="dropify" name="images[]" class="dropify ss_form_submit" id="image" multiple /> --}}
                                                     <input type="file" class="form-control-file" required
-                                                        name="file[]" accept="image/png, image/gif, image/jpeg"
-                                                        id=" " multiple>
+                                                        name="file[]" accept="image/*"
+                                                         multiple>
                                                 </div>
                                             </div>
                                         </div>
@@ -277,6 +283,8 @@
     <script src="{{ asset('assets/libs/select2/select2.min.js') }}"></script>
     <script src="{{ asset('assets/libs/jquery-toast-plugin/jquery-toast-plugin.min.js') }}"></script>
     <script src="{{ asset('assets/js/pages/toastr.init.js') }}"></script>
+    <script src="{{asset('assets/libs/flatpickr/flatpickr.min.js')}}"></script>
+
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script>
@@ -355,9 +363,35 @@
 
         var form = document.getElementById("product_form");
         document.getElementById("save-post").addEventListener("click", function (e) {
+
+        
             e.preventDefault();
             const elements = document.querySelectorAll('.select-category.active');
             const hasElements = elements.length > 0;
+            var productName = $('input[name="product_name"]').val();
+            var description = $('textarea[name="product_description"]').val();
+            var address = $('input[name="address"]').val();
+            var files = $('input[name="file[]')[0].files;
+
+            // Validate form fields.
+            if (productName === '') {
+                sweetAlert.error('Product name is required', '');
+                return;
+            }
+            if (description === '') {
+                sweetAlert.error('Description is required', '');
+                return;
+            }
+            if (address === '') {
+                sweetAlert.error('Address is required', '');
+                return;
+            }
+           
+           
+            if (files.length === 0) {
+               sweetAlert.error('Image file is required', '');
+               return;
+           }
             if (hasElements) {
                 $('.cat-error').addClass('d-none');
                 form.submit();
@@ -381,14 +415,17 @@
             switch (value) {
                 case '10':
                 $viewRentalCats.removeClass('d-none');
+                
                 break;
                 case '13':
-                $viewP2PSellCats.removeClass('d-none');
+                $viewP2PSellCats.removeClass('d-none');               
+                // $(".slick-arrow").click();
                 break;
                 default:
                 $viewAllCats.removeClass('d-none');
                 break;
             }
+            $('.category_responsive').slick('refresh');
             $categoryID.val('');
             $selectedCategory.text('');
             $p2pCategoryForm.addClass('d-none');
