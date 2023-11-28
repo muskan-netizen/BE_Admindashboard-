@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Traits\HomePage\HomePageTrait;
 use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Traits\{OrderTrait, ProductActionTrait, VendorTrait, RedisCacheTrait};
-use App\Models\{Banner, Brand, CabBookingLayout, CabBookingLayoutTranslation, Category, Client, ClientPreference, Vendor, VendorCategory, Product, ClientCurrency, HomePageLabel, HomeProduct, MobileBanner, OnboardSetting, Order, ProductCategory, SubscriptionInvoicesVendor, UserVendor, VendorCities, VendorOrderStatus, WebStylingOption};
+use App\Models\{Banner, Brand, CabBookingLayout, CabBookingLayoutTranslation, Category, Client, ClientPreference, Vendor, VendorCategory, Product, ClientCurrency, HomePageLabel, HomeProduct, MobileBanner, OnboardSetting, Order, ProductCategory, SubscriptionInvoicesVendor, UserVendor, VendorCities, VendorOrderStatus, WebStylingOption, UserAddress};
 use Illuminate\Support\Facades\Redis;
 
 /**
@@ -134,7 +134,7 @@ class HomeController extends BaseController
             $type = $request->has('type') ? $request->type : 'delivery';
               Session::put('vendorType',$type);
 
-
+            //   print_r($type);exit;
 
             $categoryTypes = getServiceTypesCategory($type);
 
@@ -290,19 +290,21 @@ class HomeController extends BaseController
 
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
             $enable_layout = CabBookingLayout::where('is_active', 1)->app();
-
+            
             $enable_layout = $enable_layout->orderBy('order_by', 'asc')->pluck('slug')->toArray();
             //$homePageData = $this->postHomePageData($request);
+            
             if($request->action=='2'){
+                // dd('sdsd');
                 $homePageData = $this->postHomePageDataV2($request, $set_template, $enable_layout, $additionalPreference,$user);
             } else {
                 $homePageData = $this->postHomePageData($request,$additionalPreference);
             }
-
+            
             if($type == 'p2p')
             {
-
-             
+                 
+                
             $vendorData = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
                 $q->whereIn('type_id',$categoryTypes);
             })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','id as is_vendor_closed' ,'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
@@ -331,10 +333,9 @@ class HomeController extends BaseController
            
             $venderIds  = $vendorData->where('status', 1)->pluck('id');
             $navCategories = $this->categoryNav($langId, $venderIds, $type , $request);
-            }
-            else{
+            } else{
            
-              
+                
                 $navCategories = $this->categoryNav($langId, @$homePageData['vendor_ids'], $type);
 
             
@@ -347,6 +348,9 @@ class HomeController extends BaseController
 
             // dd($navCategories);
             $home_page_labels = $home_page_labels->map(function ($da) use ($homePageData, $navCategories) {
+
+
+                
                 if ($da->slug != 'pickup_delivery' && $da->slug != 'dynamic_page' && $da->slug != 'nav_categories' && $da->slug != 'banner') {
 
                     $da['data'] = @$homePageData[@$da->slug];
@@ -358,6 +362,7 @@ class HomeController extends BaseController
                 }
                 return $da;
             });
+          
             $user = Auth::user();
             $s3_url = '';
             if(\Config::get('filesystems.disks.s3.driver') == 's3') {
@@ -389,6 +394,8 @@ class HomeController extends BaseController
                 ]
             ];
             //pr($cacheKey);
+            // return $this->successResponse($homeData);
+
             if($clientPreferences->is_hyperlocal == 1) {
                 $this->storeLocations($locations,$homeData,$this->loc_key);
 
@@ -397,12 +404,14 @@ class HomeController extends BaseController
                 Redis::expire($this->loc_key, $this->cache_minutes);
             }
         }
+
             return $this->successResponse($homeData);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
 
+ 
     public function getSubcategoryVendor(Request $request, $domain = '')
     {
         

@@ -928,7 +928,7 @@ class OrderController extends FrontController
                 //     ->orderBy('id', 'DESC')
                 //     ->first();
                 // dd($vendor->OrderStatusOption->getStatusName($order->luxury_option_id));
-                $vendor->order_status = strtolower($vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'';
+                $vendor->order_status = strtolower(@$vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'';
 
 
                 foreach ($vendor->products as $product) {
@@ -981,9 +981,9 @@ class OrderController extends FrontController
                 //     ->orderBy('id', 'DESC')
                 //     ->first();
                 // $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
-
-                $vendor->order_status = strtolower($vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'';
-
+                 if(!empty($vendor->OrderStatusOption)){
+                $vendor->order_status = strtolower(@$vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'n/a';
+                 }
 
                 foreach ($vendor->products as $product) {
                     $product = $this->gettimeSlotName($product);
@@ -1104,8 +1104,8 @@ class OrderController extends FrontController
                 //     ->orderBy('id', 'DESC')
                 //     ->first();
                 // $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
-
-                $vendor->order_status = strtolower($vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'';
+         
+                $vendor->order_status = strtolower(@$vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'';
 
                 
                 if($vendor->cancelled_by == $user->id){
@@ -4568,7 +4568,7 @@ class OrderController extends FrontController
            
                 foreach ($files as $file) {
                     if ($file['file_name'] != null) {
-                        if ($file['file_type'] != "Text"  && $file['file_type'] != "selector" && $file['file_type'] != "Date") {
+                        if ($file['file_type'] != "Text" && $file['file_type'] != "selector" && $file['file_type'] != "Date") {
                             $file_path = $file['file_name']->getPathname();
                             $file_mime = $file['file_name']->getMimeType('image');
                             $file_uploaded_name = $file['file_name']->getClientOriginalName();

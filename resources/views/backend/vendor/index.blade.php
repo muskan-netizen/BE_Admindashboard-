@@ -415,7 +415,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
             $('#Vendor_order_pre_time_show').text(txt);
        }
     }
-
+    var goFrugalUrl = '{{route("gofrugal.home")}}';
 </script>
 @include('backend.vendor.pagescript')
 <script src="{{asset('js/admin_vendor.js')}}"></script>

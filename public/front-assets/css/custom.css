@@ -5058,7 +5058,8 @@ body[dir="rtl"] .inner_spacing {
 }
 
 body[dir="rtl"] .footer-theme .sub-title .contact-list li {
-    padding: 0 25px 0 0
+    padding: 0;
+    padding-right: 50px;
 }
 
 body[dir="rtl"] .footer-theme .sub-title .contact-list i {
@@ -18985,17 +18986,4 @@ section#alTaxiBookingWrapper .address-form .pool_radio_controls.text-center labe
 
 
 
-/*-------------p2p----------*/
-/* body.al_body_template_nine.p2p-module .common-product-box,
-.product-box,
-.product-card-box,
-.suppliers-box {
-    background:transparent !important;
-    box-shadow:none !important;
-}
-body.al_body_template_nine.p2p-module .common-product-box,
-.product-box,
-.product-card-box,
-.suppliers-box:hover{
-    box-shadow: 0px 0px 11px 2px rgb(0 0 0 / 32%) !important;
-} */
+

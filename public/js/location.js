@@ -237,8 +237,8 @@ $(document).ready( async function () {
         sessionType = $(this).data("sessiontype");
       
         if(type == sessionType){
-        window.location.href = home_page_url;
-        return false;
+            window.location.href = home_page_url;
+            return false;
         }
         if($("#address-latitude").length > 0){
             latitude = $("#address-latitude").val();
