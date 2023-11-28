@@ -53,8 +53,8 @@ trait ResetConfiguration
 
         $tab_style = AppStyling::where('name', 'Tab Bar Style')->first();
         if ($tab_style) {
-            $tab_style_options = AppStylingOption::where('app_styling_id', $tab_style->id)->where('image','!=','bar_three.png')->get();
-            $tab_style_options->name = "Tab 1";
+            $tab_style_options = AppStylingOption::where('app_styling_id', $tab_style->id)->where('name','Tab 1')->first();
+            $tab_style_options->is_selected = 1;
             $tab_style_options->save();
         }
         $app_font = $app_font->fresh();
