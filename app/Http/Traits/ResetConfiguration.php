@@ -182,7 +182,12 @@ trait ResetConfiguration
                         }
                         break;
                     case 'is_tracking_url':
-                        if (in_array($client_preference->business_type, ['taxi', 'emart', 'super_app','rental','food_grocery_ecommerce'])) {
+                        if (in_array($client_preference->business_type, ['taxi', 'emart', 'super_app','rental','food_grocery_ecommerce','home_service'])) {
+                            $preferenceValue = 1;
+                        }
+                        break;
+                    case 'is_long_term_service':
+                        if (in_array($client_preference->business_type, ['home_service'])) {
                             $preferenceValue = 1;
                         }
                         break;
@@ -256,7 +261,7 @@ trait ResetConfiguration
             'get_estimations' => 0,
             'view_get_estimation_in_category' => 0,
             'max_safety_mod' => 0,
-            'hide_order_address' => 1,
+            'hide_order_address' => 0,
             'category_kyc_documents' => 0,
             'vendor_return_request' => 0,
             'hide_order_prepare_time' => 0,
@@ -306,7 +311,7 @@ trait ResetConfiguration
             'category_kyc_documents' => 0,
             'vendor_return_request' => 0,
             'hide_order_prepare_time' => 0,
-            'is_cancel_order_user' => 0,
+            'is_cancel_order_user' => 1,
             'book_for_friend' => 0,
             'is_static_dropoff' => 0,
             'is_scan_qrcode_bag' => 0,
@@ -474,7 +479,7 @@ trait ResetConfiguration
             'enquire_mode' => 0,
             'pharmacy_check' => 0,
             'isolate_single_vendor_order' => 1,
-            'subscription_mode' => 0,
+            'subscription_mode' => 1,
             'subscription_tab_taxi' => 0,
             'tip_before_order' => 0,
             'tip_after_order' => 0,
@@ -491,7 +496,7 @@ trait ResetConfiguration
             'category_kyc_documents' => 0,
             'vendor_return_request' => 0,
             'hide_order_prepare_time' => 0,
-            'is_cancel_order_user' => 0,
+            'is_cancel_order_user' => 1,
             'book_for_friend' => 0,
             'is_static_dropoff' => 0,
             'is_scan_qrcode_bag' => 0,
@@ -520,7 +525,7 @@ trait ResetConfiguration
         $data = [
             'enquire_mode' => 0,
             'pharmacy_check' => 0,
-            'isolate_single_vendor_order' => 1,
+            'isolate_single_vendor_order' => 0,
             'subscription_mode' => 1,
             'subscription_tab_taxi' => 0,
             'tip_before_order' => 1,
