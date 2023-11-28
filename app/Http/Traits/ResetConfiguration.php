@@ -44,7 +44,9 @@ trait ResetConfiguration
        
             $client_preference = ClientPreference::select('business_type')->first();
             $client_preference->hide_order_address = 1;
-        
+            $client_preference->celebrity_check = 0;
+            $client_preference->primary_color = "#41A2E6";
+            $client_preference->secondary_color ="#FFFFFF";
 
             $vendor_type =  ["dinein_check","takeaway_check","delivery_check","rental_check","pick_drop_check","on_demand_check","laundry_check","appointment_check","p2p_check"];
             
@@ -157,12 +159,12 @@ trait ResetConfiguration
                 'is_sms_cancel_order',
                 'is_sms_booked_ride',
                 'is_hourly_pickup_rental',
+                'add_to_cart_btn'
             ]);
 
             
             $client = Client::first();
-
-        
+          
             
             foreach ($additional_preference as $key => $value) {
                 $preferenceValue = 0; // Default value
@@ -180,13 +182,13 @@ trait ResetConfiguration
                         }
                         break;
                     case 'is_tracking_url':
-                        if (in_array($client_preference->business_type, ['taxi', 'super_app','emart'])) {
+                        if (in_array($client_preference->business_type, ['taxi', 'emart', 'super_app','rental','food_grocery_ecommerce'])) {
                             $preferenceValue = 1;
                         }
                         break;
 
                     case 'is_tracking_sms_url':
-                        if (in_array($client_preference->business_type, ['taxi', 'emart', 'super_app'])) {
+                        if (in_array($client_preference->business_type, ['taxi', 'emart', 'super_app','rental','food_grocery_ecommerce'])) {
                             $preferenceValue = 1;
                         }
                         break;
@@ -202,7 +204,12 @@ trait ResetConfiguration
                         }
                         break;
                     case 'is_free_delivery_by_roles':
-                        if (in_array($client_preference->business_type, ['p2p'])) {
+                        if (in_array($client_preference->business_type, ['p2p','super_app'])) {
+                            $preferenceValue = 1;
+                        }
+                        break;
+                    case 'add_to_cart_btn':
+                        if (in_array($client_preference->business_type, ['p2p','super_app'])) {
                             $preferenceValue = 1;
                         }
                         break;
@@ -225,7 +232,7 @@ trait ResetConfiguration
         $this->initialize();
 
 
-        $this->updateStylingsAndPreferences(3,3);
+        $this->updateStylingsAndPreferences(3,6);
 
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
         $preference->$type = 1;
@@ -514,7 +521,7 @@ trait ResetConfiguration
             'enquire_mode' => 0,
             'pharmacy_check' => 0,
             'isolate_single_vendor_order' => 1,
-            'subscription_mode' => 0,
+            'subscription_mode' => 1,
             'subscription_tab_taxi' => 0,
             'tip_before_order' => 1,
             'tip_after_order' => 0,
@@ -561,7 +568,7 @@ trait ResetConfiguration
             'enquire_mode' => 0,
             'pharmacy_check' => 0,
             'isolate_single_vendor_order' =>1,
-            'subscription_mode' => 0,
+            'subscription_mode' => 1,
             'subscription_tab_taxi' => 0,
             'tip_before_order' => 1,
             'tip_after_order' => 0,
