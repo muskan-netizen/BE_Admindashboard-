@@ -2062,8 +2062,8 @@ class PickupDeliveryController extends BaseController{
                 $actual_amount                      = $vendor_payable_amount;
 
                 $order_vendor->service_fee_percentage_amount = 0;
-                $order_vendor->subtotal_amount               = $actual_amount;
-                $order_vendor->payable_amount                = $vendor_payable_amount;
+                $order_vendor->subtotal_amount               =  $biddata->bid_price ?? $actual_amount;
+                $order_vendor->payable_amount                =  $biddata->bid_price ?? $vendor_payable_amount;
                 $order_vendor->taxable_amount                = 0;
                 $order_vendor->discount_amount               = 0;
                 $order_vendor->toll_amount                   = 0;
