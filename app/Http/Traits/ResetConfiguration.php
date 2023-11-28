@@ -42,13 +42,10 @@ trait ResetConfiguration
     public function initialize()
     {
 
-        $client_preference = ClientPreference::select('business_type')->first();
-        $client_preference = $client_preference->fresh();
-
+        $client_preference = ClientPreference::first();
         $client_preference->hide_order_address = 1;
         $client_preference->celebrity_check = 0;
         $client_preference->is_hyperlocal = 0;
-        $client_preference->save();
 
 
         $vendor_type =  ["dinein_check", "takeaway_check", "delivery_check", "rental_check", "pick_drop_check", "on_demand_check", "laundry_check", "appointment_check", "p2p_check"];
