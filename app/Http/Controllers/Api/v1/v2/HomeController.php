@@ -298,8 +298,7 @@ class HomeController extends BaseController
                 // dd('sdsd');
                 $homePageData = $this->postHomePageDataV2($request, $set_template, $enable_layout, $additionalPreference,$user);
             } else {
-             
-                $homePageData = $this->postHomePageData($request);
+                $homePageData = $this->postHomePageData($request,$additionalPreference);
             }
             
             if($type == 'p2p')
@@ -342,13 +341,8 @@ class HomeController extends BaseController
             
 
             }
-            
-          
+
             Session::put('navCategories', $navCategories);
-
-
-           
-        //  pr($homePageData);
 
             /***end new  */
 
@@ -568,9 +562,8 @@ class HomeController extends BaseController
      * @param  mixed $request
      * @return void
      */
-    public function postHomePageData(Request $request)
+    public function postHomePageData(Request $request,$additionalPreference=null)
     {
-
         $vendor_ids = [];
         $new_products = [];
         $feature_products = [];
@@ -688,11 +681,13 @@ class HomeController extends BaseController
          * put a limit to get vendors.
          */
         $long_term_vendors = $vendors->pluck('id')->toArray();
-
+        if(isset($additionalPreference['is_admin_vendor_rating']) && ($additionalPreference['is_admin_vendor_rating'] == 1)){
+            $vendors = $vendors->orderBy('admin_rating', 'DESC');
+        }else{
+            $vendors = $vendors->inRandomOrder();
+        }
         $vendors = $vendors->where('status', 1)->where($request->type, 1)
-            ->inRandomOrder()
             ->limit(10)->get();
-
         foreach ($vendors as $key => $value) {
             $vendor_ids[] = $value->id;
             // $value->vendorRating = $this->vendorRating($value->products);
@@ -991,7 +986,6 @@ class HomeController extends BaseController
 
 
         /** Respose data */
-
         $data = [
             'vendor_ids' =>$vendor_ids,
             'brands' => $brands,

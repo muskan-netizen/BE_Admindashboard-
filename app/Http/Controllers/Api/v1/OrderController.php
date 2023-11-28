@@ -4443,13 +4443,13 @@ class OrderController extends BaseController
 
     public function getOrdersListLenderBorrower(Request $request)
     {
-
-
         $user = Auth::user();
         $order_status_options = [];
         $paginate = $request->has('limit') ? $request->limit : 12;
         $type = $request->has('type') ? $request->type : 'all';
+        
         $user_type = $request->has('user_type') ? $request->user_type : 'borrower';
+        $product_type = $request->has('productType') ? $request->productType : '';
         $orders = OrderVendor::with('products')->orderBy('id', 'DESC');
         $additionalPreference =getAdditionalPreference(['is_service_product_price_from_dispatch']);
         $vendorUser =  UserVendor::select('vendor_id')->where('user_id', $user->id)->first();
@@ -4472,7 +4472,7 @@ class OrderController extends BaseController
             $orders->whereHas('products');
                 break;
                 case 'upcoming': // which order not assign yet indriver
-
+                  
                 $orders->whereHas('products');
                 $orders->whereIn('order_status_option_id', [1,2]);
                 break;
@@ -4513,6 +4513,7 @@ class OrderController extends BaseController
                 });
                 break;
         }
+        
         $orders = $orders->with(['orderDetail.editingInCart', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing','user'=>function ($qq){
             $qq->select('id','name');
         },  'products.productReturn','cancelledBy.userVendor',
@@ -4520,6 +4521,13 @@ class OrderController extends BaseController
             $q->select('id','type_id');
         },'products.product.translation'
         ])
+        ->whereHas('products.product.category.categoryDetail', function ($qq) use($product_type) {
+            if($product_type=="rent"){
+            $qq->where('type_id', 10);
+        }else{
+            $qq->where('type_id', 13);
+        }
+    })
             // ->whereHas('orderDetail', function ($q1) {
                 // $q1->where('orders.payment_status', 1)->whereNotIn('orders.payment_option_id', [1,38]);
                 // $q1->orWhere(function ($q2) {
@@ -4540,30 +4548,31 @@ class OrderController extends BaseController
 
     public function getOrdersLenderBorrower(Request $request)
     {
-
+          
         $user = Auth::user();
         $order_status_options = [];
         $paginate = $request->has('limit') ? $request->limit : 2;
         $type = $request->has('type') ? $request->type : 'all';
+        $product_type =$request->has('productType') ? $request->productType : '';
         $user_type = $request->has('user_type') ? $request->user_type : '';
         $additionalPreference =getAdditionalPreference(['is_service_product_price_from_dispatch']);
 
         $vendorUser =  UserVendor::select('vendor_id')->where('user_id', $user->id)->first();
         $orders = OrderVendor::with('products')->orderBy('id', 'DESC');
         $orders->where('user_id', $user->id) ; //borrower
-
+         
         switch ($type) {
+          
             case 'all': // which order not assign yet indriver
-
             $orders->whereHas('products');
                 break;
                 case 'upcoming': // which order not assign yet indriver
-
+                   
             $orders->whereHas('products');
             $orders->whereIn('order_status_option_id', [1,2]);
                 break;
                 case 'ongoing': // which order not assign yet indriver
-
+                  
                 $orders->whereHas('products');
             $orders->whereIn('order_status_option_id', [4]);
                     break;
@@ -4591,15 +4600,26 @@ class OrderController extends BaseController
                 });
                 break;
         }
+      
         $orders = $orders->with(['orderDetail.editingInCart', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'user'=>function ($qq){
             $qq->select('id','name');
         }, 'products.productReturn',
         'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request','products.Routes','products.order_product_status','products.product.category.categoryDetail'=>function ($q){
-            $q->select('id','type_id');
+            $q->select('id','type_id'); 
+        
         },'products.product.translation'
+      
         ])
+        ->whereHas('products.product.category.categoryDetail', function ($qq) use($product_type) {
+            if($product_type=="rent"){
+            $qq->where('type_id', 10);
+        }else{
+            $qq->where('type_id', 13);
+        }
+    })
         ->orderBy('id', 'Desc')
         ->take($paginate)->get();
+      
 
         if(@$vendorUser->vendor_id){
             $lender = OrderVendor::with('products')->orderBy('id', 'DESC');
@@ -4609,10 +4629,12 @@ class OrderController extends BaseController
             $lender->whereHas('products');
                 break;
             case 'upcoming': // which order not assign yet indriver
+                
             $lender->whereHas('products');
             $lender->whereIn('order_status_option_id', [1,2]);
                 break;
             case 'ongoing': // which order not assign yet indriver
+           
                 $lender->whereHas('products');
             $lender->whereIn('order_status_option_id', [4]);
                     break;
@@ -4641,11 +4663,17 @@ class OrderController extends BaseController
             $qq->select('id','name');
         }, 'products.productReturn',
         'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request','products.Routes','products.order_product_status','products.product.category.categoryDetail'=>function ($q){
-            $q->select('id','type_id');
+            $q->select('id','type_id');    
         },'products.product.translation'
         ])
+        ->whereHas('products.product.category.categoryDetail', function ($qq) use($product_type) {
+            if($product_type=="rent"){
+            $qq->where('type_id', 10);
+        }else{
+            $qq->where('type_id', 13);
+        }
+    })
         ->orderBy('id', 'Desc')
-
         ->take($paginate)->get();
         $orderdata['lender'] = $this->orderlistLoop($lender, $user ,$request,'lender');
         }else{
@@ -4755,7 +4783,7 @@ class OrderController extends BaseController
                             $q1->where('user_id', $user->id);
                             $q1->orWhere(function ($q2) use ($user) {
                                 $q2->whereHas('orderVendorProduct.product', function($q) use ($user){
-                                    $q->where('vendor_id',$user->userVendor->vendor_id);
+                                    $q->where('vendor_id',@$user->userVendor->vendor_id);
                                 });
                         });
                     });

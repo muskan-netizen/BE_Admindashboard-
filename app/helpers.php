@@ -598,6 +598,19 @@ if (!function_exists('imageExists')) {
         return \File::exists(public_path($url));
     }
 }
+
+if (!function_exists('imageExistsS3')) {
+    function imageExistsS3($url)
+    {
+        $headers = @get_headers($url);
+        if ($headers && strpos($headers[0], '200')) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
 if (!function_exists('getImageUrl')) {
     function getImageUrl($image, $dim)
     {

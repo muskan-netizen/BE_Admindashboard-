@@ -6527,7 +6527,9 @@ body .status_box label {
         cursor: pointer;
     }
 
-
+    div#profile-modal, div#proceed_to_pay_modal {
+        background: #0003;
+    }
 
     @media (-webkit-min-device-pixel-ratio: 2),
     (min-resolution: 192dpi) {

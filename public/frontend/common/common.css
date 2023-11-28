@@ -331,7 +331,9 @@ img.al_img_opacity {
     border-radius: 50%;
     background-size: cover;
     overflow: hidden;
-    display: block
+    display: block;
+    border:1px solid #ccc;
+
 }
 
 .file .update_pic img {

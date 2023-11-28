@@ -2520,7 +2520,7 @@
     
     {{-- ends here marg form --}}
     </div>
-    <div class="col-xl-4 col-lg-4 mb-3 d-none">
+    <div class="col-xl-4 col-lg-4 mb-3">
         <div class="page-title-box">
             <h4 class="page-title text-uppercase">{{ __('Blockchain Route Formation') }}</h4>
         </div>
