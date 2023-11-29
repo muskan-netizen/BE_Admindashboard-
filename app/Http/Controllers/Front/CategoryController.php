@@ -222,7 +222,7 @@ class CategoryController extends FrontController{
         foreach($category->childs as $key => $child){   
             $child->translation_name = ($child->translationLatest) ? $child->translationLatest->name : $child->slug;
         }
-        $service_type = $category->type->service_type;
+        $service_type = $category->type->service_type ?? "";
         
         if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && (isset($category->type_id)) && !in_array($category->type_id,[4,5]) ){
             $latitude = Session::get('latitude');
@@ -760,7 +760,6 @@ class CategoryController extends FrontController{
             }
             // Dynamic search fields
             if($getAdditionalPreference['is_attribute']) {
-                // //\Log::info(json_encode($request->dynamic_options));
                 if( !empty($request->dynamic_options) ) {
                     foreach($request->dynamic_options as $key => $val) {
                         foreach($val as $inn_key => $inn_val) {

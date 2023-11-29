@@ -296,7 +296,7 @@ class PickupDeliveryController extends BaseController{
             if($request->recurringformPost)
             {
             $recurring = recurringCalculationFunction($request);
-            // \Log::info(json_encode($recurring));
+            
             $recurringDays  = $recurring->daysCnt??1; 
             }
 

@@ -192,9 +192,7 @@ public function enableLumenService(Request $request)
         'is_lumen_key_expired' => $client->is_lumen_key_expired
     ];
 
-    \Log::info('post data');
-    \Log::info($data);
-
+   
     $headers = [
         'Content-Type' => 'application/json',
         'X-API-Key' => $client->lumen_access_token ?? '12345abcd',
@@ -203,8 +201,7 @@ public function enableLumenService(Request $request)
 
 
     if (isset($api_domain)) {
-        \Log::info('api domain');
-        \Log::info($api_domain->key_value);
+     
 
         $response = Http::withHeaders($headers)->post($api_domain->key_value . '/api/v1/createLumenClient', $data);
 
@@ -226,8 +223,7 @@ public function enableLumenService(Request $request)
         $responseData = null;
     }
 
-    \Log::info('create lumen client');
-    \Log::info($responseData);
+   
 
     return response()->json([
         'message' => 'lumen updated successfully',
@@ -247,10 +243,7 @@ public function enableCampaignService(Request $request)
         'campaign_service' => $request->campaign_service,
         'code' => $client->code,
     ];
-    
-
-    \Log::info('post data');
-    \Log::info($data);
+  
 
     $headers = [
         'Content-Type' => 'application/json',
@@ -260,9 +253,7 @@ public function enableCampaignService(Request $request)
 
 
     if (isset($api_domain)) {
-        \Log::info('api domain');
-        \Log::info($api_domain->key_value);
-
+        
         $response = Http::withHeaders($headers)->post($api_domain->key_value . '/api/v1/createLumenClient', $data);
 
         if ($response->status() === 200) {

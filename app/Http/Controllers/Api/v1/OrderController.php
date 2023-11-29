@@ -4173,8 +4173,7 @@ class OrderController extends BaseController
                 try {
                     $response = Http::get($order->ordervendor->dispatch_traking_url);
                 } catch (\Exception $ex) {
-                    //\Log::info('Error:');
-                    //\Log::info(json_encode($ex->getMessage()));
+                
                 }
 
                 if (isset($response) && $response->status() == 200) {
@@ -4261,7 +4260,6 @@ class OrderController extends BaseController
         return response()->json(['status'=>1,'message'=>'Notification sent successfully!']);
         }catch(\Exception $e)
         {
-            \Log::info($e->getMessage());
             return response()->json(['status'=>0,'error'=>$e->getMessage()]);
         }
     }
@@ -4389,7 +4387,7 @@ class OrderController extends BaseController
             return $response;
         }
         catch (\Exception $e) {
-            \Log::info($e->getMessage());
+           
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }
@@ -5073,8 +5071,7 @@ class OrderController extends BaseController
                     $response = Http::get($new_dispatch_traking_url);
 
                 } catch (\Exception $ex) {
-                    //\Log::info('Error:');
-                    //\Log::info(json_encode($ex->getMessage()));
+                 
                 }
 
 

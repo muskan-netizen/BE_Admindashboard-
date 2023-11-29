@@ -1299,8 +1299,7 @@ class OrderController extends BaseController
             ]);
         } catch (\Exception $e) {
             DB::rollback();
-            \Log::info($e->getCode());
-            \Log::info($e->getMessage());
+          
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
