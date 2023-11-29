@@ -2588,7 +2588,6 @@ class VendorController extends BaseController{
                             ->orderByRaw('CAST(products.calories AS SIGNED) desc');
                         }
                     }
-                    // \Log::info(['products' => $products->get()]);
                     $products = $products->groupBy('id');
                     }])
                     ->where('status', 1);

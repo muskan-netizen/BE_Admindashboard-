@@ -155,6 +155,7 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->aadhaar_back = $aadhaar_back;
             $homeData['profile']->preferences->aadhaar_number = $aadhaar_number;
             $homeData['profile']->preferences->upi_id = $upi_id;
+            $homeData['profile']->preferences->is_hourly_pickup_rental = $clientPreferences->is_hourly_pickup_rental;
 
             if(!is_null($passbase))
             {
@@ -1027,7 +1028,7 @@ class HomeController extends BaseController
             ->whereHas('category.categoryDetail', function ($q) {
                 $q->whereNull('categories.deleted_at');
             })
-            ->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','category_id','title','calories');
+            ->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','category_id','title','calories','per_hour_price','km_included');
         if ($where !== '') {
             $products = $products->where($where, 1);
         }

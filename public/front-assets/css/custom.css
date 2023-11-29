@@ -15322,6 +15322,9 @@ body .status_box label {
                 div#orders_wrapper   .order_head span{
                     font-size: 14px;
                 }
+                #content-wrap header .inner-pages-offset{
+                    margin: 0!important;
+                }
             }
             /* template two common css */
             /* mobile or desktop banner css start */

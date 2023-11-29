@@ -296,7 +296,7 @@ class PickupDeliveryController extends BaseController{
             if($request->recurringformPost)
             {
             $recurring = recurringCalculationFunction($request);
-            // \Log::info(json_encode($recurring));
+            
             $recurringDays  = $recurring->daysCnt??1; 
             }
 
@@ -801,6 +801,7 @@ class PickupDeliveryController extends BaseController{
                 $order->friend_name = $request->friendName;
                 $order->friend_phone_number = $request->friendPhoneNumber;
                 $order->luxury_option_id = $luxury_option->id;
+                $order->rental_hours = $request->rental_hours ?? 0;
 
                 $order->is_postpay = (isset($request->is_postpay))?$request->is_postpay:0;
                 $order->total_other_taxes   = ($request->other_taxes_string)?$request->other_taxes_string:'';
@@ -1615,7 +1616,7 @@ class PickupDeliveryController extends BaseController{
                 $files = [];
                 // $dispatch_domain->pickup_delivery_service_key_code ='745e3f';
                 // $dispatch_domain->pickup_delivery_service_key = 'icDerSAVT4Fd795DgPsPfONXahhTOA';
-                // $dispatch_domain->pickup_delivery_service_key_url ='https://192.168.96.20:8010';
+                // $dispatch_domain->pickup_delivery_service_key_url ='http://192.168.96.20:8010';
                 $client = new GCLIENT(['headers' => ['personaltoken' => $dispatch_domain->pickup_delivery_service_key, 'shortcode' => $dispatch_domain->pickup_delivery_service_key_code]]);
                 $url = $dispatch_domain->pickup_delivery_service_key_url;
 
@@ -2061,8 +2062,8 @@ class PickupDeliveryController extends BaseController{
                 $actual_amount                      = $vendor_payable_amount;
 
                 $order_vendor->service_fee_percentage_amount = 0;
-                $order_vendor->subtotal_amount               = $actual_amount;
-                $order_vendor->payable_amount                = $vendor_payable_amount;
+                $order_vendor->subtotal_amount               =  $biddata->bid_price ?? $actual_amount;
+                $order_vendor->payable_amount                =  $biddata->bid_price ?? $vendor_payable_amount;
                 $order_vendor->taxable_amount                = 0;
                 $order_vendor->discount_amount               = 0;
                 $order_vendor->toll_amount                   = 0;

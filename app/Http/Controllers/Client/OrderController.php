@@ -1299,8 +1299,7 @@ class OrderController extends BaseController
             ]);
         } catch (\Exception $e) {
             DB::rollback();
-            \Log::info($e->getCode());
-            \Log::info($e->getMessage());
+          
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
@@ -3026,7 +3025,7 @@ class OrderController extends BaseController
                 $notification_content = NotificationTemplate::where('id', 9)->first();
             }
             if ($notification_content) {
-                $body_content = str_ireplace("{order_id}", "#" . $$orderData->orderDetail->order_number, $notification_content->content);
+                $body_content = str_ireplace("{order_id}", "#" . $orderData->orderDetail->order_number, $notification_content->content);
                 $redirect_URL['type'] = 4;
                 $data = [
                     "registration_ids" => $devices,

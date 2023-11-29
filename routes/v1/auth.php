@@ -67,6 +67,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('get-order-panel-detail', 'Api\v1\BaseController@getPanelDetail')->middleware('ConnectDbFromDispatcher');
 
         Route::post('get-blockchain-address', 'Api\v1\BlockchainController@getBlockchainAddress');
+        Route::get('get-hourly-base-price', 'Api\v1\CategoryController@getHourlyBasePrice');
 
 
         Route::get('profile', 'Api\v1\ProfileController@profile');
