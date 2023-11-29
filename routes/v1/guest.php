@@ -26,10 +26,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         });
     });
 
-    
-
-
-
     Route::group(['middleware' => ['dbCheck', 'checkAuth']], function () { //apilogger
 
         Route::get('static-dropoff-locations', 'Api\v1\AddressController@staticDropoffLocations');

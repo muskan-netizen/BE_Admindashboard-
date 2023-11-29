@@ -59,6 +59,10 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('chat/sendNotificationToUser', 'Api\v1\ChatController@sendNotificationToUser');
         Route::get('chat/s3-sign', 'Api\v1\ChatController@signAws');
 
+        Route::post('addvendorwishlist', 'Api\v1\HomeController@addVendorWishList');
+        Route::post('removevendorwishlist', 'Api\v1\HomeController@removevendorwishlist');
+        Route::post('viewvendorwishlist', 'Api\v1\HomeController@viewVendorWishList');
+
        // Route::post('category-product-sync-dispatcher', 'Api\v1\DispatcherController@categoryProductSyncDispatcher')->middleware('ConnectDbFromDispatcher');
         Route::post('get-order-panel-detail', 'Api\v1\BaseController@getPanelDetail')->middleware('ConnectDbFromDispatcher');
 

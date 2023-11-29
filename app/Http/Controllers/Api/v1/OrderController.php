@@ -2478,21 +2478,6 @@ class OrderController extends BaseController
                     );
 
                 }
-                $order_item_count += $product->quantity;
-
-                $product_details[] = array(
-                    'image_path' => $product->media->first() ? $product->media->first()->image->path : $product->image,
-                    'price' => $product->price,
-                    'qty' => $product->quantity,
-                    'category_type' => $product->product->category->categoryDetail->type->title ?? '',
-                    'product_id' => $product->product_id,
-                    'title' =>$product->translation->title,
-                    'product_title' => $product->translation->title,
-                    'routes' => $product->routes,
-                    'dispatcher_agent' => $dispatcher_agent,
-                    'scheduled_date_time' => dateTimeInUserTimeZone($product->scheduled_date_time, $user->timezone),
-                    'schedule_slot' => $product->schedule_slot
-                );
 
                 $luxury_option_name = '';
                 if ($order->orderDetail->luxury_option_id > 0) {

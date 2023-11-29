@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\UserRegistrationDocuments;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart, VerificationOption, ShowSubscriptionPlanOnSignup, ClientCountries};
+use App\Models\{UserVendorWishlist,User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart, VerificationOption, ShowSubscriptionPlanOnSignup, ClientCountries};
 use DateTime;
 use DateInterval;
 use DateTimeZone;
@@ -1695,6 +1695,57 @@ class HomeController extends BaseController
 
             return $this->successResponse($homeData);
         } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function addVendorWishList(Request $request) {
+        try {
+            $user = Auth::user();
+            $wishlistData = [
+                'user_id' => $user->id,
+                'vendor_id' => $request->input('vendor_id'),
+            ];
+            UserVendorWishlist::updateOrCreate($wishlistData, $wishlistData);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Vendor added to your wish list successfully',
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            Log::error($e->getLine());
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function viewVendorWishList(Request $request) {
+        try {
+            $user = Auth::user();
+            $userVendorWishlist = UserVendorWishlist::with('vendor')->where('user_id', $user->id)->get();
+            return $this->successResponse($userVendorWishlist);
+    
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            Log::error($e->getLine());
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function removeVendorWishList(Request $request) {
+        try {
+            $user = Auth::user();
+            $wishlistData = [
+                'user_id' => $user->id,
+                'vendor_id' => $request->input('vendor_id'),
+            ];
+            UserVendorWishlist::where($wishlistData)->delete();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Vendor removed from your wish list successfully',
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            Log::error($e->getLine());
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }

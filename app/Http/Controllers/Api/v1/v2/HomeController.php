@@ -295,11 +295,12 @@ class HomeController extends BaseController
             //$homePageData = $this->postHomePageData($request);
             
             if($request->action=='2'){
+                // dd('sdsd');
                 $homePageData = $this->postHomePageDataV2($request, $set_template, $enable_layout, $additionalPreference,$user);
             } else {
                 $homePageData = $this->postHomePageData($request,$additionalPreference);
             }
-
+            
             if($type == 'p2p')
             {
                  
