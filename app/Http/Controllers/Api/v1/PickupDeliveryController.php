@@ -596,6 +596,9 @@ class PickupDeliveryController extends BaseController{
      * create order for booking
     */
      public function createOrder(Request $request){
+
+        // \Log::info('request data');
+        // \Log::info($request->all());
         DB::beginTransaction();
         try {
             $user = Auth::user();
@@ -610,7 +613,8 @@ class PickupDeliveryController extends BaseController{
                 ]);
             }
 
-
+ 
+          
             if($order_place && $order_place['status'] == 200){
                 if (($request->payment_option_id == 1) || ($request->payment_option_id == 42) || (( $request->has('transaction_id') ) && (!empty($request->transaction_id))) || (( $request->has('is_postpay')) && ($request->is_postpay==1))){
                     $data = [];
@@ -765,7 +769,7 @@ class PickupDeliveryController extends BaseController{
                     $data['message'] =  'Your phone is not verified.';
                     return $data;
                 }
-            }
+            }  
             $cart = Product::where('id', $request->product_id)->first();
             if ($cart) {
                 $loyalty_points_used = 0;
@@ -897,7 +901,7 @@ class PickupDeliveryController extends BaseController{
                 if ($request->other_taxes) {
                     $payable_amount = $payable_amount + $request->other_taxes;
                 }
-
+             
                 $vendor_taxable_amount += $request->other_taxes;
                 $total_amount += $variant->price;
                 $order_product = new OrderProduct;
@@ -913,7 +917,6 @@ class PickupDeliveryController extends BaseController{
                 $order_product->product_name = $product->sku;
                 $order_product->no_seats_for_pooling = (isset($request->is_cab_pooling) && $request->is_cab_pooling== 1 && isset($request->no_seats_for_pooling))?$request->no_seats_for_pooling:0;
                 $order_product->is_cab_pooling = isset($request->is_cab_pooling)?$request->is_cab_pooling:0;
-
                 $order_product->is_one_push_booking = isset($request->is_one_push_booking)?$request->is_one_push_booking:0;
 
                 if(isset($request->user_product_order_form) && !empty($request->user_product_order_form)){
@@ -940,6 +943,7 @@ class PickupDeliveryController extends BaseController{
                     }
                 }
 
+ 
 
                 $coupon_id = null;
                 $coupon_name = null;
@@ -994,6 +998,8 @@ class PickupDeliveryController extends BaseController{
                 $order_status->save();
                 
                 $loyalty_points_earned = LoyaltyCard::getLoyaltyPoint($loyalty_points_used, $payable_amount);
+                
+                
                 $order->total_amount = $total_amount;
                 $order->total_discount = $total_discount;
                 $order->taxable_amount = $taxable_amount;
@@ -1070,6 +1076,11 @@ class PickupDeliveryController extends BaseController{
                     $tip_amount = $request->tip;
                     $tip_amount = ($tip_amount / $customerCurrency->doller_compare) * $clientCurrency->doller_compare;
                     $order->tip_amount = decimal_format($tip_amount);
+                }
+                if(isset($request->bid_task_type) && ($request->bid_task_type == 'bid_ride_request'))
+                {
+                    $order->total_amount  = $request->amount;
+                    $order->payable_amount  = $request->amount;
                 }
                 $order->save();
 
@@ -1225,6 +1236,10 @@ class PickupDeliveryController extends BaseController{
                 $allocation_type = 'a';
                 if(isset($request->unique_id) || isset($request->agent_id)){
                     $allocation_type = 'm';
+                }
+                if(isset($request->bid_task_type) && ($request->bid_task_type == 'bid_ride_request'))
+                {
+                    $payable_amount  = $request->amount;
                 }
                 $postdata =  [
                             'notify_all' => $request->send_to_all ?1: 0,
