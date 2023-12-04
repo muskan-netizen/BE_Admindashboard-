@@ -2282,7 +2282,6 @@ class SellerController extends BaseController
 
             foreach($estimate_products as $k => $product)
             {
-                //\Log::info($product->primary);
                     //Product added
                     $productId = Product::updateOrCreate(
                     [

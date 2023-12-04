@@ -75,7 +75,6 @@ class MargApiProductUpdateCron extends Command
 
                 $result = DB::select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", [$database_name]);
                 if (empty($result)) {
-                    // \Log::info($client->database_name. " -- no db found");
                     continue;
                 }
 
@@ -144,7 +143,6 @@ class MargApiProductUpdateCron extends Command
                     if(!empty($collectionData["Details"]->pro_N)){
 
                         foreach($collectionData["Details"]->pro_N as $key => $product){
-                            // \Log::info('code--'.$product->code);
                             $detail = $this->addProduct($product,$marg_vendor_product->vendor_id);
                         }
                     }
