@@ -27,7 +27,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
                 $newvendors = ($vendors === "vendors") ? __('vendors') : $vendors ;
                 @endphp
                 @php
-                    $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module']);
+                    $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'gofrugal_enable_status']);
                 @endphp
 
                 <h4 class="page-title">{{ $newvendors }}</h4>
@@ -415,6 +415,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
             $('#Vendor_order_pre_time_show').text(txt);
        }
     }
+    var toggleGroFrugalBtn = {{$getAdditionalPreference['gofrugal_enable_status'] != 1 ? 'd-none' : ''}};
     var goFrugalUrl = '{{route("gofrugal.home")}}';
 </script>
 @include('backend.vendor.pagescript')
