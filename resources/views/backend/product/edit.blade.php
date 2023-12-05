@@ -1400,28 +1400,51 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     </div>
                     @endif
                     @endif
+                    @if (isset($getAdditionalPreference['is_product_measurement_in_cm_kg']) && $getAdditionalPreference['is_product_measurement_in_cm_kg'] == 1)
+                        <div class="row mt-2 mb-2 physicalDiv" style="{{ ($product->is_physical == 1) ? '' : '' }}">
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Length (In Centimeter)',['class' => 'control-label']) !!}
+                                {!! Form::text('length', $product->length,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '10.0']) !!}
+                            </div>
 
-                    <div class="row mt-2 mb-2 physicalDiv" style="{{ ($product->is_physical == 1) ? '' : '' }}">
-                        <div class="col-sm-4">
-                            {!! Form::label('title', 'Length (In Inches)',['class' => 'control-label']) !!}
-                            {!! Form::text('length', $product->length,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '10.0']) !!}
-                        </div>
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Width (In Centimeter)',['class' => 'control-label']) !!}
+                                {!! Form::text('breadth', $product->breadth,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '12.0']) !!}
+                            </div>
 
-                        <div class="col-sm-4">
-                            {!! Form::label('title', 'Width (In Inches)',['class' => 'control-label']) !!}
-                            {!! Form::text('breadth', $product->breadth,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '12.0']) !!}
-                        </div>
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Height (In Centimeter)',['class' => 'control-label']) !!}
+                                {!! Form::text('height', $product->height,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '8.0']) !!}
+                            </div>
 
-                        <div class="col-sm-4">
-                            {!! Form::label('title', 'Height (In Inches)',['class' => 'control-label']) !!}
-                            {!! Form::text('height', $product->height,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '8.0']) !!}
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Weight (In Kg)',['class' => 'control-label']) !!}
+                                {!! Form::text('weight', $product->weight,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '15.0']) !!}
+                            </div>
                         </div>
+                    @else
+                        <div class="row mt-2 mb-2 physicalDiv" style="{{ ($product->is_physical == 1) ? '' : '' }}">
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Length (In Inches)',['class' => 'control-label']) !!}
+                                {!! Form::text('length', $product->length,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '10.0']) !!}
+                            </div>
 
-                        <div class="col-sm-4">
-                            {!! Form::label('title', 'Weight (In Pounds)',['class' => 'control-label']) !!}
-                            {!! Form::text('weight', $product->weight,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '15.0']) !!}
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Width (In Inches)',['class' => 'control-label']) !!}
+                                {!! Form::text('breadth', $product->breadth,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '12.0']) !!}
+                            </div>
+
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Height (In Inches)',['class' => 'control-label']) !!}
+                                {!! Form::text('height', $product->height,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '8.0']) !!}
+                            </div>
+
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Weight (In Pounds)',['class' => 'control-label']) !!}
+                                {!! Form::text('weight', $product->weight,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '15.0']) !!}
+                            </div>
                         </div>
-                    </div>
+                    @endif
 
                     <!-- <div class="row mb-2">
                         {!! Form::label('title', 'Physical',['class' => 'control-label col-sm-2']) !!}

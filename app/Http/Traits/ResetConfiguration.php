@@ -164,7 +164,8 @@ trait ResetConfiguration
             'is_sms_cancel_order',
             'is_sms_booked_ride',
             'is_hourly_pickup_rental',
-            'add_to_cart_btn'
+            'add_to_cart_btn',
+            'is_product_measurement_in_cm_kg'
         ]);
 
 
