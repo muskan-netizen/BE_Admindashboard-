@@ -415,7 +415,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
             $('#Vendor_order_pre_time_show').text(txt);
        }
     }
-    var toggleGroFrugalBtn = {{$getAdditionalPreference['gofrugal_enable_status'] != 1 ? 'd-none' : ''}};
+    var toggleGroFrugalBtn = {{@$getAdditionalPreference['gofrugal_enable_status'] != 1 ? 'd-none' : ''}};
     var goFrugalUrl = '{{route("gofrugal.home")}}';
 </script>
 @include('backend.vendor.pagescript')
