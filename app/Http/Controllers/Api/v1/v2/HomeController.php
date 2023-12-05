@@ -174,7 +174,6 @@ class HomeController extends BaseController
                     $longitude = $clientPreferences->Default_longitude;
                 }
             }
- 
            
             if($clientPreferences->is_hyperlocal == 1) {
                 
@@ -194,9 +193,6 @@ class HomeController extends BaseController
                 } 
 
             }
-            
-             
-
 
             if ($this->additionalPreference['is_cache_enable_for_home'] == 1 && @$find_key['data']) {
                 $homeData = $find_key['data'];
@@ -302,22 +298,14 @@ class HomeController extends BaseController
                 $Service_area = $this->getServiceArea($latitude, $longitude, $type);
           
                 $vendorData = $vendorData->whereIn('id', $ses_vendors);
-                //if($venderFilternear && ($venderFilternear == 1) ){
-                    //->orderBy('vendorToUserDistance', 'ASC')
                     $vendorData =   $vendorData->orderBy('vendorToUserDistance', 'ASC');
-                //}
             }
            
             $venderIds  = $vendorData->where('status', 1)->pluck('id');
             $navCategories = $this->categoryNav($langId, $venderIds, $type , $request);
             }
             else{
-           
-              
                 $navCategories = $this->categoryNav($langId, @$homePageData['vendor_ids'], $type);
-
-            
-
             }
 
             Session::put('navCategories', $navCategories);
@@ -328,18 +316,12 @@ class HomeController extends BaseController
                     $da['data'] = @$homePageData[@$da->slug];
                 }
                 if ($da->slug == 'nav_categories') {
-                    // dd($da->slug);
                     $da['data'] = $navCategories;
-                    // dd($da[$da->slug]);
                 }   if ($da->slug == 'banner') {
-                    // dd($da->slug);
                     $da['banner_image'] = $mobile_banners;
-                    // dd($da[$da->slug]);
                 }
                 if ($da->slug == 'nav_categories') {
-                    // dd($da->slug);
                     $da['data'] = $navCategories;
-                    // dd($da[$da->slug]);
                 }
                 return $da;
             });
