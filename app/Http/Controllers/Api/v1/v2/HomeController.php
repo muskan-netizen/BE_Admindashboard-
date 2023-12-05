@@ -158,25 +158,7 @@ class HomeController extends BaseController
                 }
             }
 
-
-            // $banners = Banner::with(['category', 'vendor'])->where('status', 1)->where('validity_on', 1)
-            //     ->where(function ($q) {
-            //         $q->whereNull('start_date_time')->orWhere(function ($q2) {
-            //             $q2->whereDate('start_date_time', '<=', Carbon::now())
-            //                 ->whereDate('end_date_time', '>=', Carbon::now());
-            //         });
-            //     });
-            // if (isset($clientPreferences->is_service_area_for_banners) && ($clientPreferences->is_service_area_for_banners == 1) && ($clientPreferences->is_hyperlocal == 1)) {
-            //     if (!empty($latitude) && !empty($longitude)) {
-            //         $banners = $banners->whereHas('geos.serviceArea', function ($query) use ($latitude, $longitude) {
-            //             $query->select('id')->whereRaw("ST_Contains(POLYGON, ST_GEOMFROMTEXT('POINT(" . $latitude . " " . $longitude . ")'))");
-            //         });
-            //     }
-            // }
-            // $banners = $banners->orderBy('sorting', 'asc')->get();
-
             $clientPreferences = ClientPreference::first();
-
 
             $count = 0;
             if ($clientPreferences) {
@@ -273,7 +255,7 @@ class HomeController extends BaseController
 
 
             if (isset($langId) && !empty($langId))
-                $home_page_labels = $home_page_labels->with(['banner_image', 'translations' => function ($q) use ($langId) {
+                $home_page_labels = $home_page_labels->with(['translations' => function ($q) use ($langId) {
                     $q->where('language_id', $langId);
                 }]);
 
@@ -292,17 +274,14 @@ class HomeController extends BaseController
             $enable_layout = CabBookingLayout::where('is_active', 1)->app();
 
             $enable_layout = $enable_layout->orderBy('order_by', 'asc')->pluck('slug')->toArray();
-            //$homePageData = $this->postHomePageData($request);
             if($request->action=='2'){
-                $homePageData = $this->postHomePageDataV2($request, $set_template, $enable_layout, $additionalPreference,$user);
+                    $homePageData = $this->postHomePageDataV2($request, $set_template, $enable_layout, $additionalPreference,$user);
             } else {
                 $homePageData = $this->postHomePageData($request,$additionalPreference);
             }
 
             if($type == 'p2p')
             {
-
-             
             $vendorData = Vendor::whereHas('getAllCategory.category',function($q)use ($categoryTypes){
                 $q->whereIn('type_id',$categoryTypes);
             })->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude','id as is_vendor_closed' ,'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where($type, 1);
@@ -342,14 +321,20 @@ class HomeController extends BaseController
             }
 
             Session::put('navCategories', $navCategories);
-
             /***end new  */
-
-            // dd($navCategories);
-            $home_page_labels = $home_page_labels->map(function ($da) use ($homePageData, $navCategories) {
+            $home_page_labels = $home_page_labels->map(function ($da) use ($homePageData, $navCategories,$mobile_banners) {
                 if ($da->slug != 'pickup_delivery' && $da->slug != 'dynamic_page' && $da->slug != 'nav_categories' && $da->slug != 'banner') {
 
                     $da['data'] = @$homePageData[@$da->slug];
+                }
+                if ($da->slug == 'nav_categories') {
+                    // dd($da->slug);
+                    $da['data'] = $navCategories;
+                    // dd($da[$da->slug]);
+                }   if ($da->slug == 'banner') {
+                    // dd($da->slug);
+                    $da['banner_image'] = $mobile_banners;
+                    // dd($da[$da->slug]);
                 }
                 if ($da->slug == 'nav_categories') {
                     // dd($da->slug);
