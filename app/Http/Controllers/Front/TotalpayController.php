@@ -114,7 +114,7 @@ class TotalpayController extends Controller
                                 if ($payment->payment_from == 'web') {
                                     return redirect()->route('order.success', $order->id);
                                 } else {
-                                    $returnUrl = route('payment.gateway.return.response') . '/?gateway=zaincash' . '&status=200&order=' . $order->id;
+                                    $returnUrl = route('payment.gateway.return.response') . '/?gateway=totalpay' . '&status=200&order=' . $order->id;
                                     return redirect($returnUrl);
                                 }
                             }
