@@ -321,12 +321,12 @@ $category_name =  ($category->translation->first()) ? $category->translation->fi
                                        {{-- <div class="description_txt mt-3">
                                             <p>{{ (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_description : ''}}</p>
                                         </div>--}}
-                                        <input type="hidden" name="available_product_variant" id="available_product_variant" value="{{$product->variant[0]->id}}">
+                                        <input type="hidden" name="available_product_variant" id="available_product_variant" value="{{$product->variant[0]->id ?? ''}}">
                                         <input type="hidden" name="start_time" id="start_time" value="">
                                         <input type="hidden" name="end_time" id="end_time" value="">
 
                                         <div id="product_variant_wrapper">
-                                            <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id}}">
+                                            <input type="hidden" name="variant_id" id="prod_variant_id" value="{{$product->variant[0]->id ?? ''}}">
                                             @if(Session::get('vendorType') != 'p2p' )
                                             @if($product->inquiry_only == 0)
                                                 <h3 id="productPriceValue" class="mb-md-3">

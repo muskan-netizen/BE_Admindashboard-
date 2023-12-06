@@ -54,6 +54,8 @@ class AttributeController extends BaseController
      */
     public function store(Request $request)
     {
+
+   
         if($request->cate_id ==''){
             return redirect()->back()->with('error_delete',__('Please select Category!'));
         }
@@ -84,9 +86,16 @@ class AttributeController extends BaseController
             $variant->save();
             $data = $data_cate = array();
             if($variant->id > 0){
-                $data_cate['attribute_id'] = $variant->id;
-                $data_cate['category_id'] = $request->cate_id;
-                AttributeCategory::insert($data_cate);
+
+                foreach($request->cate_id as $category_id)
+                {
+                    $data_cate['attribute_id'] = $variant->id;
+                
+                    $data_cate['category_id'] = $category_id;
+                    AttributeCategory::insert($data_cate);
+
+                }
+               
                 foreach ($request->title as $key => $value) {
                     $varTrans = new AttributeTranslation();
                     $varTrans->title = $request->title[$key];
@@ -202,11 +211,33 @@ class AttributeController extends BaseController
             }
             $variant->save();
 
-            $VariantCategory = AttributeCategory::where('attribute_id', $variant->id)->first();
+            $VariantCategory = AttributeCategory::where('attribute_id', $variant->id)->get();
             if(!empty($VariantCategory)):
-                $affected = AttributeCategory::where('attribute_id', $variant->id)->update(['category_id' => $request->cate_id]);
+                foreach($request->cate_id as $category_id)
+                {
+
+                    AttributeCategory::updateOrInsert(
+                        ['attribute_id' => $variant->id, 'category_id' => $category_id],
+                        [
+                        'attribute_id' =>  $variant->id,
+                        'category_id' => $category_id
+                        ]
+                    );
+
+                }
             else:
-                $affected = AttributeCategory::insert(['attribute_id' => $variant->id, 'category_id' => $request->cate_id]);
+                foreach($request->cate_id as $category_id)
+                {
+
+                    AttributeCategory::updateOrInsert(
+                        ['attribute_id' => $variant->id, 'category_id' => $category_id],
+                        [
+                        'attribute_id' =>  $variant->id,
+                        'category_id' => $category_id
+                        ]
+                    );
+
+                }
             endif;
 
             foreach ($request->language_id as $key => $value) {

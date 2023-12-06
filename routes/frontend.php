@@ -502,6 +502,7 @@ Route::group(['middleware' => ['domain']], function () {
 
 
 	Route::get('category/{slug?}', 'Front\CategoryController@categoryProduct')->name('categoryDetail');
+	Route::post('get-rental-view', 'Front\CategoryController@getRentalView')->name('get-rental-view');
 
 	
 
@@ -676,6 +677,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 		Route::post('update-product-replace', 'Front\ReturnOrderController@updateProductReplace')->name('update.order.replace');
 
 	});
+	
 	// Rental Extend Routes
 	Route::group(['prefix' => 'extend-durartion'], function () {
 		Route::get('get-order-vendor-product-duration-data-in-model', 'Front\ExtendOrderController@getOrderProductDurationDatainModel')->name('getOrderProductDurationDatainModel');
@@ -685,6 +687,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 		Route::get('/', 'Front\BookingController@index')->name('bookingIndex');
 		Route::get('details/{id?}', 'Front\BookingController@bookingDetails')->name('front.booking.details');
 		Route::post('orderPlaceDetails/{id}', 'Front\BookingController@orderPlaceDetails')->name('front.booking.orderplacedetails');
+		Route::post('updateRentalPrice', 'Front\BookingController@updateRentalPrice')->name('front.booking.updateRentalPrice');
 
 		Route::get('payment/options', 'Front\PickupDeliveryController@getPaymentOptions');
 		Route::post('create-order', 'Front\PickupDeliveryController@createOrder');
@@ -695,6 +698,7 @@ Route::group(['middleware' => ['domain', 'webAuth']], function () {
 		Route::post('get-list-of-vehicles-old/{id}', 'Front\PickupDeliveryController@getListOfVehicles');
 		Route::post('vendor/list/{category_id}', 'Front\PickupDeliveryController@postVendorListByCategoryId')->name('pickup-delivery-route');
 		Route::post('get-list-of-vehicles/{vid}/{cid?}', 'Front\PickupDeliveryController@productsByVendorInPickupDelivery');
+		Route::post('get-list-of-rental-vehicles', 'Front\PickupDeliveryController@productsByRentalVendorInPickupDelivery')->name('get-list-of-rental-vehicles');
 		Route::post('order-tracking-details', 'Front\PickupDeliveryController@getOrderTrackingDetails')->name('bookingIndex');
 		Route::post('promo-code/verify', 'Front\PickupDeliveryController@postVerifyPromoCode')->name('verify.cab.booking.promo-code');
 		Route::get('get-product-order-form', 'Front\PickupDeliveryController@getProductOrderForm')->name('get-product-order-form');

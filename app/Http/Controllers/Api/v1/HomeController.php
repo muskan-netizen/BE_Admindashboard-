@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\UserRegistrationDocuments;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart, VerificationOption, ShowSubscriptionPlanOnSignup, ClientCountries};
+use App\Models\{UserVendorWishlist,User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart, VerificationOption, ShowSubscriptionPlanOnSignup, ClientCountries};
 use DateTime;
 use DateInterval;
 use DateTimeZone;
@@ -155,6 +155,7 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->aadhaar_back = $aadhaar_back;
             $homeData['profile']->preferences->aadhaar_number = $aadhaar_number;
             $homeData['profile']->preferences->upi_id = $upi_id;
+            $homeData['profile']->preferences->is_hourly_pickup_rental = $clientPreferences->is_hourly_pickup_rental;
 
             if(!is_null($passbase))
             {
@@ -1027,7 +1028,7 @@ class HomeController extends BaseController
             ->whereHas('category.categoryDetail', function ($q) {
                 $q->whereNull('categories.deleted_at');
             })
-            ->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','category_id','title','calories');
+            ->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','category_id','title','calories','per_hour_price','km_included');
         if ($where !== '') {
             $products = $products->where($where, 1);
         }
@@ -1694,6 +1695,57 @@ class HomeController extends BaseController
 
             return $this->successResponse($homeData);
         } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function addVendorWishList(Request $request) {
+        try {
+            $user = Auth::user();
+            $wishlistData = [
+                'user_id' => $user->id,
+                'vendor_id' => $request->input('vendor_id'),
+            ];
+            UserVendorWishlist::updateOrCreate($wishlistData, $wishlistData);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Vendor added to your wish list successfully',
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            Log::error($e->getLine());
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function viewVendorWishList(Request $request) {
+        try {
+            $user = Auth::user();
+            $userVendorWishlist = UserVendorWishlist::with('vendor')->where('user_id', $user->id)->get();
+            return $this->successResponse($userVendorWishlist);
+    
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            Log::error($e->getLine());
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function removeVendorWishList(Request $request) {
+        try {
+            $user = Auth::user();
+            $wishlistData = [
+                'user_id' => $user->id,
+                'vendor_id' => $request->input('vendor_id'),
+            ];
+            UserVendorWishlist::where($wishlistData)->delete();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Vendor removed from your wish list successfully',
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            Log::error($e->getLine());
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }

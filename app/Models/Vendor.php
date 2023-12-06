@@ -259,4 +259,5 @@ class Vendor extends Model implements Auditable{
         return $query->selectRaw("0 as distance_in_meter");
     }
 
+
 }
