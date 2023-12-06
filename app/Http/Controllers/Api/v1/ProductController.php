@@ -80,7 +80,7 @@ class ProductController extends BaseController
 
         $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
         foreach ($products->variant as $key => $value) {
-            $products->variant[$key]->multiplier = $clientCurrency->doller_compare;
+            $products->variant[$key]->multiplier = $clientCurrency->doller_compare ?? 1;
         }
 
         foreach ($products->addOn as $key => $value) {

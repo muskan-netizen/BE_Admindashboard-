@@ -42,14 +42,16 @@ class WebStylingOptionSeeder extends Seeder
                 foreach ($web_styling_options as $option) {
                     $webStylingOption = WebStylingOption::where('template_id', $option['template_id'])->first();
                     if ($webStylingOption !== null) {
-                        $webStylingOption->update(['web_styling_id' => $web_styling, 'name' => $option['name'], 'image' => $option['image']]);
+                        $webStylingOption->update(['web_styling_id' => $web_styling, 'name' => $option['name'], 'image' => $option['image'], 'is_template' => 1]);
                     } else {
                         WebStylingOption::create([
                             'name' => $option['name'],
                             'image' => $option['image'],
                             'is_selected' => $option['is_selected'],
                             'template_id' => $option['template_id'],
-                            'web_styling_id' => $option['web_styling_id']
+                            'web_styling_id' => $option['web_styling_id'],
+                            'is_template' => 1
+
                         ]);
                     }
                 }

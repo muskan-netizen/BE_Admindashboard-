@@ -149,7 +149,6 @@ class ToolsController extends BaseController
             }
             return false;
         } catch (\Exception $e) {
-            \Log::info("error ".$e->getMessage());
             return false;
         }
     }

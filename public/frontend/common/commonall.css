@@ -1615,6 +1615,18 @@ ul.product_list_order_page .items_price{
     font-weight: 400;
     padding: 0 12px;
  }
+ body[dir="rtl"] #step-2-ondemand .booking_date_section .date-items {
+    direction: ltr;
+}
+body[dir="rtl"] #step-4-ondemand .add-on-main-div {
+    direction: ltr;
+}
+#step-4-ondemand .booking-time  button.slick-prev {
+    left: 0;
+}
+#step-4-ondemand .booking-time  .slick-next {
+    right: 0;
+}
  .p2p_module_enable .buy_details .inner_spacing .flex-container .item-price h2 {
     font-size: 14px;
     line-height: 1;
