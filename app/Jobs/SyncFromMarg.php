@@ -74,7 +74,6 @@ use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, MargTrait;
                 DB::disconnect($database_name);
             }
         }
-        \Log::info("FetchMargData Command End");
     }
    
 }

@@ -75,5 +75,18 @@ class BookingController extends FrontController
             $data['data'] = $order;
             return $data;
     }
+
+
+    public function updateRentalPrice(Request $request)
+    {
+        $requestData = $request->json()->all();
+      
+        $per_hour_price = 20;
+        $price = $requestData['rental_hours'] * $per_hour_price;
+         
+    
+        return response()->json(['total_rental_price' => $price]);
+    }
+    
     
 }

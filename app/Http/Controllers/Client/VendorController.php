@@ -185,7 +185,7 @@ class VendorController extends BaseController
     }
 
     public function index(){
-
+        
         $user = Auth::user();
         $csvVendors = CsvVendorImport::orderBy('id','desc')->get();
         $preferences = ClientPreference::first();
@@ -194,6 +194,7 @@ class VendorController extends BaseController
         $vendor_docs = collect(new VendorDocs);
         $client_preferences = ClientPreference::first();
         $vendors = Vendor::withCount(['products', 'orders', 'currentlyWorkingOrders'])->where('is_seller', 0)->orderBy('id', 'desc');
+
         if ($user->is_superadmin == 0) {
             if($user->hasRole('Vendor') || $user->hasRole('Vendors') || $user->hasRole('vendor')){
                 $vendors = $vendors->whereHas('permissionToUser', function ($query) use ($user) {
@@ -213,17 +214,24 @@ class VendorController extends BaseController
         $blocked_vendor_count = $vendors->where('status', 2)->count();
         $awaiting__Approval_vendor_count = $vendors->where('status', 0)->count();
         $available_vendors_count = 0;
-        $vendors_product_count = 0;
-        $vendors_active_order_count = 0;
-        foreach ($only_active_vendors as $key => $vendor) {
-            $vendors_product_count += $vendor->products->count();
-            $vendors_active_order_count += $vendor->currentlyWorkingOrders->count();
-            if($vendor->show_slot == 1){
-                $available_vendors_count+=1;
-            }elseif ($vendor->slot->count() > 0) {
-                $available_vendors_count+=1;
-            }
-        }
+        $vendors_product_count = $vendors->sum('products_count');
+        $vendors_active_order_count = $vendors->sum('currentlyWorkingOrders_count');
+
+        // foreach ($only_active_vendors as $key => $vendor) {
+        //     // $vendors_product_count += $vendor->products->count();
+        //     // $vendors_active_order_count += $vendor->currentlyWorkingOrders->count();
+        //     if($vendor->show_slot == 1){
+        //         $available_vendors_count+=1;
+        //     }elseif ($vendor->slot->count() > 0) {
+        //         $available_vendors_count+=1;
+        //     }
+        // }
+
+        
+        $available_vendors_count = $only_active_vendors->filter(function ($vendor) {
+            return $vendor->show_slot == 1 || $vendor->slot->count() > 0;
+        })->count();
+
         $total_vendor_count = $vendors->count();
         $vendor_registration_documents = VendorRegistrationDocument::get();
 
@@ -234,7 +242,6 @@ class VendorController extends BaseController
             $vendor_for_pickup_delivery = $vendor_category->whereHas('category',function($q){$q->where('type_id',7);})->count();
             $vendor_for_ondemand = $vendor_category->whereHas('category',function($q){$q->where('type_id',8);})->count();
         }
-
         if(count($vendors) == 1 && $user->is_superadmin == 0){
             return Redirect::route('vendor.catalogs', $vendors->first()->id);
         }else{
@@ -805,10 +812,10 @@ class VendorController extends BaseController
             $tree = $this->printTree($build, 'vendor', $active);
             $categoryToggle = $this->printTreeToggle($build, $active);
         }
-        $addons = AddonSet::with('option')->select('id', 'title', 'min_select', 'max_select', 'position')
+        $addons = AddonSet::with('option.translation_one','translation_one')->select('id', 'title', 'min_select', 'max_select', 'position')
             ->where('status', '!=', 2)
             ->where('vendor_id', $id)
-            ->orderBy('position', 'asc')->get();
+            ->orderBy('position', 'asc')->get();   
         $langs = ClientLanguage::with('language')->select('language_id', 'is_primary', 'is_active')
             ->where('is_active', 1)
             ->orderBy('is_primary', 'desc')->get();

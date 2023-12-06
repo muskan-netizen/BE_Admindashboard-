@@ -321,6 +321,9 @@ input[type=number]::-webkit-outer-spin-button {
             <div id="booking-map" style="width: 100%; height: 100%;"></div>
             <input id="booking-latitude" type="hidden" value="-34">
             <input id="booking-longitude" type="hidden" value="151">
+            <input id="selected_category_id" type="hidden" value="">
+            <input id="selected_vendor_id" type="hidden" value="">
+            <input id="starting_rental_price" type="hidden" value="">
 
         </div>
         <div class="alFullMapForm col-md-12 p-0 position-absolute">
@@ -338,11 +341,27 @@ input[type=number]::-webkit-outer-spin-button {
                             <label class="tip_label mb-0  my-2" for="for_friend" id="label_for_friend">
                                 <h5 class="m-0" id="tip_5">{{ __('For Others') }}</h5>
                             </label>
+                            @if (isset($client_preference_detail) && $client_preference_detail->is_hourly_pickup_rental == 1)
+                            <input type="radio" class="tip_radio is_for_friend" id="hourly_rental" name="is_for_friend"
+                            value="1">
+                            <label class="tip_label mb-0  my-2" for="hourly_rental" id="label_for_hourly_rental">
+                                <h5 class="m-0" id="tip_5">{{ __('Hourly Rental') }}</h5>
+                            </label>
+                            @endif
+                        </div>
+                    @elseif (isset($client_preference_detail) && $client_preference_detail->is_hourly_pickup_rental == 1)
+                        <div class="tip_radio_controls_book_friend text-center mt-2">
+                            <input type="radio" class="tip_radio is_for_friend" id="hourly_rental" name="hourly_rental"
+                                value="1">
+                            <label class="tip_label mb-0  my-2" for="hourly_rental" id="label_for_hourly_rental">
+                                <h5 class="m-0" id="tip_5">{{ __('Hourly Rental') }}</h5>
+                            </label>
                         </div>
                     @endif
-                    
-                    @if($is_cab_pooling == 1 || $is_bid_ride_enable == 1 || $is_particular_driver == 1)
-                        <div class="pool_radio_controls text-center row justify-content-center">
+
+
+                    @if($is_cab_pooling == 1 || $is_bid_ride_enable == 1 || $is_recurring_booking == 1 || $is_particular_driver == 1)
+                        <div class="pool_radio_controls text-center">
                             <div class="item">
                                 <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_booking" name="is_cab_pooling_radio"
                                     value="0" checked>
@@ -350,35 +369,36 @@ input[type=number]::-webkit-outer-spin-button {
                                     <h5 class="m-0" id="pool_5">{{ __('Booking') }}</h5>
                                 </label>
                             </div>
-                            <div class="item">
-                                @if ($is_cab_pooling == 1 )
-                                    <input type="radio" class="pool_radio is_cab_pooling_radio" id="cab_pooling" name="is_cab_pooling_radio"
-                                        value="1">
-                                    <label class="pool_label mb-0  my-2" for="cab_pooling" id="label_cab_pooling">
-                                        <h5 class="m-0" id="pool_5">{{ __('Pooling') }}</h5>
-                                    </label>
-                                @endif
-                            </div>
+                            @endif
+
+                            @if($is_bid_ride_enable == 1)
                             <div class="item mx-1">
-                                @if($is_bid_ride_enable == 1)
-                                    <input type="radio" class="pool_radio" id="bid_radio"  name="is_cab_pooling_radio" value="0">
-                                    <label class="pool_label mb-0  my-2" for="bid_radio">
-                                        <h5 class="m-0" id="">Bid</h5>
-                                    </label>
-                                @endif
+                                <input type="radio" id="bid_radio" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="0">
+                                <label class="mb-0  my-2" >
+                                    <h5 class="m-0" id="">Bid</h5>
+                                </label>
                             </div>
+                            @endif
+
+                            @if($is_particular_driver == 1)
                             <div class="item">
-                                @if($is_particular_driver == 1)
-                                    <input class="pool_radio" type="radio" id="particular_driver_radio"  name="is_cab_pooling_radio" value="2">
-                                    <label class="pool_label mb-0  my-2" for="particular_driver_radio">
-                                        <h5 class="m-0" id="">Request to Driver</h5>
-                                    </label>
-                                @endif
+
+                                <input type="radio" id="particular_driver_radio" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="2">
+                                <label class="mb-0  my-2" >
+                                    <h5 class="m-0" id="">Request to Driver</h5>
+                                </label>
                             </div>
+                            @endif
+                            @if($is_recurring_booking == 1)
+                            <div class="item">
+
+                            <input type="radio" id="is_recurring_booking" class="pool_radio is_cab_pooling_radio"  name="is_cab_pooling_radio" value="4">
+                            <label class="mb-0  my-2" >
+                                <h5 class="m-0" id="">{{ __(getDynamicTypeName('Recurring')) }}</h5>
+                            </label>
+                            </div>
+                        @endif
                         </div>
-                    @endif
-
-
 
                     <div class="location-box check-pick-first">
                         <div class="where-to-go">
@@ -513,6 +533,13 @@ input[type=number]::-webkit-outer-spin-button {
                                                 class="fa fa-calendar"></i></span>
                                     </div>
                                 </div>
+
+                                @if($is_recurring_booking == 1)
+                                    <div class="recurring-option">
+                                        @include('frontend.product-part.recurring-booking')
+                                    </div>
+                                @endif
+
                             </div>
 
                             <div class="scheduled-footer">
@@ -569,8 +596,11 @@ input[type=number]::-webkit-outer-spin-button {
 
                     </div>
                 </div>
+                <div class="hourly-rental-container">
+                </div>
                 <script type="text/template" id="rider_template">
-            <div class="col-12 d-flex justify-content-between align-items-center">
+            
+                    <div class="col-12 d-flex justify-content-between align-items-center">
                 <% if(riders.length > 0){%>
                     <p class="m-0">Riders : <%= riders.length %></p>
                 <% } %>
@@ -866,7 +896,7 @@ input[type=number]::-webkit-outer-spin-button {
                     </div>
                     <div class="cab-location-details">
                     <div style="height:5px;"><div class="loader cab-detail-main-loader" style="display: none;"></div></div>
-       
+
 
                     <h4 class="d-flex align-items-center justify-content-between"><b><%= result.name %></b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount">{{Session::get('currencySymbol')}}<%= result.tags_price%></b></label></h4>
@@ -938,16 +968,16 @@ input[type=number]::-webkit-outer-spin-button {
                         <i class="fa fa-angle-down" aria-hidden="true"></i>
                     </h4>
                 </div>
-                
+
                 <div class="row">
                     <div class="col-md-12 create-bid-btn">
                         <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-task_type="schedule" booking-type='driver_request' data-tags="<%=(result.tags)%>">{{__('Request For Driver')}}</button>
                     </div>
                 </div>
             </div>
-            
+
             <span id="show_errors" class="text-danger"></span>
-            
+
         </script>
 
         <script type="text/template" id="driver_biding_list">
@@ -1013,7 +1043,10 @@ input[type=number]::-webkit-outer-spin-button {
                         <span class="d-flex align-items-center justify-content-between mt-2"><b>{{ __('Toll Fee') }}</b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount_less_toll">{{Session::get('currencySymbol')}}<%= result.toll_fee%></b></label></span>
                     <% } %>
-
+                    <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>
+                        <span class="d-flex align-items-center justify-content-between"><b>{{ __('Loyalty') }}</b> <label><sub class="ling-throgh" id
+                            ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">- {{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved%></b></label></span>
+                    <% } %>
                     <% if(result.service_charge_amount > 0){ %>
                         <span class="d-flex align-items-center justify-content-between"><b>{{ __('Service Charge') }}</b> <label><sub class="ling-throgh" id
                         ="discount_amount" style="display:none;"></sub> <b id="real_amount_toll_fee">{{Session::get('currencySymbol')}}<%= result.service_charge_amount%></b></label></span>
@@ -1056,6 +1089,11 @@ input[type=number]::-webkit-outer-spin-button {
                         <div class="col-6 mb-2 text-right" id="discount"><p class="total_amt m-0" id="subscription-amout">{{Session::get('currencySymbol')}}<%= result.subscription_discount %></p></div>
                         <input type="hidden" id="subscription-amout-h" value="<%= result.subscription_discount %>">
                         <% } %>
+
+                        <% if((result.yacht)){ %>
+                            {{-- <input type="number" class="from-control" id="seats" value="" name="seats" placeholder="Number of Seats Booking"> --}}
+                        <% } %>
+
                         <% if((result.loyalty_amount_saved) && (result.loyalty_amount_saved) > 0 ){ %>
                             <div class="col-6 mb-2">Loyalty</div>
                             <div class="col-6 mb-2 text-right">-{{Session::get('currencySymbol')}}<%= result.loyalty_amount_saved %></div>
@@ -1781,6 +1819,8 @@ input[type=number]::-webkit-outer-spin-button {
             var output = document.getElementById('output');
             output.src = URL.createObjectURL(event.target.files[0]);
         };
+        var hourly_rental_url = "{{  route('front.booking.updateRentalPrice')}}";
+        var csrf_token = "{{ csrf_token()}}";
     </script>
     @if (in_array('kongapay', $client_payment_options))
         <script src="https://kongapay-pg.kongapay.com/js/v1/production/pg.js"></script>
@@ -1798,14 +1838,20 @@ input[type=number]::-webkit-outer-spin-button {
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="{{ asset('js/cab_booking.js') }}"></script>
     <script src="{{ asset('js/biding.js') }}"></script>
+    <script src="{{asset('assets/libs/flatpickr/flatpickr.min.js')}}"></script>
+
     <script>
         var category_id = "{{ $category->id ?? '' }}";
         var category_name = "{{ @$category->translation[0]->name ?? '' }}";
         var routeset = "{{ route('pickup-delivery-route', ':category_id') }}";
-
+        var is_hourly_rental_enabled = 1;      
         var autocomplete_urls = routeset.replace(":category_id", category_id);
         var wallet_balance = {{ $wallet_balance }}
         var payment_stripe_url = "{{ route('payment.stripe') }}";
+        var get_rental_vehicle_list = "{{ route('get-list-of-rental-vehicles') }}";
+        var get_rental_view = "{{route('get-rental-view')}}";
+
+
         var get_product_detail = "{{ url('looking/product-detail') }}";
         var get_payment_options = "{{ url('looking/payment/options') }}";
         var promo_code_list_url = "{{ route('verify.promocode.list') }}";
@@ -1874,7 +1920,42 @@ input[type=number]::-webkit-outer-spin-button {
             // }
             $('#label_for_friend').click(function() {
                 $('#label_for_me').removeClass('active');
+                $('.address-form').removeClass('d-none');
+                $(".hourly-rental-container").addClass('d-none');
+                $('.hourly-rental-container').empty();
+                $(".hourly-rental-container").removeClass('active');
+
+                $('.location-containerNew').removeClass('d-none');
+
             });
+           
+            $('#label_for_hourly_rental').click(function() {
+
+            $('.address-form').addClass('d-none');
+            $('.location-containerNew').addClass('d-none');
+            $('.check-dropoff-secpond').addClass('d-none');
+            $('.for_friend').removeClass('active');
+            $(".hourly-rental-container").removeClass('d-none');
+            $(".hourly-rental-container").removeClass('active');
+            $('#label_for_friend').removeClass('active');
+           
+            $('.hourly-rental-container').empty();
+
+            // Make an AJAX request to load the view.
+            $.ajax({
+                url: "{{route('get-rental-view')}}",
+                method: 'POST',
+                success: function(response) {
+                    // Append the retrieved view to the desired element.
+                    $('.hourly-rental-container').html(response.view);
+                    
+                },
+                error: function(xhr, status, error) {
+                    // Handle errors if necessary.
+                }
+            });
+            });
+
             $(document).delegate('#submit_productfaq', 'click', function() {
                 var product_order_form_element = getFormData('#product-order-form-name');
                 $('#product_order_form').modal('hide');
@@ -1910,4 +1991,5 @@ input[type=number]::-webkit-outer-spin-button {
     }
 
     </script>
+
 @endsection

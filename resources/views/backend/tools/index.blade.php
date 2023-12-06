@@ -156,6 +156,30 @@
             </form>
         </div>
     </div>
+    <div class="row">
+        @if(Auth::user()->is_superadmin == 1)
+        <div class="col-md-3">
+            <form method="POST" id="reset_config_form" action="{{route('reset.config')}}">
+            @csrf
+            @method('POST')
+                <div class="card-box h-100 mb-0">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h4 class="header-title mb-0">{{ __('Reset to Default Configuration Settings')}}</h4>
+                    </div>
+                    <div class="row mt-2">
+                       
+                       
+                        <div class="col-md-12 mt-3">
+                            <div class="form-group mb-0">
+                                <button class="btn btn-info btn-block" id="reset_config_btn" type="submit"> {{ __("Reset") }} </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endif
 </div>
 
 @endsection
@@ -213,6 +237,26 @@
 
     });
 $(document).ready(function() {
+    $('#reset_config_form').submit(function(e) {
+
+    	e.preventDefault();
+    	
+            Swal.fire({
+                title: "{{__('Are you sure?')}}",
+                text:"{{__('This will Reset all the configurations to default settings.')}}",
+                    // icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+            }).then((result) => {
+                if(result.value)
+                {
+                    $("#reset_config_form").off("submit").submit();
+                }else{
+                    return false;
+                }
+            });
+       
+    });
     $('#catalog_copy_tools').submit(function(e) {
         var copy_to = $("#copy_to").val();
     	var copy_from = $("#copy_from").val();

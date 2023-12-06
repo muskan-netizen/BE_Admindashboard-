@@ -390,7 +390,7 @@ class CategoryController extends BaseController
                     $product->variant_quantity = $variant_quantity ?? 0; //($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
                     if ($product->variant->count() > 0) {
                         foreach ($product->variant as $k => $v) {
-                            $product->variant[$k]->multiplier = $clientCurrency->doller_compare;
+                            $product->variant[$k]->multiplier = $clientCurrency->doller_compare ?? 1;
                         }
                     } else {
                         $product->variant =  $product;
