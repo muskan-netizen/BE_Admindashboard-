@@ -28,7 +28,8 @@
 
     var check_active_subscription_url = "{{route('vendor.subscription.plan.checkActive', [$vendor->id, ':id'])}}";
     var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
-    
+    var pyment_totalpay_url= "{{ route('make.payment') }}";
+
     var card = '';
     var stripe = '';
 
@@ -172,7 +173,7 @@
         }
     });
 
-    
+
   function paymentViaRazorpay() {
         let total_amount = 0;
         let tip = 0;

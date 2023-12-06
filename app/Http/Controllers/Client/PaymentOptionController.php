@@ -629,7 +629,7 @@ class PaymentOptionController extends BaseController
                             } else {
                                 $azul_ssl_certificate = (! empty($creds) && isset($creds->azul_ssl_certificate)) ? $creds->azul_ssl_certificate : '';
                             }
-                            
+
                             if ($request->hasFile('azul_ssl_key')) {
                                 $file = $request->file('azul_ssl_key');
                                 $file_name = 'Cert/' . uniqid() . '.' . $file->getClientOriginalExtension();
@@ -638,7 +638,7 @@ class PaymentOptionController extends BaseController
                             } else {
                                 $azul_ssl_key = (! empty($creds) && isset($creds->azul_ssl_key)) ? $creds->azul_ssl_key : '';
                             }
-                            
+
                             $json_creds = json_encode(array(
                                 'azul_main_url' => $request->azul_main_url,
                                 'azul_alternate_url' => $request->azul_alternate_url,
@@ -814,6 +814,17 @@ class PaymentOptionController extends BaseController
                                 'livee_resource_key' => $request->livee_resource_key,
                             ));
                         break;
+                        case 'totalpay':
+                                    $request->validate([
+                                    'totalpay_MerchantId' => 'required',
+                                    'totalpay_password' => 'required',
+                                    ]);
+
+                                    $json_creds = json_encode(array(
+                                        'totalpay_MerchantId' => $request->totalpay_MerchantId,
+                                        'totalpay_password' => $request->totalpay_password,
+                                    ));
+                                    break;
                     }
                 }
             }
