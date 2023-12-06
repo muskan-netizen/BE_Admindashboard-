@@ -1,18 +1,16 @@
 <div class="row">
     <div class="col-md-12">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="form-group">
                     {!! Form::label('title', __('Select Category'),['class' => 'control-label']) !!}
-                    <select class="form-control selectize-select" required id="edit_cateSelectBox" name="cate_id">
+                    <select class="form-control selectize-select" required id="edit_cateSelectBox" name="cate_id[]" multiple>
                         <option value="">{{ __("Select Category") }}...</option>
                         @foreach($categories as $cate)
-                            <option value="{{$cate['id']}}" @if(@$variant->varcategory->category_id == $cate['id']) selected @endif>{{$cate['hierarchy']}}</option>
+                            <option value="{{$cate['id']}}" @if(in_array($cate['id'], $variant->varcategory->pluck('category_id')->toArray())) selected @endif>{{$cate['hierarchy']}}</option>
                         @endforeach
-                        {{-- @foreach($categories as $cate)
-                            <option value="{{$cate->id}}" @if(@$variant->varcategory->category_id == $cate->id) selected @endif>{{$cate->translation_one['name']}}</option>
-                        @endforeach --}}
                     </select>
+                    
                     <span class="invalid-feedback" role="alert">
                         <strong></strong>
                     </span>

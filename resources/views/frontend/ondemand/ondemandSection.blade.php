@@ -379,7 +379,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                             <h4 class="mb-2"><b>{!! (!empty($cart_data->product->translation->first())) ? $cart_data->product->translation->first()->title : $cart_data->product->sku !!}</b></h4>
                                             @foreach($cart_data->product->addOn as $row => $addon)
                                             <div class="add-on-main-div">
-                                                <h6 class="product-title">{{ $addon->addOnName->title }}
+                                                <h6 class="product-title">{{ $addon->addOnName->translation_one->title }}
                                                         @php
                                                             $min_select = '';
                                                             if($addon->addOnName->min_select > 0){
@@ -419,7 +419,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                                                 <div class="radios">
                                                                 <input type="{{$type_input}}" class="productAddonOption " {{ $checked }} id="inlineCheckbox_{{$key}}{{$row.'_'.$k}}"  class="productAddonOption"  name="addonData{{$row}}[{{$cart_data->id}}][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}"/>
                                                                     <label for='inlineCheckbox_{{$key}}{{$row.'_'.$k}}'>
-                                                                        <span class="customCheckbox productAddonOptionspan_{{ $checked }}" aria-hidden="true">{{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price,',').')' }} </span>
+                                                                        <span class="customCheckbox productAddonOptionspan_{{ $checked }}" aria-hidden="true">{{$option->translation_one->title .' ('.Session::get('currencySymbol').decimal_format($option->price,',').')' }} </span>
                                                                     </label>
                                                                 </div>
                                                             </div>

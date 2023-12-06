@@ -265,6 +265,7 @@ class AppStylingSeeder extends Seeder{
             'image' => 'home_four.png',
             'is_selected' => '0',
             'template_id' => '2',
+            'is_template' => 1
         ]);
 
         $app_styling_option = AppStylingOption::insert([
@@ -273,6 +274,8 @@ class AppStylingSeeder extends Seeder{
             'image' => 'home_five.png',
             'is_selected' => '0',
             'template_id' => '3',
+            'is_template' => 1
+
         ]);
 
         $app_styling_option = AppStylingOption::insert([
@@ -281,6 +284,8 @@ class AppStylingSeeder extends Seeder{
             'image' => 'home_six.png',
             'is_selected' => '0',
             'template_id' => '4',
+            'is_template' => 1
+
         ]);
 
         $app_styling_option = AppStylingOption::insert([
@@ -289,6 +294,8 @@ class AppStylingSeeder extends Seeder{
             'image' => 'home_seven.png',
             'is_selected' => '0',
             'template_id' => '5',
+            'is_template' => 1
+
         ]);
 
         $app_styling_option = AppStylingOption::insert([
@@ -297,6 +304,8 @@ class AppStylingSeeder extends Seeder{
             'image' => 'home_eight.png',
             'is_selected' => '0',
             'template_id' => '6',
+            'is_template' => 1
+
         ]);
 
         $app_styling_option = AppStylingOption::insert([
@@ -305,6 +314,8 @@ class AppStylingSeeder extends Seeder{
             'image' => 'home_nine.png',
             'is_selected' => '0',
             'template_id' => '8',
+            'is_template' => 1
+
         ]);
 
         $app_styling_option = AppStylingOption::insert([
@@ -313,6 +324,8 @@ class AppStylingSeeder extends Seeder{
             'image' => 'home_ten.png',
             'is_selected' => '0',
             'template_id' => '9',
+            'is_template' => 1
+
         ]);
 
         $app_styling_option = AppStylingOption::insert([
@@ -321,6 +334,8 @@ class AppStylingSeeder extends Seeder{
             'image' => 'home_eleven.png',
             'is_selected' => '0',
             'template_id' => '10',
+            'is_template' => 1
+
         ]);
 
         $app_styling_option = AppStylingOption::insert([
@@ -329,6 +344,7 @@ class AppStylingSeeder extends Seeder{
             'image' => 'home_twelve.png',
             'is_selected' => '0',
             'template_id' => '11',
+            'is_template' => 1
         ]);
 
         $app_styling = AppStyling::insertGetId([

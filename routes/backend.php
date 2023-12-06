@@ -155,6 +155,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('configUpdate/{code}', 'Client\ClientPreferenceController@update')->name('configure.update');
         Route::post('configUpdate', 'Client\ClientPreferenceController@updateTaxInclusivePrice')->name('configure.taxinclusive');
         Route::post('additionalUpdate', 'Client\ClientPreferenceController@additionalupdate')->name('additional.update');
+        Route::post('resetDefault', 'Client\ClientPreferenceController@resetToDefault')->name('reset.config');
         Route::post('toggleDatabase', 'Client\ClientPreferenceController@toggleDatabase')->name('configure.toggleDatabase');
         Route::post('updateIsPriceEnable', 'Client\ClientPreferenceController@updateIsPriceEnable')->name('customize.updateIsPriceEnable');
         Route::post('configUpdateAdditional/{code}', 'Client\ClientPreferenceController@updateAdditional')->name('configure.updateAdditional');
@@ -711,6 +712,10 @@ Route::group(['middleware' => 'auth:client', 'prefix' => '/admin'], function () 
     Route::get('{first}/{second}/{third}', 'Client\RoutingController@thirdLevel')->name('third');
     Route::get('{first}/{second}', 'Client\RoutingController@secondLevel')->name('second');
     Route::get('{any}', 'Client\RoutingController@root')->name('any');
+});
+
+Route::group(['prefix' => '/gofrugal'], function () {
+    Route::get('/', 'Client\GoFrugalController@index')->name('gofrugal.home');
 });
 
 });
