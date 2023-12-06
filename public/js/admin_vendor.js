@@ -228,7 +228,7 @@ function initDataTable(table, status) {
                     },
                     {
                         text: 'Sync Data from GoFrugal',
-                        className: 'ml-3 btn btn-success waves-effect Export_btn waves-light vendor_export_button',
+                        className: `ml-3 btn btn-success waves-effect Export_btn waves-light vendor_export_button ${toggleGroFrugalBtn}`,
                         action: function () {
                             window.location.href = goFrugalUrl;
                         }
