@@ -3640,7 +3640,7 @@ class OrderController extends FrontController
           if ($order_d4dunzo['state'] == 'created'){
               $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
               ->update([
-                  'd4b_task_id' => $order_d4dunzo['task_id'],
+                  'web_hook_code' => $order_d4dunzo['task_id'],
                  
                   ]);
               return 1;

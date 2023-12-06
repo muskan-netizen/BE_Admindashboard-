@@ -350,7 +350,7 @@ class D4BDunzoController extends Controller
             try {
                 $jsonData = json_decode($request->getContent());
                 $taskId = $jsonData->task_id;      
-                $details = OrderVendor::where('d4b_task_id', $taskId)->first();
+                $details =OrderVendor::where('web_hook_code',$taskId)->first();
                 $trackingStatus = $this->getTrackInfo($taskId);
                 $dispatcherStatusOptionId = null;
                 switch ($jsonData->state) {
