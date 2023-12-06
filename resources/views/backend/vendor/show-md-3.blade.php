@@ -684,7 +684,30 @@ aria-hidden="true">
     </div>
 </div>
 @endif
-
+@if(isset($checkd4bdunzo) && $checkd4bdunzo != 0)
+<div class="card-box">
+    <div class="row text-left">
+        <div class="col-md-12">
+            <form name="config-form" action="{{route('vendor.config.pickuplocation', $vendor->id)}}" class="needs-validation" method="post">
+                @csrf
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="mb-2"> <span class="">{{ __("Add Pickup Location D4b Dunzo") }}</span></h4>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-12 mb-2 d-flex align-items-center justify-content-between">
+                        <input type="text" name="d4b_dunzo_pickup_name" class="form-control" value="{{@$vendor->d4b_dunzo_pickup_name}}" {{(($vendor->d4b_dunzo_pickup_name)? '' :'')}} placeholder="{{__('Pickup Location Name')}}" required>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-info waves-effect waves-light w-100" {{(($vendor->d4b_dunzo_pickup_name)? '' :'')}}>{{ __("Save") }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
 <div class="card-box">
     <div class="row text-left">
         <div class="col-md-12">

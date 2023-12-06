@@ -3604,6 +3604,8 @@ class OrderController extends FrontController
                     } elseif ($request->shipping_delivery_type == 'M') {
                         // Create Shipping place order request for Shiprocket
                         $order_ship = $this->placeOrderRequestAhoy($request);
+                    }elseif($request->shipping_delivery_type=='D4'){
+                        $order_ship = $this->placeOrderRequestD4B($request);
                     }
                 }
                 OrderVendor::where('vendor_id', $request->vendor_id)->where('order_id', $request->order_id)->update([
@@ -3623,7 +3625,29 @@ class OrderController extends FrontController
             }
         }
     }
-
+  /// ******************  check If any D4b Mile on   ************************ ///////////////
+  public function placeOrderRequestD4B($request)
+  {
+      $ship = new D4BDunzoController();
+      //Create Shipping place order request for Shiprocket
+      $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+      $checkOrder = Order::findOrFail($request->order_id);
+     
+          if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+          $order_d4dunzo = $ship->createOrderRequestD4BDunzo($checkOrder->user_id,$checkdeliveryFeeAdded);
+          }
+          
+          if ($order_d4dunzo['state'] == 'created'){
+              $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+              ->update([
+                  'd4b_task_id' => $order_d4dunzo['task_id'],
+                 
+                  ]);
+              return 1;
+          }
+      return 2;
+  }
+  /// ******************  check If any Product Last Mile on   ************************ ///////////////
     // / ****************** check If any Product Last Mile on ************************ ///////////////
     public function placeOrderRequestShiprocket($request)
     {

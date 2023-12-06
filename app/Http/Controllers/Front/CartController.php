@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\{ApiResponser, CartManager, KwikApi, BiddingCartTrait, CartManagerV2};
 use App\Http\Controllers\Client\ShippoController;
-use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController};
+use App\Http\Controllers\{DunzoController, AhoyController, ShiprocketController,D4BDunzoController};
 use App\Models\{AddonSet, BookingOption, Cart, CartAddon, CartProduct, CartCoupon, CartDeliveryFee, Nomenclature, NomenclatureTranslation, User, Product, ClientCurrency, ClientLanguage, CartProductPrescription, ProductVariantSet, Country, UserAddress, Client, ClientPreference, Vendor, Order, OrderProduct, OrderProductAddon, OrderProductPrescription, VendorOrderStatus, OrderVendor, PaymentOption, OrderTax, LuxuryOption, UserWishlist, SubscriptionInvoicesUser, LoyaltyCard, CategoryKycDocuments, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, VendorSlot, ProductFaq, CaregoryKycDoc, CartBookingOption, CartRentalProtection, VerificationOption, VendorSlotDate, TaxRate, Page, WebStylingOption, ProductDeliveryFeeByRole, ProductRentalProtection, RentalProtection};
 use Http\Message\Cookie;
 
@@ -2352,7 +2352,8 @@ class CartController extends FrontController
                         $option = array_merge($option, $optionKwikApi);
                     }
                     //End Kwik Delivery changes code
-
+                    $d4bdunzo = new D4BDunzoController();
+                    $deliver_d4bdunzo_data= $d4bdunzo->quote($vendorData->vendor_id);
                     //Lalamove Delivery changes code
                     $lalamove = new LalaMovesController();
                     $deliver_lalmove_fee = $lalamove->getDeliveryFeeLalamove($vendorData->vendor_id);
@@ -2372,6 +2373,22 @@ class CartController extends FrontController
                             'code' => 'L_0'
                         );
                         $option = array_merge($option, $optionLala);
+                    }
+                    if($deliver_d4bdunzo_data['estimated_price']>0)
+                    {
+                        $deliver_charge_d4bdunzo = decimal_format($deliver_d4bdunzo_data['estimated_price']);
+                        $optionD4Dunzo[] = array(
+                            'type'=>'D4',
+                            'courier_name'=>__('D4B Dunzo'),
+                            'rate' => $deliver_charge_d4bdunzo,
+                            'duration' => $deliver_d4bdunzo_data['eta']['pickup'] +  $deliver_d4bdunzo_data['eta']['dropoff'],
+                            'courier_company_id' => 0,
+                            'etd' => 0,  
+                            'etd_hours' => 0,
+                            'estimated_delivery_days' => 0,
+                            'code' => 'D4_0'
+                        );
+                        $option = array_merge($option,$optionD4Dunzo);
                     }
                     //End Lalamove Delivery changes code
 
