@@ -395,6 +395,12 @@ $additionalPreference = getAdditionalPreference(['is_token_currency_enable','tok
                         <span class="error text-danger"id="error-message"></span>
                     </div>
                 <% } %>
+                <% if(payment_option.slug == 'totalpay') { %>
+                    <div class="col-md-12 mt-3 mb-3 totalpay_element_wrapper option-wrapper d-none">
+                        <form action=""></form>
+                        <span class="error text-danger" id="totalpay__error"></span>
+                    </div>
+                <% } %>
                 <% if(payment_option.slug == 'yoco') { %>
                     <div class="col-md-12 mt-3 mb-3 yoco_element_wrapper option-wrapper d-none">
                         <div class="form-control">
