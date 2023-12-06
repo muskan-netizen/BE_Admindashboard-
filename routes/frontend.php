@@ -112,69 +112,7 @@ Route::group(['middleware' => ['domain']], function () {
 			]);
 			
 			dd($response_test->json());
-// 			$responsetest = Http::withHeaders([
-// 				'client-id' => $client_id,
-// 				'Authorization' =>$content['token'],
-// 				'Accept-Language' => 'en_US',
-// 				'Content-Type' => 'application/json',
-// 			])
-// 			->post('https://apis-staging.dunzo.in/api/v2/tasks', [
-// 				"request_id" => "b115d54b-c044-4387-a629-4df0a3c0af17".strtotime(now()),
-// 				// "reference_id" => "9357d296-c366-4409-872d-2e0898f27f80".strtotime(now()),
-// 				"pickup_details" => [
-// 					[
-// 						"reference_id" => "pick_ref_1".strtotime(now()),
-// 						// "special_instructions" => "fragile items, handle with great care",
-// 						"address" => [
-// 							"apartment_address" => "004",
-// 							"street_address_1" => "SDS Pearls",
-// 							"street_address_2" => "LB Shastri nagar",
-// 							"landmark" => "Iblur lake",
-// 							"city" => "Bangalore",
-// 							"state" => "Karnataka",
-// 							"pincode" => "560017",
-// 							"country" => "India",
-// 							"lat" => 12.96722,
-// 							"lng" => 77.67211,
-// 							"contact_details" => [
-// 								"name" => "Tasneem",
-// 								"phone_number" => "9999999999",
-// 							],
-// 						]
-						
-// 					],
-// 				],
-// 				"optimised_route" => false,
-// 				"drop_details" => [
-// 					[
-// 						"reference_id" => "drop_ref_1".strtotime(now()),
-// 						// "special_instructions" => "leave at door step and ring the bell",
-// 						"address" => [
-// 							// "apartment_address" => "204 Block 4",
-// 							"street_address_1" => "Suncity Apartments",
-// 							"street_address_2" => "Bellandur",
-// 							"landmark" => "Iblur lake",
-// 							"city" => "Bangalore",
-// 							"state" => "Karnataka",
-// 							"pincode" => "560103",
-// 							"country" => "India",
-// 							"lat"=> 12.97239,
-// "								lng"=> 77.67211,
-// 							"contact_details" => [
-// 								"name" => "Nikhil",
-// 								"phone_number" => "9999999999",
-// 							],
-// 						]
-						
-// 					]
-// 						],
-// 				// 	,
-// 				"payment_method"=> "DUNZO_CREDIT",
-// 				"delivery_type" => "SCHEDULED",
-// 				'schedule_time' => Carbon::now()->addMinutes(31)->timestamp
-// 				// Carbon::now()->addMinutes(31)->timestamp
-// 			]);
-// 			dd($responsetest->json());
+
 	});
 	//easypay test
 	Route::get('testpayment', 'Front\EasypaisaControllertest@testpayment')->name('testpayment');

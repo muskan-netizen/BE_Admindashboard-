@@ -256,17 +256,7 @@ class D4BDunzoController extends Controller
     }
     public function dunzoWebhook(Request $request)
     {
-        // "order_status_id": 4,
-        // "order_uuid":"4ed83e5d-ec49-44ef-a7ea-eba3cfd91416",
-        // "partner_order_id": "78954uigg",
-        // "deliveryStaffDetails": {
-        //     "name": "karthick",
-        //     "phone": "99999999999",
-        //     "currentLocation": {
-        //         "lat": 10.452855555,
-        //         "long": 11.55854455
-        //     }
-        // }
+      
         $trackingId = '';
         $json = json_decode($request->getContent());
         if($request && isset($json->order_uuid)){
@@ -390,8 +380,7 @@ class D4BDunzoController extends Controller
                   
                 //   VendorOrderStatus::where([
                 //         'order_id' => $details->order_id,
-                //         'vendor_id' => $details->vendor_id,
-                     
+                //         'vendor_id' => $details->vendor_id,                    
                        
                 //     ])->update(['order_status_option_id'=>$dispatcherStatusOptionId]);
                     OrderVendor::where([
@@ -403,8 +392,7 @@ class D4BDunzoController extends Controller
                     
                     // dd(VendorOrderStatus::where([
                     //     'order_id' => $details->order_id,
-                    //     'vendor_id' => $details->vendor_id,
-                     
+                    //     'vendor_id' => $details->vendor_id,              
                        
                     // ])->first()); 
                     // VendorOrderStatus::Create(['order_id'=>$details->order_id,'vendor_id'=>$details->vendor_id,'order_status_option_id'=>$dispatcherStatusOptionId]);
