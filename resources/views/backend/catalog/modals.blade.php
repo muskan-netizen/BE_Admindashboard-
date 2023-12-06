@@ -106,7 +106,7 @@
                                     <tr class="trForClone">
 
                                         @foreach($languages as $lang)
-                                            <th>{{$lang->language->name}}</th>
+                                            <th>{{$lang->language->name??''}}</th>
                                         @endforeach
                                         <th></th>
                                     </tr>
