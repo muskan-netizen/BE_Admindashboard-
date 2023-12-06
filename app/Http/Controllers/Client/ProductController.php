@@ -201,7 +201,7 @@ class ProductController extends BaseController
         $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module', 'is_cab_pooling', 'is_one_push_book_enable','is_service_product_price_from_dispatch']);
         // $this->searchCatalogObjects();
 
-        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module', 'is_cab_pooling', 'is_one_push_book_enable','is_service_product_price_from_dispatch', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_attribute']);
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role', 'is_free_delivery_by_roles', 'is_seller_module', 'is_cab_pooling', 'is_one_push_book_enable','is_service_product_price_from_dispatch', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_attribute','is_product_measurement_in_cm_kg']);
 
         $with_array = ['brand', 'variant.set','vendor', 'variant.vimage.pimage.image', 'primary', 'category.cat', 'variantSets', 'vatoptions', 'addOn', 'media.image', 'related', 'upSell', 'crossSell', 'celebrities','productVariantByRoles', 'bookingOptions', 'rentalProtections'];
 

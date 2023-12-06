@@ -106,7 +106,7 @@ width: 100%;
 @media (max-width:576px){
     .al_body_template_two .show-prescription-doc {
    width:100%;
-}  
+}
 }
 </style>
 
@@ -219,16 +219,16 @@ $client_preferences = \App\Models\ClientPreference::first();
     let tax_markup_charges_percentage=0;
     let tax_service_charges_percentage=0;
     let tax_delivery_charges_percentage=0;
-    
+
     let product_container_charges_tax_amount=0;
 
-    
+
     let other_taxes=0;
     let other_taxes_string="";
     _.each(cart_details.products, function(product, key){
         /*console.log(JSON.stringify(product));*/
-      
-        
+
+
         /* --- Vendor Tax Get Percentage ---- */
         _.each(cart_details.taxRates, function(tax, index){
             if(product.vendor.fixed_fee_tax_id!=null){
@@ -271,11 +271,11 @@ $client_preferences = \App\Models\ClientPreference::first();
 
         other_taxes=(parseFloat(total_fixed_fee_amount)*tax_fixed_fee_percentage/100)+(parseFloat(cart_details.total_service_fee)*tax_service_charges_percentage/100)+(parseFloat(cart_details.all_vendor_deliver_charges)*tax_delivery_charges_percentage/100)+(parseFloat(cart_details.all_vendor_markup_charges)*tax_markup_charges_percentage/100);
         other_taxes_string='tax_fixed_fee:'+(parseFloat(total_fixed_fee_amount)*tax_fixed_fee_percentage/100)+',tax_service_charges:'+(parseFloat(cart_details.total_service_fee)*tax_service_charges_percentage/100)+',tax_delivery_charges:'+(parseFloat(cart_details.all_vendor_deliver_charges)*tax_delivery_charges_percentage/100)+',tax_markup_charges:'+(parseFloat(cart_details.all_vendor_markup_charges)*tax_markup_charges_percentage/100);
-          
+
         %>
         <div id="thead_<%= product.vendor.id %>">
             <div class="row">
-                
+
                 <div class="col-12">
                     <div class="countdownholder alert-danger" id="min_order_validation_error_<%= product.vendor.id %>" style="display:none;">Your cart will be expired in </div>
                 </div>
@@ -313,7 +313,7 @@ $client_preferences = \App\Models\ClientPreference::first();
 
             </div>
         </div>
-        
+
         <div class="col-12 cart-heading mt-2 px-0">
             <h5 class="my-1"><b><%= product.vendor.name %><%= product.fix_fee_tax %></b></h5>
             <input type="hidden" name="category_name" id="category_name" value= "<%= product.vendor.name %>" />
@@ -412,16 +412,16 @@ $client_preferences = \App\Models\ClientPreference::first();
                                     <p class="p-0 m-0 alert-danger">{{ __('Container Charges') }} *</p>
                                 </div>
                                 <div class="col-md-2 col-sm-4 text-center">
-                                    <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.container_charges) %> 
-                                    <% 
-                                    
+                                    <div class="extra-items-price">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(vendor_product.pvariant.container_charges) %>
+                                    <%
+
                                     /* --- Vendor Tax Get Percentage ---- */
                                     _.each(cart_details.taxRates, function(tax, index){
                                         if(vendor_product.product.container_charges_tax_id!=null){
                                             if(vendor_product.product.container_charges_tax_id==index){
                                                 product_container_charges_tax_amount+=parseFloat(vendor_product.pvariant.container_charges)*parseFloat(tax.tax_rate)/100;
                                             }
-                                        }                         
+                                        }
                                     });
                                      %></div>
                                 </div>
@@ -507,7 +507,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                                     {{__($fixedFee)}} :</label>
                                 </div>
                             <div class="col-7">
-                            <%= product.vendor.fixed_fee_amount %> 
+                            <%= product.vendor.fixed_fee_amount %>
                             </div>
 
                         </div>
@@ -535,7 +535,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                         </div>
                         @endif
                     <% } %>
-                    
+
                     {{-- Home Service Schedual code end at down --}}
 
                     <div class="row mb-1">
@@ -577,7 +577,7 @@ $client_preferences = \App\Models\ClientPreference::first();
     </div>
 
     @if(!$guest_user)
-   
+
                     <div class="col-lg-12 left_box new_cart mt-4 p-3">
 
                     </div>
@@ -648,7 +648,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                                 </div>
                             </div>
 
-                        </div>                    
+                        </div>
                         <div class="col-md-12 mt-2">
                             <label for="">{{__('Schedule Dropoff ')}} </label> <span class="loaderfordrop"><img class="img-fluid" style="display:none;" id="loaderfordrop" src="{{asset('front-assets/images/loading.gif')}}" alt=""></span>
                             <div class="row">
@@ -727,7 +727,7 @@ $client_preferences = \App\Models\ClientPreference::first();
             }
             %>
             <input type="hidden" id="other_taxes_string" value="<%= other_taxes_string %>">
-            
+
 
             <% if(price_bifurcation!=1){ %>
             <!-- <hr class="my-2"> -->
@@ -738,7 +738,7 @@ $client_preferences = \App\Models\ClientPreference::first();
             </div>
             <hr class="my-2">
             <% } %>
-            
+
             <% if(price_bifurcation!=1){  %>
                 <div class="row">
                     <div class="col-6">{{__('Tax')}}</div>
@@ -747,7 +747,7 @@ $client_preferences = \App\Models\ClientPreference::first();
             <hr class="my-2">
             <% } %>
             <% if(cart_details.total_subscription_discount != undefined) { %>
-                
+
                 <div class="row">
                     <div class="col-6">{{__('Subscription Discount')}}</div>
                     <div class="col-6 text-right"><b> - {{Session::get('currencySymbol')}}<span id="total_subscription_discount"><%= Helper.formatPrice(cart_details.total_subscription_discount) %><span></b></div>
@@ -755,7 +755,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                 <hr class="my-2">
             <% } %>
             <% if(cart_details.loyalty_amount > 0 && price_bifurcation!=1) { %>
-                
+
                 <div class="row">
                     <div class="col-6">{{__('Loyalty Amount')}}</div>
                     <div class="col-6 text-right"><b> - {{Session::get('currencySymbol')}}<span id="loyalty_amount"><%= Helper.formatPrice(cart_details.loyalty_amount) %></span></b></div>
@@ -841,7 +841,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                         <% } %>
                         <input type="hidden" name="cart_tip_amount" id="cart_tip_amount" value="<%= Helper.formatPrice(cart_details.tip_5_percent) %>">
                                 <input type="hidden" name="cart_total_payable_amount" value="<%= parseFloat(cart_details.total_payable_amount)+parseFloat(cart_details.tip_5_percent)+parseFloat(other_taxes) %>" <% if(cart_details.stripe_fpx_client_secret != undefined) { %> data-client_secret="<%= cart_details.stripe_fpx_client_secret %>" <% } %>>
-                                
+
                         <% }else{ %>
                             <% if(parseFloat(cart_details.wallet_amount_used) > 0) { %>
                                 <p class="total_amt m-0" id="cart_total_payable_amount" data-cart_id="<%= cart_details.id %>">{{Session::get('currencySymbol')}}<%= Helper.formatPrice(parseFloat(cart_details.total_payable_amount)+parseFloat(other_taxes)) %></p>
@@ -926,7 +926,7 @@ $client_preferences = \App\Models\ClientPreference::first();
             </div>
             @endif
             <% } %>
-                    
+
                     <div class="col-sm-6 col-lg-12 mt-2 text-sm-right cart-checkout_btn">
                         @if(isset($ageVerify->status) && $ageVerify->status == 1)
                             {{-- <button id="verify_your_age" class="btn btn-solid " type="button" >{{__('Verify Your Age')}}</button> --}}
@@ -937,7 +937,7 @@ $client_preferences = \App\Models\ClientPreference::first();
         </div>
 
     </div>
-   
+
     </div>
     </div>
             {{-- Schedual code end at down --}}
@@ -977,8 +977,8 @@ $client_preferences = \App\Models\ClientPreference::first();
             @csrf
             <div class="card-box bg-transparent">
                 <!-- <div class="row d-flex justify-space-around"> -->
-                   
-                    
+
+
                     <div class="spinner-box">
                         <div class="circle-border">
                             <div class="circle-core"></div>
@@ -986,7 +986,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                     </div>
 
                     <div class="row cart-page-layout" id="cart_table"></div>
-                    
+
                 <!-- </div> -->
                 <!-- <div class="row mb-md-3 alFourTemplateCartButtons mt-4">
                     <div class="col-sm-6 col-lg-4 mb-2 mb-sm-0 d-lg-flex align-items-lg-center justify-content-lg-between">
@@ -998,7 +998,7 @@ $client_preferences = \App\Models\ClientPreference::first();
 
 
 
-                    
+
                 </div> -->
             </div>
 
@@ -1243,7 +1243,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                                       <!-- A Stripe Element will be inserted here. -->
                                     </div>
                                 </div>
-                               
+
                                 <span class="error text-danger"id="error-message"></span>
                             </div>
                         <% } %>
@@ -1540,11 +1540,11 @@ $client_preferences = \App\Models\ClientPreference::first();
                             <span class="invalid-feedback" role="alert">
                                 <strong></strong>
                             </span>
-                            
+
                         </div>
-                       
+
                     </div>
-                        <div class="show-prescription-doc">     
+                        <div class="show-prescription-doc">
                              </div>
                 </div>
                 <div class="modal-footer">
@@ -1552,7 +1552,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                 </div>
             </form>
         </div>
-        
+
     </div>
 </div>
 <div class="modal fade pick-address" id="pick_address" tabindex="-1" aria-labelledby="pick-addressLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
@@ -1772,11 +1772,11 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
                 'error':   "{{ __('Ooops, something wrong happended.')}}"
             }
         });
-        
+
         $('.dropify-clear').click(function(e){
             e.preventDefault();
             $(".uploaded-prescription").empty();
-            
+
         });
     });
 
@@ -1818,6 +1818,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
+    var pyment_totalpay_url= "{{ route('make.payment') }}";
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
     var update_qty_url = "{{ url('product/updateCartQuantity') }}";
 
@@ -2521,12 +2522,12 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     }
 
     $(document).delegate('#view_all_address', 'click', function() {
-       
+
         $("#view_all_address").addClass("d-none");
         $("#view_all_address_div").removeClass("d-none");
-      
+
     });
-    
+
     $(document).on('change', '[id^=input_file_logo_]', function(event){
         var rel = $(this).data('rel');
         // $('#plus_icon_'+rel).hide();
