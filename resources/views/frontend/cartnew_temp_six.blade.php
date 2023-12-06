@@ -1677,6 +1677,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
+    var pyment_totalpay_url= "{{ route('make.payment') }}";
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
     var update_qty_url = "{{ url('product/updateCartQuantity') }}";
 
