@@ -584,9 +584,9 @@
                     $creds = json_decode($d4b_dunzo->credentials);
                    
                     if($d4b_dunzo->test_mode == 1){
-                        $app_url = 'https://apis-staging.dunzo.in/api/v1/token';
+                        $app_url = 'https://apis-staging.dunzo.in/api';
                     }else{
-                        $app_url = 'https://api.dunzo.in/api/v1/token';
+                        $app_url = 'https://api.dunzo.in/api/v1';
                     }
                     $client_id = (isset($creds->client_id)) ? $creds->client_id : '';
                     $client_secret = (isset($creds->client_secret)) ? $creds->client_secret : '';

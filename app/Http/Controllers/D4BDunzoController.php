@@ -38,9 +38,8 @@ class D4BDunzoController extends Controller
           
             $this->client_id = $creds_arr->client_id??'';
             $this->client_secret = $creds_arr->client_secret??'';
-            $this->client_id = $creds_arr->client_id??'';
-            // $this->app_url = (($simp_creds->test_mode=='1')?'https://apis-staging.dunzo.in':'https://apis-staging.dunzo.in'); //Live url - https://app.adloggs.com/aa
-            $this->app_url = (($simp_creds->test_mode=='1')?'https://apis-staging.dunzo.in/api/v1/token':'https://api.dunzo.in/api/v1/token'); //Live url - https://app.adloggs.com/aa
+            $this->client_id = $creds_arr->client_id??'';          
+            $this->app_url = (($simp_creds->test_mode=='1')?'https://apis-staging.dunzo.in/api':'https://api.dunzo.in/api'); //
             $this->base_price = $creds_arr->base_price ?? ''; 
             $this->distance = $creds_arr->distance ?? ''; 
             $this->amount_per_km = $creds_arr->amount_per_km ?? '';
@@ -49,7 +48,9 @@ class D4BDunzoController extends Controller
                 'client-secret' => $this->client_secret,
                 'Accept-Language' => 'en_US',
                 'Content-Type' => 'application/json',
-            ])->get($this->app_url);        
+            ])->get($this->app_url."/v1/token");  
+            
+            
             // Work with the response as needed
             $status = $response->status();            
             $content = $response->json(); // Assuming the response is in JSON format
@@ -60,6 +61,7 @@ class D4BDunzoController extends Controller
     }
     public function quote($vendor_id)
     {
+      
         try{    
                 $customer = User::find(Auth::id());
                 $cus_address = UserAddress::where('user_id', Auth::id())->orderBy('is_primary', 'desc')->first();
@@ -79,13 +81,13 @@ class D4BDunzoController extends Controller
                     //     'user_phone' => $customer->phone_number,
                     //     'remarks' => orderProductDetails($order_id),
                     //     'schedule_time' => $scheduledAt,
-               
+                    
                     $response = Http::withHeaders([
                         'client-id' => $this->client_id,
                         'Authorization' => $this->token,
                         'Accept-Language' => 'en_US',
                         'Content-Type' => 'application/json',
-                    ])->post('https://apis-staging.dunzo.in/api/v2/quote', [
+                    ])->post($this->app_url.'/v2/quote', [
                         'pickup_details' => [
                             [
                                 'lat' => floatval($vendor_details->latitude),
@@ -110,9 +112,12 @@ class D4BDunzoController extends Controller
                        
                         'schedule_time' => Carbon::now()->addMinutes(31)->timestamp,
                     ]);
+
+          
                   if($response->successful()){
                     // dd($response->json());
                     return $response->json();
+
                             // dd($response->json());
                   }else{
                     // dd($response->json());  
@@ -183,14 +188,14 @@ class D4BDunzoController extends Controller
         $cus_address = UserAddress::find($order->address_id);
         $orderProducts = OrderVendorProduct::where(['order_id'=>$orderVendor->order_id,'order_vendor_id'=>$orderVendor->id])->get();
         // create order
-      
+       
         $response_d4b_dunzo = Http::withHeaders([
             'client-id' => $this->client_id,
             'Authorization' => $this->token,
             'Accept-Language' => 'en_US',
             'Content-Type' => 'application/json',
         ])
-        ->post('https://apis-staging.dunzo.in/api/v2/tasks', [
+        ->post(  $this->app_url.'/v2/tasks', [
             'request_id' =>  $orderVendor->id.'-'.$orderVendor->order_id.'-'.$orderVendor->vendor_id.strtotime(now()),
             // 'reference_id' => '9357d296-c366-4409-872d-2e0898f27f80'.strtotime(now()),
             'pickup_details' => [
@@ -416,7 +421,7 @@ class D4BDunzoController extends Controller
             'Accept-Language' => 'en_US',
             'Content-Type' => 'application/json',
         ])
-        ->get('https://apis-staging.dunzo.in/api/v1/tasks/'.$task_id.'/status');
+        ->get( $this->app_url.'/v1/tasks/'.$task_id.'/status');
         
         // You can then handle the traking_res as needed
        

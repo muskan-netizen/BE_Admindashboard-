@@ -23,6 +23,7 @@ use App\Http\Controllers\Front\CartController as FrontCartController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Http\Controllers\ShiprocketController;
+use App\Http\Controllers\D4BDunzoController;
 
 use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, CartProductPrescription, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, BookingOption, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, CartBookingOption, CartRentalProtection, VerificationOption, TaxRate,VendorMinAmount, WebStylingOption, ProcessorProduct,OrderFiles, ProductBookingOption, ProductRentalProtection, RentalProtection};
 
@@ -41,15 +42,17 @@ class CartController extends BaseController
     {
         try {
             $user = Auth::user();
+           
             if (!$user->id) {
                 $cart = Cart::where('unique_identifier', $user->system_user)->with(['editingOrder','OrderFiles']);
             } else {
                 $cart = Cart::where('user_id', $user->id)->with(['editingOrder','OrderFiles']);
             }
+           
             $cart = $cart->first();
             $cartData = [];
             if ($cart) {
-                
+               
                 $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
 
                 if(isset($cart->editingOrder) && !empty($cart->editingOrder) && !empty($cartData))
@@ -89,7 +92,7 @@ class CartController extends BaseController
 
                 return $this->successResponse($cartData);
             }
-
+          
             return $this->successResponse($cartData);
         } catch (Exception $e) {
             return $this->successResponse([]);
@@ -679,7 +682,7 @@ class CartController extends BaseController
     /**         *      Cart  Date      *          */
     public function getCart($cart, $langId = '1', $currency = '1', $type = 'delivery',$code = 'D')
     {
-           
+         $type='delivery'; //remove this
          try{
         $container_charges_tax = 0;
         $deliver_fee_charges_tax = 0;
@@ -917,6 +920,7 @@ class CartController extends BaseController
 
                 $if_previousdeliveryfee_added = 0;
                 $vendorTotalDeliveryFee = 0;
+              
                 $previousdeliveryfee = 0;
                 //get Coupon Discount for product case
                 $coupon_product_ids = [];
@@ -1255,6 +1259,7 @@ class CartController extends BaseController
                                 }
                             }
                             $prod->taxdata = $taxData;
+                           
                             // if($prod->product->)
                             if ( (in_array($action,['delivery','on_demand']) )  && ( $is_service_product_price_from_dispatch !=1 )) {
                                 $checkLastMile = 0;
@@ -1273,11 +1278,14 @@ class CartController extends BaseController
                                     $product_tags = $prod->product->LongTermProduct->first()->tags;
                                     $NumberOfroutes = $prod->LongTermProducts ? $prod->LongTermProducts->quantity : 1;
                                 }
+                             
                                 if ($checkLastMile ) {
-
+                                  
 
                                     $deliveries = $this->getDeliveryOptions($vendorData,$preferences,$payable_amount,$address, $product_tags,$NumberOfroutes);
+                                   
                                     $deliveryDuration = 0;
+                                  
                                     if(isset($deliveries[0]))
                                     {
 
@@ -1305,13 +1313,15 @@ class CartController extends BaseController
                                             $code = $deliveries[0]['code'];
                                         }
 
-
+                                     
                                         if($prod->product->individual_delivery_fee == 1) {
+                                          
                                             $quantity_deliveryCharges = $deliveryCharges*$prod->quantity;
                                             $vendorTotalDeliveryFee = $vendorTotalDeliveryFee + $quantity_deliveryCharges;
                                             CartProduct::where('cart_id', $cart->id)->where('vendor_id', $vendorData->vendor->id)->where('product_id', $prod->product->id)->update(['product_delivery_fee'=>$quantity_deliveryCharges]);
                                             $prod->product_delivery_fee = $quantity_deliveryCharges;
                                         }else{
+                                           
                                             if($if_previousdeliveryfee_added == 0 && $deliveryCharges > 0){
                                                 $vendorTotalDeliveryFee = $vendorTotalDeliveryFee + $deliveryCharges;
                                                 $if_previousdeliveryfee_added = 1;
@@ -1467,6 +1477,7 @@ class CartController extends BaseController
                         $taxable_amount -= $discount;
                     }*/
                 }
+               
                 $payable_amount = $payable_amount + $vendorTotalDeliveryFee ;
                 $deliver_charge = $vendorTotalDeliveryFee * $clientCurrency->doller_compare;
                 $vendorData->proSum = $proSum;
@@ -1572,7 +1583,7 @@ class CartController extends BaseController
                 }
                 $vendorData->is_promo_code_available = $is_promo_code_available;
 
-
+              
                 $totalDeliveryCharges+=$vendorTotalDeliveryFee;
 
 
@@ -1631,7 +1642,7 @@ class CartController extends BaseController
 
                 if($vendorData->vendor->add_markup_price)
                 $total_markup_fee_tax +=  $total_markup_charges * $markup_price_tax_rate/100;
-            // if($vendorData->vendor->delivery_charges_tax)
+            // if($vendorData->vendor->delivery_charges_tax)totalDeliveryCharges
             // $deliver_fee_charges +=  $deliveryCharges_real * $delivery_charges_tax_rate/100;
 
             // if($vendorData->vendor->service_charges_tax)
@@ -2255,6 +2266,7 @@ class CartController extends BaseController
     //Fetch all delivery fee option
     public function getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $dispatcher_tags='', $totalRoute = '1')
     {
+       
         $option = array();
         $delivery_count = 0;
         $delivery_duration = 0;
@@ -2285,6 +2297,10 @@ class CartController extends BaseController
 
 
         //Lalamove Delivery changes code
+
+        $d4bdunzo = new D4BDunzoController();
+        $deliver_d4bdunzo_data= $d4bdunzo->quote($vendorData->vendor_id);
+         
         $lalamove = new LalaMovesController();
         $deliver_lalmove_fee = $lalamove->getDeliveryFeeLalamove($vendorData->vendor_id);
         if($deliver_lalmove_fee>0)
@@ -2304,6 +2320,24 @@ class CartController extends BaseController
             );
             $option = array_merge($option,$optionLala);
         }
+
+        if($deliver_d4bdunzo_data['estimated_price']>0)
+        {
+            $deliver_charge_d4bdunzo = decimal_format($deliver_d4bdunzo_data['estimated_price']);
+            $optionD4Dunzo[] = array(
+                'type'=>'D4',
+                'courier_name'=>__('D4B Dunzo'),
+                'rate' => $deliver_charge_d4bdunzo,
+                'duration' => $deliver_d4bdunzo_data['eta']['pickup'] +  $deliver_d4bdunzo_data['eta']['dropoff'],
+                'courier_company_id' => 0,
+                'etd' => 0,  
+                'etd_hours' => 0,
+                'estimated_delivery_days' => 0,
+                'code' => 'D4_0'
+            );
+            $option = array_merge($option,$optionD4Dunzo);
+        }
+
         //End Lalamove Delivery changes code
 
         //Kwik Delivery changes code
