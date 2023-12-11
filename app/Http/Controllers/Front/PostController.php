@@ -275,6 +275,7 @@ class PostController extends FrontController
 				if (!$client_lang) {
 					$client_lang = ClientLanguage::where('is_active', 1)->first();
 				}
+                
 				$product->save();
 				if ($product->id > 0) {
 					$datatrans[] = [

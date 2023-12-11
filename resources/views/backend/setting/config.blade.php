@@ -1867,6 +1867,111 @@
                 </div>
             </form>
         </div>
+
+        {{-- starts gofrugal POS integration --}}
+        <div class="col-xl-4 col-lg-4 h-100">
+            <div class="page-title-box">
+                <h4 class="page-title text-uppercase">{{ __('GoFrugal POS integration') }}</h4>
+            </div>
+
+            <form method="POST" action="{{ route('configure.update', Auth::user()->code) }}">
+                @csrf
+                <input type="hidden" name="gofrugal_pos_integration" id="gofrugal_pos_integration" value="1">
+                <!-- HubSpot card start -->
+                <div class="card-box h-100">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group mb-0 switchery-demo">
+                                <label class="d-flex align-items-center justify-content-between">
+                                    <h5 class="social_head text-uppercase">
+                                        <span>{{ __('GoFrugal Inventory Configuration') }}</span>
+                                    </h5>
+
+                                    <button class="btn btn-info btn-block save_btn" type="submit">
+                                        {{ __('Save') }} </button>
+                                </label>
+                                <p class="sub-header">
+                                    {{ __('View and update API Key.') }}
+                                </p>
+                            </div>
+                            <div class="form-group mb-0">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                            <label for="gofrugal_enable_status_switch"
+                                                class="mr-3">{{ __('Enable') }} <br /></label>
+                                            <input type="checkbox" data-plugin="switchery"
+                                                name="gofrugal_enable_status_switch" id="gofrugal_enable_status_switch"
+                                                class="form-control checkbox_change"
+                                                data-className="gofrugal_enable_status" data-color="#43bee1"
+                                                @if ($getAdditionalPreference['gofrugal_enable_status'] == 1) checked @endif>
+                                            <input type="hidden"
+                                                @if ($getAdditionalPreference['gofrugal_enable_status'] == 1) value="1" @else value="0" @endif
+                                                name="gofrugal_enable_status" id="gofrugal_enable_status" />
+                                        </div>
+                                        @php
+                                            $gofrugal_credentials = json_decode($getAdditionalPreference['gofrugal_credentials'], true);
+                                            $gofrugal_sandbox_enable_status = isset($gofrugal_credentials['sandbox_enable_status']) ? $gofrugal_credentials['sandbox_enable_status'] : '';
+                                            $gofrugal_api_key = isset($gofrugal_credentials['api_key']) ? $gofrugal_credentials['api_key'] : '';
+                                            $gofrugal_domain_url = isset($gofrugal_credentials['domain_url']) ? $gofrugal_credentials['domain_url'] : '';
+                                        @endphp
+                                        <div class="mt-2 gofrugalFields"
+                                            @if ($getAdditionalPreference['gofrugal_enable_status'] != 1) style="display:none;" @endif>
+                                            <div class="row">
+                                                <div class="col-12 d-none">
+                                                    <div
+                                                        class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+                                                        <label for="gofrugal_sandbox_enable_status_switch"
+                                                            class="mr-3">{{ __('Sandbox') }}
+                                                            <br /><small>{{ __('Update Sandbox Application ID and Access Token') }}</small></label>
+                                                        <input type="checkbox" data-plugin="switchery"
+                                                            name="gofrugal_sandbox_enable_status_switch"
+                                                            id="gofrugal_sandbox_enable_status_switch"
+                                                            class="form-control checkbox_change"
+                                                            data-className="gofrugal_sandbox_enable_status"
+                                                            data-color="#43bee1"
+                                                            @if ($gofrugal_sandbox_enable_status == 1) checked @endif>
+                                                        <input type="hidden"
+                                                            @if ($gofrugal_sandbox_enable_status == 1) value="1" @else value="0" @endif
+                                                            name="gofrugal_sandbox_enable_status"
+                                                            id="gofrugal_sandbox_enable_status" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="form-group mb-2">
+                                                        <label
+                                                            for="gofrugal_api_key">{{ __('API KEY') }}</label>
+                                                        <input type="text" name="gofrugal_api_key"
+                                                            id="gofrugal_api_key" placeholder=""
+                                                            class="form-control"
+                                                            value="{{ old('gofrugal_api_key', $gofrugal_api_key) }}"
+                                                            autocomplete="off">
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="form-group mb-2">
+                                                        <label
+                                                            for="gofrugal_domain_url">{{ __('DOMAIN URL') }}</label>
+                                                        <input type="text" name="gofrugal_domain_url"
+                                                            id="gofrugal_domain_url" placeholder=""
+                                                            class="form-control"
+                                                            value="{{ old('gofrugal_domain_url', $gofrugal_domain_url) }}"
+                                                            autocomplete="off">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+
         @if (isset($preference) && $preference->subscription_mode == '1')
             <div class="col-xl-4 col-lg-4 h-100">
                 <div class="page-title-box">
@@ -2415,7 +2520,7 @@
     
     {{-- ends here marg form --}}
     </div>
-    <div class="col-xl-4 col-lg-4 mb-3 d-none">
+    <div class="col-xl-4 col-lg-4 mb-3">
         <div class="page-title-box">
             <h4 class="page-title text-uppercase">{{ __('Blockchain Route Formation') }}</h4>
         </div>
@@ -3649,6 +3754,18 @@
             console.log(id);
         }
 
+        var square_enable_status_switch = $('#gofrugal_enable_status_switch');
+        if (square_enable_status_switch.length > 0) {
+            square_enable_status_switch[0].onchange = function() {
+
+                if ($('#gofrugal_enable_status_switch:checked').length != 1) {
+                    $("#gofrugal_api_key").val('');
+                    $('.gofrugalFields').hide();
+                } else {
+                    $('.gofrugalFields').show();
+                }
+            }
+        }
         function generateLumenToken() {
             var token = generateRandomString(30);
 

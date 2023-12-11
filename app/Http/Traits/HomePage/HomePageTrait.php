@@ -631,7 +631,7 @@ trait HomePageTrait
                     $vendorData->delivery_fee = $deliver_charge;
                     $vendorData->delivery_time = $delivery_duration;
                 }
-                }elseif($preferences->static_delivey_fee == 1 &&  $vendorData->vendor->order_amount_for_delivery_fee != 0){
+                }elseif($preferences->static_delivey_fee == 1 ){
                     $vendorData->delivery_fee = 0.00;
                     $vendorData->delivery_time = 00.00;
                 } 
@@ -680,15 +680,6 @@ trait HomePageTrait
       
         if (in_array('featured_products', $enable_layout)) {  # if enable featured_products section in
             $feature_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type, $featured_products_title,$p_dim, $getSubCatIds);
-        } 
-
-        if (in_array('banner', $enable_layout)) {  # if enable banner section in
-            $cab_booking_layouts = CabBookingLayout::with('banner_image')->where('slug','banner')->get();
-            
-            foreach($cab_booking_layouts as $bkey => $bval){
-                if(count($bval->banner_image) > 0)
-                $banners[$bval->banner_image[0]->cab_booking_layout_id] = $bval->banner_image[0]->banner_image_url;
-            }
         } 
         
         $top_rated_products = '';
@@ -802,11 +793,8 @@ trait HomePageTrait
                 'single_category_products'  => (!empty($single_category_products) && count($single_category_products) > 0)?$single_category_products:[],
                 'selected_products'  => (!empty($selected_products) && count($selected_products) > 0)?$selected_products:[],
                 'most_popular_products'  => (!empty($popular_products) && count($popular_products) > 0)?$popular_products:[],
-                //'recent_orders' => $activeOrders,
-                'banners' => $banners,
                 'additionalPreference' => $additionalPreference,
             ];
-            // pr( $data);
             return $data ;
     }
 

@@ -717,8 +717,8 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                  </div>
              @endif
              {{-- marg data --}}
-
-                @if($product->category->categoryDetail->type_id == 10)
+             
+                @if(($product->category->categoryDetail->type_id == 10) || (($product->category->categoryDetail->type_id == 7) && $client_preference_detail->is_hourly_pickup_rental == 1) )
                     @include('backend.product.popup.scheduleTableRows')
                     {{-- @include('backend.product.popup.addBlockTimeTablePopup') --}}
                     @include('backend.product.variant')
@@ -873,6 +873,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     @endif
                 @endif
             </div>
+            
             <div class="col-lg-5">
                 <!-- <div class="card-box ">
                     <div class="row mb-2 bg-light">
@@ -1130,6 +1131,20 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                             {!! Form::label('title', __('Minimum Increment'),['class' => 'control-label']) !!}
                             {!! Form::number('batch_count', $product->batch_count, ['class'=>'form-control', 'id' => 'batch_count', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
                         </div>
+
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group" id="per_hour_price">
+                                {!! Form::label('title', __('Per Hour Price'),['class' => 'control-label']) !!}
+                                <input class="form-control" name="per_hour_price" type="text" value="{{$product->per_hour_price}}" onkeypress="return isNumberKey(event)" maxlength="6">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div class="form-group" id="km_included">
+                                {!! Form::label('title', __('Kilometers Inclued with Rental'),['class' => 'control-label']) !!}
+                                <input class="form-control" name="km_included" type="text" value="{{$product->km_included}}" onkeypress="return isNumberKey(event)" maxlength="4">
+                            </div>
+                        </div>
+                        
                         <div class="col-md-6 mb-2">
                             {!! Form::label('title', __('Return/Replace Days'),['class' => 'control-label']) !!}
                             {!! Form::number('return_days', $product->return_days, ['class'=>'form-control', 'id' => 'return_days', 'placeholder' => '0', 'min' => '1', 'onkeypress' => 'return isNumberKey(event)']) !!}
@@ -1385,28 +1400,51 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     </div>
                     @endif
                     @endif
+                    @if (isset($getAdditionalPreference['is_product_measurement_in_cm_kg']) && $getAdditionalPreference['is_product_measurement_in_cm_kg'] == 1)
+                        <div class="row mt-2 mb-2 physicalDiv" style="{{ ($product->is_physical == 1) ? '' : '' }}">
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Length (In Centimeter)',['class' => 'control-label']) !!}
+                                {!! Form::text('length', $product->length,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '10.0']) !!}
+                            </div>
 
-                    <div class="row mt-2 mb-2 physicalDiv" style="{{ ($product->is_physical == 1) ? '' : '' }}">
-                        <div class="col-sm-4">
-                            {!! Form::label('title', 'Length (In Inches)',['class' => 'control-label']) !!}
-                            {!! Form::text('length', $product->length,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '10.0']) !!}
-                        </div>
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Width (In Centimeter)',['class' => 'control-label']) !!}
+                                {!! Form::text('breadth', $product->breadth,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '12.0']) !!}
+                            </div>
 
-                        <div class="col-sm-4">
-                            {!! Form::label('title', 'Width (In Inches)',['class' => 'control-label']) !!}
-                            {!! Form::text('breadth', $product->breadth,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '12.0']) !!}
-                        </div>
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Height (In Centimeter)',['class' => 'control-label']) !!}
+                                {!! Form::text('height', $product->height,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '8.0']) !!}
+                            </div>
 
-                        <div class="col-sm-4">
-                            {!! Form::label('title', 'Height (In Inches)',['class' => 'control-label']) !!}
-                            {!! Form::text('height', $product->height,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '8.0']) !!}
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Weight (In Kg)',['class' => 'control-label']) !!}
+                                {!! Form::text('weight', $product->weight,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '15.0']) !!}
+                            </div>
                         </div>
+                    @else
+                        <div class="row mt-2 mb-2 physicalDiv" style="{{ ($product->is_physical == 1) ? '' : '' }}">
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Length (In Inches)',['class' => 'control-label']) !!}
+                                {!! Form::text('length', $product->length,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '10.0']) !!}
+                            </div>
 
-                        <div class="col-sm-4">
-                            {!! Form::label('title', 'Weight (In Pounds)',['class' => 'control-label']) !!}
-                            {!! Form::text('weight', $product->weight,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '15.0']) !!}
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Width (In Inches)',['class' => 'control-label']) !!}
+                                {!! Form::text('breadth', $product->breadth,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '12.0']) !!}
+                            </div>
+
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Height (In Inches)',['class' => 'control-label']) !!}
+                                {!! Form::text('height', $product->height,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '8.0']) !!}
+                            </div>
+
+                            <div class="col-sm-4">
+                                {!! Form::label('title', 'Weight (In Pounds)',['class' => 'control-label']) !!}
+                                {!! Form::text('weight', $product->weight,['class' => 'form-control', 'onkeypress' => 'return isNumberKey(event)', 'placeholder' => '15.0']) !!}
+                            </div>
                         </div>
-                    </div>
+                    @endif
 
                     <!-- <div class="row mb-2">
                         {!! Form::label('title', 'Physical',['class' => 'control-label col-sm-2']) !!}
@@ -1524,7 +1562,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                     <label class="logo-size d-block text-right mt-1">{{ __("Image Size") }} 540x715</label>
                     <div class="imageDivHidden"></div>
                 </div>
-
+              
                 @if($client_preference_detail->business_type != 'taxi')
                 <div class="card-box" style="display:{{(($product->global_product_id!='')?'none':'block')}}">
                     <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">{{ __("Relate with other products") }}</h5>
@@ -1701,6 +1739,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                  <!-- end product faqs -->
 
             </div>
+            
         </div>
     </form>
 </div>

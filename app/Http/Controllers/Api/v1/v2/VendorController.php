@@ -2104,7 +2104,7 @@ class VendorController extends BaseController{
             $preferences = ClientPreference::select('distance_to_time_multiplier','distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude')->first();
             $langId = $user->language;
             $vendor = Vendor::select('id', 'name', 'desc', 'logo', 'banner', 'address', 'latitude', 'longitude', 'slug', 'show_slot', 'instagram_url',
-                        'order_min_amount', 'vendor_templete_id', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery','closed_store_order_scheduled')
+                        'order_min_amount', 'vendor_templete_id', 'order_pre_time', 'auto_reject_time', 'dine_in', 'takeaway', 'delivery','closed_store_order_scheduled','orders_per_slot')
                         ->withAvg('product', 'averageRating');
             if (($preferences) && ($preferences->is_hyperlocal == 1)) {
 
@@ -2588,7 +2588,6 @@ class VendorController extends BaseController{
                             ->orderByRaw('CAST(products.calories AS SIGNED) desc');
                         }
                     }
-                    // \Log::info(['products' => $products->get()]);
                     $products = $products->groupBy('id');
                     }])
                     ->where('status', 1);

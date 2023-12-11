@@ -269,7 +269,8 @@ body .create_box a.btn.btn-solid.mt-2 {
 }
 
 .al_body_template_three .btn.btn-solid {
-    border-radius: 30px;border:none;
+    border-radius: 30px;
+    /* border:none;  */
 }
 
 .al_body_template_three .address-btn .btn.btn-solid {
@@ -1003,7 +1004,7 @@ form#filterData {
     right: 20px!important;
     top: 5px;
     margin-left: 0;
-    content: ""
+    content: "";
 }
 
 .location-bar.d-inline-flex.align-items-center.position-relative {
@@ -1057,6 +1058,7 @@ h2.homepage-address {
     font-weight: 600;
     color: #000;
     text-transform: capitalize;
+    word-break: break-all;
 }
 .al_body_template_three h2.h2-heading {
     text-transform: uppercase!important;

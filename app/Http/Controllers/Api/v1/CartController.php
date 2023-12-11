@@ -125,7 +125,6 @@ class CartController extends BaseController
     /**     * Add product In Cart    *           */
     public function add(Request $request)
     {
-
         try {
             $preference = ClientPreference::first();
             $luxury_option = LuxuryOption::where('title', $request->type)->first();            
@@ -158,10 +157,13 @@ class CartController extends BaseController
                 'is_gift' => 0,
                 'status' => '0',
                 'item_count' => 0,
-                'user_id' => $user->id,
+                'user_id' => $user->id, 
                 'created_by' => $user->id,
                 'unique_identifier' => $unique_identifier,
                 'currency_id' => $client_currency->currency_id,
+                'scheduled_date_time' =>  $request->has('scheduled_date_time') ? $request->scheduled_date_time : null,
+                'schedule_type' =>  $request->has('schedule_type') ? $request->schedule_type : null,
+                'scheduled_slot' =>  $request->has('schedule_slot') ? $request->schedule_slot : null
             ];
             if (!empty($user_id)) {
                 $cart_detail = Cart::updateOrCreate(['user_id' => $user->id], $cart_detail);
@@ -680,7 +682,7 @@ class CartController extends BaseController
     /**         *      Cart  Date      *          */
     public function getCart($cart, $langId = '1', $currency = '1', $type = 'delivery',$code = 'D')
     {
-           
+   
          try{
         $container_charges_tax = 0;
         $deliver_fee_charges_tax = 0;
@@ -1922,7 +1924,6 @@ class CartController extends BaseController
 
      }catch(\Exception $ex)
      {
-         \Log::info($ex->getMessage());
             return [];
      }
     }
@@ -1960,7 +1961,9 @@ class CartController extends BaseController
         //type must be a : delivery , takeaway,dine_in
         $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
         $duration = $duration->slot_minutes??'';
+        
         $slots = showSlot($request->date,$vendorId,$delivery,$duration, 1, 'pickup',$cartId); // Added 1 for pickup
+       
         if(count($slots)<=0){
             $slot = [];
         }else{

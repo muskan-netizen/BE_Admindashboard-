@@ -54,7 +54,7 @@ Main Components
 }
 .cd-products-comparison-table .filter.active {
   cursor: pointer;
-  background-color: #39994a;
+  /* background-color: #39994a; */
 }
 .no-touch .cd-products-comparison-table .filter.active:hover {
   background-color: #a7cea1;

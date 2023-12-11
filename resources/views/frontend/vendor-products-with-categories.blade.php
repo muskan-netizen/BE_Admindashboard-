@@ -24,6 +24,9 @@ span.alPriceValue, span.alPriceValue i {
     display: inline-flex;
     align-items: baseline;
 }
+.vendor-products-wrapper .price_head h5{
+    max-width:70%;
+}
 </style>
 @endsection
 @section('css-links')
@@ -104,7 +107,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                                         <nav class="scrollspy-menu ">
                                             <ul>
                                                 @forelse($listData as $key => $data)
-                                                    <li><a data-slug="{{ $data->category->slug??'#' }}" style="cursor: pointer;">{{ $data->category->translation[0]->name??'' }}({{ $data->products_count }})</a>
+                                                    <li><a data-slug="{{ $data->category->slug??'#' }}" style="cursor: pointer;">{{ $data->category->translation[0]->name??'' }}({{$data->products->total() }})</a>
                                                     </li>
                                                 @empty
                                                 @endforelse
@@ -138,8 +141,14 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                                             <section class="scrolling_section " id="{{ $data->category->slug }}">
                                                 @if (!empty($data->products))
                                                     <h2 class="category-head mt-0 mb-3">
-                                                        {{ @$data->category->translation[0]->name??'' }}
-                                                        ({{ $data->products_count }})
+                                                        {{ $data->category->translation_one->name??'' }}
+                                                        ({{ $data->products->total() }})
+                                                        @if($data->products->total() > 12)
+                                                        :
+                                                            <span class="font-12">
+                                                                <a target="_blank" href="{{route('products',[$data->category_id,isset($data->vendor)?$data->vendor->id:0])}}">view all</a>
+                                                            </span>
+                                                        @endif
                                                     </h2>
                                                     @forelse($data->products as $prod)
                                                     @php

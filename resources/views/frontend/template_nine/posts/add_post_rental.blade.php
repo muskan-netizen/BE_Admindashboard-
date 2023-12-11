@@ -52,7 +52,8 @@
                                         @endif
                                     </ul>
                                 </div>
-                                <ul class=" p-0 m-0 no-gutters view-rental_cats d-none">
+                                <ul class=" p-0 m-0 no-gutters view-rental_cats d-none  ">
+                                    <div class="category_responsive">
                                     @if (@$categories)
                                         @foreach ($categories as $key => $category)
                                             @php  $icon = $category['icon']['proxy_url'] . '200/200' . $category['icon']['image_path'];  @endphp
@@ -70,8 +71,10 @@
                                             @endif
                                         @endforeach
                                     @endif
+                                    </div>
                                 </ul>
-                                <ul class=" p-0 m-0 no-gutters view-p2psell_cats d-none">
+                                <ul class=" p-0 m-0 no-gutters   view-p2psell_cats d-none ">
+                                    <div class="category_responsive">
                                     @if (@$categories)
                                         @foreach ($categories as $key => $category)
                                             @php  $icon = $category['icon']['proxy_url'] . '200/200' . $category['icon']['image_path'];  @endphp
@@ -89,6 +92,7 @@
                                             @endif
                                         @endforeach
                                     @endif
+                                    </div>
                                 </ul>
                                 <label class="cat-error text-danger mt-2 pl-1 d-none">Please select category.</label>
                             </div>
@@ -411,14 +415,17 @@
             switch (value) {
                 case '10':
                 $viewRentalCats.removeClass('d-none');
+                
                 break;
                 case '13':
-                $viewP2PSellCats.removeClass('d-none');
+                $viewP2PSellCats.removeClass('d-none');               
+                // $(".slick-arrow").click();
                 break;
                 default:
                 $viewAllCats.removeClass('d-none');
                 break;
             }
+            $('.category_responsive').slick('refresh');
             $categoryID.val('');
             $selectedCategory.text('');
             $p2pCategoryForm.addClass('d-none');
