@@ -3004,7 +3004,7 @@ class OrderController extends FrontController
             //     $payable_amount = ($request->total_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
             // }
 
-            $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
+            $ex_gateways_wallet = [4,36,40,41,22]; // stripe,mycash,userede,openpay
 
             // $tip_amount = 0;
             // if (isset($request->tip)) {
