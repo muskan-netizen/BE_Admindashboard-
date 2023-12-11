@@ -114,6 +114,7 @@ class HomeController extends BaseController
     public function homepage(Request $request, $domain = '')
     {
         try {           
+            
             $this->config();
             $home = array();
             $vendor_ids = array();
