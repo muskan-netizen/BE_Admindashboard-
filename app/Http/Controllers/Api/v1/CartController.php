@@ -67,7 +67,6 @@ class CartController extends BaseController
                         $cartData->cart_error_message = __("You can not edit this order. Either order is in processed or in processing. Please discard order editing.");
                     }
                 }
-                // dd($cartData);
 
 
                 $age_restriction = CartProduct::where('cart_id',$cart->id)->whereHas('product',function($q){
@@ -712,7 +711,7 @@ class CartController extends BaseController
         $address_id = 0;
         $delivery_status = 1;
         $cartID = $cart->id;
-        // dd($cartID);
+        
         $upSell_products = collect();
         $crossSell_products = collect();
         $delifproductnotexist = CartProduct::where('cart_id', $cartID)->doesntHave('product')->delete();
@@ -1178,7 +1177,6 @@ class CartController extends BaseController
                             ){
                                 $coupon_product_discount = $coupon_product_discount + $quantity_price + $quantity_container_charges;  
                         }
-                        // dd($cartData['vendor_products']['variants']); 
                         
                         if ($prod->pvariant) {
                             $variantsData['price']              = $price_in_currency;
@@ -2027,7 +2025,7 @@ class CartController extends BaseController
                         $url . '/api/get-delivery-fee',
                         ['form_params' => ($postdata)]
                     );
-                    // dd($url);
+                    
                     $response = json_decode($res->getBody(), true);
                     if ($response && $response['message'] == 'success') {
                         $response_array[] = array('delivery_fee' => $response['total'], 'total_duration' => $response['total_duration']);
@@ -2136,17 +2134,17 @@ class CartController extends BaseController
         $orderCount = 0;
         // Get Vendor orders
         $orderVendors = OrderVendor::where('vendor_id', $vendor->id)->get();
-        // dd($orderVendors);
+        
         foreach($orderVendors as $orderVendor){
             // Get orders of current vendor where scheduled_slot and schedule_pickup_datetime is same as received from frontend.
             $order = Order::where('id', $orderVendor->order_id)->where('scheduled_slot', $schedule_slot)->first();
-            // dd($order);
+            
             $if_order_scheduled = 0;
             if($order){
                 $schedule_pickup = Carbon::parse($order->scheduled_date_time);
                 $schedule_pickup_final = convertDateTimeInTimeZone($schedule_pickup, $timezone, 'Y-m-d');
                 // dump($schedule_pickup_final);
-                // dd($schedule_datetime);
+                
                 if($schedule_pickup_final == $schedule_datetime){
                     // Increment orderCount and return this count to front end for validation
                     $orderCount++;
