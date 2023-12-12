@@ -1104,10 +1104,10 @@ class OrderController extends FrontController
                 //     ->orderBy('id', 'DESC')
                 //     ->first();
                 // $vendor->order_status = $vendor_order_status ? strtolower($vendor_order_status->OrderStatusOption->title) : '';
-         
+
                 $vendor->order_status = strtolower(@$vendor->OrderStatusOption->getStatusName($order->luxury_option_id))??'';
 
-                
+
                 if($vendor->cancelled_by == $user->id){
                     $vendor->order_status = OrderVendor::CANCEL_STATUS;
                 }
@@ -1788,9 +1788,9 @@ class OrderController extends FrontController
     public function placeOrder(Request $request, $domain = '')
     {
 
-      
 
-       
+
+
         // dd($request->other_taxes_string);
         // $stock = $this->ProductVariantStock('18');
 
@@ -1810,7 +1810,7 @@ class OrderController extends FrontController
 
         $order_response = $this->orderSave($request, "1");
 
-        
+
         $response = $order_response->getData();
         if ($response->status == 'Success') {
             # if payment type cash on delivery or payment status is 'Paid'
@@ -1831,7 +1831,7 @@ class OrderController extends FrontController
     public function orderSave($request, $paymentStatus)
     {
 
-       
+
         try {
             $latitude = '';
             $longitude = '';
@@ -1867,9 +1867,9 @@ class OrderController extends FrontController
             $order_edit_before_hours = $additionalPreferences->order_edit_before_hours;
 
             $editlimit_datetime = Carbon::now()->addHours($order_edit_before_hours)->toDateTimeString();
-          
+
             $luxury_option = LuxuryOption::where('title', $action)->first();
-           
+
             $delivery_on_vendors = array();
             if ((isset($request->user_id)) && (! empty($request->user_id))) {
                 $user = User::find($request->user_id);
@@ -2180,7 +2180,7 @@ class OrderController extends FrontController
                 }else{
                     $tax_amount = $order->taxable_amount;
                 }
-       
+
                 $tax_amount  = round($order->total_other_taxes_amount,2);
                 $OrderVendor->status = 0;
                 $OrderVendor->user_id = $user->id;
@@ -2243,7 +2243,7 @@ class OrderController extends FrontController
                         }
                     }
 
-                
+
 
                     if(@$luxury_option->id == 4){
                         $security_amount += $vendor_cart_product->product->security_amount;
@@ -2262,14 +2262,14 @@ class OrderController extends FrontController
                     if($luxury_option->id == 9 && @$variant->month_price){
                         $schedule_days = $vendor_cart_product->additional_increments_hrs_min / 24;
                             if($schedule_days >= 7 && $schedule_days < 30){
-                                
+
                                 $variant_price = $variant->week_price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
                             }elseif($schedule_days >= 30){
                                 $variant_price = $variant->month_price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
                             }else{
                                 $variant_price = $variant->price * ($vendor_cart_product->additional_increments_hrs_min/(60*24));
                             }
-                        
+
                     }
 
 
@@ -2421,14 +2421,14 @@ class OrderController extends FrontController
                     $order_product->product_delivery_fee = isset($vendor_cart_product->product_delivery_fee) ? $vendor_cart_product->product_delivery_fee : 0;
                     $order_product->is_price_buy_driver = $is_price_buy_driver;
                     $order_product->specific_instruction = $vendor_cart_product->specific_instruction;
-                    
-                    
+
+
                     if($action == 'p2p'){
                         $order_product->price = $request->total_amount ?? 0;
                     }else{
                         $order_product->price = $variant->price * $daysCountRecurring;
                     }
-                    
+
                     /**
                      * for rental case total_booking_time as a total time
                      * for on_demand and appointment total booking time as single service duration time as per service for get totel service time multiply by quantity
@@ -2705,7 +2705,7 @@ class OrderController extends FrontController
                         //pr($res);
                     }
                     // pr($order_product);
-                    
+
                     if (! empty($vendor_cart_product->addon)) {
 
                         foreach ($vendor_cart_product->addon as $ck => $addon) {
@@ -2724,7 +2724,7 @@ class OrderController extends FrontController
                             $quantity_price = $quantity_price + $opt_quantity_price;
                         }
                     }
-                    
+
 
                     if(!empty($cart->rentalProtection)){
                         foreach($cart->rentalProtection as $protection){
@@ -3004,7 +3004,7 @@ class OrderController extends FrontController
             //     $payable_amount = ($request->total_amount + $fixed_fee_amount) - $loyalty_amount_saved ;
             // }
 
-            $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
+            $ex_gateways_wallet = [4,36,40,41,22]; // stripe,mycash,userede,openpay
 
             // $tip_amount = 0;
             // if (isset($request->tip)) {
@@ -3023,24 +3023,24 @@ class OrderController extends FrontController
             // $payable_amount = $payable_amount + $tip_amount + $total_other_taxes;
 
             $wallet_amount_used = 0;
-            // if ($user) {
-            //     if ($user->balanceFloat > 0) {
-            //         $wallet = $user->wallet;
-            //         $wallet_amount_used = $user->balanceFloat;
-            //         if ($wallet_amount_used > $payable_amount) {
-            //             $wallet_amount_used = $payable_amount;
-            //         }
-            //         $order->wallet_amount_used = $wallet_amount_used;
-            //         // Deduct wallet amount if payable amount is successfully done on gateway
-            //         if (($wallet_amount_used > 0) && (! in_array($request->payment_option_id, $ex_gateways_wallet))) {
-            //             $wallet->withdrawFloat($order->wallet_amount_used, [
-            //                 'Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>'
-            //             ]);
-            //         }
-            //     }
-            // }
+            if ($user) {
+                if ($user->balanceFloat > 0) {
+                    $wallet = $user->wallet;
+                    $wallet_amount_used = $user->balanceFloat;
+                    if ($wallet_amount_used > $payable_amount) {
+                        $wallet_amount_used = $payable_amount;
+                    }
+                    $order->wallet_amount_used = $wallet_amount_used;
+                    // Deduct wallet amount if payable amount is successfully done on gateway
+                    if (($wallet_amount_used > 0) && (! in_array($request->payment_option_id, $ex_gateways_wallet))) {
+                        $wallet->withdrawFloat($order->wallet_amount_used, [
+                            'Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>'
+                        ]);
+                    }
+                }
+            }
 
-            // $payable_amount = $payable_amount - $wallet_amount_used;
+            $payable_amount = $payable_amount - $wallet_amount_used;
 
             if(!empty($vendor_cart_product->recurring_booking_time)){
                 $payable_amount =  $request->total_amount - $wallet_amount_used;
@@ -3310,14 +3310,14 @@ class OrderController extends FrontController
 
                     }
                     $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
-                    
+
                     $super_admin = User::where('is_superadmin', 1)->pluck('id');
                     if ($request->payment_option_id == 1 || $order->is_postpay == 1 || $order->payment_status == 1) {
                         $this->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
                     }
                 } else {
                     $vendor_order_detail = $this->minimize_orderDetails_for_notification($order->id);
- 
+
                     $getAllVendorAdmin = Order::join('order_vendors as ov', 'ov.order_id', 'orders.id')->leftjoin('user_vendors as uv', 'uv.vendor_id', 'ov.vendor_id')
                         ->where('order_number', $order->order_number)
                         ->pluck('uv.user_id');
@@ -3361,7 +3361,7 @@ class OrderController extends FrontController
             }
             $this->sendSuccessSMS($request, $order);
             // $hub_key = @getAdditionalPreference(['is_marg_enable']);
-            
+
             return $this->successResponse($order);
         } catch (Exception $e) {
             DB::rollback();
@@ -4499,7 +4499,7 @@ class OrderController extends FrontController
 
     public function driverSignup(Request $request)
     {
-      
+
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required',
@@ -4580,7 +4580,7 @@ class OrderController extends FrontController
                 $filedata = [];
                 $other = [];
                 $abc = [];
-           
+
                 foreach ($files as $file) {
                     if ($file['file_name'] != null) {
                         if ($file['file_type'] != "Text" && $file['file_type'] != "selector" && $file['file_type'] != "Date") {
@@ -4797,7 +4797,7 @@ class OrderController extends FrontController
             }
         });
         $order = $order->find($order_id);
-        
+
         return $order;
     }
 
