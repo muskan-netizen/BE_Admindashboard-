@@ -572,7 +572,7 @@ class OrderController extends BaseController
                             $total_amount += ($vendor_cart_product->quantity * $variant_price);
                             $order_product = new OrderProduct;
                             $order_product->order_vendor_id = $order_vendor->id;
-                            $order_produpostPlaceOrder(ct->order_id = $order->id;
+                            $order_product->order_id = $order->id;
 
                             //Multiply by Recurring product item days
                             $order_product->price = $variant->price * $daysCountRecurring;
