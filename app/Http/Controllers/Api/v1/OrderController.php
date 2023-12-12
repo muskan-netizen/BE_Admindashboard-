@@ -572,7 +572,7 @@ class OrderController extends BaseController
                             $total_amount += ($vendor_cart_product->quantity * $variant_price);
                             $order_product = new OrderProduct;
                             $order_product->order_vendor_id = $order_vendor->id;
-                            $order_product->order_id = $order->id;
+                            $order_produpostPlaceOrder(ct->order_id = $order->id;
 
                             //Multiply by Recurring product item days
                             $order_product->price = $variant->price * $daysCountRecurring;
@@ -1057,7 +1057,7 @@ class OrderController extends BaseController
                     }
                     $payable_amount = ($payable_amount + $fixed_fee_amount) - $loyalty_amount_saved;
 
-                    $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
+                    $ex_gateways_wallet = [4,36,40,41,22]; // stripe,mycash,userede,openpay
                     $wallet_amount_used = 0;
                     if ($user->balanceFloat > 0) {
                         $wallet = $user->wallet;
@@ -4173,7 +4173,7 @@ class OrderController extends BaseController
                 try {
                     $response = Http::get($order->ordervendor->dispatch_traking_url);
                 } catch (\Exception $ex) {
-                
+
                 }
 
                 if (isset($response) && $response->status() == 200) {
@@ -4387,7 +4387,7 @@ class OrderController extends BaseController
             return $response;
         }
         catch (\Exception $e) {
-           
+
             return $this->errorResponse(__('Something went wrong, Please try again.'), 400);
         }
     }
@@ -4445,7 +4445,7 @@ class OrderController extends BaseController
         $order_status_options = [];
         $paginate = $request->has('limit') ? $request->limit : 12;
         $type = $request->has('type') ? $request->type : 'all';
-        
+
         $user_type = $request->has('user_type') ? $request->user_type : 'borrower';
         $product_type = $request->has('productType') ? $request->productType : '';
         $orders = OrderVendor::with('products')->orderBy('id', 'DESC');
@@ -4470,7 +4470,7 @@ class OrderController extends BaseController
             $orders->whereHas('products');
                 break;
                 case 'upcoming': // which order not assign yet indriver
-                  
+
                 $orders->whereHas('products');
                 $orders->whereIn('order_status_option_id', [1,2]);
                 break;
@@ -4511,7 +4511,7 @@ class OrderController extends BaseController
                 });
                 break;
         }
-        
+
         $orders = $orders->with(['orderDetail.editingInCart', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing','user'=>function ($qq){
             $qq->select('id','name');
         },  'products.productReturn','cancelledBy.userVendor',
@@ -4546,7 +4546,7 @@ class OrderController extends BaseController
 
     public function getOrdersLenderBorrower(Request $request)
     {
-          
+
         $user = Auth::user();
         $order_status_options = [];
         $paginate = $request->has('limit') ? $request->limit : 2;
@@ -4558,19 +4558,19 @@ class OrderController extends BaseController
         $vendorUser =  UserVendor::select('vendor_id')->where('user_id', $user->id)->first();
         $orders = OrderVendor::with('products')->orderBy('id', 'DESC');
         $orders->where('user_id', $user->id) ; //borrower
-         
+
         switch ($type) {
-          
+
             case 'all': // which order not assign yet indriver
             $orders->whereHas('products');
                 break;
                 case 'upcoming': // which order not assign yet indriver
-                   
+
             $orders->whereHas('products');
             $orders->whereIn('order_status_option_id', [1,2]);
                 break;
                 case 'ongoing': // which order not assign yet indriver
-                  
+
                 $orders->whereHas('products');
             $orders->whereIn('order_status_option_id', [4]);
                     break;
@@ -4598,15 +4598,15 @@ class OrderController extends BaseController
                 });
                 break;
         }
-      
+
         $orders = $orders->with(['orderDetail.editingInCart', 'vendor:id,name,logo,banner,return_request,cancel_order_in_processing', 'user'=>function ($qq){
             $qq->select('id','name');
         }, 'products.productReturn',
         'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request','products.Routes','products.order_product_status','products.product.category.categoryDetail'=>function ($q){
-            $q->select('id','type_id'); 
-        
+            $q->select('id','type_id');
+
         },'products.product.translation'
-      
+
         ])
         ->whereHas('products.product.category.categoryDetail', function ($qq) use($product_type) {
             if($product_type=="rent"){
@@ -4617,7 +4617,7 @@ class OrderController extends BaseController
     })
         ->orderBy('id', 'Desc')
         ->take($paginate)->get();
-      
+
 
         if(@$vendorUser->vendor_id){
             $lender = OrderVendor::with('products')->orderBy('id', 'DESC');
@@ -4627,12 +4627,12 @@ class OrderController extends BaseController
             $lender->whereHas('products');
                 break;
             case 'upcoming': // which order not assign yet indriver
-                
+
             $lender->whereHas('products');
             $lender->whereIn('order_status_option_id', [1,2]);
                 break;
             case 'ongoing': // which order not assign yet indriver
-           
+
                 $lender->whereHas('products');
             $lender->whereIn('order_status_option_id', [4]);
                     break;
@@ -4661,7 +4661,7 @@ class OrderController extends BaseController
             $qq->select('id','name');
         }, 'products.productReturn',
         'exchanged_of_order.orderDetail', 'exchanged_to_order.orderDetail', 'cancel_request','products.Routes','products.order_product_status','products.product.category.categoryDetail'=>function ($q){
-            $q->select('id','type_id');    
+            $q->select('id','type_id');
         },'products.product.translation'
         ])
         ->whereHas('products.product.category.categoryDetail', function ($qq) use($product_type) {
@@ -5071,7 +5071,7 @@ class OrderController extends BaseController
                     $response = Http::get($new_dispatch_traking_url);
 
                 } catch (\Exception $ex) {
-                 
+
                 }
 
 
