@@ -2331,6 +2331,12 @@ class CartController extends BaseController
             $option = array_merge($option,$optionLala);
         }
 
+        //End Lalamove Delivery changes code
+
+        //d4bdunzo Delivery changes code
+        
+        $d4bdunzo = new D4BDunzoController();
+        $deliver_d4bdunzo_data= $d4bdunzo->quote($vendorData->vendor_id);
         if($deliver_d4bdunzo_data['estimated_price']>0)
         {
             $deliver_charge_d4bdunzo = decimal_format($deliver_d4bdunzo_data['estimated_price']);
@@ -2340,16 +2346,16 @@ class CartController extends BaseController
                 'rate' => $deliver_charge_d4bdunzo,
                 'duration' => $deliver_d4bdunzo_data['eta']['pickup'] +  $deliver_d4bdunzo_data['eta']['dropoff'],
                 'courier_company_id' => 0,
-                'etd' => 0,  
+                'etd' => 0,
                 'etd_hours' => 0,
                 'estimated_delivery_days' => 0,
                 'code' => 'D4_0'
             );
             $option = array_merge($option,$optionD4Dunzo);
         }
-
-        //End Lalamove Delivery changes code
-
+        //End d4bdunzo Delivery changes code
+        
+        
         //Kwik Delivery changes code
         $kwick = new QuickApiController();
         $deliver_fee = $kwick->getDeliveryFeeKwikApi($vendorData->vendor_id);
