@@ -662,13 +662,26 @@
 
                         <div class="col-12">
                             <div class="form-group mb-2">
-                                <label for="map_key_for_app">{{ __('API KEY FOR APP') }}</label>
+                                <label for="map_key_for_app">{{ __('API KEY FOR ANDROID APP') }}</label>
                                 <input type="password" name="map_key_for_app" id="map_key_for_app" placeholder=""
                                     class="form-control"
                                     value="{{ old('map_key_for_app', $preference->map_key_for_app ?? '') }}">
                                 @if ($errors->has('map_key_for_app'))
                                     <span class="text-danger" role="alert">
                                         <strong>{{ $errors->first('map_key_for_app') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group mb-2">
+                                <label for="map_key_for_ios_app">{{ __('API KEY FOR IOS APP') }}</label>
+                                <input type="password" name="map_key_for_ios_app" id="map_key_for_ios_app" placeholder=""
+                                    class="form-control"
+                                    value="{{ old('map_key_for_ios_app', $preference->map_key_for_ios_app ?? '') }}">
+                                @if ($errors->has('map_key_for_ios_app'))
+                                    <span class="text-danger" role="alert">
+                                        <strong>{{ $errors->first('map_key_for_ios_app') }}</strong>
                                     </span>
                                 @endif
                             </div>
