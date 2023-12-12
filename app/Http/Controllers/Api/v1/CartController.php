@@ -1652,7 +1652,7 @@ class CartController extends BaseController
 
                 if($vendorData->vendor->add_markup_price)
                 $total_markup_fee_tax +=  $total_markup_charges * $markup_price_tax_rate/100;
-            // if($vendorData->vendor->delivery_charges_tax)totalDeliveryCharges
+            // if($vendorData->vendor->delivery_charges_tax)
             // $deliver_fee_charges +=  $deliveryCharges_real * $delivery_charges_tax_rate/100;
 
             // if($vendorData->vendor->service_charges_tax)
