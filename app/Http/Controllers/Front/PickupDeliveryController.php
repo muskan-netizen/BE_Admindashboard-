@@ -1249,7 +1249,7 @@ class PickupDeliveryController extends FrontController{
                     $order->payment_status = 1;
                 }
                 $wallet_amount_used = 0;
-                // $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
+                $ex_gateways_wallet = [4,36,40,41,22]; // stripe,mycash,userede,openpay,ccavenue
                 if ($user->balanceFloat > 0) {
                     $wallet = $user->wallet;
                     $wallet_amount_used = $user->balanceFloat;
@@ -1258,7 +1258,7 @@ class PickupDeliveryController extends FrontController{
                     }
                     $order->wallet_amount_used = $wallet_amount_used;
                     // Deduct wallet amount if payable amount is successfully done on gateway
-                    if (($wallet_amount_used > 0)) {
+                    if (($wallet_amount_used > 0) && (! in_array($request->payment_option_id, $ex_gateways_wallet))) {
                         $wallet->withdrawFloat($order->wallet_amount_used, [
                             'Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>'
                         ]);
