@@ -406,17 +406,17 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
 
                     {{-- Input Filed of price based on roles (START) --}}
                     @if($product->has_variant == 0)
-                        @if (isset($getAdditionalPreference['is_price_by_role']))
-                            @if($getAdditionalPreference['is_price_by_role'] == '1')
+                        {{-- @if (isset($getAdditionalPreference['is_price_by_role'])) --}}
+                            {{-- @if($getAdditionalPreference['is_price_by_role'] == '1') --}}
                                 <div class="row mb-2">
                                     @if (isset($roles))
                                         @foreach ($roles as $key => $_role)
-                                            @if( $_role['role'] === 'Corporate_user')
+                                            {{-- @if( $_role['role'] === 'Corporate_user') --}}
                                                 <div class="col-12">
 
                                                     <div class="field_wrapper">
                                                         @foreach ($product->productVariantByRoles as $role)
-                                                            @if($role->role_id == 3)
+                                                            {{-- @if($role->role_id == 3) --}}
                                                                 <div class="row corporate-row">
                                                                     <div class="col-md-5">
                                                                         <div class="form-group">
@@ -431,7 +431,7 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                                                         <a href="javascript:void(0);" class="remove_button" title="Remove field"><i class="mdi mdi-minus-circle mr-1"></i></a>
                                                                     </div>
                                                                 </div>
-                                                            @endif
+                                                            {{-- @endif --}}
                                                         @endforeach
                                                         <div class="row corporate-row">
                                                             <div class="col-md-5">
@@ -451,18 +451,18 @@ if($client_preference_detail->appointment_check == 1 && ($client_preference_deta
                                                         </div>
                                                     </div>
                                                 </div>
-                                            @else
+                                            {{-- @else
                                                 <div class="col-4 mb-2">
                                                     {!! Form::label('title', $_role['role'].' '. __('Price'), ['class' => 'control-label']) !!}
                                                     <input type="number" class="form-control" min="0" id="{{lcfirst($_role['role'])}}_price" onkeyup="isNumberKey(event)" placeholder="0" name="role_price[{{$_role['id']}}]" value="{{ isset($product->productVariantByRoles[$key]) ? (decimal_format($product->productVariantByRoles[$key]->amount) ?? 0.00) : 0.00 }}">
                                                     <input type="hidden" class="form-control" min="0" name="role_id[{{lcfirst($_role['role'])}}]" value="{{$_role['id']}}">
                                                 </div>
-                                            @endif
+                                            @endif --}}
                                         @endforeach
                                     @endif
                                 </div>
-                            @endif
-                        @endif
+                            {{-- @endif
+                        @endif --}}
                     @endif
                     {{-- Input Filed of price based on roles (END) --}}
 

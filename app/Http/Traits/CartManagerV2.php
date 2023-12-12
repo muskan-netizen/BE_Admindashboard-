@@ -756,9 +756,9 @@ trait CartManagerV2{
 
                     // $total_container_charges = $container_charges_in_currency * $prod->quantity;
 
-                    if ((@auth()->user()->role_id == 3)) {
+                    // if ((@auth()->user()->role_id == 3)) {
                         $quantity_role_price = $this->calculatePriceV2($prod->productVariantByRoles, $prod->quantity);
-                    }
+                    // }
 
                     if(@$quantity_role_price['quantity_price'] != 0 ) {
                             $quantity_price = $quantity_role_price['quantity_price'];
@@ -1906,16 +1906,16 @@ trait CartManagerV2{
         $quantity_price = 0;
         $current_price = 0;
         
-        if( ( Auth::user()->role_id == 3) && (getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1) && !empty($productVariantByRoles))  {
+        if(getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1 && !empty($productVariantByRoles))  {
             $amount = 0;
             $quantity = 0;
             foreach($productVariantByRoles->reverse() as $inn_key => $inn_val) {
-                if($inn_val->role_id == Auth::user()->role_id ) {
+                // if($inn_val->role_id == Auth::user()->role_id ) {
                     if($quantity < $inn_val->quantity && $inn_val->quantity <= $prodQuantity) {
                         $quantity = $inn_val->quantity;
                         $amount = $inn_val->amount;
                     }
-                }
+                // }
                 // break;
             }
             $quantity_price = $amount * $prodQuantity;
