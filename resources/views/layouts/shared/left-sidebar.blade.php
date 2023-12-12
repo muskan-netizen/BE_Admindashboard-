@@ -1,5 +1,5 @@
 @php
-    $getAdditionalPreference = getAdditionalPreference(['is_seller_module','is_gift_card','is_marg_enable','is_vendor_marg_configuration']);
+    $getAdditionalPreference = getAdditionalPreference(['is_seller_module','is_gift_card','is_marg_enable','is_vendor_marg_configuration','is_car_rental_enable']);
 @endphp
 <div class="left-side-menu">
     <div class="logo-box   d-lg-block">
@@ -308,12 +308,12 @@
                                 </a>
                             </li>
 
-                            <li>
+                            {{-- <li>
                                 <a href="{{route('company.getList')}}">
                                     <span class="icon-customer-2"></span>
                                     <span> {{ __('Companies') }} </span>
                                 </a>
-                            </li>
+                            </li> --}}
 
                             @if((@auth()->user()->can('chat-view') || Auth::user()->is_superadmin == 1) && @$clientData->socket_url)
                                 <li>
@@ -513,7 +513,7 @@
                                 </a>
                             </li>
                         @endif
-                        
+                        @if($getAdditionalPreference['is_car_rental_enable']==1)
                         <li>  
                             <a href="{{route('rental.protection')}}">
                                 <i class="icon-profile"></i>
@@ -532,6 +532,7 @@
                                 <span>{{ __("Destination") }}</span>
                             </a>
                         </li>
+                        @endif
                         
                         {{-- @if(Auth::user()->is_superadmin == 1)
                             <li>

@@ -286,7 +286,7 @@ $pages = \App\Models\Page::with([
                                     <div class="col-2 d-flex justify-content-end align-items-center">
                                         <div class="onhover-div pl-0 ml-xl-3 ml-lg-1 shake-effect d-block d-md-none">
                                             <div class="d-flex">
-                                            @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
+                                                @if( Session::get('vendorType') == 'p2p' )
                                                 <li class="add_post pr-2"><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn">
                                                     <span>
                                                         <i class="fa fa-plus" aria-hidden="true"></i>

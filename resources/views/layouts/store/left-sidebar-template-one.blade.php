@@ -363,9 +363,10 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                                             @endif
                                             </ul>
                                         </li>
-                                        @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
+                                     
+                                        @if( Session::get('vendorType') == 'p2p' )
                                         <li class="add_post"><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
-                                    @endif
+                                        @endif
                                         <li class="mobile-menu-btn d-none">
                                             <div class="toggle-nav p-0 d-inline-block"><i
                                                     class="fa fa-bars sidebar-bar"></i></div>
@@ -1129,19 +1130,42 @@ c-13 -26 -36 -53 -58 -66 l-37 -23 -1465 0 -1465 0 -37 23 c-22 13 -45 40 -58
                                     @if(@$navCategories)
                                     @foreach($navCategories as $cate)
                                     @if($cate['name'])
-                                    <li class="al_main_category">
+                                    <li class="al_main_category ">
 
                                 @if ($client_preference_detail->view_get_estimation_in_category == 1 && $client_preference_detail->business_type == "laundry")
                                     <a href="/get-estimation#{{$cate['slug']}}">
                                         @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='homeTest'))
-                                        <div class="nav-cate-img" > <img class="blur blurload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" src="{{$cate['icon']['image_fit']}}20/20{{$cate['icon']['image_path']}}" alt=""> </div>
-                                        @endif{{$cate['name']}}
+                                            <div class="nav-cate-img" >
+                                                 <img class="blur blurload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" src="{{$cate['icon']['image_fit']}}20/20{{$cate['icon']['image_path']}}" alt="">                                                  
+                                                </div>
+                                        @endif
+                                        <div class="" style="overflow: hidden; max-width:60px;">
+                                            {{-- <span class="slide_text">{{$cate['name']}}</span> --}}
+                                            @if(strlen($cate['name']) > 5)
+                                            <marquee behavior="scroll" direction="left" scrollamount="3">
+                                              {{$cate['name']}}
+                                            </marquee>
+                                          @else
+                                            <span>{{$cate['name']}}</span>
+                                          @endif 
+                                        </div>
+                                       
                                     </a>
                                 @else
                                     <a href="{{route('categoryDetail', $cate['slug'])}}">
                                         @if($client_preference_detail->show_icons==1 && (\Request::route()->getName()=='userHome' || \Request::route()->getName()=='homeTest'))
                                         <div class="nav-cate-img" > <img class="blur blurload" data-src="{{$cate['icon']['image_fit']}}200/200{{$cate['icon']['image_path']}}" src="{{$cate['icon']['image_fit']}}20/20{{$cate['icon']['image_path']}}" alt=""> </div>
-                                        @endif{{$cate['name']}}
+                                        @endif
+                                        <div class="" style="overflow: hidden; max-width:60px;">
+                                            {{-- <span class="slide_text">{{$cate['name']}}</span> --}}
+                                            @if(strlen($cate['name']) > 15)
+                                            <marquee behavior="scroll" direction="left" scrollamount="3">
+                                              {{$cate['name']}}
+                                            </marquee>
+                                          @else
+                                            <span>{{$cate['name']}}</span>
+                                          @endif 
+                                        </div>
                                     </a>
                                 @endif
 

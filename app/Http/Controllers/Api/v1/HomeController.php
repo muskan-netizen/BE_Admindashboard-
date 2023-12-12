@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\UserRegistrationDocuments;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\v1\BaseController;
-use App\Models\{User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart, VerificationOption, ShowSubscriptionPlanOnSignup, ClientCountries};
+use App\Models\{UserVendorWishlist,User, MobileBanner, Category, Brand, Client, ClientPreference, Cms, Order, Banner, Vendor, VendorCategory, Category_translation, ClientLanguage, PaymentOption, Product, Country, Currency, ServiceArea, ClientCurrency, ProductCategory, BrandTranslation, Celebrity, UserVendor, AppStyling, Nomenclature, AppDynamicTutorial,ClientSlot, TempCart, VerificationOption, ShowSubscriptionPlanOnSignup, ClientCountries};
 use DateTime;
 use DateInterval;
 use DateTimeZone;
@@ -44,12 +44,12 @@ class HomeController extends BaseController
             $homeData['profile'] = $preferences = Client::with(['preferences', 'country:id,name,code,phonecode'])->select('id','country_id', 'company_name', 'code', 'sub_domain','database_name', 'logo','dark_logo', 'company_address', 'phone_number', 'email','custom_domain','contact_phone_number','socket_url')->first();
             //dd(Client::with('getPreference')->first()->getPreference->auto_implement_5_percent_tip);
             $app_styling_detail = AppStyling::getSelectedData();
+            \Session::put('customerLanguage',$langId);
             foreach ($app_styling_detail as $app_styling) {
                 $key = $app_styling['key'];
                 $homeData['profile']->preferences->$key = __($app_styling['value']);
             }
             $vendorMode = [];
-       
             foreach(config('constants.VendorTypes') as $vendor_typ_key => $vendor_typ_value){
                 
                 $clientVendorTypes = $vendor_typ_key.'_check';
@@ -57,8 +57,7 @@ class HomeController extends BaseController
                 $nomenclature =  $vendor_typ_key.'_nomenclature';
                 $vendorData = [];
                     if($preferences->preferences->$clientVendorTypes == 1){
-                
-                        $vendorData['name'] =  $vendor_typ_value;
+                        $vendorData['name'] = getNomenclatureName($vendor_typ_value, false);
                         $iconFiledName = config('constants.VendorTypesIcon.'.$vendor_typ_key);
                         $vendorData["icon"] = $clientPreferences->$iconFiledName ? $clientPreferences->$iconFiledName : asset('images/al_custom3.png');
                         //$vendorData["name"] = $clientVendorTypes;
@@ -71,7 +70,7 @@ class HomeController extends BaseController
                     }
             }
            
-            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo','is_service_price_selection','is_particular_driver','is_enable_curb_side','is_enable_variant_set_v2','is_share_ride_users','is_recurring_booking','is_rental_weekly_monthly_price','is_enable_allergic_items']);
+            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','add_to_cart_btn','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo','is_service_price_selection','is_particular_driver','is_enable_curb_side','is_enable_variant_set_v2','is_share_ride_users','is_recurring_booking','is_rental_weekly_monthly_price','is_enable_allergic_items']);
 
             //mohit sir branch code updated by sohail farm meat
             $homeData['profile']->preferences->vendorMode = $vendorMode;
@@ -79,6 +78,7 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->is_cab_pooling = (int) $getAdditionalPreference['is_cab_pooling'];
             $homeData['profile']->preferences->chat_button = (int) $getAdditionalPreference['chat_button'];
             $homeData['profile']->preferences->call_button = (int) $getAdditionalPreference['call_button'];
+            $homeData['profile']->preferences->add_to_cart_btn = (int) $getAdditionalPreference['add_to_cart_btn'];
             $homeData['profile']->preferences->is_enable_curb_side = (int) $getAdditionalPreference['is_enable_curb_side'];
             $homeData['profile']->preferences->is_user_kyc_for_registration = (int) $getAdditionalPreference['is_user_kyc_for_registration'];
             $homeData['profile']->preferences->rating_check = $preferences->preferences->rating_check;
@@ -155,6 +155,7 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->aadhaar_back = $aadhaar_back;
             $homeData['profile']->preferences->aadhaar_number = $aadhaar_number;
             $homeData['profile']->preferences->upi_id = $upi_id;
+            $homeData['profile']->preferences->is_hourly_pickup_rental = $clientPreferences->is_hourly_pickup_rental;
 
             if(!is_null($passbase))
             {
@@ -354,11 +355,12 @@ class HomeController extends BaseController
                         ],
                     ];
                 }
+                $homeData['primary_currencies'] = $primary_currencies;
+                $homeData['primary_language'] = $primary_language;
+                $homeData['primary_country'] = $primary_country;
             }
 
-            $homeData['primary_currencies'] = $primary_currencies;
-            $homeData['primary_language'] = $primary_language;
-            $homeData['primary_country'] = $primary_country;
+       
 
             if (isset($homeData['profile']->custom_domain) && !empty($homeData['profile']->custom_domain) && $homeData['profile']->custom_domain != $homeData['profile']->sub_domain)
                 $domain_link = "https://" . $homeData['profile']->custom_domain;
@@ -553,59 +555,6 @@ class HomeController extends BaseController
             if($spotlight && ($spotlight == 1) ){
                 $spotlight_products=$this->getSpotlightProducts();
             }
-
-            // foreach ($new_product_details as  $new_product_detail) {
-            //     $multiply = $new_product_detail->variant->first() ? $new_product_detail->variant->first()->multiplier : 1;
-            //     $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
-            //     $image_url = $new_product_detail->media->first() && !is_null($new_product_detail->media->first()->image) ? $new_product_detail->media->first()->image->path['image_fit'] . '600/600' . $new_product_detail->media->first()->image->path['image_path'] : '';
-            //     $vprice1 = (isset($new_product_detail->variant->first()->price)?$new_product_detail->variant->first()->price * $multiply:0);
-            //     $new_products[] = array(
-            //         'image_url' => $image_url,
-            //         'sku' => $new_product_detail->sku,
-            //         'title' => $title,
-            //         'url_slug' => $new_product_detail->url_slug,
-            //         'averageRating' => number_format($new_product_detail->averageRating, 1, '.', ''),
-            //         'inquiry_only' => $new_product_detail->inquiry_only,
-            //         'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
-            //         'price' => decimal_format($vprice1),
-            //         'category' => ($new_product_detail->category->categoryDetail->translation->first()) ? $new_product_detail->category->categoryDetail->translation->first()->name : $new_product_detail->category->categoryDetail->slug
-            //     );
-            // }
-            // foreach ($feature_product_details as  $feature_product_detail) {
-            //     $multiply = $feature_product_detail->variant->first() ? $feature_product_detail->variant->first()->multiplier : 1;
-            //     $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
-            //     $image_url = $feature_product_detail->media->first() &&  !is_null($feature_product_detail->media->first()->image)? $feature_product_detail->media->first()->image->path['image_fit'] . '600/600' . $feature_product_detail->media->first()->image->path['image_path'] : '';
-            //     $vprice = (isset($feature_product_detail->variant->first()->price)?$feature_product_detail->variant->first()->price * $multiply:0);
-            //     $feature_products[] = array(
-            //         'image_url' => $image_url,
-            //         'sku' => $feature_product_detail->sku,
-            //         'title' => $title,
-            //         'url_slug' => $feature_product_detail->url_slug,
-            //         'averageRating' => number_format($feature_product_detail->averageRating, 1, '.', ''),
-            //         'inquiry_only' => $feature_product_detail->inquiry_only,
-            //         'vendor_name' => $feature_product_detail->vendor ? $feature_product_detail->vendor->name : '',
-            //         'price' => decimal_format($vprice),
-            //         'category' => ($feature_product_detail->category->categoryDetail->translation->first()) ? $feature_product_detail->category->categoryDetail->translation->first()->name : $feature_product_detail->category->categoryDetail->slug
-            //     );
-            // }
-            // foreach ($on_sale_product_details as  $on_sale_product_detail) {
-            //     $multiply = $on_sale_product_detail->variant->first() ? $on_sale_product_detail->variant->first()->multiplier : 1;
-            //     $title = $on_sale_product_detail->translation->first() ? $on_sale_product_detail->translation->first()->title : $on_sale_product_detail->sku;
-            //     $image_url = $on_sale_product_detail->media->first() && !is_null($on_sale_product_detail->media->first()->image) ? $on_sale_product_detail->media->first()->image->path['image_fit'] . '600/600' . $on_sale_product_detail->media->first()->image->path['image_path'] : '';
-            //     $vprice2 = (isset($on_sale_product_detail->variant->first()->price)?$on_sale_product_detail->variant->first()->price * $multiply:0);
-            //     $on_sale_products[] = array(
-            //         'image_url' => $image_url,
-            //         'sku' => $on_sale_product_detail->sku,
-            //         'title' => $title,
-            //         'url_slug' => $on_sale_product_detail->url_slug,
-            //         'averageRating' => number_format($on_sale_product_detail->averageRating, 1, '.', ''),
-            //         'inquiry_only' => $on_sale_product_detail->inquiry_only,
-            //         'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
-            //         'price' => decimal_format($vprice2),
-            //         'category' => ($on_sale_product_detail->category->categoryDetail->translation->first()) ? $on_sale_product_detail->category->categoryDetail->translation->first()->name : $on_sale_product_detail->category->categoryDetail->slug
-            //     );
-            // }
-
 
             $isVendorArea = 0;
 
@@ -1026,7 +975,7 @@ class HomeController extends BaseController
             ->whereHas('category.categoryDetail', function ($q) {
                 $q->whereNull('categories.deleted_at');
             })
-            ->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','category_id','title','calories');
+            ->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','category_id','title','calories','per_hour_price','km_included');
         if ($where !== '') {
             $products = $products->where($where, 1);
         }
@@ -1693,6 +1642,57 @@ class HomeController extends BaseController
 
             return $this->successResponse($homeData);
         } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function addVendorWishList(Request $request) {
+        try {
+            $user = Auth::user();
+            $wishlistData = [
+                'user_id' => $user->id,
+                'vendor_id' => $request->input('vendor_id'),
+            ];
+            UserVendorWishlist::updateOrCreate($wishlistData, $wishlistData);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Vendor added to your wish list successfully',
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            Log::error($e->getLine());
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function viewVendorWishList(Request $request) {
+        try {
+            $user = Auth::user();
+            $userVendorWishlist = UserVendorWishlist::with('vendor')->where('user_id', $user->id)->get();
+            return $this->successResponse($userVendorWishlist);
+    
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            Log::error($e->getLine());
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function removeVendorWishList(Request $request) {
+        try {
+            $user = Auth::user();
+            $wishlistData = [
+                'user_id' => $user->id,
+                'vendor_id' => $request->input('vendor_id'),
+            ];
+            UserVendorWishlist::where($wishlistData)->delete();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Vendor removed from your wish list successfully',
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            Log::error($e->getLine());
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }

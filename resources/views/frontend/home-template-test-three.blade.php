@@ -626,7 +626,8 @@
                 </div>
             </div>
         </section>
-		@elseif($homePageLabel->slug == 'recent_orders' && count($homePageData['recent_orders']) != 0 )
+					
+	   @elseif($homePageLabel->slug == 'recent_orders' && (@count($homePageData['recent_orders']) != 0 ))
 			<section class="container mb-0 render_full_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}"  >
 				<div class="top-heading d-flex justify-content-between">
 					<h2 class="h2-heading"> @php
@@ -637,7 +638,7 @@
 					<div class="col-12">
 						<div class="recent-orders product-m  render_{{$homePageLabel->slug}}" id="{{$homePageLabel->slug.$key}}">
 							@foreach ($homePageData[$homePageLabel->slug] as $order )
-							@include('frontend.common_section.recent_order')
+						
 							@endforeach
 						</div>
 					</div>

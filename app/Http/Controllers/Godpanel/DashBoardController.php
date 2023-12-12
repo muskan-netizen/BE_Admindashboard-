@@ -9,6 +9,7 @@ use App\Models\{BillingPlan, BillingPlanType, BillingTimeframe, BillingPricing, 
 use App\Http\Controllers\Client\BaseController;
 use App\Http\Traits\BillingPlanManager;
 use App\Providers\RouteServiceProvider;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
@@ -187,12 +188,11 @@ public function enableLumenService(Request $request)
         'database_name' => $client->database_name,
         'name' => $client->name ?? 'lumen',
         'email' => $client->email,
-        'password' => rand(11111111, 9999999)
+        'password' => rand(11111111, 9999999),
+        'is_lumen_key_expired' => $client->is_lumen_key_expired
     ];
 
-    \Log::info('post data');
-    \Log::info($data);
-
+   
     $headers = [
         'Content-Type' => 'application/json',
         'X-API-Key' => $client->lumen_access_token ?? '12345abcd',
@@ -201,8 +201,7 @@ public function enableLumenService(Request $request)
 
 
     if (isset($api_domain)) {
-        \Log::info('api domain');
-        \Log::info($api_domain->key_value);
+     
 
         $response = Http::withHeaders($headers)->post($api_domain->key_value . '/api/v1/createLumenClient', $data);
 
@@ -213,6 +212,8 @@ public function enableLumenService(Request $request)
             if (isset($responseData['api_key'])) {
                 $client->lumen_access_token = $responseData['api_key'];
                 $client->is_lumen_enabled = $request->is_lumen;
+                $client->is_lumen_key_expired = 0;
+                $client->lumen_timestamp = Carbon::now();
                 $client->save();
             }
         } else {
@@ -222,8 +223,7 @@ public function enableLumenService(Request $request)
         $responseData = null;
     }
 
-    \Log::info('create lumen client');
-    \Log::info($responseData);
+   
 
     return response()->json([
         'message' => 'lumen updated successfully',
@@ -243,10 +243,7 @@ public function enableCampaignService(Request $request)
         'campaign_service' => $request->campaign_service,
         'code' => $client->code,
     ];
-    
-
-    \Log::info('post data');
-    \Log::info($data);
+  
 
     $headers = [
         'Content-Type' => 'application/json',
@@ -256,9 +253,7 @@ public function enableCampaignService(Request $request)
 
 
     if (isset($api_domain)) {
-        \Log::info('api domain');
-        \Log::info($api_domain->key_value);
-
+        
         $response = Http::withHeaders($headers)->post($api_domain->key_value . '/api/v1/createLumenClient', $data);
 
         if ($response->status() === 200) {

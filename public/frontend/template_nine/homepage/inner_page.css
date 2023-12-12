@@ -392,7 +392,8 @@ body .create_box a.btn.btn-solid.mt-2 {
     height: 30px;
     width: 30px;
     border-radius: 50%;
-    background: #c2c2c2;
+    background: transparent;
+    margin-right: 10px;
     font-size: 10px;
     text-align: center;
     color: #fff;
@@ -2003,8 +2004,13 @@ body .modal-content #address-map-container {
 .al_body_template_three .suppliers-box:hover{box-shadow:none;box-sizing:border-box;border:1px solid transparent} */
 
 .wishlist-row .product-icon img {
-    border-radius: 35px;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border: 1px solid #cccc;
 }
+
 
 body #page-container #footer .footer-theme .sub-title .contact-list li span {
     padding-left: 0
@@ -2690,6 +2696,14 @@ span.org_price.ml-1.font-14{
     justify-content: flex-end;
     padding-right: 25px;
 }
+button#transfer_wallet_btn, #topup_wallet_btn {
+    font-size: 12px;
+    padding: 7px;
+    border-radius: 8px;
+    line-height: 1.5;
+    font-weight: 400;
+    text-transform: capitalize;
+}
 
 @media (min-width: 1024px) {
     .ds {
@@ -3236,6 +3250,9 @@ input.addon-input-number {
     display: flex;
     align-items: center;
     padding: 0 15px;
+}
+#alSixHomeServices .step-indicator > .indicator-line {
+    display: block;
 }
 
 .step {

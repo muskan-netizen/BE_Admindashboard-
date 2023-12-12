@@ -20,15 +20,15 @@
                 <ul class="productVariants">
                     <li class="firstChild">{{ $variant->title }}</li>
                     <li class="row otherSize m-0">
-                        @foreach ($variant->option2 as $k => $optn)
+                        @foreach ($variant->option2 as $k => $optn) 
                             <?php $var_id = $variant->variant_type_id;
                             $opt_id = $optn->variant_option_id;
                             $checked = $selectedVariant == $optn->product_variant_id ? 'checked' : '';
                             ?>
-                            <label class="radio d-inline-block txt-14 col-4 position-relative pl-4 pr-2"
+                            <label class="radio d-inline-block txt-14 col-4 position-relative pl-3 pr-2"
                                 data-title="{{ $key === 0 ? $variant->title : '' }}"> 
                                 <span
-                                    class="color_name ellipsis">{{ $optn->title }}</span>3
+                                    class="color_name ellipsis">{{ $optn->title }}</span>
                                     <input id="lineRadio-{{ $opt_id }}" name="{{ 'var_' . $var_id }}"
                                     vid="{{ $var_id }}" data-option-title="{{ $variant->title }}"
                                     optid="{{ $opt_id }}" value="{{ $opt_id }}" type="radio"

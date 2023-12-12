@@ -483,7 +483,8 @@ public function d4b_dunzo(Request $request)
 
     //Set Last Mile Delivery Configuration Detail
     public function last_mile_delivery(Request $request)
-    {
+    { 
+        //  pr($request->all());
         $preferenceset = ClientPreference::where('client_code', Auth::user()->code)->first();
         if (isset($request->need_delivery_service) && !empty($request->need_delivery_service)) {
             try {

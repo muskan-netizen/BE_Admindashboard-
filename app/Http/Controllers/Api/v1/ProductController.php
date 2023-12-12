@@ -80,7 +80,7 @@ class ProductController extends BaseController
 
         $clientCurrency = ClientCurrency::where('currency_id', Auth::user()->currency)->first();
         foreach ($products->variant as $key => $value) {
-            $products->variant[$key]->multiplier = $clientCurrency->doller_compare;
+            $products->variant[$key]->multiplier = $clientCurrency->doller_compare ?? 1;
         }
 
         foreach ($products->addOn as $key => $value) {
@@ -409,7 +409,7 @@ class ProductController extends BaseController
             }
 
             if( !empty($product->vendor_id) ) {
-                $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant','categoryName'])->whereNotIn('id',[$product->id]);
+                $suggested_product = Product::with(['media.image', 'vendor', 'translation', 'variant','categoryName','category.categoryDetail.translation'])->whereNotIn('id',[$product->id]);
                 $suggested_vendor_products = $suggested_product->where('vendor_id', $product->vendor_id)->orderby('id', 'desc')->limit(20)->get();
             }
 
