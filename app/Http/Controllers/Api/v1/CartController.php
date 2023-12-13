@@ -1214,9 +1214,10 @@ class CartController extends BaseController
                                     $vendorAddons[$ck]['cart_product_id'] = $addons->cart_product_id;
                                     $vendorAddons[$ck]['multiplier'] = $clientCurrency->doller_compare;
                                     $ttAddon = $ttAddon + $opt_quantity_price;
-                                    $order_sub_total = $order_sub_total + $opt_quantity_price;
+                                    $order_sub_total = $order_sub_total + $opt_quantity_price + $prod->pvariant->price;
                                     $opt_quantity_price_new += $opt_quantity_price;
                                     $quantity_price = $quantity_price + $opt_quantity_price;
+                                
                                     if(($in_or_not == 0 && in_array($prod->product_id,$coupon_product_ids))
                                         || ($in_or_not == 1 && !in_array($prod->product_id,$coupon_product_ids))
                                         || ($in_or_not == 0 && in_array($vendorData->vendor_id, $coupon_vendor_ids))
@@ -1239,6 +1240,7 @@ class CartController extends BaseController
                             // Check if is_cart_checked is 1 then add $quantity_price in payable amount
                             if($prod->is_cart_checked == 1){
                                 $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
+                                
                             }
 
                             if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
@@ -1393,6 +1395,7 @@ class CartController extends BaseController
                 // Add Delivery Slot Price In total amount
                 if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
                     $payable_amount = $payable_amount + decimal_format($prod->slot_price);
+                    
                 }
                 if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
                     if (isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)) {
@@ -1478,6 +1481,7 @@ class CartController extends BaseController
                     }*/
                 }
                 $payable_amount = $payable_amount + $vendorTotalDeliveryFee ;
+               
                 $deliver_charge = $vendorTotalDeliveryFee * $clientCurrency->doller_compare;
                 $vendorData->proSum = $proSum;
                 $vendorData->addonSum = $ttAddon;
@@ -1496,8 +1500,9 @@ class CartController extends BaseController
                      $amount_for_service = $opt_quantity_price_new + $vendor_products_total_amount;
                     $vendor_service_fee_percentage_amount = (($amount_for_service) * $vendorData->vendor->service_fee_percent) / 100 ;
                     $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
-                 }
-                 if($vendorData->vendor->service_charge_amount > 0){
+                }
+                if($vendorData->vendor->service_charge_amount > 0){
+                     
                      $amount_for_service = $opt_quantity_price_new + $vendor_products_total_amount;
                      $vendor_service_fee_percentage_amount = $vendorData->vendor->service_charge_amount;
                      $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
@@ -1510,6 +1515,7 @@ class CartController extends BaseController
                 
 
 
+                
                 $vendorData->service_fee_percentage_amount = number_format($vendor_service_fee_percentage_amount, 2, '.', '');
                 $vendorData->vendor_gross_total = $payable_amount;
                 $vendorData->discount_amount = $discount_amount;
@@ -1555,7 +1561,6 @@ class CartController extends BaseController
                         }
                     }
                 }
-                
                 $order_sub_total = $order_sub_total + $vendor_products_total_amount;
                 
                 $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
@@ -1813,11 +1818,12 @@ class CartController extends BaseController
             // }
             // $cart->wallet = $this->getWallet($cart->user_id, $clientCurrency->doller_compare, $currency);
         }
-        if ($loyalty_amount_saved  >= $temp_total_paying) {
+       
+        if ($loyalty_amount_saved  > $temp_total_paying) {
             $loyalty_amount_saved = $temp_total_paying;
             $cart->total_payable_amount = 0.00;
         } else {
-            $cart->total_payable_amount = ($total_paying  + $cart->total_tax) -   ($total_disc_amount + $loyalty_amount_saved);
+            $cart->total_payable_amount = $order_sub_total+($total_paying  + $cart->total_tax) -   ($total_disc_amount + $loyalty_amount_saved);
         }
         
         /* if($total_taxable_amount>0){
