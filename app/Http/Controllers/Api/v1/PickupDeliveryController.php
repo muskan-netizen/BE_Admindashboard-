@@ -91,7 +91,7 @@ class PickupDeliveryController extends BaseController{
                                 $qr->select('category_id')->from('vendor_categories')
                                     ->where('vendor_id', $vid)->where('status', 0);
                     })
-                    ->select('products.id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.category_id','products.tags','products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id')
+                    ->select('products.id','products.tax_category_id', 'products.sku', 'products.requires_shipping', 'products.sell_when_out_of_stock', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.Requires_last_mile', 'products.averageRating', 'pc.category_id','products.tags','products.seats_for_booking', 'products.available_for_pooling', 'products.is_toll_tax', 'products.travel_mode_id', 'products.toll_pass_id', 'products.emission_type_id')
                     ->where('products.vendor_id', $vid);
                     if($cid > 0){
                         $products = $products->where('products.category_id', $cid);
@@ -225,6 +225,7 @@ class PickupDeliveryController extends BaseController{
                     // $product->price_in_dollar_compare = $price_in_dollar_compare;
                     $product->tax_rate =  $tax_amount;
                     $product->total_tags_price = decimal_format($product->total_tags_price + $taxable_amount);
+                    $product->tags_price = decimal_format($product->tags_price + $product->tax_rate);
                     // $product->payable_amount =  $payable_amount;
                     $product->taxable_amount =  $taxable_amount;
                     $product->wallet_amount_used = "0.00";
@@ -1055,8 +1056,9 @@ class PickupDeliveryController extends BaseController{
                 if (isset($request->transaction_id) && (!empty($request->transaction_id))) {
                     $order->payment_status = 1;
                 }
+                
                 $wallet_amount_used = 0;
-                // $ex_gateways_wallet = [4,36,40,41]; // stripe,mycash,userede,openpay
+                $ex_gateways_wallet = [4,36,40,41,22]; // stripe,mycash,userede,openpay,ccavenue
                 if ($user->balanceFloat > 0) {
                     $wallet = $user->wallet;
                     $wallet_amount_used = $user->balanceFloat;
@@ -1065,7 +1067,7 @@ class PickupDeliveryController extends BaseController{
                     }                    
                     $order->wallet_amount_used = $wallet_amount_used;
                     // Deduct wallet amount if payable amount is successfully done on gateway
-                    if (($wallet_amount_used > 0)) {
+                    if (($wallet_amount_used > 0) && (! in_array($request->payment_option_id, $ex_gateways_wallet))) {
                         $wallet->withdrawFloat($order->wallet_amount_used, [
                             'Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>'
                         ]);
