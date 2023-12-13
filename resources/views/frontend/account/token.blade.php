@@ -262,7 +262,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurr
                               <!-- A Stripe Element will be inserted here. -->
                             </div>
                         </div>
-                       
+
                         <span class="error text-danger"id="error-message"></span>
                     </div>
                 <% } %>
@@ -284,7 +284,7 @@ $user_wallet_balance = $user->balanceFloat ? ($user->balanceFloat * ($clientCurr
                             <!-- form will be added here -->
                         </div>
                         <span class="error text-danger" id="checkout_card_error"></span>
-                    </div>  
+                    </div>
                 <% } %>
                 <% if(payment_option.slug == 'payphone') { %>
                     <div id="pp-button"></div>
@@ -353,6 +353,7 @@ var stripe_ideal_publishable_key = '{{ $stripe_ideal_publishable_key }}';
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var payment_yoco_url = "{{route('payment.yocoPurchase')}}";
     var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
+    var pyment_totalpay_url= "{{ route('make.payment') }}";
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
     var wallet_payment_options_url = "{{route('wallet.payment.option.list')}}";
     var payment_success_paypal_url = "{{route('payment.paypalCompletePurchase')}}";
