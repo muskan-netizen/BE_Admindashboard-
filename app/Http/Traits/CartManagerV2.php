@@ -1905,10 +1905,10 @@ trait CartManagerV2{
     function calculatePriceV2($productVariantByRoles, $prodQuantity) {
         $quantity_price = 0;
         $current_price = 0;
-        
+        $amount = 0;
+        $quantity = 0;
         if(getAdditionalPreference(['is_corporate_user'])['is_corporate_user'] == 1 && !empty($productVariantByRoles))  {
-            $amount = 0;
-            $quantity = 0;
+           
             foreach($productVariantByRoles->reverse() as $inn_key => $inn_val) {
                 // if($inn_val->role_id == Auth::user()->role_id ) {
                     if($quantity < $inn_val->quantity && $inn_val->quantity <= $prodQuantity) {
