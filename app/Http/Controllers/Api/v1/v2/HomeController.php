@@ -273,7 +273,7 @@ class HomeController extends BaseController
 
 
             if (isset($langId) && !empty($langId))
-                $home_page_labels = $home_page_labels->with(['banner_image', 'translations' => function ($q) use ($langId) {
+                $home_page_labels = $home_page_labels->with(['translations' => function ($q) use ($langId) {
                     $q->where('language_id', $langId);
                 }]);
 
@@ -334,31 +334,22 @@ class HomeController extends BaseController
             $venderIds  = $vendorData->where('status', 1)->pluck('id');
             $navCategories = $this->categoryNav($langId, $venderIds, $type , $request);
             } else{
-           
-                
                 $navCategories = $this->categoryNav($langId, @$homePageData['vendor_ids'], $type);
-
-            
-
             }
 
             Session::put('navCategories', $navCategories);
 
             /***end new  */
 
-            // dd($navCategories);
-            $home_page_labels = $home_page_labels->map(function ($da) use ($homePageData, $navCategories) {
-
-
-                
+            $home_page_labels = $home_page_labels->map(function ($da) use ($homePageData, $navCategories,$mobile_banners) {
                 if ($da->slug != 'pickup_delivery' && $da->slug != 'dynamic_page' && $da->slug != 'nav_categories' && $da->slug != 'banner') {
 
                     $da['data'] = @$homePageData[@$da->slug];
                 }
                 if ($da->slug == 'nav_categories') {
-                    // dd($da->slug);
                     $da['data'] = $navCategories;
-                    // dd($da[$da->slug]);
+                }   if ($da->slug == 'banner') {
+                    $da['banner_image'] = $mobile_banners;
                 }
                 return $da;
             });
