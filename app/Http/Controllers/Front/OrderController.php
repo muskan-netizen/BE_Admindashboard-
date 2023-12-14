@@ -66,7 +66,8 @@ use App\Http\Traits\ {
     SquareInventoryManager,
     VendorTrait,
     OrderTrait,
-    MargTrait
+    MargTrait,
+    CartManagerV2
 };
 use App\Models\AddonOption;
 use App\Models\ {
@@ -94,7 +95,7 @@ use Illuminate\Support\Facades\Http;
 
 class OrderController extends FrontController
 {
-    use ApiResponser, CartManager, SquareInventoryManager,VendorTrait,OrderTrait,OrderBlockchain;
+    use ApiResponser, CartManager, SquareInventoryManager,VendorTrait,OrderTrait,OrderBlockchain,CartManagerV2;
 
     /**
      * Display a listing of the resource.
@@ -2283,10 +2284,10 @@ class OrderController extends FrontController
                     $price_in_dollar_compare = $price_in_currency * $clientCurrency->doller_compare;
                     $container_charges_in_dollar_compare = $container_charges_in_currency * $clientCurrency->doller_compare;
 
-                    if ((Auth::user()->role_id == 3) && (getAdditionalPreference([
+                    if (getAdditionalPreference([
                         'is_corporate_user'
-                    ])['is_corporate_user'] == 1)) {
-                        $quantity_role_price = $this->calculatePrice($vendor_cart_product->productVariantByRoles, $vendor_cart_product->quantity);
+                    ])['is_corporate_user'] == 1) {
+                        $quantity_role_price = $this->calculatePriceV2($vendor_cart_product->productVariantByRoles, $vendor_cart_product->quantity);
                     }
                     if (@$quantity_role_price['quantity_price'] != 0 && (getAdditionalPreference([
                         'is_corporate_user'
@@ -5209,18 +5210,18 @@ class OrderController extends FrontController
     {
         $quantity_price = 0;
         $current_price = 0;
-        if ((Auth::user()->role_id == 3) && (getAdditionalPreference([
+        if (getAdditionalPreference([
             'is_corporate_user'
-        ])['is_corporate_user'] == 1) && ! empty($productVariantByRoles)) {
+        ])['is_corporate_user'] == 1 && ! empty($productVariantByRoles)) {
             $amount = 0;
             $quantity = 0;
             foreach ($productVariantByRoles->reverse() as $inn_key => $inn_val) {
-                if ($inn_val->role_id == Auth::user()->role_id) {
+                // if ($inn_val->role_id == Auth::user()->role_id) {
                     if ($quantity < $inn_val->quantity && $inn_val->quantity <= $prodQuantity) {
                         $quantity = $inn_val->quantity;
                         $amount = $inn_val->amount;
                     }
-                }
+                // }
                 // break;
             }
             $quantity_price = $amount * $prodQuantity;
