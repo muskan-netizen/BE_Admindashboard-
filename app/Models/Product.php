@@ -155,7 +155,7 @@ class Product extends Model implements Auditable
 
   public function productVariantByRoles()
   {
-    return $this->hasMany('App\Models\ProductVariantByRole')->select('id', 'role_id', 'product_id', 'product_variant_id', 'amount');
+    return $this->hasMany('App\Models\ProductVariantByRole')->select('id', 'role_id', 'product_id', 'product_variant_id', 'amount','quantity');
   }
 
   public function variant_list()
