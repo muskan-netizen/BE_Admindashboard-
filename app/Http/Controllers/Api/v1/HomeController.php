@@ -909,7 +909,7 @@ class HomeController extends BaseController
         $langId = $user->language;
         //$user_registration_documents = UserRegistrationDocuments::with(['primary'])->get();
         if( $langId){
-            $user_registration_documents = UserRegistrationDocuments::with(['translations' => function ($q) use ($langId) {
+            $user_registration_documents = UserRegistrationDocuments::with(['options.translations','translations' => function ($q) use ($langId) {
                 $q->where('language_id', $langId);
             }])->get();
 
