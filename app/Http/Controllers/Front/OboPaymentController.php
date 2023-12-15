@@ -208,14 +208,20 @@ class OboPaymentController extends Controller
                 "id" => $this->obo_client_id,
                 "key" => $this->obo_key_id
             ]);
+            \Log::error($input);
+            \Log::error($apiUrl);
             $header = [
                 'Content-Type' => 'application/json'
             ];
             $responce = Http::withBody($input, 'application/json')->withHeaders($header)->post($apiUrl);
             $data = json_decode($responce->body(),  true);
+            \Log::error($responce);
+            \Log::error($data);
             return $data;
         } catch (\Exception $e) {
             return $e->getMessage();
+            \Log::error($e->getMessage());
+            \Log::error($e->getLine());
         }
     }
 
@@ -267,8 +273,9 @@ class OboPaymentController extends Controller
     public function mobilePay(Request $request, $domain = '')
     {
         try {
+            \Log::info('mobilepay ..');
             $request->request->add(['payment_from' => $request->action, 'from' => $request->action, 'amt' => $request->amount, 'subsid' => $request->subscription_id ?? '', 'user_from' => 'app']);
-            $data =  $this->index($request, $domain, 'app');
+            $data =  $this->beforePayment($request, $domain, 'app');
             if (isset($data) && !empty($data)) {
                 return $data;
             }
