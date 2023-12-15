@@ -610,6 +610,16 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             var order_luxury_option_id = that.data("order_luxury_option");
             var alertMessage = "";
             var productIds = [];
+            if(status_option_id==4){
+                $status='Accepted'
+            }
+            else if(status_option_id==5){
+                $status='Processing'
+            }else{
+                $status='Delivering'
+
+            }
+            $title='Proceed with '+$status+' order';
             $('.productIdsCheck_'+order_id+':checked').each(function(i){
                 productIds[i] = $(this).val();
             });
@@ -635,7 +645,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                     that.prop("disabled",false);
                 }else{
                     Swal.fire({
-                    title: "{{__('Proceed with Accepting Order')}}",
+                    title: $title,
                     // icon: 'info',
                     text: alertMessage,
                     showCancelButton: true,
