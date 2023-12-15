@@ -1,4 +1,9 @@
-@extends('layouts.store', ['title' => (!empty($category->translation) && isset($category->translation[0])) ? $category->translation[0]->name : $category->slug])
+@extends('layouts.store', [
+'title' => (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : '',
+'meta_title'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_title:'',
+'meta_keyword'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_keyword:'',
+'meta_description'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_description:'',
+])
 @section('content')
 @php
 use Illuminate\Support\Arr;

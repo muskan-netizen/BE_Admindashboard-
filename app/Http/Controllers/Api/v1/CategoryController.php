@@ -83,6 +83,7 @@ class CategoryController extends BaseController
 
     public function listData($langId, $category_id, $type = '', $userid, $product_list, $mod_type, $mode_of_service = null, $limit = 12, $page = 1)
     {
+        $type = strtolower($type);
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area','subscription_mode')->where('id', '>', 0)->first();
 
         if ($type == 'vendor' && $product_list == 'false') {
@@ -241,7 +242,7 @@ class CategoryController extends BaseController
                 }
             }
             return $products;
-        } elseif ($type == 'Pickup/Delivery' || $type == 'pickup/delivery') {
+        } elseif ($type == 'pickup/delivery') {
             $vendor_ids = [];
             $user = Auth::user();
             $pickup_latitude = $user->latitude ? $user->latitude : '';
@@ -298,7 +299,7 @@ class CategoryController extends BaseController
                 );
             }
             return $category_details;
-        } elseif ($type == 'product' || $type == 'Product' || $type == 'on demand service' || $type == 'laundry' || $type == 'Laundry') {
+        } elseif ($type == 'product' || $type == 'on demand service' || $type == 'laundry') {
             $vendor_ids = Vendor::byVendorSubscriptionRule($preferences)->where('status', 1);
             
             $vendor_ids =  $vendor_ids->pluck('id')->toArray();
