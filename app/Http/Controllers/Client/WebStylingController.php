@@ -422,18 +422,21 @@ class WebStylingController extends BaseController{
      */
     public function updateWebStylesNew(Request $request){
         // dd($request->all());
-        foreach ($request->home_labels as $key => $value) {
-            $home_translation = CabBookingLayoutTranslation::where('language_id', $request->languages[$key])->where('cab_booking_layout_id', $request->home_labels[$key])->first();
-            if (!$home_translation) {
-                $home_translation = new CabBookingLayoutTranslation();
+        if($request->has('home_labels')){
+            foreach (@$request->home_labels as $key => $value) {
+                $home_translation = CabBookingLayoutTranslation::where('language_id', $request->languages[$key])->where('cab_booking_layout_id', $request->home_labels[$key])->first();
+                if (!$home_translation) {
+                    $home_translation = new CabBookingLayoutTranslation();
+                }
+                $home_translation->title = $request->names[$key];
+                $home_translation->cab_booking_layout_id  = $request->home_labels[$key];
+                $home_translation->language_id = $request->languages[$key];
+                $home_translation->save();
+
+
             }
-            $home_translation->title = $request->names[$key];
-            $home_translation->cab_booking_layout_id  = $request->home_labels[$key];
-            $home_translation->language_id = $request->languages[$key];
-            $home_translation->save();
-
-
         }
+
         if(@$request->product_category){
             $this->updateSingleCategoryProductsToDb($request);
         }

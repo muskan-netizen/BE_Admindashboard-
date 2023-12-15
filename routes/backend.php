@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BookingOptionController;
 use App\Http\Controllers\Front\SearchController;
 use App\Http\Controllers\Client\CMS\PageController;
 use App\Http\Controllers\Client\CMS\EmailController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\Client\VendorRegistrationDocumentController;
 use App\Http\Controllers\Client\SubscriptionPlansUserController;
 use App\Http\Controllers\Client\TagController;
 use App\Http\Controllers\Client\ClientSlotController;
+use App\Http\Controllers\Client\DestinationController;
 use App\Http\Controllers\Client\DriverRegistrationDocumentController;
 use App\Http\Controllers\Client\ProductFaqController;
 use App\Http\Controllers\Client\EstimationController;
@@ -29,7 +31,7 @@ use App\Http\Controllers\Client\RazorpayGatwayController;
 use App\Http\Controllers\Client\StaticDropoffController;
 
 use App\Http\Controllers\Client\GiftCard\GiftcardController;
-
+use App\Http\Controllers\Client\RentalProtectionController;
 
 Route::get('email-test', function () {
     $details['email'] = 'testmail@yopmail.com';
@@ -58,6 +60,8 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         
         Route::POST('role/getRolePermission', 'Client\RolePermissionController@getRolePermission')->name('get.role.permission');
         Route::post('role/savePermissions', 'Client\RolePermissionController@saveRolePermissions')->name('save.role.permissions');
+
+        Route::get('manage-cache', 'Client\ManageCacheController@index')->name('manageCache');
 
         Route::get('permission/add', 'Client\RolePermissionController@indexPermission')->name('permissions');
         Route::post('permission/save', 'Client\RolePermissionController@savePermission')->name('save.permission');
@@ -136,6 +140,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('account/order/filter', [OrderController::class, 'filter'])->name('account.order.filter');
         Route::get('account/order/margfilter', [OrderController::class, 'margFilter'])->name('account.order.margFilter');
         Route::get('sync-marg-order/{order_id}', [OrderController::class, 'syncMargOrder'])->name('sync-marg-order');
+        Route::post('sync-marg-all-order', [OrderController::class, 'syncMargAllOrder'])->name('sync-marg-all-order');
 
         Route::get('account/order/getOrderCalculations', [OrderController::class, 'getOrderVendorCalculations'])->name('account.order.calculations');
         Route::get('account/loyalty/filter', [LoyaltyController::class, 'filter'])->name('account.loyalty.filter');
@@ -150,12 +155,18 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('configUpdate/{code}', 'Client\ClientPreferenceController@update')->name('configure.update');
         Route::post('configUpdate', 'Client\ClientPreferenceController@updateTaxInclusivePrice')->name('configure.taxinclusive');
         Route::post('additionalUpdate', 'Client\ClientPreferenceController@additionalupdate')->name('additional.update');
+        Route::post('resetDefault', 'Client\ClientPreferenceController@resetToDefault')->name('reset.config');
         Route::post('toggleDatabase', 'Client\ClientPreferenceController@toggleDatabase')->name('configure.toggleDatabase');
         Route::post('updateIsPriceEnable', 'Client\ClientPreferenceController@updateIsPriceEnable')->name('customize.updateIsPriceEnable');
         Route::post('configUpdateAdditional/{code}', 'Client\ClientPreferenceController@updateAdditional')->name('configure.updateAdditional');
 
         Route::post('custom/mod/verification', 'Client\ClientPreferenceController@customModVerification')->name('custom.mod.verification');
 
+
+        Route::post('updatePreferenceAdditional/{code}', 'Client\ClientPreferenceController@updatePreferenceAdditional')->name('configure.updatePreferenceAdditional');
+        Route::get('deleteKeysContainingWord/{code}', 'Client\ManageCacheController@deleteKeysContainingWord')->name('configure.deleteKeysContainingWord');
+
+        
         Route::post('referandearnUpdate/{code}', 'Client\ClientPreferenceController@referandearnUpdate')->name('referandearn.update');
         Route::post('updateDomain/{code}', 'Client\ClientPreferenceController@postUpdateDomain')->name('client.updateDomain');
         Route::resource('banner', 'Client\BannerController');
@@ -382,6 +393,14 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('order/delay_time', 'Client\OrderController@addExtraPrepTimeToOrder')->name('order.delay_time');
 
 
+        Route::post('admin/company', 'Client\CompanyController@store')->name('company.add');
+        Route::get('admin/company', 'Client\CompanyController@index')->name('company.getList');
+        Route::post('admin/deleteCompany', 'Client\CompanyController@destroy')->name('company.delete');
+        Route::post('admin/editCompany', 'Client\CompanyController@edit')->name('company.edit');
+        Route::post('admin/updateCompany/{id}', 'Client\CompanyController@update')->name('company.update');
+
+        Route::get('orders/getBlockchainOrderDetail', 'Client\OrderController@getBlockchainOrderDetail')->name('orders.getBlockchainOrderDetail');
+        
         // Admin Service Area Routes
         Route::post('admin/serviceArea', 'Client\AdminServiceAreaController@store')->name('admin.serviceArea');
         Route::get('admin/serviceArea', 'Client\AdminServiceAreaController@index')->name('admin.serviceArea.index');
@@ -444,6 +463,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('shippo/updateAll', 'Client\ShippoController@updateAll')->name('shippo.updateAll');
         Route::post('kwikapi/updateAll', 'Client\DeliveryOptionController@updateKwikapi')->name('kwikapi.updateAll');
         Route::post('payoutUpdateAll', 'Client\PaymentOptionController@payoutUpdateAll')->name('payoutOption.payoutUpdateAll');
+        Route::post('shipengine/updateAll', 'Client\DeliveryOptionController@updateShipEngine')->name('shipengine.updateAll');
         Route::resource('inquiry', 'Client\ProductInquiryController');
         Route::get('inquiry/filter', [ProductInquiryController::class, 'show'])->name('inquiry.filter');
 
@@ -490,7 +510,9 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
             Route::post('updateCreateVendorInDispatchAppointment', 'Client\VendorController@updateCreateVendorInDispatchAppointment')->name('update.Create.Vendor.In.Dispatch.Appointment');
         });
 
-
+        Route::get('vendor-marg-config/{vendor_id}',  'Client\ClientPreferenceController@vendorMargConfig')->name("vendor.margConfig");
+        Route::post('vendor-marg-config-update/{vendor_id}',  'Client\ClientPreferenceController@vendorMargConfigUpdate')->name("vendorMargConfig.update");
+        
         Route::get('reports/productperformance', 'Client\ReportController@productPerformance')->name('report.productperformance');
         Route::post('reports/searchproduct', 'Client\ReportController@getOrdersListAjax')->name('report.searchproduct');
         Route::post('reports/productreport', 'Client\ReportController@getProductReportAjax')->name('report.loadproductreport');
@@ -647,6 +669,38 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::get('account/usersubscriptions', [SubscriptionPlansUserController::class, 'userSubscriptionReport'])->name('account.userSubscription');
         Route::get('usersubscriptions/list/filter', [SubscriptionPlansUserController::class, 'subscriptionfilter'])->name('subscription.list.filter');
 
+        Route::group(['prefix' => '/attributes'], function () {
+            Route::get('index', 'Client\CategoryController@manageAttribute')->name('manage.attribute');
+            Route::get('add', 'Client\CategoryController@getAddAttributeForm')->name('manage.attribute.add');
+            Route::get('edit/{id}', 'Client\CategoryController@getEditAttributeForm')->name('manage.attribute.edit');
+            Route::post('store', 'Client\CategoryController@storeAttributeForm')->name('manage.attribute.store');
+            Route::put('update/{id}', 'Client\CategoryController@updateAttributeForm')->name('manage.attribute.update');
+            Route::delete('delete/{id}', 'Client\CategoryController@destroyAttribute')->name('manage.attribute.delete');
+        });
+        Route::group(['middleware' => 'onlysuperadmin', 'prefix' => '/mealSubscription'], function () {
+            Route::get('packages', 'Client\MealSubscriptionController@getMealSubscriptionPlans')->name('mealSubscription.plans');
+            Route::post('package/save/{slug?}', 'Client\MealSubscriptionController@saveSubscriptionPlan')->name('mealSubscription.plan.save');
+            Route::post('package/updateStatus/{slug}', 'Client\MealSubscriptionController@updateSubscriptionPlanStatus')->name('mealSubscription.plan.updateStatus');
+            Route::get('package/edit/{slug}', 'Client\MealSubscriptionController@editSubscriptionPlan')->name('mealSubscription.plan.edit');
+            Route::get('package/delete/user/{slug}', 'Client\MealSubscriptionController@deleteSubscriptionPlan')->name('mealSubscription.plan.delete');
+        Route::group(['prefix' => 'rental-protection/'], function () {        
+            Route::get('', [RentalProtectionController::class, 'index'])->name('rental.protection');
+            Route::match(['put', 'post'],'store/{id?}', [RentalProtectionController::class, 'store'])->name('rental.protection.store');
+            Route::get('{id}/edit', [RentalProtectionController::class, 'edit'])->name('rental.protection.edit');
+            Route::delete('delete/{id}', [RentalProtectionController::class, 'delete'])->name('rental.protection.delete');
+        });
+        Route::group(['prefix' => 'booking-option/'], function () {     
+            Route::get('', [BookingOptionController::class, 'index'])->name('booking.option');
+            Route::match(['put', 'post'],'store/{id?}', [BookingOptionController::class, 'store'])->name('booking.option.store');
+            Route::get('{id}/edit', [BookingOptionController::class, 'edit'])->name('booking.option.edit');
+            Route::delete('delete/{id}', [BookingOptionController::class, 'delete'])->name('booking.option.delete');
+        });
+        Route::group(['prefix' => 'destination/'], function () {     
+            Route::get('', [DestinationController::class, 'index'])->name('destinations');
+            Route::match(['put', 'post'],'store/{id?}', [DestinationController::class, 'store'])->name('destination.store');
+            Route::get('{id}/edit', [DestinationController::class, 'edit'])->name('destination.edit');
+            Route::delete('delete/{id}', [DestinationController::class, 'delete'])->name('destination.delete');
+        });
     });
 });
 
@@ -658,4 +712,10 @@ Route::group(['middleware' => 'auth:client', 'prefix' => '/admin'], function () 
     Route::get('{first}/{second}/{third}', 'Client\RoutingController@thirdLevel')->name('third');
     Route::get('{first}/{second}', 'Client\RoutingController@secondLevel')->name('second');
     Route::get('{any}', 'Client\RoutingController@root')->name('any');
+});
+
+Route::group(['prefix' => '/gofrugal'], function () {
+    Route::get('/', 'Client\GoFrugalController@index')->name('gofrugal.home');
+});
+
 });

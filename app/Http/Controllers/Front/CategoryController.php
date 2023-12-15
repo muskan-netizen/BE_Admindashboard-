@@ -13,23 +13,32 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Front\FrontController;
-use App\Models\{Currency, CategoryKycDocuments,Banner, Category, Brand, Product, Celebrity, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet, ServiceArea, UserAddress,Country,Cart,CartProduct,SubscriptionInvoicesUser,ClientPreference,LoyaltyCard,Order,CaregoryKycDoc,Rider, Attribute};
+use App\Models\{Currency, CategoryKycDocuments,Banner, Category, Brand, Product, Celebrity, ClientLanguage, Vendor, VendorCategory, ClientCurrency, ProductVariantSet, ServiceArea, UserAddress,Country,Cart,CartProduct,SubscriptionInvoicesUser,ClientPreference,LoyaltyCard,Order,CaregoryKycDoc,Rider, Attribute, Company, ProductVariant};
 use Redirect;
 use Log;
 use \App\Http\Traits\{VendorTrait};
+use App\Models\Client as ModelsClient;
 class CategoryController extends FrontController{
     private $field_status = 2;
     use \App\Http\Traits\DispatcherSlot,VendorTrait;
 
-    /**
+
+      /**
      * Display product and vendor list By Category id
      *
      * @return \Illuminate\Http\Response
      */
-    public function categoryProduct(Request $request, $domain = '', $slug = 0)
+    public function companyCategoryProduct(Request $request, $domain = '',$id = 0,$slug = 0)
     {        
-        
         //$preferences = Session::get('preferences');
+
+        if(@$id && !empty($id))
+        {
+            session()->put('company_id', $id);
+        }
+
+        return redirect()->to('/');
+
         $vendorType = Session::get('vendorType');
         $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'):  getClientPreferenceDetail();
         $langId = Session::get('customerLanguage');
@@ -145,7 +154,7 @@ class CategoryController extends FrontController{
         $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';
         // $newProducts =  $this->getNewProducts($vendorIds, $langId, $curId);
         $productAttributes = '';        
-        $getAdditionalPreference = getAdditionalPreference(['is_attribute','is_postpay_enable','is_cab_pooling','is_bid_ride_enable','is_particular_driver']);
+        $getAdditionalPreference = getAdditionalPreference(['is_attribute','is_postpay_enable','is_cab_pooling','is_bid_ride_enable','is_particular_driver','is_recurring_booking','is_share_ride_users']);
         if( checkTableExists('product_attributes') ) {
           
             
@@ -170,7 +179,181 @@ class CategoryController extends FrontController{
                 $wallet_balance = Auth::user()->balanceFloat * ($clientCurrency->doller_compare ?? 1);
                 $riders = Rider::where('user_id',Auth::user()->id)->orderBy('id','DESC')->get();
 
-                return view('frontend.booking.index')->with(['maxPrice'=>$maxPrice,'clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders, 'is_cab_pooling' => $getAdditionalPreference['is_cab_pooling'], 'is_bid_ride_enable' => $getAdditionalPreference['is_bid_ride_enable'],'is_postpay_enable' => $getAdditionalPreference['is_postpay_enable'], 'is_particular_driver' => $getAdditionalPreference['is_particular_driver']]);
+                return view('frontend.booking.index')->with(['maxPrice'=>$maxPrice,'clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders, 'is_cab_pooling' => $getAdditionalPreference['is_cab_pooling'], 'is_bid_ride_enable' => $getAdditionalPreference['is_bid_ride_enable'],'is_postpay_enable' => $getAdditionalPreference['is_postpay_enable'], 'is_particular_driver' => $getAdditionalPreference['is_particular_driver'],'is_recurring_booking' => $getAdditionalPreference['is_recurring_booking'],'is_share_ride_users'=>$getAdditionalPreference['is_share_ride_users']]);
+            }
+        }
+    }
+
+    /**
+     * Display product and vendor list By Category id
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function categoryProduct(Request $request, $domain = '', $slug = 0, $service = null)
+    {        
+  
+        //$preferences = Session::get('preferences');
+        if(!empty($service) && $service == 'pick_drop'){
+            Session::forget('vendorType');
+            $vendorType = Session::put('vendorType', $service);
+        }
+        $preferences = !empty(Session::get('preferences')) ? (object)Session::get('preferences'):  getClientPreferenceDetail();
+        $langId = Session::get('customerLanguage');
+        $curId = Session::get('customerCurrency');
+        $category = Category::with(['tags', 'brands.translation' => function($q) use($langId){
+            $q->where('brand_translations.language_id', $langId);
+        },
+        'type'  => function($q){
+            $q->select('id', 'title as redirect_to' ,'service_type' );
+        },
+        'childs.translationLatest'  => function($q) use($langId){
+            $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+            ->where('category_translations.language_id', $langId);
+        },
+        'translationLatest' => function($q) use($langId){
+            $q->select('category_translations.name', 'category_translations.meta_title', 'category_translations.meta_description', 'category_translations.meta_keywords', 'category_translations.category_id')
+            ->where('category_translations.language_id', $langId);
+        },
+        'allParentsAccount'])
+        ->select('id', 'icon', 'image', 'slug', 'type_id', 'can_add_products', 'parent_id', 'sub_cat_banners')
+        ->where('slug', $slug)->firstOrFail();
+        
+        $category->translation_name = ($category->translationLatest) ? $category->translationLatest->name : $category->slug;
+        foreach($category->childs as $key => $child){   
+            $child->translation_name = ($child->translationLatest) ? $child->translationLatest->name : $child->slug;
+        }
+        $service_type = $category->type->service_type ?? "";
+        
+        if( (isset($preferences->is_hyperlocal)) && ($preferences->is_hyperlocal == 1) && (isset($category->type_id)) && !in_array($category->type_id,[4,5]) ){
+            $latitude = Session::get('latitude');
+            $longitude = Session::get('longitude');
+            $vendors = $this->getServiceAreaVendors();
+            $redirect_to = $category->type->redirect_to;
+            $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';
+
+            if( is_array($vendors) &&  (count($vendors) > 0) ){
+
+                Session::put('vendors', $vendors);
+                
+                //remake child categories array
+                if($category->childs->isNotEmpty()){
+                    $childArray = array();
+                    foreach($category->childs as $key => $child){
+                        $child_ID = $child->id;
+                        $category_vendors = VendorCategory::where('category_id', $child_ID)->where('status', 1)->first();
+                        if($category_vendors){
+                            $childArray[] = $child;
+                        }
+                    }
+                    $category->childs = collect($childArray);
+                }
+                //Abort route if category from route does not exist as per hyperlocal vendors
+                if($page != 'pickup/delivery'){
+                    $category_vendors = VendorCategory::select('vendor_id')->where('category_id', $category->id)->where('status', 1)->get();
+                    if($category_vendors->isNotEmpty()){
+                        $index = 1;
+                        foreach($category_vendors as $key => $value){
+                            if(in_array($value->vendor_id, $vendors)){
+                                break;
+                            }
+                            elseif(count($category_vendors) == $index){
+                               // abort(404);
+                            }
+                            $index++;
+                        }
+                    }
+                    else{
+                       // abort(404);
+                    }
+                }
+
+            }else{
+                // abort(404);
+            }
+        }
+
+        $navCategories = $this->categoryNav($langId);
+
+        if(isset($vendors)){
+            $vendorIds = $vendors;
+        }else{
+            $vendorIds = array();
+            $vendorList = Vendor::byVendorSubscriptionRule($preferences)->select('id', 'name')->where('status', '!=', $this->field_status);
+            if(!empty($vendorType)){
+                $vendorList= $vendorList->where($vendorType, 1);
+            }
+            $vendorList = $vendorList->get();
+            if(!empty($vendorList)){
+                foreach ($vendorList as $key => $value) {
+                    $vendorIds[] = $value->id;
+                }
+            }
+        }
+        $variantSets = ProductVariantSet::with(['options' => function($zx) use($langId){
+                            $zx->join('variant_option_translations as vt','vt.variant_option_id','variant_options.id');
+                            $zx->select('variant_options.*', 'vt.title');
+                            $zx->where('vt.language_id', $langId);
+                        }
+                    ])->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id')
+                    ->join('variant_translations as vt','vt.variant_id','vr.id')
+                    ->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title')
+                    ->where('vt.language_id', $langId)
+                    ->where('vr.status', 1)
+                    ->whereIn('product_variant_sets.product_id', function($qry) use($category){
+                        $qry->select('product_id')->from('product_categories')
+                            ->where('category_id', $category->id);
+                        })
+                    ->groupBy('product_variant_sets.variant_type_id')->get();
+                 //   pr($variantSets);
+        $redirect_to = $category->type->redirect_to;
+        
+        $listData = $this->listData($langId, $category->id, $redirect_to,$vendorIds,false);
+        
+        $maxPrice = DB::select("SELECT MAX(product_variants.price) as max_price FROM product_variants INNER JOIN products ON products.id = product_variants.product_id WHERE product_variants.status = 1 AND products.is_live = 1 AND products.category_id = ?", [$category->id])[0]->max_price;
+        $page = (strtolower($redirect_to) != '') ? strtolower($redirect_to) : 'product';
+        // $newProducts =  $this->getNewProducts($vendorIds, $langId, $curId);
+        $productAttributes = '';        
+        $getAdditionalPreference = getAdditionalPreference(['is_attribute','is_postpay_enable','is_cab_pooling','is_bid_ride_enable','is_particular_driver','is_recurring_booking','is_share_ride_users']);
+        if( checkTableExists('product_attributes') ) {
+          
+            
+            if (in_array($category->type_id, [13, 10]) && !empty($getAdditionalPreference['is_attribute'])) {
+
+                $productAttributes = Attribute::with('option', 'varcategory.cate.primary')
+                    ->select('attributes.*')
+                    ->join('attribute_categories', 'attribute_categories.attribute_id', 'attributes.id')
+                    ->where('attribute_categories.category_id', $category->id)
+                    ->where('attributes.status', '!=', 2)
+                    ->orderBy('position', 'asc')->get();
+            }
+        }
+        
+       
+        $newProducts = [];
+        if($page == 'pickup/delivery' || $page == 'product' && $slug == 'yacht'){
+            if(!Auth::user()){
+                return redirect()->route('customer.login');
+            }else{
+
+                $product = Product::where('category_id', $category->id)->orderBy('per_hour_price','asc')->first();
+
+                
+                $user_addresses = UserAddress::whereNotNull('latitude')->whereNotNull('longitude')->get();
+                $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
+                $wallet_balance = Auth::user()->balanceFloat * ($clientCurrency->doller_compare ?? 1);
+                $riders = Rider::where('user_id',Auth::user()->id)->orderBy('id','DESC')->get();
+                $companies  = Company::get();
+   
+      
+                // if($preferences->is_hourly_pickup_rental == 1)
+                // {
+                //     return view('frontend.booking.hourly_rental')->with(['maxPrice'=>$maxPrice,'clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders, 'is_cab_pooling' => $getAdditionalPreference['is_cab_pooling'], 'is_bid_ride_enable' => $getAdditionalPreference['is_bid_ride_enable'],'is_postpay_enable' => $getAdditionalPreference['is_postpay_enable'], 'is_particular_driver' => $getAdditionalPreference['is_particular_driver'],'is_recurring_booking' => $getAdditionalPreference['is_recurring_booking'],'is_share_ride_users'=>$getAdditionalPreference['is_share_ride_users'],'companies'=>$companies,'product'=> $product]);
+
+                // }else{
+
+                    return view('frontend.booking.index')->with(['maxPrice'=>$maxPrice,'clientCurrency' => $clientCurrency ,'wallet_balance' => $wallet_balance, 'user_addresses' => $user_addresses, 'navCategories' => $navCategories,'category' => $category,'riders'=>$riders, 'is_cab_pooling' => $getAdditionalPreference['is_cab_pooling'], 'is_bid_ride_enable' => $getAdditionalPreference['is_bid_ride_enable'],'is_postpay_enable' => $getAdditionalPreference['is_postpay_enable'], 'is_particular_driver' => $getAdditionalPreference['is_particular_driver'],'is_recurring_booking' => $getAdditionalPreference['is_recurring_booking'],'is_share_ride_users'=>$getAdditionalPreference['is_share_ride_users'],'companies'=>$companies,'product'=> $product]);
+                // }
+
             }
         }elseif($page == 'on demand service' || $page == 'appointment'){
             $cartDataGet = $this->getCartOnDemand($request);
@@ -204,6 +387,7 @@ class CategoryController extends FrontController{
             $clientCurrency = ClientCurrency::where('currency_id', $curId)->first();
             return view('frontend.ondemand.index')->with(['maxPrice'=>$maxPrice,'clientCurrency' => $clientCurrency,'time_slots' =>  $cartDataGet['time_slots'], 'period' =>  $cartDataGet['period'] ,'cartData' => $cartDataGet['cartData'], 'addresses' => $cartDataGet['addresses'], 'countries' => $cartDataGet['countries'], 'subscription_features' => $cartDataGet['subscription_features'], 'guest_user'=>$cartDataGet['guest_user'],'listData' => $listData, 'category' => $category,'navCategories' => $navCategories]);
         }else{
+
             if($page == 'laundry' || $service_type == 'rental_service')
                 $page = 'product';
                 
@@ -332,7 +516,7 @@ class CategoryController extends FrontController{
                         ->select('products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating', 'products.inquiry_only','products.minimum_order_count','products.batch_count','products.updated_at')
                         ->where('products.is_live', 1)
                         ->where('products.category_id', $category_id);
-            if(count($vendors) > 0){
+            if (!empty($vendors) && !in_array(strtolower($type), ['rental service', 'p2p'])) {
                 $products = $products->whereIn('products.vendor_id', $vendors);
             }
             $maxPrice = 0;
@@ -366,7 +550,7 @@ class CategoryController extends FrontController{
      */
     public function categoryVendorProducts(Request $request, $domain = '', $slug1 = 0, $slug2 = 0)
     {
-        
+   
         // slug1 => category slug
         // slug2 => vendor slug
         $maxPrice = 0;
@@ -576,7 +760,6 @@ class CategoryController extends FrontController{
             }
             // Dynamic search fields
             if($getAdditionalPreference['is_attribute']) {
-                // //\Log::info(json_encode($request->dynamic_options));
                 if( !empty($request->dynamic_options) ) {
                     foreach($request->dynamic_options as $key => $val) {
                         foreach($val as $inn_key => $inn_val) {
@@ -688,16 +871,21 @@ class CategoryController extends FrontController{
             $last_mile_check       = $product ? $product->Requires_last_mile  : '';
             $vendorStartDate       = $vendorStartTime  = '';
             $slotsDate = findSlot('',$product->vendor_id,'','webFormet');
+
+            
             if($slotsDate){
                 $vendorStartDate = (($slotsDate)?$slotsDate['date']:'');
                 $vendorStartTime = (($slotsDate)?$slotsDate['time']:'');
             }
+      
             // ch
             if(($cateTypeId ==  12) && ($is_slot_from_dispatch == 1) && ( $last_mile_check ==1) ){ 
                 $Dispatch =  $this->getDispatchAppointmentDomain();
                 $dispatchAgents = [];
                 $cart_product_id = $request->cart_product_id??0;
                 if($Dispatch){
+                   $unique = ModelsClient::first()->code;
+                   $email =  $unique.$product->vendor->id."_royodispatch@dispatch.com"; 
                    $vendor_latitude =  $product->vendor ? $product->vendor->latitude : 30.71728880;
                    $vendor_longitude =  $product->vendor ? $product->vendor->longitude : 76.80350870;
                     $location[] = array(
@@ -714,7 +902,8 @@ class CategoryController extends FrontController{
                         'longitude'        => $vendor_longitude,
                         'service_time'     => $product->minimum_duration_min,
                         'schedule_date'    => $request->cur_date,
-                        'slot_start_time'  => $vendorStartTime
+                        'slot_start_time'  => $vendorStartTime,
+                        'team_email'       => $email
                     ];
                     $dispatchAgents = $this->getSlotFeeDispatcher($dispatchData);
                 }
@@ -743,8 +932,10 @@ class CategoryController extends FrontController{
         
         $slots = showSlot($date,$request->product_vendor_id,'delivery');
 
-      
-
+        
+        $vendor = Vendor::where('id', $product->vendor_id)->select('show_slot')->first();
+     
+        
         $time_slots = [];
         if(!empty($slots)){
             $time_slots = $slots;
@@ -755,19 +946,26 @@ class CategoryController extends FrontController{
             // }
         }else{
             $end_time = date('Y-m-d 23:59');
-            $timing   = $this->SplitTime($curr_time, $end_time, "60");
-            foreach ($timing as $k=> $slt) {
-                if($k+1 < count($timing)){
-                    $viewSlot['name'] = date('h:i:A', strtotime($slt)).' - '.date('h:i:A', strtotime($timing[$k+1]));
-                    $viewSlot['value'] = $slt.' - '.$timing[$k+1]; 
-                    $time_slots[] =  $viewSlot;
+            if($vendor->show_slot == 1)
+            { 
+                $timing   = $this->SplitTime($curr_time, $end_time, "60");
+                foreach ($timing as $k=> $slt) {
+                    if($k+1 < count($timing)){
+                        $viewSlot['name'] = date('h:i:A', strtotime($slt)).' - '.date('h:i:A', strtotime($timing[$k+1]));
+                        $viewSlot['value'] = $slt.' - '.$timing[$k+1]; 
+                        $time_slots[] =  $viewSlot;
+                    }
                 }
+
             }
+           
           //$time_slots  // this is for static slots 
         }
 
         //pr($time_slots);
         $cart_product_id = $request->cart_product_id??0;
+
+     
         if ($request->ajax()) {
            return \Response::json(\View::make('frontend.ondemand.time-slots-for-date', array('time_slots' => $time_slots,'cart_product_id'=> $cart_product_id))->render());
         }
@@ -812,4 +1010,30 @@ class CategoryController extends FrontController{
         return $this->errorResponse('Invalid product form ', 404);
     }
 
+ 
+    public function getRentalView(Request $request)
+    {
+ 
+ 
+        if($request->has('category_id'))
+        {
+            $product_ids = Product::where('category_id', $request->category_id)->pluck('id');
+            $productVariant = ProductVariant::whereIn('product_id', $product_ids)->orderBy('price','asc')->first();
+            
+             
+
+            return response()->json(['product' => $productVariant]);
+        }
+        else{
+
+            $langId = Session::get('customerLanguage');
+  
+            $navCategories = $this->categoryNav($langId);
+             
+            $view = view('frontend.booking.hourlyRental',['navCategories' => $navCategories])->render();
+    
+            return response()->json(['view' => $view]);
+        }
+       
+    }
 }

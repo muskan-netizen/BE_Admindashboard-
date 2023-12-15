@@ -1,4 +1,4 @@
-function add_spinner(id,text = null){
+function add_spinner(id,text = ""){
     remove_spinner(id);
     var html = `<div id="overlay">
             <div class="cv-spinner">

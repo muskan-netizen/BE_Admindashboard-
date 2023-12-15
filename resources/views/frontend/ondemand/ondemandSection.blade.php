@@ -349,10 +349,12 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                                     </div>
                                                 </div>
                                                 <hr>
-
-
-
                                                 @endforeach
+                                                @if(count($listData))
+                                                <div class="pagination pagination-rounded justify-content-end mb-0 page-m-20">
+                                                    {{ $listData->links() }}
+                                                </div>
+                                                @endif
                                             @else
                                                 <div class="col-xl-12 col-12 mt-4"><h5 class="text-center">{{ __('No Product Found') }}</h5></div>
                                             @endif
@@ -377,7 +379,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                             <h4 class="mb-2"><b>{!! (!empty($cart_data->product->translation->first())) ? $cart_data->product->translation->first()->title : $cart_data->product->sku !!}</b></h4>
                                             @foreach($cart_data->product->addOn as $row => $addon)
                                             <div class="add-on-main-div">
-                                                <h6 class="product-title">{{ $addon->addOnName->title }}
+                                                <h6 class="product-title">{{ $addon->addOnName->translation_one->title }}
                                                         @php
                                                             $min_select = '';
                                                             if($addon->addOnName->min_select > 0){
@@ -417,7 +419,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                                                 <div class="radios">
                                                                 <input type="{{$type_input}}" class="productAddonOption " {{ $checked }} id="inlineCheckbox_{{$key}}{{$row.'_'.$k}}"  class="productAddonOption"  name="addonData{{$row}}[{{$cart_data->id}}][]" addonId="{{$addon->addon_id}}" addonOptId="{{$option->id}}"/>
                                                                     <label for='inlineCheckbox_{{$key}}{{$row.'_'.$k}}'>
-                                                                        <span class="customCheckbox productAddonOptionspan_{{ $checked }}" aria-hidden="true">{{$option->title .' ('.Session::get('currencySymbol').decimal_format($option->price,',').')' }} </span>
+                                                                        <span class="customCheckbox productAddonOptionspan_{{ $checked }}" aria-hidden="true">{{$option->translation_one->title .' ('.Session::get('currencySymbol').decimal_format($option->price,',').')' }} </span>
                                                                     </label>
                                                                 </div>
                                                             </div>
@@ -442,6 +444,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
 
 
                             @if(app('request')->input('step') == '2')
+                             
                                 <div id="step-2-ondemand">
                                    @php
                                    $lastKey = count($cartData) - 1;
@@ -452,13 +455,15 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                         @php
                                          $last_cart_product_id =  $cart_data->id
                                          @endphp
-                                        @if( in_array($cart_data->cateTypeId , [8,12]) && ($additionalPreference['is_service_product_price_from_dispatch'] !=1))
+                                        
+                                        @if(in_array($cart_data->cateTypeId , [8,12]) && ($additionalPreference['is_service_product_price_from_dispatch'] !=1))
+                                          
                                             @if(!empty($cart_data->product->mode_of_service) && $cart_data->product->mode_of_service == 'schedule')
-                                            @php
-                                                $productDate = trim(date('Y-m-d', strtotime($cart_data->scheduled_date_time)));
-                                            @endphp
+                                                @php
+                                                    $productDate = trim(date('Y-m-d', strtotime($cart_data->scheduled_date_time)));
+                                                @endphp
 
-
+                                               
                                             <div  id="date_time_set_div{{$cart_data->id}}" class="booking_date_section">
 
                                                 <h4 class="mb-2" ><b>{{ __('When would you like your service?')}}</b></h4>
@@ -493,6 +498,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                                 @else
                                                 <h5 class="text-center">{{ __("Vendor has not created slots for this Date yet.") }}</h5>
                                                 @endif
+                                               
                                                 @if($cart_data->is_dispatch_slot == 1)
                                                 @php
 
@@ -506,7 +512,7 @@ if($getOnDemandPricingRule['is_price_from_freelancer']==1){
                                                 @endphp
                                                 <div class="booking-time-wrapper" id="show-all-time-slots{{$cart_data->id}}" >
                                                     {{-- style="@if($cart_data->schedule_slot != '')  @else display: none; @endif " --}}
-                                                @include('frontend.ondemand.dispatcher_agent_slots')
+                                                    @include('frontend.ondemand.dispatcher_agent_slots')
                                                 </div>
                                                 @else
                                                     @php

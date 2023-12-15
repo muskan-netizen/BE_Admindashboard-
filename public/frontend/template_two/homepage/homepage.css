@@ -202,6 +202,11 @@ body .category-head {
 .cab-banner-area .cab-input input.form-control{
     color: #000!important;  
 }
+@media(min-width:1900px) {
+    ul.sm.pixelstrap.sm-horizontal{
+        justify-content: center;
+    }
+}
 @media(max-width:1440px) {
    .product-right .product-buttons button{margin-bottom: 10px;}
    .product-right .product-buttons a{margin-bottom: 10px;}
@@ -310,14 +315,15 @@ body .category-head {
 }
 
 .al_body_template_two .extra-items-price,
-.al_body_template_two .order-success-sec h3,
-.al_body_template_two .total-sec span {
+.al_body_template_two .order-success-sec h3
+{
     font-weight: 600;
 }
-
+.al_body_template_two .product-order h3{font-weight: 400;}
 .al_body_template_two .product-order h3 {
     text-transform: capitalize;
 }
+
 
 .al_body_template_two .order-success-sec {
     background-color: transparent;

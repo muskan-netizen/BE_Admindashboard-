@@ -13,12 +13,14 @@ if(session()->has('applocale')){
 $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
 @endphp
 <div class="top-header site-topbar al_custom_head">
+
     <nav class="navbar navbar-expand-lg p-0 ">
         <div class="container ">
             <div class="row d-flex align-items-center justify-content-between w-100">
                 <div class="col-lg-6 p-0 d-md-flex align-items-center justify-content-start" >
                     <a class="navbar-brand mr-3"  href="{{ route('userHome') }}">
                     <img class="logo-image" style="height:50px;" alt="" src="{{$urlImg}}"></a>
+                    
                     <div class="al_custom_head_map_box px-2 py-1 d-md-inline-flex  d-flex align-items-center justify-content-start">
                         @if(isset($preference))
                         @if(($preference->is_hyperlocal) && ($preference->is_hyperlocal == 1))
@@ -231,6 +233,14 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
 
 <div class="al_mobile_menu al_new_mobile_header">
                 <div class="al_new_cart">
+                    <div class="d-flex">
+                    @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
+                    <li class="add_post"><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn">
+                        <span>
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                            {{ __('Add Post') }}</span>
+                        </a></li>
+                    @endif
                     @if($client_preference_detail->cart_enable == 1)
                     <div class="onhover-dropdown_al onhover-div mobile-cart">
                         <a href="{{route('showCart')}}" style="position: relative">
@@ -240,6 +250,7 @@ $getAdditionalPreference = getAdditionalPreference(['is_phone_signup']);
                         <ul class="show-div shopping-cart"></ul>
                     </div>
                     @endif
+                </div>
                 </div>
                 <a class="al_toggle-menu" href="#">
                     <i></i>

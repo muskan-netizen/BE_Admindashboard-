@@ -22,6 +22,9 @@ class OrderProductRating extends Model
       return $this->belongsTo(User::class,'user_id','id');
     }
 
+    public function userimage(){
+      return $this->belongsTo(User::class,'user_id','id')->select('id', 'image', 'name');
+    }
 
     public function getTimeZoneCreatedAtAttribute($value)
     { 

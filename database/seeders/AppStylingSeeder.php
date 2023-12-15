@@ -49,7 +49,19 @@ class AppStylingSeeder extends Seeder{
 
         $app_styling_option = AppStylingOption::insert([
             'app_styling_id' => $app_styling,
+            'name' => 'ProximaNova-Regular',
+            'is_selected' => '0'
+        ]);
+
+        $app_styling_option = AppStylingOption::insert([
+            'app_styling_id' => $app_styling,
             'name' => 'Poppins-Regular',
+            'is_selected' => '0'
+        ]);
+
+        $app_styling_option = AppStylingOption::insert([
+            'app_styling_id' => $app_styling,
+            'name' => 'ProximaNova-Regular',
             'is_selected' => '0'
         ]);
 
@@ -69,6 +81,11 @@ class AppStylingSeeder extends Seeder{
         ]);
         $app_styling_option = AppStylingOption::insert([
             'app_styling_id' => $app_styling,
+            'name' => 'ProximaNova-Medium',
+            'is_selected' => '0'
+        ]);
+        $app_styling_option = AppStylingOption::insert([
+            'app_styling_id' => $app_styling,
             'name' => 'Futura-Medium',
             'is_selected' => '0'
         ]);
@@ -84,6 +101,12 @@ class AppStylingSeeder extends Seeder{
             'is_selected' => '0'
         ]);
 
+        $app_styling_option = AppStylingOption::insert([
+            'app_styling_id' => $app_styling,
+            'name' => 'ProximaNova-Medium',
+            'is_selected' => '0'
+        ]);
+
         $app_styling = AppStyling::insertGetId([
             'name' => 'Bold Font',
             'type' => '2'
@@ -96,6 +119,11 @@ class AppStylingSeeder extends Seeder{
         $app_styling_option = AppStylingOption::insert([
             'app_styling_id' => $app_styling,
             'name' => 'SFProText-Bold',
+            'is_selected' => '0'
+        ]);
+        $app_styling_option = AppStylingOption::insert([
+            'app_styling_id' => $app_styling,
+            'name' => 'ProximaNova-Bold',
             'is_selected' => '0'
         ]);
         $app_styling_option = AppStylingOption::insert([
@@ -121,6 +149,11 @@ class AppStylingSeeder extends Seeder{
             'is_selected' => '0'
         ]);
 
+        $app_styling_option = AppStylingOption::insert([
+            'app_styling_id' => $app_styling,
+            'name' => 'ProximaNova-Bold',
+            'is_selected' => '0'
+        ]);
 
         $app_styling = AppStyling::insertGetId([
             'name' => 'Primary Color',
@@ -232,6 +265,7 @@ class AppStylingSeeder extends Seeder{
             'image' => 'home_four.png',
             'is_selected' => '0',
             'template_id' => '2',
+            'is_template' => 1
         ]);
 
         $app_styling_option = AppStylingOption::insert([
@@ -240,6 +274,8 @@ class AppStylingSeeder extends Seeder{
             'image' => 'home_five.png',
             'is_selected' => '0',
             'template_id' => '3',
+            'is_template' => 1
+
         ]);
 
         $app_styling_option = AppStylingOption::insert([
@@ -248,6 +284,8 @@ class AppStylingSeeder extends Seeder{
             'image' => 'home_six.png',
             'is_selected' => '0',
             'template_id' => '4',
+            'is_template' => 1
+
         ]);
 
         $app_styling_option = AppStylingOption::insert([
@@ -256,6 +294,8 @@ class AppStylingSeeder extends Seeder{
             'image' => 'home_seven.png',
             'is_selected' => '0',
             'template_id' => '5',
+            'is_template' => 1
+
         ]);
 
         $app_styling_option = AppStylingOption::insert([
@@ -264,6 +304,8 @@ class AppStylingSeeder extends Seeder{
             'image' => 'home_eight.png',
             'is_selected' => '0',
             'template_id' => '6',
+            'is_template' => 1
+
         ]);
 
         $app_styling_option = AppStylingOption::insert([
@@ -272,6 +314,8 @@ class AppStylingSeeder extends Seeder{
             'image' => 'home_nine.png',
             'is_selected' => '0',
             'template_id' => '8',
+            'is_template' => 1
+
         ]);
 
         $app_styling_option = AppStylingOption::insert([
@@ -280,6 +324,8 @@ class AppStylingSeeder extends Seeder{
             'image' => 'home_ten.png',
             'is_selected' => '0',
             'template_id' => '9',
+            'is_template' => 1
+
         ]);
 
         $app_styling_option = AppStylingOption::insert([
@@ -288,6 +334,8 @@ class AppStylingSeeder extends Seeder{
             'image' => 'home_eleven.png',
             'is_selected' => '0',
             'template_id' => '10',
+            'is_template' => 1
+
         ]);
 
         $app_styling_option = AppStylingOption::insert([
@@ -296,6 +344,7 @@ class AppStylingSeeder extends Seeder{
             'image' => 'home_twelve.png',
             'is_selected' => '0',
             'template_id' => '11',
+            'is_template' => 1
         ]);
 
         $app_styling = AppStyling::insertGetId([

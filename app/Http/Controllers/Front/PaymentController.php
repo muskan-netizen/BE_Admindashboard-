@@ -81,8 +81,10 @@ class PaymentController extends FrontController{
         $serviceType =  Session::get('vendorType');
         $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','is_cod_payment','is_prepaid_payment']);
         if($serviceType == 'takeaway' && !empty($getAdditionalPreference['advance_booking_amount']) && !empty($getAdditionalPreference['advance_booking_amount_percentage']) && ($getAdditionalPreference['advance_booking_amount_percentage'] > 0) && ($getAdditionalPreference['advance_booking_amount_percentage'] < 101) ){
+            
             $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->where('status', 1)->where('id', '!=', 1)->get();
         }else{
+           
             $payment_options = PaymentOption::select('id', 'code', 'title', 'credentials')->where('status', 1)->get();
         }
                  
@@ -95,7 +97,7 @@ class PaymentController extends FrontController{
         }
         //till here
         foreach ($payment_options as $k => $payment_option) {
-            if(((in_array($payment_option->code, $ex_codes)) || (!empty($payment_option->credentials))) && $payment_option->code!=$checkCod){
+            if(((in_array($payment_option->code, $ex_codes)) || (!empty($payment_option->credentials)))){
                 $payment_option->slug = strtolower(str_replace(' ', '_', $payment_option->title));
                 if($payment_option->code == 'stripe'){
                     $payment_option->title = 'Credit/Debit Card (Stripe)';
@@ -129,6 +131,7 @@ class PaymentController extends FrontController{
                 unset($payment_options[$k]);
             }
         }
+  
         return $this->successResponse($payment_options);
     }
 

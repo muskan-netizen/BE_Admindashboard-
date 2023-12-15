@@ -196,12 +196,13 @@
                                             @if(isset($opt) && isset($var) && !empty($var->title) )
 
                                                 @if( !empty($var->type) && $var->type == 3 )
-                                                    <div class="form-check-inline">
-                                                        <div class="attr_radio_{{$var->id}}">
-                                                        <input type="radio" name="attribute[{{$var->id}}][option][{{$counter}}][value]" class="attr_radio"  
-                                                        value="{{$opt->id}}" data-key="{{$var->title}}">
+                                                    <div class="form-check-inline radio_Btn">
+                                                        <div class="attr_radio_{{$var->id}}">                                                            
+                                                            <input type="radio" name="attribute[{{$var->id}}][option][{{$counter}}][value]" class="attr_radio"  
+                                                            value="{{$opt->id}}" data-key="{{$var->title}}">
+                                                            <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label>
                                                         </div>
-                                                        <label for="opt_vid_{{$opt->id}}">{{$opt->title}}</label>
+                                                        
                                                     </div>
 
 

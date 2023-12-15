@@ -25,6 +25,7 @@ class SmsProviderSeeder extends Seeder
             array('id' => 7,'provider' => 'Vonage (nexmo)','keyword' => 'vonage','status' => '1'),
             array('id' => 8,'provider' => 'SMS Partner France','keyword' => 'sms_partner','status' => '1'),
             array('id' => 9,'provider' => 'Ethiopia','keyword' => 'ethiopia','status' => '1'),
+            array('id' => 10,'provider' => 'SMS Country','keyword' => 'sms_country','status' => '1'),
         );
         if($sms_count == 0)
         {

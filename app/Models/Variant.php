@@ -45,6 +45,9 @@ class Variant extends Model
   public function category(){
     return $this->belongsToMany(Category::class, 'variant_categories', 'variant_id', 'category_id');
   }
+  public function product(){
+    return $this->belongsTo(Product::class, 'id', 'product_id');
+  }
 
 
   public function getActualPriceAttribute()

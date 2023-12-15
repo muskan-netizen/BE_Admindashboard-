@@ -212,7 +212,7 @@ class AppStylingController extends BaseController
     public function updateHomePage(Request $request)
     {
         $font = AppStylingOption::where('id', $request->home_styles)->first();
-        $option_change = AppStylingOption::where('app_styling_id', '=', $font->app_styling_id)->update(array('is_selected' => 0));
+        $option_change = AppStylingOption::where('app_styling_id', $font->app_styling_id)->update(array('is_selected' => 0));
         $font->is_selected = 1;
         $font->save();
         return response()->json([

@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Front\FrontController;
+use App\Http\Traits\ShipEngineTrait;
 use App\Models\{Country, UserWishlist, User,CarImages ,Product, UserAddress};
 
 class AddressController extends FrontController{
@@ -17,6 +18,7 @@ class AddressController extends FrontController{
      *
      * @return \Illuminate\Http\Response
      */
+    use ShipEngineTrait;
     public function index(Request $request, $domain = ''){
         $langId = Session::get('customerLanguage');
         $countries = Country::get();
@@ -62,14 +64,15 @@ class AddressController extends FrontController{
         ]);
         $client = getClientPreferenceDetail();
 
-        $country = Country::select('code', 'name')->where('id', $request->country)->first();
+        $country = Country::select('code', 'name')->where('id', $request->country)->first();        
         $address = new UserAddress;
         $address->type = $request->type;
         $address->city = $request->city??"";
         $address->state = $request->state??"";
+        $address->state_code = $request->state_code??"";
         $address->street = $request->street;
         $address->country = $country->name;
-        $address->country_code = $country->code;
+        $address->country_code = $country->code??'US';
         $address->user_id = Auth::user()->id;
         $address->address = $request->address;
         $address->pincode = $request->pincode??"";
@@ -77,11 +80,25 @@ class AddressController extends FrontController{
         $address->longitude  = $request->longitude;
         $address->house_number = $request->house_number??"";
         $address->extra_instruction = $request->extra_instruction??"";
-        $address->save();
-       
+
         $msg = __('Address Has Been Added Successfully');
+        $status = 'success';
+
+        if (shipEngineEnable()) {
+            $res = $this->shipEngineAddressValidate($address);
+            if ($res[0]['status'] == 'verified') {
+                // $address->state_code = $res[0]['matched_address']['state_province'];
+                $address->save();
+            }else{
+                $msg = $res['message'];
+                $status = 'error';
+            }  
+        }else{
+            $address->save();
+        }     
+        
         if($request->ajax()){
-            return response()->json(['status' => 'success', 'message' => $msg, 'address' => $address]);
+            return response()->json(['status' => $status, 'message' => $msg, 'address' => $address]);
         }else{
             return redirect()->route('user.addressBook')->with('success', $msg);
         }

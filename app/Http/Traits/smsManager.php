@@ -17,12 +17,13 @@ trait smsManager{
             $to_number = substr($to, 1);
             $endpoint = $api_url.'?apikey='.$crendentials->api_key.'&senderid='.$crendentials->sender_id.'&number='.$to_number.'&message='.$message.'&format=json&template_id='.$templates_id;
             $response=$this->getGuzzle($endpoint);
+            \Log::info(['response mTalkz_sms ', $response]);
             return $response;
     }
 
 
 
-    public function mazinhost($to,$message,$crendentials)
+    public function mazinhost_sms($to,$message,$crendentials)
     {
         $curl = curl_init();
         $from = $crendentials->sender_id;
@@ -234,5 +235,24 @@ trait smsManager{
         }
     }
 
+    public function sms_country($to, $message, $crendentials)
+    {
+        try {
+            return Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Basic '.base64_encode($crendentials->sms_auth_key.':'.$crendentials->sms_auth_token)
+            ])->post('https://restapi.smscountry.com/v0.1/Accounts/'.$crendentials->sms_auth_key.'/SMSes', [
+                "Text"=> $message,
+                "Number"=> str_replace("+","",$to),
+                "SenderId"=> $crendentials->sms_sender_id,
+                "DRNotifyUrl"=> "https://www.domainname.com/notifyurl",
+                "DRNotifyHttpMethod"=> "POST",
+                "Tool"=> "API"
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json(['data' => $th->getMessage()]);
+        }
+        
+    }
 
 }

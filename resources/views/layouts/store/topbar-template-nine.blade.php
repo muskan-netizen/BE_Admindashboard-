@@ -11,9 +11,9 @@ if(session()->has('applocale')){
     $applocale = session()->get('applocale');
 }
 @endphp
-<div class="top-header site-topbar al_custom_head">
+<div class="top-header site-topbar al_custom_head mobileHeader d-none">
     <nav class="navbar navbar-expand-lg p-0 ">
-        <div class="container ">
+        <div class="container-fluid ">
             <div class="row d-flex align-items-center justify-content-between w-100">
                 <div class="col-lg-5 p-0 d-md-flex align-items-center justify-content-start"   >
                     <a class="navbar-brand mr-3"  href="{{ route('userHome') }}">
@@ -34,17 +34,19 @@ if(session()->has('applocale')){
                             <div class="list-box style-4" style="display:none;" id="search_box_main_div"> </div>
                         </div>                       
                     </div>
+                    @if(Auth::user())
+                   @if( p2p_module_status() )
+                    <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
+                    @endif 
+                    @endif
                     <div class="al_toggle-menu">
                             <span></span><span></span><span></span>
                         </div>
                 </div>
-
+                
                 <div class="col-lg-7 text-right ml-auto al_z_index p-0"  >
                     <ul class="header-dropdown ml-auto">
                         @if(Auth::user())
-                        @if( p2p_module_status() )
-                        <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
-                        @endif
                         <li class="search-b">
                             <a href="{{route('user.notification')}}" > <img  class="img-fluid img-white-s" src="{{asset('images/g4.png')}}"> <img  class="img-fluid img-black-s" src="{{asset('images/g4-white.png')}}">Notifications </a>
                         </li>
@@ -64,9 +66,6 @@ if(session()->has('applocale')){
                         </li> --}}
                         @endif
                         @if($client_preference_detail->header_quick_link == 1)
-                        @if( p2p_module_status() && Session::get('vendorType') == 'p2p' )
-                        <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
-                        @endif
                         @if( $is_ondemand_multi_pricing ==1 )
                             @include('layouts.store.onDemandTopBarli')
                         @endif
@@ -156,12 +155,23 @@ if(session()->has('applocale')){
                                         <a href="{{route('user.logout')}}" data-lng="es">{{__('Logout')}}</a>
                                     </li>
                                 @else
+                                  @php
+                                $getAdditionalPreference = getAdditionalPreference(['is_user_pre_signup']);
+                                @endphp
+                                @if(isset($getAdditionalPreference) && ($getAdditionalPreference['is_user_pre_signup'] == 1))
+                                
+                                 <li>
+                                    <a href="{{route('customer.register')}}" data-lng="es">{{__('Pre Signup')}}</a>
+                                </li>
+                               @else
+                                  
                                 <li>
                                     <a href="{{route('customer.login')}}" data-lng="en">{{__('Login')}}</a>
                                 </li>
                                 <li>
                                     <a href="{{route('customer.register')}}" data-lng="es">{{__('Register')}}</a>
                                 </li>
+                                @endif
                                 @endif
                             </ul>
                         </li>
@@ -442,9 +452,7 @@ if(session()->has('applocale')){
                         <div class="mobile-list">
                             <ul class="header-dropdown ml-auto">                    
                                 @if($client_preference_detail->header_quick_link == 1)
-                                @if( p2p_module_status() )
-                                <li><a href="{{route('posts.index', ['fullPage'=>1])}}" class="sell-btn"><span><i class="fa fa-plus" aria-hidden="true"></i>{{ __('Add Post') }}</span></a></li>
-                                @endif
+                               
                                 <li class="onhover-dropdown quick-links quick-links">
                                     <span class="quick-links ml-1 align-middle">{{ __('Quick Links') }}</span>
                                     <ul class="onhover-show-div">
@@ -847,7 +855,7 @@ if(session()->has('applocale')){
         </div>
     </div>--}}
 </div>
-<div class="al_mobile_menu al_new_mobile_header">
+<div class="al_mobile_menu al_new_mobile_header d-none">
                 <div class="al_new_cart">
                     @if($client_preference_detail->cart_enable == 1)
                     <div class="onhover-dropdown_al onhover-div mobile-cart">

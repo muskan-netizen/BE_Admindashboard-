@@ -30,7 +30,12 @@
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <h4>{{ __("Log Tables") }}</h4>
+                           
                     </div>
+                    <h3>Total Login : {{@$logsignIn}}</h3>
+                    <h3>Total SignUp : {{@$logsignUp}}</h3>
+                    <h3>Total paymentCall : {{@$paymentCall}}</h3>
+                    <h3>Total orderCreated : {{@$orderCreated}}</h3>
 
                    <div class="custom-dd-empty dd home-options-list" id="pickup_page_datatable">
                         <a href="#" target="_self" style="color:#095cd2;">

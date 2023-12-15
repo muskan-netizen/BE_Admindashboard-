@@ -1124,7 +1124,7 @@ trait OrderTrait
         }
     }
 
-    public function sendTrackingUrlSMS($order, $vendor_id = '')
+    public function sendTrackingUrlSMS($order,$order_id='', $vendor_id = '')
     {
         $user = User::find($order['user_id']);
         $prefer = ClientPreference::select('sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'currency_id')->first();
@@ -1134,7 +1134,8 @@ trait OrderTrait
             $to = '+' . $user['dial_code'] . $user['phone_number'];
         }
         $provider = $prefer['sms_provider'];
-        $order    = Order::where(['user_id' => $order['user_id'], 'order_number' => $order['order_number']])->with('orderStatusVendor', 'ordervendor')->first();
+        $order    = Order::where('id',$order_id)->with('orderStatusVendor', 'ordervendor')->first();
+  
         if (isset($order->orderStatusVendor)) {
             $order_status = '';
             foreach ($order->orderStatusVendor as $key => $status) {
@@ -1157,8 +1158,7 @@ trait OrderTrait
         }
 
         $tracking_url = $order->ordervendor->dispatch_traking_url;
-        \Log::info('tracking');
-        \Log::info($tracking_url);
+        
         $tracking_url = get_tiny_url($tracking_url);
 
         $keyData = ['{user_name}' => $user['name'] ?? '', '{order_number}' => $order['order_number'] ?? '', '{track_url}' => $tracking_url ?? '', '{order_status}' => $order_status ?? ''];
@@ -1395,12 +1395,6 @@ trait OrderTrait
         foreach ($devices as $device) {
             $token[] = $device;
         }
-        // $token[] = "d4SQZU1QTMyMaENeZXL3r6:APA91bHoHsQ-rnxsFaidTq5fPse0k78qOTo7ZiPTASiH69eodqxGoMnRu2x5xnX44WfRhrVJSQg2FIjdfhwCyfpnZKL2bHb5doCiIxxpaduAUp4MUVIj8Q43SB3dvvvBkM1Qc1ThGtEM";
-        // dd($token);
-
-        // $from = env('FIREBASE_SERVER_KEY');
-
-
         $notification_content = NotificationTemplate::where('id', 2)->first();
         $client_preferences = ClientPreference::select('fcm_server_key', 'favicon')->first();
         if ($notification_content && ! empty($token) && ! empty($client_preferences->fcm_server_key)) {
@@ -1422,9 +1416,7 @@ trait OrderTrait
      // place Request To Dispatch for Appointment , OnDemand
      public function placeRequestToDispatchSingleProductUpdate($order, $vendor, $dispatch_domain,$vendorProduct ,$is_restricted ,$request)
      {
-
            try {
-
              $order = Order::find($order);
              $customer = User::find($order->user_id);
              $cus_address = UserAddress::find($order->address_id);
@@ -1564,12 +1556,10 @@ trait OrderTrait
                          'rejectable_order' =>  $rejectable_order
                      ];
 
-
                      if ($is_restricted == 1) {
                          $postdata['user_verification_type'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? $customer->passbase_verification->resources->type : null;
                          $postdata['user_datapoints'] = isset($customer->passbase_verification) && !is_null($customer->passbase_verification) ? json_decode($customer->passbase_verification->resources->datapoints) : null;
                      }
-
 
                      $client = new Client([
                          'headers' => [
@@ -1627,61 +1617,53 @@ trait OrderTrait
 
 
      public function orderSuccessCartDetail($order)
-        {
-            try {
-                    // Auto accept order
-                    $orderController = new OrderController();
-                    $orderController->autoAcceptOrderIfOn($order->id);
+    {
+        try {
+            // Auto accept order
+            $orderController = new OrderController();
+            $orderController->autoAcceptOrderIfOn($order->id);
 
-                    $cart = Cart::where('user_id',$order->user_id)->select('id')->first();
-                    $cartid = $cart->id;
-
-                    Cart::where('id', $cartid)->update([
-                        'schedule_type' => null,
-                        'scheduled_date_time' => null,
-                        'comment_for_pickup_driver' => null,
-                        'comment_for_dropoff_driver' => null,
-                        'comment_for_vendor' => null,
-                        'schedule_pickup' => null,
-                        'schedule_dropoff' => null,
-                        'specific_instructions' => null
-                    ]);
-                    CaregoryKycDoc::where('cart_id', $cartid)->update([
-                        'ordre_id' => $order->id,
-                        'cart_id' => ''
-                    ]);
-                    CartAddon::where('cart_id', $cartid)->delete();
-                    CartCoupon::where('cart_id', $cartid)->delete();
-                    CartProduct::where('cart_id', $cartid)->delete();
-                    CartProductPrescription::where('cart_id', $cartid)->delete();
-
-
-                    // Send Notification
-                    if (! empty($order->vendors)) {
-                        foreach ($order->vendors as $vendor_value) {
-                            $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
-                            $user_vendors = UserVendor::where([
-                                'vendor_id' => $vendor_value->vendor_id
-                            ])->pluck('user_id');
-                            $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
-                        }
-                    }
-
-                    $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
-                    $super_admin = User::where('is_superadmin', 1)->pluck('id');
-                    $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
-
-                        // send sms
-                        $this->sendOrderSuccessSMS($order);
-                }catch(\Exception $e)
-                {
-                    \Log::info('sendSuccessSMS error :-'.$e->getMessage());
-                    return true;
+            $cart = Cart::where('user_id',$order->user_id)->select('id')->first();
+            $cartid = $cart->id;
+            Cart::where('id', $cartid)->update([
+                'schedule_type' => null,
+                'scheduled_date_time' => null,
+                'comment_for_pickup_driver' => null,
+                'comment_for_dropoff_driver' => null,
+                'comment_for_vendor' => null,
+                'schedule_pickup' => null,
+                'schedule_dropoff' => null,
+                'specific_instructions' => null
+            ]);
+            CaregoryKycDoc::where('cart_id', $cartid)->update([
+                'ordre_id' => $order->id,
+                'cart_id' => ''
+            ]);
+            CartAddon::where('cart_id', $cartid)->delete();
+            CartCoupon::where('cart_id', $cartid)->delete();
+            CartProduct::where('cart_id', $cartid)->delete();
+            CartProductPrescription::where('cart_id', $cartid)->delete();
+            // Send Notification
+            if (! empty($order->vendors)) {
+                foreach ($order->vendors as $vendor_value) {
+                    $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id, $vendor_value->vendor_id);
+                    $user_vendors = UserVendor::where([
+                        'vendor_id' => $vendor_value->vendor_id
+                    ])->pluck('user_id');
+                    $orderController->sendOrderPushNotificationVendors($user_vendors, $vendor_order_detail);
                 }
-                return true;
+            }
+            $vendor_order_detail = $orderController->minimize_orderDetails_for_notification($order->id);
+            $super_admin = User::where('is_superadmin', 1)->pluck('id');
+            $orderController->sendOrderPushNotificationVendors($super_admin, $vendor_order_detail);
+                // send sms
+            $this->sendOrderSuccessSMS($order);
+        }catch(\Exception $e){
+            \Log::info('sendSuccessSMS error :-'.$e->getMessage());
+            return true;
         }
-
-
+        return true;
+    }
 
     public function sendOrderSuccessSMS($order)
     {
@@ -1792,8 +1774,50 @@ trait OrderTrait
         ];
         sendFcmCurlRequest($data);
      }
+     
 
 
+     public function saveOrderLongTermServiceSchedule($order,$productId)
+     {
+         $user = auth()->user();
+         $client_timezone = DB::table('clients')->first('timezone');
+         if($user){
+             $timezone = $user->timezone ??  $client_timezone->timezone;
+         }else{
+             $timezone = $client_timezone->timezone ?? ( $user ? $user->timezone : 'Asia/Kolkata' );
+         }
+ 
+         $user_timezone          =   $timezone;
+         $recurring_booking_time =   convertDateTimeInTimeZone($order->recurring_booking_time, $user_timezone, 'H:i');
+ 
+             $RecurringServiceSchedule = array();
+ 
+                 // No Nee other action
+                 if(@$order->recurring_booking_type){
+                 $Recurring_quantity     = $order->quantity;
+                 $recurring_day_data     = $order->recurring_day_data;
+                 $recurring_day_data     = explode(",",$recurring_day_data);
+ 
+                 $ndate                  = convertDateTimeInClientTimeZone(Carbon::now());
+                 $recurring_booking_time = convertDateTimeInTimeZone($order->recurring_booking_time, $user_timezone, 'H:i');
+                 for ($x = 0; $x < count($recurring_day_data); $x++) {
+                     $date           = $recurring_day_data[$x];
+                     $newDate        = $date.' '. $recurring_booking_time;
+                     $RecurringServiceSchedule [] = [
+                         'order_vendor_product_id' => $productId,
+                         'schedule_date'           => $newDate,
+                         'type'                    => 4, // Pickup and drop
+                         'order_number'            => $order->order_number
+                     ];
+                 }
+             }
+ 
+             if (!empty($RecurringServiceSchedule)) {
+                     OrderLongTermServiceSchedule::insert($RecurringServiceSchedule);
+                 }
+     }
+ 
+     
 
 
 
