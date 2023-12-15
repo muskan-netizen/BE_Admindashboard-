@@ -686,7 +686,6 @@
                                 @endif
                             </div>
                         </div>
-
                     </div>
                 </div>
             </form><!-- Map Configuration end -->

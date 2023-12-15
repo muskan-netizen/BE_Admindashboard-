@@ -322,10 +322,11 @@ class HomeController extends BaseController
 
                     $da['data'] = @$homePageData[@$da->slug];
                 }
+                if ($da->slug == 'banner') {
+                    $da['banner_image'] = $mobile_banners;
+                }
                 if ($da->slug == 'nav_categories') {
                     $da['data'] = $navCategories;
-                }   if ($da->slug == 'banner') {
-                    $da['banner_image'] = $mobile_banners;
                 }
                 if ($da->slug == 'nav_categories') {
                     $da['data'] = $navCategories;
