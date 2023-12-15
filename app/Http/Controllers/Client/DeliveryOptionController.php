@@ -104,12 +104,12 @@ class DeliveryOptionController extends Controller
         return redirect()->back()->with('toaster', $toaster);
 
     }
-//Set new dunzo configuration details function
-public function d4b_dunzo(Request $request)
-{
 
+    //Set new dunzo configuration details function
+    public function d4b_dunzo(Request $request)
+    {
+        \Log::info('dunzo')
      try{
-         //dd($request->input());
          $msg = 'Dunzo delivery details have been saved successfully!';
          $id = $request->method_id;
          $method_name_arr = $request->method_name;
@@ -172,7 +172,8 @@ public function d4b_dunzo(Request $request)
 
          return redirect()->back()->with('toaster', $toaster);
 
- }
+    }
+
     //Set new roadie configuration details function
     public function roadie(Request $request)
     {
