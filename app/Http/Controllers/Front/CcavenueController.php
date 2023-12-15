@@ -239,6 +239,20 @@ class CcavenueController extends Controller
        $order->payment_status = '1';
        $order->save();
        Payment::create(['amount' => 0, 'transaction_id' => $request->tracking_id, 'balance_transaction' => $order->payable_amount, 'type' => 'pickup_deleivery', 'date' => date('Y-m-d'), 'order_id' => $order->id]);
+          // Deduct wallet amount if payable amount is successfully done on gateway
+        if ( $order->wallet_amount_used > 0 ) {
+        $user = User::find(auth()->id());
+        $wallet = $user->wallet;
+        $transaction_exists = Transaction::where('type', 'withdraw')->where('meta', 'LIKE', '%order_number%')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+        if(!$transaction_exists){
+            $wallet->withdrawFloat($order->wallet_amount_used, [
+                'description' => 'Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>',
+                'order_number' => $order->order_number,
+                'transaction_id' => $request->tracking_id,
+                'payment_option' => 'ccavenue'
+            ]);
+        }
+      }
        // Send Notification
        $plaseOrderForPickup = new PickupDeliveryController();
        $request->request->add(['transaction_id' => $request->tracking_id]);

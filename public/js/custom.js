@@ -4665,6 +4665,7 @@ $(document).ready(function () {
         var quan = parseInt($('.quantity_count').val());
         var hasInv = $('#hasInventory').val();
         var str = $('#instock').val();
+        $message= 'Only '+str+' is available for this product';
         var batch_count = $(this).data("batch_count");
         // var res = parseInt(str.substring(10, str.length - 1));
         if (batch_count > 0)
@@ -4675,7 +4676,7 @@ $(document).ready(function () {
         if ((quan + batch_count) > str && hasInv == "1") {
             Swal.fire({
                 // title: "Warning!",
-                text: "Quantity is not available in stock",
+                text: $message,
                 icon: "warning",
                 button: "OK",
             });
