@@ -89,7 +89,7 @@ class OboPaymentController extends Controller
                     ], JSON_UNESCAPED_SLASHES);
                     $responce = Http::withBody($input, 'application/json')->withHeaders($header)->post($apiUrl);
                     $responceData = json_decode($responce->body(), true);
-                    if (isset($responceData['status']) && $responceData['status'] ===  "OK") {
+                    if (isset($responceData['status']) && $responceData['status'] ===  "200") {
                         $redirectUrl =  $responceData['data']['url'];
                         return response()->json([
                             'status' => 'Success',
@@ -208,15 +208,11 @@ class OboPaymentController extends Controller
                 "id" => $this->obo_client_id,
                 "key" => $this->obo_key_id
             ]);
-            \Log::error($input);
-            \Log::error($apiUrl);
             $header = [
                 'Content-Type' => 'application/json'
             ];
             $responce = Http::withBody($input, 'application/json')->withHeaders($header)->post($apiUrl);
             $data = json_decode($responce->body(),  true);
-            \Log::error($responce);
-            \Log::error($data);
             return $data;
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -273,7 +269,6 @@ class OboPaymentController extends Controller
     public function mobilePay(Request $request, $domain = '')
     {
         try {
-            \Log::info('mobilepay ..');
             $request->request->add(['payment_from' => $request->action, 'from' => $request->action, 'amt' => $request->amount, 'subsid' => $request->subscription_id ?? '', 'user_from' => 'app']);
             $data =  $this->beforePayment($request, $domain, 'app');
             if (isset($data) && !empty($data)) {
