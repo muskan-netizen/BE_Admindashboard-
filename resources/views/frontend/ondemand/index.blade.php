@@ -18,7 +18,6 @@ if(isset($product)){
 @extends('layouts.store',  $meta_data)
 @section('content')
 @php
-// pr(23432);
 use Illuminate\Support\Arr;
 @endphp
 
