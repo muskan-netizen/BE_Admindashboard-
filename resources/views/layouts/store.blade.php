@@ -162,6 +162,8 @@ if($type == 'p2p'){
     @endif --}}
 
     @include('layouts.store/footer')
+    @if($client_preference_detail->enable_pwa == 1)
+
     <script src="{{ asset('/sw.js') }}"></script>
 <script>
    if ("serviceWorker" in navigator) {
@@ -179,6 +181,7 @@ if($type == 'p2p'){
      console.error("Service workers are not supported.");
   }
 </script>
+@endif
 </body>
 
 </html>

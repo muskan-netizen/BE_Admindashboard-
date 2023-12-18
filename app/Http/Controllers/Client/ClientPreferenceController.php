@@ -502,7 +502,7 @@ class ClientPreferenceController extends BaseController{
             // $preference->delivery_check = ($request->has('delivery_check') && $request->delivery_check == 'on') ? 1 : 0;
         }
 
-
+ 
         if($request->has('custom_mods_config') && $request->custom_mods_config == '1'){
             $preference->enquire_mode = ($request->has('enquire_mode') && $request->enquire_mode == 'on') ? 1 : 0;
             $preference->pharmacy_check = ($request->has('pharmacy_check') && $request->pharmacy_check == 'on') ? 1 : 0;
@@ -537,7 +537,11 @@ class ClientPreferenceController extends BaseController{
             $preference->map_on_search_screen = ($request->has('map_on_search_screen') && $request->map_on_search_screen == 'on') ? 1 : 0;
             $preference->slots_with_service_area = ($request->has('slots_with_service_area') && $request->slots_with_service_area == 'on') ? 1 : 0;
             $preference->is_hourly_pickup_rental = ($request->has('is_hourly_pickup_rental_switch') && $request->is_hourly_pickup_rental_switch == 'on') ? 1 : 0;
+            $preference->enable_pwa = ($request->has('enable_pwa') && $request->enable_pwa == 'on') ? 1 : 0;
         }
+
+      
+         
 
         if($request->has('edit_order_modes') && $request->edit_order_modes == '1'){
          $preference->is_edit_order_admin = ($request->has('is_edit_order_admin') && $request->is_edit_order_admin == 'on') ? 1 : 0;
