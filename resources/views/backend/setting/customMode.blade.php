@@ -840,3 +840,11 @@
         <input type="hidden" @if (@$getAdditionalPreference['is_corporate_user'] == 1) value="1" @else value="0" @endif name="is_corporate_user" id="is_corporate_user">
     </div>
 </div>
+<div class="col-md-4">
+    <div class="form-group d-flex justify-content-between mb-3 ">
+        <label for="enquire_mode" class="mr-2 mb-0">{{ __('Enable PWA') }}</label>
+        <span><input type="checkbox" data-plugin="switchery" name="enable_pwa" id="enable_pwa"
+                class="form-control" data-color="#43bee1"
+                @if (isset($preference) && $preference->enable_pwa == '1') checked='checked' @endif></span>
+    </div>
+</div>
