@@ -108,7 +108,6 @@ class DeliveryOptionController extends Controller
     //Set new dunzo configuration details function
     public function d4b_dunzo(Request $request)
     {
-        \Log::info('dunzo')
      try{
          $msg = 'Dunzo delivery details have been saved successfully!';
          $id = $request->method_id;
