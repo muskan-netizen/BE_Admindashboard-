@@ -15,7 +15,7 @@ use App\Http\Controllers\Api\v1\{BaseController, VnpayController, StripeGatewayC
 use App\Http\Controllers\Front\DpoController;
 use App\Http\Controllers\Front\CcavenueController;
 use App\Http\Controllers\Front\KongapayController;
-use App\Http\Controllers\Front\MpesaController;
+use App\Http\Controllers\Front\{MpesaController,TotalpayController};
 use App\Http\Controllers\Front\MvodafoneController;
 use App\Http\Controllers\Front\NmiPaymentController;
 use App\Http\Controllers\Front\OboPaymentController;
@@ -48,7 +48,7 @@ class PaymentOptionController extends BaseController
         } else {
             //Till here
             $payment_options = PaymentOption::whereIn('code', $code)->where('status', 1)->get(['id', 'code', 'credentials', 'title', 'off_site']);
-            
+
             foreach ($payment_options as $option) {
                 if ($option->code == 'stripe') {
                     $option->title = __('Credit/Debit Card (Stripe)');
@@ -73,6 +73,8 @@ class PaymentOptionController extends BaseController
                     $option->title = __("O'Pay");
                 } elseif ($option->code == 'livee') {
                     $option->title = __("livees");
+                }elseif($option->code == 'totalpay') {
+                    $option->title = __('Total Pay');
                 }
                 $option->title = __($option->title);
             }
@@ -152,7 +154,11 @@ class PaymentOptionController extends BaseController
         $gateway = new MyCashGatewayController();
         return $gateway->purchase($request);
     }
-    
+    public function postPaymentVia_totalpay(Request $request)
+    {
+        $gateway = new TotalpayController();
+        return $gateway->makePayment($request);
+    }
     public function postPaymentVia_mpesasafari(Request $request)
     {
         $gateway = new MpesaSafariController();

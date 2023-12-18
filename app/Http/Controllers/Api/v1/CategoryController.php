@@ -84,6 +84,7 @@ class CategoryController extends BaseController
     public function listData($langId, $category_id, $type = '', $userid, $product_list, $mod_type, $mode_of_service = null, $limit = 12, $page = 1)
     {
         $type = strtolower($type);
+
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area','subscription_mode')->where('id', '>', 0)->first();
 
         if ($type == 'vendor' && $product_list == 'false') {
