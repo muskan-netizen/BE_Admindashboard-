@@ -310,8 +310,6 @@ class HomeController extends BaseController
             $venderIds  = $vendorData->where('status', 1)->pluck('id');
             $navCategories = $this->categoryNav($langId, $venderIds, $type , $request);
             } else{
-           
-                
                 $navCategories = $this->categoryNav($langId, @$homePageData['vendor_ids'], $type);
             }
 

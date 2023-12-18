@@ -358,11 +358,12 @@ class CartController extends FrontController
             if ($productDetail->is_long_term_service != 1) {
                 /** if product type is not equal to on demand and appointment
                  **/
+                $message= 'Only '.$productDetail->variant[0]->quantity.' is available for this product';
 
-                if ((!in_array($productDetail->category->categoryDetail->type_id, [8, 12])) && ($productDetail->has_inventory == 1)  && ($productDetail->sell_when_out_of_stock == 0)) {
-                    if (!empty($already_added_product_in_cart)) {
-                        if (($productDetail->variant[0]->quantity + $order_edit_qty) <= $already_added_product_in_cart->quantity) {
-                            return response()->json(['status' => 'error', 'message' => __('Maximum quantity already added in your carts')]);
+                if( ( !in_array($productDetail->category->categoryDetail->type_id,[8,12])) && ($productDetail->has_inventory == 1)  && ($productDetail->sell_when_out_of_stock == 0)){
+                    if(!empty($already_added_product_in_cart)){
+                        if(($productDetail->variant[0]->quantity + $order_edit_qty) <= $already_added_product_in_cart->quantity){
+                            return response()->json(['status' => 'error', 'message' =>$message]);
                         }
                         if (($productDetail->variant[0]->quantity + $order_edit_qty) <= ($already_added_product_in_cart->quantity + $request->quantity)) {
                             $request->quantity = $productDetail->variant[0]->quantity + $order_edit_qty - $already_added_product_in_cart->quantity;
@@ -1943,10 +1944,10 @@ class CartController extends FrontController
                 $sel->groupBy('product_id');
             }
         ])->find($cartProduct->product_id);
-
-        if (($productDetail->category->categoryDetail->type_id != 8) && ($productDetail->has_inventory == 1)  && ($productDetail->sell_when_out_of_stock == 0)) {
-            if ($productDetail->variant[0]->quantity < $request->quantity) {
-                return response()->json(['status' => 'error', 'quantity' => $productDetail->variant[0]->quantity, 'message' => __('Maximum quantity already added in your cart')]);
+        $message= 'Only '.$productDetail->variant[0]->quantity.' is available for this product';
+        if( ($productDetail->category->categoryDetail->type_id != 8) && ($productDetail->has_inventory == 1)  && ($productDetail->sell_when_out_of_stock == 0) ){
+            if($productDetail->variant[0]->quantity < $request->quantity){
+                return response()->json(['status' => 'error', 'quantity' => $productDetail->variant[0]->quantity, 'message' => $message]);
             }
         }
 

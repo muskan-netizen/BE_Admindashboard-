@@ -11,9 +11,9 @@
 @endswitch
 @php
 $orderTitles = [
-    'Active' => "Active",
-    'Past' => "Past",
-    'Rejected/Cancel' => "Rejected/Cancel"
+    'Active' => "Active ",
+    'Past' => "Past ",
+    'Rejected/Cancel' => "Rejected/Cancel "
 ];
 
 $clientData = \App\Models\Client::select('socket_url')->first();
