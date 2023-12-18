@@ -26,10 +26,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         });
     });
 
-    
-
-
-
     Route::group(['middleware' => ['dbCheck', 'checkAuth']], function () { //apilogger
 
         Route::get('static-dropoff-locations', 'Api\v1\AddressController@staticDropoffLocations');
@@ -54,9 +50,13 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
 
         Route::get('user/registration/document', 'Api\v1\HomeController@UserRegistrationDocument');
 
+        Route::post('/cart/updateCartWalletAmount', 'Api\v1\CartController@updateCartWalletAmount');
+        
+        Route::post('product/inquiry', 'Api\v1\ProductInquiryController@store');
         Route::post('cart/add', 'Api\v1\CartController@add');
         Route::post('checkProductAvailibility', 'Api\v1\RentalProductController@checkProductAvailibility');
         Route::get('cart/list', 'Api\v1\CartController@index');
+        Route::post('cart/add-booking-option', 'Api\v1\CartController@addBookingOptionToCart');
         Route::post('upload/prescriptions', 'Api\v1\CartController@uploadPrescriptions');
         Route::post('delete/prescriptions', 'Api\v1\CartController@deleteProductPrescription');
         Route::post('mfc/stk/push', 'Api\v1\CartController@stkPushRequest');
@@ -129,6 +129,12 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('getslotsFormDispatcher', 'Api\v1\AppointmentController@getSlotFromDispatchDemand');
         // get GerenalSlot slot from dispatcher
         Route::get('getDispatcherGerenalSlot', 'Api\v1\DispatcherController@getDispatcherGerenalSlot');
+
+        Route::get('home-restaurents', 'Api\v1\HomeController@homeRestaurents');
+        Route::get('category-restaurents/{category_id}', 'Api\v1\HomeController@categoryRestaurents');
+        
+        Route::get('allergic-items', 'Api\v1\AllergicItemController@index');
+
     });
 
     Route::group(['middleware' => ['dbCheck', 'systemAuth']], function () { //apilogger
@@ -146,9 +152,13 @@ Route::group(['prefix' => 'v1', 'middleware' => ['ApiLocalization']], function (
         Route::post('cart/productfaq/update', 'Api\v1\CartController@updateCartProductFaq');
         Route::post('dropoff-location', 'Api\v1\StaticDropoffController@getStaticLocation');
 
+        //Make Event for tracking
+        Route::post('track-event', 'TrackEventController@saveEvents');
+
         Route::post('cart/updateCartCheckedStatus', 'Api\v1\CartController@updateCartCheckedStatus');
     });
     Route::group(['middleware' => ['dbCheck']], function () {
         Route::post('header', 'Api\v1\HomeController@headerContent');
+        Route::post('rental-protection', 'Api\v1\CartController@getRentalProtection');
     });
 });

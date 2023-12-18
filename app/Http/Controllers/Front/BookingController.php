@@ -33,7 +33,7 @@ class BookingController extends FrontController
         $navCategories = $this->categoryNav($langId);
         $user_addresses = UserAddress::get();
         $order = Order::where('order_number',$order_id)->where('user_id',Auth::id())->first();
-        $order->vendors->first()->dispatch_traking_url;
+        // $order->vendors->first()->dispatch_traking_url;
         $route = route('front.booking.orderplacedetails',$order->id);
         
         
@@ -75,5 +75,18 @@ class BookingController extends FrontController
             $data['data'] = $order;
             return $data;
     }
+
+
+    public function updateRentalPrice(Request $request)
+    {
+        $requestData = $request->json()->all();
+      
+        $per_hour_price = 20;
+        $price = $requestData['rental_hours'] * $per_hour_price;
+         
+    
+        return response()->json(['total_rental_price' => $price]);
+    }
+    
     
 }

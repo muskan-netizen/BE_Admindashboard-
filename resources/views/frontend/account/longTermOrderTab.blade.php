@@ -334,7 +334,7 @@ padding: 7px 15px;
                                                     @endphp
                                                     <div class="d-flex justify-content-start">
                                                         <h6 class="m-0 pr-2 text-left">{{ __('Product Name') }}:</h6>
-                                                        <a href="{{ $Service_product_url }}" target="_blank"> {{ $product->longTermSchedule->product->primary->title }}</a>
+                                                        <a href="{{ $Service_product_url }}" target="_blank"> {{ $product->longTermSchedule->product->primary->title  ?? ''}}</a>
                                                     </div>
                                                     <div class="d-flex justify-content-start">
                                                         <h6 class="m-0 pr-2 text-left">{{ __('No. of Bookings') }}:</h6>

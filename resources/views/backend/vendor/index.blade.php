@@ -3,6 +3,8 @@
 <link href="{{asset('assets/libs/dropzone/dropzone.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/dropify/dropify.min.css')}}" rel="stylesheet" type="text/css" />
 <link href="{{asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+<link href="https://cdn.datatables.net/buttons/1.5.1/css/buttons.dataTables.min.css" rel="stylesheet" />
+
 <link rel="stylesheet" href="{{asset('assets/css/intlTelInput.css')}}">
 <style type="text/css">
 @media(min-width: 1440px){.content{min-height: calc(100vh - 100px);}.dataTables_scrollBody {height: calc(100vh - 500px);}}
@@ -12,6 +14,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
 <style type="text/css">
     .pac-container,.pac-container .pac-item{z-index:99999!important}.fc-v-event{border-color:#43bee1;background-color:#43bee1}.dd-list .dd3-content{position:relative}span.inner-div{top:50%;-webkit-transform:translateY(-50%);-moz-transform:translateY(-50%);transform:translateY(-50%)}.button{position:relative;padding:8px 16px;background:#009579;border:none;outline:0;border-radius:50px;cursor:pointer}.button:active{background:#007a63}.button__text{font:bold 20px Quicksand,san-serif;color:#fff;transition:all .2s}.button--loading .button__text{visibility:hidden;opacity:0}.button--loading::after{content:"";position:absolute;width:16px;height:16px;top:0;left:0;right:0;bottom:0;margin:auto;border:4px solid transparent;border-top-color:#fff;border-radius:50%;animation:button-loading-spinner 1s ease infinite}@keyframes button-loading-spinner{from{transform:rotate(0turn)}to{transform:rotate(1turn)}}
 </style>
+
 @endsection
 @section('content')
 <div class="container-fluid vendor-page">
@@ -24,7 +27,7 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
                 $newvendors = ($vendors === "vendors") ? __('vendors') : $vendors ;
                 @endphp
                 @php
-                    $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module']);
+                    $getAdditionalPreference = getAdditionalPreference(['is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'gofrugal_enable_status']);
                 @endphp
 
                 <h4 class="page-title">{{ $newvendors }}</h4>
@@ -412,10 +415,14 @@ div.dataTables_wrapper div.dataTables_filter input {width: 180px;}
             $('#Vendor_order_pre_time_show').text(txt);
        }
     }
-
+    var gofrugalEnableStatus = "{{ @$getAdditionalPreference['gofrugal_enable_status'] }}";
+    var toggleGroFrugalBtn = gofrugalEnableStatus != 1 ? 'd-none' : '';
+    var goFrugalUrl = '{{route("gofrugal.home")}}';
 </script>
 @include('backend.vendor.pagescript')
 <script src="{{asset('js/admin_vendor.js')}}"></script>
+@include('backend.export_pdf')
+
 <script type="text/javascript">
     var search_text = "{{__('Search By '). getNomenclatureName('vendors', false) . __(' Name')}}";
     var table_info = '{{__("Showing _START_ to _END_  of _TOTAL_ entries")}}';

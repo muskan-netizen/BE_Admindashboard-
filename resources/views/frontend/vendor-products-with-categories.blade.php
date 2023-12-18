@@ -32,7 +32,7 @@ span.alPriceValue, span.alPriceValue i {
 @php
 $add_to_cart =  route('addToCart') ;
 $is_service_product_price_from_dispatch_forOnDemand = 0;
-$additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch','is_service_price_selection']);
+$additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch','is_service_price_selection','is_enable_allergic_items']);
 $getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'), (@Session::get('onDemandPricingSelected') ?? ''),$additionalPreference);
 $category_type_idForNotShowshPlusMinus = ['12'];
 if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
@@ -91,6 +91,10 @@ if($getOnDemandPricingRule['is_price_from_freelancer'] ==1 ){
                                                 <option value="high_to_low">{{ __('Cost : High to Low') }}</option>
                                                 <option value="rating">{{ __('Avg. Customer Review') }}</option>
                                                 <option value="newly_added">{{ __('Newest Arrivals') }}</option>
+                                                @if ($additionalPreference['is_enable_allergic_items'] == 1)
+                                                    <option value="cal_asc">{{ __('Calories : Low to High') }}</option>
+                                                    <option value="cal_desc">{{ __('Calories : High to Low') }}</option>
+                                                @endif
                                             </select>
                                         </div>
                                     </div>

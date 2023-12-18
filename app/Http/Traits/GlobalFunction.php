@@ -11,10 +11,10 @@ use Illuminate\Support\Facades\Config;
 trait GlobalFunction{
 
 
-    public function socketDropDown()
+    public static function socketDropDown()
     {
-        $chatSocket= ChatSocket::where('status', 1)->get();
-        return $chatSocket;
+        // $chatSocket= ChatSocket::where('status', 1)->get();
+        // return $chatSocket;
     }
 
     public function checkDbStat($id)

@@ -142,11 +142,11 @@
                                                             @foreach($addon_sets as $set)
                                                             <tr>
                                                                 <td>{{$set->id}}</td>
-                                                                <td>{{$set->title}}</td>
+                                                                <td>{{$set->translation_one->title}}</td>
                                                                 <td>{{$set->min_select}} - {{$set->max_select}}</td>
                                                                 <td>
                                                                     @foreach($set->option as $opt)
-                                                                    <span>{{$opt->title}} - {{$clientCurrency->currency->symbol}}{{decimal_format($opt->price)}}</span><br />
+                                                                    <span>{{$opt->translation_one->title}} - {{$clientCurrency->currency->symbol}}{{decimal_format($opt->price)}}</span><br />
                                                                     <span></span>
                                                                     @endforeach
                                                                 </td>

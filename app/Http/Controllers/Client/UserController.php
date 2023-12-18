@@ -31,7 +31,7 @@ use App\Models\UserDevice;
 use Session;
 use DB;
 use Spatie\Permission\Models\Role;
-use App\Models\{Payment, User, Client, ClientPreference, Country, CsvCustomerImport, Currency, Language, UserVerification, RoleOld, Transaction, UserDocs, UserRegistrationDocuments, OrderVendor, VendorOrderStatus, ClientCurrency, ServiceArea};
+use App\Models\{Payment, User, Client, ClientPreference, Country, CsvCustomerImport, Currency, Language, UserVerification, RoleOld, Transaction, UserDocs, UserRegistrationDocuments, OrderVendor, VendorOrderStatus, ClientCurrency, Company, ServiceArea};
 
 class UserController extends BaseController
 {
@@ -52,6 +52,10 @@ class UserController extends BaseController
 
     public function index()
     {
+        if(!auth()->user()->can('customers-view') && !auth()->user()->is_superadmin)
+        {
+            return redirect('client/dashboard')->with('error','You do not have permission to do this task.');
+        }
         $roles = RoleOld::all();
         $countries = Country::all();
         $active_users = User::where('status', 1)->where('is_superadmin', '!=', 1)->count();
@@ -71,7 +75,8 @@ class UserController extends BaseController
             }
         }
         $csvCustomers = CsvCustomerImport::all();
-        return view('backend/users/index')->with(['inactive_users' => $inactive_users, 'social_logins' => $social_logins, 'active_users' => $active_users, 'users' => $users, 'roles' => $roles, 'countries' => $countries, 'csvCustomers' => $csvCustomers, 'user_registration_documents' => $user_registration_documents]);
+        $companies = Company::get();
+        return view('backend/users/index')->with(['inactive_users' => $inactive_users, 'social_logins' => $social_logins, 'active_users' => $active_users, 'users' => $users, 'roles' => $roles, 'countries' => $countries, 'csvCustomers' => $csvCustomers, 'user_registration_documents' => $user_registration_documents,'companies'=>$companies]);
     }
     
     public function getFilterData(Request $request)
@@ -107,10 +112,14 @@ class UserController extends BaseController
 
 
         if ($request->type == 'active') {
-            $users->where('status', 1);
+                $users->where('status', 1)->where('is_superadmin', '!=', 1);
         } else if ($request->type == 'inactive') {
             $users->where('status', 3);
         }
+        if ($request->company_filter) {
+            $users->where('company_id', $request->company_filter);
+        }
+
         return Datatables::of($users)
             ->addColumn('edit_url', function ($users) {
                 return route('customer.new.edit', $users->id);
@@ -143,7 +152,7 @@ class UserController extends BaseController
                 }
             })
             ->addColumn('is_superadmin', function ($users) use ($current_user) {
-                return $current_user->is_superadmin;
+                return $current_user->is_superadmin??'-';
             })
             ->addColumn('wallet_id', function ($users) {
                 return $users->wallet->id ?? '';
@@ -379,9 +388,9 @@ class UserController extends BaseController
     public function newEdit($domain = '', $id)
     {
         $subadmin = User::find($id);
-        $geoIds = explode(',',$subadmin->geo_ids);
-        // dd($geoIds);
         $userRole = @$subadmin->roles[0]->id;
+        $geoIds = explode(',',$subadmin->geo_ids);
+
         $permissions = PermissionsOld::where('status', 1)->whereNotin('id', [4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 22, 23, 24, 25])->get();
         $user_permissions = UserPermissions::where('user_id', $id)->get();
         $vendor_permissions = UserVendor::where('user_id', $id)->pluck('vendor_id')->toArray();

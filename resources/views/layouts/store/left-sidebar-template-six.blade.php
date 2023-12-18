@@ -143,7 +143,7 @@ $q->where(['is_published' => 1, 'language_id' => session()->get('customerLanguag
                            <a href="{{ route('user.profile') }}" data-lng="en">{{ __('Profile') }}</a>
                         </li>
                         <li>
-                           <a href="{{ route('user.logout') }}" data-lng="es">{{ __('Logout') }}</a>
+                           <a href="{{ route('user.logout') }}" data-lng="en">{{ __('Logout') }}</a>
                         </li>
                      </ul>
                   </li>

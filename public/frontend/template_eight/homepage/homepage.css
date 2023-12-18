@@ -1512,6 +1512,7 @@ section.suppliers-section.container.vender_slider .supplier-rating h5 {
     padding: 0px;
 }
 
+
 .al_body_template_eight .p2p_eccomerce_slider .slick-slide>div {
     margin: 0px;
 }
@@ -1815,6 +1816,8 @@ body.dark.al_body_template_eight article#page-container section .vendors section
     line-height: 30px;
     opacity: 1;
     box-shadow: 0 0 5px rgba(0, 0, 0, .2);
+    color: #000!important;
+    font-size: 20px;
 }
 
 .row.selected_products-slider.slick-initialized.slick-slider div .col-md-3 {

@@ -36,6 +36,11 @@ class OrderProduct extends Model{
     public function vendor(){
         return $this->belongsTo('App\Models\Vendor', 'vendor_id', 'id')->select('id', 'name', 'desc', 'logo', 'banner', 'order_pre_time', 'auto_reject_time', 'order_min_amount');
     }
+    public function categories()
+    {
+      return $this->hasOne('App\Models\Category','category_id','id');
+    }
+  
     public function coupon(){
       return $this->hasOne('App\Models\CartCoupon', 'vendor_id', 'vendor_id')->select("cart_id", "coupon_id", 'vendor_id');
     }
@@ -43,13 +48,13 @@ class OrderProduct extends Model{
        return $this->hasMany('App\Models\OrderProductAddon', 'order_product_id', 'id');
     }
     public function product(){
-      return $this->belongsTo('App\Models\Product')->select('id', 'sku', 'url_slug', 'is_live', 'weight', 'weight_unit', 'averageRating', 'brand_id', 'tax_category_id', 'category_id','minimum_duration_min','is_long_term_service', 'returnable', 'replaceable', 'return_days', 'sync_from_inventory','height', 'breadth', 'length', 'description')->withTrashed();
+      return $this->belongsTo('App\Models\Product')->select('id', 'sku', 'url_slug', 'is_live', 'weight', 'weight_unit', 'averageRating', 'brand_id', 'tax_category_id', 'category_id','minimum_duration_min','is_long_term_service', 'returnable', 'replaceable', 'return_days', 'sync_from_inventory', 'height', 'breadth', 'length', 'description', 'latitude', 'longitude', 'address','title')->withTrashed();
     }
      public function variant(){
       return $this->hasMany('App\Models\ProductVariant','product_id', 'product_id')->select('id', 'sku', 'product_id', 'title', 'quantity', 'price', 'position', 'compare_at_price', 'barcode', 'cost_price', 'currency_id', 'tax_category_id')->where('status', 1);
     }
     public function pvariant(){
-      return $this->belongsTo('App\Models\ProductVariant', 'variant_id', 'id')->select('id', 'sku', 'product_id', 'title', 'price', 'tax_category_id', 'barcode');
+      return $this->belongsTo('App\Models\ProductVariant', 'variant_id', 'id')->select('id', 'sku', 'product_id', 'title', 'price', 'tax_category_id', 'barcode','price','week_price','month_price');
     }
     public function media(){
         return $this->hasMany('App\Models\ProductImage', 'product_id', 'product_id')->select('product_id', 'media_id', 'is_default');

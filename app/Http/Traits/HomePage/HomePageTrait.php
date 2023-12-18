@@ -2,13 +2,15 @@
 
 namespace App\Http\Traits\HomePage;
 
-use App\Models\{CabBookingLayout, Category, HomePageLabel, HomeProduct, Order, OrderProductRating, OrderVendorProduct, Product, ProductCategory, ProductRecentlyViewed, Vendor, VendorCategory, VendorCities, PromoCodeDetail, Promocode, SubscriptionInvoicesVendor, VendorOrderStatus};
+use App\Models\{CabBookingLayout, Category, HomePageLabel, HomeProduct, Order, OrderProductRating, OrderVendorProduct, Product, ProductCategory, ProductRecentlyViewed, Vendor, VendorCategory, VendorCities, PromoCodeDetail, Promocode, SubscriptionInvoicesVendor, VendorOrderStatus, UserAddress, ClientPreference, User};
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
 use Session, DB, Auth;
 use Illuminate\Support\Str;
+use GuzzleHttp\Client as GCLIENT;
 use App\Http\Traits\{ProductActionTrait};
 use Kreait\Firebase\Auth as FirebaseAuth;
+use App\Http\Controllers\Api\v1\CartController;
 
 trait HomePageTrait
 {
@@ -339,7 +341,6 @@ trait HomePageTrait
                         $query2->whereNotIn('id', $promo_code_details->toArray());
                     }
                 });
-
                 $query->orWhere(function ($query1) use ($promo_code_details) {
                     $query1->where('restriction_type', 0);
                     if (!empty($promo_code_details->toArray())) {
@@ -352,41 +353,38 @@ trait HomePageTrait
             if($firstOrderCheck){
                 $result1->where('first_order_only', 0);
             }
-
             $result1->where(['promo_visibility' => 'public']);
     
             $result1 = $result1->where('is_deleted', 0)->get();
-
             $promo_codes = $promo_codes->merge($result1);
-        
         }
 
         if(!empty($vendor_ids)){
             $vendor_promo_code_details = PromoCodeDetail::whereHas('promocode')->whereIn('refrence_id', $vendor_ids)->pluck('promocode_id');
-            $result2 = Promocode::where('restriction_on', 1)->where(function ($query) use ($vendor_promo_code_details ) {
-                $query->where(function ($query2) use ($vendor_promo_code_details) {
-                    $query2->where('restriction_type', 1);
-                    if (!empty($vendor_promo_code_details->toArray())) {
-                        $query2->whereNotIn('id', $vendor_promo_code_details->toArray());
-                    }
-                });
-
-                $query->orWhere(function ($query1) use ($vendor_promo_code_details) {
-                    $query1->where('restriction_type', 0);
-                    if (!empty($vendor_promo_code_details->toArray())) {
-                        $query1->whereIn('id', $vendor_promo_code_details->toArray());
-                    } else {
-                        $query1->where('id', 0);
-                    }
-                });
-            });
-            if($firstOrderCheck){
-                $result2->where('first_order_only', 0);
-            }
-
-            $result2->where(['promo_visibility' => 'public']);
-
-            $result2 = $result2->where('is_deleted', 0)->whereDate('expiry_date', '>=', $now)->get();
+            $result2 = Promocode::where('restriction_on', 1)
+                ->where(function ($query) use ($vendor_promo_code_details) {
+                    $query->where(function ($query2) use ($vendor_promo_code_details) {
+                        $query2->where('restriction_type', 1);
+                        if ($vendor_promo_code_details->isNotEmpty()) {
+                            $query2->whereNotIn('id', $vendor_promo_code_details);
+                        }
+                    })
+                    ->orWhere(function ($query1) use ($vendor_promo_code_details) {
+                        $query1->where('restriction_type', 0);
+                        if ($vendor_promo_code_details->isNotEmpty()) {
+                            $query1->whereIn('id', $vendor_promo_code_details);
+                        } else {
+                            $query1->where('id', 0);
+                        }
+                    });
+                })
+                ->when($firstOrderCheck, function ($query) {
+                    return $query->where('first_order_only', 0);
+                })
+                ->where('promo_visibility', 'public')
+                ->where('is_deleted', 0)
+                ->whereDate('expiry_date', '>=', $now)
+                ->get();
             $promo_codes = $promo_codes->merge($result2);
         }
         return $promo_codes;
@@ -463,7 +461,7 @@ trait HomePageTrait
      public function postHomePageDataV2($request,$set_template,$enable_layout,$additionalPreference,$user='', $getSubCatIds='')
     {
         $client_timezone = DB::table('clients')->first('timezone');
-      
+     
         
         if(!empty($user)){
             $timezone        = $user->timezone ? $user->timezone :  ($client_timezone->timezone ?? 'Asia/Kolkata' );
@@ -590,6 +588,7 @@ trait HomePageTrait
         $vendor_ids = $this->getRandomVendorIdsForHomePage($preferences, $request->type, $preferences['is_admin_vendor_rating'], $latitude, $longitude,@$request->momo);
         $home_page_labels = HomePageLabel::with('translations')->get();
         if (in_array('brands', $enable_layout)) {     # if enable brands section in
+             
             $brands = $this->getBrandsForHomePage($language_id, $this->field_status);
         }else{
             $brands = [];
@@ -615,10 +614,28 @@ trait HomePageTrait
             }
         }
 
+         
         
         if(count($vendor_ids) > 0){
-          
             $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids,null,$this->venderFilterOpenClose,$this->venderFilterbest);
+            $preferences = ClientPreference::first();
+            $getCartController = new CartController();
+            foreach($vendors as $k => $vendorData){
+                if($preferences->static_delivey_fee != 1){
+                $deliver_response_array = $getCartController->getDeliveryFeeDispatcher($vendorData->id, $dispatcher_tags='');
+                
+                if (!empty($deliver_response_array[0])){
+                    $totalRoute = '1';
+                    $deliver_charge = (!empty($deliver_response_array[0]['delivery_fee']))?number_format(($deliver_response_array[0]['delivery_fee']*$totalRoute), 2, '.', ''):'0.00';
+                    $delivery_duration = (!empty($deliver_response_array[0]['total_duration']))?number_format($deliver_response_array[0]['total_duration'], 0, '.', ''):'0.00';
+                    $vendorData->delivery_fee = $deliver_charge;
+                    $vendorData->delivery_time = $delivery_duration;
+                }
+                }elseif($preferences->static_delivey_fee == 1 ){
+                    $vendorData->delivery_fee = 0.00;
+                    $vendorData->delivery_time = 00.00;
+                } 
+            }
         }
         
         $trendingVendors = [];
@@ -765,7 +782,7 @@ trait HomePageTrait
 
 
         /** Respose data */
-      
+            //   print_r($vendors);exit;
         
             $data = [
                 'vendor_ids'=>$vendor_ids,
@@ -789,10 +806,8 @@ trait HomePageTrait
                 'banners' => $banners,
                 'additionalPreference' => $additionalPreference,
             ];
-            //pr( $data);
+            // pr( $data);
             return $data ;
     }
-
-    
 
 }

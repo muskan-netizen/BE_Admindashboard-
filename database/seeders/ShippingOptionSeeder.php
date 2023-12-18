@@ -24,7 +24,8 @@ class ShippingOptionSeeder extends Seeder
         	array('id' => '4', 'path' => '', 'code' => 'ahoy', 'title' => 'Ahoy', 'status' => '0','test_mode'=>'1'),
         	array('id' => '5', 'path' => '', 'code' => 'shippo', 'title' => 'Shippo', 'status' => '0','test_mode'=>'1'),
         	array('id' => '6', 'path' => '', 'code' => 'kwikapi', 'title' => 'KwikApi', 'status' => '0','test_mode'=>'1'),
-        	array('id' => '7', 'path' => '', 'code' => 'roadie', 'title' => 'Roadie', 'status' => '0','test_mode' => '1')
+        	array('id' => '7', 'path' => '', 'code' => 'roadie', 'title' => 'Roadie', 'status' => '0','test_mode' => '1'),
+        	array('id' => '8', 'path' => '', 'code' => 'shipengine', 'title' => 'ShipEngine', 'status' => '0','test_mode' => '1')
       	); 
 
       	if($option_count == 0)

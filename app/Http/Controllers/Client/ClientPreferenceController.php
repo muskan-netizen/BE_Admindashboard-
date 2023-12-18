@@ -8,10 +8,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Client\BaseController;
-use App\Models\{Client, ClientPreference, ClientPreferenceAdditional, MapProvider, SmsProvider, NomenclatureTranslation, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption,StaticDropoffLocation,Facilty, RoleOld, User, Country, ClientCountries};
+use App\Models\{Client, ClientPreference, ClientPreferenceAdditional, MapProvider, SmsProvider, NomenclatureTranslation, Template, Currency, Language, ClientLanguage, ClientCurrency, Nomenclature, ReferAndEarn,SocialMedia, VendorRegistrationDocument, PageTranslation, BrandTranslation, VariantTranslation, ProductTranslation, Category_translation, AddonOptionTranslation, ClientSlot, DriverRegistrationDocument, VariantOptionTranslation,Tag , UserRegistrationDocuments,UserRegistrationDocumentTranslation, ThirdPartyAccounting, CategoryKycDocuments, VerificationOption,StaticDropoffLocation,Facilty, RoleOld, User, Country, ClientCountries, VendorMargConfig};
 use GuzzleHttp\Client as GCLIENT;
 use DB;
 use App\Http\Traits\ApiResponser;
+use App\Http\Traits\ResetConfiguration;
 use App\Http\Traits\ValidatorTrait;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB as FacadesDB;
@@ -20,7 +21,7 @@ use Session;
 
 class ClientPreferenceController extends BaseController{
     use \App\Http\Traits\ClientPreferenceManager;
-    use ApiResponser;
+    use ApiResponser,ResetConfiguration;
 
     // client_preference_fillable_key this variables define in ClientPreferenceManager
 
@@ -68,35 +69,35 @@ class ClientPreferenceController extends BaseController{
             }
         }
 
-
+  
+        
         $accounting     = ThirdPartyAccounting::where('code','xero')->first();
 
         $productDeliveryFeeByRole = ProductDeliveryFeeByRole::groupBy('role_id')->get()->pluck('role_id')->toArray();
 
-        $getAdditionalPreference = getAdditionalPreference(['hubspot_access_token', 'is_hubspot_enable', 'is_price_by_role', 'is_free_delivery_by_roles', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'is_gift_card', 'is_cab_pooling', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds','is_service_product_price_from_dispatch','is_file_cart_instructions','is_user_kyc_for_registration','add_to_cart_btn','chat_button','call_button','is_tracking_url','is_tracking_sms_url','is_place_order_delivery_zero','is_cust_success_signup_email','is_admin_vendor_rating','square_enable_status', 'square_credentials','is_long_term_service','is_influencer_refer_and_earn','is_show_vendor_on_subcription','is_postpay_enable','is_order_edit_enable','order_edit_before_hours','is_enable_compare_product','is_bid_enable','update_order_product_price','is_service_price_selection', 'is_particular_driver', 'pickup_notification_before', 'pickup_notification_before_hours', 'pickup_notification_before2', 'pickup_notification_before2_hours','is_enable_curb_side','is_recurring_booking','is_map_search_perticular_country','marg_access_token', 'is_marg_enable', 'marg_company_code', 'marg_decrypt_key','marg_date_time','stock_notification_qunatity','stock_notification_before','marg_company_url','is_enable_google_analytics','header_script','footer_script']);
+        $getAdditionalPreference = getAdditionalPreference(['is_price_by_role','is_phone_signup', 'token_currency', 'is_token_currency_enable', 'hubspot_access_token', 'is_hubspot_enable', 'gtag_id', 'fpixel_id','is_long_term_service', 'is_free_delivery_by_roles', 'is_cab_pooling', 'is_attribute', 'is_gst_required_for_vendor_registration', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module', 'is_same_day_delivery', 'is_next_day_delivery', 'is_hyper_local_delivery', 'is_cod_payment', 'is_prepaid_payment', 'is_partial_payment', 'add_to_cart_btn', 'chat_button', 'call_button', 'seller_sold_title','saller_platform_logo','is_tracking_url','is_tracking_sms_url', 'is_tax_price_inclusive', 'is_postpay_enable', 'is_order_edit_enable', 'order_edit_before_hours','is_gift_card', 'is_place_order_delivery_zero', 'is_cust_success_signup_email','is_influencer_refer_and_earn','is_bid_enable','advance_booking_amount','advance_booking_amount_percentage','update_order_product_price', 'is_bid_ride_enable', 'is_one_push_book_enable', 'bid_expire_time_limit_seconds',  'is_corporate_user', 'is_user_kyc_for_registration','is_service_product_price_from_dispatch','is_recurring_booking','is_file_cart_instructions','is_admin_vendor_rating', 'square_enable_status', 'square_credentials','is_show_vendor_on_subcription','is_enable_compare_product','is_service_price_selection','is_particular_driver', 'pickup_notification_before', 'pickup_notification_before_hours','pickup_notification_before2', 'pickup_notification_before2_hours','is_enable_curb_side','is_map_search_perticular_country','marg_access_token','marg_date_time', 'is_marg_enable', 'marg_company_code', 'marg_decrypt_key','stock_notification_before','stock_notification_qunatity','marg_company_url','is_share_ride_users','is_cache_enable_for_home','cache_reset_time_for_home','cache_radius_for_home','is_enable_allergic_items','is_enable_google_analytics','header_script','footer_script','is_vendor_marg_configuration','marg_cron_schedular_time','is_role_and_permission_enable','is_taxjar_enable','taxjar_testmode','taxjar_api_token','is_lumen_enabled','lumen_domain_url','lumen_access_token','is_rental_weekly_monthly_price','blockchain_route_formation','blockchain_api_domain','blockchain_address_id','is_car_rental_enable', 'is_gofrugal_enable','gofrugal_enable_status','gofrugal_credentials','is_sms_complete_order','is_sms_cancel_order','is_sms_booked_ride','is_hourly_pickup_rental']);
+
         $client_detail = Client::first();
-
         return view('backend/setting/config')->with([
-                                                'tags' => $tags,
-                                                'slots'=>$slots,
-                                                'laundry_teams' => $laundry_teams,
-                                                'last_mile_teams' => $last_mile_teams,
-                                                'client' => $client,
-                                                'preference' => $preference,
-                                                'mapTypes'=> $mapTypes,
-                                                'smsTypes' => $smsTypes,
-                                                'client_languages' => $client_languages,
-                                                'file_types' => $file_types,
-                                                'vendor_registration_documents' => $vendor_registration_documents,
-                                                'driver_registration_documents' => $driver_registration_documents,
-                                                'file_types_driver' => $file_types_driver,
-                                                'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm,
-                                                'productDeliveryFeeByRole'=> $productDeliveryFeeByRole,
-                                                'accounting'=> $accounting,
-                                                'getAdditionalPreference'=> $getAdditionalPreference,
-                                                'client_detail' => $client_detail
-
-                                            ]);
+                    'tags' => $tags,
+                    'slots'=>$slots,
+                    'laundry_teams' => $laundry_teams,
+                    'last_mile_teams' => $last_mile_teams,
+                    'client' => $client,
+                    'preference' => $preference,
+                    'mapTypes'=> $mapTypes,
+                    'smsTypes' => $smsTypes,
+                    'client_languages' => $client_languages,
+                    'file_types' => $file_types,
+                    'vendor_registration_documents' => $vendor_registration_documents,
+                    'driver_registration_documents' => $driver_registration_documents,
+                    'file_types_driver' => $file_types_driver,
+                    'nomenclatureProductOrderForm' => $nomenclatureProductOrderForm,
+                    'productDeliveryFeeByRole'=> $productDeliveryFeeByRole,
+                    'accounting'=> $accounting,
+                    'getAdditionalPreference'=> $getAdditionalPreference,
+                    'client_detail' => $client_detail
+                ]);
     }
 
 
@@ -196,6 +197,7 @@ class ClientPreferenceController extends BaseController{
      */
 
     public function additionalupdate(Request $request){
+
             $rules = array(
                 'token_currency' => 'required_if:is_token_currency_enable,1'
             );
@@ -206,6 +208,7 @@ class ClientPreferenceController extends BaseController{
             }
 
         try {
+           
 
             $this->updatePreferenceAdditional($request);
 
@@ -288,6 +291,8 @@ class ClientPreferenceController extends BaseController{
         return true;
     }
     public function update(Request $request, $code){
+ 
+       
         $cp = new ClientPreference();
         $preference = ClientPreference::where('client_code', Auth::user()->code)->first();
         if(!$preference){
@@ -295,7 +300,9 @@ class ClientPreferenceController extends BaseController{
             $preference->client_code = $code;
         }
 
-        $keyShould = array( 'show_dark_mode', 'show_payment_icons', 'loyalty_check',   'theme_admin', 'distance_unit',   'date_format', 'time_format',  'fb_client_id', 'fb_client_secret', 'fb_client_url', 'twitter_client_id', 'twitter_client_secret', 'twitter_client_url', 'google_client_id', 'google_client_secret', 'google_client_url',  'apple_client_id', 'apple_client_secret', 'apple_client_url',    'map_provider', 'map_key', 'map_secret', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'verify_email', 'verify_phone', 'web_template_id', 'app_template_id', 'personal_access_token_v1', 'personal_access_token_v2', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption', 'mail_from',   'primary_color', 'secondary_color',  'dispatcher_key', 'web_color',   'fcm_server_key', 'fcm_api_key', 'fcm_auth_domain', 'fcm_project_id', 'fcm_storage_bucket', 'fcm_messaging_sender_id', 'fcm_app_id', 'fcm_measurement_id',  'android_app_link', 'ios_link', 'single_vendor', 'stripe_connect',   'customer_support', 'customer_support_key', 'customer_support_application_id', 'shipping_mode',  'tools_mode',  'digit_after_decimal', 'need_xero',  'db_audit_logs',  'map_key_for_app',    'user_order_history', 'order_cancellation_time', 'cancellation_percentage',  'vendor_fcm_server_key', 'estimation_matching_logic',   'signup_image',  'is_tax_price_inclusive');
+        $keyShould = array( 'show_dark_mode', 'show_payment_icons', 'loyalty_check',   'theme_admin', 'distance_unit',   'date_format', 'time_format',  'fb_client_id', 'fb_client_secret', 'fb_client_url', 'twitter_client_id', 'twitter_client_secret', 'twitter_client_url', 'google_client_id', 'google_client_secret', 'google_client_url',  'apple_client_id', 'apple_client_secret', 'apple_client_url',    'map_provider', 'map_key', 'map_secret', 'sms_provider', 'sms_key', 'sms_secret', 'sms_from', 'verify_email', 'verify_phone', 'web_template_id', 'app_template_id', 'personal_access_token_v1', 'personal_access_token_v2', 'mail_type', 'mail_driver', 'mail_host', 'mail_port', 'mail_username', 'mail_password', 'mail_encryption', 'mail_from',   'primary_color', 'secondary_color',  'dispatcher_key', 'web_color',   'fcm_server_key', 'fcm_api_key', 'fcm_auth_domain', 'fcm_project_id', 'fcm_storage_bucket', 'fcm_messaging_sender_id', 'fcm_app_id', 'fcm_measurement_id',  'android_app_link', 'ios_link', 'single_vendor', 'stripe_connect',   'customer_support', 'customer_support_key', 'customer_support_application_id', 'shipping_mode',  'tools_mode',  'digit_after_decimal', 'need_xero',  'db_audit_logs',  'map_key_for_app',    'user_order_history', 'order_cancellation_time', 'cancellation_percentage',  'vendor_fcm_server_key', 'estimation_matching_logic',   'signup_image',  'is_tax_price_inclusive','map_key_for_ios_app');
+        $keyShouldNot = array('is_user_pre_signup','last_mile_team','hide_order_address','unifonic_app_id','unifonic_account_email','unifonic_account_password','laundry_pickup_team', 'laundry_dropoff_team','laundry_service_key_url','laundry_service_key_code','laundry_service_key','laundry_submit_btn','need_dispacher_ride_submit_btn','need_dispacher_home_other_service_submit_btn','need_inventory_service_submit_btn','last_mile_submit_btn','dispacher_home_other_service_key_url','dispacher_home_other_service_key_code','dispacher_home_other_service_key','pickup_delivery_service_key_url','pickup_delivery_service_key_code','pickup_delivery_service_key','delivery_service_key_url','delivery_service_key_code','delivery_service_key','need_delivery_service','need_dispacher_home_other_service','need_dispacher_ride','Default_location_name', 'Default_latitude', 'Default_longitude', 'is_hyperlocal', '_token', 'social_login', 'send_to', 'languages', 'hyperlocals', 'currency_data', 'multiply_by', 'cuid', 'primary_language', 'primary_currency', 'currency_data', 'verify_config','verify_vendor_type','custom_mods_config', 'distance_to_time_calc_config','delay_order','gifting','product_order_form','mtalkz_api_key','mtalkz_sender_id','mazinhost_api_key','mazinhost_sender_id','minimum_order_batch','edit_order_modes','cancel_order_modes','category_kyc_documents','xero_submit','xero_status','xero_client_id','xero_secret_id','method_id','method_name','active','passbase_publish_key','passbase_secret_key','arkesel_api_key','arkesel_sender_id', 'subscription_tab_taxi',"sos","sos_police_contact",'sos_ambulance_contact' ,'sos_enable','is_static_dropoff','is_vendor_tags', 'slotting_and_scheduling','appointment_submit_btn','need_appointment_service','appointment_service_key_url','appointment_service_key_code','appointment_service_key','is_long_term_service','is_long_term_service_switch','is_long_term_service','is_long_term_service_switch', 'is_phone_signup_switch', 'is_phone_signup','is_tax_price_inclusive','is_price_by_role_switch','is_price_by_role', 'is_gst_required_for_vendor_registration', 'is_gst_required_for_vendor_registration_switch', 'is_baking_details_required_for_vendor_registration_switch', 'is_baking_details_required_for_vendor_registration', 'is_advance_details_required_for_vendor_registration_switch', 'is_advance_details_required_for_vendor_registration', 'is_vendor_category_required_for_vendor_registration_switch', 'is_vendor_category_required_for_vendor_registration', 'is_seller_module_switch', 'is_seller_module', 'is_cab_pooling_switch', 'is_cab_pooling', 'is_same_day_delivery_switch', 'is_same_day_delivery', 'is_next_day_delivery_switch', 'is_next_day_delivery', 'is_hyper_local_delivery_switch', 'is_hyper_local_delivery', 'is_cod_payment_switch', 'is_cod_payment', 'is_prepaid_payment_switch', 'is_prepaid_payment', 'is_partial_payment_switch', 'is_partial_payment','is_cab_pooling_switch', 'is_cab_pooling' , 'is_attribute_switch', 'is_attribute', 'add_to_cart_btn_switch', 'add_to_cart_btn', 'chat_button', 'chat_button_switch', 'call_button_switch', 'call_button', 'seller_sold_title','saller_platform_logo','is_tracking_url_switch','is_tracking_url','is_tracking_url_sms_switch','is_tracking_sms_url', 'is_postpay_enable_switch', 'is_postpay_enable', 'is_order_edit_enable_switch', 'is_order_edit_enable', 'order_edit_before_hours','is_gift_card','is_gift_card_switch','is_place_order_delivery_zero_switch', 'is_place_order_delivery_zero','is_cust_success_signup_email_switch', 'is_cust_success_signup_email','is_influencer_refer_and_earn_switch', 'is_influencer_refer_and_earn','afrTalk_api_key','afrTalk_sender_id','is_order_bid_switch','is_bid_enable','update_order_product_price', 'update_order_product_price_switch', 'is_bid_ride_enable', 'is_bid_ride_enable_switch', 'is_one_push_book_enable', 'is_one_push_book_enable_switch', 'bid_expire_time_limit_seconds', 'is_corporate_user_switch', 'is_corporate_user', 'is_user_kyc_for_registration_switch', 'is_user_kyc_for_registration','is_service_product_price_from_dispatch_switch','is_service_product_price_from_dispatch','is_recurring_booking_switch','is_recurring_booking', 'third_party_accounting_config','is_file_cart_instructions_switch','is_file_cart_instructions', 'vonage_api_key', 'vonage_secret_key', 'sms_partner_api_key', 'sms_partner_sender_id','is_admin_vendor_rating_switch','is_admin_vendor_rating', 'square_enable_status_switch', 'square_enable_status', 'square_sandbox_enable_status_switch', 'square_sandbox_enable_status', 'square_application_id', 'square_access_token', 'square_pos_integration', 'square_location_id','static_otp','is_enable_compare_product','is_rental_weekly_monthly_price', 'influencer_mode','is_enable_google_analytics');
+
         foreach ($request->all() as $key => $value) {
             if(in_array($key, $keyShould)){
                $preference->{$key} = $value;
@@ -328,7 +335,28 @@ class ClientPreferenceController extends BaseController{
         if($request->has('influencer_mode')){
             $preference->celebrity_check = ($request->has('celebrity_check') && $request->celebrity_check == 'on') ? 1 : 0;
         }
+        //gofrugal pos integration
+        if($request->has('gofrugal_pos_integration') && $request->gofrugal_pos_integration == '1'){
 
+            $gofrugal_enable_status = ($request->has('gofrugal_enable_status')) ? $request->gofrugal_enable_status : 0;
+            $gofrugal_sandbox_enable_status = ($request->has('gofrugal_sandbox_enable_status')) ? $request->gofrugal_sandbox_enable_status : 0;
+
+            if($gofrugal_enable_status == 1)
+            {
+                $json_creds = json_encode(array(
+                    'api_key'        => $request->gofrugal_api_key,
+                    'sandbox_enable_status' => $gofrugal_sandbox_enable_status,
+                    'domain_url' => $request->gofrugal_domain_url
+                ));
+            }else{
+                $json_creds = json_encode(array(
+                    'api_key'        => '',
+                    'sandbox_enable_status' => '',
+                    'domain_url' => ''
+                ));
+            }
+            $request->request->add(['gofrugal_credentials' => $json_creds]);
+        }
         // update Client Preference Additional column
         $this->updatePreferenceAdditional($request);
         if($request->has('sms_provider'))
@@ -392,6 +420,14 @@ class ClientPreferenceController extends BaseController{
                 $sms_credentials = [
                     'sms_username' => $request->sms_username,
                     'sms_password' => $request->sms_password,
+                ];
+            }
+            elseif($request->sms_provider == 10) // Sms Country
+            {
+                $sms_credentials = [
+                    'sms_sender_id' => $request->sms_sender_id,
+                    'sms_auth_key' => $request->sms_auth_key,
+                    'sms_auth_token' => $request->sms_auth_token,
                 ];
             }
             //for static otp
@@ -465,6 +501,8 @@ class ClientPreferenceController extends BaseController{
             // $preference->takeaway_check = ($request->has('takeaway_check') && $request->takeaway_check == 'on') ? 1 : 0;
             // $preference->delivery_check = ($request->has('delivery_check') && $request->delivery_check == 'on') ? 1 : 0;
         }
+
+
         if($request->has('custom_mods_config') && $request->custom_mods_config == '1'){
             $preference->enquire_mode = ($request->has('enquire_mode') && $request->enquire_mode == 'on') ? 1 : 0;
             $preference->pharmacy_check = ($request->has('pharmacy_check') && $request->pharmacy_check == 'on') ? 1 : 0;
@@ -498,6 +536,7 @@ class ClientPreferenceController extends BaseController{
             $preference->stop_order_acceptance_for_users = ($request->has('stop_order_acceptance_for_users') && $request->stop_order_acceptance_for_users == 'on') ? 1 : 0;
             $preference->map_on_search_screen = ($request->has('map_on_search_screen') && $request->map_on_search_screen == 'on') ? 1 : 0;
             $preference->slots_with_service_area = ($request->has('slots_with_service_area') && $request->slots_with_service_area == 'on') ? 1 : 0;
+            $preference->is_hourly_pickup_rental = ($request->has('is_hourly_pickup_rental_switch') && $request->is_hourly_pickup_rental_switch == 'on') ? 1 : 0;
         }
 
         if($request->has('edit_order_modes') && $request->edit_order_modes == '1'){
@@ -861,8 +900,12 @@ class ClientPreferenceController extends BaseController{
                 $preferenceset->need_appointment_service = ($request->has('need_appointment_service') && $request->need_appointment_service == 'on') ? 1 : 0;
             }
         }
-
         $preferenceset->save();
+        $client = Client::first();
+
+        ClientPreferenceAdditional::updateOrCreate(
+            ['key_name' => 'is_user_pre_signup', 'client_code' => $client->code],
+            ['key_name' => 'is_user_pre_signup', 'key_value' => ($request->has('is_user_pre_signup') && $request->input('is_user_pre_signup') == 'on') ? 1 : 0,'client_code' => $client->code,'client_id'=> $client->id]);
 
         if($request->has('send_to') && $request->send_to == 'customize' ){
             return redirect()->route('configure.customize')->with('success', 'Client customizations updated successfully!');
@@ -956,16 +999,12 @@ class ClientPreferenceController extends BaseController{
                 return redirect()->back()->withInput()->withErrors(new \Illuminate\Support\MessageBag(['custom_domain' => $e->getMessage()]));
             }
 
-
         }else{
             return redirect()->back()->withInput()->withErrors(new \Illuminate\Support\MessageBag(['custom_domain' => 'Domain name "' . $request->custom_domain . '" is already pointed. Please select a different domain']));
         }
 
-
-
-
-
     }
+
     public function updateVerificationOption($data)
     {
         $method_id_arr = $data['method_id'];
@@ -1039,6 +1078,92 @@ class ClientPreferenceController extends BaseController{
 
            return redirect()->back()->with('success', 'Client settings updated successfully!');
         }
+
+    }
+       
+
+        /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\ClientPreferenceAdditional  $PreferenceAdditional
+     * @return \Illuminate\Http\Response
+     */
+    public function updateAdditional(Request $request){
+
+        $request->merge(['is_cache_enable_for_home' => ($request->has('is_cache_enable_for_home') && $request->is_cache_enable_for_home == 'on') ? 1 : 0]);
+        $ret = $this->updatePreferenceAdditional($request);
+        if($ret){
+            return redirect()->back()->with('success', 'Cache updated successfully!');
+        }
+       // return redirect()->route('configure.index')->with('success', 'Client configurations updated successfully!');
+    }
+
+    public function vendorMargConfig($domain,$vendor_id)
+    {
+        $data['vendorMargConfig'] = VendorMargConfig::where('vendor_id',$vendor_id)->first();
+        $data['vendor_id'] = $vendor_id;
+        return view('backend.vendor.marg_config',$data);
+    }
+
+    public function vendorMargConfigUpdate($domain,Request $request,$vendor_id)
+    {
+        VendorMargConfig::updateOrCreate([
+            'vendor_id' => $vendor_id
+        ],[
+            'is_marg_enable' => $request->is_marg_enable,
+            'marg_company_url' => $request->marg_company_url,
+            'marg_company_code' => $request->marg_company_code,
+            'marg_access_token' => $request->marg_access_token,
+            'marg_decrypt_key' => $request->marg_decrypt_key,
+            'marg_date_time' => $request->marg_date_time??''
+        ]);
+
+        return back();
+    }
+    public function resetToDefault(Request $request)
+    {
+        $client_preference = ClientPreference::select('business_type')->first();
+        
+        switch($client_preference->business_type)
+        {
+
+            case 'taxi':
+                $this->resetPickDropConfiguration("pick_drop_check");
+                break;
+            
+            case 'food_grocery_ecommerce':
+                $this->resetDeliveryConfiguration("delivery_check");
+                break;
+            
+            case 'home_service':
+                $this->resetOnDemandConfiguration("on_demand_check");
+                break;
+            
+            case 'laundry':
+                $this->resetLaundryConfiguration("laundry_check");
+                break;
+            
+            case 'rental':
+                $this->resetRentalConfiguration("rental_check");
+                break;
+                
+            case 'p2p':
+                $this->resetP2PConfiguration("p2p_check");
+                break;
+            
+            case 'emart':
+                $this->resetEmartConfiguration("delivery_check");
+                break;
+            case 'super_app':
+                $this->resetSuperAppConfiguration("delivery_check");
+                break;
+            
+            default:
+                break;
+         }
+
+        return redirect()->back()->with('success', 'Configuration resetted successfully!');
 
     }
 }

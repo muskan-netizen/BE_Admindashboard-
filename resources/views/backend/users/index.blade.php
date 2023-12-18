@@ -52,7 +52,11 @@
 
 
 .table_customber_add.royo_customber_btn div.dataTables_wrapper div.dataTables_filter {position: inherit;top: 0px !important;}
-
+.company-address {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+}
 @media  screen and (max-width:1800px){
 .royo_customber_btn .position-absolute {
     left: 35%;
@@ -188,17 +192,32 @@
                 @endphp
                 <div class="al_new_export_table royo_customber_btn table_customber_add">
                     <div class="position-absolute mb-2">
+
+                        
+                        
                         @if($hub_key==1)
                             <button class="btn btn-info waves-effect waves-light text-sm-right sync_hubspot" userId="0"><i class="mdi mdi-sync mr-1"></i>{{ __('Sync with hubspot') }}
                             </button>
                         @endif
                         <button class="btn btn-info waves-effect waves-light text-sm-right exportUserModal" data-url="{{ route('customer.export') }}" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Export') }}
                         </button>
+                        <button class="btn btn-info waves-effect waves-light text-sm-right exportUsersPdf" ><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Export as PDF') }}
+                        </button>
                         <button class="btn btn-info waves-effect waves-light text-sm-right importUserModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __('Import') }}
                         </button>
                         <button class="btn btn-info waves-effect waves-light text-sm-right addUserModal" userId="0"><i class="mdi mdi-plus-circle mr-1"></i> {{ __("Add") }}
                         </button>
                         <button type="button" class="btn btn-info waves-effect waves-light" data-toggle="modal" data-target="#pay-receive-modal" data-backdrop="static" data-keyboard="false">{{__("Edit Wallet")}}</button>
+
+                        <div class="col-sm-3 mb-1">
+                            <select class="form-control al_box_height company-address" id="company_option_select_box" name="company_id" >
+                                <option value="">{{ __('Select Company') }}</option>
+                                @forelse($companies as $company)
+                                    <option value="{{$company->id}}">{{$company->name}}</option>
+                                @empty
+                                @endforelse
+                            </select>
+                        </div>
                     </div>
 
 
@@ -334,13 +353,22 @@
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
             }
         });
-        initDataTable('user_datatable','active');
-        $(document).on("click","#inactive-user",function() {
-            initDataTable('inactive_user_datatable','inactive');
-        });
+         initDataTable('user_datatable','active');
         $(document).on("click","#active-user",function() {
+            $('input[type="search"]').val('');
             initDataTable('user_datatable','active');
         });
+        
+        $(document).on("click","#inactive-user",function() {
+            $('input[type="search"]').val('');
+            initDataTable('inactive_user_datatable','inactive');
+        });
+        
+
+        $(document).on("change","#company_option_select_box",function() {
+            initDataTable('user_datatable','active');
+        });
+
         $(document).on("click", ".delete-vendor", function() {
             var destroy_url = $(this).data('destroy_url');
             var id = $(this).data('rel');
@@ -369,12 +397,12 @@
                 $('#'+table).DataTable({
                     "dom": '<"toolbar">Bfrtip',
                     "responsive": true,
-                    "searching": true,
                     "destroy": true,
+                    "searching": true,
                     "scrollX": true,
                     "processing": true,
                     "serverSide": true,
-                    "iDisplayLength": 10,
+                    "iDisplayLength": 20,
                     language: {
                         search: "",
                         info:'{{__("Showing _START_ to _END_  of _TOTAL_ entries")}}',
@@ -389,19 +417,36 @@
                     },
                     buttons: [{
                         className: 'btn btn-success waves-effect waves-light',
-                        text: '<span class="btn-label"><i class="mdi mdi-export-variant"></i></span>{{__("Export CSV")}}',
+                        text: '<span class="btn-label"><i class="mdi mdi-file-pdf-box"></i></span>{{__("Export CSV")}}',
                         action: function(e, dt, node, config) {
                             window.location.href = "{{ route('customer.export') }}";
                         }
-                    }],
+                    },
+                            {
+                                extend: 'pdf',
+                                text: 'Export to PDF',
+                                className:'btn btn-success waves-effect Export_btn waves-light ml-2',
+                                id:'exp-btn',
+                                text: '<span class="btn-label"><i class="mdi mdi-file-pdf-box"></i></span>Export PDF',
+                                orientation: 'landscape',
+                                exportOptions: {
+                                    columns: ':visible'
+                                },
+                                customize: function (doc) {
+                                doc.pageOrientation = 'landscape';
+                                doc.pageSize = 'A3'; // Set the custom page size
+                            }
+                            }],
                     ajax: {
                         url: "{{route('user.filterdata')}}",
                         data: function(d) {
                             d._token = "{{ csrf_token() }}";
-                            d.search = $('input[type="search"]').val();
+                            // d.search = $('input[type="search"]').val();
+                            d.search = $('#'+table).DataTable().search();
                             d.date_filter = $('#range-datepicker').val();
                             d.payment_option = $('#payment_option_select_box option:selected').val();
                             d.tax_type_filter = $('#tax_type_select_box option:selected').val();
+                            d.company_filter = $('#company_option_select_box option:selected').val();
                             d.type = type;
                         }
                     },
@@ -594,6 +639,8 @@
                             "mRender": function(data, type, full) {
                                 if (full.is_superadmin == 1) {
                                     return "<div class='form-ul'><div class='inner-div'><a href='" + full.edit_url + "' class='action-icon editIconBtn'><i class='mdi mdi-square-edit-outline'></i></a><a href='" + full.delete_url + "' class='action-icon delete_customer'><i class='mdi mdi-delete' title='Delete user'></i></a></div></div>";
+                                }else{
+                                    return "-";
                                 }
                             }
                         },
@@ -631,6 +678,7 @@
             "dom": '<"toolbar">Bfrtip',
             "destroy": true,
             "scrollX": true,
+            "searching": true,
             "processing": true,
             "serverSide": true,
             "iDisplayLength": 10,
@@ -844,7 +892,22 @@
                         action: function(e, dt, node, config) {
                             window.location.href = "{{ route('customer.export') }}";
                         }
-                    }],
+                    },
+                            {
+                             extend: 'pdf',
+                                text: 'Export to PDF',
+                                className:'btn btn-success waves-effect Export_btn waves-light ml-2',
+                                id:'exp-btn',
+                                text: '<span class="btn-label"><i class="mdi mdi-export-variant"></i></span>Export PDF',
+                                orientation: 'landscape',
+                                exportOptions: {
+                                    columns: ':visible'
+                                },
+                                customize: function (doc) {
+                                doc.pageOrientation = 'landscape';
+                                doc.pageSize = 'A3'; // Set the custom page size
+                            }
+                            }],
                     ajax: {
                         url: "{{route('user.filterdata')}}",
                         data: function(d) {
@@ -1044,6 +1107,8 @@
                             "mRender": function(data, type, full) {
                                 if (full.is_superadmin == 1) {
                                     return "<div class='form-ul'><div class='inner-div'><a href='" + full.edit_url + "' class='action-icon editIconBtn'><i class='mdi mdi-square-edit-outline'></i></a><a href='" + full.delete_url + "' class='action-icon delete_customer'><i class='mdi mdi-delete' title='Delete user'></i></a></div></div>";
+                                }else{
+                                    return "-";
                                 }
                             }
                         },
@@ -1064,8 +1129,17 @@
                         });
                     }
                 });
+
+                
+              
        // console.log('start_date',start_date,'end_date',end_date);
     }
+    $('.exportUsersPdf').click(function(){
+            
+                  $('.buttons-pdf').click();
+    });
 </script>
 @include('backend.users.pagescript')
+@include('backend.export_pdf')
+
 @endsection
