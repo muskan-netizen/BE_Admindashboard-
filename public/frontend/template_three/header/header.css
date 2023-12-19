@@ -41,8 +41,9 @@ header#al_new_design .main-menu .al_count_tabs_new_design.d-none.d-sm-block ul#t
 .al_count_tabs_new_design li a.nav-link.active img,.al_count_tabs_new_design li a.nav-link:hover img{filter:grayscale(0)}.al_count_tabs_new_design li a.nav-link img{filter:grayscale(1)}
 .dark .al_count_tabs_new_design li a.nav-link .al_tabsIcons{background-color: #232323;}
 .custom-vender-outter .main-top-heading h2 {font-size: 28px;text-transform: capitalize;}
-.al_count_tabs_new_design li a.nav-link .al_tabsIcons{position:relative;width:50px;height:50px;text-align:center;line-height:50px;background-color:#eee;display:inline-block;margin-right:10px;border-radius:50%;margin-bottom:10px}
-.al_count_tabs_new_design li a.nav-link{display:flex;align-items:center;font-size:18px;color:#888;border-bottom:2px solid transparent!important;font-weight:400;border-top:0;border-left:0;border-radius:0;border-right:0}
+.al_count_tabs_new_design li a.nav-link .al_tabsIcons{position:relative;width:40px;height:40px;text-align:center;line-height:50px;background-color:#eee;display:inline-block;margin-right:10px;border-radius:50%;margin-bottom:10px}
+.al_count_tabs_new_design li a.nav-link{display:flex;align-items:center;font-size:14px;color:#888;border-bottom:2px solid transparent!important;font-weight:400;border-top:0;border-left:0;border-radius:0;border-right:0}
+.al_count_tabs_new_design li a.nav-link .al_tabsIcons img {width: 22px;}
 .al_count_tabs_new_design li a.nav-link.active,.al_count_tabs_new_design li a.nav-link:hover{
     border-bottom:2px solid var(--theme-deafult)!important;color:var(--theme-deafult);background-color:transparent}
 .al_img_opacity{opacity:.4}.al_count_tabs_new_design li a.nav-link.active img,.al_count_tabs_new_design li a.nav-link:hover img{filter:grayscale(0)}.al_count_tabs_new_design li a.nav-link img{filter:grayscale(1);position:absolute;top:0;right:0;margin:auto;left:0;bottom:0}
@@ -171,7 +172,7 @@ body.dark.al_body_template_three .al_count_tabs_new_design li a.nav-link{
 }
 @media(max-width:1400px){
     .al_count_tabs_new_design li a.nav-link{
-        font-size: 16px;
+        font-size: 12px;
     }
 }
 @media(max-width:1240px){

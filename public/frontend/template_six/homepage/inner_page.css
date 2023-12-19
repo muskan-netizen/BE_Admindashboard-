@@ -2287,6 +2287,7 @@ ol.breadcrumb {
     height: auto;
     line-height: normal;
     padding: 10px 14px;
+    font-size: 14px;
 }
 
 .radio-btns input[type="radio"] {
