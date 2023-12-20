@@ -55,8 +55,7 @@ class D4BDunzoController extends Controller
 
                             ],
                     'delivery_type' => 'SCHEDULED',
-
-                    'schedule_time' => Carbon::now()->addMinutes(31)->timestamp,
+                    'schedule_time' => Carbon::now()->addMinutes($vendor_details->order_pre_time??10)->timestamp,
                 ]);
 
                 if($response->successful()){
