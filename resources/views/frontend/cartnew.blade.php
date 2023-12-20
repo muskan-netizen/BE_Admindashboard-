@@ -184,16 +184,20 @@ $client_preferences = \App\Models\ClientPreference::first();
 
 <script type="text/template" id="promo_code_template">
     <% _.each(promo_codes, function(promo_code, key){%>
-        <div class="col-lg-6 mt-3">
+        <div class="col-lg-12 mt-3">
             <div class="coupon-code mt-0">
                 <div class="p-2">
                     <img class="blur-up lazyload p-1" data-src="<%= promo_code.image.proxy_url %>100/70<%= promo_code.image.image_path %>" alt="">
                     <h6 class="mt-0"><%= promo_code.title %></h6>
                 </div>
                 <hr class="m-0">
-                <div class="code-outer p-2 text-uppercase d-flex align-items-center justify-content-between">
-                    <label class="m-0"><%= promo_code.name %></label>
-                    <a class="btn btn-solid apply_promo_code_btn" data-vendor_id="<%= vendor_id %>" data-cart_id="<%= cart_id %>" data-coupon_id="<%= promo_code.id %>" data-amount="<%= amount %>" style="cursor: pointer;">{{__('Apply')}}</a>
+                <div class="code-outer p-2 text-uppercase row align-items-center justify-content-between">
+                    <div class="col-9">
+                        <label class="m-0"><%= promo_code.name %></label>
+                    </div>
+                    <div class="col-3 text-left">
+                        <a class="btn btn-solid apply_promo_code_btn" data-vendor_id="<%= vendor_id %>" data-cart_id="<%= cart_id %>" data-coupon_id="<%= promo_code.id %>" data-amount="<%= amount %>" style="cursor: pointer;">{{__('Apply')}}</a>
+                    </div>
                 </div>
                 <hr class="m-0">
                 <div class="offer-text p-2">
