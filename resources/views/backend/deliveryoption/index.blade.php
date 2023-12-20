@@ -572,7 +572,7 @@
 
         <!-- End Dunzo -->
         @if($d4b_dunzo)
-       
+
         <div class="col-md-6 mb-3">
             <form method="POST" id="payment_option_form" action="{{route('delivery.d4b_dunzo')}}" class="h-100">
                 @csrf
@@ -582,11 +582,11 @@
                     <input type="hidden" name="method_name" id="{{$d4b_dunzo->code}}" value="{{$d4b_dunzo->code}}">
                     <?php
                     $creds = json_decode($d4b_dunzo->credentials);
-                   
+
                     if($d4b_dunzo->test_mode == 1){
                         $app_url = 'https://apis-staging.dunzo.in/api';
                     }else{
-                        $app_url = 'https://api.dunzo.in/api/v1';
+                        $app_url = 'https://api.dunzo.in/api';
                     }
                     $client_id = (isset($creds->client_id)) ? $creds->client_id : '';
                     $client_secret = (isset($creds->client_secret)) ? $creds->client_secret : '';
@@ -697,7 +697,7 @@
 
                     <?php
                     $creds = json_decode($roadieOption->credentials);
-                    
+
                     $api_access_token = (isset($creds->api_access_token)) ? $creds->api_access_token : '';
                     $api_base_url = (isset($creds->api_base_url)) ? $creds->api_base_url : '';
 
@@ -1068,12 +1068,12 @@
                       $email = (isset($creds->api_email)) ? $creds->api_email : '';
                       $pass = (isset($creds->api_pass)) ? $creds->api_pass : '';
                       $domain = (isset($creds->domain_name)) ? $creds->domain_name : '';
-                    
- 
+
+
                       $base_price = (isset($creds->base_price)) ? $creds->base_price : '0';
                       $distance = (isset($creds->distance)) ? $creds->distance : '0';
                       $amount_per_km = (isset($creds->amount_per_km)) ? $creds->amount_per_km : '0';
- 
+
                       $height = (isset($creds->height)) ? $creds->height : '0';
                       $width = (isset($creds->width)) ? $creds->width : '0';
                       $weight = (isset($creds->weight)) ? $creds->weight : '0';
@@ -1084,7 +1084,7 @@
                              <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
                          </div>
                       </div>
- 
+
                       <div class="row">
                           <div class="col-6">
                               <div class="form-group mb-0 switchery-demo  d-flex justify-content-between align-items-center">
@@ -1101,11 +1101,11 @@
                           </div>
                           @endif
                       </div>
- 
+
                       @if ( (strtolower($kwikOption->code) == 'kwikapi') )
                       <div id="kwikapi_fields_wrapper" @if($kwikOption->status != 1) style="display:none" @endif>
                           <hr>
- 
+
                           <div class="row">
                               <div class="col-sm-6">
                                   <div class="form-group mb-0">
@@ -1113,7 +1113,7 @@
                                       <input type="text" name="kwikapi_email" id="kwikapi_email" class="form-control" value="{{$email}}" @if($kwikOption->status == 1) required @endif autofill="off">
                                   </div>
                               </div>
-                      
+
                             <div class="col-sm-6">
                                 <div class="form-group mb-0">
                                     <label for="kwikapi_pass" class="mr-3">{{ __("Vendor Password") }}</label>
@@ -1129,11 +1129,11 @@
                             </div>
                         </div>
                     </div>
- 
- 
- 
+
+
+
                           <div class="col-md-12 mt-3 p-0">
- 
+
                              <h5 class="d-inline-block ">
                                  <span>{{ __('Webhook Url') }} : </span>
                                  <a href="javascript:;" ><span id="pwd_spn" class="password-span">{{route('quick-api')}}</span></a>
@@ -1144,31 +1144,31 @@
                                  </a>
                                  <h6 id="copy_message2" class="copy-message mt-2"></h6>
                              </sup>
- 
+
                               <div class="form-group mt-2 switchery-demo">
                                   <label for="" class="mr-3">{{ __("Set Base Price Fare") }}</label>
                                   <input type="checkbox"  data-title="{{$kwikOption->code}}" data-plugin="switchery" name="base_active" class="chk_box base_select" data-color="#43bee1" @if($base_price > 0) checked @endif>
                               </div>
                           <hr/>
                           </div>
- 
- 
+
+
                       <div class="row mt-3" id="kwikapi_fields_wrapper_base" @if($base_price < 1) style="display:none" @endif >
- 
+
                           <div class="col-md-4">
                               <div class="form-group mb-0">
                                   <label for="kwikapi_base_price" class="mr-3">{{ __("Base Price") }}</label>
                                   <input type="text" name="base_price" id="kwikapi_base_price" class="form-control" value="{{$base_price??0}}" >
                               </div>
                           </div>
- 
+
                           <div class="col-md-4">
                               <div class="form-group mb-0">
                                   <label for="kwikapi_distance" class="mr-3">{{ __("Distance") }}</label>
                                   <input type="text" name="distance" id="kwikapi_distance" class="form-control" value="{{@$distance??0}}" >
                               </div>
                           </div>
- 
+
                           <div class="col-md-4">
                               <div class="form-group mb-0">
                                   <label for="kwikapi_amount_per_km" class="mr-3">{{ __("Amount Per Killometer") }}</label>
@@ -1176,16 +1176,16 @@
                               </div>
                           </div>
                       </div>
- 
- 
-                      
+
+
+
                       </div>
                       @endif
                   </div>
               </form>
           </div>
           @endif
- 
+
           <!-- End Kwik Api -->
 
           <!--- shipEngineOption Code -->
@@ -1204,7 +1204,7 @@
                             $api_key = (isset($creds->api_key)) ? $creds->api_key : '';
                             $service_code = (isset($creds->service_code)) ? $creds->service_code : '';
                             $carrier_ids = (isset($creds->carrier_ids)) ? $creds->carrier_ids : '';
-                            
+
                             $base_price = (isset($creds->base_price)) ? $creds->base_price : '0';
                             $distance = (isset($creds->distance)) ? $creds->distance : '0';
                             $amount_per_km = (isset($creds->amount_per_km)) ? $creds->amount_per_km : '0';
@@ -1216,7 +1216,7 @@
                                 <button class="btn btn-info waves-effect waves-light save_btn" type="submit"> {{ __("Save") }}</button>
                             </div>
                         </div>
-    
+
                         <div class="row">
                             <div class="col-6">
                                 <div class="form-group mb-0 switchery-demo  d-flex justify-content-between align-items-center">
@@ -1233,11 +1233,11 @@
                                 </div>
                             @endif
                         </div>
-    
+
                         @if ( (strtolower($shipEngineOption->code) == 'shipengine') )
                             <div id="shipengine_fields_wrapper" @if($shipEngineOption->status != 1) style="display:none" @endif>
                                 <hr>
-        
+
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="form-group mb-0">
@@ -1258,7 +1258,7 @@
                                         </div>
                                     </div>
                                 </div>
-        
+
                                 <div class="col-md-12 mt-3 p-0">
                                     <h5 class="d-inline-block ">
                                         <span>{{ __('Webhook Url') }} : </span>
@@ -1277,23 +1277,23 @@
                                     </div> --}}
                                     <hr/>
                                 </div>
-        
+
                                 {{-- <div class="row mt-3" id="{{$shipEngineOption->code}}_fields_wrapper_base" @if($base_price < 1) style="display:none" @endif >
-            
+
                                     <div class="col-md-4">
                                         <div class="form-group mb-0">
                                             <label for="kwikapi_base_price" class="mr-3">{{ __("Base Price") }}</label>
                                             <input type="text" name="base_price" id="kwikapi_base_price" class="form-control" value="{{$base_price??0}}" >
                                         </div>
                                     </div>
-            
+
                                     <div class="col-md-4">
                                         <div class="form-group mb-0">
                                             <label for="kwikapi_distance" class="mr-3">{{ __("Distance") }}</label>
                                             <input type="text" name="distance" id="kwikapi_distance" class="form-control" value="{{@$distance??0}}" >
                                         </div>
                                     </div>
-            
+
                                     <div class="col-md-4">
                                         <div class="form-group mb-0">
                                             <label for="kwikapi_amount_per_km" class="mr-3">{{ __("Amount Per Killometer") }}</label>
@@ -1307,7 +1307,7 @@
                 </form>
             </div>
           @endif
- 
+
           <!-- End shipEngineOption Api -->
 
     </div>

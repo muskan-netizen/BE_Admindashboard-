@@ -71,9 +71,10 @@ class D4BDunzoController extends Controller
 
                         'schedule_time' => Carbon::now()->addMinutes(31)->timestamp,
                     ]);
+                    \Log::info(['rees'=>$response]);
 
                   if($response->successful()){
-                    // dd($response->json());
+                     \Log::info(['ree'=>$response->json()]);
                     return $response->json();
 
                             // dd($response->json());

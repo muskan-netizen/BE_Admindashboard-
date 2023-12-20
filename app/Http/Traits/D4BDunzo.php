@@ -36,7 +36,7 @@ trait D4BDunzo{
          $this->client_id = $creds_arr->client_id??'';
          $this->client_secret = $creds_arr->client_secret??'';
          $this->client_id = $creds_arr->client_id??'';
-         $this->app_url = (($simp_creds->test_mode=='1')?'https://apis-staging.dunzo.in/api':'https://api.dunzo.in/api'); //
+         $this->app_url = (($simp_creds->test_mode=='1')?'https://apis-staging.dunzo.in/api':'https://api.dunzo.in/api');
          $this->base_price = $creds_arr->base_price ?? '';
          $this->distance = $creds_arr->distance ?? '';
          $this->amount_per_km = $creds_arr->amount_per_km ?? '';
@@ -46,8 +46,6 @@ trait D4BDunzo{
              'Accept-Language' => 'en_US',
              'Content-Type' => 'application/json',
          ])->get($this->app_url."/v1/token");
-
-
          // Work with the response as needed
          $status = $response->status();
          $content = $response->json(); // Assuming the response is in JSON format
@@ -111,8 +109,6 @@ trait D4BDunzo{
     ));
 
     $response = curl_exec($curl);
-    //dd($response);
-    //\Log::info(json_encode($response));
     $err = curl_error($curl);
 
     curl_close($curl);
@@ -140,7 +136,7 @@ public function createOrder($orderVendor,$vendor_details,$cus_address,$customer,
         'pickup_details' => [
             [
                 'reference_id' => 'pick_ref_1'.$orderVendor->id.'-'.$orderVendor->order_id.'-'.$orderVendor->vendor_id.strtotime(now()),
-                'special_instructions' => 'fragile items, handle with great care',
+                'special_instructions' => $order->specific_instructions??'fragile items, handle with great care',
                 'address' => [
                     // 'apartment_address' => '004',
                     'street_address_1' => $vendor_details->address,
@@ -164,7 +160,7 @@ public function createOrder($orderVendor,$vendor_details,$cus_address,$customer,
         'drop_details' => [
             [
                 'reference_id' => 'drop_ref_1'.$orderVendor->id.'-'.$orderVendor->order_id.'-'.$orderVendor->vendor_id.strtotime(now()),
-                'special_instructions' => 'leave at door step and ring the bell',
+                'special_instructions' => $order->specific_instructions??'leave at door step and ring the bell',
                 'address' => [
                     // 'apartment_address' => '204 Block 4',
                     'street_address_1' => 'Suncity Apartments',
@@ -192,7 +188,7 @@ public function createOrder($orderVendor,$vendor_details,$cus_address,$customer,
         ],
         'payment_method' => 'DUNZO_CREDIT',
         'delivery_type' => 'SCHEDULED',
-        'schedule_time' => Carbon::now()->addMinutes(31)->timestamp,
+        'schedule_time' => Carbon::now()->addMinutes($vendor_details->order_pre_time??10)->timestamp,
     ]);
     return $response_d4b_dunzo->json();
 }

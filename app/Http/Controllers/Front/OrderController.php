@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\AhoyController;
+use App\Http\Controllers\D4BDunzoController;
 use App\Http\Controllers\DunzoController;
 use DB;
 use Log;
@@ -91,6 +92,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Front\LalaMovesController;
+use App\Http\Controllers\ShiprocketController;
 use Illuminate\Support\Facades\Http;
 
 class OrderController extends FrontController
@@ -3641,28 +3643,25 @@ class OrderController extends FrontController
             }
         }
     }
-  /// ******************  check If any D4b Mile on   ************************ ///////////////
-  public function placeOrderRequestD4B($request)
-  {
-      $ship = new D4BDunzoController();
-      //Create Shipping place order request for Shiprocket
-      $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
-      $checkOrder = Order::findOrFail($request->order_id);
-     
-          if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
-          $order_d4dunzo = $ship->createOrderRequestD4BDunzo($checkOrder->user_id,$checkdeliveryFeeAdded);
-          }
-          
-          if ($order_d4dunzo['state'] == 'created'){
-              $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
-              ->update([
-                  'web_hook_code' => $order_d4dunzo['task_id'],
-                 
-                  ]);
-              return 1;
-          }
-      return 2;
-  }
+    /// ******************  check If any D4b Mile on   ************************ ///////////////
+    public function placeOrderRequestD4B($request)
+    {
+        $ship = new D4BDunzoController();
+        //Create Shipping place order request for Shiprocket
+        $checkdeliveryFeeAdded = OrderVendor::where(['order_id' => $request->order_id, 'vendor_id' => $request->vendor_id])->first();
+        $checkOrder = Order::findOrFail($request->order_id);
+        if ($checkdeliveryFeeAdded && $checkdeliveryFeeAdded->delivery_fee > 0.00){
+        $order_d4dunzo = $ship->createOrderRequestD4BDunzo($checkOrder->user_id,$checkdeliveryFeeAdded);
+        }
+        if ($order_d4dunzo['state'] == 'created'){
+            $up_web_hook_code = OrderVendor::where(['order_id' => $checkOrder->id, 'vendor_id' => $request->vendor_id])
+            ->update([
+                'web_hook_code' => $order_d4dunzo['task_id'],
+                ]);
+            return 1;
+        }
+        return 2;
+    }
   /// ******************  check If any Product Last Mile on   ************************ ///////////////
     // / ****************** check If any Product Last Mile on ************************ ///////////////
     public function placeOrderRequestShiprocket($request)
