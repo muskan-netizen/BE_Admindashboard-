@@ -70,7 +70,7 @@ class HomeController extends BaseController
                     }
             }
            
-            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','add_to_cart_btn','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo','is_service_price_selection','is_particular_driver','is_enable_curb_side','is_enable_variant_set_v2','is_share_ride_users','is_recurring_booking','is_rental_weekly_monthly_price','is_enable_allergic_items']);
+            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','add_to_cart_btn','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo','is_service_price_selection','is_particular_driver','is_enable_curb_side','is_enable_variant_set_v2','is_share_ride_users','is_recurring_booking','is_rental_weekly_monthly_price','is_enable_allergic_items','is_user_pre_signup']);
 
             //mohit sir branch code updated by sohail farm meat
             $homeData['profile']->preferences->vendorMode = $vendorMode;
@@ -100,7 +100,7 @@ class HomeController extends BaseController
             // on demand service is_share_ride_users
             $homeData['profile']->preferences->is_share_ride_users       = (int) $getAdditionalPreference['is_share_ride_users'];
             $homeData['profile']->preferences->is_recurring_booking       = (int) $getAdditionalPreference['is_recurring_booking'];
-
+            $homeData['profile']->preferences->is_user_pre_signup       = (int) $getAdditionalPreference['is_user_pre_signup'];
             // on demand service pricing
             $homeData['profile']->preferences->is_service_product_price_from_dispatch   = (int) $getAdditionalPreference['is_service_product_price_from_dispatch'];
             $homeData['profile']->preferences->is_service_price_selection               = (int) $getAdditionalPreference['is_service_price_selection'];
