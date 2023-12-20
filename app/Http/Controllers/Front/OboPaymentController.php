@@ -47,6 +47,8 @@ class OboPaymentController extends Controller
                 $token = $tokenData['token'];
                 if (isset($token)) {
                     // user details
+                    \Log::info('$tokenData');
+                    \Log::info($tokenData);
                     $user = auth()->user();
                     $userEmail       = $user->email;
                     $userPhone       = $user->dial_code . $user->phone_number;
@@ -57,7 +59,7 @@ class OboPaymentController extends Controller
                     if ($request->payment_from == 'cart') {
                         $urlParams   = "transactionid=$orderNumber&paymentfrom=cart&success=true";
                     } elseif ($request->payment_from == 'wallet') {
-                        $urlParams   = "transactionid=$orderNumber&paymentfrom=wallet&success=true";
+                        $urlParams   = "transactionid=$orderNumber&paymentfrom=wallet&payment_from=wallet&success=true";
                     } elseif ($request->payment_from == 'subscription') {
                         $urlParams   = "transactionid=$orderNumber&subscription_id=$request->subscription_id&amount=$request->amount&success=true";
                     } elseif ($request->payment_from == 'pickup_delivery') {
@@ -87,9 +89,16 @@ class OboPaymentController extends Controller
                         "return_url"    => url('after-payment/obo' . '?' . $urlParams),
                         "custom_pg_id"  => $this->obo_market_place_id,
                     ], JSON_UNESCAPED_SLASHES);
+                    \Log::info('$input');
+                    \Log::info($input);
+                    \Log::info($apiUrl);
                     $responce = Http::withBody($input, 'application/json')->withHeaders($header)->post($apiUrl);
                     $responceData = json_decode($responce->body(), true);
+                    \Log::info('$responce');
+                    \Log::info($responce);
                     if (isset($responceData['status']) && $responceData['status'] ===  "200") {
+                    \Log::info('$responce 4');
+
                         $redirectUrl =  $responceData['data']['url'];
                         return response()->json([
                             'status' => 'Success',
