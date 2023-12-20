@@ -197,7 +197,7 @@ $client_preferences = \App\Models\ClientPreference::first();
                     </div>
                     <div class="col-3 text-left">
                         <a class="btn btn-solid apply_promo_code_btn" data-vendor_id="<%= vendor_id %>" data-cart_id="<%= cart_id %>" data-coupon_id="<%= promo_code.id %>" data-amount="<%= amount %>" style="cursor: pointer;">{{__('Apply')}}</a>
-                    </div>                                        
+                    </div>
                 </div>
                 <hr class="m-0">
                 <div class="offer-text p-2">
