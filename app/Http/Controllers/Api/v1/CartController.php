@@ -1227,6 +1227,9 @@ class CartController extends BaseController
                                             $coupon_product_discount = $coupon_product_discount + $opt_quantity_price;
                                     }
                                 }
+                                if($order_sub_total){
+                                    $order_sub_total = round($order_sub_total  + $prod->pvariant->price*$prod->quantity,2);
+                                }
                             }
                             $variantsData['discount_amount'] = $pro_disc;
                             $variantsData['coupon_applied'] = $codeApplied;
