@@ -191,9 +191,12 @@
         .booking-experienceNew {
             background-color: #fff;
             left: 0;
-            height: 100%;
+            height: auto;
+            max-height: 100%;
+            top: 0;
+            bottom: 0;
             overflow-x: hidden;
-            overflow-y: scroll;
+            overflow-y: auto;
             width: 140% ;
         }
 
