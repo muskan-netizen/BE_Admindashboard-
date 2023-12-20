@@ -1189,7 +1189,8 @@ class CartController extends BaseController
                             $variantsData['gross_qty_price']    = $price_in_doller_compare * $prod->quantity;
 
                             $addon_price = 0;
-                            if (!empty($prod->addon)) {
+                            // $prod->addon;
+                            if (!empty($prod->addon->toArray())) {
                                 // return $prod->addon;
                                 foreach ($prod->addon as $ck => $addons) {
                                     //return $addons->set;
@@ -1227,9 +1228,9 @@ class CartController extends BaseController
                                             $coupon_product_discount = $coupon_product_discount + $opt_quantity_price;
                                     }
                                 }
-                                if($order_sub_total){
-                                    $order_sub_total = round($order_sub_total  + $prod->pvariant->price*$prod->quantity,2);
-                                }
+                                
+                            }else{
+                                $order_sub_total = round($order_sub_total  + $prod->pvariant->price*$prod->quantity,2);
                             }
                             $variantsData['discount_amount'] = $pro_disc;
                             $variantsData['coupon_applied'] = $codeApplied;
