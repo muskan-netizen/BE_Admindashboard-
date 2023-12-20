@@ -1296,15 +1296,10 @@ class CartController extends BaseController
                                 }
 
                                 if ($checkLastMile ) {
-\Log::info(235346);
-
                                     $deliveries = $this->getDeliveryOptions($vendorData,$preferences,$payable_amount,$address, $product_tags,$NumberOfroutes);
-
                                     $deliveryDuration = 0;
-
                                     if(isset($deliveries[0]))
                                     {
-
                                         if($code){
                                             $new = array_filter($deliveries, function ($var) use ($code) {
                                                 return ($var['code'] == $code);

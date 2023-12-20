@@ -24,111 +24,47 @@ class D4BDunzoController extends Controller
     public function quote($vendor_id)
     {
         try{
-                $customer = User::find(Auth::id());
-                $cus_address = UserAddress::where('user_id', Auth::id())->orderBy('is_primary', 'desc')->first();
-                if ($cus_address && $this->status==1){
-                    $vendor_details = Vendor::find($vendor_id);
-                    // 'pick_lat' => $vendor_details->latitude,
-                    //     'pick_lng' => $vendor_details->longitude,
-                    //     'pick_address' => $vendor_details->address,
-                    //     'vendor_name' => $vendor_details->name,
-                    //     'vendor_contact' => $vendor_details->phone_no,
-                    //     'drop_lat' => $cus_address->latitude,
-                    //     'drop_lng' => $cus_address->longitude,
-                    //     'drop_address' => $cus_address->address,
-                    //     'user_name' => $customer->name,
-                    //     'user_phone' => $customer->phone_number,
-                    //     'remarks' => orderProductDetails($order_id),
-                    //     'schedule_time' => $scheduledAt,
-
-                    $response = Http::withHeaders([
-                        'client-id' => $this->client_id,
-                        'Authorization' => $this->token,
-                        'Accept-Language' => 'en_US',
-                        'Content-Type' => 'application/json',
-                    ])->post($this->app_url.'/v2/quote', [
-                        'pickup_details' => [
-                            [
-                                'lat' => floatval($vendor_details->latitude),
-                                'lng' => floatval($vendor_details->longitude),
-                                'reference_id' => 'pickup-ref-abcd123'.strtotime(now()),
-                            ],
+            $customer = User::find(Auth::id());
+            $cus_address = UserAddress::where('user_id', Auth::id())->orderBy('is_primary', 'desc')->first();
+            if ($cus_address && $this->status==1){
+                $vendor_details = Vendor::find($vendor_id);
+                $response = Http::withHeaders([
+                    'client-id' => $this->client_id,
+                    'Authorization' => $this->token,
+                    'Accept-Language' => 'en_US',
+                    'Content-Type' => 'application/json',
+                ])->post($this->app_url.'/v2/quote', [
+                    'pickup_details' => [
+                        [
+                            'lat' => floatval($vendor_details->latitude),
+                            'lng' => floatval($vendor_details->longitude),
+                            'reference_id' => 'pickup-ref-abcd123'.strtotime(now()),
                         ],
-                        'optimised_route' => true,
-                        'drop_details' => [
-                            [
-                                'lat' =>  floatval($cus_address->latitude),
-                                'lng' => floatval($cus_address->longitude),
-                                'reference_id' => 'drop-ref1-abcd887'.strtotime(now()),
-                                // 'payment_data' => [
-                                //     'payment_method' => 'COD',
-                                //     'amount' => 101,
-                                // ],
-                            ]
+                    ],
+                    'optimised_route' => true,
+                    'drop_details' => [
+                        [
+                            'lat' =>  floatval($cus_address->latitude),
+                            'lng' => floatval($cus_address->longitude),
+                            'reference_id' => 'drop-ref1-abcd887'.strtotime(now()),
+                            // 'payment_data' => [
+                            //     'payment_method' => 'COD',
+                            //     'amount' => 101,
+                            // ],
+                        ]
 
-                                ],
-                        'delivery_type' => 'SCHEDULED',
+                            ],
+                    'delivery_type' => 'SCHEDULED',
 
-                        'schedule_time' => Carbon::now()->addMinutes(31)->timestamp,
-                    ]);
-                    \Log::info(['rees'=>$response]);
+                    'schedule_time' => Carbon::now()->addMinutes(31)->timestamp,
+                ]);
 
-                  if($response->successful()){
-                     \Log::info(['ree'=>$response->json()]);
+                if($response->successful()){
                     return $response->json();
-
-                            // dd($response->json());
-                  }else{
-                    // dd($response->json());
+                }else{
                     $response = 2;
-                  }
-                //     if($quotation['code']=='200'){
-                //         $response = $this->placeOrders($data,$response);
-                //     \Log::info(json_encode($response));
-                //         if($response['code']=='200'){
-                //             $response = json_decode($response['response']);
-                //         }else{
-                //             $response = 2;
-                //         }
-                // }else{
-                //     $response = 2;
-                // }
-
-                    // \Log::info($response);
-
-
-                //     $data = (object) array(
-                //         'pick_lat' => $vendor_details->latitude,
-                //         'pick_lng' => $vendor_details->longitude,
-                //         'pick_address' => $vendor_details->address,
-                //         'vendor_name' => $vendor_details->name,
-                //         // 'vendor_contact' => $vendor_details->phone_no,
-                //         'vendor_contact' => '3768865552',
-                //         'drop_lat' => $cus_address->latitude,
-                //         'drop_lng' => $cus_address->longitude,
-                //         'drop_address' => $cus_address->address,
-                //         'user_name' => $customer->name,
-                //         'user_phone' => $customer->phone_number,
-                //         'remarks' => 'Delivery vendor message remarks'
-                //     );
-
-                //     $quotation = $this->getQuotations($data);
-                //     $actualAmount=0;
-                //     if($quotation['code']!='409')
-                //     {
-                //         $json = json_decode($quotation['response']);
-                //         $distance =  round($json->distance->value/1000);
-                //         if($this->base_price > 0)
-                //         {
-                //             $actualAmount = getBaseprice($distance);
-                //          }else{
-                //             $actualAmount = $json->totalFee;
-                //         }
-                //     }
-                //     //dd($actualAmount);
-                //     return $actualAmount;
                 }
-
+            }
         }catch(\Exception $e){
             return 0;
         }

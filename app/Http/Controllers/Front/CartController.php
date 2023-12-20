@@ -2368,11 +2368,8 @@ class CartController extends FrontController
                     }
 
                     $d4bdunzo = new D4BDunzoController();
-                    \Log::info(9348754);
-
 
                     $deliver_d4bdunzo_data= $d4bdunzo->quote($vendorData->vendor_id);
-                    \Log::info($deliver_d4bdunzo_data);
                     if($deliver_d4bdunzo_data['estimated_price']>0)
                     {
                         $deliver_charge_d4bdunzo = decimal_format($deliver_d4bdunzo_data['estimated_price']);
