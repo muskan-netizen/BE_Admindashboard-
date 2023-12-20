@@ -3,13 +3,15 @@
 <link defer type="text/css" href="{{asset('assets/css/bootstrap.min.css')}}" rel="stylesheet" id="bs-default-stylesheet" />
 <link defer type="text/css" rel="stylesheet" media="all" href="{{asset('front-assets/css/color1-style.css')}}">
 
-@if($client_preference_detail->enable_pwa == 1)
-<!-- PWA  -->
+
+@if(@getAdditionalPreference(['enable_pwa'])['enable_pwa'] == 1)
+	<!-- PWA  -->
 <meta name="theme-color" content="#6777ef"/>
 <link rel="apple-touch-icon" href="{{ asset('logo.PNG') }}">
 
 
-<link rel="manifest" href="{{ url('/manifest')}}">@endif
+<link rel="manifest" href="{{ url('/manifest')}}">
+@endif
 @if(Route::currentRouteName() != "userHome")
 
 <link defer type="text/css" rel="stylesheet"  href="{{asset('frontend/common/common.css')}}">

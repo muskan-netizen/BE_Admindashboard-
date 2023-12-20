@@ -162,7 +162,7 @@ if($type == 'p2p'){
     @endif --}}
 
     @include('layouts.store/footer')
-    @if($client_preference_detail->enable_pwa == 1)
+    @if(@getAdditionalPreference(['enable_pwa'])['enable_pwa'] == 1)
 
     <script src="{{ asset('/sw.js') }}"></script>
 <script>
