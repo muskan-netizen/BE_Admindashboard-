@@ -20,6 +20,7 @@ class OrderVendorTaxExport implements FromCollection,WithHeadings,WithMapping{
             });
         }
         $vendor_orders = $vendor_orders->get();
+           
         return $vendor_orders;
     }
 
@@ -41,7 +42,7 @@ class OrderVendorTaxExport implements FromCollection,WithHeadings,WithMapping{
             $order_vendors->orderDetail ? $order_vendors->orderDetail->created_at : '',
             $order_vendors->user ? $order_vendors->user->name : '',
             $order_vendors->payable_amount,
-            $order_vendors->discount_amount,
+            $order_vendors->taxable_amount,
             '',
             $order_vendors->orderDetail ? $order_vendors->orderDetail->paymentOption->title : '',
         ];
