@@ -1,9 +1,21 @@
-@extends('layouts.store', [
-'title' => (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : '',
-'meta_title'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_title:'',
-'meta_keyword'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_keyword:'',
-'meta_description'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_description:'',
-])
+@php
+if(isset($product)){
+    $meta_data =  [
+        'title' => (!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->title : '',
+        'meta_title'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_title:'',
+        'meta_keyword'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_keyword:'',
+        'meta_description'=>(!empty($product->translation) && isset($product->translation[0])) ? $product->translation[0]->meta_description:'',
+    ];
+}else{
+    $meta_data = [
+        'title' => (!empty($category->translation) && isset($category->translation[0])) ? $category->translation[0]->name : $category->slug,
+        'meta_title'=>(!empty($category->translation) && isset($category->translation[0])) ? $category->translation[0]->meta_title:'',
+        'meta_keyword'=>(!empty($category->translation) && isset($category->translation[0])) ? $category->translation[0]->meta_keyword:'',
+        'meta_description'=>(!empty($category->translation) && isset($category->translation[0])) ? $category->translation[0]->meta_description:'',
+    ];
+}
+@endphp
+@extends('layouts.store',  $meta_data)
 @section('content')
 @php
 use Illuminate\Support\Arr;
