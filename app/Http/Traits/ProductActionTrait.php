@@ -653,6 +653,11 @@ trait ProductActionTrait{
                 $mainQuery.= " ORDER BY `lineOfSightDistance` ASC";
             }
             
+
+            if ($preferences->rating == 'asc' || $preferences->rating == 'desc') {
+                $mainQuery.= " ORDER BY `rating` ".$preferences->rating;
+            }
+            
             //if(!empty($set_template) && $set_template->template_id != 3){
                 $mainQuery .= " LIMIT 10";
             //}
