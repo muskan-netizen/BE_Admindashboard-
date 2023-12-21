@@ -430,7 +430,8 @@ Route::group(['middleware' => ['domain']], function () {
 	]);
 	Route::get('/autocomplete-search', 'Front\SearchController@postAutocompleteSearch')->name('autocomplete');
 	Route::get('/search-all/{keyword}', 'Front\SearchController@showSearchResults')->name('showSearchResults');
-	 Route::get('/', 'Front\UserhomeController@index')->name('userHome');
+	Route::get('/', 'Front\UserhomeController@index')->name('userHome');
+
 	// Route::get('/', 'Front\YachtController@yacht')->name('userHome');
 	Route::any('products-searchResults', 'Front\YachtController@productsSearchResult')->name('productSearch');
 	Route::get('/setSessionIndex', 'Front\UserhomeController@setSessionIndex')->name('setSessionIndex');

@@ -1309,4 +1309,37 @@ class UserhomeController extends FrontController
 
         return view('backend.tools.index')->with(['vendors' => $vendors, 'taxCategory' => $taxCategory, 'categories' => $p_categories]);
     }
+
+    public function manifest()
+    {
+        $client = Client::first();
+        // $logo = $client->logo['image_fit'].'72/72' . $client->logo['image_path'];
+        $logo = $client->logo['image_fit'].'72/72' . str_replace('@webp','',$client->logo['image_path']);
+
+        
+        $manifest = [
+            'name' => env('APP_NAME', 'royo'),
+            'short_name' => 'ro2',
+            'start_url' => '/',
+            'background_color' => '#6777ef',
+            'description' => 'Royo Orders',
+            'display' => 'fullscreen',
+            'theme_color' => '#6777ef',
+            'icons' => [
+                [
+                    'src' => '',
+                    'sizes' => '72x72',
+                    'type' => 'image/webp',
+                    'purpose' => 'any maskable',
+                ],
+            ],
+        ];
+ 
+        $jsonResponse  = json_encode($manifest);
+
+        $jsonResponse = stripslashes($jsonResponse);
+
+         return response($jsonResponse, 200)
+             ->header('Content-Type', 'application/json');
+    }
 }

@@ -1530,7 +1530,7 @@ li.grand_total.d-flex.align-items-center.justify-content-between label.m-0 {
     }
 
     .al_body_template_three .cab-image-box {
-        height: 200px;
+        height: auto;
     }
 
 
