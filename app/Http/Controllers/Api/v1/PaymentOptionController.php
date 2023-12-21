@@ -76,6 +76,9 @@ class PaymentOptionController extends BaseController
                 }elseif($option->code == 'totalpay') {
                     $option->title = __('Total Pay');
                 }
+                elseif ($option->code == 'orangepay') {
+                    $option->title = __("Orangepay");
+                }
                 $option->title = __($option->title);
             }
             return $this->successResponse($payment_options, '', 201);

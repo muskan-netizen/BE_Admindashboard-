@@ -275,6 +275,10 @@ Route::group(['middleware' => ['domain']], function () {
      Route::post('/make-payment','Front\TotalpayController@makePayment')->name('make.payment');
      Route::get('/success-totalpay', 'Front\TotalpayController@paymentSuccessTotalpay');
 
+	  //orangepay
+	  Route::post('/initiate-payment','Front\OrangePaymentController@web_payment')->name('initiate.payment');
+	  Route::get('/success-orangepay', 'Front\OrangePaymentController@SuccessPage')->name('success.orangepayment');
+
 	//Route::get('payment/yoco-webview', 'Api\v1\YocoGatewayController@yocoWebView')->name('payment.yoco-webview');
 	Route::post('payment/yoco', 'Front\YocoGatewayController@yocoPurchase')->name('payment.yocoPurchase');
 

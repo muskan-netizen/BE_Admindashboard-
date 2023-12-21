@@ -171,6 +171,8 @@ Options']) @section('css')
                 //Totalpay
                 $totalpay_MerchantId = (isset($creds->totalpay_MerchantId)) ? $creds->totalpay_MerchantId:'';
 				$totalpay_password = (isset($creds->totalpay_password)) ? $creds->totalpay_password:'';
+				$orangepay_MerchantKey= (isset($creds->orangepay_MerchantKey)) ? $creds->orangepay_MerchantKey:'';
+				$orangepay_MerchantToken= (isset($creds->orangepay_MerchantToken)) ? $creds->orangepay_MerchantToken:'';
                 ?>
 
                 <div class="card-box h-100 mb-0">
@@ -1844,6 +1846,29 @@ Options']) @section('css')
                         </div>
                     </div>
                     @endif
+
+					@if ( (strtolower($opt->code) == 'orangepay') )
+				<div class="mt-2" id="orangepay_fields_wrapper" @if($opt->
+					status != 1) style="display:none" @endif>
+					<div class="row">
+					<div class="col-12">
+							<div class="form-group mb-2">
+								<label for="orangepay_MerchantKey" class="mr-3">{{ __("Merchant Key") }}</label>
+								<input type="text" name="orangepay_MerchantKey" id="orangepay_MerchantKey"
+									class="form-control" value="{{$orangepay_MerchantKey}}" @if($opt->status
+								== 1) required @endif>
+							</div>
+							<div class="form-group mb-2">
+								<label for="orangepay_MerchantToken" class="mr-3">{{ __("Bearer Token") }}</label>
+								<input type="text" name="orangepay_MerchantToken" id="orangepay_MerchantToken"
+									class="form-control" value="{{$orangepay_MerchantToken}}" @if($opt->status
+								== 1) required @endif>
+							</div>
+						</div>
+					</div>
+				</div>
+			@endif
+			
                     @if ( (strtolower($opt->code) == 'totalpay') )
                     <div class="mt-2" id="totalpay_fields_wrapper" @if($opt->
                         status != 1) style="display:none" @endif>
@@ -1869,6 +1894,7 @@ Options']) @section('css')
                     </div>
                 @endif
 
+				
 
 
 
