@@ -1914,7 +1914,7 @@ Options']) @section('css')
                 $publishable_key = (isset($creds->publishable_key)) ? $creds->publishable_key : '';
                 $client_id = (isset($creds->client_id)) ? $creds->client_id : '';
 				if(strtolower($opt->code) == 'obo') {
-					$opt->title = "O'PayY";
+					$opt->title = "O'Pay";
 				}
                 ?>
 
