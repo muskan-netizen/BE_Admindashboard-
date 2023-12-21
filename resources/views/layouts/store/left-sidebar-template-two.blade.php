@@ -168,11 +168,11 @@ $currencyList = \App\Models\ClientCurrency::with('currency')->orderBy('is_primar
    <!-- End Cab Booking Header From Here -->
 
    <div class="container main-menu d-block ">
-      <div class="row align-items-center py-md-2 position-initial">
+      <div class="row align-items-center py-md-0 position-initial py-0">
          <!-- @include('frontend.home_page_2.main_menu')  -->
          <div class="col-lg-2 col-5">
-            <a class="navbar-brand mr-0"  href="{{route('userHome')}}">
-               <img id="theme-logo" class="logo-image" alt="" style="height:45px" src="{{$urlImg}}">
+            <a class="navbar-brand mr-0 py-0"  href="{{route('userHome')}}">
+               <img id="theme-logo" class="logo-image" alt="" style="height:70px;padding:8px 0" src="{{$urlImg}}">
             </a>
          </div>
          <div class="col-lg-7 main-menu order-lg-1 order-2 d-sm-block d-none">
