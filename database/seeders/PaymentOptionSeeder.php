@@ -69,7 +69,7 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '53', 'path' => '', 'code' => 'nmi', 'title' => 'Nmi', 'off_site' => '1', 'status' => '0'),
         array('id' => '54', 'path' => '', 'code' => 'yappy', 'title' => 'yappy', 'off_site' => '1', 'status' => '0'),
         array('id' => '55', 'path' => '', 'code' => 'data_trans', 'title' => 'Data Trans', 'off_site' => '0', 'status' => '0'),
-        array('id' => '56', 'path' => '', 'code' => 'obo', 'title' => 'Obo', 'off_site' => '1', 'status' => '0'),
+        array('id' => '56', 'path' => '', 'code' => 'obo', 'title' => "obo", 'off_site' => '1', 'status' => '0'),
         array('id' => '57', 'path' => '', 'code' => 'pesapal', 'title' => 'pesapal', 'off_site' => '1', 'status' => '0'),
         array('id' => '58', 'path' => '', 'code' => 'powertrans', 'title' => 'powertrans', 'off_site' => '1', 'status' => '0'),
         array('id' => '59', 'path' => '', 'code' => 'livee', 'title' => 'livee', 'off_site' => '1', 'status' => '1'),
@@ -77,6 +77,7 @@ class PaymentOptionSeeder extends Seeder
         array('id' => '62', 'path' => '', 'code' => 'mpesasafari', 'title' => 'Mpesa Safari', 'off_site' => '1', 'status' => '0'),
         array('id' => '65', 'path' => '', 'code' => 'totalpay', 'title' => 'TotalPay', 'off_site' => '1', 'status' => '0')
       );
+      
 
       if($option_count == 0)
       {

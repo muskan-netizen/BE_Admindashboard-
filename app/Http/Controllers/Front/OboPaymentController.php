@@ -57,7 +57,7 @@ class OboPaymentController extends Controller
                     if ($request->payment_from == 'cart') {
                         $urlParams   = "transactionid=$orderNumber&paymentfrom=cart&success=true";
                     } elseif ($request->payment_from == 'wallet') {
-                        $urlParams   = "transactionid=$orderNumber&paymentfrom=wallet&success=true";
+                        $urlParams   = "transactionid=$orderNumber&paymentfrom=wallet&payment_from=wallet&success=true";
                     } elseif ($request->payment_from == 'subscription') {
                         $urlParams   = "transactionid=$orderNumber&subscription_id=$request->subscription_id&amount=$request->amount&success=true";
                     } elseif ($request->payment_from == 'pickup_delivery') {
