@@ -611,6 +611,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             var alertMessage = "";
             var productIds = [];
             var title = "";
+              alert(single_div);
             if(status_option_id == 2){
                  title = "{{__('Proceed with Accepting Order')}}";
             }else if(status_option_id == 4){
@@ -701,11 +702,21 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                         that.replaceWith("<button class='update-status-ar btn-warning' data-full_div='" + full_div + "' data-single_div='" + single_div + "'  data-count='" + count + "'  data-order_id='" + order_id + "'  data-vendor_id='" + vendor_id + "'  data-status_option_id='" + status_option_id_next + "' data-order_vendor_id=" + order_vendor_id + ">" + next_status + "</button>");
                                         return false;
                                     } else {
-
+                                      
                                         if (count == 0) {
-                                            $(full_div).slideUp(1000, function() {
+                                            var singleOrderDiv = full_div.find("#single-order-div01");
+
+                                            // Check if the child element exists
+                                            if (singleOrderDiv.length > 0) {
+                                            $(single_div).slideUp(1000, function() {
                                                 $(this).remove();
                                             });
+
+                                        }else{
+                                                $(full_div).slideUp(1000, function() {
+                                                $(this).remove(); 
+                                                }); 
+                                            }
 
                                         } else {
                                             $(single_div).slideUp(1000, function() {
