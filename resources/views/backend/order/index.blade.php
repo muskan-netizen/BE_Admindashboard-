@@ -594,7 +594,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
         // update status
         $(document).on("click", ".update-status-ar", function() {
-			
+			alert(count);
             let that = $(this);
             that.prop("disabled",true);
             var count = that.data("count");
@@ -633,7 +633,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                 alertMessage = that.data('alert_message');
             }
             if (status_option_id == 3) {
-                return openRejectModal(order_id, vendor_id, status_option_id, order_vendor_id, order_luxury_option_id);
+                return addrejectSubmit(order_id, vendor_id, status_option_id, order_vendor_id, order_luxury_option_id);
             } else {
                 if(productIds.length === 0 && order_luxury_option_id == 4 && status_option_id == 2){
                     Swal.fire({ 

@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\v1\BaseController;
 use App\Http\Traits\{OrderTrait, ProductActionTrait, VendorTrait, RedisCacheTrait};
 use App\Models\{Banner, Brand, CabBookingLayout, CabBookingLayoutTranslation, Category, Client, ClientPreference, Vendor, VendorCategory, Product, ClientCurrency, HomePageLabel, HomeProduct, MobileBanner, OnboardSetting, Order, ProductCategory, SubscriptionInvoicesVendor, UserVendor, VendorCities, VendorOrderStatus, WebStylingOption, UserAddress};
 use Illuminate\Support\Facades\Redis;
+use GuzzleHttp\Client as GClient;
 
 /**
  * HomeController
@@ -361,6 +362,11 @@ class HomeController extends BaseController
                     //'data' => json_encode($homeData)
                 ]
             ];
+
+             $get_preference = $this->checkIfLastMileOn();
+            if(!empty($get_preference)){
+                $homeData['freelance_details'] = $this->getAllAgentDetailFromDispatcher($get_preference);
+            }
             //pr($cacheKey);
             // return $this->successResponse($homeData);
 
@@ -1714,5 +1720,41 @@ class HomeController extends BaseController
             ];
             //pr( $data);
             return $data ;
+    }
+  # check if last mile delivery on
+  public function checkIfLastMileOn()
+  {
+      $preference = ClientPreference::first();
+      if ( !empty($preference->dispacher_home_other_service_key) && !empty($preference->dispacher_home_other_service_key_code) && !empty($preference->dispacher_home_other_service_key_url))
+          return $preference;
+      else
+          return false;
+  }
+
+    public function getAllAgentDetailFromDispatcher($data)
+    {
+  
+        try {
+                $client = new GClient([
+                    'headers' => [
+                        'personaltoken' => $data['dispacher_home_other_service_key'],
+                        'shortcode'     => $data['dispacher_home_other_service_key_code'],
+                        'content-type'  => 'application/json'
+                    ]
+                ]);
+              
+                $url = $data['dispacher_home_other_service_key_url']. '/api/get/all_agent_detail';
+                $res = $client->get($url );
+                $response = json_decode($res->getBody(), true);
+        
+                if ($response && $response['status'] === 200) {
+                    return $response['data'];
+                }
+                return [];
+               
+        } catch (\Exception $e) {
+           // Log::info($e->getMessage());
+            return [];
+        }
     }
 }
