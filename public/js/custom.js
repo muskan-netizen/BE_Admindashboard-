@@ -1871,56 +1871,56 @@ $(document).ready(function () {
             });
             }
         // Orange Pay  paymentViaOranngepay(address_id,payment_option_id,order)
-            function paymentViaOranngepay(address_id,payment_option_id,order) {
-                let walletElement = $("input[name='wallet_amount']");
-                let subscriptionElement = $("input[name='subscription_amount']");
-                let total_amount = 0;
-                let ajaxData = [];
+        //     function paymentViaOranngepay(address_id,payment_option_id,order) {
+        //         let walletElement = $("input[name='wallet_amount']");
+        //         let subscriptionElement = $("input[name='subscription_amount']");
+        //         let total_amount = 0;
+        //         let ajaxData = [];
 
-            if (path.indexOf("wallet") !== -1) {
-               total_amount = walletElement.val();
-                ajaxData.push({ name: 'payment_from', value: 'wallet' });
-            } else if (path.indexOf("cart") !== -1) {
-                ajaxData.push({ name: 'payment_from', value: 'cart' },
-                { name: 'order_number', value: order['order_number']}
-                );
-            }  else if (path.indexOf("subscription") !== -1) {
-                total_amount = subscriptionElement.val();
-                ajaxData = $("#subscription_payment_form").serializeArray();
-                ajaxData.push({ name: 'payment_from', value: 'subscription' });
-            } else if (typeof tip_for_past_order !== 'undefined' && tip_for_past_order == 1) {
-                total_amount = walletElement.val();
-                console.log($("#order_number").val());
-                ajaxData.push(
-                    { name: 'payment_from', value: 'tip' },
-                    { name: 'order_number', value: $("#order_number").val() }
-            );
-            }
+        //     if (path.indexOf("wallet") !== -1) {
+        //        total_amount = walletElement.val();
+        //         ajaxData.push({ name: 'payment_from', value: 'wallet' });
+        //     } else if (path.indexOf("cart") !== -1) {
+        //         ajaxData.push({ name: 'payment_from', value: 'cart' },
+        //         { name: 'order_number', value: order['order_number']}
+        //         );
+        //     }  else if (path.indexOf("subscription") !== -1) {
+        //         total_amount = subscriptionElement.val();
+        //         ajaxData = $("#subscription_payment_form").serializeArray();
+        //         ajaxData.push({ name: 'payment_from', value: 'subscription' });
+        //     } else if (typeof tip_for_past_order !== 'undefined' && tip_for_past_order == 1) {
+        //         total_amount = walletElement.val();
+        //         console.log($("#order_number").val());
+        //         ajaxData.push(
+        //             { name: 'payment_from', value: 'tip' },
+        //             { name: 'order_number', value: $("#order_number").val() }
+        //     );
+        //     }
 
-        ajaxData.push
-        (
-            { name: 'amount', value: total_amount },
-            { name: 'returnUrl', value: path },
-            { name: 'payment_option_id', value: payment_option_id }
-        );
-        $.ajax({
-            type: "POST",
-            dataType: 'json',
-            url: payment_orangepay_url,
-            data: ajaxData,
-            success: function (response)
-            {
-                if (response.status == "Success")
-                {
-                    alert(url)
-                    alert(data)
-                    let paymentUrl = response.payment_url;
-                    console.log(response.payment_from);
-                    window.location.href = paymentUrl;
-                }
-            }
-        });
-        }
+        // ajaxData.push
+        // (
+        //     { name: 'amount', value: total_amount },
+        //     { name: 'returnUrl', value: path },
+        //     { name: 'payment_option_id', value: payment_option_id }
+        // );
+        // $.ajax({
+        //     type: "POST",
+        //     dataType: 'json',
+        //     url: payment_orangepay_url,
+        //     data: ajaxData,
+        //     success: function (response)
+        //     {
+        //         if (response.status == "Success")
+        //         {
+        //             alert(url)
+        //             alert(data)
+        //             let paymentUrl = response.payment_url;
+        //             console.log(response.payment_from);
+        //             window.location.href = paymentUrl;
+        //         }
+        //     }
+        // });
+        // }
             //totalpay Ends
     function paymentSuccessViaPaypal(amount, token, payer_id, path, tip = 0, order_number = 0) {
         let address_id = 0;

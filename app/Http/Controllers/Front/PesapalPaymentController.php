@@ -14,12 +14,12 @@ use App\Models\Payment;
 use App\Models\User;
 use App\Models\UserVendor;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 use App\Http\Traits\PesapalPaymentTrait;
 use App\Models\CaregoryKycDoc;
-use App\Models\Transaction;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+use App\Models\Transaction;
 use Illuminate\Support\Facades\Redirect;
  
 class PesapalPaymentController extends Controller
