@@ -12,12 +12,12 @@ trait YachtTrait
     public function productSearch($request, $pickup, $dropOff,$category_id = null)
     {
 
-      
+
         $pickup_time = $pickup->time ?? '';
         $drop_time = $dropOff->time ?? '';
         $clientPreference = \App\Models\ClientPreference::where(['id' => 1])->first();
         if ($request->service == 'airport') {
-            $mapKey = '1234';
+            $mapKey = '';
             if ($clientPreference && !empty($clientPreference->map_key)) {
                 $mapKey = $clientPreference->map_key;
             }
@@ -33,7 +33,7 @@ trait YachtTrait
             });
         }
         $category = Category::where('slug', $request->service)->first();
- 
+
         $data['products'] = [];
         if ($category) {
             $products= Product::with([
