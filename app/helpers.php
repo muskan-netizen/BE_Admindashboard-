@@ -379,7 +379,7 @@ if (!function_exists('generateWalletTransactionReference')) {
 if (!function_exists('getNomenclatureName')) {
     function getNomenclatureName($searchTerm, $plural = true)
     {
-        $searchTerm = "Appointment";
+        // $searchTerm = "Appointment";
         $result = Nomenclature::with(['translations' => function ($q) {
             $q->where('language_id', session()->get('customerLanguage'));
         }])->where('label', 'LIKE', "%{$searchTerm}%")->first();
