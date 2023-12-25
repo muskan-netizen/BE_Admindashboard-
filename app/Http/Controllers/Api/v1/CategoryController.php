@@ -87,8 +87,6 @@ class CategoryController extends BaseController
         $user = Auth::user();
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area','subscription_mode')->where('id', '>', 0)->first();
 
-        $latitude = !empty($request->latitude) ? ($request->latitude ?? $user->latitude ) :  $preferences->Default_latitude ;
-        $longitude =!empty($request->longitude) ? ($request->longitude ?? $user->longitude ) :  $preferences->Default_longitude;
 
         if ($type == 'vendor' && $product_list == 'false') {
          
@@ -303,6 +301,11 @@ class CategoryController extends BaseController
             }
             return $category_details;
         } elseif ($type == 'product' || $type == 'on demand service' || $type == 'laundry') {
+
+            $latitude = !empty($request->latitude) ? $request->latitude : $preferences->Default_latitude;
+            $longitude = !empty($request->longitude) ? $request->longitude : $preferences->Default_longitude;
+
+
             $vendor_ids = Vendor::byVendorSubscriptionRule($preferences)->where('status', 1);
             
             $vendor_ids =  $vendor_ids->pluck('id')->toArray();

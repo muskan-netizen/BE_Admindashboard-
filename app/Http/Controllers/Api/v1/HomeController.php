@@ -384,7 +384,6 @@ class HomeController extends BaseController
     /** return dashboard content like categories, vendors, brands, products     */
     public function homepage(Request $request)
     {
-         
         try {
             $vends = [];
             $venderIds = [];
@@ -539,7 +538,6 @@ class HomeController extends BaseController
                 }
 
             }
-            
             //filter vendor
             if($venderFilterClose && ($venderFilterClose == 1) ){
                 $vendorData =   $vendorData->where('is_vendor_closed',1)->values();
