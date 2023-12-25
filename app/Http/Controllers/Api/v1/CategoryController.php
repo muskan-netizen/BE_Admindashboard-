@@ -339,8 +339,11 @@ class CategoryController extends BaseController
                 'tags.tag.translations' => function ($q) use ($langId) {
                     $q->where('language_id', $langId);
                 }
-            ])->select('products.category_id', 'mode_of_service', 'products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', 'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.tags','products.is_recurring_booking')->where('products.category_id', $category_id)->where('products.is_live', 1)
-            ->where('mode_of_service', $mode_of_service)->whereIn('products.vendor_id', $vendor_ids)->paginate($limit, $page);
+            ])->select('products.category_id', 'mode_of_service', 'products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', 'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.tags','products.is_recurring_booking')
+            ->where('products.category_id', $category_id)->where('products.is_live', 1)
+            ->where('mode_of_service', $mode_of_service)
+            ->whereIn('products.vendor_id', $vendor_ids)
+            ->paginate($limit, $page);
                 
 
             if (!empty($products)) {
@@ -405,16 +408,20 @@ class CategoryController extends BaseController
                 }
             }
 
+            $vendorDistance[] = [];
             if (!empty($products)) {
-                foreach ($products as $key => $product) {
-                    $vendorData = Vendor::where('id',$product->vendor_id)->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where('status', 1)->first();
-                    if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
-                        $vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendorData, $preferences, $request->type);
-                       $product->lineOfSightDistance =$vendor->lineOfSightDistance;
-                       $product->timeofLineOfSightDistance =$vendor->timeofLineOfSightDistance;
+                 foreach ($products as $key => $product) {
+                    if(empty($vendorDistance[$product->vendor_id])){
+                        $vendorDistance[$product->vendor->id] = $this->getVendorDistanceWithTime($latitude, $longitude, $product->vendor, $preferences, $request->type);
                     }
-                     
+                        if($vendorDistance[$product->vendor_id])
+                        {
+                            $product->lineOfSightDistance =$vendorDistance[$product->vendor_id]->lineOfSightDistance??0;
+                            $product->timeofLineOfSightDistance =$vendorDistance[$product->vendor_id]->timeofLineOfSightDistance??0;
+                        }
+                    
                 }
+
             }
              
             $listData = $products;
