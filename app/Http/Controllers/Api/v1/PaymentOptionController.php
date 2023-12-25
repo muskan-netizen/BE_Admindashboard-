@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use App\Models\PaymentOption;
 use Omnipay\Common\CreditCard;
 use App\Http\Traits\{ApiResponser, PaymentTrait};
-use App\Http\Controllers\Api\v1\{BaseController, VnpayController, StripeGatewayController, PaystackGatewayController, PayfastGatewayController, MobbexGatewayController, YocoGatewayController, RazorpayGatewayController, SimplifyGatewayController, SquareGatewayController, PagarmeGatewayController, CheckoutGatewayController, EasebuzzController, MyCashGatewayController, OpenpayPaymentController, UseRedePaymentController, UPayGatewayController, ConektaGatewayController, TelrGatewayController, KhaltiGatewayController, PlugnpayGatewayController};
+use App\Http\Controllers\Api\v1\{BaseController, VnpayController, StripeGatewayController, PaystackGatewayController, PayfastGatewayController, MobbexGatewayController, YocoGatewayController, RazorpayGatewayController, SimplifyGatewayController, SquareGatewayController, PagarmeGatewayController, CheckoutGatewayController, EasebuzzController, MyCashGatewayController, OpenpayPaymentController, UseRedePaymentController, UPayGatewayController, ConektaGatewayController, TelrGatewayController, KhaltiGatewayController, PlugnpayGatewayController,ThawaniPaymentController};
 use App\Http\Controllers\Front\DpoController;
 use App\Http\Controllers\Front\CcavenueController;
 use App\Http\Controllers\Front\KongapayController;
@@ -75,6 +75,8 @@ class PaymentOptionController extends BaseController
                     $option->title = __("livees");
                 }elseif($option->code == 'totalpay') {
                     $option->title = __('Total Pay');
+                }elseif($option->code == 'thawani') {
+                    $option->title = __('Thawani Payment');
                 }
                 $option->title = __($option->title);
             }
@@ -370,6 +372,13 @@ class PaymentOptionController extends BaseController
         $gateway = new PlugnpayGatewayController();
 
         return $gateway->PlugPayPurchase($request);
+    }
+    public function postPaymentVia_thawani(Request $request)
+    {
+
+        $gateway = new ThawaniPaymentController();
+
+        return $gateway->paybythawanipg($request);
     }
 
     public function postPaymentVia_paypal(Request $request)

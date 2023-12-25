@@ -1871,6 +1871,57 @@ $(document).ready(function () {
             });
             }
             //totalpay Ends
+             //The Thawani Pg  starts
+        function paymentViaThawanipg(address_id,payment_option_id,order)
+        {
+            let walletElement = $("input[name='wallet_amount']");
+            let subscriptionElement = $("input[name='subscription_amount']");
+            let total_amount = 0;
+            let ajaxData = [];
+
+            if (path.indexOf("wallet") !== -1) {
+                total_amount = walletElement.val();
+                ajaxData.push({ name: 'payment_from', value: 'wallet' });
+            }else if (path.indexOf("cart") !== -1) {
+                total_amount = order['total_amount'];
+                ajaxData.push({ name: 'payment_from', value: 'cart' },
+                { name: 'order_number', value: order['order_number']},
+                );
+            } else if (path.indexOf("subscription") !== -1) {
+                total_amount = subscriptionElement.val();
+                ajaxData = $("#subscription_payment_form").serializeArray();
+                ajaxData.push({ name: 'payment_from', value: 'subscription' });
+            } else if (typeof tip_for_past_order !== 'undefined' && tip_for_past_order == 1) {
+                total_amount = walletElement.val();
+                console.log($("#order_number").val());
+                ajaxData.push(
+                { name: 'payment_from', value: 'tip' },
+                { name: 'order_number', value: $("#order_number").val() }
+                );
+            }
+
+            ajaxData.push
+            (
+                { name: 'amount', value: total_amount },
+                { name: 'returnUrl', value: path },
+                { name: 'payment_option_id', value: payment_option_id }
+            );
+            $.ajax({
+                type: "POST",
+                dataType: 'json',
+                url: payment_thawani_url,
+                data: ajaxData,
+                success: function (response)
+                {
+                    if (response.status == "Success")
+                    {
+                    let paymentUrl = response.payment_url;
+                    window.location.href = paymentUrl;
+                    }
+                }
+            });
+        }
+         //Thawani Pg Ends Here Ends
     function paymentSuccessViaPaypal(amount, token, payer_id, path, tip = 0, order_number = 0) {
         let address_id = 0;
         if (path.indexOf("cart") !== -1) {
@@ -5329,6 +5380,9 @@ $(document).ready(function () {
             case 65:
                 paymentViaTotalpay('', payment_option_id, '');
             break;
+            case 67:
+                paymentViaThawanipg('', payment_option_id, '');
+            break;
 
         }
 
@@ -5899,7 +5953,15 @@ $(document).ready(function () {
                 if (order != '') {
                     paymentViaTotalpay(address_id, payment_option_id, order);
                 }
-              break;
+            break;
+            case '67':
+                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
+                if (order != '') {
+                paymentViaThawanipg(address_id, payment_option_id, order);
+                }else {
+                return false;
+                }
+            break;
         }
 
     }
@@ -6148,6 +6210,9 @@ $(document).ready(function () {
             break;
             case 65:
                 paymentViaTotalpay('', payment_option_id, '');
+            break;
+            case 67:
+                paymentViaThawanipg('', payment_option_id, '');
             break;
         }
     }

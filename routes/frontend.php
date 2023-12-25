@@ -276,7 +276,9 @@ Route::group(['middleware' => ['domain']], function () {
      //totalpay
      Route::post('/make-payment','Front\TotalpayController@makePayment')->name('make.payment');
      Route::get('/success-totalpay', 'Front\TotalpayController@paymentSuccessTotalpay');
-
+	//thawani Payment Gateway
+	Route::post('/pay-by-thawanipg', 'Front\ThawaniPaymentController@paybythawanipg')->name('pay-by-thawanipg');
+    Route::get('/after-payment', 'Front\ThawaniPaymentController@afterpayment')->name('after.payment');
 	//Route::get('payment/yoco-webview', 'Api\v1\YocoGatewayController@yocoWebView')->name('payment.yoco-webview');
 	Route::post('payment/yoco', 'Front\YocoGatewayController@yocoPurchase')->name('payment.yocoPurchase');
 

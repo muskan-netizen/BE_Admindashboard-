@@ -327,6 +327,7 @@ if($showSubscriptionPlanPopUp == 1){
     var razorpay_complete_payment_url = "{{ route('payment.razorpayCompletePurchase') }}";
     var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
     var pyment_totalpay_url= "{{ route('make.payment') }}";
+    var payment_thawani_url= "{{ route('pay-by-thawanipg') }}";
     var featured_product_language = "{{ __('Featured Product') }}";
     var new_product_language = "{{ __('New Product') }}";
     var on_sale_product_language = "{{ __('On Sale') }}";
