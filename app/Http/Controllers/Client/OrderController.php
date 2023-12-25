@@ -1200,6 +1200,10 @@ class OrderController extends BaseController
                             //Create Shipping place order request for Ahoy
                             $ship = new AhoyController();
                             $order_ship = $ship->cancelOrderRequestAhoy($currentOrderStatus->web_hook_code);
+                        }elseif ($orderData->shipping_delivery_type == 'D4') {
+                            //Cancel Dunzo place order request for Dunzo
+                            $ship = new D4BDunzoController();
+                            $order_ship = $ship->cancelOrderRequestD4BDunzo($currentOrderStatus->web_hook_code,$currentOrderStatus->reject_reason);
                         }
 
                         // return amount to user wallet worked by harbans

@@ -265,36 +265,19 @@ public function createOrder($orderVendor,$vendor_details,$cus_address,$customer,
   }
 
 
-  public function cancelOrder($data)
-  {
-    $this->configDetails();
-    $curl = curl_init();
-
-    curl_setopt_array($curl, array(
-    CURLOPT_URL => $this->app_url."/oporder/update",
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_ENCODING => "",
-    CURLOPT_MAXREDIRS => 10,
-    CURLOPT_TIMEOUT => 30,
-    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-    CURLOPT_CUSTOMREQUEST => "POST",
-    CURLOPT_POSTFIELDS => $data,
-    CURLOPT_HTTPHEADER => array(
-        "apikey: {$this->api_key}",
-    ),
-    ));
-
-    $response = curl_exec($curl);
-    $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-    $err = curl_error($curl);
-    curl_close($curl);
-
-    if ($err) {
-        return $err;
-    } else {
-        return $response;
+    public function cancelOrder($data,$task_id)
+    {
+        $this->configDetails();
+        $response = Http::withHeaders([
+            'client-id' => $this->client_id,
+            'Authorization' => $this->token,
+            'Accept-Language' => 'en_US',
+            'Content-Type' => 'application/json',
+        ])->post($this->app_url.'/v2/tasks/'.$task_id."/cancel", $data);
+        if($response->successful()){
+            return $response->json();
+        }else{
+            $response = 2;
+        }
     }
-
-  }
-
 }
