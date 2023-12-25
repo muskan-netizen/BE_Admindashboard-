@@ -904,6 +904,8 @@ body.al_body_template_nine.p2p-module .alPageSearchView .product-box .front a {
 
 body.al_body_template_nine.p2p-module .alPageSearchView .img-wrapper {
     margin-top: 0 !important;
+    max-height: 200px;
+    min-height: 200px;
 }
 
 body.al_body_template_nine.p2p-module li.onhover-dropdown.quick-links.quick-links {
