@@ -266,7 +266,7 @@ class HomeController extends BaseController
             $request->request->add(['noTinJson' => 1]);
             /***start new  */
 
-            $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating', 'is_service_product_price_from_dispatch']);
+            $additionalPreference = getAdditionalPreference(['is_token_currency_enable', 'token_currency','is_long_term_service','is_admin_vendor_rating', 'is_service_product_price_from_dispatch','is_freelance_on_homepage']);
 
             $set_template = WebStylingOption::where('web_styling_id', 1)->where('is_selected', 1)->first();
             $enable_layout = CabBookingLayout::where('is_active', 1)->app();
@@ -364,7 +364,7 @@ class HomeController extends BaseController
             ];
 
              $get_preference = $this->checkIfLastMileOn();
-            if(!empty($get_preference)){
+            if(!empty($get_preference) && @$additionalPreference['is_freelance_on_homepage']==1){
                 $homeData['freelance_details'] = $this->getAllAgentDetailFromDispatcher($get_preference);
             }
             //pr($cacheKey);
