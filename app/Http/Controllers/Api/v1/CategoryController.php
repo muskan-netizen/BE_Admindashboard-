@@ -74,22 +74,24 @@ class CategoryController extends BaseController
             
             $response['category'] = $category;
             $response['filterData'] = $variantSets;
-            $response['listData'] = $this->listData($langId, $cid, strtolower($category->type->redirect_to), $userid, $product_list, $mod_type, $mode_of_service, $limit, $page);
+            $response['listData'] = $this->listData($langId, $cid, strtolower($category->type->redirect_to), $userid, $product_list, $mod_type, $mode_of_service, $limit, $page, $request);
             return $this->successResponse($response);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
 
-    public function listData($langId, $category_id, $type = '', $userid, $product_list, $mod_type, $mode_of_service = null, $limit = 12, $page = 1)
+    public function listData($langId, $category_id, $type = '', $userid, $product_list, $mod_type, $mode_of_service = null, $limit = 12, $page = 1, $request)
     {
         $type = strtolower($type);
-
+        $user = Auth::user();
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area','subscription_mode')->where('id', '>', 0)->first();
+
+        $latitude = !empty($request->latitude) ? ($request->latitude ?? $user->latitude ) :  $preferences->Default_latitude ;
+        $longitude =!empty($request->longitude) ? ($request->longitude ?? $user->longitude ) :  $preferences->Default_longitude;
 
         if ($type == 'vendor' && $product_list == 'false') {
          
-            $user = Auth::user();
             $vendor_ids = [];
             $vendor_categories = VendorCategory::where('category_id', $category_id)->where('status', 1)->get();
        
@@ -335,68 +337,83 @@ class CategoryController extends BaseController
                     $q->where('language_id', $langId);
                 }
             ])->select('products.category_id', 'mode_of_service', 'products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', 'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.tags','products.is_recurring_booking')
-                ->where('products.category_id', $category_id)->where('products.is_live', 1)->where('mode_of_service', $mode_of_service)->whereIn('products.vendor_id', $vendor_ids)->paginate($limit, $page);
+            ->where('mode_of_service', $mode_of_service)->whereIn('products.vendor_id', $vendor_ids)->paginate($limit, $page);
+                
+
+            // if (!empty($products)) {
+            //     foreach ($products as $key => $product) {
+            //         foreach ($product->addOn as $key => $value) {
+            //             foreach ($value->setoptions as $k => $v) {
+            //                 if ($v->price == 0) {
+            //                     $v->is_free = true;
+            //                 } else {
+            //                     $v->is_free = false;
+            //                 }
+            //                 $v->multiplier = $clientCurrency->doller_compare;
+            //             }
+            //         }
+
+            //         $product->vendor->is_vendor_closed = 0;
+            //         if ($product->vendor->show_slot == 0) {
+            //             if (($product->vendor->slotDate->isEmpty()) && ($product->vendor->slot->isEmpty())) {
+            //                 $product->vendor->is_vendor_closed = 1;
+            //             } else {
+            //                 $product->vendor->is_vendor_closed = 0;
+            //                 if ($product->vendor->slotDate->isNotEmpty()) {
+            //                     $product->vendor->opening_time = Carbon::parse($product->vendor->slotDate->first()->start_time)->format('g:i A');
+            //                     $product->vendor->closing_time = Carbon::parse($product->vendor->slotDate->first()->end_time)->format('g:i A');
+            //                 } elseif ($product->vendor->slot->isNotEmpty()) {
+            //                     $product->vendor->opening_time = Carbon::parse($product->vendor->slot->first()->start_time)->format('g:i A');
+            //                     $product->vendor->closing_time = Carbon::parse($product->vendor->slot->first()->end_time)->format('g:i A');
+            //                 }
+            //             }
+            //         }
+
+            //         $p_id = $product->id;
+            //         $variantData = $product->with(['variantSet' => function ($z) use ($langId, $p_id) {
+            //             $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
+            //             $z->join('variant_translations as vt', 'vt.variant_id', 'vr.id');
+            //             $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
+            //             $z->where('vt.language_id', $langId);
+            //             $z->where('product_variant_sets.product_id', $p_id)->orderBy('product_variant_sets.variant_type_id', 'asc');
+            //         }, 'variantSet.options' => function ($zx) use ($langId, $p_id) {
+            //             $zx->join('variant_option_translations as vt', 'vt.variant_option_id', 'variant_options.id')
+            //                 ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id')
+            //                 ->where('pvs.product_id', $p_id)
+            //                 ->where('vt.language_id', $langId);
+            //         }])->where('id', $p_id)->first();
+            //         $product->variantSet = $variantData->variantSet;
+            //         $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
+            //         $product->product_image = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
+            //         $product->translation_title = ($product->translation->isNotEmpty()) ? $product->translation->first()->title : $product->sku;
+            //         $product->translation_description = ($product->translation->isNotEmpty()) ? html_entity_decode(strip_tags($product->translation->first()->body_html)) : '';
+            //         $product->translation_description = !empty($product->translation_description) ? mb_substr($product->translation_description, 0, 70) . '...' : '';
+            //         $product->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
+            //         $product->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
+            //         $product->variant_id = ($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
+            //         $product->variant_quantity = ($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
+            //         if ($product->variant->count() > 0) {
+            //             foreach ($product->variant as $k => $v) {
+            //                 $product->variant[$k]->multiplier = $clientCurrency->doller_compare;
+            //             }
+            //         } else {
+            //             $product->variant =  $product;
+            //         }
+            //     }
+            // }
+
             if (!empty($products)) {
                 foreach ($products as $key => $product) {
-                    foreach ($product->addOn as $key => $value) {
-                        foreach ($value->setoptions as $k => $v) {
-                            if ($v->price == 0) {
-                                $v->is_free = true;
-                            } else {
-                                $v->is_free = false;
-                            }
-                            $v->multiplier = $clientCurrency->doller_compare;
-                        }
+                    $vendorData = Vendor::where('id',$product->vendor_id)->select('id', 'slug', 'name', 'desc', 'banner', 'order_pre_time', 'order_min_amount', 'vendor_templete_id', 'show_slot', 'latitude', 'longitude', 'closed_store_order_scheduled')->withAvg('product', 'averageRating','closed_store_order_scheduled')->where('status', 1)->first();
+                    if (($preferences) && ($preferences->is_hyperlocal == 1) && ($latitude) && ($longitude)) {
+                        $vendor = $this->getVendorDistanceWithTime($latitude, $longitude, $vendorData, $preferences, $request->type);
+                       $product->lineOfSightDistance =$vendor->lineOfSightDistance;
+                       $product->timeofLineOfSightDistance =$vendor->timeofLineOfSightDistance;
                     }
-
-                    $product->vendor->is_vendor_closed = 0;
-                    if ($product->vendor->show_slot == 0) {
-                        if (($product->vendor->slotDate->isEmpty()) && ($product->vendor->slot->isEmpty())) {
-                            $product->vendor->is_vendor_closed = 1;
-                        } else {
-                            $product->vendor->is_vendor_closed = 0;
-                            if ($product->vendor->slotDate->isNotEmpty()) {
-                                $product->vendor->opening_time = Carbon::parse($product->vendor->slotDate->first()->start_time)->format('g:i A');
-                                $product->vendor->closing_time = Carbon::parse($product->vendor->slotDate->first()->end_time)->format('g:i A');
-                            } elseif ($product->vendor->slot->isNotEmpty()) {
-                                $product->vendor->opening_time = Carbon::parse($product->vendor->slot->first()->start_time)->format('g:i A');
-                                $product->vendor->closing_time = Carbon::parse($product->vendor->slot->first()->end_time)->format('g:i A');
-                            }
-                        }
-                    }
-
-                    $p_id = $product->id;
-                    $variantData = $product->with(['variantSet' => function ($z) use ($langId, $p_id) {
-                        $z->join('variants as vr', 'product_variant_sets.variant_type_id', 'vr.id');
-                        $z->join('variant_translations as vt', 'vt.variant_id', 'vr.id');
-                        $z->select('product_variant_sets.product_id', 'product_variant_sets.product_variant_id', 'product_variant_sets.variant_type_id', 'vr.type', 'vt.title');
-                        $z->where('vt.language_id', $langId);
-                        $z->where('product_variant_sets.product_id', $p_id)->orderBy('product_variant_sets.variant_type_id', 'asc');
-                    }, 'variantSet.options' => function ($zx) use ($langId, $p_id) {
-                        $zx->join('variant_option_translations as vt', 'vt.variant_option_id', 'variant_options.id')
-                            ->select('variant_options.*', 'vt.title', 'pvs.product_variant_id', 'pvs.variant_type_id')
-                            ->where('pvs.product_id', $p_id)
-                            ->where('vt.language_id', $langId);
-                    }])->where('id', $p_id)->first();
-                    $product->variantSet = $variantData->variantSet;
-                    $product->is_wishlist = $product->category->categoryDetail->show_wishlist;
-                    $product->product_image = ($product->media->isNotEmpty()) ? $product->media->first()->image->path['image_fit'] . '300/300' . $product->media->first()->image->path['image_path'] : '';
-                    $product->translation_title = ($product->translation->isNotEmpty()) ? $product->translation->first()->title : $product->sku;
-                    $product->translation_description = ($product->translation->isNotEmpty()) ? html_entity_decode(strip_tags($product->translation->first()->body_html)) : '';
-                    $product->translation_description = !empty($product->translation_description) ? mb_substr($product->translation_description, 0, 70) . '...' : '';
-                    $product->variant_multiplier = $clientCurrency ? $clientCurrency->doller_compare : 1;
-                    $product->variant_price = ($product->variant->isNotEmpty()) ? $product->variant->first()->price : 0;
-                    $product->variant_id = ($product->variant->isNotEmpty()) ? $product->variant->first()->id : 0;
-                    $product->variant_quantity = ($product->variant->isNotEmpty()) ? $product->variant->first()->quantity : 0;
-                    if ($product->variant->count() > 0) {
-                        foreach ($product->variant as $k => $v) {
-                            $product->variant[$k]->multiplier = $clientCurrency->doller_compare;
-                        }
-                    } else {
-                        $product->variant =  $product;
-                    }
+                     
                 }
             }
+             
             $listData = $products;
             return $listData;
         }
