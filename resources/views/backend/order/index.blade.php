@@ -594,7 +594,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
         // update status
         $(document).on("click", ".update-status-ar", function() {
-			
+		
             let that = $(this);
             that.prop("disabled",true);
             var count = that.data("count");
