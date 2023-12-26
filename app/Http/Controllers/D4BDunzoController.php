@@ -239,4 +239,12 @@ class D4BDunzoController extends Controller
         }
     }
 
+    public function cancelOrderRequestD4BDunzo($task_id,$reason)
+    {
+		if($this->status){
+            $data =array('cancellation_reason'=>$reason??'No Need');
+			return $cancel_order= $this->cancelOrder($data,$task_id);
+		}
+    }
+
 }
