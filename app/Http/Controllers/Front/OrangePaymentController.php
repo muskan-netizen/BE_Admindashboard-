@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Traits\{ApiResponser, OrderTrait};
+use App\Http\Traits\HomePage\HomePageTrait;
 use App\Models\{Order, Payment, PaymentOption, User};
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Redirect;
 
 class OrangePaymentController extends Controller
 {
+    use HomePageTrait;
     use ApiResponser;
     public function __construct()
     {
@@ -30,33 +32,20 @@ class OrangePaymentController extends Controller
         $headers = [
             'Authorization' => 'Basic '.$bearer,
             'Content-Type' => 'application/x-www-form-urlencoded',
-            'Cookie' => 'BIGipServer~naomi-ginefa~PoolOCProuter-OCP-EFA-HTTP-NORMANDIE=!bMhHGM1WQJ1AYQU3UzhIVdohv0ViBgAcRlF4ofhzU+EHb/PyP6lvieVDAfKrSraeI165DBPfBSERU1soW8q/2i86sytoghA2NSjLcpI=; BIGipServer~naomi-ginefa~PoolOCProuter-OCP-EFA-HTTP-RUEIL=!vkJSjroHRb2WlZEkioRitpNtJV/P2h3jGIk+uQTUWrMoxexXvPdZT4xTqPSJLM2dcETW0u8QH7B0mu5DnY0HBylZRac/EOgBJVy3h+4=; aa18925415715d69ee149f9d943dc7f8=3488b5c2d8e3b589a38818d14ae4ae74',
         ];
         $formattedHeaders = [];
         foreach ($headers as $key => $value) {
             $formattedHeaders[] = $key . ': ' . $value;
         }
-        curl_setopt_array($curl, array(
-        CURLOPT_URL => 'https://api.orange.com/oauth/v3/token',
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS => 'grant_type=client_credentials',
-        CURLOPT_HTTPHEADER => $formattedHeaders,
-        ));
-
-        $response = curl_exec($curl);
-        curl_close($curl);
+        $url='https://api.orange.com/oauth/v3/token';
+        $response = $this->makeCurlRequest($url, 'POST',[] , $formattedHeaders);
         return $response;
     }
 
+    
+
     public function web_payment(Request $request){
         try{
-        \Log::info(['Request web_payment'=>$request->all()]);
         $user = auth()->user();
         $data['come_from'] = 'app';
         $order = Order::where(['order_number' => $request->order_number])->first();
@@ -76,7 +65,6 @@ class OrangePaymentController extends Controller
         $headers = [
             'Authorization' => 'Bearer '.$accessToken,
             'Content-Type' => 'application/json',
-            'Cookie' => 'BIGipServer~naomi-ginefa~PoolOCProuter-OCP-EFA-HTTP-NORMANDIE=!bMhHGM1WQJ1AYQU3UzhIVdohv0ViBgAcRlF4ofhzU+EHb/PyP6lvieVDAfKrSraeI165DBPfBSERU1soW8q/2i86sytoghA2NSjLcpI=; BIGipServer~naomi-ginefa~PoolOCProuter-OCP-EFA-HTTP-RUEIL=!vkJSjroHRb2WlZEkioRitpNtJV/P2h3jGIk+uQTUWrMoxexXvPdZT4xTqPSJLM2dcETW0u8QH7B0mu5DnY0HBylZRac/EOgBJVy3h+4=; aa18925415715d69ee149f9d943dc7f8=3488b5c2d8e3b589a38818d14ae4ae74'
         ];
         $order_id = (string)($order->id??time());
         $data = [
@@ -96,19 +84,8 @@ class OrangePaymentController extends Controller
             $formattedHeaders[] = $key . ': ' . $value;
         }
         $jsonData = json_encode($data);
-        curl_setopt_array($curl, array(
-        CURLOPT_URL => 'https://api.orange.com/orange-money-webpay/dev/v1/webpayment',
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS =>$jsonData,
-        CURLOPT_HTTPHEADER => $formattedHeaders,
-        ));
-        $response1 = curl_exec($curl);
+        $url='https://api.orange.com/orange-money-webpay/dev/v1/webpayment';
+        $response1 =$this->makeCurlRequest($url,'POST', $data, $formattedHeaders);
         $response = json_decode($response1, true);
         $jsonResponse = json_encode($response);
         curl_close($curl);
@@ -131,57 +108,6 @@ class OrangePaymentController extends Controller
         \Log::error($e->getLine());
     }
     }
-
-    // public function TransactionStatus(Request $request){
-    //     $curl = curl_init();
-    //     $Tokenresponse=$this->create_token($request);
-    //     $WebPaymentresponse=$this->web_payment($request);
-    //     $data = json_decode($Tokenresponse, true);
-    //     $pay_token_response = json_decode($WebPaymentresponse, true);
-    //     $accessToken = $data['access_token'];
-    //     if($pay_token_response){
-    //     $headers = [
-    //         'Authorization' => 'Bearer '.$accessToken,
-    //         'Content-Type:  application/json',
-    //         'Cookie: BIGipServer~naomi-ginefa~PoolOCProuter-OCP-EFA-HTTP-NORMANDIE=!t2Qh85zNWnEJ+IQ3UzhIVdohv0ViBnhaD1hFEHEWeNoalfU5hMGNUOuhlEZYk91eW+9tOFiw4dTiyl5vq9m65dAz0cmbpSbpAZ3g3tA=; BIGipServer~naomi-ginefa~PoolOCProuter-OCP-EFA-HTTP-RUEIL=!ilbgZLGq3TzKnqckioRitpNtJV/P2gkGz1rLYsSG0yBEMI6CARW0FYOCKB9imN4RgdVkWoBNq0IePmlv/ZhZTtFOX24VazyroMYjW6Q=; aa18925415715d69ee149f9d943dc7f8=63fa33d2a534a6f7f3dceaa7feba523d'
-    //     ];
-    //     $data = [
-    //         "order_id" => $pay_token_response['order_id'],
-    //         "amount" => $pay_token_response['total_amount'],
-    //         "pay_token" => $pay_token_response['pay_token'],
-    //     ];
-    //     $formattedHeaders = [];
-    //     foreach ($headers as $key => $value) {
-    //         $formattedHeaders[] = $key . ': ' . $value;
-    //     }
-    //     $jsonData = json_encode($data);
-    //     curl_setopt_array($curl, array(
-    //     CURLOPT_URL => 'https://api.orange.com/orange-money-webpay/dev/v1/transactionstatus',
-    //     CURLOPT_RETURNTRANSFER => true,
-    //     CURLOPT_ENCODING => '',
-    //     CURLOPT_MAXREDIRS => 10,
-    //     CURLOPT_TIMEOUT => 0,
-    //     CURLOPT_FOLLOWLOCATION => true,
-    //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-    //     CURLOPT_CUSTOMREQUEST => 'POST',
-    //     CURLOPT_POSTFIELDS =>$jsonData ,
-    //     CURLOPT_HTTPHEADER => $formattedHeaders,
-    //     ));
-
-    //     $response1 = curl_exec($curl);
-    //     $response = json_decode($response1, true);
-    //     $response['order_id'] = $pay_token_response['order_id'];
-    //     $response['total_amount'] = $pay_token_response['total_amount'];
-    //     $response['payment_from'] = $pay_token_response['payment_from'];
-    //     $jsonResponse = json_encode($response);
-    //     curl_close($curl);
-    //     return $jsonResponse;
-    // }else{
-    //     \Log::error('inside else');
-
-    // }
-
-    // }
 
     public function SuccessPage(Request $request){
         $payment=Payment::where('transaction_id',$request['notif_token'])->first();
