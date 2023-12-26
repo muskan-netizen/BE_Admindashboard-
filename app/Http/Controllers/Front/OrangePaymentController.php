@@ -110,6 +110,8 @@ class OrangePaymentController extends Controller
     }
 
     public function SuccessPage(Request $request){
+        \Log::info("Payment Return Response - ".$request->all());
+        
         $payment=Payment::where('transaction_id',$request['notif_token'])->first();
         $order=Order::where('order_number',$payment->viva_order_id)->first();
         $user=User::where('id',$payment->user_id)->first();
