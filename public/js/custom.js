@@ -1870,7 +1870,6 @@ $(document).ready(function () {
                 }
             });
             }
-        // Orange Pay  paymentViaOranngepay(address_id,payment_option_id,order)
         //     function paymentViaOranngepay(address_id,payment_option_id,order) {
         //         let walletElement = $("input[name='wallet_amount']");
         //         let subscriptionElement = $("input[name='subscription_amount']");

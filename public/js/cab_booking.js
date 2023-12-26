@@ -835,7 +835,6 @@ $(document).ready(function () {
                 }
             }).get();
         }
-        alert('here')
         displayLocationCab(latitude, longitude);initMap2();
         getVendorList();
     });
