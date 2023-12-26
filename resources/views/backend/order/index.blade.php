@@ -611,6 +611,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             var alertMessage = "";
             var productIds = [];
             var title = "";
+            var totalCount = $(full_div + ' [data-count]').length;
             if(status_option_id == 2){
                  title = "{{__('Proceed with Accepting Order')}}";
             }else if(status_option_id == 4){
@@ -703,14 +704,28 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
                                     } else {
 
                                         if (count == 0) {
+                                            if(totalCount>2){
+                                               
+                                                $(single_div).slideUp(1000, function() {
+                                                $(this).remove();
+                                            });
+                                            }else{
+                                                
                                             $(full_div).slideUp(1000, function() {
                                                 $(this).remove();
                                             });
+                                        }
 
                                         } else {
-                                            $(single_div).slideUp(1000, function() {
+                                            if(totalCount>2){
+                                                $(single_div).slideUp(1000, function() {
                                                 $(this).remove();
                                             });
+                                            }else{
+                                            $(full_div).slideUp(1000, function() {
+                                                $(this).remove();
+                                            });
+                                        }
 
                                         }
                                         that.prop("disabled",false);
