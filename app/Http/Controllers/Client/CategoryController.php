@@ -65,7 +65,7 @@ class CategoryController extends BaseController
             $build = $this->buildTree($categories->toArray());;
             $tree = $this->printTree($build);
         }
-        $tags = Tag::with('primary')->get();
+        $tags = Tag::with('primary')->latest()->get();
         $facilties = Facilty::with('primary')->get();
         // $langs = ClientLanguage::join('languages as lang', 'lang.id', 'client_languages.language_id')
         //     ->select('lang.id as langId', 'lang.name as langName', 'lang.sort_code', 'client_languages.client_code', 'client_languages.is_primary')

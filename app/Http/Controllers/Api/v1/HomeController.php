@@ -70,7 +70,7 @@ class HomeController extends BaseController
                     }
             }
            
-            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','add_to_cart_btn','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo','is_service_price_selection','is_particular_driver','is_enable_curb_side','is_enable_variant_set_v2','is_share_ride_users','is_recurring_booking','is_rental_weekly_monthly_price','is_enable_allergic_items']);
+            $getAdditionalPreference = getAdditionalPreference(['advance_booking_amount', 'advance_booking_amount_percentage','update_order_product_price','is_one_push_book_enable', 'is_bid_ride_enable','is_service_product_price_from_dispatch','is_postpay_enable','is_order_edit_enable','is_bid_enable','is_file_cart_instructions','is_cab_pooling','chat_button','call_button','add_to_cart_btn','is_user_kyc_for_registration','seller_sold_title','seller_platform_logo','is_service_price_selection','is_particular_driver','is_enable_curb_side','is_enable_variant_set_v2','is_share_ride_users','is_recurring_booking','is_rental_weekly_monthly_price','is_enable_allergic_items','is_user_pre_signup']);
 
             //mohit sir branch code updated by sohail farm meat
             $homeData['profile']->preferences->vendorMode = $vendorMode;
@@ -100,7 +100,7 @@ class HomeController extends BaseController
             // on demand service is_share_ride_users
             $homeData['profile']->preferences->is_share_ride_users       = (int) $getAdditionalPreference['is_share_ride_users'];
             $homeData['profile']->preferences->is_recurring_booking       = (int) $getAdditionalPreference['is_recurring_booking'];
-
+            $homeData['profile']->preferences->is_user_pre_signup       = (int) $getAdditionalPreference['is_user_pre_signup'];
             // on demand service pricing
             $homeData['profile']->preferences->is_service_product_price_from_dispatch   = (int) $getAdditionalPreference['is_service_product_price_from_dispatch'];
             $homeData['profile']->preferences->is_service_price_selection               = (int) $getAdditionalPreference['is_service_price_selection'];
@@ -155,6 +155,7 @@ class HomeController extends BaseController
             $homeData['profile']->preferences->aadhaar_back = $aadhaar_back;
             $homeData['profile']->preferences->aadhaar_number = $aadhaar_number;
             $homeData['profile']->preferences->upi_id = $upi_id;
+            $homeData['profile']->preferences->is_hourly_pickup_rental = $clientPreferences->is_hourly_pickup_rental;
 
             if(!is_null($passbase))
             {
@@ -555,59 +556,6 @@ class HomeController extends BaseController
                 $spotlight_products=$this->getSpotlightProducts();
             }
 
-            // foreach ($new_product_details as  $new_product_detail) {
-            //     $multiply = $new_product_detail->variant->first() ? $new_product_detail->variant->first()->multiplier : 1;
-            //     $title = $new_product_detail->translation->first() ? $new_product_detail->translation->first()->title : $new_product_detail->sku;
-            //     $image_url = $new_product_detail->media->first() && !is_null($new_product_detail->media->first()->image) ? $new_product_detail->media->first()->image->path['image_fit'] . '600/600' . $new_product_detail->media->first()->image->path['image_path'] : '';
-            //     $vprice1 = (isset($new_product_detail->variant->first()->price)?$new_product_detail->variant->first()->price * $multiply:0);
-            //     $new_products[] = array(
-            //         'image_url' => $image_url,
-            //         'sku' => $new_product_detail->sku,
-            //         'title' => $title,
-            //         'url_slug' => $new_product_detail->url_slug,
-            //         'averageRating' => number_format($new_product_detail->averageRating, 1, '.', ''),
-            //         'inquiry_only' => $new_product_detail->inquiry_only,
-            //         'vendor_name' => $new_product_detail->vendor ? $new_product_detail->vendor->name : '',
-            //         'price' => decimal_format($vprice1),
-            //         'category' => ($new_product_detail->category->categoryDetail->translation->first()) ? $new_product_detail->category->categoryDetail->translation->first()->name : $new_product_detail->category->categoryDetail->slug
-            //     );
-            // }
-            // foreach ($feature_product_details as  $feature_product_detail) {
-            //     $multiply = $feature_product_detail->variant->first() ? $feature_product_detail->variant->first()->multiplier : 1;
-            //     $title = $feature_product_detail->translation->first() ? $feature_product_detail->translation->first()->title : $feature_product_detail->sku;
-            //     $image_url = $feature_product_detail->media->first() &&  !is_null($feature_product_detail->media->first()->image)? $feature_product_detail->media->first()->image->path['image_fit'] . '600/600' . $feature_product_detail->media->first()->image->path['image_path'] : '';
-            //     $vprice = (isset($feature_product_detail->variant->first()->price)?$feature_product_detail->variant->first()->price * $multiply:0);
-            //     $feature_products[] = array(
-            //         'image_url' => $image_url,
-            //         'sku' => $feature_product_detail->sku,
-            //         'title' => $title,
-            //         'url_slug' => $feature_product_detail->url_slug,
-            //         'averageRating' => number_format($feature_product_detail->averageRating, 1, '.', ''),
-            //         'inquiry_only' => $feature_product_detail->inquiry_only,
-            //         'vendor_name' => $feature_product_detail->vendor ? $feature_product_detail->vendor->name : '',
-            //         'price' => decimal_format($vprice),
-            //         'category' => ($feature_product_detail->category->categoryDetail->translation->first()) ? $feature_product_detail->category->categoryDetail->translation->first()->name : $feature_product_detail->category->categoryDetail->slug
-            //     );
-            // }
-            // foreach ($on_sale_product_details as  $on_sale_product_detail) {
-            //     $multiply = $on_sale_product_detail->variant->first() ? $on_sale_product_detail->variant->first()->multiplier : 1;
-            //     $title = $on_sale_product_detail->translation->first() ? $on_sale_product_detail->translation->first()->title : $on_sale_product_detail->sku;
-            //     $image_url = $on_sale_product_detail->media->first() && !is_null($on_sale_product_detail->media->first()->image) ? $on_sale_product_detail->media->first()->image->path['image_fit'] . '600/600' . $on_sale_product_detail->media->first()->image->path['image_path'] : '';
-            //     $vprice2 = (isset($on_sale_product_detail->variant->first()->price)?$on_sale_product_detail->variant->first()->price * $multiply:0);
-            //     $on_sale_products[] = array(
-            //         'image_url' => $image_url,
-            //         'sku' => $on_sale_product_detail->sku,
-            //         'title' => $title,
-            //         'url_slug' => $on_sale_product_detail->url_slug,
-            //         'averageRating' => number_format($on_sale_product_detail->averageRating, 1, '.', ''),
-            //         'inquiry_only' => $on_sale_product_detail->inquiry_only,
-            //         'vendor_name' => $on_sale_product_detail->vendor ? $on_sale_product_detail->vendor->name : '',
-            //         'price' => decimal_format($vprice2),
-            //         'category' => ($on_sale_product_detail->category->categoryDetail->translation->first()) ? $on_sale_product_detail->category->categoryDetail->translation->first()->name : $on_sale_product_detail->category->categoryDetail->slug
-            //     );
-            // }
-
-
             $isVendorArea = 0;
 
             // Start Mobile Banners
@@ -961,7 +909,7 @@ class HomeController extends BaseController
         $langId = $user->language;
         //$user_registration_documents = UserRegistrationDocuments::with(['primary'])->get();
         if( $langId){
-            $user_registration_documents = UserRegistrationDocuments::with(['translations' => function ($q) use ($langId) {
+            $user_registration_documents = UserRegistrationDocuments::with(['options.translations','translations' => function ($q) use ($langId) {
                 $q->where('language_id', $langId);
             }])->get();
 
@@ -1027,7 +975,7 @@ class HomeController extends BaseController
             ->whereHas('category.categoryDetail', function ($q) {
                 $q->whereNull('categories.deleted_at');
             })
-            ->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','category_id','title','calories');
+            ->select('id', 'sku', 'url_slug', 'weight_unit', 'weight', 'vendor_id', 'has_variant', 'has_inventory', 'sell_when_out_of_stock', 'requires_shipping', 'Requires_last_mile', 'averageRating', 'inquiry_only','category_id','title','calories','per_hour_price','km_included');
         if ($where !== '') {
             $products = $products->where($where, 1);
         }

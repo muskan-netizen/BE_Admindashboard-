@@ -57,7 +57,7 @@ class OboPaymentController extends Controller
                     if ($request->payment_from == 'cart') {
                         $urlParams   = "transactionid=$orderNumber&paymentfrom=cart&success=true";
                     } elseif ($request->payment_from == 'wallet') {
-                        $urlParams   = "transactionid=$orderNumber&paymentfrom=wallet&success=true";
+                        $urlParams   = "transactionid=$orderNumber&paymentfrom=wallet&payment_from=wallet&success=true";
                     } elseif ($request->payment_from == 'subscription') {
                         $urlParams   = "transactionid=$orderNumber&subscription_id=$request->subscription_id&amount=$request->amount&success=true";
                     } elseif ($request->payment_from == 'pickup_delivery') {
@@ -89,7 +89,7 @@ class OboPaymentController extends Controller
                     ], JSON_UNESCAPED_SLASHES);
                     $responce = Http::withBody($input, 'application/json')->withHeaders($header)->post($apiUrl);
                     $responceData = json_decode($responce->body(), true);
-                    if (isset($responceData['status']) && $responceData['status'] ===  "OK") {
+                    if (isset($responceData['status']) && $responceData['status'] ===  "200") {
                         $redirectUrl =  $responceData['data']['url'];
                         return response()->json([
                             'status' => 'Success',
@@ -216,6 +216,8 @@ class OboPaymentController extends Controller
             return $data;
         } catch (\Exception $e) {
             return $e->getMessage();
+            \Log::error($e->getMessage());
+            \Log::error($e->getLine());
         }
     }
 
@@ -268,7 +270,7 @@ class OboPaymentController extends Controller
     {
         try {
             $request->request->add(['payment_from' => $request->action, 'from' => $request->action, 'amt' => $request->amount, 'subsid' => $request->subscription_id ?? '', 'user_from' => 'app']);
-            $data =  $this->index($request, $domain, 'app');
+            $data =  $this->beforePayment($request, $domain, 'app');
             if (isset($data) && !empty($data)) {
                 return $data;
             }

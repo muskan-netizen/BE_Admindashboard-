@@ -77,7 +77,7 @@ class CMSPageController extends BaseController
         })->first();
 
         $data['page_detail'] = $page_detail;
-        $page_detail->primary = $page_detail->translation;
+        $page_detail->primary = $page_detail->translation ?? null;
         if ($page_detail->translation->type_of_form != 2) {
             if($page_detail->primary->type_of_form == 3){
                 $faq =   FaqTranslations::where('page_id',$page_detail->id)->where('language_id', $langId)->get();

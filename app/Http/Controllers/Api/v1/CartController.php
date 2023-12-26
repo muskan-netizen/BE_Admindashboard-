@@ -23,6 +23,7 @@ use App\Http\Controllers\Front\CartController as FrontCartController;
 use App\Http\Controllers\Front\LalaMovesController;
 use App\Http\Controllers\Front\QuickApiController;
 use App\Http\Controllers\ShiprocketController;
+use App\Http\Controllers\D4BDunzoController;
 
 use App\Models\{AddonOption, User, Product, Cart, ProductFaq,ProductVariantSet, CartProductPrescription, ProductVariant, CartProduct, CartCoupon, ClientCurrency, Brand, CartAddon, UserDevice, AddonSet, BookingOption, CartDeliveryFee, Client as ModelsClient, UserAddress, ClientPreference, LuxuryOption, Vendor, LoyaltyCard, SubscriptionInvoicesUser, VendorDineinCategory, VendorDineinTable, VendorDineinCategoryTranslation, VendorDineinTableTranslation, OrderVendor, OrderProductAddon, OrderTax, OrderProduct, OrderProductPrescription, VendorOrderStatus, VendorSlot,CategoryKycDocuments,CaregoryKycDoc, CartBookingOption, CartRentalProtection, VerificationOption, TaxRate,VendorMinAmount, WebStylingOption, ProcessorProduct,OrderFiles, ProductBookingOption, ProductRentalProtection, RentalProtection};
 
@@ -39,19 +40,22 @@ class CartController extends BaseController
 
     public function index(Request $request)
     {
+
         try {
+
             $user = Auth::user();
+
             if (!$user->id) {
                 $cart = Cart::where('unique_identifier', $user->system_user)->with(['editingOrder','OrderFiles']);
             } else {
                 $cart = Cart::where('user_id', $user->id)->with(['editingOrder','OrderFiles']);
             }
+
             $cart = $cart->first();
             $cartData = [];
             if ($cart) {
-                
-                $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
 
+                $cartData = $this->getCart($cart, $user->language, $user->currency, $request->type,$request->code);
                 if(isset($cart->editingOrder) && !empty($cart->editingOrder) && !empty($cartData))
                 {
                     $editlimit_datetime = Carbon::now()->toDateTimeString();
@@ -86,7 +90,6 @@ class CartController extends BaseController
                     $cartData->passbase_check = $passbase['check']??0;
                     $cartData->passbase_status= $passbase['status']??'';
                 }
-
                 return $this->successResponse($cartData);
             }
 
@@ -126,12 +129,12 @@ class CartController extends BaseController
     {
         try {
             $preference = ClientPreference::first();
-            $luxury_option = LuxuryOption::where('title', $request->type)->first();            
+            $luxury_option = LuxuryOption::where('title', $request->type)->first();
             $user = Auth::user();
             $langId = $user->language;
             $user_id = $user->id;
             $client_timezone = DB::table('clients')->first('timezone');
-            $timezone = $user->timezone ? $user->timezone :  ($client_timezone->timezone ?? 'Asia/Kolkata' );           
+            $timezone = $user->timezone ? $user->timezone :  ($client_timezone->timezone ?? 'Asia/Kolkata' );
             $unique_identifier = '';
             if (!$user_id) {
                 if (empty($user->system_user)) {
@@ -140,7 +143,7 @@ class CartController extends BaseController
                 $unique_identifier = $user->system_user;
             }
             $product = Product::where('sku', $request->sku)->first();
-            
+
             if (!$product) {
                 return $this->errorResponse(__('Invalid product.'), 404);
             }
@@ -150,13 +153,13 @@ class CartController extends BaseController
                 return $this->errorResponse(__('Invalid product variant.'), 404);
             }
 
-            
+
             $client_currency = ClientCurrency::where('is_primary', '=', 1)->first();
             $cart_detail = [
                 'is_gift' => 0,
                 'status' => '0',
                 'item_count' => 0,
-                'user_id' => $user->id, 
+                'user_id' => $user->id,
                 'created_by' => $user->id,
                 'unique_identifier' => $unique_identifier,
                 'currency_id' => $client_currency->currency_id,
@@ -166,10 +169,10 @@ class CartController extends BaseController
             ];
             if (!empty($user_id)) {
                 $cart_detail = Cart::updateOrCreate(['user_id' => $user->id], $cart_detail);
-               
+
             } else {
                 $cart_detail = Cart::updateOrCreate(['unique_identifier' => $unique_identifier], $cart_detail);
-                
+
 
             }
             $already_added_product_in_cart = CartProduct::where(["product_id" => $request->product_id, 'cart_id' => $cart_detail->id])->first();
@@ -196,7 +199,7 @@ class CartController extends BaseController
                     ], 404);
                 }
             }
-            
+
             $order_edit_qty = (!empty($already_added_product_in_cart) && !empty($already_added_product_in_cart->order_quantity))?$already_added_product_in_cart->order_quantity:0;
             if($product->is_long_term_service !=1){
                 if ($product->category->categoryDetail->type_id == 8) {
@@ -681,8 +684,8 @@ class CartController extends BaseController
     /**         *      Cart  Date      *          */
     public function getCart($cart, $langId = '1', $currency = '1', $type = 'delivery',$code = 'D')
     {
-   
-         try{
+
+     try{
         $container_charges_tax = 0;
         $deliver_fee_charges_tax = 0;
         $total_service_fee_tax = 0;
@@ -715,6 +718,7 @@ class CartController extends BaseController
         $upSell_products = collect();
         $crossSell_products = collect();
         $delifproductnotexist = CartProduct::where('cart_id', $cartID)->doesntHave('product')->delete();
+
         $cartData = CartProduct::with([
             'vendor', 'coupon' => function ($qry) use ($cartID) {
                 $qry->where('cart_id', $cartID);
@@ -752,9 +756,10 @@ class CartController extends BaseController
             'vendorProducts.product.bookingOptions.bookingOption',
             'vendorProducts.product.cartBookingOptions.bookingOption',
         ]);
-        
+
         $cartData = $cartData->select('vendor_id', 'vendor_dinein_table_id','dispatch_agent_id', 'is_cart_checked')->where('status', [0, 1])->where('cart_id', $cartID)->groupBy('vendor_id')->orderBy('created_at', 'asc')->get();
-    
+
+
 
         $taxes=TaxRate::all();
         $taxRates=array();
@@ -834,6 +839,7 @@ class CartController extends BaseController
             $total_fixed_fee_tax = 0;
 
             $delivery_slot_amount = 0;
+
             foreach ($cartData as $ven_key => $vendorData) {
 
             $scheduledDateTime = dateTimeInUserTimeZone($vendorData->scheduled_date_time, $user_timezone);
@@ -844,7 +850,7 @@ class CartController extends BaseController
             // this variable for get slot from dispatc
             $slotsdate = $slotsRes['date'];
             $slotcount =count((array)$slots);
-            
+
             $vendorData->slotsdate = $slotsdate;
             $vendorData->slots = $slots;
             $vendorData->slotsCnt =  $slotcount;
@@ -919,6 +925,7 @@ class CartController extends BaseController
 
                 $if_previousdeliveryfee_added = 0;
                 $vendorTotalDeliveryFee = 0;
+
                 $previousdeliveryfee = 0;
                 //get Coupon Discount for product case
                 $coupon_product_ids = [];
@@ -926,11 +933,11 @@ class CartController extends BaseController
                 $coupon_product_discount = 0;
                 $in_or_not = 0;
                 $rate = 0;
-                if (isset($vendorData->coupon) && !empty($vendorData->coupon) && isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)){                  
+                if (isset($vendorData->coupon) && !empty($vendorData->coupon) && isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)){
                     if($vendorData->coupon->promo->restriction_on == 0)
-                    { 
+                    {
                         $coupon_product_ids = $vendorData->coupon->promo->details->pluck('refrence_id')->toArray();
-                        $in_or_not = $vendorData->coupon->promo->restriction_type; 
+                        $in_or_not = $vendorData->coupon->promo->restriction_type;
                     }
                     elseif($vendorData->coupon->promo->restriction_on == 1){
                         $coupon_vendor_ids = $vendorData->coupon->promo->details->pluck('refrence_id')->toArray();
@@ -953,7 +960,10 @@ class CartController extends BaseController
                     $prod->product->Seats = $fields['Seats'] ?? '' .' Seats';
                     $prod->product->cabins = $fields['Cabins'] ?? '' .' Cabins';
                     $prod->product->baths = $fields['Baths'] ?? '' .'Baths';
-
+                    $prod->stock_out = 1;
+                    if($prod->pvariant['quantity'] > 0){
+                        $prod->stock_out=0;
+                    }
                     $rentalProtection += $prod->product->cartRentalProtections->rentalProtection->price ?? 0;
                     $bookingOption += $prod->product->cartBookingOptions->bookingOption->price ?? 0;
                     $securityAmount += $prod->product->security_amount ?? 0;
@@ -1027,7 +1037,7 @@ class CartController extends BaseController
                             $prod->days = $start_date_time->diff($end_date_time)->days + 1;
                             $rental_price = $prod->pvariant ? $prod->pvariant->price : 0;
                             if(isset($prod->pvariant->month_price) && !empty($prod->pvariant->month_price)  && isset($prod->pvariant->week_price)){
-                                
+
                                 if($prod->days >= 7 && $prod->days < 30){
                                     $rental_price = $prod->pvariant->week_price;
                                 }elseif($prod->days >= 30){
@@ -1106,11 +1116,11 @@ class CartController extends BaseController
                         $price_in_doller_compare = $price_in_currency * $clientCurrency->doller_compare;
                         $container_charges_in_currency = $prod->pvariant->container_charges??0.00;
                         $container_charges_in_doller_compare = $prod->pvariant->container_charges??0.00;
-                        
+
                         $quantity_price = $price_in_doller_compare * $prod->quantity;
 
                         $quantity_price =  (($quantity_price)*($prod->recurring_date_count));
-                        
+
                         $quantity_container_charges = $container_charges_in_doller_compare * $prod->quantity;
                         $quantity_container_charges = decimal_format($quantity_container_charges);
                         $item_count = $item_count + $prod->quantity;
@@ -1121,7 +1131,7 @@ class CartController extends BaseController
 
                             $vendor_products_total_amount = $vendor_products_total_amount + $quantity_price;
                         }
-                        
+
                         $total_container_charges = $total_container_charges + $quantity_container_charges;
                         $prod->luxury_option_id= $prod->luxury_option_id??'';
                         if (isset($prod->pvariant->image->imagedata) && !empty($prod->pvariant->image->imagedata)) {
@@ -1155,12 +1165,12 @@ class CartController extends BaseController
                             $dropoff_delay_date = $prod->product->dropoff_delay_hrs_min;
                         }
                         //Check product promo code is valid for this product
-                        
+
                         $checkProductPromoCodeController = new PromoCodeController();
                         $productPromoRequest = new Request();
                         $productPromoRequest->setMethod('POST');
                         $productPromoRequest->request->add(['cart_id' => $cartID, 'product_id' => $prod->product_id]);
-                        $productPromoCodeResponse = $checkProductPromoCodeController->postProductPromoCodeCheck($productPromoRequest)->getData();                       
+                        $productPromoCodeResponse = $checkProductPromoCodeController->postProductPromoCodeCheck($productPromoRequest)->getData();
                         if($productPromoCodeResponse->status == 'Success'){
                             $coupon_apply_price+=$price_in_currency * $prod->quantity;
                         }
@@ -1169,9 +1179,9 @@ class CartController extends BaseController
                             || ($in_or_not == 0 && in_array($vendorData->vendor_id, $coupon_vendor_ids))
                             || ($in_or_not == 1 && !in_array($vendorData->vendor_id, $coupon_vendor_ids))
                             ){
-                                $coupon_product_discount = $coupon_product_discount + $quantity_price + $quantity_container_charges;  
+                                $coupon_product_discount = $coupon_product_discount + $quantity_price + $quantity_container_charges;
                         }
-                        
+
                         if ($prod->pvariant) {
                             $variantsData['price']              = $price_in_currency;
                             $variantsData['id']                 = $prod->pvariant->id;
@@ -1183,7 +1193,8 @@ class CartController extends BaseController
                             $variantsData['gross_qty_price']    = $price_in_doller_compare * $prod->quantity;
 
                             $addon_price = 0;
-                            if (!empty($prod->addon)) {
+                            // $prod->addon;
+                            if (!empty($prod->addon->toArray())) {
                                 // return $prod->addon;
                                 foreach ($prod->addon as $ck => $addons) {
                                     //return $addons->set;
@@ -1208,9 +1219,10 @@ class CartController extends BaseController
                                     $vendorAddons[$ck]['cart_product_id'] = $addons->cart_product_id;
                                     $vendorAddons[$ck]['multiplier'] = $clientCurrency->doller_compare;
                                     $ttAddon = $ttAddon + $opt_quantity_price;
-                                    $order_sub_total = $order_sub_total + $opt_quantity_price;
+                                    $order_sub_total = $order_sub_total + $opt_quantity_price + $prod->pvariant->price;
                                     $opt_quantity_price_new += $opt_quantity_price;
                                     $quantity_price = $quantity_price + $opt_quantity_price;
+
                                     if(($in_or_not == 0 && in_array($prod->product_id,$coupon_product_ids))
                                         || ($in_or_not == 1 && !in_array($prod->product_id,$coupon_product_ids))
                                         || ($in_or_not == 0 && in_array($vendorData->vendor_id, $coupon_vendor_ids))
@@ -1220,6 +1232,9 @@ class CartController extends BaseController
                                             $coupon_product_discount = $coupon_product_discount + $opt_quantity_price;
                                     }
                                 }
+
+                            }else{
+                                $order_sub_total = round($order_sub_total  + $prod->pvariant->price*$prod->quantity,2);
                             }
                             $variantsData['discount_amount'] = $pro_disc;
                             $variantsData['coupon_applied'] = $codeApplied;
@@ -1228,9 +1243,12 @@ class CartController extends BaseController
 
                             $only_products_amount += $quantity_price;
 
+
+
                             // Check if is_cart_checked is 1 then add $quantity_price in payable amount
                             if($prod->is_cart_checked == 1){
                                 $payable_amount = $payable_amount + $quantity_price + $quantity_container_charges;
+
                             }
 
                             if (!empty($prod->product->taxCategory) && count($prod->product->taxCategory->taxRate) > 0) {
@@ -1257,6 +1275,7 @@ class CartController extends BaseController
                                 }
                             }
                             $prod->taxdata = $taxData;
+
                             // if($prod->product->)
                             if ( (in_array($action,['delivery','on_demand']) )  && ( $is_service_product_price_from_dispatch !=1 )) {
                                 $checkLastMile = 0;
@@ -1275,14 +1294,12 @@ class CartController extends BaseController
                                     $product_tags = $prod->product->LongTermProduct->first()->tags;
                                     $NumberOfroutes = $prod->LongTermProducts ? $prod->LongTermProducts->quantity : 1;
                                 }
+
                                 if ($checkLastMile ) {
-
-
                                     $deliveries = $this->getDeliveryOptions($vendorData,$preferences,$payable_amount,$address, $product_tags,$NumberOfroutes);
                                     $deliveryDuration = 0;
                                     if(isset($deliveries[0]))
                                     {
-
                                         if($code){
                                             $new = array_filter($deliveries, function ($var) use ($code) {
                                                 return ($var['code'] == $code);
@@ -1309,11 +1326,13 @@ class CartController extends BaseController
 
 
                                         if($prod->product->individual_delivery_fee == 1) {
+
                                             $quantity_deliveryCharges = $deliveryCharges*$prod->quantity;
                                             $vendorTotalDeliveryFee = $vendorTotalDeliveryFee + $quantity_deliveryCharges;
                                             CartProduct::where('cart_id', $cart->id)->where('vendor_id', $vendorData->vendor->id)->where('product_id', $prod->product->id)->update(['product_delivery_fee'=>$quantity_deliveryCharges]);
                                             $prod->product_delivery_fee = $quantity_deliveryCharges;
                                         }else{
+
                                             if($if_previousdeliveryfee_added == 0 && $deliveryCharges > 0){
                                                 $vendorTotalDeliveryFee = $vendorTotalDeliveryFee + $deliveryCharges;
                                                 $if_previousdeliveryfee_added = 1;
@@ -1385,6 +1404,7 @@ class CartController extends BaseController
                 // Add Delivery Slot Price In total amount
                 if($prod->delivery_date != '' && $prod->slot_price != '' && $prod->slot_id != ''){
                     $payable_amount = $payable_amount + decimal_format($prod->slot_price);
+
                 }
                 if (isset($vendorData->coupon) && !empty($vendorData->coupon) ) {
                     if (isset($vendorData->coupon->promo) && !empty($vendorData->coupon->promo)) {
@@ -1469,7 +1489,9 @@ class CartController extends BaseController
                         $taxable_amount -= $discount;
                     }*/
                 }
+
                 $payable_amount = $payable_amount + $vendorTotalDeliveryFee ;
+
                 $deliver_charge = $vendorTotalDeliveryFee * $clientCurrency->doller_compare;
                 $vendorData->proSum = $proSum;
                 $vendorData->addonSum = $ttAddon;
@@ -1488,8 +1510,9 @@ class CartController extends BaseController
                      $amount_for_service = $opt_quantity_price_new + $vendor_products_total_amount;
                     $vendor_service_fee_percentage_amount = (($amount_for_service) * $vendorData->vendor->service_fee_percent) / 100 ;
                     $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
-                 }
-                 if($vendorData->vendor->service_charge_amount > 0){
+                }
+                if($vendorData->vendor->service_charge_amount > 0){
+
                      $amount_for_service = $opt_quantity_price_new + $vendor_products_total_amount;
                      $vendor_service_fee_percentage_amount = $vendorData->vendor->service_charge_amount;
                      $payable_amount = $payable_amount + $vendor_service_fee_percentage_amount;
@@ -1499,7 +1522,8 @@ class CartController extends BaseController
                 if(@$getAdditionalPreference['is_rental_weekly_monthly_price']){
                     $rental_price = $rental_price + $total_service_fee ;
                 }
-                
+
+
 
 
                 $vendorData->service_fee_percentage_amount = number_format($vendor_service_fee_percentage_amount, 2, '.', '');
@@ -1547,9 +1571,8 @@ class CartController extends BaseController
                         }
                     }
                 }
-                
                 $order_sub_total = $order_sub_total + $vendor_products_total_amount;
-                
+
                 $getAdditionalPreference = getAdditionalPreference(['is_price_by_role']);
 
                 if($getAdditionalPreference['is_price_by_role'] == 1){
@@ -1805,22 +1828,23 @@ class CartController extends BaseController
             // }
             // $cart->wallet = $this->getWallet($cart->user_id, $clientCurrency->doller_compare, $currency);
         }
-        if ($loyalty_amount_saved  >= $temp_total_paying) {
+
+        if ($loyalty_amount_saved  > $temp_total_paying) {
             $loyalty_amount_saved = $temp_total_paying;
             $cart->total_payable_amount = 0.00;
         } else {
-            $cart->total_payable_amount = ($total_paying  + $cart->total_tax) -   ($total_disc_amount + $loyalty_amount_saved);
+            $cart->total_payable_amount = $order_sub_total+($total_paying  + $cart->total_tax) -   ($total_disc_amount + $loyalty_amount_saved);
         }
-        
+
         /* if($total_taxable_amount>0){
             $cart->total_payable_amount = $cart->total_payable_amount +$total_taxable_amount;
         } */
 
 
         // add other taxes amount as well in total payable amount.
-        
 
-        
+
+
         if($cart->other_taxes>0){
             $cart->total_payable_amount = $cart->total_payable_amount + $cart->other_taxes;
         }
@@ -1830,7 +1854,7 @@ class CartController extends BaseController
         if(@$rental_price){
             $cart->total_payable_amount = $rental_price;
         }
-            
+
 
         $wallet_amount_used = 0;
         if (isset($user)) {
@@ -1853,7 +1877,7 @@ class CartController extends BaseController
             $cart->deliver_status = $delivery_status;
         }
         $cart->loyalty_amount = $loyalty_amount_saved;
-        
+
         if (isset($cart_product_luxury_id) && isset($cart_product_luxury_id->luxury_option_id) && $cart_product_luxury_id->luxury_option_id ==4) {
             if($cart_product_luxury_id->additional_increments_hrs_min && $prod->pvariant->incremental_price_per_min){
                 $additional_price = ($cart_product_luxury_id->additional_increments_hrs_min / $prod->pvariant->incremental_price_per_min);
@@ -1864,10 +1888,10 @@ class CartController extends BaseController
         else{
             $cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
         }
-        
+
         $cart->total_payable_amount += ($securityAmount + $rentalProtection + $bookingOption);
         //$cart->total_payable_amount= number_format((float)$cart->total_payable_amount, 2, '.', '');
-        
+
         //mohit sir branch code updated by sohail farm meat
         $pendingAmount = 0;
         $advancePayableAmount = 0;
@@ -1900,7 +1924,7 @@ class CartController extends BaseController
         }
 
         $total_payable_amount_calc_tip = $cart->total_payable_amount - $total_taxable_amount;
-        
+
         if(@$rental_price > 0){
             $cart->total_payable_amount = $rental_price;
         }
@@ -1914,7 +1938,6 @@ class CartController extends BaseController
 
      }catch(\Exception $ex)
      {
-         \Log::info($ex->getMessage());
             return [];
      }
     }
@@ -1952,9 +1975,9 @@ class CartController extends BaseController
         //type must be a : delivery , takeaway,dine_in
         $duration = Vendor::where('id',$vendorId)->select('slot_minutes')->first();
         $duration = $duration->slot_minutes??'';
-        
+
         $slots = showSlot($request->date,$vendorId,$delivery,$duration, 1, 'pickup',$cartId); // Added 1 for pickup
-       
+
         if(count($slots)<=0){
             $slot = [];
         }else{
@@ -1995,7 +2018,6 @@ class CartController extends BaseController
             if ($dispatch_domain && $dispatch_domain != false) {
                 $customer = User::find(Auth::id());
                 $cus_address = UserAddress::where('user_id', Auth::id())->orderBy('is_primary', 'desc')->first();
-                if ($cus_address) {
                     $tasks = array();
                     $vendor_details = Vendor::find($vendor_id);
                     $location[] = array(
@@ -2019,12 +2041,12 @@ class CartController extends BaseController
                         $url . '/api/get-delivery-fee',
                         ['form_params' => ($postdata)]
                     );
+
                     $response = json_decode($res->getBody(), true);
                     if ($response && $response['message'] == 'success') {
                         $response_array[] = array('delivery_fee' => $response['total'], 'total_duration' => $response['total_duration']);
                         return $response_array;
                     }
-                }
             }
         } catch (\Exception $e) {
         }
@@ -2128,17 +2150,17 @@ class CartController extends BaseController
         $orderCount = 0;
         // Get Vendor orders
         $orderVendors = OrderVendor::where('vendor_id', $vendor->id)->get();
-        // dd($orderVendors);
+
         foreach($orderVendors as $orderVendor){
             // Get orders of current vendor where scheduled_slot and schedule_pickup_datetime is same as received from frontend.
             $order = Order::where('id', $orderVendor->order_id)->where('scheduled_slot', $schedule_slot)->first();
-            // dd($order);
+
             $if_order_scheduled = 0;
             if($order){
                 $schedule_pickup = Carbon::parse($order->scheduled_date_time);
                 $schedule_pickup_final = convertDateTimeInTimeZone($schedule_pickup, $timezone, 'Y-m-d');
                 // dump($schedule_pickup_final);
-                // dd($schedule_datetime);
+
                 if($schedule_pickup_final == $schedule_datetime){
                     // Increment orderCount and return this count to front end for validation
                     $orderCount++;
@@ -2259,6 +2281,7 @@ class CartController extends BaseController
     //Fetch all delivery fee option
     public function getDeliveryOptions($vendorData, $preferences, $payable_amount, $address, $dispatcher_tags='', $totalRoute = '1')
     {
+
         $option = array();
         $delivery_count = 0;
         $delivery_duration = 0;
@@ -2308,7 +2331,30 @@ class CartController extends BaseController
             );
             $option = array_merge($option,$optionLala);
         }
+
         //End Lalamove Delivery changes code
+
+        //d4bdunzo Delivery changes code
+        $d4bdunzo = new D4BDunzoController();
+        $deliver_d4bdunzo_data= $d4bdunzo->quote($vendorData->vendor_id);
+        if($deliver_d4bdunzo_data['estimated_price']>0)
+        {
+            $deliver_charge_d4bdunzo = decimal_format($deliver_d4bdunzo_data['estimated_price']);
+            $optionD4Dunzo[] = array(
+                'type'=>'D4',
+                'courier_name'=>__('D4B Dunzo'),
+                'rate' => $deliver_charge_d4bdunzo,
+                'duration' => $deliver_d4bdunzo_data['eta']['pickup'] +  $deliver_d4bdunzo_data['eta']['dropoff'],
+                'courier_company_id' => 0,
+                'etd' => 0,
+                'etd_hours' => 0,
+                'estimated_delivery_days' => 0,
+                'code' => 'D4_0'
+            );
+            $option = array_merge($option,$optionD4Dunzo);
+        }
+        //End d4bdunzo Delivery changes code
+
 
         //Kwik Delivery changes code
         $kwick = new QuickApiController();
@@ -2586,7 +2632,7 @@ class CartController extends BaseController
             $cartBookingOption->delete();
             return response()->json(['status'=>'Success', 'data' => 'Booking Option has been deleted successfully'], 200);
         }
-        
+
         $cartBookingOption = new CartBookingOption();
         $cartBookingOption->product_id = $request->product_id;
         $cartBookingOption->booking_option_id = $bookingOption->id;

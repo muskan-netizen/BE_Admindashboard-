@@ -15322,6 +15322,9 @@ body .status_box label {
                 div#orders_wrapper   .order_head span{
                     font-size: 14px;
                 }
+                #content-wrap header .inner-pages-offset{
+                    margin: 0!important;
+                }
             }
             /* template two common css */
             /* mobile or desktop banner css start */
@@ -18985,5 +18988,13 @@ section#alTaxiBookingWrapper .address-form .pool_radio_controls.text-center labe
 }
 
 
-
+@media (max-width:1600px){
+    .al_custom_ordertabs .item_no {
+        right: -50px;        
+        font-size: 10px;
+        width: 22px;
+        height: 22px;
+        line-height: 22px;
+    }
+}
 

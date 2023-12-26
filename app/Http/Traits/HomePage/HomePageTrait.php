@@ -615,14 +615,14 @@ trait HomePageTrait
         }
 
          
-        
         if(count($vendor_ids) > 0){
             $vendors = $this->getVendorForHomePage($preferences, "random_or_admin_rating", $timezone, $additionalPreference['is_admin_vendor_rating'], $request->type, $language_id, $latitude, $longitude, $vendor_ids,null,$this->venderFilterOpenClose,$this->venderFilterbest);
             $preferences = ClientPreference::first();
             $getCartController = new CartController();
             foreach($vendors as $k => $vendorData){
                 if($preferences->static_delivey_fee != 1){
-                $deliver_response_array = $getCartController->getDeliveryFeeDispatcher($vendorData->id, $dispatcher_tags='');
+                    $deliver_response_array = $getCartController->getDeliveryFeeDispatcher($vendorData->id, $dispatcher_tags='');
+                    // lineeeeeeeeeeeeeeeee
                 
                 if (!empty($deliver_response_array[0])){
                     $totalRoute = '1';
@@ -680,15 +680,6 @@ trait HomePageTrait
       
         if (in_array('featured_products', $enable_layout)) {  # if enable featured_products section in
             $feature_products = $this->vendorProducts($vendor_ids, $language_id, $currency_id, 'is_featured', $request->type, $featured_products_title,$p_dim, $getSubCatIds);
-        } 
-
-        if (in_array('banner', $enable_layout)) {  # if enable banner section in
-            $cab_booking_layouts = CabBookingLayout::with('banner_image')->where('slug','banner')->get();
-            
-            foreach($cab_booking_layouts as $bkey => $bval){
-                if(count($bval->banner_image) > 0)
-                $banners[$bval->banner_image[0]->cab_booking_layout_id] = $bval->banner_image[0]->banner_image_url;
-            }
         } 
         
         $top_rated_products = '';
@@ -802,12 +793,36 @@ trait HomePageTrait
                 'single_category_products'  => (!empty($single_category_products) && count($single_category_products) > 0)?$single_category_products:[],
                 'selected_products'  => (!empty($selected_products) && count($selected_products) > 0)?$selected_products:[],
                 'most_popular_products'  => (!empty($popular_products) && count($popular_products) > 0)?$popular_products:[],
-                //'recent_orders' => $activeOrders,
-                'banners' => $banners,
                 'additionalPreference' => $additionalPreference,
             ];
-            // pr( $data);
             return $data ;
+    }
+
+    public function makeCurlRequest($url, $method, $data, $headers) {
+        if (count($data) == 0) {
+            $postData = 'grant_type=client_credentials';
+        } else {
+            $postData = json_encode($data);
+        }
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => $method,
+            CURLOPT_POSTFIELDS => 'grant_type=client_credentials',
+            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_POSTFIELDS =>$postData,
+            ));
+    
+            $response = curl_exec($curl);
+            curl_close($curl);
+            return $response;
+        
     }
 
 }

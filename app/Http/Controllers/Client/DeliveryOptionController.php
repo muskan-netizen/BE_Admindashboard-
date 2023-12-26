@@ -25,6 +25,8 @@ class DeliveryOptionController extends Controller
         if ($preference && $preference->need_delivery_service == '1') {
             $last_mile_teams = $this->getLastMileTeams();
         }
+        $d4b_dunzo = ShippingOption::where('code', 'd4b_dunzo')->first();
+
         return view('backend/deliveryoption/index')->with([
             'delOption' => $shippingOptions->get('lalamove'),
             'opt' => $shippingOptions->get('shiprocket'),
@@ -36,6 +38,7 @@ class DeliveryOptionController extends Controller
             'kwikOption' => $shippingOptions->get('kwikapi'),
             'roadieOption' => $shippingOptions->get('roadie'),
             'shipEngineOption' => $shippingOptions->get('shipengine'),
+            'd4b_dunzo'=>$d4b_dunzo
         ]);
     }
 
@@ -99,6 +102,74 @@ class DeliveryOptionController extends Controller
         }
 
         return redirect()->back()->with('toaster', $toaster);
+
+    }
+
+    //Set new dunzo configuration details function
+    public function d4b_dunzo(Request $request)
+    {
+     try{
+         $msg = 'Dunzo delivery details have been saved successfully!';
+         $id = $request->method_id;
+         $method_name_arr = $request->method_name;
+         $active_arr = $request->active;
+         $base_active = $request->base_active;
+         $test_mode_arr = $request->sandbox;
+
+         $saved_creds = ShippingOption::select('credentials')->where('id', $id)->first();
+
+         if ((isset($saved_creds)) && (!empty($saved_creds->credentials))) {
+
+                 $json_creds = $saved_creds->credentials;
+             } else {
+                 $json_creds = NULL;
+         }
+
+             $status = 0;
+             $test_mode = 0;
+             if ((isset($active_arr)) && ($active_arr == 'on')) {
+
+                 $status = 1;
+
+                 if ((isset($test_mode_arr)) && ($test_mode_arr == 'on')) {
+                     $test_mode = 1;
+                 }
+
+                 if ((isset($method_name_arr)) && (strtolower($method_name_arr) == 'd4b_dunzo')) {
+                     $validatedData = $request->validate([
+                         'client_id'               => 'required',
+                         'client_secret'               => 'required',
+                         'app_url'               => 'required',
+                     ]);
+                     $json_creds = array(
+                         'client_id'               => $request->client_id,
+                         'client_secret'               => $request->client_secret,
+                         'app_url'               => (($test_mode=='1')?'https://apis-staging.dunzo.in/api/v1/token':'https://api.dunzo.in/api/v1/token'),
+                     );
+                     //dd($json_creds);
+
+                     if ((isset($base_active)) && ($base_active == 'on')) {
+                         $json_creds['base_price'] = $request->base_price;
+                         $json_creds['distance'] = $request->distance;
+                         $json_creds['amount_per_km'] = $request->amount_per_km;
+                     }else{
+                         $json_creds['base_price'] = '0';
+                         $json_creds['distance'] = '0';
+                         $json_creds['amount_per_km'] = '0';
+                     }
+                     $json_creds = json_encode($json_creds);
+                 }
+             }
+
+           ShippingOption::where('id', $id)->update(['status' => $status, 'credentials' => $json_creds, 'test_mode' => $test_mode]);
+           $toaster = $this->successToaster(__('Success'), $msg);
+
+         }catch(\Exception $e)
+         {
+             $toaster = $this->errorToaster(__('Error'), $e->getMessage());
+         }
+
+         return redirect()->back()->with('toaster', $toaster);
 
     }
 
@@ -169,7 +240,7 @@ class DeliveryOptionController extends Controller
                 if ((isset($test_mode_arr)) && ($test_mode_arr == 'on')) {
                     $test_mode = 1;
                 }
-                
+
 
                 if ((isset($method_name_arr)) && (strtolower($method_name_arr) == 'ahoy')) {
                     $validatedData = $request->validate([
@@ -413,6 +484,7 @@ class DeliveryOptionController extends Controller
     //Set Last Mile Delivery Configuration Detail
     public function last_mile_delivery(Request $request)
     {
+        //  pr($request->all());
         $preferenceset = ClientPreference::where('client_code', Auth::user()->code)->first();
         if (isset($request->need_delivery_service) && !empty($request->need_delivery_service)) {
             try {

@@ -2457,7 +2457,7 @@ a.vehical-view-box.d-flex.align-items-center.no-gutters.px-2:hover {
 }
 
 .cab-image-box {
-    height: 300px
+    height: 420px
 }
 
 .cab-image-box img {
@@ -4098,7 +4098,7 @@ a.morelink.less {
 }
 .al_body_template_three .product-description_list.border-bottom {
     height: 100%;
-    max-height: 80px;
-    min-height: 80px;
+    max-height: inherit;
+    min-height: inherit;
     overflow: hidden;
 }

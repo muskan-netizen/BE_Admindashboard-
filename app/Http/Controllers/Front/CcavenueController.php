@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Redirect;
 use JWT\Token;
 use Log;
 use App\Http\Traits\Giftcard\GiftCardTrait;
+use App\Models\Transaction;
 use App\Models\UserGiftCard;
 use Carbon\Carbon;
 
@@ -112,10 +113,10 @@ class CcavenueController extends Controller
    {
     $user = $this->createUserToken();
     $merchant_data='';
- 
+
     $number = $this->orderNumber($request); // order no
     $working_key=$this->access_key;//Shared by CCAVENUES
-    $access_code=$this->access_code;//Shared by CCAVENUES   
+    $access_code=$this->access_code;//Shared by CCAVENUES
     $url=$this->url;//Shared by CCAVENUES
     if($request->from == 'pickup_delivery' && UserAddress::where('is_primary','1')->doesntExist()){
       $address = new \stdClass();
@@ -197,23 +198,23 @@ class CcavenueController extends Controller
 
    public function successForm(Request $request)
    {
-    $encResponse=$request->encResp;			//This is the response sent by the CCAvenue Server
-	  $rcvdString=$this->decrypt($encResponse,$this->access_key);		//Crypto Decryption used as per the specified working key.
-	  $order_status="";
-	  $decryptValues=explode('&', $rcvdString);
+        $encResponse=$request->encResp;			//This is the response sent by the CCAvenue Server
+	    $rcvdString=$this->decrypt($encResponse,$this->access_key);		//Crypto Decryption used as per the specified working key.
+	    $order_status="";
+	    $decryptValues=explode('&', $rcvdString);
 
-	  $dataSize=sizeof($decryptValues);
-    $dataArray = array();
-    for($i = 0; $i < $dataSize; $i++)
-    {
-      $information=explode('=',$decryptValues[$i]);
-      $request->request->add([$information[0] => $information[1]]);
-    }
+	    $dataSize=sizeof($decryptValues);
+        $dataArray = array();
+        for($i = 0; $i < $dataSize; $i++)
+        {
+        $information=explode('=',$decryptValues[$i]);
+        $request->request->add([$information[0] => $information[1]]);
+        }
 
-    if(isset($request->merchant_param5) && !empty($request->merchant_param5)){
-        $user = User::where('auth_token',$request->merchant_param5)->first();
-        Auth::login($user);
-     }
+        if(isset($request->merchant_param5) && !empty($request->merchant_param5)){
+            $user = User::where('auth_token',$request->merchant_param5)->first();
+            Auth::login($user);
+        }
 
         if($request->merchant_param2=='cart'){
             return $this->completeOrderCart($request);
@@ -232,19 +233,33 @@ class CcavenueController extends Controller
 
    public function completeOrderPickup(Request $request)
    {
-   
+
      $order = Order::where('order_number', $request->order_id)->first();
      if (isset($request->order_status) && $request->order_status == 'Success') {
        $order->payment_status = '1';
        $order->save();
        Payment::create(['amount' => 0, 'transaction_id' => $request->tracking_id, 'balance_transaction' => $order->payable_amount, 'type' => 'pickup_deleivery', 'date' => date('Y-m-d'), 'order_id' => $order->id]);
+          // Deduct wallet amount if payable amount is successfully done on gateway
+        if ( $order->wallet_amount_used > 0 ) {
+        $user = User::find(auth()->id());
+        $wallet = $user->wallet;
+        $transaction_exists = Transaction::where('type', 'withdraw')->where('meta', 'LIKE', '%order_number%')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+        if(!$transaction_exists){
+            $wallet->withdrawFloat($order->wallet_amount_used, [
+                'description' => 'Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>',
+                'order_number' => $order->order_number,
+                'transaction_id' => $request->tracking_id,
+                'payment_option' => 'ccavenue'
+            ]);
+        }
+      }
        // Send Notification
        $plaseOrderForPickup = new PickupDeliveryController();
        $request->request->add(['transaction_id' => $request->tracking_id]);
        $plaseOrderForPickup =   $plaseOrderForPickup->orderUpdateAfterPaymentPickupDelivery($request);
        if (isset($request->merchant_param3) && $request->merchant_param3 == 'mob') {
          $returnUrl = route('payment.gateway.return.response').'/?gateway=ccavenue'.'&status=200&transaction_id='.$request->tracking_id;
-         return Redirect::to($returnUrl); 
+         return Redirect::to($returnUrl);
        } else {
          return Redirect::to(route('front.booking.details', $order->order_number));
        }
@@ -284,6 +299,21 @@ class CcavenueController extends Controller
                 CartProductPrescription::where('cart_id', $cartid)->delete();
 
                 Payment::create(['amount'=>0,'transaction_id'=>$request->tracking_id,'balance_transaction'=>$order->payable_amount,'type'=>'cart','date'=>date('Y-m-d'),'order_id'=>$order->id]);
+
+                // Deduct wallet amount if payable amount is successfully done on gateway
+                if ( $order->wallet_amount_used > 0 ) {
+                    $user = User::find(auth()->id());
+                    $wallet = $user->wallet;
+                    $transaction_exists = Transaction::where('type', 'withdraw')->where('meta', 'LIKE', '%order_number%')->where('meta', 'LIKE', '%'.$order->order_number.'%')->first();
+                    if(!$transaction_exists){
+                        $wallet->withdrawFloat($order->wallet_amount_used, [
+                            'description' => 'Wallet has been <b>debited</b> for order number <b>' . $order->order_number . '</b>',
+                            'order_number' => $order->order_number,
+                            'transaction_id' => $request->tracking_id,
+                            'payment_option' => 'ccavenue'
+                        ]);
+                    }
+                }
 
                 // Send Notification
                 if (!empty($order->vendors)) {
@@ -344,7 +374,7 @@ class CcavenueController extends Controller
               $UserGiftCard->amount       = $gift_card->amount;
               $UserGiftCard->expiry_date  = $gift_card->expiry_date;
               $UserGiftCard->gift_card_code = $code;
-              $UserGiftCard->buy_for_data = !empty($request->senderData) ? $request->senderData : ''; 
+              $UserGiftCard->buy_for_data = !empty($request->senderData) ? $request->senderData : '';
               $UserGiftCard->save();
               if(isset($request->send_card_to_email)){
                   $currSymbol = isset($request->currency) ? $request->currency : '$';
@@ -361,7 +391,7 @@ class CcavenueController extends Controller
               $payment->type                  = 'giftCard';
               $payment->save();
           }
-          
+
           $message = __('Your Gift Card has been activated successfully.');
           if(isset($request->merchant_param3) && $request->merchant_param3=='mob')
           {
@@ -370,7 +400,7 @@ class CcavenueController extends Controller
           }else{
             return Redirect::to(route('giftCard.index'))->with('success',$message);
           }
-          
+
       }else{
         $message = __('Something went wrong.');
 

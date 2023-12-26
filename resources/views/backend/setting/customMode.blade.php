@@ -637,7 +637,19 @@
     </div>
 </div>
 @endif
-
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_service_price_selection_switch" class="mr-2 mb-0">{{ __('Map Configuration') }}<small
+                class="d-block pr-5">{{ __('Enable this if you want to search address within your country') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_map_search_perticular_country_switch"
+                id="is_map_search_perticular_country_switch" class="form-control checkbox_change"
+                data-className="is_map_search_perticular_country" data-color="#43bee1"
+                @if ($getAdditionalPreference['is_map_search_perticular_country'] == 1) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if ($getAdditionalPreference['is_map_search_perticular_country'] == 1) value="1" @else value="0" @endif
+            name="is_map_search_perticular_country" id="is_map_search_perticular_country" />
+    </div>
+</div>
 <div class="col-md-4">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="is_particular_driver_switch" class="mr-2 mb-0">{{ __('Request for Particular Driver') }}<small
@@ -740,7 +752,19 @@
             name="is_role_and_permission_enable" id="is_role_and_permission_enable" />
     </div>
 </div>
-
+<div class="col-md-4 d-none">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_hourly_pickup_rental" class="mr-2 mb-0">{{ __('Hourly Pick & Drop Rental') }}<small
+            class="d-block pr-5">{{ __('Enable Hourly Pick & Drop Rental') }}</small></label>
+    <span> <input type="checkbox" data-plugin="switchery" name="is_hourly_pickup_rental_switch"
+            id="is_hourly_pickup_rental_switch" class="form-control checkbox_change"
+            data-className="is_hourly_pickup_rental" data-color="#43bee1"
+            @if (isset($getAdditionalPreference) && $getAdditionalPreference['is_hourly_pickup_rental'] == '1') checked='checked' @endif>
+    </span>
+    <input type="hidden" @if (isset($getAdditionalPreference) && $getAdditionalPreference['is_hourly_pickup_rental'] == '1')  value="1" @else value="0" @endif
+        name="is_hourly_pickup_rental" id="is_hourly_pickup_rental" />
+</div>
+</div>
 <div class="col-md-4 ">
     <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
         <label for="is_vendor_marg_configuration" class="mr-2 mb-0">{{ __('Car Rental') }}<small
@@ -793,5 +817,50 @@
         </span>
         <input type="hidden" @if (@$getAdditionalPreference['is_sms_booked_ride'] == 1) value="1" @else value="0" @endif
             name="is_sms_booked_ride" id="is_sms_booked_ride" />
+    </div>
+</div>
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_vendor_marg_configuration" class="mr-2 mb-0">{{ __('Product Measurement') }}<small
+                class="d-block pr-5">{{ __('Enable measurement in (CM/KG).') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_product_measurement_in_cm_kg"
+                id="is_product_measurement_in_cm_kg_switch" class="form-control checkbox_change"
+                data-className="is_product_measurement_in_cm_kg" data-color="#43bee1"
+                @if (@$getAdditionalPreference['is_product_measurement_in_cm_kg']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['is_product_measurement_in_cm_kg'] == 1) value="1" @else value="0" @endif
+            name="is_product_measurement_in_cm_kg" id="is_product_measurement_in_cm_kg" />
+    </div>
+</div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_freelance_on_homepage" class="mr-2 mb-0">{{ __('Enable Freelancer Location in Homepage') }}<small
+                class="d-block pr-5">{{ __('Enable Freelancer Location in Homepage.') }}</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_freelance_on_homepage"
+                id="is_freelance_on_homepage_switch" class="form-control checkbox_change"
+                data-className="is_freelance_on_homepage" data-color="#43bee1"
+                @if (@$getAdditionalPreference['is_freelance_on_homepage']) checked='checked' @endif>
+        </span>
+        <input type="hidden" @if (@$getAdditionalPreference['is_freelance_on_homepage'] == 1) value="1" @else value="0" @endif
+            name="is_freelance_on_homepage" id="is_freelance_on_homepage" />
+    </div>
+</div>
+
+<div class="col-md-4 ">
+    <div class="form-group d-flex justify-content-between mb-3 alCustomToggleColor">
+        <label for="is_enable_compare_product" class="mr-2 mb-0">Bulk Order Product<small class="d-block pr-5">Enable Bulk Order Product Recomended For ECommerce.</small></label>
+        <span> <input type="checkbox" data-plugin="switchery" name="is_corporate_user" id="is_corporate_user_switch" class="form-control checkbox_change" data-classname="is_corporate_user" data-color="#43bee1"   @if (@$getAdditionalPreference['is_corporate_user']) checked='checked' @endif ></span>
+        <input type="hidden" @if (@$getAdditionalPreference['is_corporate_user'] == 1) value="1" @else value="0" @endif name="is_corporate_user" id="is_corporate_user">
+    </div>
+</div>
+<div class="col-md-4">
+    <div class="form-group d-flex justify-content-between mb-3">
+        <label for="enable_pwa_switch" class="mr-2 mb-0">{{ __('Enable PWA') }}</label>
+        <input type="hidden" @if (@$getAdditionalPreference['enable_pwa'] == 1) value="1" @else value="0" @endif name="enable_pwa" id="enable_pwa">
+
+        <span><input type="checkbox" data-plugin="switchery" name="enable_pwa_switch" id="enable_pwa_switch"
+                class="form-control" data-color="#43bee1"
+                @if (@$getAdditionalPreference['enable_pwa'] == 1) checked='checked' @endif></span>
     </div>
 </div>

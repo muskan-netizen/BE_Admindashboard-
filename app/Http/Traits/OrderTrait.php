@@ -1158,8 +1158,7 @@ trait OrderTrait
         }
 
         $tracking_url = $order->ordervendor->dispatch_traking_url;
-        \Log::info('tracking');
-        \Log::info($tracking_url);
+        
         $tracking_url = get_tiny_url($tracking_url);
 
         $keyData = ['{user_name}' => $user['name'] ?? '', '{order_number}' => $order['order_number'] ?? '', '{track_url}' => $tracking_url ?? '', '{order_status}' => $order_status ?? ''];
@@ -1617,7 +1616,7 @@ trait OrderTrait
      }
 
 
-     public function orderSuccessCartDetail($order)
+    public function orderSuccessCartDetail($order)
     {
         try {
             // Auto accept order

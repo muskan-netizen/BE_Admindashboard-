@@ -594,7 +594,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
 
         // update status
         $(document).on("click", ".update-status-ar", function() {
-			
+		
             let that = $(this);
             that.prop("disabled",true);
             var count = that.data("count");
@@ -616,7 +616,7 @@ color: var(--theme-deafult);position: relative;left: -24px;font-weight: 600;bord
             }else if(status_option_id == 4){
                  title = "{{__('Processing Order')}}";
             }else if(status_option_id == 5){
-                 title = "{{__('Out of delivery')}}";
+                 title = "{{__('Out for delivery')}}";
             }else{
                  title = "{{__('Complete the delivery?')}}";
             }

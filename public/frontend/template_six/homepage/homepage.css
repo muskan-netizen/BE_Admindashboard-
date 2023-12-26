@@ -24,12 +24,12 @@
         background-image: unset!important;
         position: relative;
     }
-@media (max-width:576px) {
-    body[dir="rtl"] #alSixHomeServices .col-xl-8.offset-xl-2 {
-        margin-right: 0!important;
+    @media (max-width:576px) {
+
+        body[dir="rtl"] #alSixHomeServices .col-xl-8.offset-xl-2 {
+            margin-right: 0!important;
+        }
     }
-  }
-  
     .home-slider-wrapper span.carousel-control-prev-icon:before{
         position: absolute;
         content: "";

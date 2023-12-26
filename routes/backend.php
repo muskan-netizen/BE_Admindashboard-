@@ -155,6 +155,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::post('configUpdate/{code}', 'Client\ClientPreferenceController@update')->name('configure.update');
         Route::post('configUpdate', 'Client\ClientPreferenceController@updateTaxInclusivePrice')->name('configure.taxinclusive');
         Route::post('additionalUpdate', 'Client\ClientPreferenceController@additionalupdate')->name('additional.update');
+        Route::post('resetDefault', 'Client\ClientPreferenceController@resetToDefault')->name('reset.config');
         Route::post('toggleDatabase', 'Client\ClientPreferenceController@toggleDatabase')->name('configure.toggleDatabase');
         Route::post('updateIsPriceEnable', 'Client\ClientPreferenceController@updateIsPriceEnable')->name('customize.updateIsPriceEnable');
         Route::post('configUpdateAdditional/{code}', 'Client\ClientPreferenceController@updateAdditional')->name('configure.updateAdditional');
@@ -448,6 +449,7 @@ Route::group(['middleware' => 'adminLanguageSwitch'], function () {
         Route::resource('deliveryoption', 'Client\DeliveryOptionController');
         Route::resource('verifyoption','Client\VerificationController');
         Route::post('delivery/dunzo', 'Client\DeliveryOptionController@dunzo')->name('delivery.dunzo');
+        Route::post('delivery/d4b_dunzo', 'Client\DeliveryOptionController@d4b_dunzo')->name('delivery.d4b_dunzo');
         Route::post('delivery/roadie', 'Client\DeliveryOptionController@roadie')->name('delivery.roadie');
         Route::post('delivery/ahoy', 'Client\DeliveryOptionController@ahoy')->name('delivery.ahoy');
         Route::post('delivery/last_mile_delivery','Client\DeliveryOptionController@last_mile_delivery')->name('delivery.last_mile_delivery');

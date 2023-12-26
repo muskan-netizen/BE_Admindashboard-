@@ -15,11 +15,11 @@
 @php
     $mapKey = '1234';
     $theme = Session::get('preferences');
-    
+
     if($theme && !empty($theme->map_key)){
         $mapKey = $theme->map_key;
     }
-   
+
     $webColor = '#ff4c3b';
     \Session::forget('success');
 @endphp
@@ -240,7 +240,7 @@ gtag('config', 'G-5LPF1QP3Y3');
 
 @if(isset($analytics['gtag_id']))
     gtag('config', "{{$analytics['gtag_id'] ?? ''}}");
-@endif   
+@endif
 
 @if(!isset($_COOKIE['show-subscription-plan']) && ($showSubscriptionPlanPopUp == 1) && (Route::current()->getName() != 'userHome'))
     $(document).ready(function() {
@@ -265,7 +265,7 @@ gtag('config', 'G-5LPF1QP3Y3');
         </script>
         <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={{$analytics['fpixel_id']}}&ev=PageView&noscript=1"/></noscript>
     <!-- End Meta Pixel Code -->
-    @endif   
+    @endif
 
 @php
 if($showSubscriptionPlanPopUp == 1){
@@ -283,12 +283,12 @@ if($showSubscriptionPlanPopUp == 1){
     @if(Session::has('vendorType') && (Session::get('vendorType') != '') )
         vendor_type = "{{Session::get('vendorType')}}";
     @endif
-    @php 
+    @php
         $additionalPreference = getAdditionalPreference(['is_service_product_price_from_dispatch','is_service_price_selection']);
         $getOnDemandPricingRule = getOnDemandPricingRule(Session::get('vendorType'), (@Session::get('onDemandPricingSelected') ?? ''),$additionalPreference);
         $is_service_product_price_from_dispatch_forOnDemand =$getOnDemandPricingRule['is_price_from_freelancer'] ?? 0;
     @endphp
-   
+
      is_service_product_price_from_dispatch_forOnDemand ="{{ $is_service_product_price_from_dispatch_forOnDemand  }}";
     var autocomplete_url = "{{ route('autocomplete') }}";
     let stripe_publishable_key = '{{ $stripe_publishable_key }}';
@@ -326,6 +326,8 @@ if($showSubscriptionPlanPopUp == 1){
     var url2 = "{{ route('config.get') }}";
     var razorpay_complete_payment_url = "{{ route('payment.razorpayCompletePurchase') }}";
     var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
+    var pyment_totalpay_url= "{{ route('make.payment') }}";
+    var payment_orangepay_url="{{ route('initiate.payment') }}"
     var featured_product_language = "{{ __('Featured Product') }}";
     var new_product_language = "{{ __('New Product') }}";
     var on_sale_product_language = "{{ __('On Sale') }}";

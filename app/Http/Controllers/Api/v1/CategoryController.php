@@ -74,20 +74,22 @@ class CategoryController extends BaseController
             
             $response['category'] = $category;
             $response['filterData'] = $variantSets;
-            $response['listData'] = $this->listData($langId, $cid, strtolower($category->type->redirect_to), $userid, $product_list, $mod_type, $mode_of_service, $limit, $page);
+            $response['listData'] = $this->listData($langId, $cid, strtolower($category->type->redirect_to), $userid, $product_list, $mod_type, $mode_of_service, $limit, $page, $request);
             return $this->successResponse($response);
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }
 
-    public function listData($langId, $category_id, $type = '', $userid, $product_list, $mod_type, $mode_of_service = null, $limit = 12, $page = 1)
+    public function listData($langId, $category_id, $type = '', $userid, $product_list, $mod_type, $mode_of_service = null, $limit = 12, $page = 1, $request)
     {
+        $type = strtolower($type);
+        $user = Auth::user();
         $preferences = ClientPreference::select('distance_to_time_multiplier', 'distance_unit_for_time', 'is_hyperlocal', 'Default_location_name', 'Default_latitude', 'Default_longitude', 'pickup_delivery_service_area','subscription_mode')->where('id', '>', 0)->first();
+
 
         if ($type == 'vendor' && $product_list == 'false') {
          
-            $user = Auth::user();
             $vendor_ids = [];
             $vendor_categories = VendorCategory::where('category_id', $category_id)->where('status', 1)->get();
        
@@ -241,7 +243,7 @@ class CategoryController extends BaseController
                 }
             }
             return $products;
-        } elseif ($type == 'Pickup/Delivery' || $type == 'pickup/delivery') {
+        } elseif ($type == 'pickup/delivery') {
             $vendor_ids = [];
             $user = Auth::user();
             $pickup_latitude = $user->latitude ? $user->latitude : '';
@@ -298,7 +300,12 @@ class CategoryController extends BaseController
                 );
             }
             return $category_details;
-        } elseif ($type == 'product' || $type == 'Product' || $type == 'on demand service' || $type == 'laundry' || $type == 'Laundry') {
+        } elseif ($type == 'product' || $type == 'on demand service' || $type == 'laundry') {
+
+            $latitude = !empty($request->latitude) ? $request->latitude : $preferences->Default_latitude;
+            $longitude = !empty($request->longitude) ? $request->longitude : $preferences->Default_longitude;
+
+
             $vendor_ids = Vendor::byVendorSubscriptionRule($preferences)->where('status', 1);
             
             $vendor_ids =  $vendor_ids->pluck('id')->toArray();
@@ -333,7 +340,12 @@ class CategoryController extends BaseController
                     $q->where('language_id', $langId);
                 }
             ])->select('products.category_id', 'mode_of_service', 'products.id', 'products.sku', 'products.url_slug', 'products.weight_unit', 'products.weight', 'products.vendor_id', 'products.has_variant', 'products.has_inventory', 'products.sell_when_out_of_stock', 'products.requires_shipping', 'products.Requires_last_mile', 'products.averageRating','products.minimum_order_count','products.batch_count', 'products.is_show_dispatcher_agent', 'products.is_slot_from_dispatch', 'products.tags','products.is_recurring_booking')
-                ->where('products.category_id', $category_id)->where('products.is_live', 1)->where('mode_of_service', $mode_of_service)->whereIn('products.vendor_id', $vendor_ids)->paginate($limit, $page);
+            ->where('products.category_id', $category_id)->where('products.is_live', 1)
+            ->where('mode_of_service', $mode_of_service)
+            ->whereIn('products.vendor_id', $vendor_ids)
+            ->paginate($limit, $page);
+                
+
             if (!empty($products)) {
                 foreach ($products as $key => $product) {
                     foreach ($product->addOn as $key => $value) {
@@ -395,6 +407,23 @@ class CategoryController extends BaseController
                     }
                 }
             }
+
+            $vendorDistance[] = [];
+            if (!empty($products)) {
+                 foreach ($products as $key => $product) {
+                    if(empty($vendorDistance[$product->vendor_id])){
+                        $vendorDistance[$product->vendor->id] = $this->getVendorDistanceWithTime($latitude, $longitude, $product->vendor, $preferences, $request->type);
+                    }
+                        if($vendorDistance[$product->vendor_id])
+                        {
+                            $product->lineOfSightDistance =$vendorDistance[$product->vendor_id]->lineOfSightDistance??0;
+                            $product->timeofLineOfSightDistance =$vendorDistance[$product->vendor_id]->timeofLineOfSightDistance??0;
+                        }
+                    
+                }
+
+            }
+             
             $listData = $products;
             return $listData;
         }
@@ -592,5 +621,23 @@ class CategoryController extends BaseController
             ]);
        
     }
+    public function getHourlyBasePrice(Request $request)
+
+    {
+    
+        if($request->has('cat_id'))
+        {
+            $category_id = $request->get('cat_id');
+            $product = ProductVariant::whereHas('product', function ($query) use ($category_id) {
+                $query->where('category_id', $category_id);
+            })->orderBy('price','asc')->first();
+           
+             return $this->successResponse($product,null,200);
+
+        }
+        return $this->errorResponse('No Product Found ', 404);
+
+    }
+
 
 }
