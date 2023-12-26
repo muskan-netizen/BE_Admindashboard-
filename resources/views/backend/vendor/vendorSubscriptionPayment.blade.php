@@ -29,7 +29,6 @@
     var check_active_subscription_url = "{{route('vendor.subscription.plan.checkActive', [$vendor->id, ':id'])}}";
     var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
     var pyment_totalpay_url= "{{ route('make.payment') }}";
-    var payment_orangepay_url="{{ route('initiate.payment') }}"
 
     var card = '';
     var stripe = '';

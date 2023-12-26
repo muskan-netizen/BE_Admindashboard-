@@ -1870,7 +1870,7 @@ $(document).ready(function () {
                 }
             });
             }
-
+            //totalpay Ends
     function paymentSuccessViaPaypal(amount, token, payer_id, path, tip = 0, order_number = 0) {
         let address_id = 0;
         if (path.indexOf("cart") !== -1) {
@@ -5329,9 +5329,6 @@ $(document).ready(function () {
             case 65:
                 paymentViaTotalpay('', payment_option_id, '');
             break;
-            case 66:
-                paymentViaOranngepay('', payment_option_id, '');
-            break;
 
         }
 
@@ -5903,13 +5900,6 @@ $(document).ready(function () {
                     paymentViaTotalpay(address_id, payment_option_id, order);
                 }
               break;
-              case 66:
-                var order = placeOrderBeforePayment(address_id, payment_option_id, tip);
-                if (order != '') {
-                    paymentViaOranngepay('', payment_option_id, '');
-                }
-                
-            break;
         }
 
     }
@@ -6158,9 +6148,6 @@ $(document).ready(function () {
             break;
             case 65:
                 paymentViaTotalpay('', payment_option_id, '');
-            break;
-            case 66:
-                paymentViaOranngepay('', payment_option_id, '');
             break;
         }
     }
