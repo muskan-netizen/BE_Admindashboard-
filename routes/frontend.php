@@ -36,6 +36,7 @@ Route::group(['middleware' => ['domain']], function () {
 	Route::any('webhook/lalamove', 'Front\LalaMovesController@webhooks')->name('webhook');
 	Route::any('webhook/ship-rocket', 'ShiprocketController@shiprocketWebhook')->name('webshiprocket');
 	Route::any('webhook/dunzo', 'DunzoController@dunzoWebhook')->name('dunzoWebhook');
+	Route::any('webhook/d4bdunzo','D4BDunzoController@d4bdunzoWebhook')->name('d4bdunzoWebhook');
 	Route::any('webhook/ahoy', 'AhoyController@ahoyWebhook')->name('ahoyWebhook');
 	Route::any('webhook/roadie', [RoadieController::class, 'roadieWebhook'])->name('roadieWebhook');
 	Route::get('webhook/user_rating', 'Front\UserRatingController@userRatingWebhook')->name('user_rating_webhook');
@@ -96,6 +97,7 @@ Route::group(['middleware' => ['domain']], function () {
 
 	//lalMoves Test Route
 	Route::match(['get', 'post'], 'order/lalamoves/quotation', 'Front\LalaMovesController@quotation')->name('order.lalamoves.quotation');
+	Route::match(['get','post'],'order/d4bdunzo/quotation','Front\D4BDunzoController@quotation')->name('order.d4bdunzo.quotation');
 
 	Route::match(['get', 'post'], 'order/lalamoves/place-order', 'Front\LalaMovesController@placeOrder')->name('order.lalamoves.place_order');
 
@@ -278,6 +280,7 @@ Route::group(['middleware' => ['domain']], function () {
 	  //orangepay
 	  Route::post('/initiate-payment','Front\OrangePaymentController@web_payment')->name('initiate.payment');
 	  Route::get('/success-orangepay', 'Front\OrangePaymentController@SuccessPage')->name('success.orangepayment');
+	  Route::get('/cancel-orangepay', 'Front\OrangePaymentController@CancelPage')->name('cancel.orangepayment');
 
 	//Route::get('payment/yoco-webview', 'Api\v1\YocoGatewayController@yocoWebView')->name('payment.yoco-webview');
 	Route::post('payment/yoco', 'Front\YocoGatewayController@yocoPurchase')->name('payment.yocoPurchase');

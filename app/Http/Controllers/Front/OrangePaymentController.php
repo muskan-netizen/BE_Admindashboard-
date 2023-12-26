@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Redirect;
 
 class OrangePaymentController extends Controller
 {
+    use ApiResponser;
     public function __construct()
     {
         $payOption = PaymentOption::select('credentials', 'test_mode', 'status')->where('code', 'orangepay')->where('status', 1)->first();
@@ -22,7 +23,6 @@ class OrangePaymentController extends Controller
             $this->orangepay_MerchantToken = $credentials->orangepay_MerchantToken;
         }
     }
-
     public function create_token(Request $request){
 
         $curl = curl_init();
@@ -56,6 +56,7 @@ class OrangePaymentController extends Controller
 
     public function web_payment(Request $request){
         try{
+        \Log::info(['Request web_payment'=>$request->all()]);
         $user = auth()->user();
         $data['come_from'] = 'app';
         $order = Order::where(['order_number' => $request->order_number])->first();
@@ -83,9 +84,9 @@ class OrangePaymentController extends Controller
             "currency" => "OUV",
             "order_id" => $order_id,
             "amount" => $request->total_amount,
-            "return_url" => "http://192.168.102.19:8000/success-orangepay",
-            "cancel_url" => "http://myvirtualshop.webnode.es/txncncld/",
-            "notif_url" => "http://www.merchant-example2.org/notif",
+            "return_url" => route('success.orangepayment'),
+            "cancel_url" => url('cancel-orangepay'),
+            "notif_url" => url('success-orangepay'),
             "lang" => "fr",
             "reference" => $order_id,
         ];
@@ -109,11 +110,21 @@ class OrangePaymentController extends Controller
         ));
         $response1 = curl_exec($curl);
         $response = json_decode($response1, true);
-        $response['order_id'] = $order_id;
-        $response['total_amount'] = $request->total_amount;
-        $response['payment_from'] = $request->payment_from;
         $jsonResponse = json_encode($response);
         curl_close($curl);
+        if($response['notif_token']){
+        $data = [
+            'amount' => $request->total_amount,
+            'payment_option_id' => 66,
+            'transaction_id' => $response['notif_token'],
+            'balance_transaction' => $request->total_amount,
+            'viva_order_id' => $order->order_number ?? $order_id,
+            'type' => $request->payment_from,
+            'date' => date('Y-m-d'),
+            'user_id' => $user->id
+        ];
+        }
+        Payment::create($data);
         return $jsonResponse;
     }catch(\Exception $e){
         \Log::error($e->getMessage());
@@ -121,109 +132,75 @@ class OrangePaymentController extends Controller
     }
     }
 
-    public function TransactionStatus(Request $request){
-        $curl = curl_init();
-        $Tokenresponse=$this->create_token($request);
-        $WebPaymentresponse=$this->web_payment($request);
-        $data = json_decode($Tokenresponse, true);
-        $pay_token_response = json_decode($WebPaymentresponse, true);
-        $accessToken = $data['access_token'];
-        if($pay_token_response){
-        $headers = [
-            'Authorization' => 'Bearer '.$accessToken,
-            'Content-Type:  application/json',
-            'Cookie: BIGipServer~naomi-ginefa~PoolOCProuter-OCP-EFA-HTTP-NORMANDIE=!t2Qh85zNWnEJ+IQ3UzhIVdohv0ViBnhaD1hFEHEWeNoalfU5hMGNUOuhlEZYk91eW+9tOFiw4dTiyl5vq9m65dAz0cmbpSbpAZ3g3tA=; BIGipServer~naomi-ginefa~PoolOCProuter-OCP-EFA-HTTP-RUEIL=!ilbgZLGq3TzKnqckioRitpNtJV/P2gkGz1rLYsSG0yBEMI6CARW0FYOCKB9imN4RgdVkWoBNq0IePmlv/ZhZTtFOX24VazyroMYjW6Q=; aa18925415715d69ee149f9d943dc7f8=63fa33d2a534a6f7f3dceaa7feba523d'
-        ];
-        $data = [
-            "order_id" => $pay_token_response['order_id'],
-            "amount" => $pay_token_response['total_amount'],
-            "pay_token" => $pay_token_response['pay_token'],
-        ];
-        $formattedHeaders = [];
-        foreach ($headers as $key => $value) {
-            $formattedHeaders[] = $key . ': ' . $value;
-        }
-        $jsonData = json_encode($data);
-        curl_setopt_array($curl, array(
-        CURLOPT_URL => 'https://api.orange.com/orange-money-webpay/dev/v1/transactionstatus',
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS =>$jsonData ,
-        CURLOPT_HTTPHEADER => $formattedHeaders,
-        ));
+    // public function TransactionStatus(Request $request){
+    //     $curl = curl_init();
+    //     $Tokenresponse=$this->create_token($request);
+    //     $WebPaymentresponse=$this->web_payment($request);
+    //     $data = json_decode($Tokenresponse, true);
+    //     $pay_token_response = json_decode($WebPaymentresponse, true);
+    //     $accessToken = $data['access_token'];
+    //     if($pay_token_response){
+    //     $headers = [
+    //         'Authorization' => 'Bearer '.$accessToken,
+    //         'Content-Type:  application/json',
+    //         'Cookie: BIGipServer~naomi-ginefa~PoolOCProuter-OCP-EFA-HTTP-NORMANDIE=!t2Qh85zNWnEJ+IQ3UzhIVdohv0ViBnhaD1hFEHEWeNoalfU5hMGNUOuhlEZYk91eW+9tOFiw4dTiyl5vq9m65dAz0cmbpSbpAZ3g3tA=; BIGipServer~naomi-ginefa~PoolOCProuter-OCP-EFA-HTTP-RUEIL=!ilbgZLGq3TzKnqckioRitpNtJV/P2gkGz1rLYsSG0yBEMI6CARW0FYOCKB9imN4RgdVkWoBNq0IePmlv/ZhZTtFOX24VazyroMYjW6Q=; aa18925415715d69ee149f9d943dc7f8=63fa33d2a534a6f7f3dceaa7feba523d'
+    //     ];
+    //     $data = [
+    //         "order_id" => $pay_token_response['order_id'],
+    //         "amount" => $pay_token_response['total_amount'],
+    //         "pay_token" => $pay_token_response['pay_token'],
+    //     ];
+    //     $formattedHeaders = [];
+    //     foreach ($headers as $key => $value) {
+    //         $formattedHeaders[] = $key . ': ' . $value;
+    //     }
+    //     $jsonData = json_encode($data);
+    //     curl_setopt_array($curl, array(
+    //     CURLOPT_URL => 'https://api.orange.com/orange-money-webpay/dev/v1/transactionstatus',
+    //     CURLOPT_RETURNTRANSFER => true,
+    //     CURLOPT_ENCODING => '',
+    //     CURLOPT_MAXREDIRS => 10,
+    //     CURLOPT_TIMEOUT => 0,
+    //     CURLOPT_FOLLOWLOCATION => true,
+    //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    //     CURLOPT_CUSTOMREQUEST => 'POST',
+    //     CURLOPT_POSTFIELDS =>$jsonData ,
+    //     CURLOPT_HTTPHEADER => $formattedHeaders,
+    //     ));
 
-        $response1 = curl_exec($curl);
-        $response = json_decode($response1, true);
-        $response['order_id'] = $pay_token_response['order_id'];
-        $response['total_amount'] = $pay_token_response['total_amount'];
-        $response['payment_from'] = $pay_token_response['payment_from'];
-        $jsonResponse = json_encode($response);
-        curl_close($curl);
-        return $jsonResponse;
-    }else{
-        \Log::error('inside else');
+    //     $response1 = curl_exec($curl);
+    //     $response = json_decode($response1, true);
+    //     $response['order_id'] = $pay_token_response['order_id'];
+    //     $response['total_amount'] = $pay_token_response['total_amount'];
+    //     $response['payment_from'] = $pay_token_response['payment_from'];
+    //     $jsonResponse = json_encode($response);
+    //     curl_close($curl);
+    //     return $jsonResponse;
+    // }else{
+    //     \Log::error('inside else');
 
-    }
+    // }
 
-    }
+    // }
 
     public function SuccessPage(Request $request){
-        $TransactionStatusresponse=$this->TransactionStatus($request);
-        $response = json_decode($TransactionStatusresponse, true);
-        $user = auth()->user();
-        $order=Order::where('id',$response['order_id'])->first();
+        $payment=Payment::where('transaction_id',$request['notif_token'])->first();
+        $order=Order::where('order_number',$payment->viva_order_id)->first();
+        $user=User::where('id',$payment->user_id)->first();
         $data['come_from'] = 'app';
-        if ($request->isMethod('post')) {
-                $data['come_from'] = 'web';
-            if (isset($request->auth_token) && ! empty($request->auth_token)) {
-                $user = User::where('auth_token', $request->auth_token)->first();
-                Auth::login($user);
-            } else {
-                $user = auth()->user();
-            }         
+        if($request['status'] == 'SUCCESS'){
+                $payment->update([
+                    'transaction_id' => $request['txnid'],
+                ]);
+                $payment->save();
         }
-        if($response['status'] == 'SUCCESS'){
-            if($response['payment_from'] == 'subscription')
-            {
-                $data = [
-                    'amount' => $response['total_amount'],
-                    'payment_option_id' => 66,
-                    'transaction_id' => $response['txnid'],
-                    'balance_transaction' => $response['total_amount'],
-                    'viva_order_id' => $order->order_number ?? '',
-                    'type' => $response['payment_from'],
-                    'date' => date('Y-m-d'),
-                    'user_id' => $user->id,
-                ];
-            }
-            else{
-                $data = [
-                    'amount' => $response['total_amount'],
-                    'payment_option_id' => 66,
-                    'transaction_id' => $response['txnid'],
-                    'balance_transaction' => $response['total_amount'],
-                    'viva_order_id' => $order->order_number ?? '',
-                    'type' => $response['payment_from'],
-                    'date' => date('Y-m-d'),
-                    'user_id' => $user->id
-                ];
-            }
-            Payment::create($data);
-        }
-
-    $payment = Payment::where('transaction_id', $response['txnid'])->first();
-
+    $payment = Payment::where('transaction_id', $request['txnid'])->first();
         if ($payment->type == 'wallet') {
             return $this->completeOrderWallet($request, $payment,$user);
         }elseif ($payment->type == 'subscription') {
             return $this->completeOrderSubs($request, $payment,$user);
         } elseif ($payment->type == 'pickup_delivery') {
-            return $this->completeOrderPickup($request, $payment,$user,$response);
+            return $this->completeOrderPickup($request, $payment,$user);
         }  
 
 
@@ -329,14 +306,14 @@ class OrangePaymentController extends Controller
         return redirect()->route('user.subscription.plans');
         
     }
-
-    public function completeOrderPickup(Request $request,$payment,$user,$response)
+    
+    public function completeOrderPickup(Request $request,$payment,$user)
     {
         $order = Order::where('order_number',$payment->viva_order_id)->first();
         if ($order) {
                 $order->payment_status = 1;
                 $order->save();
-                $payment_exists = Payment::where('transaction_id', $response['txnid'])->first();
+                $payment_exists = Payment::where('transaction_id', $request['txnid'])->first();
                 if (!$payment_exists) {
                     $payment = new Payment();
                     $payment->date = date('Y-m-d');
@@ -344,7 +321,7 @@ class OrangePaymentController extends Controller
                     $payment->order_id = $order->id ?? '';
                     $payment->payment_option_id = 66;
                     $payment->user_id = $order->user_id ?? '';
-                    $payment->transaction_id =$response['txnid'];
+                    $payment->transaction_id =$request['txnid'];
                     $payment->balance_transaction = $order->payable_amount ?? '';
                     $payment->save();
                 }
@@ -376,6 +353,17 @@ class OrangePaymentController extends Controller
 
             return Redirect::to(route('user.wallet'))->with('error',$request->message);
         }
+    }
+
+    public function CancelPage(Request $request)
+    {
+        if(isset($request->come_from) && $request->come_from == 'app')
+        {
+            $response['status']         = 'Error';
+            $response['msg']            = 'Payment Cancel';
+            return response()->json($response);
+        }
+        return redirect()->back();
     }
 
 }

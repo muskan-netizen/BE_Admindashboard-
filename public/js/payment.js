@@ -4228,7 +4228,6 @@ $(document).ready(function () {
         let cabElement = $("#pickup_now");
         let subscriptionElement = $("input[name='subscription_amount']");
         let subscription_id = $("input[name='subscription_id']");
-
         var data = {};
         if (path.indexOf("cart") !== -1) {
             total_amount = cartElement.val();
@@ -4261,8 +4260,6 @@ $(document).ready(function () {
         data.total_amount = total_amount;
         data.payment_option_id = payment_option_id;
         data._token = $('input[name=_token]').val();
-
-
         $.ajax({
             type: "post",
             dataType: "json",
