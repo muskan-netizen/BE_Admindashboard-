@@ -76,7 +76,6 @@
         $("#cab_payment_method_form, .select_payment_option_done").attr("disabled", true);
         var type = $(this).attr('data-type');
         let payment_option_id = $("#cab_payment_method_form input[name='select_cab_payment_method']:checked").val();
-
         if (payment_option_id == 4) {
             stripe.createToken(card).then(function(result) {
                 //card error case
@@ -529,6 +528,9 @@ $(document).ready(function () {
                     }else if(payment_option_id == 62){
                         payWithLivees(reload_route,'',response.data);
                     }
+                    else if(payment_option_id == 66){
+                        paymentViaOranngepay(reload_route,'',response.data);
+                    }
                     cabBookingPaymentOptions(payment_option_id, response.data);
                 }
                 else if(response.status == 201){
@@ -833,7 +835,6 @@ $(document).ready(function () {
                 }
             }).get();
         }
-
         displayLocationCab(latitude, longitude);initMap2();
         getVendorList();
     });
@@ -1486,7 +1487,6 @@ $(document).ready(function () {
 
         var latitude             = $('#address-latitude').val();
         var longitude            = $('#address-longitude').val();
-
         var pickup_location      = $('#pickup_location_latitude').val();
         var destination_location = $('#destination_location_latitude').val();
         var pickupAddress        = $('#address-input').val();
@@ -1552,7 +1552,7 @@ $(document).ready(function () {
                 }
             }).get();
         }
-
+        
         displayLocationCab(latitude, longitude);
         getVendorList();
 
@@ -2109,7 +2109,6 @@ $(document).ready(function () {
                 }
             }
         );
-
         $('#address-latitude').val(lat);
         $('#address-longitude').val(long);
         displayLocationCab(lat, long);
@@ -2119,7 +2118,8 @@ $(document).ready(function () {
     }
     let lat = $("#booking-latitude").val();
     let long = $("#booking-longitude").val();
-    displayLocationCab(lat, long);
+    //displayLocationCab(lat, long);
+    
     function displayLocationCab(latitude, longitude) {
         var geocoder;
         geocoder = new google.maps.Geocoder();

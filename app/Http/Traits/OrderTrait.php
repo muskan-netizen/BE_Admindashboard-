@@ -1616,7 +1616,7 @@ trait OrderTrait
      }
 
 
-     public function orderSuccessCartDetail($order)
+    public function orderSuccessCartDetail($order)
     {
         try {
             // Auto accept order

@@ -798,4 +798,31 @@ trait HomePageTrait
             return $data ;
     }
 
+    public function makeCurlRequest($url, $method, $data, $headers) {
+        if (count($data) == 0) {
+            $postData = 'grant_type=client_credentials';
+        } else {
+            $postData = json_encode($data);
+        }
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => $method,
+            CURLOPT_POSTFIELDS => 'grant_type=client_credentials',
+            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_POSTFIELDS =>$postData,
+            ));
+    
+            $response = curl_exec($curl);
+            curl_close($curl);
+            return $response;
+        
+    }
+
 }
