@@ -1144,12 +1144,6 @@ input[type=number]::-webkit-outer-spin-button {
             }
             %>
                 <input type="hidden" id="stripe_token" name="stripe_token" value="">
-            <h4 class="d-flex align-items-center justify-content-between mb-2 cab_payment_method_selection"  data-toggle="modal" data-target="#payment_modal">
-                <span id="payment_type">
-                    <i class="fa fa-money" aria-hidden="true"></i> {{__('Cash')}}
-                </span>
-                <i class="fa fa-angle-down" aria-hidden="true"></i>
-            </h4>
                 <button class="btn btn-solid w-100" id="pickup_now" data-payment_method="1" data-product_id="<%= result.id %>" data-coupon_id =""  data-subscriptionPayableAmount ="<%= payableAmout %>" data-vendor_id="<%= result.vendor_id %>" data-amount="<%= result.original_tags_price%>" data-tollamount="<%= result.toll_fee%>" data-servicechargeamount="<%= result.service_charge_amount%>" data-totalamount="<%= (result.total_tags_price)%>" data-image="<%= result.image_url %>" data-rel="pickup_now" data-task_type="now">{{__('Book Now')}}</button>
             </div>
             <!--<div class="col-6">
@@ -1871,7 +1865,7 @@ input[type=number]::-webkit-outer-spin-button {
         var no_result_message = "{{ __('No result found. Please try a new search') }}";
         var create_mtn_momo_token = "{{route('mtn.momo.createToken')}}";
         var powertrans_payment_url = "{{ route('powertrans.payment') }}";
-        var payment_orangepay_url="{{ route('initiate.payment') }}"
+
         var pesapal_payment_url = "{{ route('pesapal.payment') }}";
         /// ************* product order form **************///////
         $('body').on('click', '.clproduct_order_form', function(event) {
@@ -1891,9 +1885,7 @@ input[type=number]::-webkit-outer-spin-button {
 
     <script type="text/javascript">
         $(document).ready(function(e) {
-            setTimeout(function(){
-                $("#get-current-location").trigger("click");
-            }, "5000");
+            $("#get-current-location").trigger("click");
             var daterang = $('input[name="schedule_pickup_date"]').daterangepicker({
                 singleDatePicker: true,
                 startDate: moment().add('10', 'minutes'),

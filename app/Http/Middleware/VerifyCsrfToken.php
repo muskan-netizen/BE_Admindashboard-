@@ -44,7 +44,6 @@ class VerifyCsrfToken extends Middleware
         'square/inventory/event/update',
         'skipcash/webhook',
 
-        'success/pesapal',
-        'success-orangepay'
+        'success/pesapal'
     ];
 }

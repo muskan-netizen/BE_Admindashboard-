@@ -226,7 +226,6 @@
     var payment_paylink_url = "{{route('payment.paylinkPurchase')}}";
     var payment_razorpay_url = "{{route('payment.razorpayPurchase')}}";
     var pyment_totalpay_url= "{{ route('make.payment') }}";
-    var payment_orangepay_url="{{ route('initiate.payment') }}"
     var payment_checkout_url = "{{route('payment.checkoutPurchase')}}";
     var payment_khalti_url = "{{route('payment.khaltiVerification')}}";
     var payment_khalti_complete_purchase = "{{route('payment.khaltiCompletePurchase')}}";

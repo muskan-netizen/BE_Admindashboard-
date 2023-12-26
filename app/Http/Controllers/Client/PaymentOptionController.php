@@ -825,17 +825,6 @@ class PaymentOptionController extends BaseController
                                         'totalpay_password' => $request->totalpay_password,
                                     ));
                                     break;
-                        case 'orangepay':
-                            $request->validate([
-                            'orangepay_MerchantKey' => 'required',
-                            'orangepay_MerchantToken' => 'required',
-                            ]);
-
-                            $json_creds = json_encode(array(
-                                'orangepay_MerchantKey' => $request->orangepay_MerchantKey,
-                                'orangepay_MerchantToken' => $request->orangepay_MerchantToken,
-                            ));
-                            break;
                     }
                 }
             }

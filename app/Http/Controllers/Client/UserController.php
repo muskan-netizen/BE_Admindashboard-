@@ -449,8 +449,6 @@ class UserController extends BaseController
         }
 
         $data = [
-            'email'        => $request->email,
-            'phone_number'        => $request->phone,
             'status'        => $request->status,
             'role_id'       => $request->has('role_id') ? $request->get('role_id') : $user->role_id,
             'is_admin'      => $request->is_admin,

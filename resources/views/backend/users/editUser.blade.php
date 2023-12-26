@@ -99,20 +99,8 @@
                                 <div class="form-group">
                                     <label for="email" class="control-label">{{ __('EMAIL') }}</label>
                                      <input type="email" class="form-control" id="email" name="email"
-                                        value="{{ old('email', $subadmin->email ?? '')}}" placeholder="Enter email address">
+                                        value="{{ old('email', $subadmin->email ?? '')}}" placeholder="Enter email address" readonly>
                                     @if($errors->has('email'))
-                                    <span class="text-danger" role="alert">
-                                        <strong>{{ $errors->first('email') }}</strong>
-                                    </span>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="phone" class="control-label">{{ __('Phone Number') }}</label>
-                                     <input type="phone" class="form-control" id="phone" name="phone"
-                                        value="{{ old('email', $subadmin->phone_number ?? '')}}" placeholder="Enter phone number">
-                                    @if($errors->has('phone'))
                                     <span class="text-danger" role="alert">
                                         <strong>{{ $errors->first('email') }}</strong>
                                     </span>
